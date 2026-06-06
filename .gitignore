@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Local Vercel/project state
+.vercel/
+
+# Hermes local agent planning/session files
+.hermes/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Temporary files
+.tmp/
+tmp/

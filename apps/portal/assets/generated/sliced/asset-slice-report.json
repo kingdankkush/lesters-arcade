@@ -1,0 +1,1189 @@
+{
+  "generatedCount": 76,
+  "spriteSize": [
+    128,
+    128
+  ],
+  "iconSize": [
+    96,
+    96
+  ],
+  "parallaxSize": [
+    1024,
+    256
+  ],
+  "assets": [
+    {
+      "id": "idle",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-idle.png",
+      "sourceBox": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "run-1",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-run-1.png",
+      "sourceBox": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "run-2",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-run-2.png",
+      "sourceBox": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "shoot",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-shoot.png",
+      "sourceBox": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "blade",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-blade.png",
+      "sourceBox": [
+        0,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "grenade",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-grenade.png",
+      "sourceBox": [
+        256,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "jump",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-jump.png",
+      "sourceBox": [
+        512,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "hurt",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-hurt.png",
+      "sourceBox": [
+        768,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "ko",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-ko.png",
+      "sourceBox": [
+        0,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "victory",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-victory.png",
+      "sourceBox": [
+        256,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "crouch",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-crouch.png",
+      "sourceBox": [
+        512,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "reload",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-reload.png",
+      "sourceBox": [
+        768,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "portrait",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-portrait.png",
+      "sourceBox": [
+        0,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "dash",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-dash.png",
+      "sourceBox": [
+        256,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "fall",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-fall.png",
+      "sourceBox": [
+        512,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "extra",
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/lester-extra.png",
+      "sourceBox": [
+        768,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "goblin-idle",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-goblin-idle.png",
+      "sourceBox": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "goblin-attack",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-goblin-attack.png",
+      "sourceBox": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "goblin-hit",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-goblin-hit.png",
+      "sourceBox": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "goblin-ko",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-goblin-ko.png",
+      "sourceBox": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "wisp-idle",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-wisp-idle.png",
+      "sourceBox": [
+        0,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "wisp-attack",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-wisp-attack.png",
+      "sourceBox": [
+        256,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "wisp-hit",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-wisp-hit.png",
+      "sourceBox": [
+        512,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "wisp-ko",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-wisp-ko.png",
+      "sourceBox": [
+        768,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "bruiser-idle",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-bruiser-idle.png",
+      "sourceBox": [
+        0,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "bruiser-attack",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-bruiser-attack.png",
+      "sourceBox": [
+        256,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "bruiser-hit",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-bruiser-hit.png",
+      "sourceBox": [
+        512,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "bruiser-ko",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-bruiser-ko.png",
+      "sourceBox": [
+        768,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "scambot-idle",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-scambot-idle.png",
+      "sourceBox": [
+        0,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "scambot-attack",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-scambot-attack.png",
+      "sourceBox": [
+        256,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "scambot-hit",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-scambot-hit.png",
+      "sourceBox": [
+        512,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "scambot-ko",
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/enemy-scambot-ko.png",
+      "sourceBox": [
+        768,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        128,
+        128
+      ]
+    },
+    {
+      "id": "settler",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-settler.png",
+      "sourceBox": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "block-breaker",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-block-breaker.png",
+      "sourceBox": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "hashstorm",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-hashstorm.png",
+      "sourceBox": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "litecoin-blade",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-litecoin-blade.png",
+      "sourceBox": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "crypto-bomb",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-crypto-bomb.png",
+      "sourceBox": [
+        0,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "hard-fork",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-hard-fork.png",
+      "sourceBox": [
+        256,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "health",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-health.png",
+      "sourceBox": [
+        512,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "shield",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-shield.png",
+      "sourceBox": [
+        768,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "ammo",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-ammo.png",
+      "sourceBox": [
+        0,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "cold-storage",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-cold-storage.png",
+      "sourceBox": [
+        256,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "score-multiplier",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-score-multiplier.png",
+      "sourceBox": [
+        512,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "one-up",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-one-up.png",
+      "sourceBox": [
+        768,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "coin",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-coin.png",
+      "sourceBox": [
+        0,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "crate",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-crate.png",
+      "sourceBox": [
+        256,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "spark",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-spark.png",
+      "sourceBox": [
+        512,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "rare-drop",
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/icon-weapon-rare-drop.png",
+      "sourceBox": [
+        768,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "icon-weapon"
+    },
+    {
+      "id": "first-run",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-first-run.png",
+      "sourceBox": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "first-1000",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-first-1000.png",
+      "sourceBox": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "boss-breaker",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-boss-breaker.png",
+      "sourceBox": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "master-survivor",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-master-survivor.png",
+      "sourceBox": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "blade-master",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-blade-master.png",
+      "sourceBox": [
+        0,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "grenadier",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-grenadier.png",
+      "sourceBox": [
+        256,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "no-damage",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-no-damage.png",
+      "sourceBox": [
+        512,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "powerup-collector",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-powerup-collector.png",
+      "sourceBox": [
+        768,
+        256,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "wallet-linked",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-wallet-linked.png",
+      "sourceBox": [
+        0,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "paid-board",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-paid-board.png",
+      "sourceBox": [
+        256,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "combo-chain",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-combo-chain.png",
+      "sourceBox": [
+        512,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "foundry-clear",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-foundry-clear.png",
+      "sourceBox": [
+        768,
+        512,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "tower-clear",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-tower-clear.png",
+      "sourceBox": [
+        0,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "getaway-clear",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-getaway-clear.png",
+      "sourceBox": [
+        256,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "season-top",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-season-top.png",
+      "sourceBox": [
+        512,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "developer-cabinet",
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/badge-developer-cabinet.png",
+      "sourceBox": [
+        768,
+        768,
+        256,
+        256
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "group": "badge"
+    },
+    {
+      "id": "level1-underchain.sky",
+      "source": "hmh-level-1-underchain-parallax-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/level1-underchain-sky.png",
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level1-underchain.skyline",
+      "source": "hmh-level-1-underchain-parallax-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/level1-underchain-skyline.png",
+      "sourceBox": [
+        0,
+        96,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level1-underchain.midground",
+      "source": "hmh-level-1-underchain-parallax-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/level1-underchain-midground.png",
+      "sourceBox": [
+        0,
+        192,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level1-underchain.street",
+      "source": "hmh-level-1-underchain-parallax-textfree.png",
+      "output": "apps/portal/assets/generated/sliced/level1-underchain-street.png",
+      "sourceBox": [
+        0,
+        320,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level2-foundry.sky",
+      "source": "hmh-level-2-foundry-vertical-kit.png",
+      "output": "apps/portal/assets/generated/sliced/level2-foundry-sky.png",
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level2-foundry.skyline",
+      "source": "hmh-level-2-foundry-vertical-kit.png",
+      "output": "apps/portal/assets/generated/sliced/level2-foundry-skyline.png",
+      "sourceBox": [
+        0,
+        96,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level2-foundry.midground",
+      "source": "hmh-level-2-foundry-vertical-kit.png",
+      "output": "apps/portal/assets/generated/sliced/level2-foundry-midground.png",
+      "sourceBox": [
+        0,
+        192,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level2-foundry.street",
+      "source": "hmh-level-2-foundry-vertical-kit.png",
+      "output": "apps/portal/assets/generated/sliced/level2-foundry-street.png",
+      "sourceBox": [
+        0,
+        320,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level3-getaway.sky",
+      "source": "hmh-level-3-getaway-parallax.png",
+      "output": "apps/portal/assets/generated/sliced/level3-getaway-sky.png",
+      "sourceBox": [
+        0,
+        0,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level3-getaway.skyline",
+      "source": "hmh-level-3-getaway-parallax.png",
+      "output": "apps/portal/assets/generated/sliced/level3-getaway-skyline.png",
+      "sourceBox": [
+        0,
+        96,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level3-getaway.midground",
+      "source": "hmh-level-3-getaway-parallax.png",
+      "output": "apps/portal/assets/generated/sliced/level3-getaway-midground.png",
+      "sourceBox": [
+        0,
+        192,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    },
+    {
+      "id": "level3-getaway.street",
+      "source": "hmh-level-3-getaway-parallax.png",
+      "output": "apps/portal/assets/generated/sliced/level3-getaway-street.png",
+      "sourceBox": [
+        0,
+        320,
+        1024,
+        256
+      ],
+      "size": [
+        1024,
+        256
+      ]
+    }
+  ]
+}

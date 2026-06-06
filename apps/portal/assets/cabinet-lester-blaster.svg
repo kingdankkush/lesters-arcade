@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 520" role="img" aria-labelledby="title desc">
+  <title id="title">Hard Money Heroes Arcade Cabinet</title>
+  <desc id="desc">Pixel-styled neon arcade cabinet with Hard Money Heroes marquee.</desc>
+  <defs>
+    <linearGradient id="cab" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#25115e"/>
+      <stop offset=".5" stop-color="#0b1d45"/>
+      <stop offset="1" stop-color="#020713"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#19f7ff" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#071120"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <path d="M56 38h248l32 72-24 376H48L24 110z" fill="url(#cab)" stroke="#19f7ff" stroke-width="8"/>
+  <path d="M72 56h216l22 54H50z" fill="#080616" stroke="#ffe84d" stroke-width="6"/>
+  <text x="180" y="91" text-anchor="middle" font-family="monospace" font-size="20" font-weight="900" fill="#ffe84d" filter="url(#glow)">HARD MONEY HEROES</text>
+  <rect x="67" y="133" width="226" height="162" rx="14" fill="#050b16" stroke="#111" stroke-width="14"/>
+  <rect x="82" y="148" width="196" height="132" rx="8" fill="url(#screen)"/>
+  <circle cx="142" cy="215" r="36" fill="#ff7b2f"/>
+  <rect x="114" y="226" width="56" height="22" fill="#ffb347"/>
+  <rect x="126" y="196" width="11" height="11" fill="#080616"/><rect x="152" y="196" width="11" height="11" fill="#080616"/>
+  <rect x="205" y="185" width="36" height="14" fill="#ffe84d"/><rect x="240" y="189" width="18" height="6" fill="#ff3df2"/>
+  <path d="M66 322h228l-14 70H80z" fill="#14082d" stroke="#ff3df2" stroke-width="5"/>
+  <circle cx="122" cy="356" r="14" fill="#ff3df2"/><circle cx="166" cy="356" r="12" fill="#45ff8a"/><circle cx="205" cy="356" r="12" fill="#ffe84d"/>
+  <rect x="231" y="342" width="40" height="18" rx="9" fill="#19f7ff"/>
+  <path d="M88 392h184l20 74H68z" fill="#09071c" stroke="#ffe84d" stroke-width="5"/>
+  <text x="180" y="435" text-anchor="middle" font-family="monospace" font-size="19" font-weight="900" fill="#ffffff">INSERT LTC</text>
+</svg>

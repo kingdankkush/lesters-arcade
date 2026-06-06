@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Pixel Lester Pilot</title>
+  <desc id="desc">Pixel-inspired Lester mascot head with goggles.</desc>
+  <rect width="160" height="160" rx="28" fill="#080616"/>
+  <path d="M36 78 18 35l43 21h38l43-21-18 43v27c0 25-19 45-44 45s-44-20-44-45z" fill="#f57b2f"/>
+  <path d="M48 84h28v20H48zm36 0h28v20H84z" fill="#111827"/>
+  <rect x="72" y="91" width="16" height="6" fill="#111827"/>
+  <path d="M64 119h32l-16 14z" fill="#fff0c2"/>
+  <rect x="34" y="45" width="92" height="12" rx="6" fill="#19f7ff"/>
+  <rect x="44" y="56" width="72" height="10" rx="5" fill="#ffe84d"/>
+</svg>

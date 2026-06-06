@@ -1,0 +1,130 @@
+{
+  "note": "Derivative prototype slices from generated Hard Money Heroes concept art. Not final production animation atlases.",
+  "sourceFolder": "apps/portal/assets/generated",
+  "slicedFolder": "apps/portal/assets/generated/sliced",
+  "sprites": {
+    "lester": {
+      "source": "hmh-lester-hero-sprite-sheet-textfree.png",
+      "cols": 4,
+      "rows": 4,
+      "frames": {
+        "idle": "apps/portal/assets/generated/sliced/lester-idle.png",
+        "run-1": "apps/portal/assets/generated/sliced/lester-run-1.png",
+        "run-2": "apps/portal/assets/generated/sliced/lester-run-2.png",
+        "shoot": "apps/portal/assets/generated/sliced/lester-shoot.png",
+        "blade": "apps/portal/assets/generated/sliced/lester-blade.png",
+        "grenade": "apps/portal/assets/generated/sliced/lester-grenade.png",
+        "jump": "apps/portal/assets/generated/sliced/lester-jump.png",
+        "hurt": "apps/portal/assets/generated/sliced/lester-hurt.png",
+        "ko": "apps/portal/assets/generated/sliced/lester-ko.png",
+        "victory": "apps/portal/assets/generated/sliced/lester-victory.png",
+        "crouch": "apps/portal/assets/generated/sliced/lester-crouch.png",
+        "reload": "apps/portal/assets/generated/sliced/lester-reload.png",
+        "portrait": "apps/portal/assets/generated/sliced/lester-portrait.png",
+        "dash": "apps/portal/assets/generated/sliced/lester-dash.png",
+        "fall": "apps/portal/assets/generated/sliced/lester-fall.png",
+        "extra": "apps/portal/assets/generated/sliced/lester-extra.png"
+      }
+    },
+    "enemy": {
+      "source": "hmh-enemy-wave-sprite-sheet-textfree.png",
+      "cols": 4,
+      "rows": 4,
+      "frames": {
+        "goblin-idle": "apps/portal/assets/generated/sliced/enemy-goblin-idle.png",
+        "goblin-attack": "apps/portal/assets/generated/sliced/enemy-goblin-attack.png",
+        "goblin-hit": "apps/portal/assets/generated/sliced/enemy-goblin-hit.png",
+        "goblin-ko": "apps/portal/assets/generated/sliced/enemy-goblin-ko.png",
+        "wisp-idle": "apps/portal/assets/generated/sliced/enemy-wisp-idle.png",
+        "wisp-attack": "apps/portal/assets/generated/sliced/enemy-wisp-attack.png",
+        "wisp-hit": "apps/portal/assets/generated/sliced/enemy-wisp-hit.png",
+        "wisp-ko": "apps/portal/assets/generated/sliced/enemy-wisp-ko.png",
+        "bruiser-idle": "apps/portal/assets/generated/sliced/enemy-bruiser-idle.png",
+        "bruiser-attack": "apps/portal/assets/generated/sliced/enemy-bruiser-attack.png",
+        "bruiser-hit": "apps/portal/assets/generated/sliced/enemy-bruiser-hit.png",
+        "bruiser-ko": "apps/portal/assets/generated/sliced/enemy-bruiser-ko.png",
+        "scambot-idle": "apps/portal/assets/generated/sliced/enemy-scambot-idle.png",
+        "scambot-attack": "apps/portal/assets/generated/sliced/enemy-scambot-attack.png",
+        "scambot-hit": "apps/portal/assets/generated/sliced/enemy-scambot-hit.png",
+        "scambot-ko": "apps/portal/assets/generated/sliced/enemy-scambot-ko.png"
+      }
+    }
+  },
+  "icons": {
+    "icon-weapon": {
+      "source": "hmh-weapons-pickups-icon-sheet-textfree.png",
+      "cols": 4,
+      "rows": 4,
+      "frames": {
+        "settler": "apps/portal/assets/generated/sliced/icon-weapon-settler.png",
+        "block-breaker": "apps/portal/assets/generated/sliced/icon-weapon-block-breaker.png",
+        "hashstorm": "apps/portal/assets/generated/sliced/icon-weapon-hashstorm.png",
+        "litecoin-blade": "apps/portal/assets/generated/sliced/icon-weapon-litecoin-blade.png",
+        "crypto-bomb": "apps/portal/assets/generated/sliced/icon-weapon-crypto-bomb.png",
+        "hard-fork": "apps/portal/assets/generated/sliced/icon-weapon-hard-fork.png",
+        "health": "apps/portal/assets/generated/sliced/icon-weapon-health.png",
+        "shield": "apps/portal/assets/generated/sliced/icon-weapon-shield.png",
+        "ammo": "apps/portal/assets/generated/sliced/icon-weapon-ammo.png",
+        "cold-storage": "apps/portal/assets/generated/sliced/icon-weapon-cold-storage.png",
+        "score-multiplier": "apps/portal/assets/generated/sliced/icon-weapon-score-multiplier.png",
+        "one-up": "apps/portal/assets/generated/sliced/icon-weapon-one-up.png",
+        "coin": "apps/portal/assets/generated/sliced/icon-weapon-coin.png",
+        "crate": "apps/portal/assets/generated/sliced/icon-weapon-crate.png",
+        "spark": "apps/portal/assets/generated/sliced/icon-weapon-spark.png",
+        "rare-drop": "apps/portal/assets/generated/sliced/icon-weapon-rare-drop.png"
+      }
+    },
+    "badge": {
+      "source": "hmh-achievement-badge-sheet-textfree.png",
+      "cols": 4,
+      "rows": 4,
+      "frames": {
+        "first-run": "apps/portal/assets/generated/sliced/badge-first-run.png",
+        "first-1000": "apps/portal/assets/generated/sliced/badge-first-1000.png",
+        "boss-breaker": "apps/portal/assets/generated/sliced/badge-boss-breaker.png",
+        "master-survivor": "apps/portal/assets/generated/sliced/badge-master-survivor.png",
+        "blade-master": "apps/portal/assets/generated/sliced/badge-blade-master.png",
+        "grenadier": "apps/portal/assets/generated/sliced/badge-grenadier.png",
+        "no-damage": "apps/portal/assets/generated/sliced/badge-no-damage.png",
+        "powerup-collector": "apps/portal/assets/generated/sliced/badge-powerup-collector.png",
+        "wallet-linked": "apps/portal/assets/generated/sliced/badge-wallet-linked.png",
+        "paid-board": "apps/portal/assets/generated/sliced/badge-paid-board.png",
+        "combo-chain": "apps/portal/assets/generated/sliced/badge-combo-chain.png",
+        "foundry-clear": "apps/portal/assets/generated/sliced/badge-foundry-clear.png",
+        "tower-clear": "apps/portal/assets/generated/sliced/badge-tower-clear.png",
+        "getaway-clear": "apps/portal/assets/generated/sliced/badge-getaway-clear.png",
+        "season-top": "apps/portal/assets/generated/sliced/badge-season-top.png",
+        "developer-cabinet": "apps/portal/assets/generated/sliced/badge-developer-cabinet.png"
+      }
+    }
+  },
+  "parallaxLayers": {
+    "level1-underchain": {
+      "source": "hmh-level-1-underchain-parallax-textfree.png",
+      "layers": {
+        "sky": "apps/portal/assets/generated/sliced/level1-underchain-sky.png",
+        "skyline": "apps/portal/assets/generated/sliced/level1-underchain-skyline.png",
+        "midground": "apps/portal/assets/generated/sliced/level1-underchain-midground.png",
+        "street": "apps/portal/assets/generated/sliced/level1-underchain-street.png"
+      }
+    },
+    "level2-foundry": {
+      "source": "hmh-level-2-foundry-vertical-kit.png",
+      "layers": {
+        "sky": "apps/portal/assets/generated/sliced/level2-foundry-sky.png",
+        "skyline": "apps/portal/assets/generated/sliced/level2-foundry-skyline.png",
+        "midground": "apps/portal/assets/generated/sliced/level2-foundry-midground.png",
+        "street": "apps/portal/assets/generated/sliced/level2-foundry-street.png"
+      }
+    },
+    "level3-getaway": {
+      "source": "hmh-level-3-getaway-parallax.png",
+      "layers": {
+        "sky": "apps/portal/assets/generated/sliced/level3-getaway-sky.png",
+        "skyline": "apps/portal/assets/generated/sliced/level3-getaway-skyline.png",
+        "midground": "apps/portal/assets/generated/sliced/level3-getaway-midground.png",
+        "street": "apps/portal/assets/generated/sliced/level3-getaway-street.png"
+      }
+    }
+  }
+}

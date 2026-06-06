@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lester's Arcade — LitVM Web3 Arcade Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="crt-overlay" aria-hidden="true"></div>
+    <main class="arcade-shell">
+      <header class="hero-panel">
+        <section class="hero-copy">
+          <p class="eyebrow">LITVM // DAPPIT-READY // 60FPS WEB ARCADE</p>
+          <h1>Lester's Arcade</h1>
+          <p class="tagline">A browser-first Web3 dApp arcade portal: wallet parent account, SNES-style cabinet selection, and a 60fps Canvas vertical slice for Hard Money Heroes. Godot can be explored later, but the current hackathon path is web-native so wallet, LitVM, and smart-contract rails stay simple.</p>
+          <div id="accountFlowSteps" class="account-flow" aria-label="Login integration flow"></div>
+        </section>
+        <section class="login-terminal" aria-label="Parent login terminal">
+          <div class="terminal-topline">
+            <span class="red-light"></span>
+            <span class="yellow-light"></span>
+            <span class="green-light"></span>
+            <strong>ARCADE GATEWAY</strong>
+          </div>
+          <img class="pilot-avatar" src="./assets/lester-pilot.svg" alt="Pixel Lester pilot avatar" />
+          <p class="label">EVM Wallet Login</p>
+          <h2 id="walletStatus">No wallet connected</h2>
+          <p id="systemStatus">Connect a wallet to create the parent Lester's Arcade account used by all child games.</p>
+          <button id="connectWalletButton" class="primary-button">Connect MetaMask / Mock Fallback</button>
+          <p class="tiny-note">Prototype only: requests wallet login + LiteForge network setup; no signature, funds, or live transaction.</p>
+          <div id="walletRailPanel" class="wallet-rail-panel" aria-label="Wallet and parent sync rails"></div>
+        </section>
+      </header>
+
+      <section class="ticker" aria-label="Arcade news ticker">
+        <span>WEB CANVAS NOW</span>
+        <span>PHASER/CUSTOM CANVAS NEXT</span>
+        <span>GODOT HTML5 OPTIONAL</span>
+        <span>DAPPIT.IO SMART CONTRACT RAILS</span>
+        <span>60FPS TARGET</span>
+        <span>PARALLAX SIDE SCROLLING</span>
+        <span>FREE = PRACTICE ONLY</span>
+        <span>PAID MODE = OFFICIAL BOARD</span>
+      </section>
+
+      <section class="panel generated-art-panel" aria-label="Generated Hard Money Heroes art pack">
+        <div class="panel-heading split-heading">
+          <div>
+            <p class="label">Generated Asset Pack</p>
+            <h2>Hard Money Heroes Production-Art Drafts</h2>
+          </div>
+          <span class="system-pill">AI concept pass // text-free preferred</span>
+        </div>
+        <p class="machine-copy">These generated drafts are local prototype assets only: useful for art direction, portal polish, sprite extraction planning, and first-playable layout tests. Final launch art still needs human cleanup, animation slicing, and brand/legal review.</p>
+        <div class="generated-art-grid">
+          <figure class="generated-art-card wide-art-card">
+            <img src="./assets/generated/lesters-arcade-parent-portal-hero-textfree.png" alt="Text-free Lester's Arcade parent portal hero artwork" loading="lazy" />
+            <figcaption><strong>Parent portal hero</strong><span>Arcade-room mood image for the Web3 hub.</span></figcaption>
+          </figure>
+          <figure class="generated-art-card portrait-art-card">
+            <img src="./assets/generated/hmh-cabinet-key-art-textfree.png" alt="Text-free Hard Money Heroes cabinet key art" loading="lazy" />
+            <figcaption><strong>Cabinet key art</strong><span>Blank-marquee poster base; add final title separately.</span></figcaption>
+          </figure>
+          <figure class="generated-art-card">
+            <img src="./assets/generated/hmh-lester-hero-sprite-sheet-textfree.png" alt="Lester hero sprite-sheet draft" loading="lazy" />
+            <figcaption><strong>Lester sprite draft</strong><span>Idle, run, shoot, blade, grenade, hurt, KO, victory.</span></figcaption>
+          </figure>
+          <figure class="generated-art-card wide-art-card">
+            <img src="./assets/generated/hmh-level-1-underchain-parallax-textfree.png" alt="Underchain District Level 1 parallax background draft" loading="lazy" />
+            <figcaption><strong>Level 1 parallax</strong><span>Underchain District street/alley stage direction.</span></figcaption>
+          </figure>
+          <figure class="generated-art-card">
+            <img src="./assets/generated/hmh-enemy-wave-sprite-sheet-textfree.png" alt="First enemy wave sprite-sheet draft" loading="lazy" />
+            <figcaption><strong>Enemy wave</strong><span>Goblin, wisp, bruiser, and scam-bot silhouettes.</span></figcaption>
+          </figure>
+          <figure class="generated-art-card wide-art-card">
+            <img src="./assets/generated/hmh-boss-roster-concept-textfree.png" alt="Hard Money Heroes boss roster silhouette concept" loading="lazy" />
+            <figcaption><strong>Boss roster</strong><span>Text-free silhouettes for the 10-boss escalation.</span></figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="grid polish-grid" aria-label="Quality, guide, branding, and tooltip refinement">
+        <article class="panel guide-panel">
+          <div class="panel-heading split-heading">
+            <div>
+              <p class="label">Player Guide</p>
+              <h2>How to Read + Play the Arcade</h2>
+            </div>
+            <span class="system-pill guide-pill">Tooltips active</span>
+          </div>
+          <p id="guideIntro" class="machine-copy">Use this as the beginner-friendly quick-start layer: portal → cabinet → mode → combat → score sync.</p>
+          <div id="quickStartGuide" class="quick-start-grid"></div>
+          <div id="instructionPanel" class="instruction-grid"></div>
+          <div id="tooltipShelf" class="tooltip-shelf"></div>
+        </article>
+
+        <article class="panel brand-panel">
+          <div class="panel-heading split-heading">
+            <div>
+              <p class="label">Brand System</p>
+              <h2>Colors, Patterns + Icons</h2>
+            </div>
+            <span class="system-pill">Hard Money polish pass</span>
+          </div>
+          <div id="brandPalette" class="brand-palette"></div>
+          <div id="patternList" class="pattern-list"></div>
+          <div id="iconLegend" class="icon-legend"></div>
+          <div id="qualityChecklist" class="quality-checklist"></div>
+        </article>
+      </section>
+
+      <section class="grid dashboard-grid">
+        <article class="panel parent-panel">
+          <div class="panel-heading">
+            <p class="label">Parent System</p>
+            <h2>Player Command Center</h2>
+          </div>
+          <div id="playerSummary" class="player-summary"></div>
+          <div class="ops-grid">
+            <section>
+              <h3>Progress</h3>
+              <div id="progressList" class="mini-list"></div>
+            </section>
+            <section>
+              <h3>Achievements</h3>
+              <div id="achievementList" class="mini-list"></div>
+            </section>
+            <section>
+              <h3>Transactions</h3>
+              <div id="transactionList" class="mini-list"></div>
+            </section>
+            <section>
+              <h3>High Scores</h3>
+              <div id="highScoreList" class="mini-list"></div>
+            </section>
+          </div>
+        </article>
+
+        <article class="panel stage-panel">
+          <div class="panel-heading split-heading">
+            <div>
+              <p class="label">Arcade Floor</p>
+              <h2>Cabinet Row</h2>
+            </div>
+            <span class="system-pill">Synced Dapp Machines</span>
+          </div>
+          <div id="cabinetStage" class="cabinet-stage"></div>
+        </article>
+      </section>
+
+      <section class="grid stack-grid">
+        <article class="panel wide-panel">
+          <div class="panel-heading split-heading">
+            <div>
+              <p class="label">Build Stack</p>
+              <h2>What This dApp Is Built On</h2>
+            </div>
+            <span class="system-pill">LitVM + dappit candidate</span>
+          </div>
+          <div id="buildStackPanel" class="build-stack-grid"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-heading">
+            <p class="label">Cabinet Menu</p>
+            <h2>Login + Game Options</h2>
+          </div>
+          <div id="menuModelPanel" class="menu-grid"></div>
+        </article>
+      </section>
+
+      <section class="panel cartridge-panel">
+        <div class="panel-heading split-heading">
+          <div>
+            <p class="label">Game Select</p>
+            <h2>SNES Cartridge Shelf</h2>
+          </div>
+          <p class="shelf-note">Select a cartridge to load its cabinet. Coming-soon games remain locked but still show how the arcade scales.</p>
+        </div>
+        <div id="cartridgeRack" class="cartridge-rack"></div>
+      </section>
+
+      <section class="grid game-grid">
+        <article class="panel game-panel">
+          <div class="panel-heading split-heading">
+            <div>
+              <p class="label">Selected Cabinet</p>
+              <h2 id="selectedGameTitle">Hard Money Heroes</h2>
+            </div>
+            <span id="selectedGameStatus" class="system-pill">playable</span>
+          </div>
+          <p id="selectedGameTagline" class="machine-copy"></p>
+          <div class="mode-row">
+            <button id="freePlayButton" class="secondary-button">Free Play</button>
+            <button id="paidPlayButton" class="primary-button">Insert $0.25 Credit</button>
+          </div>
+          <div class="run-terminal">
+            <p class="label">Official Run State</p>
+            <h3 id="runStatus">Waiting for player...</h3>
+            <p id="runDetails">Connect wallet, select Hard Money Heroes, then choose free practice or official paid mode.</p>
+          </div>
+          <button id="simulateRunButton" class="play-button">Complete Prototype Run + Sync Parent System</button>
+          <div id="leaderboardPanel" class="leaderboard-list"></div>
+        </article>
+
+        <article class="panel combat-panel">
+          <div class="panel-heading split-heading">
+            <div>
+              <p class="label">First Game Vertical Slice</p>
+              <h2>60fps Side-Scrolling Shooter</h2>
+            </div>
+            <span id="fpsPill" class="system-pill">60fps target</span>
+          </div>
+          <canvas id="combatCanvas" width="760" height="340" aria-label="Hard Money Heroes side-scrolling shooter prototype"></canvas>
+          <div class="combat-controls" aria-label="Combat controls">
+            <button id="startCombatButton" class="primary-button">Start Combat Test</button>
+            <button id="jumpButton" class="secondary-button">Jump / Double Jump</button>
+            <button id="shootButton" class="secondary-button">Shoot</button>
+            <button id="meleeButton" class="secondary-button">Blade</button>
+            <button id="grenadeButton" class="secondary-button">Throwable</button>
+            <button id="powerUpButton" class="secondary-button">Drop Power-Up</button>
+          </div>
+          <div class="run-terminal sandbox-terminal">
+            <p class="label">Local Combat Sandbox</p>
+            <h3 id="combatRunStatus">Local combat sandbox idle</h3>
+            <p id="combatStatus">Start the 60fps Canvas sandbox to practice controls without changing official paid-run state.</p>
+          </div>
+          <div id="controlSchemePanel" class="control-grid"></div>
+        </article>
+      </section>
+
+      <section class="grid design-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <p class="label">Run Tuning</p>
+            <h2>Hard Money Heroes Difficulty Curve</h2>
+          </div>
+          <div id="difficultyPanel" class="stat-grid"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-heading">
+            <p class="label">Moves + Pickups</p>
+            <h2>Core Mechanics</h2>
+          </div>
+          <div id="mechanicList" class="tag-cloud"></div>
+        </article>
+        <article class="panel boss-panel">
+          <div class="panel-heading">
+            <p class="label">Boss Rotation</p>
+            <h2>10 Bosses, 2–3 Stages Each</h2>
+          </div>
+          <div id="bossRoster" class="boss-roster"></div>
+        </article>
+      </section>
+
+      <section class="panel codex-shell">
+        <div class="panel-heading split-heading">
+          <div>
+            <p class="label">Game Design Codex</p>
+            <h2>Characters, Weapons, Enemies, Levels, Effects, Audio, Unlockables</h2>
+          </div>
+          <span class="system-pill">Prototype-ready spec</span>
+        </div>
+        <div id="codexPanels" class="codex-grid"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

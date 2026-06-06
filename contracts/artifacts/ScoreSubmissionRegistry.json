@@ -1,0 +1,177 @@
+{
+  "sourcePath": "contracts/src/ScoreSubmissionRegistry.sol",
+  "contractName": "ScoreSubmissionRegistry",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "initialVerifier",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "sessionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "gameId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        }
+      ],
+      "name": "ScoreSubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "trustedVerifier",
+          "type": "address"
+        }
+      ],
+      "name": "TrustedVerifierUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "scoresBySession",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "sessionId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "gameId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "submittedAt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "exists",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "verifier",
+          "type": "address"
+        }
+      ],
+      "name": "setTrustedVerifier",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "sessionId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "player",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "gameId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "score",
+          "type": "uint256"
+        }
+      ],
+      "name": "submitScore",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "trustedVerifier",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "evm": {
+    "bytecode": {
+      "object": "6080604052348015600e575f5ffd5b50604051610583380380610583833981016040819052602b91607f565b5f80546001600160a01b031990811633178255600180546001600160a01b03851692168217905560405190917f06327d5a55b2af341cf157d25cce9bda2c059bcbf398c0aa8a34b3666f0746e591a25060aa565b5f60208284031215608e575f5ffd5b81516001600160a01b038116811460a3575f5ffd5b9392505050565b6104cc806100b75f395ff3fe608060405234801561000f575f5ffd5b5060043610610055575f3560e01c8063052b82dd146100595780638da5cb5b14610089578063e47e62601461009b578063ea22b02114610122578063f795bb9b14610137575b5f5ffd5b60015461006c906001600160a01b031681565b6040516001600160a01b0390911681526020015b60405180910390f35b5f5461006c906001600160a01b031681565b6100eb6100a936600461040c565b600260208190525f918252604090912080546001820154928201546003830154600484015460059094015492946001600160a01b031693919290919060ff1686565b604080519687526001600160a01b0390951660208701529385019290925260608401526080830152151560a082015260c001610080565b61013561013036600461043e565b61014a565b005b610135610145366004610476565b61037d565b6001546001600160a01b031633146101995760405162461bcd60e51b815260206004820152600d60248201526c27a7262cafab22a924a324a2a960991b60448201526064015b60405180910390fd5b836101d95760405162461bcd60e51b815260206004820152601060248201526f115354151657d4d154d4d253d397d25160821b6044820152606401610190565b6001600160a01b03831661021e5760405162461bcd60e51b815260206004820152600c60248201526b22a6a82a2cafa82620aca2a960a11b6044820152606401610190565b8161025b5760405162461bcd60e51b815260206004820152600d60248201526c115354151657d1d0535157d251609a1b6044820152606401610190565b5f8481526002602052604090206005015460ff16156102ab5760405162461bcd60e51b815260206004820152600c60248201526b53434f52455f45584953545360a01b6044820152606401610190565b6040805160c0810182528581526001600160a01b038581166020808401828152848601888152606086018881524260808801908152600160a089018181525f8f81526002808952908c90209a518b559551918a0180546001600160a01b03191692909916919091179097559151928701929092559051600386015551600485015591516005909301805460ff1916931515939093179092559151838152849287917f623daa06fd8884da90cf4ee350f3f30c0e2cc98d59e3627d5983a3c7c2dbf41c910160405180910390a450505050565b5f546001600160a01b031633146103c35760405162461bcd60e51b815260206004820152600a60248201526927a7262cafa7aba722a960b11b6044820152606401610190565b600180546001600160a01b0319166001600160a01b0383169081179091556040517f06327d5a55b2af341cf157d25cce9bda2c059bcbf398c0aa8a34b3666f0746e5905f90a250565b5f6020828403121561041c575f5ffd5b5035919050565b80356001600160a01b0381168114610439575f5ffd5b919050565b5f5f5f5f60808587031215610451575f5ffd5b8435935061046160208601610423565b93969395505050506040820135916060013590565b5f60208284031215610486575f5ffd5b61048f82610423565b939250505056fea2646970667358221220ff793d0b2d1686f1dd8c6f56f13550550266aba930c9b3a282093a66027cf72464736f6c63430008230033"
+    }
+  }
+}
