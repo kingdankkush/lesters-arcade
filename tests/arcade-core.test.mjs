@@ -583,6 +583,7 @@ test('UI quality guide model covers controls, tooltips, instructions, branding, 
 
 test('V2 app shell hides prototype chrome behind full-screen wallet profile, cabinet, and leaderboard navigation', () => {
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.layout, 'full-screen-arcade-app');
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.productionDomain, 'lestersarcade.io');
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletIsPrimaryKey, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.profileRules.username.appearsOnLeaderboards, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.profileRules.avatar.requiredPixels, 150);
@@ -594,6 +595,13 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'cabinets'), true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'profile'), true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'leaderboards'), true);
+  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.officialFlow, ['wallet-splash', 'arcade-walk-in', 'cabinet-select', 'mode-select', 'level-one-intro', 'begin-level']);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes').playable, true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 1);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.requiresZkLtc, true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.levelIntro.durationSeconds, 8);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.levelIntro.hasBeginButton, true);
 });
 
 test('V2 tactical combat spec slows pacing into staged cover, platform, mini-boss, and boss sections', () => {

@@ -8,7 +8,89 @@
   </head>
   <body>
     <div class="crt-overlay" aria-hidden="true"></div>
-    <main class="arcade-shell">
+    <main class="arcade-shell official-shell">
+      <section id="officialApp" class="official-app" aria-label="Lester's Arcade official app">
+        <div class="official-scanline" aria-hidden="true"></div>
+        <nav class="official-nav" aria-label="Lester's Arcade main navigation">
+          <strong>Lester's Arcade</strong>
+          <div id="officialNavTabs" class="official-nav-tabs"></div>
+          <button id="developerBackstageToggle" class="ghost-button" type="button">Dev Backstage</button>
+        </nav>
+
+        <section id="officialWalletSplash" class="official-view wallet-splash-view">
+          <div class="splash-copy">
+            <p class="eyebrow">Official Testnet App // lestersarcade.io</p>
+            <h1>Lester's Arcade</h1>
+            <p class="tagline">Connect your wallet, enter the arcade, pick a cabinet, then boot Hard Money Heroes in Free Mode or Ranked testnet mode.</p>
+            <button id="officialConnectButton" class="primary-button big-action" type="button">Connect Wallet</button>
+            <p id="officialWalletCopy" class="tiny-note">Your wallet is your profile. Scores, achievements, usernames, avatars, and ranked runs attach to the connected wallet.</p>
+          </div>
+          <div class="splash-cabinet-stack" aria-hidden="true">
+            <div class="neon-cabinet cabinet-live"><span>Hard Money Heroes</span></div>
+            <div class="neon-cabinet cabinet-locked"><span>Lilly Lightning</span></div>
+            <div class="neon-cabinet cabinet-locked"><span>Mempool Mayhem</span></div>
+          </div>
+        </section>
+
+        <section id="officialArcadeFloor" class="official-view arcade-floor-view" hidden>
+          <div class="arcade-walk-in">
+            <p class="eyebrow">Wallet profile active</p>
+            <h2 id="officialProfileTitle">Entering the Arcade...</h2>
+            <p id="officialProfileCopy">The connected wallet profile is loading cabinet access, leaderboard placement, and testnet mode options.</p>
+          </div>
+          <div id="officialCabinetGrid" class="official-cabinet-grid" aria-label="Arcade cabinet selection"></div>
+        </section>
+
+        <section id="officialModeSelect" class="official-view mode-select-view" hidden>
+          <div>
+            <p class="eyebrow">Selected Cabinet</p>
+            <h2>Hard Money Heroes</h2>
+            <p class="machine-copy">Choose Free Mode for local practice, or Play Ranked for an official testnet run. Ranked will eventually submit at game over with wallet, username, avatar, score, and run receipt.</p>
+          </div>
+          <div class="official-mode-grid">
+            <button id="officialFreeModeButton" class="mode-card" type="button">
+              <strong>Free Mode</strong>
+              <span>Practice only. No official score, progress, achievements, or chain writes.</span>
+            </button>
+            <button id="officialRankedModeButton" class="mode-card ranked-card" type="button">
+              <strong>Play Ranked</strong>
+              <span>Requires a little testnet zkLTC for now. Scores submit only at game over.</span>
+            </button>
+          </div>
+          <div id="officialRankedTooltip" class="ranked-tooltip"></div>
+        </section>
+
+        <section id="officialLevelIntro" class="official-view level-intro-view" hidden>
+          <div class="level-intro-card">
+            <p class="eyebrow">Level 1 Boot Sequence</p>
+            <h2>Level 1 // Underchain District</h2>
+            <p>Survive as long as possible. Clear staged sections, use cover, time jumps, chain kills, and preserve no-damage streaks for higher scores.</p>
+            <div class="level-control-strip">
+              <span>WASD/arrows move</span>
+              <span>Ctrl crouch</span>
+              <span>Space jump</span>
+              <span>Left click shoot</span>
+              <span>E/right click melee</span>
+              <span>F throwable</span>
+            </div>
+            <p class="tiny-note">8-second intro target. Click Begin when ready; gameplay starts slow and builds into staged scroll-locked sections.</p>
+            <button id="officialBeginLevelButton" class="primary-button big-action" type="button">Begin Level 1</button>
+          </div>
+        </section>
+
+        <section id="officialGameplay" class="official-view gameplay-view" hidden>
+          <div class="gameplay-topbar">
+            <div>
+              <p class="eyebrow">Hard Money Heroes</p>
+              <h2 id="officialGameModeTitle">Level 1 // Free Mode</h2>
+            </div>
+            <p id="officialGameStateCopy" class="tiny-note">Local sandbox state is separate from official paid-run sync.</p>
+          </div>
+          <div id="officialCombatMount" class="official-combat-mount"></div>
+        </section>
+      </section>
+
+      <div id="developerBackstage" class="developer-backstage" hidden>
       <header class="hero-panel">
         <section class="hero-copy">
           <p class="eyebrow">LITVM // DAPPIT-READY // 60FPS WEB ARCADE</p>
@@ -264,6 +346,7 @@
         </div>
         <div id="codexPanels" class="codex-grid"></div>
       </section>
+      </div>
     </main>
 
     <script type="module" src="./main.js"></script>

@@ -288,8 +288,10 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
 
 export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   layout: 'full-screen-arcade-app',
-  principle: 'Most prototype/debug/network/codex material is hidden behind menus; the default player experience is login → cabinet select → play/profile/leaderboards.',
+  productionDomain: 'lestersarcade.io',
+  principle: 'Most prototype/debug/network/codex material is hidden behind menus; the default player experience is login → animated arcade entry → cabinet select → mode select → Level 1 intro → play/profile/leaderboards/settings.',
   initialFlow: Object.freeze(['wallet-login', 'profile-activation', 'cabinet-select', 'game-menu', 'run-or-leaderboards']),
+  officialFlow: Object.freeze(['wallet-splash', 'arcade-walk-in', 'cabinet-select', 'mode-select', 'level-one-intro', 'begin-level']),
   hiddenByDefault: Object.freeze(['build-stack-panels', 'network-rails', 'debug-codex', 'generated-gallery', 'prototype-test-buttons']),
   navigation: Object.freeze([
     Object.freeze({ id: 'cabinets', label: 'Cabinets', purpose: 'Select Hard Money Heroes or future Lester arcade cabinets.' }),
@@ -297,6 +299,23 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
     Object.freeze({ id: 'leaderboards', label: 'Leaderboards', purpose: 'Browse global boards plus the current wallet profile placement.' }),
     Object.freeze({ id: 'settings', label: 'Settings', purpose: 'Controls, audio, accessibility, network status, and sign-out.' }),
   ]),
+  cabinets: Object.freeze([
+    Object.freeze({ id: 'hard-money-heroes', gameId: 'lester-blaster', title: 'Hard Money Heroes', status: 'playable', playable: true, description: 'The first playable Lester arcade cabinet: tactical run-and-gun score survival on LitVM LiteForge.' }),
+    Object.freeze({ id: 'lilly-lightning', gameId: 'lilly-lightning', title: 'Lilly Lightning', status: 'coming-soon', playable: false, description: 'Future Lilly cabinet using the teal sprite direction.' }),
+    Object.freeze({ id: 'mempool-mayhem', gameId: 'mempool-mayhem', title: 'Mempool Mayhem', status: 'coming-soon', playable: false, description: 'Future score-attack cabinet for wallet-profile expansion.' }),
+  ]),
+  modeSelect: Object.freeze({
+    free: Object.freeze({ label: 'Free Mode', official: false, copy: 'Practice locally with no official leaderboard, achievement, progress, or transaction writes.' }),
+    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked testnet runs require a small amount of zkLTC for now. Get testnet zkLTC from the LitVM LiteForge faucet; it has no real value.' }),
+  }),
+  levelIntro: Object.freeze({
+    levelId: 'level-1-underchain',
+    title: 'Level 1 // Underchain District',
+    durationSeconds: 8,
+    hasBeginButton: true,
+    controlsSummary: 'WASD/arrows move · Ctrl crouch · Space jump · Left click shoot · E/right click melee · F throwable',
+    goalCopy: 'Survive as long as possible, clear staged enemy sections, chain kills and damage without getting hit, then submit official scores only at game over.',
+  }),
   profileRules: Object.freeze({
     walletIsPrimaryKey: true,
     walletLockCopy: 'Progress, high scores, achievements, uploads, and official paid-run submissions are assigned to the connected wallet. Sign out to use a different wallet.',

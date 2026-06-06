@@ -3,6 +3,7 @@ import {
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BUILD_STACK,
   LESTER_ARCADE_WALLET_RAILS,
+  LESTERS_ARCADE_V2_APP_SHELL,
   LESTER_BLASTER_ANIMATION_PLAN,
   LITVM_LITEFORGE_NETWORK,
   LESTER_BLASTER_BOSS_SYSTEM,
@@ -102,6 +103,27 @@ const combatArt = {
 };
 
 const dom = {
+  officialApp: document.querySelector('#officialApp'),
+  officialNavTabs: document.querySelector('#officialNavTabs'),
+  developerBackstageToggle: document.querySelector('#developerBackstageToggle'),
+  developerBackstage: document.querySelector('#developerBackstage'),
+  officialWalletSplash: document.querySelector('#officialWalletSplash'),
+  officialConnectButton: document.querySelector('#officialConnectButton'),
+  officialWalletCopy: document.querySelector('#officialWalletCopy'),
+  officialArcadeFloor: document.querySelector('#officialArcadeFloor'),
+  officialProfileTitle: document.querySelector('#officialProfileTitle'),
+  officialProfileCopy: document.querySelector('#officialProfileCopy'),
+  officialCabinetGrid: document.querySelector('#officialCabinetGrid'),
+  officialModeSelect: document.querySelector('#officialModeSelect'),
+  officialFreeModeButton: document.querySelector('#officialFreeModeButton'),
+  officialRankedModeButton: document.querySelector('#officialRankedModeButton'),
+  officialRankedTooltip: document.querySelector('#officialRankedTooltip'),
+  officialLevelIntro: document.querySelector('#officialLevelIntro'),
+  officialBeginLevelButton: document.querySelector('#officialBeginLevelButton'),
+  officialGameplay: document.querySelector('#officialGameplay'),
+  officialGameModeTitle: document.querySelector('#officialGameModeTitle'),
+  officialGameStateCopy: document.querySelector('#officialGameStateCopy'),
+  officialCombatMount: document.querySelector('#officialCombatMount'),
   accountFlowSteps: document.querySelector('#accountFlowSteps'),
   walletStatus: document.querySelector('#walletStatus'),
   systemStatus: document.querySelector('#systemStatus'),
@@ -162,6 +184,9 @@ let lastRunResult = null;
 let lastRunScore = 0;
 let lastRunElapsedSeconds = 0;
 let lastBossId = null;
+let officialAppStep = 'wallet-splash';
+let officialSelectedMode = null;
+let developerBackstageOpen = false;
 
 const combat = {
   active: false,
@@ -378,6 +403,196 @@ function renderFlowSteps() {
     appendText(card, 'span', copy);
     dom.accountFlowSteps.append(card);
   }
+}
+
+function setOfficialView(step) {
+  officialAppStep = step;
+  render();
+}
+
+function showOfficialPanel(activePanel) {
+  for (const panel of [dom.officialWalletSplash, dom.officialArcadeFloor, dom.officialModeSelect, dom.officialLevelIntro, dom.officialGameplay]) {
+    if (panel) panel.hidden = panel !== activePanel;
+  }
+}
+
+function renderOfficialNav() {
+  if (!dom.officialNavTabs) return;
+  dom.officialNavTabs.replaceChildren();
+  for (const item of LESTERS_ARCADE_V2_APP_SHELL.navigation) {
+    const button = el('button', { className: `official-nav-tab ${officialAppStep === item.id ? 'active' : ''}`, textContent: item.label });
+    button.type = 'button';
+    button.disabled = !connectedWallet && item.id !== 'cabinets';
+    button.addEventListener('click', () => {
+      if (item.id === 'cabinets') setOfficialView(connectedWallet ? 'cabinet-select' : 'wallet-splash');
+      if (item.id === 'profile') setOfficialView('profile');
+      if (item.id === 'leaderboards') setOfficialView('leaderboards');
+      if (item.id === 'settings') setOfficialView('settings');
+    });
+    dom.officialNavTabs.append(button);
+  }
+}
+
+function renderOfficialWalletSplash() {
+  if (!dom.officialWalletSplash) return;
+  const copy = connectedWallet
+    ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`
+    : LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy;
+  dom.officialWalletCopy.textContent = copy;
+  dom.officialConnectButton.textContent = connectedWallet ? 'Enter Arcade' : 'Connect Wallet';
+}
+
+function renderOfficialCabinets() {
+  dom.officialCabinetGrid.replaceChildren();
+  for (const cabinet of LESTERS_ARCADE_V2_APP_SHELL.cabinets) {
+    const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'}` });
+    card.type = 'button';
+    card.disabled = !cabinet.playable;
+    card.addEventListener('click', () => {
+      if (!cabinet.playable) return;
+      selectedGameId = cabinet.gameId;
+      currentSession = null;
+      lastCompletedSession = null;
+      lastRunResult = null;
+      setOfficialView('mode-select');
+    });
+    appendText(card, 'span', cabinet.playable ? 'PLAYABLE NOW' : 'COMING SOON', 'cabinet-status-label');
+    appendText(card, 'strong', cabinet.title);
+    appendText(card, 'small', cabinet.description);
+    dom.officialCabinetGrid.append(card);
+  }
+}
+
+function renderOfficialProfile() {
+  dom.officialCabinetGrid.replaceChildren();
+  const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
+  const profile = snapshot?.profile;
+  const card = el('article', { className: 'official-info-card' });
+  appendText(card, 'span', 'Wallet Profile', 'cabinet-status-label');
+  appendText(card, 'strong', profile?.handle ?? 'Connect wallet to activate profile');
+  appendText(card, 'small', connectedWallet ? `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // username + 150x150 avatar editor next` : 'Wallet is the locked identity for progress, high scores, achievements, and avatars.');
+  dom.officialCabinetGrid.append(card);
+}
+
+function renderOfficialLeaderboards() {
+  dom.officialCabinetGrid.replaceChildren();
+  const model = buildLeaderboardModel(state, { gameId: selectedGameId, wallet: connectedWallet });
+  for (const cadence of LESTERS_ARCADE_V2_APP_SHELL.leaderboardRules.cadences) {
+    const card = el('article', { className: 'official-info-card leaderboard-cadence-card' });
+    appendText(card, 'span', cadence.toUpperCase(), 'cabinet-status-label');
+    appendText(card, 'strong', model.topEntries[0] ? `#1 ${model.topEntries[0].score.toLocaleString()}` : 'No ranked scores yet');
+    appendText(card, 'small', 'Global board + your wallet placement will appear here after official game-over submissions.');
+    dom.officialCabinetGrid.append(card);
+  }
+}
+
+function renderOfficialSettings() {
+  dom.officialCabinetGrid.replaceChildren();
+  const settings = [
+    ['Controls', LESTERS_ARCADE_V2_APP_SHELL.levelIntro.controlsSummary],
+    ['Audio', 'Music and SFX start after user interaction; prototype music is loaded from the local Lester/Lilly rap track.'],
+    ['Network', `${LITVM_LITEFORGE_NETWORK.name} // Chain ${LITVM_LITEFORGE_NETWORK.chainId} // gas ${LITVM_LITEFORGE_NETWORK.nativeCurrency.symbol}`],
+    ['Sign out', 'Coming next: clear active wallet and sign in with another wallet profile.'],
+  ];
+  for (const [title, copy] of settings) {
+    const card = el('article', { className: 'official-info-card' });
+    appendText(card, 'span', 'SETTING', 'cabinet-status-label');
+    appendText(card, 'strong', title);
+    appendText(card, 'small', copy);
+    dom.officialCabinetGrid.append(card);
+  }
+}
+
+function renderOfficialArcadeFloor() {
+  const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
+  const titleByStep = {
+    'arcade-walk-in': 'Entering the Arcade...',
+    'cabinet-select': 'Choose Your Cabinet',
+    profile: 'Wallet Profile',
+    leaderboards: 'Leaderboards',
+    settings: 'Settings',
+  };
+  const copyByStep = {
+    'arcade-walk-in': `${walletShort} is active. Neon doors opening; cabinet row loading...`,
+    'cabinet-select': 'Select a cabinet. Hard Money Heroes is the only playable option right now; future cabinets remain locked.',
+    profile: LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy,
+    leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
+    settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
+  };
+  dom.officialProfileTitle.textContent = titleByStep[officialAppStep] ?? titleByStep['cabinet-select'];
+  dom.officialProfileCopy.textContent = copyByStep[officialAppStep] ?? copyByStep['cabinet-select'];
+  if (officialAppStep === 'profile') renderOfficialProfile();
+  else if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
+  else if (officialAppStep === 'settings') renderOfficialSettings();
+  else renderOfficialCabinets();
+}
+
+function renderOfficialModeSelect() {
+  const ranked = LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked;
+  dom.officialRankedTooltip.replaceChildren();
+  appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: needs testnet ${ranked.token}`);
+  appendText(dom.officialRankedTooltip, 'span', ranked.copy);
+  const link = el('a', { className: 'wallet-link', textContent: 'Get zkLTC faucet', href: ranked.faucetUrl, target: '_blank', rel: 'noreferrer' });
+  dom.officialRankedTooltip.append(link);
+}
+
+function renderOfficialGameplay() {
+  const modeLabel = officialSelectedMode === 'ranked' ? 'Ranked Testnet' : 'Free Mode';
+  dom.officialGameModeTitle.textContent = `Level 1 // ${modeLabel}`;
+  dom.officialGameStateCopy.textContent = officialSelectedMode === 'ranked'
+    ? 'Ranked testnet run: official score packet is still separated until game-over submission.'
+    : 'Free practice: local sandbox only; no official profile, achievement, high-score, or transaction writes.';
+  if (dom.officialCombatMount && !dom.officialCombatMount.contains(dom.combatCanvas)) {
+    dom.officialCombatMount.append(dom.combatCanvas);
+  }
+}
+
+function renderOfficialApp() {
+  if (!dom.officialApp) return;
+  dom.officialApp.dataset.step = officialAppStep;
+  dom.developerBackstage.hidden = !developerBackstageOpen;
+  dom.developerBackstageToggle.textContent = developerBackstageOpen ? 'Hide Backstage' : 'Dev Backstage';
+  renderOfficialNav();
+  renderOfficialWalletSplash();
+  if (!connectedWallet && officialAppStep !== 'wallet-splash') officialAppStep = 'wallet-splash';
+  if (['arcade-walk-in', 'cabinet-select', 'profile', 'leaderboards', 'settings'].includes(officialAppStep)) {
+    showOfficialPanel(dom.officialArcadeFloor);
+    renderOfficialArcadeFloor();
+  } else if (officialAppStep === 'mode-select') {
+    showOfficialPanel(dom.officialModeSelect);
+    renderOfficialModeSelect();
+  } else if (officialAppStep === 'level-one-intro') {
+    showOfficialPanel(dom.officialLevelIntro);
+  } else if (officialAppStep === 'gameplay') {
+    showOfficialPanel(dom.officialGameplay);
+    renderOfficialGameplay();
+  } else {
+    showOfficialPanel(dom.officialWalletSplash);
+  }
+}
+
+async function connectOfficialWallet() {
+  if (!connectedWallet) await connectWallet();
+  officialAppStep = 'arcade-walk-in';
+  render();
+  setTimeout(() => {
+    if (officialAppStep === 'arcade-walk-in') setOfficialView('cabinet-select');
+  }, 900);
+}
+
+async function startOfficialMode(mode) {
+  officialSelectedMode = mode;
+  await startMode(mode === 'ranked' ? 'paid' : 'free');
+  officialAppStep = 'level-one-intro';
+  render();
+}
+
+async function beginOfficialLevel() {
+  if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
+  officialAppStep = 'gameplay';
+  render();
+  await startCombat();
+  render();
 }
 
 function detectEthereumProvider() {
@@ -1598,7 +1813,17 @@ function render() {
   renderDesignPanels();
   renderControlScheme();
   renderCodexPanels();
+  renderOfficialApp();
 }
+
+dom.officialConnectButton.addEventListener('click', connectOfficialWallet);
+dom.developerBackstageToggle.addEventListener('click', () => {
+  developerBackstageOpen = !developerBackstageOpen;
+  renderOfficialApp();
+});
+dom.officialFreeModeButton.addEventListener('click', () => startOfficialMode('free'));
+dom.officialRankedModeButton.addEventListener('click', () => startOfficialMode('ranked'));
+dom.officialBeginLevelButton.addEventListener('click', beginOfficialLevel);
 
 dom.connectWalletButton.addEventListener('click', connectWallet);
 dom.freePlayButton.addEventListener('click', () => startMode('free'));
