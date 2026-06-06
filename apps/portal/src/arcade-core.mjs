@@ -249,21 +249,22 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
     Object.freeze({ anchor: 'simulateRunButton', title: 'Sync prototype result', copy: 'Completes a generated run summary and writes progress back to the parent account model.' }),
     Object.freeze({ anchor: 'startCombatButton', title: 'Start 60fps combat', copy: 'Starts the Canvas test loop. Target: 60fps, smooth controls, pixel-snapped sprites.' }),
     Object.freeze({ anchor: 'jumpButton', title: 'Jump / double jump', copy: 'Keyboard: Space. Use double jump to reach vertical platforms and dodge boss sweeps.' }),
-    Object.freeze({ anchor: 'shootButton', title: 'Shoot', copy: 'Keyboard: J. Fire your current gun; pickups can swap blaster, shotgun, auto, rail, or rare super weapon.' }),
-    Object.freeze({ anchor: 'meleeButton', title: 'Litecoin Blade', copy: 'Keyboard: K. Signature close-range slash with silver arc, Ł sparks, and optional gore if enabled before the run.' }),
-    Object.freeze({ anchor: 'grenadeButton', title: 'Throwable', copy: 'Keyboard: L. Use Crypto Bombs for AOE or Hard Forks for precision throws once the full loadout is built.' }),
+    Object.freeze({ anchor: 'shootButton', title: 'Shoot', copy: 'Mouse: Left Click. Fire your current gun; pickups can swap blaster, shotgun, auto, rail, or rare super weapon.' }),
+    Object.freeze({ anchor: 'meleeButton', title: 'Litecoin Blade', copy: 'Keyboard: E or Mouse: Right Click. Signature close-range slash with silver arc, Ł sparks, and optional gore if enabled before the run.' }),
+    Object.freeze({ anchor: 'grenadeButton', title: 'Throwable', copy: 'Keyboard: F. Use Crypto Bombs or Hard Fork throwing axes once the full loadout is built.' }),
     Object.freeze({ anchor: 'powerUpButton', title: 'Drop power-up', copy: 'Prototype helper for testing health, shield, ammo, +1up, score multiplier, and weapon pickups.' }),
     Object.freeze({ anchor: 'combatCanvas', title: 'Gameplay viewport', copy: 'Left-to-right parallax side scroller with mini-boss scroll locks and infinite level-three escalation.' }),
     Object.freeze({ anchor: 'leaderboardPanel', title: 'Official board', copy: 'Only paid prototype runs are eligible for official leaderboard state.' }),
   ]),
   controls: Object.freeze({
     keyboard: Object.freeze([
-      Object.freeze({ action: 'Move Left', key: 'A', tip: 'Tap or hold to dodge while the camera scrolls right.' }),
-      Object.freeze({ action: 'Move Right', key: 'D', tip: 'Advance toward pickups and boss arenas.' }),
+      Object.freeze({ action: 'Move Left', key: 'A / ArrowLeft', tip: 'Tap or hold to dodge while the camera scrolls right.' }),
+      Object.freeze({ action: 'Move Right', key: 'D / ArrowRight', tip: 'Advance toward pickups and boss arenas.' }),
+      Object.freeze({ action: 'Crouch', key: 'Control / S / ArrowDown', tip: 'Duck behind cover and lower your hitbox under slower enemy fire.' }),
       Object.freeze({ action: 'Jump', key: 'Space', tip: 'Press twice for double jump and vertical lanes.' }),
-      Object.freeze({ action: 'Shoot', key: 'J', tip: 'Core ranged attack; maintain fire for combos.' }),
-      Object.freeze({ action: 'Blade', key: 'K', tip: 'Fast close-range Litecoin Blade melee for ammo conservation.' }),
-      Object.freeze({ action: 'Throwable', key: 'L', tip: 'Crypto Bomb area burst or Hard Fork precision throw for swarms and boss phases.' }),
+      Object.freeze({ action: 'Shoot', key: 'Left Click', tip: 'Core ranged attack; maintain fire for combos.' }),
+      Object.freeze({ action: 'Blade', key: 'E / Right Click', tip: 'Fast close-range Litecoin Blade melee for ammo conservation.' }),
+      Object.freeze({ action: 'Throwable', key: 'F', tip: 'Crypto Bomb area burst or Hard Fork throwing axe for swarms and boss phases.' }),
       Object.freeze({ action: 'Reload', key: 'R', tip: 'Reload limited-ammo pickups.' }),
     ]),
     gamepad: Object.freeze([
@@ -282,6 +283,82 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
     Object.freeze({ id: 'canvas-feel', label: '60fps target and readable combat HUD surfaced', status: 'prototype-pass' }),
     Object.freeze({ id: 'production-art', label: 'Final production sprite sheets and animation timing', status: 'needs-production-pass' }),
     Object.freeze({ id: 'real-wallet-tooltips', label: 'Live wallet/dappit/LitVM tooltip copy after integration', status: 'needs-production-pass' }),
+  ]),
+});
+
+export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
+  layout: 'full-screen-arcade-app',
+  principle: 'Most prototype/debug/network/codex material is hidden behind menus; the default player experience is login → cabinet select → play/profile/leaderboards.',
+  initialFlow: Object.freeze(['wallet-login', 'profile-activation', 'cabinet-select', 'game-menu', 'run-or-leaderboards']),
+  hiddenByDefault: Object.freeze(['build-stack-panels', 'network-rails', 'debug-codex', 'generated-gallery', 'prototype-test-buttons']),
+  navigation: Object.freeze([
+    Object.freeze({ id: 'cabinets', label: 'Cabinets', purpose: 'Select Hard Money Heroes or future Lester arcade cabinets.' }),
+    Object.freeze({ id: 'profile', label: 'Profile', purpose: 'Edit username/avatar, view wallet-bound progress, achievements, and high scores.' }),
+    Object.freeze({ id: 'leaderboards', label: 'Leaderboards', purpose: 'Browse global boards plus the current wallet profile placement.' }),
+    Object.freeze({ id: 'settings', label: 'Settings', purpose: 'Controls, audio, accessibility, network status, and sign-out.' }),
+  ]),
+  profileRules: Object.freeze({
+    walletIsPrimaryKey: true,
+    walletLockCopy: 'Progress, high scores, achievements, uploads, and official paid-run submissions are assigned to the connected wallet. Sign out to use a different wallet.',
+    username: Object.freeze({ editable: true, minLength: 3, maxLength: 18, appearsOnLeaderboards: true }),
+    avatar: Object.freeze({ editable: true, upload: true, requiredPixels: 150, shape: 'square', appearsOnLeaderboards: true }),
+  }),
+  leaderboardRules: Object.freeze({
+    cadences: Object.freeze(['daily', 'weekly', 'monthly', 'yearly', 'all-time']),
+    views: Object.freeze(['global-top', 'my-placement', 'friends-future']),
+    submissionTrigger: 'game-over-score-submit',
+    onChainPayload: Object.freeze(['gameId', 'score', 'username', 'wallet', 'avatarUri', 'cadence', 'chainId', 'runReceipt']),
+    officialModeOnly: true,
+  }),
+});
+
+export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
+  feel: 'slower tactical side-scroller with staged combat rooms, cover, platforming, and readable enemy tells instead of constant speed-run scrolling',
+  controls: Object.freeze({
+    move: 'WASD / Arrow Keys',
+    crouch: 'Control / S / ArrowDown',
+    jump: 'Space',
+    shoot: 'Left Click',
+    melee: 'E / Right Click',
+    throwable: 'F',
+  }),
+  sectionPlan: Object.freeze([
+    Object.freeze({ section: 1, goal: 'load area and teach cover/jump/shoot', enemyCount: [2, 3], lock: 'soft-scroll-lock' }),
+    Object.freeze({ section: 2, goal: 'advance after first clear with more cover and vertical props', enemyCount: [3, 4], lock: 'kill-gate' }),
+    Object.freeze({ section: 3, goal: 'add platforms, holes, explosive props, and one mini-boss', enemyCount: [2, 3], miniBoss: true, lock: 'mini-boss-scroll-lock' }),
+    Object.freeze({ section: 8, goal: 'main boss arena after tactical escalation', enemyCount: [0, 2], boss: true, lock: 'boss-scroll-lock' }),
+  ]),
+  pacingRules: Object.freeze([
+    'Keep 0–4 enemies on screen; prefer fewer enemies with stronger tells over spam.',
+    'Reduce enemy movement speed and rate of fire so crouch/cover/jump decisions matter.',
+    'Enemy melee counters should lag player melee by roughly 1–2 seconds after a readable tell.',
+    'Use destructible cover, explosive props, platforms, and ground gaps to create tactical decisions.',
+    'Scroll resumes only after staged enemies, mini-bosses, or bosses are cleared.',
+  ]),
+});
+
+export const LESTER_BLASTER_ART_REDO_BRIEF = Object.freeze({
+  priority: 'Redo production character art before polishing enemy sheets; Lester must match Justin-provided references more closely.',
+  referenceAssets: Object.freeze([
+    Object.freeze({ id: 'lilly-teal-reference', path: './assets/reference/lilly-reference-teal-sprite-sheet.png', dimensions: '1448x1086', role: 'Lilly visual direction and future alternate playable sheet' }),
+    Object.freeze({ id: 'lester-sheet-01', path: './assets/reference/lester-sprites-sheet-01.png', dimensions: '1448x1086', role: 'Lester production silhouette/action reference' }),
+    Object.freeze({ id: 'lester-sheet-02', path: './assets/reference/lester-sprites-sheet-02.png', dimensions: '1448x1086', role: 'Lester production pose/animation reference' }),
+  ]),
+  lesterMustReadAs: Object.freeze(['Lester first, not generic commando', 'chunky readable side-scroller silhouette', 'consistent head/face proportions across every frame', 'blue/silver Litecoin arcade accents without logo wallpaper']),
+  requiredHeroStates: Object.freeze(['idle', 'run', 'crouch', 'jump', 'fall', 'shoot', 'melee', 'throw', 'hurt', 'death', 'victory']),
+  enemySpriteUpgrade: Object.freeze(['idle', 'walk-or-fly', 'attack-tell', 'attack', 'melee-counter', 'hit', 'death', 'optional-gore-overlay']),
+  aiSpriteToolingCandidates: Object.freeze(['manual pixel cleanup from reference sheets', 'Aseprite/LibreSprite slicing and animation validation', 'image-generation reference-to-sprite pass only after license/consistency review']),
+});
+
+export const LESTER_BLASTER_AUDIO_ASSET_PLAN = Object.freeze({
+  prototypeMusic: Object.freeze([
+    Object.freeze({ id: 'lester-lilly-rap-getting-lit', title: 'Lester and Lilly Rap - Getting Lit', src: './assets/audio/music/lester-and-lilly-rap-getting-lit.mp3', use: 'prototype menu/attract or first gameplay loop after user interaction' }),
+  ]),
+  sfxNeeds: Object.freeze(['menu/login clicks', 'wallet connect', 'cabinet select', 'jump/land', 'gun fire', 'melee slash', 'throwable/explosion', 'enemy bark', 'player damage', 'enemy damage', 'pickup', 'game over', 'leaderboard submit/sync', 'ambient arcade/level bed']),
+  freeLibraries: Object.freeze([
+    Object.freeze({ name: 'Kenney Audio', license: 'CC0 on many packs', bestFor: 'UI, impact, sci-fi, RPG, casino/arcade prototype SFX' }),
+    Object.freeze({ name: 'Mixkit Game SFX', license: 'Mixkit free SFX license', bestFor: 'quick arcade/game notification sounds' }),
+    Object.freeze({ name: 'Sonniss GameAudioGDC', license: 'royalty-free media production; no AI/ML training', bestFor: 'larger production-quality ambience, impacts, weapons, and creature layers' }),
   ]),
 });
 
@@ -675,7 +752,7 @@ export const LESTER_BLASTER_HD_SPRITE_ATLAS = Object.freeze({
 });
 
 export const LESTER_BLASTER_CONTROL_SCHEME = Object.freeze({
-  keyboard: Object.freeze({ moveLeft: 'A / ArrowLeft', moveRight: 'D / ArrowRight', crouch: 'S / ArrowDown', jump: 'Space', shoot: 'J', melee: 'K', grenade: 'L', reload: 'R', pause: 'Enter', swapWeapon: 'I' }),
+  keyboard: Object.freeze({ moveLeft: 'A / ArrowLeft', moveRight: 'D / ArrowRight', crouch: 'Control / S / ArrowDown', jump: 'Space', shoot: 'Left Click', melee: 'E / Right Click', grenade: 'F', reload: 'R', pause: 'Enter', swapWeapon: 'Q' }),
   gamepad: Object.freeze({ move: 'Left Stick / D-Pad', jump: 'A', shoot: 'X / RT', melee: 'B', grenade: 'Y / RB', pause: 'Start', swapWeapon: 'LB' }),
   touch: Object.freeze({ move: 'left thumb virtual stick', jump: 'right thumb jump', shoot: 'right thumb fire', melee: 'right thumb melee', grenade: 'right thumb grenade' }),
   accessibility: Object.freeze(['rebindable controls', 'screen shake toggle', 'flash intensity toggle', 'music/sfx sliders', 'high-contrast projectile option']),
@@ -1129,8 +1206,9 @@ export function buildLesterBlasterDesignCodex() {
 
 export function buildLesterBlasterControlDisplayModel() {
   return [
-    { label: 'Move', key: `${LESTER_BLASTER_CONTROL_SCHEME.keyboard.moveLeft} + ${LESTER_BLASTER_CONTROL_SCHEME.keyboard.moveRight}`, hint: 'Dodge left or advance right while the camera scrolls.' },
-    { label: 'Jump', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.jump, hint: 'Press twice for double jump and vertical platforms.' },
+    { label: 'Move', key: `${LESTER_BLASTER_CONTROL_SCHEME.keyboard.moveLeft} + ${LESTER_BLASTER_CONTROL_SCHEME.keyboard.moveRight}`, hint: 'Dodge left or advance right through staged combat rooms.' },
+    { label: 'Crouch', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.crouch, hint: 'Duck behind cover and lower your hitbox under slower enemy fire.' },
+    { label: 'Jump', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.jump, hint: 'Jump to platforms, clear holes, and time tactical vertical lanes.' },
     { label: 'Shoot', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.shoot, hint: 'Fire The Settler or the current pickup weapon.' },
     { label: 'Blade', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.melee, hint: 'Close-range Litecoin Blade slash with sparks; gore only if enabled pre-run.' },
     { label: 'Throwable', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.grenade, hint: 'Throw Crypto Bombs or Hard Fork precision axes.' },

@@ -183,6 +183,8 @@ const combat = {
   maxDamageCombo: 0,
   noDamageSeconds: 0,
   invulnerableFrames: 0,
+  crouching: false,
+  crouchFrames: 0,
   bullets: [],
   enemyShots: [],
   enemies: [],
@@ -306,7 +308,7 @@ function renderCombatSandboxStatus() {
     activeMode: currentSession?.mode ?? 'practice',
   });
   dom.combatRunStatus.textContent = model.heading;
-  dom.combatStatus.textContent = `${model.details} Keyboard: Space jump, J shoot, K knife, L grenade, R reload, A/D move.`;
+  dom.combatStatus.textContent = `${model.details} Controls: WASD/arrows move, Ctrl/S/Down crouch, Space jump, Left Click shoot, E/Right Click melee, F throwable, R reload.`;
   dom.combatRunStatus.dataset.state = model.state;
 }
 
@@ -328,7 +330,10 @@ function rectsOverlap(a, b) {
 }
 
 function playerHitbox() {
-  return { x: combat.playerX + 4, y: combat.playerY - 82, w: 42, h: 74 };
+  const crouching = combat.crouching && combat.playerY >= GROUND_Y - 2;
+  return crouching
+    ? { x: combat.playerX + 5, y: combat.playerY - 52, w: 42, h: 44 }
+    : { x: combat.playerX + 4, y: combat.playerY - 82, w: 42, h: 74 };
 }
 
 function enemyHitbox(enemy) {
@@ -878,6 +883,8 @@ async function startCombat() {
   combat.maxDamageCombo = 0;
   combat.noDamageSeconds = 0;
   combat.invulnerableFrames = 0;
+  combat.crouching = false;
+  combat.crouchFrames = 0;
   combat.bullets = [];
   combat.enemyShots = [];
   combat.enemies = [];
@@ -985,8 +992,11 @@ function updateCombatStep(stepMs) {
   combat.noDamageSeconds += dt * 18;
   combat.invulnerableFrames = Math.max(0, combat.invulnerableFrames - 1);
 
-  if (combat.keys.has('a')) combat.playerX = Math.max(62, combat.playerX - 3.1);
-  if (combat.keys.has('d')) combat.playerX = Math.min(214, combat.playerX + 3.1);
+  combat.crouching = combat.keys.has('control') || combat.keys.has('s') || combat.keys.has('arrowdown');
+  combat.crouchFrames = combat.crouching ? combat.crouchFrames + 1 : 0;
+  const playerSpeed = combat.crouching ? 1.65 : 3.1;
+  if (combat.keys.has('a') || combat.keys.has('arrowleft')) combat.playerX = Math.max(62, combat.playerX - playerSpeed);
+  if (combat.keys.has('d') || combat.keys.has('arrowright')) combat.playerX = Math.min(214, combat.playerX + playerSpeed);
 
   combat.velocityY += 0.72;
   combat.playerY = Math.min(GROUND_Y, combat.playerY + combat.velocityY);
@@ -1425,9 +1435,10 @@ function drawProps(ctx) {
 
 function selectHeroFrame() {
   if (combat.playerY < GROUND_Y - 4) return combatArt.hero.jump;
+  if (combat.crouching && combat.playerY >= GROUND_Y - 2) return combatArt.hero.idle;
   if (combat.meleeSwings > 0 && combat.frame - combat.meleeSwings < 18) return combatArt.hero.blade;
   if (combat.shots > 0 && combat.frame % 36 < 10) return combatArt.hero.shoot;
-  if (combat.keys.has('a') || combat.keys.has('d')) return combat.frame % 20 < 10 ? combatArt.hero.run1 : combatArt.hero.run2;
+  if (combat.keys.has('a') || combat.keys.has('d') || combat.keys.has('arrowleft') || combat.keys.has('arrowright')) return combat.frame % 20 < 10 ? combatArt.hero.run1 : combatArt.hero.run2;
   return combatArt.hero.idle;
 }
 
@@ -1606,16 +1617,30 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     jump();
   }
-  if (key === 'j') shoot();
-  if (key === 'k') melee();
-  if (key === 'l') grenade();
+  if (key === 'e') melee();
+  if (key === 'f') grenade();
   if (key === 'r') reload();
-  if (key === 'a' || key === 'd') combat.keys.add(key);
+  if (['a', 'd', 's', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) {
+    event.preventDefault();
+    combat.keys.add(key);
+  }
 });
 
 document.addEventListener('keyup', (event) => {
   const key = event.key.toLowerCase();
-  if (key === 'a' || key === 'd') combat.keys.delete(key);
+  if (['a', 'd', 's', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) combat.keys.delete(key);
+});
+
+dom.combatCanvas.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+});
+
+dom.combatCanvas.addEventListener('mousedown', (event) => {
+  if (event.button === 0) shoot();
+  if (event.button === 2) {
+    event.preventDefault();
+    melee();
+  }
 });
 
 const injectedProvider = detectEthereumProvider();

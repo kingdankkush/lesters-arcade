@@ -14,12 +14,15 @@ import {
   LESTER_ARCADE_BUILD_STACK,
   LESTER_ARCADE_UI_QUALITY_SYSTEM,
   LESTER_ARCADE_WALLET_RAILS,
+  LESTERS_ARCADE_V2_APP_SHELL,
   LESTER_BLASTER_ANIMATION_PLAN,
   LITVM_LITEFORGE_NETWORK,
   LESTER_BLASTER_BOSS_SYSTEM,
   LESTER_BLASTER_CHARACTER_ROSTER,
   LESTER_BLASTER_COMBAT_EFFECTS,
   LESTER_BLASTER_CONTROL_SCHEME,
+  LESTER_BLASTER_ART_REDO_BRIEF,
+  LESTER_BLASTER_AUDIO_ASSET_PLAN,
   LESTER_BLASTER_ENEMY_CATALOG,
   LESTER_BLASTER_ENVIRONMENTS,
   LESTER_BLASTER_GAMEPLAY,
@@ -28,6 +31,7 @@ import {
   LESTER_BLASTER_MENU_OPTIONS,
   LESTER_BLASTER_PERFORMANCE_TARGETS,
   LESTER_BLASTER_SOUND_DESIGN,
+  LESTER_BLASTER_TACTICAL_COMBAT_V2,
   LESTER_BLASTER_UNLOCKABLES,
   LESTER_BLASTER_WEAPON_SYSTEM,
   applyPowerUp,
@@ -321,6 +325,9 @@ test('Lester Blaster design codex covers characters, art, controls, weapons, env
   assert.equal(LESTER_BLASTER_ENEMY_CATALOG.every((enemy) => enemy.aiArchetype && enemy.animationStates.length >= 3), true);
   assert.equal(LESTER_BLASTER_ANIMATION_PLAN.playerStates.includes('double-jump'), true);
   assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.jump, 'Space');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.shoot, 'Left Click');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.melee, 'E / Right Click');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.grenade, 'F');
   assert.equal(LESTER_BLASTER_MENU_OPTIONS.main.length >= 6, true);
   assert.equal(LESTER_BLASTER_SOUND_DESIGN.musicTracks.length >= 4, true);
   assert.equal(LESTER_BLASTER_UNLOCKABLES.length >= 8, true);
@@ -566,12 +573,55 @@ test('UI quality guide model covers controls, tooltips, instructions, branding, 
   assert.equal(guide.selectedGameId, 'lester-blaster');
   assert.equal(guide.quickStart.length >= 6, true);
   assert.equal(guide.tooltips.length >= 10, true);
-  assert.equal(guide.tooltips.some((tip) => tip.anchor === 'shootButton' && tip.copy.includes('J')), true);
-  assert.equal(guide.controls.keyboard.some((control) => control.action === 'Shoot' && control.key === 'J'), true);
+  assert.equal(guide.tooltips.some((tip) => tip.anchor === 'shootButton' && tip.copy.includes('Left Click')), true);
+  assert.equal(guide.controls.keyboard.some((control) => control.action === 'Shoot' && control.key === 'Left Click'), true);
   assert.equal(guide.brand.palette.length >= 7, true);
   assert.equal(guide.iconLegend.some((icon) => icon.label.includes('Official')), true);
   assert.equal(guide.qualityChecklist.every((item) => item.status === 'prototype-pass' || item.status === 'needs-production-pass'), true);
   assert.equal(LESTER_ARCADE_UI_QUALITY_SYSTEM.instructions.some((instruction) => instruction.title.includes('Survive')), true);
+});
+
+test('V2 app shell hides prototype chrome behind full-screen wallet profile, cabinet, and leaderboard navigation', () => {
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.layout, 'full-screen-arcade-app');
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletIsPrimaryKey, true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.profileRules.username.appearsOnLeaderboards, true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.profileRules.avatar.requiredPixels, 150);
+  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.leaderboardRules.cadences, ['daily', 'weekly', 'monthly', 'yearly', 'all-time']);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.leaderboardRules.submissionTrigger, 'game-over-score-submit');
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.leaderboardRules.onChainPayload.includes('username'), true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.leaderboardRules.onChainPayload.includes('wallet'), true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.hiddenByDefault.includes('debug-codex'), true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'cabinets'), true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'profile'), true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'leaderboards'), true);
+});
+
+test('V2 tactical combat spec slows pacing into staged cover, platform, mini-boss, and boss sections', () => {
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.move, 'WASD / Arrow Keys');
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.shoot, 'Left Click');
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.melee, 'E / Right Click');
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.throwable, 'F');
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.sectionPlan[0].enemyCount[0], 2);
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.sectionPlan.some((section) => section.miniBoss), true);
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.sectionPlan.some((section) => section.boss && section.section >= 8), true);
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.pacingRules.some((rule) => rule.includes('0–4 enemies')), true);
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.pacingRules.some((rule) => rule.includes('Scroll resumes')), true);
+});
+
+test('V2 art and audio plans track Justin reference assets, Lester redo, 150x150 profile direction, and free SFX sources', () => {
+  const refPaths = LESTER_BLASTER_ART_REDO_BRIEF.referenceAssets.map((asset) => fileURLToPath(new URL(`../apps/portal/${asset.path.replace('./', '')}`, import.meta.url)));
+  const musicPath = fileURLToPath(new URL('../apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3', import.meta.url));
+
+  assert.equal(LESTER_BLASTER_ART_REDO_BRIEF.priority.includes('Lester'), true);
+  assert.equal(LESTER_BLASTER_ART_REDO_BRIEF.requiredHeroStates.includes('crouch'), true);
+  assert.equal(LESTER_BLASTER_ART_REDO_BRIEF.requiredHeroStates.includes('melee'), true);
+  assert.equal(LESTER_BLASTER_ART_REDO_BRIEF.enemySpriteUpgrade.includes('attack-tell'), true);
+  assert.equal(refPaths.every((path) => existsSync(path) && statSync(path).size > 0), true);
+  assert.equal(existsSync(musicPath) && statSync(musicPath).size > 0, true);
+  assert.equal(LESTER_BLASTER_AUDIO_ASSET_PLAN.prototypeMusic[0].src.includes('lester-and-lilly-rap-getting-lit.mp3'), true);
+  assert.equal(LESTER_BLASTER_AUDIO_ASSET_PLAN.sfxNeeds.includes('wallet connect'), true);
+  assert.equal(LESTER_BLASTER_AUDIO_ASSET_PLAN.freeLibraries.some((library) => library.name === 'Kenney Audio' && library.license.includes('CC0')), true);
+  assert.equal(LESTER_BLASTER_AUDIO_ASSET_PLAN.freeLibraries.some((library) => library.name.includes('Sonniss') && library.license.includes('no AI/ML training')), true);
 });
 
 test('control display model does not leak undefined labels into the visible controls guide', () => {
@@ -580,6 +630,10 @@ test('control display model does not leak undefined labels into the visible cont
 
   assert.equal(controls.length >= 6, true);
   assert.equal(move.key, 'A / ArrowLeft + D / ArrowRight');
+  assert.equal(controls.some((control) => control.label === 'Crouch' && control.key.includes('Control')), true);
+  assert.equal(controls.some((control) => control.label === 'Shoot' && control.key === 'Left Click'), true);
+  assert.equal(controls.some((control) => control.label === 'Blade' && control.key.includes('Right Click')), true);
+  assert.equal(controls.some((control) => control.label === 'Throwable' && control.key === 'F'), true);
   assert.equal(controls.every((control) => control.key && !control.key.includes('undefined')), true);
   assert.equal(controls.every((control) => control.label && !control.label.includes('undefined')), true);
 });
