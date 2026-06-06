@@ -501,6 +501,38 @@ test('generated sliced asset report covers gameplay art and every PNG is verifia
   }
 });
 
+test('production Lester sprite manifest slices Justin-provided animation sheets into runtime frames', () => {
+  const packagePath = fileURLToPath(new URL('../package.json', import.meta.url));
+  const manifestPath = fileURLToPath(new URL('../apps/portal/assets/lester-production/lester-production-sprite-manifest.json', import.meta.url));
+  const packageJson = JSON.parse(readFileSync(packagePath, 'utf8'));
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+
+  assert.equal(packageJson.scripts['assets:lester'], 'python scripts/slice-lester-production-sprites.py');
+  assert.equal(manifest.character, 'Lester');
+  assert.equal(manifest.source, 'Justin-provided production sprite sheets');
+  assert.equal(manifest.frameGrid.columns, 5);
+  assert.equal(manifest.frameGrid.rows, 5);
+  assert.equal(manifest.frameGrid.sourceFrameSize.width, 256);
+  assert.equal(manifest.frameGrid.sourceFrameSize.height, 256);
+
+  for (const state of ['idle', 'walk', 'run', 'jump']) {
+    assert.equal(manifest.animations[state].frames.length, 25, `${state} has 25 frames`);
+    assert.equal(manifest.animations[state].loop, state !== 'jump');
+    assert.equal(existsSync(fileURLToPath(new URL(`../${manifest.animations[state].source}`, import.meta.url))), true, `${state} source exists`);
+    for (const frame of manifest.animations[state].frames) {
+      const framePath = fileURLToPath(new URL(`../${frame.src}`, import.meta.url));
+      assert.equal(existsSync(framePath), true, `${frame.src} exists`);
+      assert.equal(statSync(framePath).size > 0, true, `${frame.src} non-empty`);
+      const png = readFileSync(framePath);
+      assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], frame.size, `${frame.src} dimensions match`);
+    }
+  }
+
+  for (const pose of ['facing', 'leftSideProfile', 'rightSideProfile', 'facingShotgun', 'leftSideShotgun', 'rightSideShotgun']) {
+    assert.equal(existsSync(fileURLToPath(new URL(`../${manifest.stills[pose].src}`, import.meta.url))), true, `${pose} still exists`);
+  }
+});
+
 test('level plan uses the confirmed ground-outward, vertical-upward, and high-speed-getaway campaign rhythm', () => {
   assert.equal(LESTER_BLASTER_LEVEL_PLAN.length, 3);
   assert.equal(LESTER_BLASTER_LEVEL_PLAN[0].title, 'Level 1: The Slums');

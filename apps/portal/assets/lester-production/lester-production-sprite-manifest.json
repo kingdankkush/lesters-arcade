@@ -1,0 +1,2516 @@
+{
+  "character": "Lester",
+  "source": "Justin-provided production sprite sheets",
+  "generatedBy": "scripts/slice-lester-production-sprites.py",
+  "frameGrid": {
+    "columns": 5,
+    "rows": 5,
+    "sourceFrameSize": {
+      "width": 256,
+      "height": 256
+    },
+    "runtimeFrameSize": {
+      "width": 128,
+      "height": 128
+    }
+  },
+  "runtime": {
+    "defaultFacing": "right",
+    "anchor": "bottom-center",
+    "drawSize": {
+      "width": 104,
+      "height": 104
+    },
+    "fallback": "apps/portal/assets/generated/sliced Lester frames"
+  },
+  "animations": {
+    "idle": {
+      "source": "apps/portal/assets/lester-production/source/Lester-idle.png",
+      "fps": 8,
+      "loop": true,
+      "notes": "Breathing/idle stance sheet from Justin.",
+      "frames": [
+        {
+          "index": 0,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-00.png",
+          "grid": {
+            "column": 0,
+            "row": 0,
+            "box": [
+              0,
+              0,
+              256,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            167,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 1,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-01.png",
+          "grid": {
+            "column": 1,
+            "row": 0,
+            "box": [
+              256,
+              0,
+              512,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            166,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 2,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-02.png",
+          "grid": {
+            "column": 2,
+            "row": 0,
+            "box": [
+              512,
+              0,
+              768,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            35,
+            166,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 3,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-03.png",
+          "grid": {
+            "column": 3,
+            "row": 0,
+            "box": [
+              768,
+              0,
+              1024,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            168,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 4,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-04.png",
+          "grid": {
+            "column": 4,
+            "row": 0,
+            "box": [
+              1024,
+              0,
+              1280,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            169,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 5,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-05.png",
+          "grid": {
+            "column": 0,
+            "row": 1,
+            "box": [
+              0,
+              256,
+              256,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            170,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 6,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-06.png",
+          "grid": {
+            "column": 1,
+            "row": 1,
+            "box": [
+              256,
+              256,
+              512,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            170,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 7,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-07.png",
+          "grid": {
+            "column": 2,
+            "row": 1,
+            "box": [
+              512,
+              256,
+              768,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            74,
+            35,
+            169,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 8,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-08.png",
+          "grid": {
+            "column": 3,
+            "row": 1,
+            "box": [
+              768,
+              256,
+              1024,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            167,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 9,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-09.png",
+          "grid": {
+            "column": 4,
+            "row": 1,
+            "box": [
+              1024,
+              256,
+              1280,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            166,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 10,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-10.png",
+          "grid": {
+            "column": 0,
+            "row": 2,
+            "box": [
+              0,
+              512,
+              256,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            35,
+            166,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 11,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-11.png",
+          "grid": {
+            "column": 1,
+            "row": 2,
+            "box": [
+              256,
+              512,
+              512,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            168,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 12,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-12.png",
+          "grid": {
+            "column": 2,
+            "row": 2,
+            "box": [
+              512,
+              512,
+              768,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            169,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 13,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-13.png",
+          "grid": {
+            "column": 3,
+            "row": 2,
+            "box": [
+              768,
+              512,
+              1024,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            170,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 14,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-14.png",
+          "grid": {
+            "column": 4,
+            "row": 2,
+            "box": [
+              1024,
+              512,
+              1280,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            170,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 15,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-15.png",
+          "grid": {
+            "column": 0,
+            "row": 3,
+            "box": [
+              0,
+              768,
+              256,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            169,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 16,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-16.png",
+          "grid": {
+            "column": 1,
+            "row": 3,
+            "box": [
+              256,
+              768,
+              512,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            167,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 17,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-17.png",
+          "grid": {
+            "column": 2,
+            "row": 3,
+            "box": [
+              512,
+              768,
+              768,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            74,
+            35,
+            166,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 18,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-18.png",
+          "grid": {
+            "column": 3,
+            "row": 3,
+            "box": [
+              768,
+              768,
+              1024,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            35,
+            166,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 19,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-19.png",
+          "grid": {
+            "column": 4,
+            "row": 3,
+            "box": [
+              1024,
+              768,
+              1280,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            167,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 20,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-20.png",
+          "grid": {
+            "column": 0,
+            "row": 4,
+            "box": [
+              0,
+              1024,
+              256,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            34,
+            169,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 21,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-21.png",
+          "grid": {
+            "column": 1,
+            "row": 4,
+            "box": [
+              256,
+              1024,
+              512,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            35,
+            170,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 22,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-22.png",
+          "grid": {
+            "column": 2,
+            "row": 4,
+            "box": [
+              512,
+              1024,
+              768,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            74,
+            35,
+            170,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 23,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-23.png",
+          "grid": {
+            "column": 3,
+            "row": 4,
+            "box": [
+              768,
+              1024,
+              1024,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            169,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 24,
+          "src": "apps/portal/assets/lester-production/frames/idle/lester-idle-24.png",
+          "grid": {
+            "column": 4,
+            "row": 4,
+            "box": [
+              1024,
+              1024,
+              1280,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            75,
+            35,
+            167,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    "walk": {
+      "source": "apps/portal/assets/lester-production/source/Lester-walk.png",
+      "fps": 10,
+      "loop": true,
+      "notes": "Side-scrolling walk cycle sheet from Justin.",
+      "frames": [
+        {
+          "index": 0,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-00.png",
+          "grid": {
+            "column": 0,
+            "row": 0,
+            "box": [
+              0,
+              0,
+              256,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            74,
+            37,
+            184,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 1,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-01.png",
+          "grid": {
+            "column": 1,
+            "row": 0,
+            "box": [
+              256,
+              0,
+              512,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            77,
+            36,
+            180,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 2,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-02.png",
+          "grid": {
+            "column": 2,
+            "row": 0,
+            "box": [
+              512,
+              0,
+              768,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            34,
+            168,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 3,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-03.png",
+          "grid": {
+            "column": 3,
+            "row": 0,
+            "box": [
+              768,
+              0,
+              1024,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            79,
+            32,
+            165,
+            216
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 4,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-04.png",
+          "grid": {
+            "column": 4,
+            "row": 0,
+            "box": [
+              1024,
+              0,
+              1280,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            80,
+            33,
+            166,
+            216
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 5,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-05.png",
+          "grid": {
+            "column": 0,
+            "row": 1,
+            "box": [
+              0,
+              256,
+              256,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            76,
+            36,
+            178,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 6,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-06.png",
+          "grid": {
+            "column": 1,
+            "row": 1,
+            "box": [
+              256,
+              256,
+              512,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            72,
+            38,
+            178,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 7,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-07.png",
+          "grid": {
+            "column": 2,
+            "row": 1,
+            "box": [
+              512,
+              256,
+              768,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            76,
+            37,
+            170,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 8,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-08.png",
+          "grid": {
+            "column": 3,
+            "row": 1,
+            "box": [
+              768,
+              256,
+              1024,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            79,
+            34,
+            165,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 9,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-09.png",
+          "grid": {
+            "column": 4,
+            "row": 1,
+            "box": [
+              1024,
+              256,
+              1280,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            79,
+            31,
+            165,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 10,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-10.png",
+          "grid": {
+            "column": 0,
+            "row": 2,
+            "box": [
+              0,
+              512,
+              256,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            79,
+            33,
+            172,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 11,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-11.png",
+          "grid": {
+            "column": 1,
+            "row": 2,
+            "box": [
+              256,
+              512,
+              512,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            36,
+            181,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 12,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-12.png",
+          "grid": {
+            "column": 2,
+            "row": 2,
+            "box": [
+              512,
+              512,
+              768,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            74,
+            37,
+            184,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 13,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-13.png",
+          "grid": {
+            "column": 3,
+            "row": 2,
+            "box": [
+              768,
+              512,
+              1024,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            36,
+            178,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 14,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-14.png",
+          "grid": {
+            "column": 4,
+            "row": 2,
+            "box": [
+              1024,
+              512,
+              1280,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            34,
+            164,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 15,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-15.png",
+          "grid": {
+            "column": 0,
+            "row": 3,
+            "box": [
+              0,
+              768,
+              256,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            32,
+            165,
+            216
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 16,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-16.png",
+          "grid": {
+            "column": 1,
+            "row": 3,
+            "box": [
+              256,
+              768,
+              512,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            79,
+            33,
+            166,
+            216
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 17,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-17.png",
+          "grid": {
+            "column": 2,
+            "row": 3,
+            "box": [
+              512,
+              768,
+              768,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            76,
+            36,
+            178,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 18,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-18.png",
+          "grid": {
+            "column": 3,
+            "row": 3,
+            "box": [
+              768,
+              768,
+              1024,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            38,
+            178,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 19,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-19.png",
+          "grid": {
+            "column": 4,
+            "row": 3,
+            "box": [
+              1024,
+              768,
+              1280,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            76,
+            37,
+            170,
+            216
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 20,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-20.png",
+          "grid": {
+            "column": 0,
+            "row": 4,
+            "box": [
+              0,
+              1024,
+              256,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            79,
+            34,
+            165,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 21,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-21.png",
+          "grid": {
+            "column": 1,
+            "row": 4,
+            "box": [
+              256,
+              1024,
+              512,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            79,
+            31,
+            165,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 22,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-22.png",
+          "grid": {
+            "column": 2,
+            "row": 4,
+            "box": [
+              512,
+              1024,
+              768,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            33,
+            173,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 23,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-23.png",
+          "grid": {
+            "column": 3,
+            "row": 4,
+            "box": [
+              768,
+              1024,
+              1024,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            36,
+            181,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 24,
+          "src": "apps/portal/assets/lester-production/frames/walk/lester-walk-24.png",
+          "grid": {
+            "column": 4,
+            "row": 4,
+            "box": [
+              1024,
+              1024,
+              1280,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            73,
+            37,
+            183,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    "run": {
+      "source": "apps/portal/assets/lester-production/source/Lester-run.png",
+      "fps": 14,
+      "loop": true,
+      "notes": "Side-scrolling run cycle sheet from Justin.",
+      "frames": [
+        {
+          "index": 0,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-00.png",
+          "grid": {
+            "column": 0,
+            "row": 0,
+            "box": [
+              0,
+              0,
+              256,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            65,
+            42,
+            189,
+            206
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 1,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-01.png",
+          "grid": {
+            "column": 1,
+            "row": 0,
+            "box": [
+              256,
+              0,
+              512,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            61,
+            43,
+            190,
+            206
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 2,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-02.png",
+          "grid": {
+            "column": 2,
+            "row": 0,
+            "box": [
+              512,
+              0,
+              768,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            63,
+            47,
+            187,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 3,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-03.png",
+          "grid": {
+            "column": 3,
+            "row": 0,
+            "box": [
+              768,
+              0,
+              1024,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            84,
+            50,
+            174,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 4,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-04.png",
+          "grid": {
+            "column": 4,
+            "row": 0,
+            "box": [
+              1024,
+              0,
+              1280,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            72,
+            42,
+            176,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 5,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-05.png",
+          "grid": {
+            "column": 0,
+            "row": 1,
+            "box": [
+              0,
+              256,
+              256,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            62,
+            42,
+            191,
+            201
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 6,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-06.png",
+          "grid": {
+            "column": 1,
+            "row": 1,
+            "box": [
+              256,
+              256,
+              512,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            64,
+            46,
+            179,
+            209
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 7,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-07.png",
+          "grid": {
+            "column": 2,
+            "row": 1,
+            "box": [
+              512,
+              256,
+              768,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            85,
+            49,
+            175,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 8,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-08.png",
+          "grid": {
+            "column": 3,
+            "row": 1,
+            "box": [
+              768,
+              256,
+              1024,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            71,
+            42,
+            187,
+            211
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 9,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-09.png",
+          "grid": {
+            "column": 4,
+            "row": 1,
+            "box": [
+              1024,
+              256,
+              1280,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            61,
+            43,
+            189,
+            206
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 10,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-10.png",
+          "grid": {
+            "column": 0,
+            "row": 2,
+            "box": [
+              0,
+              512,
+              256,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            65,
+            47,
+            187,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 11,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-11.png",
+          "grid": {
+            "column": 1,
+            "row": 2,
+            "box": [
+              256,
+              512,
+              512,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            85,
+            48,
+            176,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 12,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-12.png",
+          "grid": {
+            "column": 2,
+            "row": 2,
+            "box": [
+              512,
+              512,
+              768,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            70,
+            42,
+            181,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 13,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-13.png",
+          "grid": {
+            "column": 3,
+            "row": 2,
+            "box": [
+              768,
+              512,
+              1024,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            63,
+            43,
+            190,
+            203
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 14,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-14.png",
+          "grid": {
+            "column": 4,
+            "row": 2,
+            "box": [
+              1024,
+              512,
+              1280,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            69,
+            49,
+            175,
+            213
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 15,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-15.png",
+          "grid": {
+            "column": 0,
+            "row": 3,
+            "box": [
+              0,
+              768,
+              256,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            84,
+            45,
+            174,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 16,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-16.png",
+          "grid": {
+            "column": 1,
+            "row": 3,
+            "box": [
+              256,
+              768,
+              512,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            65,
+            42,
+            189,
+            206
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 17,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-17.png",
+          "grid": {
+            "column": 2,
+            "row": 3,
+            "box": [
+              512,
+              768,
+              768,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            62,
+            44,
+            189,
+            211
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 18,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-18.png",
+          "grid": {
+            "column": 3,
+            "row": 3,
+            "box": [
+              768,
+              768,
+              1024,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            74,
+            49,
+            184,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 19,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-19.png",
+          "grid": {
+            "column": 4,
+            "row": 3,
+            "box": [
+              1024,
+              768,
+              1280,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            84,
+            44,
+            176,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 20,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-20.png",
+          "grid": {
+            "column": 0,
+            "row": 4,
+            "box": [
+              0,
+              1024,
+              256,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            65,
+            42,
+            190,
+            206
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 21,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-21.png",
+          "grid": {
+            "column": 1,
+            "row": 4,
+            "box": [
+              256,
+              1024,
+              512,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            62,
+            45,
+            183,
+            209
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 22,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-22.png",
+          "grid": {
+            "column": 2,
+            "row": 4,
+            "box": [
+              512,
+              1024,
+              768,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            78,
+            50,
+            176,
+            214
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 23,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-23.png",
+          "grid": {
+            "column": 3,
+            "row": 4,
+            "box": [
+              768,
+              1024,
+              1024,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            83,
+            43,
+            177,
+            215
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 24,
+          "src": "apps/portal/assets/lester-production/frames/run/lester-run-24.png",
+          "grid": {
+            "column": 4,
+            "row": 4,
+            "box": [
+              1024,
+              1024,
+              1280,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            65,
+            42,
+            189,
+            206
+          ],
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    },
+    "jump": {
+      "source": "apps/portal/assets/lester-production/source/Lester-jump.png",
+      "fps": 12,
+      "loop": false,
+      "notes": "Jump arc/action sheet from Justin.",
+      "frames": [
+        {
+          "index": 0,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-00.png",
+          "grid": {
+            "column": 0,
+            "row": 0,
+            "box": [
+              0,
+              0,
+              256,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            72,
+            36,
+            184,
+            201
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 1,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-01.png",
+          "grid": {
+            "column": 1,
+            "row": 0,
+            "box": [
+              256,
+              0,
+              512,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            71,
+            35,
+            184,
+            200
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 2,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-02.png",
+          "grid": {
+            "column": 2,
+            "row": 0,
+            "box": [
+              512,
+              0,
+              768,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            70,
+            35,
+            185,
+            200
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 3,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-03.png",
+          "grid": {
+            "column": 3,
+            "row": 0,
+            "box": [
+              768,
+              0,
+              1024,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            69,
+            35,
+            185,
+            200
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 4,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-04.png",
+          "grid": {
+            "column": 4,
+            "row": 0,
+            "box": [
+              1024,
+              0,
+              1280,
+              256
+            ]
+          },
+          "sourceAlphaBounds": [
+            67,
+            41,
+            187,
+            209
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 5,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-05.png",
+          "grid": {
+            "column": 0,
+            "row": 1,
+            "box": [
+              0,
+              256,
+              256,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            67,
+            50,
+            188,
+            219
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 6,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-06.png",
+          "grid": {
+            "column": 1,
+            "row": 1,
+            "box": [
+              256,
+              256,
+              512,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            80,
+            70,
+            185,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 7,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-07.png",
+          "grid": {
+            "column": 2,
+            "row": 1,
+            "box": [
+              512,
+              256,
+              768,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            81,
+            87,
+            169,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 8,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-08.png",
+          "grid": {
+            "column": 3,
+            "row": 1,
+            "box": [
+              768,
+              256,
+              1024,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            80,
+            80,
+            165,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 9,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-09.png",
+          "grid": {
+            "column": 4,
+            "row": 1,
+            "box": [
+              1024,
+              256,
+              1280,
+              512
+            ]
+          },
+          "sourceAlphaBounds": [
+            81,
+            81,
+            165,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 10,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-10.png",
+          "grid": {
+            "column": 0,
+            "row": 2,
+            "box": [
+              0,
+              512,
+              256,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            82,
+            74,
+            167,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 11,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-11.png",
+          "grid": {
+            "column": 1,
+            "row": 2,
+            "box": [
+              256,
+              512,
+              512,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            77,
+            46,
+            182,
+            212
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 12,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-12.png",
+          "grid": {
+            "column": 2,
+            "row": 2,
+            "box": [
+              512,
+              512,
+              768,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            72,
+            35,
+            184,
+            201
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 13,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-13.png",
+          "grid": {
+            "column": 3,
+            "row": 2,
+            "box": [
+              768,
+              512,
+              1024,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            70,
+            29,
+            185,
+            194
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 14,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-14.png",
+          "grid": {
+            "column": 4,
+            "row": 2,
+            "box": [
+              1024,
+              512,
+              1280,
+              768
+            ]
+          },
+          "sourceAlphaBounds": [
+            69,
+            28,
+            185,
+            193
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 15,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-15.png",
+          "grid": {
+            "column": 0,
+            "row": 3,
+            "box": [
+              0,
+              768,
+              256,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            68,
+            27,
+            186,
+            192
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 16,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-16.png",
+          "grid": {
+            "column": 1,
+            "row": 3,
+            "box": [
+              256,
+              768,
+              512,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            68,
+            27,
+            186,
+            192
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 17,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-17.png",
+          "grid": {
+            "column": 2,
+            "row": 3,
+            "box": [
+              512,
+              768,
+              768,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            67,
+            35,
+            188,
+            203
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 18,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-18.png",
+          "grid": {
+            "column": 3,
+            "row": 3,
+            "box": [
+              768,
+              768,
+              1024,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            67,
+            54,
+            190,
+            223
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 19,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-19.png",
+          "grid": {
+            "column": 4,
+            "row": 3,
+            "box": [
+              1024,
+              768,
+              1280,
+              1024
+            ]
+          },
+          "sourceAlphaBounds": [
+            84,
+            81,
+            183,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 20,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-20.png",
+          "grid": {
+            "column": 0,
+            "row": 4,
+            "box": [
+              0,
+              1024,
+              256,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            81,
+            88,
+            172,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 21,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-21.png",
+          "grid": {
+            "column": 1,
+            "row": 4,
+            "box": [
+              256,
+              1024,
+              512,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            80,
+            81,
+            165,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 22,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-22.png",
+          "grid": {
+            "column": 2,
+            "row": 4,
+            "box": [
+              512,
+              1024,
+              768,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            81,
+            79,
+            165,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 23,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-23.png",
+          "grid": {
+            "column": 3,
+            "row": 4,
+            "box": [
+              768,
+              1024,
+              1024,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            81,
+            79,
+            165,
+            237
+          ],
+          "size": [
+            128,
+            128
+          ]
+        },
+        {
+          "index": 24,
+          "src": "apps/portal/assets/lester-production/frames/jump/lester-jump-24.png",
+          "grid": {
+            "column": 4,
+            "row": 4,
+            "box": [
+              1024,
+              1024,
+              1280,
+              1280
+            ]
+          },
+          "sourceAlphaBounds": [
+            81,
+            79,
+            165,
+            238
+          ],
+          "size": [
+            128,
+            128
+          ]
+        }
+      ]
+    }
+  },
+  "stills": {
+    "facing": {
+      "source": "apps/portal/assets/lester-production/source/Lester-Facing.png",
+      "src": "apps/portal/assets/lester-production/stills/lester-facing.png",
+      "size": [
+        256,
+        256
+      ],
+      "sourceMode": "RGB"
+    },
+    "leftSideProfile": {
+      "source": "apps/portal/assets/lester-production/source/Lester-Left-SideProfile.png",
+      "src": "apps/portal/assets/lester-production/stills/lester-left-side-profile.png",
+      "size": [
+        256,
+        256
+      ],
+      "sourceMode": "RGB"
+    },
+    "rightSideProfile": {
+      "source": "apps/portal/assets/lester-production/source/Lester-Right-SideProfile.png",
+      "src": "apps/portal/assets/lester-production/stills/lester-right-side-profile.png",
+      "size": [
+        256,
+        256
+      ],
+      "sourceMode": "RGB"
+    },
+    "facingShotgun": {
+      "source": "apps/portal/assets/lester-production/source/Lester-Facing-Shotgun.png",
+      "src": "apps/portal/assets/lester-production/stills/lester-facing-shotgun.png",
+      "size": [
+        256,
+        256
+      ],
+      "sourceMode": "RGB"
+    },
+    "leftSideShotgun": {
+      "source": "apps/portal/assets/lester-production/source/Lester-Left-Side-Shotgun.png",
+      "src": "apps/portal/assets/lester-production/stills/lester-left-side-shotgun.png",
+      "size": [
+        256,
+        256
+      ],
+      "sourceMode": "RGB"
+    },
+    "rightSideShotgun": {
+      "source": "apps/portal/assets/lester-production/source/Lester-Right-Side-Shotgun.png",
+      "src": "apps/portal/assets/lester-production/stills/lester-right-side-shotgun.png",
+      "size": [
+        256,
+        256
+      ],
+      "sourceMode": "RGB"
+    }
+  }
+}

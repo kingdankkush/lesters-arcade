@@ -4,6 +4,7 @@ import process from 'node:process';
 
 const root = process.cwd();
 const reportPath = path.resolve(root, 'apps/portal/assets/generated/sliced/asset-slice-report.json');
+const lesterManifestPath = path.resolve(root, 'apps/portal/assets/lester-production/lester-production-sprite-manifest.json');
 
 function fail(message) {
   throw new Error(`Generated asset verification failed: ${message}`);
@@ -90,4 +91,51 @@ if (categoryCounts.icons < 10) fail(`expected weapon/pickup icons, got ${categor
 if (categoryCounts.badges < 6) fail(`expected achievement badges, got ${categoryCounts.badges}`);
 if (categoryCounts.level1Parallax < 4) fail(`expected Level 1 parallax layers, got ${categoryCounts.level1Parallax}`);
 
-console.log(`Generated sliced asset verification passed: ${report.generatedCount} PNGs (${Object.entries(categoryCounts).map(([key, value]) => `${key}=${value}`).join(', ')}).`);
+function validateLesterProductionSprites() {
+  if (!existsSync(lesterManifestPath)) {
+    fail(`missing production Lester manifest ${path.relative(root, lesterManifestPath)}`);
+  }
+  const manifest = readJson(lesterManifestPath);
+  if (manifest.character !== 'Lester') fail('production Lester manifest has wrong character');
+  if (manifest.frameGrid?.columns !== 5 || manifest.frameGrid?.rows !== 5) fail('production Lester manifest must describe a 5x5 source grid');
+  const animations = manifest.animations ?? {};
+  const stills = manifest.stills ?? {};
+  let productionFrameCount = 0;
+
+  for (const state of ['idle', 'walk', 'run', 'jump']) {
+    const animation = animations[state];
+    if (!animation) fail(`missing production Lester animation ${state}`);
+    if (!Array.isArray(animation.frames) || animation.frames.length !== 25) {
+      fail(`production Lester ${state} expected 25 frames, got ${animation?.frames?.length ?? 0}`);
+    }
+    if (!animation.source || !existsSync(path.resolve(root, animation.source))) fail(`missing production Lester source for ${state}`);
+    for (const frame of animation.frames) {
+      const framePath = path.resolve(root, frame.src);
+      if (!existsSync(framePath)) fail(`missing production Lester frame ${frame.src}`);
+      if (statSync(framePath).size <= 0) fail(`production Lester frame ${frame.src} is empty`);
+      const [width, height] = readPngSize(framePath);
+      if (width !== frame.size[0] || height !== frame.size[1]) {
+        fail(`production Lester frame ${frame.src} dimensions ${width}x${height} do not match report ${frame.size.join('x')}`);
+      }
+      productionFrameCount += 1;
+    }
+  }
+
+  for (const pose of ['facing', 'leftSideProfile', 'rightSideProfile', 'facingShotgun', 'leftSideShotgun', 'rightSideShotgun']) {
+    const still = stills[pose];
+    if (!still) fail(`missing production Lester still ${pose}`);
+    const stillPath = path.resolve(root, still.src);
+    if (!existsSync(stillPath)) fail(`missing production Lester still file ${still.src}`);
+    if (statSync(stillPath).size <= 0) fail(`production Lester still ${still.src} is empty`);
+    const [width, height] = readPngSize(stillPath);
+    if (width !== still.size[0] || height !== still.size[1]) {
+      fail(`production Lester still ${still.src} dimensions ${width}x${height} do not match manifest ${still.size.join('x')}`);
+    }
+  }
+
+  return { productionFrameCount, stillCount: Object.keys(stills).length };
+}
+
+const lesterProduction = validateLesterProductionSprites();
+
+console.log(`Generated sliced asset verification passed: ${report.generatedCount} PNGs (${Object.entries(categoryCounts).map(([key, value]) => `${key}=${value}`).join(', ')}); production Lester=${lesterProduction.productionFrameCount} frames/${lesterProduction.stillCount} stills.`);

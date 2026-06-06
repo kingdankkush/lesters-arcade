@@ -57,14 +57,40 @@ function imageReady(image) {
   return Boolean(image?.complete && image.naturalWidth > 0);
 }
 
+function loadAnimationFrames(pattern, count) {
+  return Array.from({ length: count }, (_, index) => loadImageAsset(pattern.replace('{index}', String(index).padStart(2, '0'))));
+}
+
+function selectAnimationFrame(frames, frame, fps = 10, loop = true) {
+  if (!frames?.length) return null;
+  const ticksPerFrame = Math.max(1, Math.round(LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps / fps));
+  const rawIndex = Math.floor(frame / ticksPerFrame);
+  const index = loop ? rawIndex % frames.length : Math.min(frames.length - 1, rawIndex);
+  return frames[index];
+}
+
 const combatArt = {
   hero: {
-    idle: loadImageAsset('./assets/generated/sliced/lester-idle.png'),
-    run1: loadImageAsset('./assets/generated/sliced/lester-run-1.png'),
-    run2: loadImageAsset('./assets/generated/sliced/lester-run-2.png'),
-    shoot: loadImageAsset('./assets/generated/sliced/lester-shoot.png'),
-    blade: loadImageAsset('./assets/generated/sliced/lester-blade.png'),
-    jump: loadImageAsset('./assets/generated/sliced/lester-jump.png'),
+    animations: {
+      idle: loadAnimationFrames('./assets/lester-production/frames/idle/lester-idle-{index}.png', 25),
+      walk: loadAnimationFrames('./assets/lester-production/frames/walk/lester-walk-{index}.png', 25),
+      run: loadAnimationFrames('./assets/lester-production/frames/run/lester-run-{index}.png', 25),
+      jump: loadAnimationFrames('./assets/lester-production/frames/jump/lester-jump-{index}.png', 25),
+    },
+    stills: {
+      shoot: loadImageAsset('./assets/lester-production/stills/lester-right-side-shotgun.png'),
+      facing: loadImageAsset('./assets/lester-production/stills/lester-facing.png'),
+      leftSide: loadImageAsset('./assets/lester-production/stills/lester-left-side-profile.png'),
+      rightSide: loadImageAsset('./assets/lester-production/stills/lester-right-side-profile.png'),
+    },
+    fallback: {
+      idle: loadImageAsset('./assets/generated/sliced/lester-idle.png'),
+      run1: loadImageAsset('./assets/generated/sliced/lester-run-1.png'),
+      run2: loadImageAsset('./assets/generated/sliced/lester-run-2.png'),
+      shoot: loadImageAsset('./assets/generated/sliced/lester-shoot.png'),
+      blade: loadImageAsset('./assets/generated/sliced/lester-blade.png'),
+      jump: loadImageAsset('./assets/generated/sliced/lester-jump.png'),
+    },
   },
   enemies: {
     goblin: loadImageAsset('./assets/generated/sliced/enemy-goblin-idle.png'),
@@ -1649,12 +1675,21 @@ function drawProps(ctx) {
 }
 
 function selectHeroFrame() {
-  if (combat.playerY < GROUND_Y - 4) return combatArt.hero.jump;
-  if (combat.crouching && combat.playerY >= GROUND_Y - 2) return combatArt.hero.idle;
-  if (combat.meleeSwings > 0 && combat.frame - combat.meleeSwings < 18) return combatArt.hero.blade;
-  if (combat.shots > 0 && combat.frame % 36 < 10) return combatArt.hero.shoot;
-  if (combat.keys.has('a') || combat.keys.has('d') || combat.keys.has('arrowleft') || combat.keys.has('arrowright')) return combat.frame % 20 < 10 ? combatArt.hero.run1 : combatArt.hero.run2;
-  return combatArt.hero.idle;
+  const hero = combatArt.hero;
+  if (combat.playerY < GROUND_Y - 4) return selectAnimationFrame(hero.animations.jump, combat.frame, 12, false) ?? hero.fallback.jump;
+  if (combat.crouching && combat.playerY >= GROUND_Y - 2) return selectAnimationFrame(hero.animations.idle, combat.frame, 8) ?? hero.fallback.idle;
+  if (combat.meleeSwings > 0 && combat.frame - combat.meleeSwings < 18) return hero.fallback.blade;
+  if (combat.shots > 0 && combat.frame % 36 < 10) return hero.stills.shoot ?? hero.fallback.shoot;
+  if (combat.keys.has('a') || combat.keys.has('d') || combat.keys.has('arrowleft') || combat.keys.has('arrowright')) {
+    return selectAnimationFrame(hero.animations.run, combat.frame, 14) ?? (combat.frame % 20 < 10 ? hero.fallback.run1 : hero.fallback.run2);
+  }
+  return selectAnimationFrame(hero.animations.idle, combat.frame, 8) ?? hero.fallback.idle;
+}
+
+function playerFacingLeft() {
+  const left = combat.keys.has('a') || combat.keys.has('arrowleft');
+  const right = combat.keys.has('d') || combat.keys.has('arrowright');
+  return left && !right;
 }
 
 function drawPlayer(ctx) {
@@ -1666,7 +1701,17 @@ function drawPlayer(ctx) {
   ctx.save();
   if (blink) ctx.globalAlpha = 0.54;
   if (imageReady(heroFrame)) {
-    ctx.drawImage(heroFrame, x - 16, y - 88 + bob, 88, 88);
+    const drawWidth = 104;
+    const drawHeight = 104;
+    const drawX = x - 34;
+    const drawY = y - drawHeight + bob;
+    if (playerFacingLeft()) {
+      ctx.translate(drawX + drawWidth / 2, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(heroFrame, -drawWidth / 2, drawY, drawWidth, drawHeight);
+    } else {
+      ctx.drawImage(heroFrame, drawX, drawY, drawWidth, drawHeight);
+    }
     ctx.fillStyle = '#f9f7ff';
     ctx.fillRect(x + 3, GROUND_Y + 2, 38, 8);
     ctx.restore();
