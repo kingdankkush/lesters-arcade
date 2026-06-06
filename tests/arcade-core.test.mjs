@@ -9,6 +9,7 @@ import {
   ACHIEVEMENTS,
   ARCADE_GAMES,
   DEFAULT_REVENUE_SPLIT_BPS,
+  HARD_MONEY_HEROES_ASSET_MANIFEST,
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BRAND_SYSTEM,
   LESTER_ARCADE_BUILD_STACK,
@@ -648,6 +649,38 @@ test('V2 tactical combat spec slows pacing into staged cover, platform, mini-bos
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.pacingRules.some((rule) => rule.includes('Scroll resumes')), true);
 });
 
+test('deeper combat spec codifies staged waves, health, pause menu, fullscreen modes, and paid restart gates', () => {
+  const { levelOne, health, enemyAi, gameplayMenu, viewportModes, runStateSeparation } = LESTER_BLASTER_TACTICAL_COMBAT_V2;
+
+  assert.deepEqual(levelOne.stageCountRange, [12, 14]);
+  assert.deepEqual(levelOne.wavesPerPauseRange, [1, 3]);
+  assert.deepEqual(levelOne.normalEnemiesOnScreenRange, [2, 3]);
+  assert.deepEqual(levelOne.miniBossEnemiesOnScreenRange, [4, 5]);
+  assert.equal(levelOne.miniBossEveryStages.includes(3), true);
+  assert.equal(levelOne.miniBossEveryStages.includes(4), true);
+  assert.equal(levelOne.finalBoss, 'randomized-from-boss-pool');
+  assert.equal(levelOne.platformingSections.includes('timed gap jumps'), true);
+  assert.equal(levelOne.platformingSections.includes('power-up pickup lanes'), true);
+
+  assert.equal(health.playerMaxPercent, 100);
+  assert.equal(health.damagePerNormalHitPercent, 5);
+  assert.equal(health.deathAtPercent, 0);
+  assert.equal(health.gameOverActions.includes('Play Again'), true);
+
+  assert.equal(enemyAi.roles.includes('cover-shooter'), true);
+  assert.equal(enemyAi.roles.includes('aggressive-melee-rusher'), true);
+  assert.equal(enemyAi.rateOfFire, 'reduced-readable');
+  assert.equal(enemyAi.coverDecision.includes('defensive'), true);
+
+  assert.deepEqual(gameplayMenu.actions, ['Restart', 'Toggle Music On/Off', 'Swap Characters', 'Return to Game Menu', 'Exit Game']);
+  assert.equal(gameplayMenu.restart.freeModeCost, 'free-restart-from-level-start');
+  assert.equal(gameplayMenu.restart.paidModeCost, 'requires-new-paid-credit');
+  assert.equal(viewportModes.default, 'fullscreen');
+  assert.equal(viewportModes.available.includes('embedded-window'), true);
+  assert.equal(runStateSeparation.freeMode, 'local-sandbox-only');
+  assert.equal(runStateSeparation.paidMode, 'official-sync-only-at-game-over');
+});
+
 test('V2 art and audio plans track Justin reference assets, Lester redo, 150x150 profile direction, and free SFX sources', () => {
   const refPaths = LESTER_BLASTER_ART_REDO_BRIEF.referenceAssets.map((asset) => fileURLToPath(new URL(`../apps/portal/${asset.path.replace('./', '')}`, import.meta.url)));
   const musicPath = fileURLToPath(new URL('../apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit.mp3', import.meta.url));
@@ -662,6 +695,47 @@ test('V2 art and audio plans track Justin reference assets, Lester redo, 150x150
   assert.equal(LESTER_BLASTER_AUDIO_ASSET_PLAN.sfxNeeds.includes('wallet connect'), true);
   assert.equal(LESTER_BLASTER_AUDIO_ASSET_PLAN.freeLibraries.some((library) => library.name === 'Kenney Audio' && library.license.includes('CC0')), true);
   assert.equal(LESTER_BLASTER_AUDIO_ASSET_PLAN.freeLibraries.some((library) => library.name.includes('Sonniss') && library.license.includes('no AI/ML training')), true);
+});
+
+test('Hard Money Heroes manifest ingests Lester/Lilly weapon frames, first enemies, menu screens, and prototype music', () => {
+  const manifest = HARD_MONEY_HEROES_ASSET_MANIFEST;
+  assert.equal(manifest.id, 'hard-money-heroes-justin-assets-v1');
+  assert.equal(manifest.generatedFrom.includes('Hard Money Heroes/Art Assets'), true);
+
+  for (const actorId of ['lester', 'lilly']) {
+    const actor = manifest.playableCharacters[actorId];
+    assert.equal(actor.weapons.machineGun.available, true, `${actorId} machine gun still available`);
+    assert.equal(actor.weapons.knife.available, true, `${actorId} knife/melee still available`);
+    assert.equal(actor.weapons.grenade.available, true, `${actorId} grenade still available`);
+    for (const state of ['idle', 'walk', 'run', 'jump', 'attack']) {
+      assert.equal(actor.animations[state].frames.length >= 8, true, `${actorId} ${state} has selected frames`);
+      assert.equal(actor.animations[state].selectedFrom.endsWith('.png'), true, `${actorId} ${state} tracks source sheet`);
+      for (const frame of actor.animations[state].frames.slice(0, 4)) {
+        const framePath = fileURLToPath(new URL(`../apps/portal/${frame.src.replace('./', '')}`, import.meta.url));
+        assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
+        const png = readFileSync(framePath);
+        assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], frame.size, `${frame.src} dimensions match`);
+      }
+    }
+  }
+
+  assert.equal(manifest.playableCharacters.lester.weapons.pistol.preservedFromPreviousPass, true);
+  assert.equal(manifest.playableCharacters.lester.weapons.shotgun.preservedFromPreviousPass, true);
+
+  assert.equal(manifest.enemies.trenchDegen.behavior.primary, 'slow-readable-melee');
+  assert.equal(manifest.enemies.trenchDegen.behavior.secondary, 'occasional-low-rate-pistol');
+  assert.equal(manifest.enemies.evilBanker.behavior.primary, 'fast-briefcase-melee-rusher');
+  assert.equal(manifest.enemies.warrenSpearRider.behavior.spearThrowAccuracy, 0.6);
+  assert.equal(manifest.enemies.warrenSpearRider.behavior.dodgeRequired, true);
+
+  for (const screen of ['splash', 'mainMenu', 'options', 'modeSelect']) {
+    const screenPath = fileURLToPath(new URL(`../apps/portal/${manifest.screens[screen].src.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(screenPath) && statSync(screenPath).size > 0, true, `${screen} screen exists`);
+  }
+
+  assert.equal(manifest.audio.musicTracks.length >= 4, true);
+  assert.equal(manifest.audio.sfxPlan.weaponFire.includes('machine-gun'), true);
+  assert.equal(manifest.audio.sfxPlan.enemyBarks.includes('warren-spear-rider-horse'), true);
 });
 
 test('control display model does not leak undefined labels into the visible controls guide', () => {

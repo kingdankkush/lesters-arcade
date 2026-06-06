@@ -17,6 +17,7 @@ import {
   LESTER_BLASTER_PERFORMANCE_TARGETS,
   LESTER_BLASTER_POWER_UPS,
   LESTER_BLASTER_SOUND_DESIGN,
+  LESTER_BLASTER_TACTICAL_COMBAT_V2,
   LESTER_BLASTER_UNLOCKABLES,
   LESTER_BLASTER_WEAPON_SYSTEM,
   buildLeaderboardModel,
@@ -45,6 +46,16 @@ const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
 const PLAYER_X = 108;
 const GROUND_Y = 276;
 const FIXED_STEP_MS = 1000 / LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps;
+const NORMAL_HIT_DAMAGE = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.damagePerNormalHitPercent;
+const PLAYER_MAX_HEALTH = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.playerMaxPercent;
+const STAGE_COUNT = 13;
+const NORMAL_STAGE_CAP = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.normalEnemiesOnScreenRange[1];
+const MINI_BOSS_STAGE_CAP = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.miniBossEnemiesOnScreenRange[1];
+const DEFAULT_VIEWPORT_MODE = LESTER_BLASTER_TACTICAL_COMBAT_V2.viewportModes.default;
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
 
 function loadImageAsset(src) {
   const image = new Image();
@@ -149,6 +160,17 @@ const dom = {
   officialGameplay: document.querySelector('#officialGameplay'),
   officialGameModeTitle: document.querySelector('#officialGameModeTitle'),
   officialGameStateCopy: document.querySelector('#officialGameStateCopy'),
+  officialGameplayControls: document.querySelector('#officialGameplayControls'),
+  combatPauseButton: document.querySelector('#combatPauseButton'),
+  combatRestartButton: document.querySelector('#combatRestartButton'),
+  combatMusicButton: document.querySelector('#combatMusicButton'),
+  combatCharacterButton: document.querySelector('#combatCharacterButton'),
+  combatViewportButton: document.querySelector('#combatViewportButton'),
+  combatReturnMenuButton: document.querySelector('#combatReturnMenuButton'),
+  combatExitButton: document.querySelector('#combatExitButton'),
+  combatMenuPanel: document.querySelector('#combatMenuPanel'),
+  combatMenuTitle: document.querySelector('#combatMenuTitle'),
+  combatMenuCopy: document.querySelector('#combatMenuCopy'),
   officialCombatMount: document.querySelector('#officialCombatMount'),
   accountFlowSteps: document.querySelector('#accountFlowSteps'),
   walletStatus: document.querySelector('#walletStatus'),
@@ -216,6 +238,9 @@ let developerBackstageOpen = false;
 
 const combat = {
   active: false,
+  paused: false,
+  gameOver: false,
+  gameOverReason: '',
   startedAt: 0,
   frame: 0,
   elapsedGameSeconds: 0,
@@ -224,8 +249,8 @@ const combat = {
   velocityY: 0,
   velocityX: 0,
   jumpsLeft: 2,
-  health: 100,
-  lives: 3,
+  health: PLAYER_MAX_HEALTH,
+  lives: 1,
   score: 0,
   kills: 0,
   combo: 0,
@@ -242,17 +267,36 @@ const combat = {
   particles: [],
   floatingTexts: [],
   powerUps: [],
+  props: [],
+  hazards: [],
+  platforms: [],
   powerUpsCollected: 0,
   collectedPowerUpTypes: new Set(),
   grenades: 3,
   ammo: Infinity,
   weaponId: 'coin-blaster',
+  characterId: 'lester',
   shots: 0,
   meleeSwings: 0,
   boss: null,
+  bossDefeated: false,
   miniBossLock: false,
   scrollLockReason: null,
   scroll: 0,
+  scrollSpeed: 0,
+  stageIndex: 1,
+  stageCount: STAGE_COUNT,
+  stagePhase: 'travel',
+  stageTravel: 0,
+  stageTravelGoal: 160,
+  waveIndex: 0,
+  wavesThisStage: 1,
+  waveSpawnQueue: 0,
+  waveEnemiesSpawned: 0,
+  nextWaveSpawnFrame: 0,
+  stagedEnemiesDefeated: 0,
+  musicEnabled: true,
+  viewportMode: DEFAULT_VIEWPORT_MODE,
   keys: new Set(),
   lastTimestamp: 0,
   accumulatorMs: 0,
@@ -363,6 +407,116 @@ function renderCombatSandboxStatus() {
   dom.combatRunStatus.dataset.state = model.state;
 }
 
+function gameplaySyncCopy() {
+  const modeCopy = officialSelectedMode === 'ranked'
+    ? 'Ranked testnet: official score sync is held until game-over submission; restart requires a new paid credit.'
+    : 'Free practice: local sandbox only; restart is free and never writes profile/leaderboard state.';
+  const phase = combat.stagePhase === 'travel'
+    ? `slow scroll to Stage ${combat.stageIndex} engagement`
+    : combat.stagePhase === 'boss'
+      ? 'level boss lock'
+      : `Wave ${combat.waveIndex}/${combat.wavesThisStage || 1}`;
+  const lockCopy = combat.scrollLockReason ? ` // ${combat.scrollLockReason}` : '';
+  const healthCopy = `HP ${Math.max(0, Math.round(combat.health))}%`;
+  return `${modeCopy} // ${healthCopy} // Stage ${combat.stageIndex}/${combat.stageCount} // ${phase}${lockCopy}`;
+}
+
+function syncCombatOverlay() {
+  if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = gameplaySyncCopy();
+  if (dom.officialCombatMount) {
+    dom.officialCombatMount.dataset.viewport = combat.viewportMode;
+    dom.officialCombatMount.dataset.paused = String(combat.paused);
+    dom.officialCombatMount.dataset.gameOver = String(combat.gameOver);
+  }
+  if (dom.officialGameplayControls) dom.officialGameplayControls.dataset.mode = currentSession?.mode ?? 'free';
+  if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Return to Game' : 'Pause';
+  if (dom.combatRestartButton) dom.combatRestartButton.textContent = currentSession?.isPaid ? 'Restart (New Credit)' : 'Restart Free';
+  if (dom.combatMusicButton) dom.combatMusicButton.textContent = combat.musicEnabled ? 'Music On' : 'Music Off';
+  if (dom.combatCharacterButton) dom.combatCharacterButton.textContent = `Swap: ${combat.characterId === 'lester' ? 'Lester' : 'Lilly'}`;
+  if (dom.combatViewportButton) {
+    const label = combat.viewportMode === 'fullscreen' ? 'Embedded Window' : combat.viewportMode === 'embedded-window' ? 'Expand Fullscreen' : 'Fullscreen';
+    dom.combatViewportButton.textContent = label;
+  }
+  if (dom.combatMenuPanel) {
+    dom.combatMenuPanel.hidden = !(combat.paused || combat.gameOver);
+    dom.combatMenuPanel.dataset.state = combat.gameOver ? 'game-over' : 'paused';
+  }
+  if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.gameOver ? 'Game Over' : 'Paused';
+  if (dom.combatMenuCopy) {
+    dom.combatMenuCopy.textContent = combat.gameOver
+      ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again restarts free mode immediately; ranked mode requires a new paid credit.`
+      : 'Restart, toggle music, swap Lester/Lilly skins, return to the pre-match game menu, or exit back to Lester’s Arcade.';
+  }
+}
+
+async function toggleCombatPause(forcePaused) {
+  if (!combat.active && !combat.gameOver) return;
+  combat.paused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
+  if (combat.paused) spawnText('PAUSED', 350, 132, '#ffe84d');
+  syncCombatOverlay();
+}
+
+async function restartCombatRun() {
+  const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
+  if (wasPaid) {
+    dom.combatStatus.textContent = 'Ranked restart selected: this starts a fresh local ranked attempt and represents a new testnet credit in the official flow. Prior paid-run state is not silently resubmitted.';
+    currentSession = startPlaySession({ wallet: connectedWallet ?? MOCK_WALLET, gameId: selectedGameId, mode: 'paid' });
+  } else {
+    dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or paid-run state is written.';
+    currentSession = startPlaySession({ wallet: connectedWallet ?? MOCK_WALLET, gameId: selectedGameId, mode: 'free' });
+  }
+  await startCombat();
+  combat.paused = false;
+  renderOfficialRunStatus();
+  syncCombatOverlay();
+}
+
+function toggleCombatMusic() {
+  combat.musicEnabled = !combat.musicEnabled;
+  spawnText(combat.musicEnabled ? 'MUSIC ON' : 'MUSIC OFF', combat.playerX + 24, combat.playerY - 92, combat.musicEnabled ? '#45ff8a' : '#ff476f');
+  syncCombatOverlay();
+}
+
+function swapCombatCharacter() {
+  combat.characterId = combat.characterId === 'lester' ? 'lilly' : 'lester';
+  spawnText(combat.characterId === 'lester' ? 'LESTER' : 'LILLY SKIN', combat.playerX + 24, combat.playerY - 104, '#19f7ff');
+  syncCombatOverlay();
+}
+
+function cycleCombatViewport() {
+  combat.viewportMode = combat.viewportMode === 'fullscreen'
+    ? 'embedded-window'
+    : combat.viewportMode === 'embedded-window'
+      ? 'windowed'
+      : 'fullscreen';
+  syncCombatOverlay();
+}
+
+function returnToOfficialGameMenu() {
+  combat.active = false;
+  combat.paused = false;
+  combat.gameOver = false;
+  combat.keys.clear();
+  officialAppStep = 'mode-select';
+  dom.combatStatus.textContent = currentSession?.isPaid
+    ? 'Returned to the pre-match game menu. Ranked restart/payment choices stay explicit.'
+    : 'Returned to the pre-match game menu. Free practice state was discarded locally.';
+  renderOfficialApp();
+  syncCombatOverlay();
+}
+
+function exitToArcade() {
+  combat.active = false;
+  combat.paused = false;
+  combat.gameOver = false;
+  combat.keys.clear();
+  officialAppStep = connectedWallet ? 'cabinet' : 'login';
+  officialSelectedMode = 'free';
+  dom.combatStatus.textContent = 'Exited Hard Money Heroes back to Lester’s Arcade. No hidden paid-run sync occurred.';
+  renderOfficialApp();
+  syncCombatOverlay();
+}
+
 function weaponById(weaponId) {
   return LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.find((weapon) => weapon.id === weaponId)
     ?? LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons[0];
@@ -409,10 +563,161 @@ function powerUpHitbox(power) {
   return { x: power.x, y: power.y - 18, w: 26, h: 28 };
 }
 
+function propHitbox(prop) {
+  if (prop.kind === 'gap') return { x: prop.x, y: GROUND_Y + 4, w: prop.w, h: 42 };
+  return { x: prop.x, y: prop.y, w: prop.w, h: prop.h };
+}
+
+function propBlocksShot(prop) {
+  return prop.hp > 0 && ['cover', 'crate', 'wall', 'barrel'].includes(prop.kind);
+}
+
+function playerCoverProp() {
+  if (!combat.crouching || combat.playerY < GROUND_Y - 2) return null;
+  const playerBox = playerHitbox();
+  return combat.props.find((prop) => propBlocksShot(prop)
+    && prop.cover
+    && prop.x < playerBox.x + playerBox.w + 18
+    && prop.x + prop.w > playerBox.x - 8);
+}
+
+function damageProp(prop, damage, source = 'impact') {
+  if (!propBlocksShot(prop)) return false;
+  prop.hp -= damage;
+  spawnText(`${prop.label ?? prop.kind} -${damage}`, prop.x, prop.y - 10, '#ffe84d');
+  if (prop.hp <= 0) {
+    spawnExplosion(prop.x + prop.w / 2, prop.y + prop.h / 2, prop.explosive ? '#ff7b2f' : '#aab6d3');
+    if (prop.explosive) {
+      const blast = { x: prop.x - 70, y: prop.y - 48, w: prop.w + 140, h: prop.h + 96 };
+      for (const enemy of combat.enemies) {
+        if (rectsOverlap(blast, enemyHitbox(enemy))) damageEnemy(enemy, 16, source);
+      }
+      const bossBox = bossHitbox();
+      if (bossBox && rectsOverlap(blast, bossBox)) damageBoss(18, source);
+    }
+  }
+  return prop.hp <= 0;
+}
+
 function releaseScrollLock(reason = 'arena clear') {
   combat.miniBossLock = false;
   combat.scrollLockReason = null;
   spawnText(`SCROLL RELEASED // ${reason}`, 250, 90, '#45ff8a');
+}
+
+function isFinalBossStage(stageIndex = combat.stageIndex) {
+  return stageIndex >= combat.stageCount;
+}
+
+function isMiniBossStage(stageIndex = combat.stageIndex) {
+  return !isFinalBossStage(stageIndex) && stageIndex > 1 && stageIndex % 4 === 0;
+}
+
+function wavesForStage(stageIndex = combat.stageIndex) {
+  const [minWaves, maxWaves] = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.wavesPerPauseRange;
+  return clamp(minWaves + ((stageIndex + 1) % maxWaves), minWaves, maxWaves);
+}
+
+function enemyCapForStage(stageIndex = combat.stageIndex) {
+  return isMiniBossStage(stageIndex) || isFinalBossStage(stageIndex) ? MINI_BOSS_STAGE_CAP : NORMAL_STAGE_CAP;
+}
+
+function createTravelHazards(stageIndex) {
+  const gapWidth = 42 + (stageIndex % 3) * 8;
+  return [
+    { id: `gap-${stageIndex}`, kind: 'gap', label: 'Gap', x: 620, y: GROUND_Y + 5, w: gapWidth, h: 34, damage: NORMAL_HIT_DAMAGE, active: true },
+    { id: `wall-${stageIndex}`, kind: 'wall', label: 'Wall', x: 735, y: GROUND_Y - 44, w: 26, h: 52, hp: 18, maxHp: 18, cover: true, active: true },
+  ];
+}
+
+function createStageProps(stageIndex, phase = 'travel') {
+  const enemyCoverShift = (stageIndex % 3) * 18;
+  const common = [
+    { id: `player-cover-${stageIndex}`, kind: 'cover', label: 'Cover', x: 154, y: GROUND_Y - 42, w: 42, h: 50, hp: 26, maxHp: 26, cover: true, active: true },
+    { id: `enemy-cover-a-${stageIndex}`, kind: 'crate', label: 'Crate', x: 470 + enemyCoverShift, y: GROUND_Y - 44, w: 48, h: 52, hp: 24, maxHp: 24, cover: true, active: true },
+    { id: `enemy-cover-b-${stageIndex}`, kind: 'crate', label: 'Crate', x: 610 + enemyCoverShift, y: GROUND_Y - 56, w: 48, h: 64, hp: 28, maxHp: 28, cover: true, active: true },
+    { id: `barrel-${stageIndex}`, kind: 'barrel', label: 'Barrel', x: 560 + enemyCoverShift, y: GROUND_Y - 32, w: 28, h: 40, hp: 10, maxHp: 10, cover: false, explosive: true, active: true },
+  ];
+  if (phase === 'travel') return [...common.slice(0, 1), ...createTravelHazards(stageIndex)];
+  return common;
+}
+
+function createStagePlatforms(stageIndex) {
+  return [
+    { id: `platform-low-${stageIndex}`, x: 380, y: GROUND_Y - 72, w: 90, h: 12, label: 'low platform' },
+    { id: `platform-high-${stageIndex}`, x: 585, y: GROUND_Y - 112, w: 76, h: 12, label: 'high platform' },
+  ];
+}
+
+function beginStage(stageIndex = 1) {
+  combat.stageIndex = clamp(stageIndex, 1, combat.stageCount);
+  combat.stagePhase = 'travel';
+  combat.stageTravel = 0;
+  combat.stageTravelGoal = 135 + combat.stageIndex * 18;
+  combat.waveIndex = 0;
+  combat.wavesThisStage = isFinalBossStage() ? 0 : wavesForStage();
+  combat.waveSpawnQueue = 0;
+  combat.waveEnemiesSpawned = 0;
+  combat.nextWaveSpawnFrame = combat.frame + 30;
+  combat.bossDefeated = false;
+  combat.miniBossLock = false;
+  combat.scrollLockReason = null;
+  combat.props = createStageProps(combat.stageIndex, 'travel');
+  combat.hazards = combat.props.filter((prop) => prop.kind === 'gap');
+  combat.platforms = createStagePlatforms(combat.stageIndex);
+  if (combat.stageIndex % 2 === 1) {
+    const powerUp = LESTER_BLASTER_POWER_UPS[combat.stageIndex % LESTER_BLASTER_POWER_UPS.length];
+    combat.powerUps.push({ ...powerUp, x: 700, y: GROUND_Y - 48, vy: -1.2, ttl: 620 });
+  }
+  spawnText(`STAGE ${combat.stageIndex}/${combat.stageCount} // TRAVEL`, 260, 82, '#19f7ff');
+  syncCombatOverlay();
+}
+
+function beginStageEngagement() {
+  combat.stagePhase = isFinalBossStage() ? 'boss' : 'engagement';
+  combat.miniBossLock = true;
+  combat.scrollSpeed = 0;
+  combat.props = createStageProps(combat.stageIndex, 'engagement');
+  combat.hazards = [];
+  combat.platforms = createStagePlatforms(combat.stageIndex);
+  if (isFinalBossStage()) {
+    const boss = LESTER_BLASTER_BOSS_SYSTEM.bosses[(combat.stageIndex + combat.kills + combat.frame) % LESTER_BLASTER_BOSS_SYSTEM.bosses.length];
+    combat.scrollLockReason = `LEVEL BOSS LOCK // defeat ${boss.title}`;
+    spawnBoss(boss);
+    return;
+  }
+  combat.scrollLockReason = isMiniBossStage()
+    ? `MINI-BOSS LOCK // Stage ${combat.stageIndex} waves + captain`
+    : `SCROLL LOCK // clear Stage ${combat.stageIndex} engagement`;
+  if (isMiniBossStage()) spawnMiniBoss();
+  startNextWave();
+  spawnText(`STAGE ${combat.stageIndex} LOCK`, 300, 88, isMiniBossStage() ? '#ff7b2f' : '#ffe84d');
+}
+
+function startNextWave() {
+  if (combat.waveIndex >= combat.wavesThisStage) return;
+  combat.waveIndex += 1;
+  const [minEnemies, maxEnemies] = isMiniBossStage()
+    ? LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.miniBossEnemiesOnScreenRange
+    : LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.normalEnemiesOnScreenRange;
+  const target = minEnemies + ((combat.stageIndex + combat.waveIndex) % (maxEnemies - minEnemies + 1));
+  combat.waveSpawnQueue = target;
+  combat.waveEnemiesSpawned = 0;
+  combat.nextWaveSpawnFrame = combat.frame + 14;
+  spawnText(`WAVE ${combat.waveIndex}/${combat.wavesThisStage}`, 330, 112, '#ffe84d');
+}
+
+function completeStage() {
+  if (isFinalBossStage()) {
+    combat.active = false;
+    combat.gameOver = true;
+    combat.gameOverReason = 'Level 1 cleared — boss defeated';
+    combat.scrollLockReason = 'LEVEL CLEAR';
+    spawnText('LEVEL CLEAR', 318, 120, '#45ff8a');
+    return;
+  }
+  releaseScrollLock(`Stage ${combat.stageIndex} clear`);
+  beginStage(combat.stageIndex + 1);
 }
 
 function renderFlowSteps() {
@@ -565,9 +870,7 @@ function renderOfficialModeSelect() {
 function renderOfficialGameplay() {
   const modeLabel = officialSelectedMode === 'ranked' ? 'Ranked Testnet' : 'Free Mode';
   dom.officialGameModeTitle.textContent = `Level 1 // ${modeLabel}`;
-  dom.officialGameStateCopy.textContent = officialSelectedMode === 'ranked'
-    ? 'Ranked testnet run: official score packet is still separated until game-over submission.'
-    : 'Free practice: local sandbox only; no official profile, achievement, high-score, or transaction writes.';
+  syncCombatOverlay();
   if (dom.officialCombatMount && !dom.officialCombatMount.contains(dom.combatCanvas)) {
     dom.officialCombatMount.append(dom.combatCanvas);
   }
@@ -1106,6 +1409,9 @@ function renderCodexPanels() {
 
 async function startCombat() {
   combat.active = true;
+  combat.paused = false;
+  combat.gameOver = false;
+  combat.gameOverReason = '';
   combat.startedAt = performance.now();
   combat.frame = 0;
   combat.elapsedGameSeconds = 0;
@@ -1114,8 +1420,8 @@ async function startCombat() {
   combat.velocityX = 0;
   combat.velocityY = 0;
   combat.jumpsLeft = 2;
-  combat.health = 100;
-  combat.lives = currentSession?.isPaid ? 3 : 99;
+  combat.health = PLAYER_MAX_HEALTH;
+  combat.lives = 1;
   combat.score = 0;
   combat.kills = 0;
   combat.combo = 0;
@@ -1132,6 +1438,9 @@ async function startCombat() {
   combat.particles = [];
   combat.floatingTexts = [];
   combat.powerUps = [];
+  combat.props = [];
+  combat.hazards = [];
+  combat.platforms = [];
   combat.powerUpsCollected = 0;
   combat.collectedPowerUpTypes = new Set();
   combat.grenades = currentSession?.isPaid ? 3 : 9;
@@ -1140,11 +1449,27 @@ async function startCombat() {
   combat.shots = 0;
   combat.meleeSwings = 0;
   combat.boss = null;
+  combat.bossDefeated = false;
   combat.miniBossLock = false;
   combat.scrollLockReason = null;
   combat.scroll = 0;
+  combat.scrollSpeed = 0;
+  combat.stageCount = STAGE_COUNT;
+  combat.stageIndex = 1;
+  combat.stagePhase = 'travel';
+  combat.stageTravel = 0;
+  combat.stageTravelGoal = 160;
+  combat.waveIndex = 0;
+  combat.wavesThisStage = 1;
+  combat.waveSpawnQueue = 0;
+  combat.waveEnemiesSpawned = 0;
+  combat.nextWaveSpawnFrame = 0;
+  combat.stagedEnemiesDefeated = 0;
+  combat.keys.clear();
   lastBossId = null;
+  beginStage(1);
   renderCombatSandboxStatus();
+  syncCombatOverlay();
 }
 
 function jump() {
@@ -1196,6 +1521,11 @@ function melee() {
       damageEnemy(enemy, LESTER_BLASTER_WEAPON_SYSTEM.melee.damage, 'knife');
     }
   }
+  for (const prop of combat.props) {
+    if (propBlocksShot(prop) && rectsOverlap(meleeBox, propHitbox(prop))) {
+      damageProp(prop, LESTER_BLASTER_WEAPON_SYSTEM.melee.damage, 'knife');
+    }
+  }
   const bossBox = bossHitbox();
   if (bossBox && rectsOverlap(meleeBox, bossBox)) damageBoss(LESTER_BLASTER_WEAPON_SYSTEM.melee.damage, 'knife');
 }
@@ -1225,12 +1555,102 @@ function reload() {
   spawnText('RELOAD', combat.playerX + 20, combat.playerY - 80, '#45ff8a');
 }
 
+function moveStageObjects(scrollDelta) {
+  if (!scrollDelta) return;
+  for (const prop of combat.props) prop.x -= scrollDelta * 1.15;
+  for (const platform of combat.platforms) platform.x -= scrollDelta * 1.15;
+  for (const power of combat.powerUps) power.x -= scrollDelta * 0.28;
+}
+
+function updatePlatformingAndProps() {
+  const playerBox = playerHitbox();
+  let landedOnPlatform = false;
+  for (const platform of combat.platforms) {
+    const platformBox = { x: platform.x, y: platform.y - 2, w: platform.w, h: platform.h + 6 };
+    const feet = { x: playerBox.x + 4, y: playerBox.y + playerBox.h - 4, w: playerBox.w - 8, h: 10 };
+    if (combat.velocityY >= 0 && rectsOverlap(feet, platformBox) && combat.playerY <= platform.y + 8) {
+      combat.playerY = platform.y;
+      combat.velocityY = 0;
+      combat.jumpsLeft = 2;
+      landedOnPlatform = true;
+    }
+  }
+  if (!landedOnPlatform && combat.playerY < GROUND_Y) {
+    // Gravity in updateCombatStep handles the fall; this branch is intentionally empty for readability.
+  }
+
+  for (const prop of combat.props) {
+    if (prop.hp !== undefined && prop.hp <= 0) continue;
+    const box = propHitbox(prop);
+    if (prop.kind === 'gap') {
+      const grounded = combat.playerY >= GROUND_Y - 2;
+      if (grounded && rectsOverlap({ ...playerBox, y: GROUND_Y + 2, h: 14 }, box)) {
+        damagePlayer(prop.damage ?? NORMAL_HIT_DAMAGE, 'gap');
+        combat.velocityY = -8;
+        combat.playerX = Math.max(62, combat.playerX - 18);
+        spawnText('JUMP THE GAP', combat.playerX + 20, combat.playerY - 90, '#ffe84d');
+      }
+      continue;
+    }
+    if (['wall', 'barrel'].includes(prop.kind) && rectsOverlap(playerBox, box)) {
+      damagePlayer(NORMAL_HIT_DAMAGE, prop.kind);
+      combat.playerX = Math.max(62, prop.x - 48);
+      damageProp(prop, prop.kind === 'barrel' ? 4 : 1, 'body-check');
+    }
+  }
+  combat.props = combat.props.filter((prop) => prop.kind === 'gap' ? prop.x > -120 : prop.x > -120 && (prop.hp === undefined || prop.hp > 0));
+  combat.platforms = combat.platforms.filter((platform) => platform.x + platform.w > -80);
+  combat.hazards = combat.props.filter((prop) => prop.kind === 'gap');
+}
+
+function updateStageDirector() {
+  if (combat.paused || combat.gameOver) return;
+  if (combat.stagePhase === 'travel') {
+    const targetSpeed = 0.72 + Math.min(0.32, combat.stageIndex * 0.018);
+    combat.scrollSpeed += (targetSpeed - combat.scrollSpeed) * 0.08;
+    combat.scroll += combat.scrollSpeed;
+    combat.stageTravel += combat.scrollSpeed;
+    moveStageObjects(combat.scrollSpeed);
+    if (combat.stageTravel >= combat.stageTravelGoal) beginStageEngagement();
+    return;
+  }
+
+  combat.scrollSpeed += (0 - combat.scrollSpeed) * 0.18;
+  combat.scroll += combat.scrollSpeed;
+  moveStageObjects(combat.scrollSpeed);
+
+  if (combat.stagePhase === 'boss') return;
+
+  const cap = enemyCapForStage();
+  const liveStageEnemies = combat.enemies.filter((enemy) => enemy.stageIndex === combat.stageIndex).length;
+  if (combat.waveSpawnQueue > 0 && liveStageEnemies < cap && combat.frame >= combat.nextWaveSpawnFrame) {
+    const role = (combat.stageIndex + combat.waveIndex + combat.waveEnemiesSpawned) % 3 === 0
+      ? 'aggressive-melee-rusher'
+      : 'cover-shooter';
+    const spawned = spawnEnemy({ role, stageIndex: combat.stageIndex });
+    if (spawned) {
+      combat.waveSpawnQueue -= 1;
+      combat.waveEnemiesSpawned += 1;
+      combat.nextWaveSpawnFrame = combat.frame + 42;
+    }
+  }
+
+  if (combat.waveSpawnQueue <= 0 && combat.enemies.filter((enemy) => enemy.stageIndex === combat.stageIndex).length === 0) {
+    if (combat.waveIndex < combat.wavesThisStage) startNextWave();
+    else completeStage();
+  }
+}
+
 function updateCombatStep(stepMs) {
-  if (!combat.active) return;
+  if (!combat.active || combat.paused || combat.gameOver) {
+    updateParticles(stepMs / 1000);
+    updateFloatingTexts();
+    return;
+  }
   const dt = stepMs / 1000;
   combat.frame += 1;
-  combat.elapsedGameSeconds += dt * 18;
-  combat.noDamageSeconds += dt * 18;
+  combat.elapsedGameSeconds += dt;
+  combat.noDamageSeconds += dt;
   combat.invulnerableFrames = Math.max(0, combat.invulnerableFrames - 1);
 
   combat.crouching = combat.keys.has('control') || combat.keys.has('s') || combat.keys.has('arrowdown');
@@ -1247,15 +1667,8 @@ function updateCombatStep(stepMs) {
   }
 
   const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
-  if (!combat.miniBossLock) combat.scroll += (2.2 + difficulty.tier * 0.16) * dt * 60;
-
-  const spawnEvery = Math.max(28, Math.floor(80 / difficulty.enemySpawnMultiplier));
-  if (combat.frame % spawnEvery === 0) spawnEnemy();
-  if (combat.frame % 520 === 0 && combat.elapsedGameSeconds > 120) spawnMiniBoss();
-
-  const bossRoll = scheduleBossEncounter({ elapsedSeconds: combat.elapsedGameSeconds, seed: Math.floor(combat.scroll) + combat.kills });
-  if (bossRoll.shouldSpawn && bossRoll.boss && !combat.boss && lastBossId !== bossRoll.boss.id) spawnBoss(bossRoll.boss);
-
+  updateStageDirector();
+  updatePlatformingAndProps();
   updateBullets();
   updateEnemies(difficulty);
   updateBoss(difficulty);
@@ -1275,43 +1688,69 @@ function updateCombatStep(stepMs) {
     difficultyTier: difficulty.tier,
   });
   combat.score = scoreModel.total;
+  if (combat.frame % 30 === 0) {
+    renderCombatSandboxStatus();
+    syncCombatOverlay();
+  }
 }
 
-function spawnEnemy() {
-  const spawn = chooseEnemySpawn({ elapsedSeconds: combat.elapsedGameSeconds, seed: combat.frame + combat.kills });
-  const laneOffset = (combat.frame % 3) * 24;
-  combat.enemies.push({
+function spawnEnemy(options = {}) {
+  const cap = enemyCapForStage(options.stageIndex ?? combat.stageIndex);
+  const liveStageEnemies = combat.enemies.filter((enemy) => enemy.stageIndex === (options.stageIndex ?? combat.stageIndex)).length;
+  if (liveStageEnemies >= cap) return null;
+  const spawn = chooseEnemySpawn({ elapsedSeconds: combat.elapsedGameSeconds, seed: combat.frame + combat.kills + combat.waveEnemiesSpawned });
+  const role = options.role ?? (spawn.ai?.aggression > 1.2 ? 'aggressive-melee-rusher' : 'cover-shooter');
+  const flying = spawn.enemy.class?.includes('flying');
+  const laneOffset = flying ? 70 : (combat.waveEnemiesSpawned % 3) * 8;
+  const targetCover = combat.props.find((prop) => prop.cover && prop.x > 360)?.x ?? (500 + (combat.waveEnemiesSpawned % 2) * 90);
+  const enemy = {
     ...spawn.enemy,
-    x: 790,
-    y: GROUND_Y - laneOffset,
-    hp: spawn.scaledHealth,
-    maxHp: spawn.scaledHealth,
-    attackTimer: 30 + (combat.frame % 40),
+    x: 820 + combat.waveEnemiesSpawned * 22,
+    y: flying ? GROUND_Y - 52 - laneOffset : GROUND_Y - laneOffset,
+    hp: Math.max(12, Math.round(spawn.scaledHealth * 0.72)),
+    maxHp: Math.max(12, Math.round(spawn.scaledHealth * 0.72)),
+    attackTimer: role === 'aggressive-melee-rusher' ? 68 : 116 + (combat.frame % 34),
+    tellFrames: 0,
     ai: spawn.ai,
+    role,
+    state: role === 'cover-shooter' ? 'seeking-cover' : 'rushing',
+    targetCoverX: targetCover - 26,
+    damage: NORMAL_HIT_DAMAGE,
     score: spawn.enemy.score,
     miniBoss: false,
-  });
+    stageIndex: options.stageIndex ?? combat.stageIndex,
+  };
+  combat.enemies.push(enemy);
+  return enemy;
 }
 
 function spawnMiniBoss() {
-  if (combat.boss || combat.enemies.some((enemy) => enemy.miniBoss)) return;
+  if (combat.boss || combat.enemies.some((enemy) => enemy.miniBoss && enemy.stageIndex === combat.stageIndex)) return null;
   combat.miniBossLock = true;
-  combat.scrollLockReason = 'SCROLL LOCK // clear Dock Loader Mini-Boss to advance';
-  combat.enemies.push({
+  combat.scrollLockReason = `MINI-BOSS LOCK // clear Stage ${combat.stageIndex} captain`;
+  const enemy = {
     id: 'dock-loader-mech',
     title: 'Dock Loader Mini-Boss',
     class: 'mini-boss',
-    x: 720,
+    x: 735,
     y: GROUND_Y,
-    hp: 95,
-    maxHp: 95,
+    hp: 115 + combat.stageIndex * 4,
+    maxHp: 115 + combat.stageIndex * 4,
     attackPatterns: ['forklift-charge', 'crate-lob', 'ground-pound'],
     deathEffect: 'huge orange explosion + loader parts',
     ai: { aggression: 1.7, fairnessTell: 'loader horn flash' },
+    role: 'armored-pressure',
+    state: 'pressure',
+    attackTimer: 122,
+    tellFrames: 0,
+    damage: NORMAL_HIT_DAMAGE,
     score: 900,
     miniBoss: true,
-  });
-  spawnText('SCROLL LOCK', 330, 110, '#ff476f');
+    stageIndex: combat.stageIndex,
+  };
+  combat.enemies.push(enemy);
+  spawnText('MINI-BOSS LOCK', 300, 110, '#ff476f');
+  return enemy;
 }
 
 function spawnBoss(bossData) {
@@ -1319,18 +1758,21 @@ function spawnBoss(bossData) {
   combat.boss = {
     ...bossData,
     x: 650,
-    hp: 240,
-    maxHp: 240,
+    hp: 280,
+    maxHp: 280,
     phase: 1,
     lastPhase: 1,
-    attackTimer: 70,
+    attackTimer: 124,
     patterns: canonicalBoss.attackPatterns ?? [],
     superMoves: canonicalBoss.superMoves ?? [],
+    stageIndex: combat.stageIndex,
   };
+  combat.stagePhase = 'boss';
   combat.miniBossLock = true;
   combat.scrollLockReason = `BOSS LOCK // defeat ${bossData.title}`;
   lastBossId = bossData.id;
   spawnText(`BOSS: ${bossData.title}`, 280, 95, '#ffe84d');
+  syncCombatOverlay();
 }
 
 function updateBullets() {
@@ -1345,6 +1787,12 @@ function updateBullets() {
   const bossBox = bossHitbox();
   for (const bullet of combat.bullets) {
     const bulletBox = bulletHitbox(bullet);
+    const blockingProp = combat.props.find((prop) => propBlocksShot(prop) && rectsOverlap(bulletBox, propHitbox(prop)));
+    if (blockingProp) {
+      damageProp(blockingProp, Math.max(2, bullet.damage), bullet.weaponId);
+      bullet.ttl = 0;
+      continue;
+    }
     for (const enemy of combat.enemies) {
       if (rectsOverlap(bulletBox, enemyHitbox(enemy))) {
         damageEnemy(enemy, bullet.damage, bullet.weaponId);
@@ -1360,8 +1808,22 @@ function updateBullets() {
 
   const playerBox = playerHitbox();
   for (const shot of combat.enemyShots) {
-    if (combat.invulnerableFrames <= 0 && rectsOverlap(enemyShotHitbox(shot), playerBox)) {
-      damagePlayer(shot.damage);
+    const shotBox = enemyShotHitbox(shot);
+    const coverProp = combat.props.find((prop) => propBlocksShot(prop) && rectsOverlap(shotBox, propHitbox(prop)));
+    if (coverProp) {
+      damageProp(coverProp, Math.max(1, shot.damage), 'enemy-shot');
+      shot.ttl = 0;
+      continue;
+    }
+    const crouchCover = playerCoverProp();
+    if (crouchCover && shot.x <= crouchCover.x + crouchCover.w + 8 && shot.x >= crouchCover.x - 18) {
+      damageProp(crouchCover, Math.max(1, shot.damage), 'cover-block');
+      spawnText('COVER BLOCK', crouchCover.x - 6, crouchCover.y - 16, '#19f7ff');
+      shot.ttl = 0;
+      continue;
+    }
+    if (combat.invulnerableFrames <= 0 && rectsOverlap(shotBox, playerBox)) {
+      damagePlayer(shot.damage, 'enemy-shot');
       shot.ttl = 0;
     }
   }
@@ -1372,29 +1834,64 @@ function updateBullets() {
 function updateEnemies(difficulty) {
   const playerBox = playerHitbox();
   for (const enemy of combat.enemies) {
-    const speed = enemy.miniBoss ? 0.35 : (1.25 + difficulty.enemyAiLevel * 0.1) * (enemy.speed ?? 1);
-    enemy.x -= speed;
-    enemy.attackTimer -= 1;
-    if (combat.invulnerableFrames <= 0 && rectsOverlap(enemyHitbox(enemy), playerBox)) {
-      damagePlayer(enemy.damage ?? (enemy.miniBoss ? 18 : 8));
-      enemy.attackTimer = Math.max(enemy.attackTimer, 42);
-    }
-    if (enemy.attackTimer <= 0) {
-      const ranged = enemy.attackPatterns?.some((pattern) => pattern.includes('throw') || pattern.includes('burst') || pattern.includes('spit') || pattern.includes('orb'));
-      if (ranged) {
-        combat.enemyShots.push({ x: enemy.x, y: enemy.y - 35, vx: 3.3 * difficulty.enemyProjectileSpeedMultiplier, vy: enemy.miniBoss ? -0.2 : 0, damage: enemy.damage ?? 9, ttl: 160 });
-      } else if (combat.invulnerableFrames <= 0 && rectsOverlap(enemyHitbox(enemy), playerBox)) {
-        damagePlayer(enemy.damage ?? 8);
+    const enemyBox = enemyHitbox(enemy);
+    const distanceToPlayer = enemy.x - (combat.playerX + playerBox.w);
+    const isFlying = enemy.class?.includes('flying');
+    const baseSpeed = enemy.miniBoss ? 0.24 : (enemy.speed ?? 1) * (enemy.role === 'aggressive-melee-rusher' ? 1.18 : 0.55);
+
+    if (enemy.miniBoss) {
+      if (enemy.x > 560) enemy.x -= baseSpeed;
+      enemy.attackTimer -= 1;
+      if (enemy.attackTimer < 24) enemy.tellFrames = 24 - enemy.attackTimer;
+      if (enemy.attackTimer <= 0) {
+        combat.enemyShots.push({ x: enemy.x - 8, y: enemy.y - 42, vx: 2.3, vy: 0, damage: NORMAL_HIT_DAMAGE, ttl: 180 });
+        if (distanceToPlayer < 92 && combat.invulnerableFrames <= 0) damagePlayer(NORMAL_HIT_DAMAGE, 'mini-boss-melee');
+        enemy.attackTimer = 150;
+        enemy.tellFrames = 0;
       }
-      enemy.attackTimer = Math.max(38, 110 - difficulty.enemyAiLevel * 7);
+    } else if (enemy.role === 'aggressive-melee-rusher') {
+      enemy.state = distanceToPlayer > 46 ? 'rushing' : 'melee-tell';
+      if (distanceToPlayer > 46) enemy.x -= baseSpeed + difficulty.enemyAiLevel * 0.015;
+      enemy.attackTimer -= 1;
+      if (distanceToPlayer <= 58 && enemy.attackTimer <= 28) enemy.tellFrames = 28 - enemy.attackTimer;
+      if (distanceToPlayer <= 58 && enemy.attackTimer <= 0) {
+        if (combat.invulnerableFrames <= 0 && rectsOverlap(enemyBox, playerHitbox())) damagePlayer(NORMAL_HIT_DAMAGE, 'enemy-melee');
+        enemy.attackTimer = 118;
+        enemy.tellFrames = 0;
+      }
+    } else {
+      const targetX = enemy.targetCoverX ?? 520;
+      if (enemy.x > targetX) {
+        enemy.state = 'seeking-cover';
+        enemy.x -= baseSpeed;
+      } else {
+        enemy.state = 'in-cover';
+        enemy.x += Math.sin((combat.frame + enemy.x) * 0.04) * 0.12;
+      }
+      if (isFlying) enemy.y += Math.sin((combat.frame + enemy.x) * 0.035) * 0.45;
+      enemy.attackTimer -= 1;
+      if (enemy.attackTimer <= 28) enemy.tellFrames = 28 - enemy.attackTimer;
+      if (enemy.attackTimer <= 0) {
+        combat.enemyShots.push({
+          x: enemy.x - 6,
+          y: enemy.y - (isFlying ? 22 : 35),
+          vx: 2.15 * Math.max(0.85, difficulty.enemyProjectileSpeedMultiplier),
+          vy: isFlying ? 0.08 : 0,
+          damage: NORMAL_HIT_DAMAGE,
+          ttl: 190,
+        });
+        enemy.attackTimer = 128 + (enemy.stageIndex % 3) * 18;
+        enemy.tellFrames = 0;
+      }
     }
+
+    if (!enemy.miniBoss && enemy.x < -80) enemy.hp = 0;
   }
 
   for (const enemy of combat.enemies.filter((enemy) => enemy.hp <= 0)) {
     killEnemy(enemy);
   }
   combat.enemies = combat.enemies.filter((enemy) => enemy.hp > 0 && enemy.x > -120);
-  if (combat.miniBossLock && !combat.boss && !combat.enemies.some((enemy) => enemy.miniBoss)) releaseScrollLock('arena clear');
 }
 
 function updateBoss(difficulty) {
@@ -1409,26 +1906,26 @@ function updateBoss(difficulty) {
     spawnExplosion(combat.boss.x + 46, GROUND_Y - 65, nextPhase === 3 ? '#ff236d' : '#ff7b2f');
   }
   combat.boss.attackTimer -= 1;
-  if (combat.invulnerableFrames <= 0 && rectsOverlap(bossHitbox(), playerHitbox())) damagePlayer(14 + combat.boss.phase * 4);
+  if (combat.invulnerableFrames <= 0 && rectsOverlap(bossHitbox(), playerHitbox())) damagePlayer(NORMAL_HIT_DAMAGE, 'boss-contact');
   if (combat.boss.attackTimer <= 0) {
     const pattern = combat.boss.patterns[(combat.frame + combat.boss.phase) % combat.boss.patterns.length] ?? 'ranged-burst';
     const superMove = combat.boss.phase >= 2 && combat.frame % 3 === 0
       ? combat.boss.superMoves[(combat.frame + combat.boss.phase) % combat.boss.superMoves.length]
       : null;
-    const shots = superMove ? 7 + combat.boss.phase : pattern.includes('sweep') || pattern.includes('bullet') ? 5 : 2 + combat.boss.phase;
+    const shots = superMove ? 5 + combat.boss.phase : pattern.includes('sweep') || pattern.includes('bullet') ? 4 : 2 + combat.boss.phase;
     for (let i = 0; i < shots; i += 1) {
       combat.enemyShots.push({
         x: combat.boss.x + 8,
         y: GROUND_Y - 82 + (i - shots / 2) * (superMove ? 10 : 13),
-        vx: 3.2 + difficulty.enemyProjectileSpeedMultiplier + combat.boss.phase * 0.24,
-        vy: (i - shots / 2) * (superMove ? 0.16 : 0.1),
-        damage: 10 + combat.boss.phase * 3 + (superMove ? 4 : 0),
-        ttl: superMove ? 210 : 180,
+        vx: 2.35 + combat.boss.phase * 0.18,
+        vy: (i - shots / 2) * (superMove ? 0.14 : 0.08),
+        damage: NORMAL_HIT_DAMAGE,
+        ttl: superMove ? 220 : 190,
       });
     }
     if (superMove) spawnText(`SUPER: ${superMove}`, combat.boss.x - 44, GROUND_Y - 132, '#ffe84d');
     if (combat.boss.phase === 3) spawnExplosion(combat.boss.x + 42, GROUND_Y - 55, '#ff236d');
-    combat.boss.attackTimer = Math.max(38, 112 - difficulty.enemyAiLevel * 6);
+    combat.boss.attackTimer = Math.max(78, 150 - combat.boss.phase * 14);
   }
   if (combat.boss.hp <= 0) {
     const clearedBoss = combat.boss;
@@ -1438,8 +1935,10 @@ function updateBoss(difficulty) {
     combat.combo += 1;
     combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
     combat.boss = null;
-    releaseScrollLock(`${clearedBoss.title} defeated`);
+    combat.bossDefeated = true;
     dropPowerUp();
+    if (isFinalBossStage()) completeStage();
+    else releaseScrollLock(`${clearedBoss.title} defeated`);
   }
 }
 
@@ -1495,48 +1994,49 @@ function damageBoss(damage, source) {
   spawnBlood(combat.boss.x + 40, GROUND_Y - 70, source === 'hash-rail' ? '#19f7ff' : '#ff236d');
 }
 
-function damagePlayer(damage) {
-  if (combat.invulnerableFrames > 0 || damage <= 0) return false;
-  combat.health -= damage;
+function damagePlayer(damage, source = 'hit') {
+  if (combat.invulnerableFrames > 0 || damage <= 0 || combat.gameOver) return false;
+  const applied = NORMAL_HIT_DAMAGE;
+  combat.health = clamp(combat.health - applied, 0, PLAYER_MAX_HEALTH);
   combat.combo = 0;
   combat.damageCombo = 0;
   combat.noDamageSeconds = 0;
-  combat.invulnerableFrames = 72;
-  spawnText(`-${damage} HP`, combat.playerX, combat.playerY - 80, '#ff476f');
+  combat.invulnerableFrames = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.invulnerabilityAfterHitFrames;
+  spawnText(`-${applied}% HP`, combat.playerX, combat.playerY - 80, '#ff476f');
   spawnBlood(combat.playerX + 12, combat.playerY - 40, '#ff476f');
-  if (combat.health <= 0) {
-    combat.lives -= 1;
-    if (combat.lives <= 0) {
-      combat.active = false;
-      dom.combatRunStatus.textContent = 'Local combat sandbox ended';
-      dom.combatStatus.textContent = `Practice result: ${combat.score.toLocaleString()} score, ${combat.kills} kills, ${formatSeconds(combat.elapsedGameSeconds)} survived. Official run state above remains unchanged.`;
-    } else {
-      combat.health = 100;
-      combat.invulnerableFrames = 120;
-      spawnText(`+LIFE ${combat.lives}`, combat.playerX, combat.playerY - 96, '#45ff8a');
-    }
+  if (source === 'enemy-melee') spawnText('MELEE HIT', combat.playerX + 24, combat.playerY - 96, '#ffe84d');
+  if (combat.health <= LESTER_BLASTER_TACTICAL_COMBAT_V2.health.deathAtPercent) {
+    combat.health = 0;
+    combat.lives = 0;
+    combat.active = false;
+    combat.paused = false;
+    combat.gameOver = true;
+    combat.gameOverReason = currentSession?.isPaid
+      ? 'Lester was defeated. Ranked run ended; submit only from game-over, and Play Again requires a new testnet credit.'
+      : 'Lester was defeated. Free practice can restart from the beginning at no cost.';
+    dom.combatRunStatus.textContent = 'Local combat sandbox game over';
+    dom.combatStatus.textContent = `Game Over: ${combat.score.toLocaleString()} score, ${combat.kills} kills, ${formatSeconds(combat.elapsedGameSeconds)} survived. Official paid-run state remains separated until explicit game-over submission.`;
+    syncCombatOverlay();
   }
   return true;
 }
 
 function killEnemy(enemy) {
   combat.kills += 1;
+  combat.stagedEnemiesDefeated += enemy.stageIndex === combat.stageIndex ? 1 : 0;
   combat.combo += 2;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   spawnText(`+${enemy.score ?? 100}`, enemy.x, enemy.y - 70, '#ffe84d');
   spawnExplosion(enemy.x + 12, enemy.y - 28, enemy.miniBoss ? '#ff7b2f' : '#ff476f');
-  if (enemy.miniBoss) {
-    dropPowerUp();
-    releaseScrollLock(`${enemy.title} defeated`);
-  }
+  if (enemy.miniBoss) dropPowerUp();
 }
 
 function collectCombatPowerUp(power) {
   combat.powerUpsCollected += 1;
   combat.collectedPowerUpTypes.add(power.id ?? power.effect ?? power.title);
-  if (power.effect === 'heal') combat.health = Math.min(100, combat.health + power.amount);
+  if (power.effect === 'heal') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + power.amount);
   if (power.effect === 'grenades') combat.grenades += power.amount;
-  if (power.effect === 'life') combat.lives += 1;
+  if (power.effect === 'life') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + 25);
   if (power.effect === 'weapon') {
     combat.weaponId = power.weaponId;
     const weapon = weaponById(power.weaponId);
@@ -1544,7 +2044,7 @@ function collectCombatPowerUp(power) {
   }
   if (power.effect === 'ammo') combat.ammo = Number.isFinite(combat.ammo) ? combat.ammo + power.amount : combat.ammo;
   if (power.effect === 'shield') {
-    combat.health = Math.min(125, combat.health + power.amount * 15);
+    combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + power.amount * 15);
     combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
   }
   if (power.effect === 'scoreMultiplier') spawnText('2X SCORE', power.x, power.y - 20, '#ffe84d');
@@ -1666,11 +2166,57 @@ function drawProps(ctx) {
   const environment = LESTER_BLASTER_ENVIRONMENTS[Math.min(LESTER_BLASTER_ENVIRONMENTS.length - 1, Math.floor((combat.elapsedGameSeconds / 60) / 4))];
   ctx.font = '11px monospace';
   for (let i = 0; i < environment.props.length; i += 1) {
-    const x = ((i * 190 + 240) - combat.scroll * 0.96) % 900;
-    ctx.fillStyle = i % 2 ? '#24304f' : '#2d1a46';
+    const x = ((i * 190 + 240) - combat.scroll * 0.36) % 900;
+    ctx.fillStyle = i % 2 ? 'rgba(36,48,79,.42)' : 'rgba(45,26,70,.38)';
     ctx.fillRect(x, GROUND_Y - 34 - (i % 3) * 12, 48, 42 + (i % 3) * 12);
-    ctx.fillStyle = '#19f7ff';
+    ctx.fillStyle = 'rgba(25,247,255,.72)';
     ctx.fillText(environment.props[i].slice(0, 9).toUpperCase(), x + 4, GROUND_Y - 10);
+  }
+
+  for (const platform of combat.platforms) {
+    ctx.fillStyle = '#1e3358';
+    ctx.fillRect(platform.x, platform.y, platform.w, platform.h);
+    ctx.fillStyle = '#19f7ff';
+    ctx.fillRect(platform.x, platform.y, platform.w, 3);
+    ctx.fillStyle = 'rgba(255,232,77,.36)';
+    for (let x = platform.x + 8; x < platform.x + platform.w - 8; x += 24) ctx.fillRect(x, platform.y + 8, 12, 3);
+  }
+
+  for (const prop of combat.props) {
+    if (prop.kind === 'gap') {
+      ctx.fillStyle = '#02040a';
+      ctx.fillRect(prop.x, GROUND_Y + 9, prop.w, 74);
+      ctx.fillStyle = '#ff476f';
+      ctx.fillRect(prop.x, GROUND_Y + 7, prop.w, 4);
+      ctx.fillStyle = '#ffe84d';
+      ctx.fillText('GAP', prop.x + 8, GROUND_Y + 31);
+      continue;
+    }
+    const box = propHitbox(prop);
+    const hpRatio = Math.max(0, Math.min(1, (prop.hp ?? prop.maxHp ?? 1) / (prop.maxHp ?? prop.hp ?? 1)));
+    if (prop.kind === 'barrel') {
+      ctx.fillStyle = '#ff7b2f';
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+      ctx.fillStyle = '#ffe84d';
+      ctx.fillRect(box.x + 4, box.y + 10, box.w - 8, 6);
+      ctx.fillStyle = '#080616';
+      ctx.fillText('BOOM', box.x + 2, box.y + 26);
+    } else if (prop.kind === 'wall') {
+      ctx.fillStyle = '#6e7898';
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+      ctx.fillStyle = '#283147';
+      for (let y = box.y + 8; y < box.y + box.h; y += 16) ctx.fillRect(box.x, y, box.w, 2);
+    } else {
+      ctx.fillStyle = prop.cover ? '#79512c' : '#4c365f';
+      ctx.fillRect(box.x, box.y, box.w, box.h);
+      ctx.fillStyle = prop.cover ? '#ffe84d' : '#19f7ff';
+      ctx.fillRect(box.x + 6, box.y + 7, box.w - 12, 3);
+      ctx.fillText(prop.cover ? 'COVER' : 'CRATE', box.x + 4, box.y + box.h - 7);
+    }
+    if (prop.hp !== undefined) {
+      ctx.fillStyle = '#45ff8a';
+      ctx.fillRect(box.x, box.y - 6, box.w * hpRatio, 3);
+    }
   }
 }
 
@@ -1880,9 +2426,22 @@ dom.shootButton.addEventListener('click', shoot);
 dom.meleeButton.addEventListener('click', melee);
 dom.grenadeButton.addEventListener('click', grenade);
 dom.powerUpButton.addEventListener('click', dropPowerUp);
+dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
+dom.combatRestartButton?.addEventListener('click', restartCombatRun);
+dom.combatMusicButton?.addEventListener('click', toggleCombatMusic);
+dom.combatCharacterButton?.addEventListener('click', swapCombatCharacter);
+dom.combatViewportButton?.addEventListener('click', cycleCombatViewport);
+dom.combatReturnMenuButton?.addEventListener('click', returnToOfficialGameMenu);
+dom.combatExitButton?.addEventListener('click', exitToArcade);
 
 document.addEventListener('keydown', (event) => {
   const key = event.key.toLowerCase();
+  if (key === 'enter' || key === 'escape') {
+    event.preventDefault();
+    toggleCombatPause();
+    return;
+  }
+  if (combat.paused || combat.gameOver) return;
   if (event.code === 'Space') {
     event.preventDefault();
     jump();
@@ -1906,6 +2465,7 @@ dom.combatCanvas.addEventListener('contextmenu', (event) => {
 });
 
 dom.combatCanvas.addEventListener('mousedown', (event) => {
+  if (combat.paused || combat.gameOver) return;
   if (event.button === 0) shoot();
   if (event.button === 2) {
     event.preventDefault();

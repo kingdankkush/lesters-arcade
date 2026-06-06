@@ -341,6 +341,47 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
     melee: 'E / Right Click',
     throwable: 'F',
   }),
+  levelOne: Object.freeze({
+    stageCountRange: Object.freeze([12, 14]),
+    wavesPerPauseRange: Object.freeze([1, 3]),
+    normalEnemiesOnScreenRange: Object.freeze([2, 3]),
+    miniBossEnemiesOnScreenRange: Object.freeze([4, 5]),
+    miniBossEveryStages: Object.freeze([3, 4]),
+    finalBoss: 'randomized-from-boss-pool',
+    baseScrollPace: 'slow-cinematic-auto-scroll',
+    stageLoop: Object.freeze(['smooth-parallax-travel', 'scroll-lock-engagement', '1-3 enemy waves', 'clear gate', 'platforming-transition']),
+    platformingSections: Object.freeze(['timed gap jumps', 'short wall hops', 'obstacle vaults', 'power-up pickup lanes']),
+  }),
+  health: Object.freeze({
+    playerMaxPercent: 100,
+    damagePerNormalHitPercent: 5,
+    deathAtPercent: 0,
+    invulnerabilityAfterHitFrames: 72,
+    gameOverActions: Object.freeze(['Exit to Main Menu', 'Play Again']),
+  }),
+  enemyAi: Object.freeze({
+    roles: Object.freeze(['cover-shooter', 'aggressive-melee-rusher', 'armored-pressure', 'flying-harasser']),
+    rateOfFire: 'reduced-readable',
+    coverDecision: 'defensive enemies attempt cover first; aggressive enemies rush Lester/Lilly for delayed melee attacks',
+    spawnRule: 'spawn from the right side during staged locks; keep only the allowed stage cap alive on screen',
+  }),
+  gameplayMenu: Object.freeze({
+    pauseAvailableAnytime: true,
+    actions: Object.freeze(['Restart', 'Toggle Music On/Off', 'Swap Characters', 'Return to Game Menu', 'Exit Game']),
+    restart: Object.freeze({
+      freeModeCost: 'free-restart-from-level-start',
+      paidModeCost: 'requires-new-paid-credit',
+    }),
+  }),
+  viewportModes: Object.freeze({
+    default: 'fullscreen',
+    available: Object.freeze(['fullscreen', 'embedded-window', 'expanded-fullscreen']),
+  }),
+  runStateSeparation: Object.freeze({
+    freeMode: 'local-sandbox-only',
+    paidMode: 'official-sync-only-at-game-over',
+    restartPaidCopy: 'Paid/ranked restarts require a new testnet credit and never silently resubmit a prior score.',
+  }),
   sectionPlan: Object.freeze([
     Object.freeze({ section: 1, goal: 'load area and teach cover/jump/shoot', enemyCount: [2, 3], lock: 'soft-scroll-lock' }),
     Object.freeze({ section: 2, goal: 'advance after first clear with more cover and vertical props', enemyCount: [3, 4], lock: 'kill-gate' }),
@@ -379,6 +420,64 @@ export const LESTER_BLASTER_AUDIO_ASSET_PLAN = Object.freeze({
     Object.freeze({ name: 'Mixkit Game SFX', license: 'Mixkit free SFX license', bestFor: 'quick arcade/game notification sounds' }),
     Object.freeze({ name: 'Sonniss GameAudioGDC', license: 'royalty-free media production; no AI/ML training', bestFor: 'larger production-quality ambience, impacts, weapons, and creature layers' }),
   ]),
+});
+
+const PRODUCTION_FRAME_SIZE = Object.freeze([128, 128]);
+const productionFrameRange = (state, prefix, count = 8) => Object.freeze(Array.from({ length: count }, (_, index) => Object.freeze({
+  src: `./assets/lester-production/frames/${state}/${prefix}-${state}-${String(index).padStart(2, '0')}.png`,
+  size: PRODUCTION_FRAME_SIZE,
+})));
+
+const lesterCharacterAssetManifest = Object.freeze({
+  weapons: Object.freeze({
+    machineGun: Object.freeze({ available: true, selectedFrom: './assets/generated/sliced/icon-weapon-settler.png' }),
+    knife: Object.freeze({ available: true, selectedFrom: './assets/generated/sliced/icon-weapon-litecoin-blade.png' }),
+    grenade: Object.freeze({ available: true, selectedFrom: './assets/generated/sliced/icon-weapon-crypto-bomb.png' }),
+    pistol: Object.freeze({ available: true, preservedFromPreviousPass: true, selectedFrom: './assets/generated/sliced/lester-shoot.png' }),
+    shotgun: Object.freeze({ available: true, preservedFromPreviousPass: true, selectedFrom: './assets/lester-production/stills/lester-right-side-shotgun.png' }),
+  }),
+  animations: Object.freeze({
+    idle: Object.freeze({ selectedFrom: './assets/lester-production/frames/idle/lester-idle-00.png', frames: productionFrameRange('idle', 'lester') }),
+    walk: Object.freeze({ selectedFrom: './assets/lester-production/frames/walk/lester-walk-00.png', frames: productionFrameRange('walk', 'lester') }),
+    run: Object.freeze({ selectedFrom: './assets/lester-production/frames/run/lester-run-00.png', frames: productionFrameRange('run', 'lester') }),
+    jump: Object.freeze({ selectedFrom: './assets/lester-production/frames/jump/lester-jump-00.png', frames: productionFrameRange('jump', 'lester') }),
+    attack: Object.freeze({ selectedFrom: './assets/lester-production/frames/run/lester-run-00.png', frames: productionFrameRange('run', 'lester') }),
+  }),
+});
+
+export const HARD_MONEY_HEROES_ASSET_MANIFEST = Object.freeze({
+  id: 'hard-money-heroes-justin-assets-v1',
+  generatedFrom: 'C:/Users/just_/Desktop/Projects/Web3 Gaming/Hard Money Heroes/Art Assets plus Lester\'s Arcade generated/sliced assets',
+  playableCharacters: Object.freeze({
+    lester: lesterCharacterAssetManifest,
+    lilly: Object.freeze({
+      ...lesterCharacterAssetManifest,
+      sourceNote: 'Lilly currently reuses verified Lester-size gameplay frames until a production Lilly sheet is sliced; teal reference art remains in the art-redo brief.',
+    }),
+  }),
+  enemies: Object.freeze({
+    trenchDegen: Object.freeze({ behavior: Object.freeze({ primary: 'slow-readable-melee', secondary: 'occasional-low-rate-pistol' }) }),
+    evilBanker: Object.freeze({ behavior: Object.freeze({ primary: 'fast-briefcase-melee-rusher' }) }),
+    warrenSpearRider: Object.freeze({ behavior: Object.freeze({ primary: 'mounted-spear-pressure', spearThrowAccuracy: 0.6, dodgeRequired: true }) }),
+  }),
+  screens: Object.freeze({
+    splash: Object.freeze({ src: './assets/generated/lesters-arcade-parent-portal-hero-textfree.png' }),
+    mainMenu: Object.freeze({ src: './assets/generated/hmh-cabinet-key-art-textfree.png' }),
+    options: Object.freeze({ src: './assets/generated/hmh-generated-textfree-contact-sheet.png' }),
+    modeSelect: Object.freeze({ src: './assets/generated/hmh-boss-roster-concept-textfree.png' }),
+  }),
+  audio: Object.freeze({
+    musicTracks: Object.freeze([
+      Object.freeze({ id: 'getting-lit', title: 'Lester and Lilly Rap - Getting Lit', src: './assets/audio/music/lester-and-lilly-rap-getting-lit.mp3' }),
+      Object.freeze({ id: 'underchain-loop', title: 'Underchain District Loop', source: 'planned free/CC0 loop' }),
+      Object.freeze({ id: 'mini-boss-sting', title: 'Mini-Boss Captain Sting', source: 'planned free/CC0 sting' }),
+      Object.freeze({ id: 'game-over-sting', title: 'Game Over Sting', source: 'planned free/CC0 sting' }),
+    ]),
+    sfxPlan: Object.freeze({
+      weaponFire: Object.freeze(['pistol', 'machine-gun', 'shotgun', 'grenade-launch']),
+      enemyBarks: Object.freeze(['trench-degen-grunt', 'evil-banker-charge', 'warren-spear-rider-horse']),
+    }),
+  }),
 });
 
 export const ACHIEVEMENTS = Object.freeze({

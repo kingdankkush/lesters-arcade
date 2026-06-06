@@ -442,6 +442,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 }
 
 .gameplay-view {
+  position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 16px;
@@ -453,6 +454,77 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   justify-content: space-between;
   gap: 18px;
   margin-top: 0;
+}
+
+.gameplay-control-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.gameplay-control-strip button {
+  padding: 9px 12px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.gameplay-control-strip[data-mode="paid"] button,
+.gameplay-control-strip[data-mode="ranked"] button {
+  border: 1px solid rgba(255, 232, 77, 0.34);
+}
+
+.combat-menu-panel {
+  position: absolute;
+  z-index: 4;
+  top: 142px;
+  left: 50%;
+  width: min(620px, calc(100vw - 44px));
+  transform: translateX(-50%);
+  padding: 20px;
+  border: 1px solid rgba(255, 232, 77, 0.5);
+  border-radius: 20px;
+  background:
+    linear-gradient(135deg, rgba(8, 6, 22, 0.94), rgba(21, 7, 34, 0.92)),
+    radial-gradient(circle at top right, rgba(255, 71, 111, 0.18), transparent 16rem);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.44), inset 0 0 26px rgba(255, 232, 77, 0.08);
+  text-align: center;
+}
+
+.combat-menu-panel h3 {
+  margin: 4px 0 8px;
+  color: white;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  text-transform: uppercase;
+}
+
+.combat-menu-panel p:last-child {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.combat-menu-panel[data-state="game-over"] {
+  border-color: rgba(255, 71, 111, 0.62);
+  box-shadow: 0 0 46px rgba(255, 71, 111, 0.18), inset 0 0 30px rgba(255, 71, 111, 0.12);
+}
+
+.official-combat-mount[data-paused="true"],
+.official-combat-mount[data-game-over="true"] {
+  filter: saturate(0.76) brightness(0.82);
+}
+
+.official-combat-mount[data-viewport="embedded-window"] canvas {
+  width: min(100%, 820px);
+  max-height: calc(100vh - 320px);
+}
+
+.official-combat-mount[data-viewport="windowed"] canvas {
+  width: min(100%, 640px);
+  max-height: 420px;
+}
+
+.official-combat-mount[data-viewport="fullscreen"] canvas {
+  width: min(100%, 1180px);
 }
 
 .official-combat-mount {
