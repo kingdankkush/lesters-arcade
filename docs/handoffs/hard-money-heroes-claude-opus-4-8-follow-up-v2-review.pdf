@@ -1,0 +1,418 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R] /Count 7 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Length 4630 >>
+stream
+BT /F2 16.00 Tf 1 0 0 1 48.00 738.00 Tm (Hard Money Heroes / Lester's Arcade - Claude Opus 4.8) Tj ET
+BT /F2 16.00 Tf 1 0 0 1 48.00 717.00 Tm (Follow-up Review Packet) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 691.00 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 676.70 Tm (Generated: 2026-06-07T20:40:57Z) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 663.90 Tm (Prepared by: Hermes Agent) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 651.10 Tm (Recipient: Claude Opus 4.8) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 638.30 Tm (Context source: Claude's `Hard_Money_Heroes_Design_Bible_v2.pdf`, now normalized into) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 625.50 Tm (`docs/game-design/hard-money-heroes-design-bible-v2.md` and applied as active project canon.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 612.70 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 595.40 Tm (0. Purpose of this follow-up) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 577.40 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 563.10 Tm (Claude, your v2 Design Bible has now been accepted as the active design authority for the game) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 550.30 Tm (direction. This follow-up asks you to stress-test that spec before Hermes turns it into more) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 537.50 Tm (runtime implementation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 524.70 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 510.40 Tm (Please respond as a practical build critic, not just a designer. Focus on:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 497.60 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 483.30 Tm (1. Improvements and missing design clarifications.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 470.50 Tm (2. Bug-testing strategy.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 457.70 Tm (3. Exploit/failure points in gameplay, scoring, wallet identity, and ranked submission.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 444.90 Tm (4. UI/UX/user-flow improvements for Lester's Arcade and cabinet selection.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 432.10 Tm (5. EVM/LitVM testnet interoperability and setup robustness.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 419.30 Tm (6. A prioritized implementation plan that reduces risk and avoids rebuilding the old side-) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 406.50 Tm (   scroller by accident.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 393.70 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 376.40 Tm (1. Current accepted direction after your v2 Bible) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 358.40 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 344.10 Tm (- Parent portal: Lester's Arcade.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 331.30 Tm (- First cabinet: Hard Money Heroes.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 318.50 Tm (- Stable internal game ID remains `lester-blaster` for persisted state compatibility.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 305.70 Tm (- Active genre/display genre: `isometric-run-and-gun-roguelike`.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 292.90 Tm (- Core run: 20-minute isometric roguelite survival, ending in Mainnet Express extraction, with) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 280.10 Tm (  optional Overtime.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 267.30 Tm (- Free practice: local/practice only; writes nothing official.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 254.50 Tm (- Ranked/paid: same mechanics/RNG as free, but wallet-bound, explicit submit, verifier-backed,) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 241.70 Tm (  official leaderboard eligible.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 228.90 Tm (- Main hero: Lester.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 216.10 Tm (- Lilly: future unlockable alt hero/skin in HMH, not a separate active cabinet yet.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 203.30 Tm (- Controls: WASD movement, mouse aim, hold fire, dash/dodge, throwable, reload, pause, level-) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 190.50 Tm (  up reroll.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 177.70 Tm (- Run loop: procedural chunks, enemies spawn outside camera-safe radius, XP gems, paused two-) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 164.90 Tm (  card draft + one reroll, boss arena rings, extraction at 20:00.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 152.10 Tm (- Balance target: ~4-6 minute median survival after 3 runs, ~30 level-up picks by 20 minutes,) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 139.30 Tm (  ~60 visible enemies max, attack-token cap of 2-5.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 126.50 Tm (- Anti-cheat target: fixed timestep, seeded RNG, input log, periodic checksums, final summary,) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 113.70 Tm (  server re-sim, verifier-signed score.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 100.90 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade follow-up - page 1 of 7) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 5095 >>
+stream
+BT /F2 12.50 Tf 1 0 0 1 48.00 735.00 Tm (2. LitVM / EVM compatibility baseline to preserve) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 717.00 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 702.70 Tm (Project constants and LitVM docs currently align on:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 689.90 Tm () Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 675.60 Tm (| Field | Value |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 667.00 Tm (| --- | --- |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 658.40 Tm (| Network | LitVM LiteForge public testnet |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 649.80 Tm (| Chain ID | `4441` decimal / `0x1159` hex |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 641.20 Tm (| Native gas | `zkLTC`, 18 decimals |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 632.60 Tm (| RPC | `https://liteforge.rpc.caldera.xyz/http` |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 624.00 Tm (| Explorer | `https://liteforge.explorer.caldera.xyz` |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 615.40 Tm (| Repo hub/faucet URL | `https://liteforge.hub.caldera.xyz` |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 606.80 Tm (| Portal | `https://testnet.litvm.com` |) Tj ET
+BT /F3 6.40 Tf 1 0 0 1 48.00 598.20 Tm (| EVM target from docs | Shanghai-compatible EVM |) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 589.60 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 575.30 Tm (Wallet rail expectations:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 562.50 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 548.20 Tm (- EIP-1193 injected wallet first: MetaMask/Rabby/EVM-compatible.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 535.40 Tm (- Normalize decimal and hex chain IDs.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 522.60 Tm (- Implement `wallet_switchEthereumChain` for `0x1159`.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 509.80 Tm (- Implement `wallet_addEthereumChain` fallback with chain name, RPC, explorer, native) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 497.00 Tm (  currency.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 484.20 Tm (- Mock wallet stays QA fallback only; never eligible for live/real official funds.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 471.40 Tm (- Never request seed phrases or private keys.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 458.60 Tm (- Real funds, deployments, recurring automation, public launch, and commercial Litecoin) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 445.80 Tm (  branding remain explicitly gated.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 433.00 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 415.70 Tm (3. Questions for you: remaining design improvements) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 397.70 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 383.40 Tm (Please answer with concrete tables and acceptance criteria.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 370.60 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 356.30 Tm (3.1 Game loop and feel) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 342.30 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 328.00 Tm (1. Does the 20-minute extraction target create enough replay desire, or should the first) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 315.20 Tm (   vertical slice prove only a 6:30 Act I clear first?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 302.40 Tm (2. Should Overtime preserve the same score formula with multiplier, or should it have separate) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 289.60 Tm (   leaderboard categories to avoid making extraction-run scores irrelevant?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 276.80 Tm (3. What is the exact minimum fun vertical slice: how many enemy archetypes, skills, power-ups,) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 264.00 Tm (   and biome chunks must exist before playtesting is worthwhile?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 251.20 Tm (4. Is dash mandatory in P0, or can it be behind the first skill unlock? Your v2 says MVP-in;) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 238.40 Tm (   please validate risks.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 225.60 Tm (5. Should auto-aim/auto-fire be purely accessibility, or should mobile default to hybrid aim?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 212.80 Tm (6. What should a failed 2-minute learner run teach? What specific feedback should appear after) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 200.00 Tm (   death?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 187.20 Tm (7. Should bosses stop XP/level-up drops during arena rings to avoid modal interruptions during) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 174.40 Tm (   boss phases?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 161.60 Tm (8. Should players be able to level up inside boss fights, and if yes, should the boss pause) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 148.80 Tm (   too?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 136.00 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 121.70 Tm (3.2 Enemy, spawn, and anti-farming) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 107.70 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 93.40 Tm (1. Give exact spawn weights by act and minute for each enemy archetype.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 80.60 Tm (2. Define the attack-token algorithm: which attacks consume tokens, when tokens release, and) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 67.80 Tm (   which boss/add attacks bypass the cap.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade follow-up - page 2 of 7) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 4968 >>
+stream
+BT /F1 9.20 Tf 1 0 0 1 48.00 738.00 Tm (3. Define AFK/corner-farming detection that cannot punish legitimate kiting.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 725.20 Tm (4. Define enemy de-spawn/reposition rules so enemies do not visibly pop or exploit pathing.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 712.40 Tm (5. Which enemies are dangerous to ship first because they require complex pathing, hooks, or) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 699.60 Tm (   formations?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 686.80 Tm (6. Which enemy behaviors are likely to break in isometric collision/occlusion?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 674.00 Tm (7. Should elite modifiers stack on any enemy, or should some combinations be banned \(e.g.,) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 661.20 Tm (   Swift + Volatile, Shielded + Summoner\)?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 648.40 Tm (8. Should elite visual tags be color-coded, icon-coded, or both for colorblind accessibility?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 635.60 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 621.30 Tm (3.3 Skills and builds) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 607.30 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 593.00 Tm (1. Provide the first 12 P0 skills with exact rank values, rarity, tags, icon concepts, and) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 580.20 Tm (   tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 567.40 Tm (2. Define the first 3 evolved upgrades that should be implemented earliest.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 554.60 Tm (3. What draw-weight algorithm avoids dead drafts while still creating build identity?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 541.80 Tm (4. Should level-up choices be deterministic from seed + RNG cursor, or can UI reroll create) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 529.00 Tm (   separate RNG streams?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 516.20 Tm (5. Which skills create exploit risk: infinite invulnerability, pickup magnet farming, revive) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 503.40 Tm (   loops, reroll banking, score multipliers?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 490.60 Tm (6. How should assists or accessibility toggles affect leaderboard transparency, if at all?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 477.80 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 463.50 Tm (3.4 Bosses) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 449.50 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 435.20 Tm (1. Which boss should be P0: Warren mini-boss only, Rug Pull Baron, or both?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 422.40 Tm (2. What is the smallest arena-ring implementation that proves the boss system without) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 409.60 Tm (   overbuilding?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 396.80 Tm (3. Define exact boss add budgets, phase HP thresholds, damage values, telegraph durations, and) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 384.00 Tm (   rewards.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 371.20 Tm (4. Which boss mechanics should be delayed until projectile/collision/occlusion are stable?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 358.40 Tm (5. Should perfect boss clear be no damage from boss only, no damage from any source, or no HP) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 345.60 Tm (   loss including shields?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 332.80 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 318.50 Tm (3.5 Scoring) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 304.50 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 290.20 Tm (1. Validate the v2 score formula against top-player incentives. What degenerate strategy still) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 277.40 Tm (   wins?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 264.60 Tm (2. Should `biomeIndex * 1500` be awarded once, incrementally, or only on successful seam/boss) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 251.80 Tm (   clear?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 239.00 Tm (3. How should score handle Overtime so 22-minute runs do not erase all 20-minute skill) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 226.20 Tm (   expression?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 213.40 Tm (4. Define exact anti-farm diminishing returns by enemy type and minute.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 200.60 Tm (5. Should score packets include assist flags, build hash, version, and RNG seed in the) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 187.80 Tm (   leaderboard row?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 175.00 Tm (6. Should there be separate boards for Free Practice local, Ranked Assist-On, Ranked Assist-) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 162.20 Tm (   Off, Overtime, and Daily Seed?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 149.40 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 132.10 Tm (4. Questions for you: Lester's Arcade UI / UX and cabinet user flow) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 114.10 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 99.80 Tm (Please critique the entire player journey, not only Hard Money Heroes gameplay.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 87.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade follow-up - page 3 of 7) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 5033 >>
+stream
+BT /F2 10.50 Tf 1 0 0 1 48.00 738.00 Tm (4.1 Desired public flow) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 724.00 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 709.70 Tm (Current desired flow:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 696.90 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 682.60 Tm (1. Player lands on Lester's Arcade.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 669.80 Tm (2. Wallet splash explains connect wallet / play free / mock QA fallback.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 657.00 Tm (3. Profile activation creates wallet-bound parent arcade account.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 644.20 Tm (4. Cabinet select shows playable and future cabinets.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 631.40 Tm (5. Player chooses Hard Money Heroes.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 618.60 Tm (6. Cabinet splash / intro explains game premise and Free vs Ranked.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 605.80 Tm (7. Player chooses Free Practice or Ranked / Insert Credit.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 593.00 Tm (8. Chain guard checks wallet/provider/network if ranked.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 580.20 Tm (9. Run starts.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 567.40 Tm (10. Pause/menu offers Resume, Settings, Restart, Game Menu, Exit to Arcade.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 554.60 Tm (11. Game-over/win shows score breakdown.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 541.80 Tm (12. Ranked run offers explicit Submit Official Score.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 529.00 Tm (13. Result sync updates profile, achievements, leaderboard, receipts.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 516.20 Tm (14. Player returns to cabinet, leaderboard, profile, or arcade floor.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 503.40 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 489.10 Tm (Questions:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 476.30 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 462.00 Tm (1. Is wallet connect too early? Should Free Practice be playable before wallet connection) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 449.20 Tm (   while still encouraging profile creation?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 436.40 Tm (2. What exactly should a guest see on cabinet select before connecting?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 423.60 Tm (3. How should future cabinets be displayed without confusing users into thinking they are) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 410.80 Tm (   broken?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 398.00 Tm (4. Should Hard Money Heroes show a game detail screen before mode select: controls, average) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 385.20 Tm (   run length, risk-free Free, ranked requirements?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 372.40 Tm (5. What is the clearest copy for `Free Practice`, `Ranked Testnet`, and `Official Submit`?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 359.60 Tm (6. Should wallet chain guard appear before the run, at game over, or both?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 346.80 Tm (7. How should wrong-chain users recover without leaving the app?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 334.00 Tm (8. What should happen if the player exits to arcade during a ranked run before death/win?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 321.20 Tm (9. Should the profile settings page be available from every screen?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 308.40 Tm (10. What user-flow analytics events should be recorded locally/testnet for debugging) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 295.60 Tm (   onboarding friction?) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 282.80 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 268.50 Tm (4.2 UI failure points) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 254.50 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 240.20 Tm (Please produce a risk matrix for:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 227.40 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 213.10 Tm (- Player does not understand Free vs Ranked.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 200.30 Tm (- Player thinks mock wallet means real official status.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 187.50 Tm (- Player cannot find cabinet select after connecting.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 174.70 Tm (- Player clicks future cabinet and sees no useful explanation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 161.90 Tm (- Player starts ranked on wrong chain.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 149.10 Tm (- Player disconnects wallet mid-run.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 136.30 Tm (- Player exits fullscreen and input focus breaks.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 123.50 Tm (- Level-up modal appears while mouse is captured or mobile buttons are active.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 110.70 Tm (- Game-over submit fails and user does not know whether score was recorded.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 97.90 Tm (- Profile handle/avatar validation fails.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 85.10 Tm (- Leaderboard mixes practice and official rows visually.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 72.30 Tm (- Mobile layout obscures HUD or buttons.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade follow-up - page 4 of 7) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 4559 >>
+stream
+BT /F1 9.20 Tf 1 0 0 1 48.00 738.00 Tm (- Accessibility toggles are hidden or unclear.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 725.20 Tm (- Gore toggle state is unclear or changes mid-run.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 712.40 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 695.10 Tm (5. Questions for you: bug testing, exploits, and failure modes) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 677.10 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 662.80 Tm (Please provide a P0/P1 test plan that covers these categories.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 650.00 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 635.70 Tm (5.1 Gameplay exploit/failure checklist) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 621.70 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 607.40 Tm (- AFK/corner farming.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 594.60 Tm (- Spawn camping near chunk seams.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 581.80 Tm (- Enemy spawn inside collision/hazards/walls.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 569.00 Tm (- Pickup drops inside collision or under large props.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 556.20 Tm (- Projectile tunneling through walls or missing due to high speed.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 543.40 Tm (- Dash i-frames chaining into invulnerability.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 530.60 Tm (- Revive loops or revive triggering multiple times.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 517.80 Tm (- Reroll bank duplication by closing/reopening modal.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 505.00 Tm (- Level-up modal not pausing projectiles/enemy attacks.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 492.20 Tm (- Timer continuing during pause/modal/fullscreen exit.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 479.40 Tm (- Boss arena ring trapping player in collision.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 466.60 Tm (- Boss adds violating threat budget.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 453.80 Tm (- Overtime scaling overflow or score inflation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 441.00 Tm (- FPS drops changing deterministic simulation results.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 428.20 Tm (- Device-pixel-ratio / resize causing aim coordinate errors.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 415.40 Tm (- Mobile touch controls firing while menus are open.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 402.60 Tm (- Audio resume/play state desync after browser tab suspension.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 389.80 Tm () Tj ET
+BT /F2 10.50 Tf 1 0 0 1 48.00 375.50 Tm (5.2 Web3 / wallet / ranked exploit checklist) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 361.50 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 347.20 Tm (- Free run accidentally writes official state.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 334.40 Tm (- Mock wallet accepted as real ranked wallet.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 321.60 Tm (- Wrong chain submit accepted.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 308.80 Tm (- Decimal/hex chain ID mismatch.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 296.00 Tm (- Fake injected provider or malicious provider response.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 283.20 Tm (- Address normalization/case mismatch creates duplicate profiles.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 270.40 Tm (- Handle collision or profanity bypass.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 257.60 Tm (- Avatar upload XSS, oversized file, tracking pixel, or unsupported format.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 244.80 Tm (- Duplicate `sessionId` double-submit.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 232.00 Tm (- Score submit replayed across wallet, chain, build, gameId, or season.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 219.20 Tm (- Input log tampered after run.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 206.40 Tm (- Checksum interval too sparse to catch state edits.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 193.60 Tm (- RNG seed chosen/manipulated by player for favorable drops.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 180.80 Tm (- Client clock/time manipulation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 168.00 Tm (- Ranked run abandoned after payment/credit reservation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 155.20 Tm (- Network request succeeds but UI stays in submit-failed state, or vice versa.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 142.40 Tm (- Testnet receipt recorded without verifier signature.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 129.60 Tm (- Contract/event schema changes break old profiles.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 116.80 Tm (- Chain reorg or testnet RPC outage during submit.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 104.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade follow-up - page 5 of 7) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 4615 >>
+stream
+BT /F2 10.50 Tf 1 0 0 1 48.00 738.00 Tm (5.3 LitVM/EVM setup tests) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 724.00 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 709.70 Tm (Please specify tests for:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 696.90 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 682.60 Tm (- No provider installed.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 669.80 Tm (- Provider installed but locked.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 657.00 Tm (- Provider installed, wrong chain.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 644.20 Tm (- Provider installed, correct chain.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 631.40 Tm (- `wallet_switchEthereumChain` success.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 618.60 Tm (- `wallet_switchEthereumChain` user rejects.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 605.80 Tm (- `wallet_switchEthereumChain` unknown chain -> `wallet_addEthereumChain` success.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 593.00 Tm (- Add-chain rejection.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 580.20 Tm (- RPC unavailable.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 567.40 Tm (- Explorer link generation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 554.60 Tm (- Faucet/hub link generation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 541.80 Tm (- zkLTC gas balance absent/zero.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 529.00 Tm (- Testnet-only copy visible.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 516.20 Tm (- Real-funds disabled / no mainnet transaction path.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 503.40 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 486.10 Tm (6. Requested Claude output format) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 468.10 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 453.80 Tm (Please answer in this structure:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 441.00 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 426.70 Tm (1. **Executive build-risk summary** - top 10 risks before coding the v2 migration.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 413.90 Tm (2. **Design refinements** - concrete changes to v2, not general advice.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 401.10 Tm (3. **P0 vertical-slice spec** - exact enemy/skill/boss/UI minimums.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 388.30 Tm (4. **UX flow critique** - cabinet selection, wallet/profile, Free vs Ranked, game-over submit.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 375.50 Tm (5. **Exploit/failure matrix** - severity, likelihood, detection test, mitigation.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 362.70 Tm (6. **LitVM/EVM interoperability checklist** - wallet calls, chain params, sign/submit flow,) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 349.90 Tm (   test cases.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 337.10 Tm (7. **Implementation backlog** - P0/P1/P2 with acceptance criteria and suggested tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 324.30 Tm (8. **Open questions for Justin** - only the decisions that truly need owner approval.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 311.50 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 294.20 Tm (7. Non-negotiable constraints) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 276.20 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 261.90 Tm (- Do not recommend real funds, deployments, public launch, recurring automation, or commercial) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 249.10 Tm (  Litecoin branding as executable steps without explicit Justin approval.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 236.30 Tm (- Do not change persisted IDs casually: `gameId`, achievement IDs, leaderboard keys, profile) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 223.50 Tm (  schema keys.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 210.70 Tm (- Do not make ranked mode pay-to-win or different-RNG.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 197.90 Tm (- Do not co-mingle practice and official scores.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 185.10 Tm (- Do not ask for seed phrases/private keys.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 172.30 Tm (- Do not make future cabinets look broken; label them clearly as roadmap/coming-soon.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 159.50 Tm (- Keep Command Center/public materials neutral and avoid irrelevant personal handles/labels.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 146.70 Tm () Tj ET
+BT /F2 12.50 Tf 1 0 0 1 48.00 129.40 Tm (8. Starting implementation assumption for Hermes) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 111.40 Tm () Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 97.10 Tm (Unless you find a fatal flaw, Hermes will proceed after your next critique by updating) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 84.30 Tm (docs/tests first, then migrating runtime in small verified slices:) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 71.50 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade follow-up - page 6 of 7) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 940 >>
+stream
+BT /F1 9.20 Tf 1 0 0 1 48.00 738.00 Tm (1. Active genre/display-genre constants and legacy side-scroll deprecation shims.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 725.20 Tm (2. Free/ranked write-boundary tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 712.40 Tm (3. Controls contract tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 699.60 Tm (4. XP curve/draft/reroll tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 686.80 Tm (5. Threat-budget spawn-director tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 674.00 Tm (6. Score formula golden tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 661.20 Tm (7. LitVM chain-guard/wallet matrix tests.) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 648.40 Tm (8. UI flow smoke: wallet/profile -> cabinet select -> HMH -> Free/Ranked -> run -> pause ->) Tj ET
+BT /F1 9.20 Tf 1 0 0 1 48.00 635.60 Tm (   game over -> submit/exit.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade follow-up - page 7 of 7) Tj ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 18 0 R >>
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000162 00000 n 
+0000000232 00000 n 
+0000000307 00000 n 
+0000000375 00000 n 
+0000005057 00000 n 
+0000005203 00000 n 
+0000010350 00000 n 
+0000010496 00000 n 
+0000015517 00000 n 
+0000015665 00000 n 
+0000020751 00000 n 
+0000020899 00000 n 
+0000025511 00000 n 
+0000025659 00000 n 
+0000030327 00000 n 
+0000030475 00000 n 
+0000031467 00000 n 
+trailer
+<< /Size 20 /Root 1 0 R >>
+startxref
+31615
+%%EOF

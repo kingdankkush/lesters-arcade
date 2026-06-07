@@ -1,0 +1,1344 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R 33 0 R 35 0 R 37 0 R 39 0 R 41 0 R 43 0 R 45 0 R 47 0 R] /Count 21 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+6 0 obj
+<< /Length 4664 >>
+stream
+BT /F2 17.00 Tf 1 0 0 1 48.00 738.00 Tm (Hard Money Heroes / Lester's Arcade - Claude Opus 4.8) Tj ET
+BT /F2 17.00 Tf 1 0 0 1 48.00 716.00 Tm (Design Handoff) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 688.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 673.00 Tm (Generated: 2026-06-07T20:05:59Z) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 660.00 Tm (Repository: `C:/Users/just_/Desktop/Projects/Web3 Gaming/Lesters-Arcade`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 647.00 Tm (Primary source files inspected:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 634.00 Tm (- `AGENTS.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 621.00 Tm (- `PROJECT.md`, `DECISIONS.md`, `OPEN_QUESTIONS.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 608.00 Tm (- `docs/game-design/hard-money-heroes-canon.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 595.00 Tm (- `docs/game-design/hard-money-heroes-isometric-roguelike-pivot.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 582.00 Tm (- `docs/game-design/hard-money-heroes-pixellab-isometric-production-wave-1.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 569.00 Tm (- `docs/design/login-parent-system-ux.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 556.00 Tm (- `docs/architecture/build-stack-litvm-dappit.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 543.00 Tm (- `docs/contracts/README.md`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 530.00 Tm (- `apps/portal/src/arcade-core.mjs`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 517.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 502.00 Tm (Audience: Claude Opus 4.8. Purpose: analyze the current game/platform canon, identify) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 489.00 Tm (missing design detail, propose upgrades, and help turn the current playable/prototype) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 476.00 Tm (direction into a stronger isometric roguelike Web3 arcade cabinet.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 463.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 448.00 Tm (IMPORTANT CANON NOTE: The active direction as of 2026-06-07 is **isometric run-and-gun) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 435.00 Tm (roguelike / roguelite survival**. Older side-scroller/tactical side-scroller constants still) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 422.00 Tm (exist in code and should be treated as historical source material or biome/combat) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 409.00 Tm (inspiration unless explicitly migrated into the isometric design.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 396.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 381.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 362.00 Tm (1. Executive Summary) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 342.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 327.00 Tm (Lester's Arcade is the parent Web3 arcade portal. Hard Money Heroes is the first playable) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 314.00 Tm (child cabinet/game. The portal uses an EVM wallet as the durable player account, then lets) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 301.00 Tm (the player select cabinets, play free practice runs, or play ranked/paid runs that are) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 288.00 Tm (eligible for official leaderboards, achievements, profile progress, and transaction) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 275.00 Tm (receipts.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 262.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 247.00 Tm (Hard Money Heroes began as a Metal Slug-style side-scrolling run-and-gun but is actively) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 234.00 Tm (pivoting into an isometric roguelike survival shooter. The intended fantasy is: Lester drops) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 221.00 Tm (into Litecoin City After Dark, moves freely across procedural isometric chunks, survives) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 208.00 Tm (escalating enemies, earns XP from kills, pauses on level-up, chooses from two random) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 195.00 Tm (upgrades with one reroll, and builds toward a run that becomes overwhelming around the) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 182.00 Tm (20-minute mark.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 169.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 154.00 Tm (Primary design identity:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 141.00 Tm (- Parent portal: Lester's Arcade.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 128.00 Tm (- First cabinet: Hard Money Heroes.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 115.00 Tm (- Active genre: isometric-run-and-gun-roguelike.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 102.00 Tm (- World: Litecoin City After Dark.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 89.00 Tm (- Tone: goofy arcade mix with gritty Metal Slug-style satire.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 76.00 Tm (- Main hero: Lester.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 1 of 21) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 4210 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (- Future unlockable/alternate hero: Lilly.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm (- Free play: practice-only / local-only.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 712.00 Tm (- Ranked/paid play: official score, achievement, progress, and transaction path.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 699.00 Tm (- Prototype entry fee: $0.25 simulated credit.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 686.00 Tm (- Target network: LitVM LiteForge, chain ID 4441 \(0x1159\), gas token zkLTC.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 673.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 658.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 639.00 Tm (2. Authority Map and How Opus Should Read This Handoff) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 619.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 604.00 Tm (Use this precedence order:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 591.00 Tm (1. Active user direction and repo `AGENTS.md`: isometric roguelike pivot is active.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 578.00 Tm (2. `docs/game-design/hard-money-heroes-isometric-roguelike-pivot.md` and `docs/game-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 565.00 Tm (   design/hard-money-heroes-canon.md`.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 552.00 Tm (3. `apps/portal/src/arcade-core.mjs` for implemented constants, score formulas,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 539.00 Tm (   wallet/profile state, achievements, and current data model.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 526.00 Tm (4. Older side-scroller docs/constants only as reusable theme, names, balance inspiration,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 513.00 Tm (   not as final camera/level structure.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 500.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 485.00 Tm (Potential conflict to resolve:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 472.00 Tm (- Code still labels the playable cabinet genre as side-scrolling run-and-gun and keeps side-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 459.00 Tm (  scroller level plans.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 446.00 Tm (- The active design doc says those stages become procedural biome/theme material for the) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 433.00 Tm (  isometric roguelike.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 420.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 405.00 Tm (OPUS TASK: Normalize the docs and code model so future agents cannot accidentally keep) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 392.00 Tm (building the old side-scroller. Recommend exact renamed constants, compatibility shims, and) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 379.00 Tm (migration notes.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 366.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 351.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 332.00 Tm (3. Lester's Arcade Platform Model) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 312.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 297.00 Tm (Platform purpose) Tj ET
+BT /F2 17.00 Tf 1 0 0 1 48.00 282.00 Tm (Lester's Arcade) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 254.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 235.00 Tm (Purpose) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 215.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 200.00 Tm (Build a retro Litecoin-themed Web3 arcade portal where EVM-wallet players enter arcade) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 187.00 Tm (cabinets that are synced dapp games. Free play is casual/untracked; paid play unlocks) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 174.00 Tm (official leaderboards, achievements, tournaments, and revenue splits for infrastructure and) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 161.00 Tm (game developers.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 148.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 133.00 Tm (Parent/child structure) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 118.00 Tm (- Lester's Arcade is the parent arcade/account portal.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 105.00 Tm (- Each cabinet is a child dapp/cartridge.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 92.00 Tm (- Hard Money Heroes is the first playable cabinet.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 79.00 Tm (- Future cabinets currently listed: Lilly's Lightning Pinball, Block Brawler, Mega Lester /) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 2 of 21) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 4468 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (  other placeholders.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm (- The parent account owns wallet identity, player profile, per-game progress, official high) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 712.00 Tm (  scores, achievements, paid sessions, and future tournament/community rails.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 699.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 684.00 Tm (Public player flow) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 669.00 Tm (- connect-wallet) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 656.00 Tm (- select-game) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 643.00 Tm (- watch-or-skip-intro) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 630.00 Tm (- choose-mode) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 617.00 Tm (- begin-level) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 604.00 Tm (- play) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 591.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 576.00 Tm (Official app shell flow) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 561.00 Tm (- wallet-splash) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 548.00 Tm (- arcade-walk-in) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 535.00 Tm (- cabinet-select) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 522.00 Tm (- hard-money-heroes-intro) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 509.00 Tm (- mode-select) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 496.00 Tm (- level-one-intro) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 483.00 Tm (- begin-level) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 470.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 455.00 Tm (Navigation surfaces) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 440.00 Tm (| Nav | Purpose |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 431.00 Tm (| --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 422.00 Tm (| Play | Select Hard Money Heroes or future Lester arcade cabinets. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 413.00 Tm (| Profile | Edit username/avatar, view wallet-bound progress, achievements, and high scores. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 404.00 Tm (| Scores | Browse global boards plus the current wallet profile placement. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 395.00 Tm (| Settings | Controls, audio, accessibility, network status, and sign-out. |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 386.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 371.00 Tm (Cabinet roster in current shell) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 356.00 Tm (| Cabinet | Game ID | Status | Playable | Description |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 347.00 Tm (| --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 338.00 Tm (| Hard Money Heroes | lester-blaster | playable | True | The first playable Lester arcade cabinet: tactical run-and-gun) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 329.00 Tm (score survival on LitVM LiteForge. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 320.00 Tm (| Lilly Lightning | lilly-lightning | coming-soon | False | Future Lilly cabinet using the teal sprite direction. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 311.00 Tm (| Mempool Mayhem | mempool-mayhem | coming-soon | False | Future score-attack cabinet for wallet-profile expansion. |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 302.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 287.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 274.00 Tm (- Clarify whether future cabinets are real roadmap items or menu flavor.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 261.00 Tm (- Define how a third-party cabinet registers with the parent system.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 248.00 Tm (- Decide whether the portal should be branded primarily as Litecoin/LitVM or as a broader) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 235.00 Tm (  retro arcade with LitVM payment rails.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 222.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 207.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 188.00 Tm (4. Wallet Login, Player Profile, and Web3 Rails) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 168.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 153.00 Tm (Wallet network) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 138.00 Tm (- name: LitVM LiteForge) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 125.00 Tm (- status: public-testnet) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 112.00 Tm (- chainId: 4441) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 99.00 Tm (- chainIdHex: 0x1159) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 86.00 Tm (- explorerUrl: https://liteforge.explorer.caldera.xyz) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 73.00 Tm (- faucetUrl: https://liteforge.hub.caldera.xyz) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 3 of 21) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 4849 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (- portalUrl: https://testnet.litvm.com) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm (- Native gas token: zkLTC \(18 decimals\).) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 712.00 Tm (- RPC HTTP: https://liteforge.rpc.caldera.xyz/http) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 699.00 Tm (- RPC WebSocket: wss://liteforge.rpc.caldera.xyz/ws) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 686.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 671.00 Tm (Wallet connectors) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 656.00 Tm (| Connector | Label | Role | Prototype-safe |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 647.00 Tm (| --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 638.00 Tm (| injected-evm | Browser EVM wallet | preferred real-wallet connector for LitVM-compatible accounts | True |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 629.00 Tm (| mock-wallet | Mock local wallet | offline QA fallback when MetaMask/Rabby/etc. are unavailable | True |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 620.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 605.00 Tm (Read/write permissions) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 590.00 Tm (Read scopes:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 577.00 Tm (- wallet address) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 564.00 Tm (- chain id) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 551.00 Tm (- parent arcade profile) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 538.00 Tm (- child game progress) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 525.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 510.00 Tm (Write scopes for official paid/ranked play:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 497.00 Tm (- paid sessions) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 484.00 Tm (- profile progress) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 471.00 Tm (- achievements) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 458.00 Tm (- official scores) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 445.00 Tm (- transaction receipts) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 432.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 417.00 Tm (Free mode rule: free practice never writes progress, achievements, scores, or transactions) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 404.00 Tm (to the parent account) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 391.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 376.00 Tm (Paid mode rule: official paid runs create a parent-sync packet for progress, achievements,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 363.00 Tm (leaderboard, and receipt state) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 350.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 335.00 Tm (Chain guard states observed from current model) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 320.00 Tm (| Scenario status | Chain guard | Wallet | Copy |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 311.00 Tm (| --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 302.00 Tm (| mock-ready | mock-fallback | - | No injected EVM wallet detected. Mock fallback is available; real testnet play uses) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 293.00 Tm (LitVM LiteForge and faucet zkLTC. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 284.00 Tm (| ready | needs-wallet-connection | - | Connect MetaMask/Rabby on LitVM LiteForge \(Chain ID 4441\) or use the mock fallback) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 275.00 Tm (for offline QA. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 266.00 Tm (| connected-valid-chain | right-chain | 0x123456...345678 | LitVM LiteForge ready. Chain ID 4441 // gas token zkLTC //) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 257.00 Tm (faucet available for free testnet gas. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 248.00 Tm (| connected-wrong-chain | wrong-chain | 0x123456...345678 | Switch or add LitVM LiteForge in MetaMask/Rabby. Expected) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 239.00 Tm (Chain ID 4441 \(0x1159\); detected 0x1. |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 230.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 215.00 Tm (Profile model) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 200.00 Tm (A profile is created from the normalized wallet address. Current fields include:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 187.00 Tm (- wallet, handle, avatar, rank, XP, joinedAt) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 174.00 Tm (- achievements array) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 161.00 Tm (- totalPaidRuns and totalFreeRuns) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 148.00 Tm (- per-game progress records: best paid score, best free score, paid/free run counts, longest) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 135.00 Tm (  run, best distance, kills, grenade kills, melee kills, boss kills, perfect boss kills,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 122.00 Tm (  cumulative seconds, power-ups, max combo, max damage combo, enemy kills by type, weapons) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 109.00 Tm (  used, unique power-ups, bosses defeated, last session ID/time) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 96.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 4 of 21) Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 4598 >>
+stream
+BT /F2 11.00 Tf 1 0 0 1 48.00 738.00 Tm (Profile settings rules) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 723.00 Tm (- walletIsPrimaryKey: True) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 710.00 Tm (- walletLockCopy: Progress, high scores, achievements, uploads, and official paid-run) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 697.00 Tm (  submissions are assigned to the connected wallet. Sign out to use a different wallet.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 684.00 Tm (- Username: editable, 3-18 chars, appears on leaderboards.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm (- Avatar: editable/uploadable, square 150px target, appears on leaderboards.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 658.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 643.00 Tm (Revenue split) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 628.00 Tm (Entry fee: $0.25 in prototype micro-USDC units.) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 615.00 Tm (| Bucket | BPS | Percent |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 606.00 Tm (| --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 597.00 Tm (| infrastructure | 4000 | 40% |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 588.00 Tm (| developer | 3500 | 35% |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 579.00 Tm (| tournament | 1500 | 15% |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 570.00 Tm (| community | 1000 | 10% |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 561.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 546.00 Tm (Intended contract modules) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 531.00 Tm (- PlayerProfileRegistry: identity/profile shell.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 518.00 Tm (- GameRegistry: official cabinet records and developer/economy settings.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 505.00 Tm (- ArcadePaymentRouter: paid sessions and revenue splits.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 492.00 Tm (- ScoreSubmissionRegistry: official score records from trusted verifier.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 479.00 Tm (- AchievementRegistry: achievement definitions and unlocks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 466.00 Tm (- TournamentPool: future competition windows and prize accounting.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 453.00 Tm (- LestersArcadeCore: composition wrapper.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 440.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 425.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 412.00 Tm (- Decide first real paid asset: USDC, zkLTC, ETH, LTC, or multi-asset routing.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 399.00 Tm (- Decide if handles are globally unique and moderated.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 386.00 Tm (- Decide if achievements remain off-chain, become ERC-1155 badges, or use a hybrid.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 373.00 Tm (- Define anti-cheat/verifier trust model before real prizes or paid play.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 360.00 Tm (- Confirm current LitVM RPC/chain/faucet/token addresses from official docs before) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 347.00 Tm (  deployment.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 334.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 319.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 300.00 Tm (5. Free vs Ranked/Paid State Boundaries) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 280.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 265.00 Tm (Free practice:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 252.00 Tm (- No cost.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 239.00 Tm (- Local/practice score only.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 226.00 Tm (- No official leaderboard entry.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 213.00 Tm (- No achievement unlocks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 200.00 Tm (- No parent progress writes.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 187.00 Tm (- No payment/transaction record.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 174.00 Tm (- Useful for onboarding and QA.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 161.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 146.00 Tm (Ranked/paid:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 133.00 Tm (- Uses the wallet-bound profile.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 120.00 Tm (- Requires the ranked/testnet flow.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 107.00 Tm (- Creates a paid session with entry fee, lives, revenue split, and write scopes.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 94.00 Tm (- At score submission, updates parent progress, achievements, official leaderboard,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 81.00 Tm (  transaction/payment history, and official session history.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 68.00 Tm (- Current verifier status: prototype-local-unverified.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 5 of 21) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 4618 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (- Next verifier step: replace simulated transaction hashes with LitVM receipts and verifier-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm (  signed score summaries.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 712.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 697.00 Tm (Official leaderboard rules:) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 684.00 Tm (| Field | Value |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 675.00 Tm (| --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 666.00 Tm (| Cadences | daily, weekly, monthly, yearly, all-time |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 657.00 Tm (| Views | global-top, my-placement, friends-future |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 648.00 Tm (| Submission trigger | game-over-score-submit |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 639.00 Tm (| Official mode only | True |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 630.00 Tm (| On-chain payload | gameId, score, username, wallet, avatarUri, cadence, chainId, runReceipt |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 621.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 606.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 593.00 Tm (- Make the game-over official score submit an explicit player action, not an automatic) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 580.00 Tm (  hidden write.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 567.00 Tm (- Define how the app handles disconnects, wrong-chain status, duplicate submits, and) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 554.00 Tm (  abandoned paid sessions.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 541.00 Tm (- Define whether free-mode local scores should be visible only inside the current browser) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 528.00 Tm (  session or saved locally with a non-official label.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 515.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 500.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 481.00 Tm (6. Game Theory / Player Motivation / Strategic Loop) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 461.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 446.00 Tm (Core player motivations:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 433.00 Tm (- Mastery: survive longer as enemy pressure escalates.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 420.00 Tm (- Buildcraft: choose upgrades that create a different run identity each session.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 407.00 Tm (- Skill expression: movement, aim, kiting, melee risk, throwable timing, boss patterns, and) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 394.00 Tm (  pickup routing.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 381.00 Tm (- Score attack: optimize kills, combos, boss clears, coins, power-ups, no-damage windows,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 368.00 Tm (  and survival time.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 355.00 Tm (- Social proof: official leaderboards and achievements tied to wallet identity.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 342.00 Tm (- Low-friction onboarding: free play is safe and untracked; ranked play is opt-in.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 329.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 314.00 Tm (Risk/reward surfaces:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 301.00 Tm (- Close-range Litecoin Blade can one-shot weak enemies but exposes the player.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 288.00 Tm (- Crypto Bombs and Hard Forks can solve crowds or elites but need scarcity/cooldown tuning.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 275.00 Tm (- XP shards/coins force movement decisions: collect now under pressure or kite enemies) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 262.00 Tm (  first.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 249.00 Tm (- Power-up routes create short-term opportunity vs long-term survival safety.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 236.00 Tm (- Ranked mode adds official reputation/score stakes without changing core mechanics.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 223.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 208.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 195.00 Tm (- Add an explicit scoring strategy guide: what should top players optimize?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 182.00 Tm (- Decide whether the intended meta is survival time, score efficiency, boss kills, or build) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 169.00 Tm (  diversity.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 156.00 Tm (- Add anti-addiction/ethical design guardrails: clear exit ramps, no dark-pattern spend) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 143.00 Tm (  loops, no pay-to-win stat upgrades.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 130.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 115.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 6 of 21) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 4302 >>
+stream
+BT /F2 13.00 Tf 1 0 0 1 48.00 734.00 Tm (7. Active Game Loop and Core Mechanics) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 714.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 699.00 Tm (Isometric roguelike target) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 684.00 Tm (- Camera projection: isometric.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm (- Tile size: 64x32.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 658.00 Tm (- Follow mode: free-roam-map-centered-on-player.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 645.00 Tm (- Movement model: 8-way-directional-free-roam.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 632.00 Tm (- Directions: N, NE, E, SE, S, SW, W, NW.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 619.00 Tm (- Aim model: mouse-directional-run-and-gun.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 606.00 Tm (- Projectile space: world-x-y converted through isometric projection at render time.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 593.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 578.00 Tm (Run loop) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 563.00 Tm (1. Player enters a procedural isometric combat zone.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 550.00 Tm (2. Enemies spawn outside the safe radius and pressure the player.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 537.00 Tm (3. Player kills enemies for XP and score.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 524.00 Tm (4. XP shards/gems or direct XP fill the XP bar.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 511.00 Tm (5. Level-up pauses gameplay.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 498.00 Tm (6. Two random upgrade options appear.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 485.00 Tm (7. Player may use one reroll per level-up event.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 472.00 Tm (8. Choosing a skill immediately applies stats and resumes the run.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 459.00 Tm (9. Difficulty ramps toward an intended 20-minute survival ceiling.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 446.00 Tm (10. Free/ranked mode determines whether the final result remains local or can be submitted) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 433.00 Tm (   officially.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 420.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 405.00 Tm (Controls - active target for isometric design) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 390.00 Tm (- WASD / left stick: 8-way movement.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 377.00 Tm (- Mouse / right stick: aim direction.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 364.00 Tm (- Left click / right trigger: fire.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 351.00 Tm (- Reload: automatic when empty, optional manual reload.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 338.00 Tm (- Dash/evade: optional after core movement/combat works.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 325.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 310.00 Tm (Current legacy/tactical controls still in code) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 295.00 Tm (| Action | Keyboard |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 286.00 Tm (| --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 277.00 Tm (| Move left/right | A/D or arrows |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 268.00 Tm (| Crouch | Control / S / ArrowDown |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 259.00 Tm (| Jump | Space |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 250.00 Tm (| Shoot | Left Click |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 241.00 Tm (| Melee | E / Right Click |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 232.00 Tm (| Throwable | F |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 223.00 Tm (| Reload | R |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 214.00 Tm (| Swap weapon | Q |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 205.00 Tm (| Pause | Enter |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 196.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 181.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 168.00 Tm (- Replace side-scroll controls with the final isometric/twin-stick control contract.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 155.00 Tm (- Decide if shooting is always manual aim, auto-fire toward nearest enemy, or hybrid) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 142.00 Tm (  accessibility mode.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 129.00 Tm (- Decide whether dash is in the MVP or a later skill/unlock.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 116.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 101.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 7 of 21) Tj ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 5488 >>
+stream
+BT /F2 13.00 Tf 1 0 0 1 48.00 734.00 Tm (8. Procedural Level / World Design) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 714.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 699.00 Tm (Active world: Litecoin City After Dark) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 686.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm (World pitch: A neon-drenched cyberpunk metropolis built on the bones of a failed financial) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 658.00 Tm (system.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 645.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 630.00 Tm (Atmosphere: perpetual night, rain-slicked streets, holographic ticker tape, glass towers) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 617.00 Tm (pulsing with market data) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 604.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 589.00 Tm (The old authored levels are now best treated as biome/theme pools for procedural chunks:) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 576.00 Tm (| Biome/theme | Route/source | Boss/source | Design purpose |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 567.00 Tm (| --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 558.00 Tm (| Level 1 - The Slums | Underchain District -> Industrial Foundry | The Rug Pull Baron | FUD Goblins, Paper Hands, Rug) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 549.00 Tm (Rats, Honeypot Turrets, Gas Fee Wisps, Slippage Skaters |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 540.00 Tm (| Level 2 - The Tower | Financial District -> Vertical Skyscraper Ascent | The Influencer \(Mr. NGMI\) | Bot Swarm \(Sybil) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 531.00 Tm (Drones\), Phishing Anglers, MEV Reapers, Honeypot Turrets |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 522.00 Tm (| Level 3 - The Getaway | Bullet Train Interior -> Rooftop Finale | The Quantum Hacker | Slippage Skaters, Paper Hands,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 513.00 Tm (Honeypot Turrets, MEV Reapers, Liquidation Cascade Golems, Gas Fee Wisps, Bot Swarms |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 504.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 489.00 Tm (Current environment data in code:) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 476.00 Tm (| Environment | Window | Mood | Hazards |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 467.00 Tm (| --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 458.00 Tm (| The Slums: Underchain District | 0-2 min | tight, claustrophobic neon alleys where rugged players survive under broken) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 449.00 Tm (1000x billboards | steam grates, flickering scam signs, cheap platforms yanked by Rug Rats |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 440.00 Tm (| The Slums: Industrial Foundry | 2-5 min | counterfeit token factory of molten mint furnaces, hydraulic presses, and) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 431.00 Tm (smelt-pits | moving conveyor floor, smelt-pits, hydraulic press timing gates |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 422.00 Tm (| The Tower: Financial District Ascent | 5-10 min | chrome-and-black-glass extraction machine dressed as legitimacy |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 413.00 Tm (atrium drops, elevator edge hooks, server-rack flank corridors |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 404.00 Tm (| The Tower: Penthouse Rain | 10-13 min | open-air rain, influencer ring-light glow, and the entire city below | bot) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 395.00 Tm (shield swarms, sponsored-post bombs, open-air knockback edges |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 386.00 Tm (| The Getaway: Mainnet Express | 13-20 min | bullet train chase through neon night, luxury cars, vault cars, engine) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 377.00 Tm (machinery, and rooftop rain | wind knockback, sparking breached car, passing-pylon light flicker, train-bank camera shake) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 368.00 Tm (|) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 359.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 344.00 Tm (Procedural generator direction:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 331.00 Tm (- Pick a biome/stage theme.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 318.00 Tm (- Assemble 16x16 isometric chunks around the player/camera area.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 305.00 Tm (- Place navigable ground, collision footprints, props, hazards, and pickups.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 292.00 Tm (- Maintain a spawn-safe radius around the player.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 279.00 Tm (- Spawn enemies outside the immediate camera-safe radius.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 266.00 Tm (- Stream/recycle chunks as the player moves.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 253.00 Tm (- Handle depth sorting/occlusion for buildings, trees, signs, cars, crates, and props.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 240.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 225.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 212.00 Tm (- Define tile/chunk schema: floor, collision, wall footprint, prop footprint, hazard, spawn) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 199.00 Tm (  lane, pickup lane, exit/streaming boundary.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 186.00 Tm (- Define exact safe spawn radius and camera radius.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 173.00 Tm (- Define how biomes transition during a single 20-minute run.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 160.00 Tm (- Clarify whether bosses create temporary arenas inside the procedural map.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 147.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 132.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 8 of 21) Tj ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 20 0 R >>
+endobj
+22 0 obj
+<< /Length 6443 >>
+stream
+BT /F2 13.00 Tf 1 0 0 1 48.00 734.00 Tm (9. Characters) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 714.00 Tm () Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 699.00 Tm (| Character | Role | Unlock/status | Tagline | Art direction |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 690.00 Tm (| --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 681.00 Tm (| Lester | main playable Hard Money Hero | starter | Rambo-like Litecoin City commando walking against the panic. | high-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 672.00 Tm (detail 16-bit/Neo-Geo chunky commando silhouette, clean Litecoin blue/silver hero accents, optional rain/cyberpunk grime,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 663.00 Tm (readable blade arc and muzzle flashes. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 654.00 Tm (| Lilly | future unlockable alternate art hero | future unlockable; setup after Lester production sprite pass | Same) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 645.00 Tm (moveset as Lester, new sprite/personality pass later. | match Lester gameplay silhouette and hitbox while swapping the) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 636.00 Tm (visible character art/sprites. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 627.00 Tm (| Max Mempool | parked future character concept | parked; not part of current Hard Money Heroes canon | Retained as a non-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 618.00 Tm (canon placeholder until Justin approves a third hero. | chunky arcade bruiser placeholder only; do not produce final) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 609.00 Tm (assets until approved. |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 600.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 585.00 Tm (Current canon details:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 572.00 Tm (- Lester is the starter/main playable Hard Money Hero.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 559.00 Tm (- Lilly is a future unlockable alternate hero with the same moveset, hitbox, and gameplay) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 546.00 Tm (  stats as Lester, but different art/personality.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 533.00 Tm (- Max Mempool exists in current source as a parked placeholder concept and should not become) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 520.00 Tm (  active canon unless Justin approves.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 507.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 492.00 Tm (Animation needs for isometric pivot:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 479.00 Tm (- Idle, run/move, aim/shoot/attack in 8 directions.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 466.00 Tm (- Reload/recover where relevant.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 453.00 Tm (- Hurt/stagger front/back/side at minimum; ideally 8 directions.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 440.00 Tm (- Death/defeat variants.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 427.00 Tm (- Special/boss attacks where direction matters.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 414.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 399.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 386.00 Tm (- Flesh out Lester and Lilly personality, barks, silhouette, and build identity.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 373.00 Tm (- Decide if Lilly is a skin, same-stat character, or a different class after unlock.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 360.00 Tm (- Do not expose Lilly as playable until unlock/design is approved.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 347.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 332.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 313.00 Tm (10. Enemy Catalog, AI Behaviors, and Spawn Timing) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 293.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 278.00 Tm (Current source has 12 enemy entries.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 265.00 Tm () Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 250.00 Tm (| Enemy | Class | HP | DMG | SPD | Score | Spawns after | AI archetype | Attacks | Tell |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 241.00 Tm (| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 232.00 Tm (| FUD Goblin | grunt | 7 | 7 | 1.8 | 80 | 0 | swarm-shambler | slow-sell-arc, swarm-body-block | mouth opens with SELL) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 223.00 Tm (bubble wind-up |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 214.00 Tm (| Gas Fee Wisp | hazard-flyer | 10 | 8 | 2.2 | 140 | 35 | hover-taxer | resource-tax, sticky-tar-puddle | gas-pump body) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 205.00 Tm (glows before taxing |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 196.00 Tm (| Paper Hands | panic-melee | 12 | 9 | 2 | 120 | 0 | panic-charge-flee | wild-melee, ally-collision-chaos | crumpled hands) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 187.00 Tm (shake before charge |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 178.00 Tm (| Crypto Bro | kol-ranged-grunt | 18 | 12 | 1.9 | 210 | 55 | taunt-strafe-shooter | phone-taunt-shot, jump-back-flex,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 169.00 Tm (close-knife-panic | phone screen flashes before the shot/taunt |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 160.00 Tm (| Gas Beast | armored-bruiser | 32 | 16 | 0.95 | 340 | 115 | gas-cloud-area-denial | gas-tax-pulse, slow-claw-swipe,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 151.00 Tm (short-hop-body-check | chest vents glow orange before gas pulse |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 142.00 Tm (| Bot Swarm \(Sybil Drones\) | formation-flyer | 9 | 10 | 2.4 | 150 | 80 | parent-drone-formation | formation-laser-ping,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 133.00 Tm (parent-drone-scatter | blank wallet face flashes red target dot |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 124.00 Tm (| Rug Rat | disruptor | 8 | 7 | 3.3 | 130 | 70 | platform-yanker | platform-yank, low-dash-knockback | tiny rolled rug) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 115.00 Tm (lifts before dash |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 106.00 Tm (| Honeypot Turret | stationary-trap | 18 | 13 | 0 | 220 | 90 | loot-bait-trap | short-range-spread, clamp-burst | too-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 97.00 Tm (perfect loot glow pulses twice |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 88.00 Tm (| Slippage Skater | mid-tier-rusher | 20 | 14 | 3.6 | 260 | 130 | overshoot-u-turn | slide-rush, overshoot-return | skates) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 79.00 Tm (spark before line rush |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 70.00 Tm (| Phishing Angler | zoning-hook | 24 | 16 | 1.2 | 300 | 180 | fake-wallet-lure | connect-wallet-lure, hook-reel | glowing) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 9 of 21) Tj ET
+endstream
+endobj
+23 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 22 0 R >>
+endobj
+24 0 obj
+<< /Length 6737 >>
+stream
+BT /F3 6.70 Tf 1 0 0 1 48.00 738.00 Tm (Connect Wallet lure appears before hook is active |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 729.00 Tm (| MEV Reaper | elite-flanker | 34 | 19 | 3 | 420 | 240 | sandwich-pincer | two-sided-pincer, same-frame-blade-strike | two) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 720.00 Tm (shadows split to either side |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 711.00 Tm (| Liquidation Cascade Golem | armored-elite | 54 | 24 | 0.9 | 560 | 360 | slow-armored-shockwave | armored-stomp, death-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 702.00 Tm (cascade-shockwave | block stack flashes margin-call red before collapse |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 693.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 678.00 Tm (AI role state machine) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 663.00 Tm (Required states: spawn, seek, telegraph, attack, recover, reposition, defeated.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 650.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 635.00 Tm (Global fairness:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 622.00 Tm (- maxActiveAttackers: 2) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 609.00 Tm (- minTelegraphFrames: 24) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 596.00 Tm (- recoveryFramesAfterAttack: 20) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 583.00 Tm (- readableTellRule: Every damaging action must spend telegraph frames on-screen before) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 570.00 Tm (  collision or projectile release.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 557.00 Tm (- roleCapRule: Prefer fewer active attackers with stronger tells; staged rooms should not) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 544.00 Tm (  dogpile more than two simultaneous attacks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 531.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 516.00 Tm (Role summaries:) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 503.00 Tm (| Role | Preferred range / rule | Tells | Counters |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 494.00 Tm (| --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 485.00 Tm (| Cover Shooter | mid | muzzle flash, attack-windup-bar, cover peek frame | crouch, jump lane, destroy cover, grenade |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 476.00 Tm (| Melee Rusher | close | shake pose, lunge crouch, yellow attack bar | jump, blade timing, knockback shot |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 467.00 Tm (| Flyer Harasser | upper-mid |  | jump timing, anti-air shots, safe-lane read |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 458.00 Tm (| Armored Pressure | Armored enemies move slowly, telegraph heavily, and reward rare weapons or explosives instead of spam) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 449.00 Tm (fire. |  | Hash Rail, grenade, cover bait, vertical reposition |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 440.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 425.00 Tm (Spawn director samples from current model) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 410.00 Tm (| Time | Pressure | Interval | Max enemies | Chase share | Ranged share | Elite share | Projectile mult | Health mult |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 401.00 Tm (Label |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 392.00 Tm (| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 383.00 Tm (| 0m | 0 | 3.2 | 12 | 0.68 | 0.22 | 0.01 | 1 | 1 | opening |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 374.00 Tm (| 2m | 0.1 | 2.92 | 22 | 0.66 | 0.26 | 0.04 | 1.08 | 1.21 | opening |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 365.00 Tm (| 5m | 0.25 | 2.51 | 37 | 0.64 | 0.31 | 0.09 | 1.21 | 1.52 | volatile |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 356.00 Tm (| 10m | 0.5 | 1.81 | 62 | 0.59 | 0.4 | 0.17 | 1.43 | 2.05 | market-crash |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 347.00 Tm (| 15m | 0.75 | 1.12 | 87 | 0.55 | 0.48 | 0.24 | 1.64 | 2.58 | panic |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 338.00 Tm (| 20m | 1 | 0.42 | 112 | 0.5 | 0.57 | 0.32 | 1.85 | 3.1 | survival-wall |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 329.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 314.00 Tm (Enemy spawn sample outputs) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 299.00 Tm (| Time | Enemy | Role | Environment | Scaled HP | Scaled DMG | Tier | Tell frames |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 290.00 Tm (| --- | --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 281.00 Tm (| 0s | Paper Hands | meleeRusher | The Slums: Underchain District | 15 | 10 | 1 | 25 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 272.00 Tm (| 35s | Paper Hands | meleeRusher | The Slums: Underchain District | 15 | 10 | 1 | 25 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 263.00 Tm (| 70s | Gas Fee Wisp | flyerHarasser | The Slums: Underchain District | 12 | 9 | 1 | 25 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 254.00 Tm (| 115s | Rug Rat | coverShooter | The Slums: Underchain District | 10 | 8 | 1 | 25 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 245.00 Tm (| 180s | Phishing Angler | coverShooter | The Slums: Underchain District | 33 | 19 | 2 | 26 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 236.00 Tm (| 240s | Gas Beast | armoredPressure | The Slums: Industrial Foundry | 44 | 19 | 2 | 27 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 227.00 Tm (| 360s | Phishing Angler | coverShooter | The Slums: Industrial Foundry | 37 | 20 | 3 | 28 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 218.00 Tm (| 600s | Paper Hands | meleeRusher | The Tower: Financial District Ascent | 23 | 13 | 5 | 30 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 209.00 Tm (| 900s | Honeypot Turret | coverShooter | The Tower: Penthouse Rain | 41 | 21 | 7 | 32 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 200.00 Tm (| 1200s | FUD Goblin | coverShooter | The Getaway: Mainnet Express | 19 | 13 | 9 | 34 |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 191.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 176.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 163.00 Tm (- Several enemy names in generated PixelLab assets differ from current canon \(e.g. Trench) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 150.00 Tm (  Degen, Evil Banker, Warren Spear Rider, Bit Whale, Chain Reaper\). Decide whether to add) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 137.00 Tm (  them as official enemies/bosses or map them to existing archetypes.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 124.00 Tm (- Add one-paragraph lore/gameplay descriptions for every enemy.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 111.00 Tm (- Define spawn weights by time, biome, and run pressure.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 98.00 Tm (- Define elite modifiers: shielded, fast, burning trail, splitting, explosive death,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 85.00 Tm (  projectile fan, summoner aura.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 72.00 Tm (- Define power budget so max enemies on map does not become unreadable before the 20-minute) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 10 of 21) Tj ET
+endstream
+endobj
+25 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 24 0 R >>
+endobj
+26 0 obj
+<< /Length 7260 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (  wall.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 710.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 691.00 Tm (11. Boss Roster and Boss Pressure) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 656.00 Tm (Target boss count: 10.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 643.00 Tm () Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 628.00 Tm (| Boss | Specialty | Unlock/source | Stages | Attack patterns | Super moves |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 619.00 Tm (| --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 610.00 Tm (| The Rug Pull Baron | tilting rug arena reveals grinding foundry press | Level 1 boss | phase-1-pattern-learn,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 601.00 Tm (phase-2-arena-shift, phase-3-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 592.00 Tm (safe-lane-sweep, homing-orb | screen-wide-warning-blast, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 583.00 Tm (| Mt. Goxzilla | withdrawals-paused beam and offline weak point | exchange-ruin kaiju | phase-1-pattern-learn,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 574.00 Tm (phase-2-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions, safe-lane-sweep | screen-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 565.00 Tm (wide-warning-blast, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 556.00 Tm (| The Whale | market-dump pressure waves and flooded platforming | wave-management boss | phase-1-pattern-learn,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 547.00 Tm (phase-2-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions, safe-lane-sweep, homing-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 538.00 Tm (orb | screen-wide-warning-blast, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 529.00 Tm (| Sir FUD, the Bear King | red-candlestick warhammer, goblin summons, burning floor zones | bear-market knight |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 520.00 Tm (phase-1-pattern-learn, phase-2-arena-shift, phase-3-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 511.00 Tm (shockwave, summon-minions, safe-lane-sweep | screen-wide-warning-blast, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 502.00 Tm (| The 51% Hydra | mining-rig heads and central consensus node puzzle | mechanic-puzzle boss | phase-1-pattern-learn,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 493.00 Tm (phase-2-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions, safe-lane-sweep, homing-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 484.00 Tm (orb | screen-wide-warning-blast, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 475.00 Tm (| Tetherra, the Stable Queen | peg-pillar invulnerability and depeg panic fire | reserve-pillar boss | phase-1-pattern-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 466.00 Tm (learn, phase-2-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions, safe-lane-sweep |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 457.00 Tm (screen-wide-warning-blast, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 448.00 Tm (| The Maximalist | corrupted Lester mirror duel using player-like moveset | skill-check duel | phase-1-pattern-learn,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 439.00 Tm (phase-2-arena-shift, phase-3-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 430.00 Tm (safe-lane-sweep, homing-orb | screen-wide-warning-blast, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 421.00 Tm (| Gas Titan \(The Congestion\) | fee spike floor hazards with low-fee damage windows | timing boss | phase-1-pattern-learn,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 412.00 Tm (phase-2-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions, safe-lane-sweep | screen-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 403.00 Tm (wide-warning-blast, multi-lane-bullet-hell, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 394.00 Tm (| The Influencer \(Mr. NGMI\) | Sybil Swarm shield, shill beams, sponsored-post bombs | Level 2 penthouse boss |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 385.00 Tm (phase-1-pattern-learn, phase-2-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-shockwave, summon-minions,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 376.00 Tm (safe-lane-sweep, homing-orb | screen-wide-warning-blast, multi-lane-bullet-hell, desperation-dash-chain |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 367.00 Tm (| The Quantum Hacker | three fork phases, illusions, vault damage race, leaked seed-phrase reveal | Level 3 final boss |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 358.00 Tm (phase-1-pattern-learn, phase-2-arena-shift, phase-3-enrage | lane-charge, lobbed-projectiles, ranged-burst, floor-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 349.00 Tm (shockwave, summon-minions, safe-lane-sweep | screen-wide-warning-blast, multi-lane-bullet-hell, desperation-dash-chain |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 340.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 325.00 Tm (Current boss phase rules:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 312.00 Tm (- mini-boss and boss doors pause side scrolling until defeated) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 299.00 Tm (- phase transition pauses side scroll and changes arena hazards) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 286.00 Tm (- boss super moves require unique wind-up, audio siren, and safe-lane readability) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 273.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 258.00 Tm (Boss cadence in current source:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 245.00 Tm (- Boss interval target: every 3-5 minutes.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 232.00 Tm (- Scheduler checks 4-minute windows and can spawn during the first 75 seconds of a boss) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 219.00 Tm (  window after the minimum time.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 206.00 Tm (- Current side-scroll language says scroll locks; active isometric pivot should reinterpret) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 193.00 Tm (  this as temporary arena boundaries, boss hazard zones, or spatial pressure inside) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 180.00 Tm (  procedural chunks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 167.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 152.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 139.00 Tm (- Write a full boss design sheet for each boss: silhouette, arena effect, phases,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 126.00 Tm (  telegraphs, adds, safe zones, counterplay, reward, achievement hooks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 113.00 Tm (- Decide first boss for vertical slice; probably The Rug Pull Baron or a new isometric-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 100.00 Tm (  friendly mini-boss from PixelLab assets.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 87.00 Tm (- Define whether normal enemies keep spawning during boss events and at what capped budget.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 74.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 11 of 21) Tj ET
+endstream
+endobj
+27 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 26 0 R >>
+endobj
+28 0 obj
+<< /Length 5231 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 719.00 Tm (12. Weapons, Combat Moves, and Combat Effects) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 699.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 684.00 Tm (Weapon naming principle: hybrid arcade weapon names with crypto twist; function-first, not) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm (exhausting pun-first) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 658.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 643.00 Tm (Primary weapons / upgrades) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 628.00 Tm (| Weapon | ID | Type | Rarity | DMG | Pellets | Fire rate | Reload | Range | Ammo | Best for |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 619.00 Tm (| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 610.00 Tm (| The Settler | coin-blaster | starter | starter | 3 | - | 5.8 | 0.7 | mid | infinite | baseline enemy waves and always-) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 601.00 Tm (has-a-way-out fallback combat |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 592.00 Tm (| The Block Breaker | scatter-shotgun | weapon-pickup | uncommon | 2 | 7 | 2.3 | 1.1 | short cone | 30 | close-range) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 583.00 Tm (swarms, room clears, and mini-boss armor chips |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 574.00 Tm (| The Hashstorm | auto-miner | weapon-pickup | uncommon | 2 | - | 10.5 | 1.4 | mid-long stream | 90 | Bot Swarms,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 565.00 Tm (Liquidation cascades, and holding a line under pressure |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 556.00 Tm (| Spread LTC | spread-ltc | upgrade | rare | 2 | 5 | 3.8 | 0.9 | short-mid cone | timed upgrade | crowd control and flying) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 547.00 Tm (swarms |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 538.00 Tm (| Hash Rail | hash-rail | upgrade | rare | 9 | - | 1.6 | 1.8 | long piercing beam | timed upgrade | armored enemies,) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 529.00 Tm (bosses, and lane clears |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 520.00 Tm (| Oracle Slayer | oracle-slayer | weapon-pickup | super-rare | 24 | - | 1.1 | 2.4 | full-screen charged shot | 6 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 511.00 Tm (emergency boss phase deletes and master-run clutch moments |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 502.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 487.00 Tm (Melee) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 472.00 Tm (- Name: The Litecoin Blade.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 459.00 Tm (- Damage: 8.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 446.00 Tm (- Range: 58 px.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 433.00 Tm (- Cooldown: 320 ms.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 420.00 Tm (- One-shots: fud-goblin, paper-hand.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 407.00 Tm (- Animation: three-frame clean silver arc-trail slash with LTC spark stamp on successful) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 394.00 Tm (  close-range kills; optional gore only if enabled pre-run) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 381.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 366.00 Tm (Throwables) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 351.00 Tm (| Throwable | ID | Damage | Radius | Fuse | Role |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 342.00 Tm (| --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 333.00 Tm (| Crypto Bombs | satoshi-frag | 14 | 92 | 650 | AOE throwable |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 324.00 Tm (| Hard Forks | chain-cluster | 9 | 40 | 0 | precision straight-line throwable axe |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 315.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 300.00 Tm (Named combat moves to polish) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 285.00 Tm (- Settler Shot: default aimed sidearm fire.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 272.00 Tm (- Block Breaker Blast: shotgun cone / close-range crowd clear.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 259.00 Tm (- Hashstorm Spray: full-auto suppressive fire.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 246.00 Tm (- Litecoin Blade Slash: close-range melee finisher.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 233.00 Tm (- Crypto Bomb Toss: arcing AOE throwable.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 220.00 Tm (- Hard Fork Throw: precision straight-line axe throw.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 207.00 Tm (- Hash Rail Charge: long piercing beam pickup.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 194.00 Tm (- Oracle Slayer Shot: rare full-screen charged shot.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 181.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 166.00 Tm (Effects and gore rules) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 151.00 Tm (Sparks/effects always enabled:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 138.00 Tm (- alwaysEnabled: True) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 125.00 Tm (- style: silver LTC sparks, orange impact sparks, shell casings, muzzle flashes, electric) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 112.00 Tm (  drone shards) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 99.00 Tm (- readabilityRole: always-on feedback for hits, parries, pickups, and enemy deaths even when) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 86.00 Tm (  gore is disabled) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 73.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 12 of 21) Tj ET
+endstream
+endobj
+29 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 28 0 R >>
+endobj
+30 0 obj
+<< /Length 5643 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (Blood/gore:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm (- enabledByDefault: False) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 712.00 Tm (- toggleBeforeRun: True) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 699.00 Tm (- style: stylized pixel blood splatter and dismemberment chunks only after explicit pre-run) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 686.00 Tm (  toggle) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 673.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 658.00 Tm (Weapon effects:) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 645.00 Tm (| Effect | Description |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 636.00 Tm (| --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 627.00 Tm (| Weapon muzzle flash | two-frame yellow/white/blue flash at barrel |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 618.00 Tm (| Shell casings | small brass pixels ejected downward on gunfire |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 609.00 Tm (| Litecoin Blade sparks | silver slash arc plus orange impact sparks; optional gore if enabled |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 600.00 Tm (| Block Breaker smoke cone | short-lived grey/orange pixel cloud |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 591.00 Tm (| Hash Rail afterimage | cyan beam trail and screen line persistence |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 582.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 567.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 554.00 Tm (- Decide final move names, cooldowns, ammo/reload rules, and how each weapon scales with) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 541.00 Tm (  roguelike skills.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 528.00 Tm (- Define hitboxes in world/isometric space rather than side-view pixels.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 515.00 Tm (- Add damage typing: bullet, blade, explosive, electric, burn, chain, boss-specific.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 502.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 487.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 468.00 Tm (13. Power-ups and Pickups) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 448.00 Tm () Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 433.00 Tm (| Power-up | ID | Category | Effect | Amount/mult | Duration | Rarity | Sprite brief |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 424.00 Tm (| --- | --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 415.00 Tm (| Cold Storage | health-pack | health | heal | 35 | - | common | glowing blue hardware-wallet medkit with white LTC) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 406.00 Tm (heartbeat glow |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 397.00 Tm (| Crypto Bomb Cache | grenade-crate | ammo | grenades | 2 | - | common | matte-black bomb cache stamped with small blue) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 388.00 Tm (LTC |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 379.00 Tm (| Extra Hard Money Hero | bonus-life | life | life | 1 | - | rare | tiny Lester head icon with silver-blue halo |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 370.00 Tm (| Spread LTC Chip | spread-ltc-chip | weapon | weapon | - | 18 | uncommon | cyan fan chip |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 361.00 Tm (| Hash Rail Core | hash-rail-core | weapon | weapon | - | 14 | rare | glowing white/cyan core |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 352.00 Tm (| 2x Hard Money Multiplier | score-multiplier | score | scoreMultiplier | 2 | 20 | uncommon | gold x2 token with subtle) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 343.00 Tm (blue rim |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 334.00 Tm (| Cold Wallet Shield | shield-cache | defense | shield | 1 | 12 | uncommon | hovering blue-and-silver hex barrier device |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 325.00 Tm (| Ammo Cache | ammo-cache | ammo | ammo | 30 | - | common | silver magazine crate with orange hazard stripe |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 316.00 Tm (| LTC Cache | ltc-cache | score | scoreBonus | 500 | - | common | sparkling silver coin pile used as pickup accent, not) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 307.00 Tm (wallpaper |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 298.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 283.00 Tm (Current pickup mechanics from code:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 270.00 Tm (- Heal caps at max health.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 257.00 Tm (- Grenade crates add grenades.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 244.00 Tm (- Bonus lives add lives only if lives are finite.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 231.00 Tm (- Weapon pickups temporarily replace the primary weapon and add activePowerUps with) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 218.00 Tm (  duration.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 205.00 Tm (- Score multiplier raises the current score multiplier for its duration.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 192.00 Tm (- Shield cache adds shield charges.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 179.00 Tm (- Ammo cache adds reserve ammo.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 166.00 Tm (- LTC Cache adds pending score bonus.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 153.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 138.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 125.00 Tm (- Define actual drop rates by enemy, biome, elite, boss, and luck stat.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 112.00 Tm (- Define XP shard pickup behavior separately from score/LTC pickup behavior.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 99.00 Tm (- Add spawn safety rules so power-ups do not appear inside walls or under enemy death) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 86.00 Tm (  clutter.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 73.00 Tm (- Decide if health/power-up scarcity should change in ranked mode or only by difficulty) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 13 of 21) Tj ET
+endstream
+endobj
+31 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 30 0 R >>
+endobj
+32 0 obj
+<< /Length 7323 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (  pressure.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 710.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 691.00 Tm (14. XP, Level-Up, and Skill Unlock Mechanics) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 656.00 Tm (Confirmed rules:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 643.00 Tm (- Kills grant XP or drop XP gems/shards.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 630.00 Tm (- Base XP per kill in current model: 12.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 617.00 Tm (- XP curve: level cost starts at 100 XP and rises by 25 XP per level.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 604.00 Tm (- Level-up pauses gameplay.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 591.00 Tm (- Each level-up offers exactly 2 upgrade options.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 578.00 Tm (- Each level-up gives 1 reroll.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 565.00 Tm (- Skills: 40 total.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 552.00 Tm (- Levels per skill: 5.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 539.00 Tm (- Default stat step: 5% per rank.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 526.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 511.00 Tm (Current implementation details:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 498.00 Tm (- Level 1 XP cost starts at 100.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 485.00 Tm (- Cost rises by 25 per level.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 472.00 Tm (- Upgrade choices are seeded, random-looking, and exclude maxed skills.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 459.00 Tm (- Applying a skill increments the skill rank, adds +5% to that skill's stat, unpauses) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 446.00 Tm (  gameplay, and clears pending upgrade choices.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 433.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 418.00 Tm (Skill library \(40 skills x 5 levels\)) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 403.00 Tm (| Skill | ID | Category | Stat | Max | %/rank | Description |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 394.00 Tm (| --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 385.00 Tm (| Damage Alpha | damage-alpha | offense | damage | 5 | 5 | +5% weapon damage per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 376.00 Tm (| Rate of Fire | rate-of-fire | offense | rateOfFire | 5 | 5 | +5% fire-rate per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 367.00 Tm (| Reload Hands | reload-hands | offense | reloadSpeed | 5 | 5 | +5% reload speed per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 358.00 Tm (| Street Runner | move-speed | mobility | movementSpeed | 5 | 5 | +5% movement speed per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 349.00 Tm (| Diamond Hands HP | max-health | defense | maxHealth | 5 | 5 | +5% max health per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 340.00 Tm (| Cold Wallet Armor | armor | defense | armor | 5 | 5 | +5% damage reduction per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 331.00 Tm (| Magnet Wallet | pickup-radius | utility | pickupRadius | 5 | 5 | +5% XP pickup radius per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 322.00 Tm (| Wisdom Candles | xp-gain | economy | xpGain | 5 | 5 | +5% XP gained per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 313.00 Tm (| Crit Candle | critical-chance | offense | criticalChance | 5 | 5 | +5% critical chance budget per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 304.00 Tm (| Crit Multiplier | critical-damage | offense | criticalDamage | 5 | 5 | +5% critical damage per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 295.00 Tm (| Tracer Velocity | bullet-speed | offense | bulletSpeed | 5 | 5 | +5% projectile speed per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 286.00 Tm (| Fat Rounds | bullet-size | offense | bulletSize | 5 | 5 | +5% projectile size per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 277.00 Tm (| Piercing Ledger | pierce | offense | pierce | 5 | 5 | +5% pierce budget per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 268.00 Tm (| Multi-Sig Burst | multishot | offense | multishot | 5 | 5 | +5% multishot chance per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 259.00 Tm (| Spread Control | spread-control | offense | spreadControl | 5 | 5 | +5% spread control per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 250.00 Tm (| Hard Rejection | knockback | control | knockback | 5 | 5 | +5% knockback per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 241.00 Tm (| Dash Settlement | dash-cooldown | mobility | dashCooldown | 5 | 5 | +5% dash cooldown recovery per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 232.00 Tm (| Gap Runner | dash-distance | mobility | dashDistance | 5 | 5 | +5% dash distance per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 223.00 Tm (| Self Custody Regen | health-regen | defense | healthRegen | 5 | 5 | +5% regeneration budget per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 214.00 Tm (| Shield Capacity | shield-capacity | defense | shieldCapacity | 5 | 5 | +5% shield capacity per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 205.00 Tm (| Frag Yield | grenade-damage | throwable | grenadeDamage | 5 | 5 | +5% grenade damage per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 196.00 Tm (| Fast Fuse | grenade-cooldown | throwable | grenadeCooldown | 5 | 5 | +5% throwable cooldown recovery per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 187.00 Tm (| Blast Radius | area-size | throwable | areaSize | 5 | 5 | +5% area size per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 178.00 Tm (| Buff Duration | duration | utility | duration | 5 | 5 | +5% buff duration per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 169.00 Tm (| Green Candle Luck | luck | economy | luck | 5 | 5 | +5% drop luck per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 160.00 Tm (| Reroll Bank | reroll-bank | economy | rerollBank | 5 | 5 | +5% reroll economy per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 151.00 Tm (| Hard Money Score | coin-score | economy | scoreMultiplier | 5 | 5 | +5% score multiplier per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 142.00 Tm (| Mempool Tar | enemy-slow | control | enemySlow | 5 | 5 | +5% enemy slow power per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 133.00 Tm (| Hot Wallet Burn | burn-damage | status | burnDamage | 5 | 5 | +5% burn damage per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 124.00 Tm (| Chain Lightning | chain-lightning | status | chainLightning | 5 | 5 | +5% chain proc budget per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 115.00 Tm (| Satellite Wallets | orbitals | summon | orbitals | 5 | 5 | +5% orbital uptime per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 106.00 Tm (| Drone Damage | drone-damage | summon | droneDamage | 5 | 5 | +5% drone damage per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 97.00 Tm (| Turret Speed | turret-speed | summon | turretSpeed | 5 | 5 | +5% turret fire-rate per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 88.00 Tm (| Boss Breaker | boss-damage | offense | bossDamage | 5 | 5 | +5% boss damage per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 79.00 Tm (| Elite Breaker | elite-damage | offense | eliteDamage | 5 | 5 | +5% elite damage per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 70.00 Tm (| Contact Punish | contact-damage | defense | contactDamage | 5 | 5 | +5% contact retaliation per rank. |) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 14 of 21) Tj ET
+endstream
+endobj
+33 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 32 0 R >>
+endobj
+34 0 obj
+<< /Length 4942 >>
+stream
+BT /F3 6.70 Tf 1 0 0 1 48.00 738.00 Tm (| I-Frame Ledger | invulnerability | defense | invulnerability | 5 | 5 | +5% invulnerability duration per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 729.00 Tm (| Second Wallet | revive | defense | revive | 5 | 5 | +5% revive budget per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 720.00 Tm (| Loot Quality | loot-quality | economy | lootQuality | 5 | 5 | +5% upgrade rarity weight per rank. |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 711.00 Tm (| Global Cooldown | cooldown-global | utility | globalCooldown | 5 | 5 | +5% global cooldown recovery per rank. |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 702.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 687.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 674.00 Tm (- Add rarity/weight per skill; current model treats all skills equally.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 661.00 Tm (- Add evolved/build-defining upgrades beyond flat +5% stats.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 648.00 Tm (- Define mutually exclusive branches or synergies if desired.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 635.00 Tm (- Define whether some skills require achievements, character selection, or weapon pickups.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 622.00 Tm (- Add UI copy/icon prompts for every skill and rank indicator.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 609.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 594.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 575.00 Tm (15. Scoring System) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 555.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 540.00 Tm (Current scoring formula from code:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 527.00 Tm (- Survival: elapsed seconds x 8.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 514.00 Tm (- Distance: inferred or provided meters x 2. If distance is absent, inferred as elapsed) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 501.00 Tm (  seconds x 2.7.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 488.00 Tm (- Kills: kills x 95.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 475.00 Tm (- Bosses: bosses defeated x 1,500.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 462.00 Tm (- Combo: max kill combo x 85 + max damage combo x 3 + no-damage seconds x 4.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 449.00 Tm (- Power-ups: power-ups collected x 175.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 436.00 Tm (- Upgrades: unique weapon upgrades x 325 + 750 rare weapon bonus.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 423.00 Tm (- Coins: coins collected x 15.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 410.00 Tm (- Difficulty: difficulty tier x 120.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 397.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 382.00 Tm (Score examples from current formula) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 367.00 Tm (| Scenario | Total | Survival | Distance | Kills | Bosses | Combo | PowerUps | Upgrades | Coins | Difficulty |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 358.00 Tm (| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 349.00 Tm (| 3-minute learner run | 6062 | 1440 | 972 | 1710 | 0 | 755 | 350 | 325 | 270 | 240 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 340.00 Tm (| 8-minute strong run | 22962 | 3840 | 2592 | 8075 | 1500 | 2475 | 1225 | 1725 | 1050 | 480 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 331.00 Tm (| 18-minute master survival | 60207 | 8640 | 5832 | 24700 | 6000 | 5700 | 3150 | 2375 | 2850 | 960 |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 322.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 307.00 Tm (Leaderboard model:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 294.00 Tm (- Top 10 entries per game in current in-memory prototype.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 281.00 Tm (- Sorting: highest score first, then earlier recordedAt.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 268.00 Tm (- Official eligibility requires paid/ranked session and future verifier-signed score) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 255.00 Tm (  summary.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 242.00 Tm (- Season cadences: daily, weekly, monthly, yearly, all-time.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 229.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 214.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 201.00 Tm (- Rebalance score for roguelike survival: distance may be less meaningful than time, kills,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 188.00 Tm (  elite kills, boss kills, build level, and risk modifiers.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 175.00 Tm (- Add anti-farming constraints if enemies can spawn infinitely.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 162.00 Tm (- Decide if no-damage scoring encourages fun or creates degenerate passive play.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 149.00 Tm (- Add score normalization for different characters/loadouts if future characters diverge) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 136.00 Tm (  statistically.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 123.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 108.00 Tm () Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 15 of 21) Tj ET
+endstream
+endobj
+35 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 34 0 R >>
+endobj
+36 0 obj
+<< /Length 7903 >>
+stream
+BT /F2 13.00 Tf 1 0 0 1 48.00 734.00 Tm (16. Achievements and Unlockables) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 714.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 699.00 Tm (Total achievements in source: 50.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 686.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm (Tier counts:) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 658.00 Tm (| Tier | Count |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 649.00 Tm (| --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 640.00 Tm (| bronze | 10 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 631.00 Tm (| silver | 10 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 622.00 Tm (| gold | 10 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 613.00 Tm (| platinum | 10 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 604.00 Tm (| diamond | 5 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 595.00 Tm (| mythic | 5 |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 586.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 571.00 Tm (Unlockable rewards currently listed:) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 558.00 Tm (| Unlockable | Type | Unlock condition |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 549.00 Tm (| --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 540.00 Tm (| Classic Lester Jacket | skin | starter |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 531.00 Tm (| Litecoin Silver Armor | skin | score 10,000+ in paid mode |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 522.00 Tm (| Lilly Alternate Hero | character | future unlockable after Lester sprite pass |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 513.00 Tm (| Max Mempool Placeholder | character | parked concept, not current canon |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 504.00 Tm (| Hashstorm Permanent Loadout | weapon | Hashstorm Specialist achievement |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 495.00 Tm (| Mainnet Express Rooftop Jukebox Track | music | survive 15 minutes |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 486.00 Tm (| Boss Rush Marquee | cabinet-art | defeat five bosses |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 477.00 Tm (| Untouchable Boss Badge | profile-badge | no-damage boss clear |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 468.00 Tm (| Boss Concept Gallery | gallery | encounter all ten bosses |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 459.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 444.00 Tm (Full achievement list) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 429.00 Tm (| Achievement | ID | Tier | Difficulty | Type | Requirement |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 420.00 Tm (| --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 411.00 Tm (| Cabinet Pioneer | cabinet-pioneer | bronze | easy | login | {"login":true} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 402.00 Tm (| First Paid Run | first-paid-run | bronze | easy | paid-run | {"paidRuns":1} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 393.00 Tm (| First 1,000 Points | first-1000-points | bronze | easy | score | {"score":1000} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 384.00 Tm (| First Blood | first-blood | bronze | easy | kill | {"kills":1} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 375.00 Tm (| Ten-Enemy Cleanup | ten-enemy-kills | bronze | easy | kill | {"kills":10} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 366.00 Tm (| Crypto Bomb Initiate | first-grenade-kill | bronze | easy | grenade | {"grenadeKills":1} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 357.00 Tm (| Pickup Ready | first-powerup | bronze | easy | collection | {"powerUpsCollected":1} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 348.00 Tm (| Beat Level 1 Boss | beat-level-1-boss | bronze | easy | boss | {"bossId":"any"} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 339.00 Tm (| Five-Minute Fighter | five-minute-run | bronze | easy | survival | {"elapsedSeconds":300} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 330.00 Tm (| Combo Starter | combo-starter | bronze | easy | combo | {"maxCombo":5} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 321.00 Tm (| Gas Beast Hunter | gas-beast-hunter | silver | medium | enemy-hunt | {"enemyId":"gas-beast","cumulativeKills":50} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 312.00 Tm (| Goblin Cleanup | goblin-cleanup | silver | medium | enemy-hunt | {"family":"goblin","cumulativeKills":75} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 303.00 Tm (| Drone Swatter | drone-swatter | silver | medium | enemy-hunt | {"family":"drone","cumulativeKills":60} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 294.00 Tm (| Grenade Century | grenade-century | silver | medium | grenade | {"cumulativeGrenadeKills":100} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 285.00 Tm (| Blade Master | blade-master | silver | medium | melee | {"cumulativeMeleeKills":100} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 276.00 Tm (| Hash Rail Specialist | hash-rail-specialist | silver | medium | weapon | {"weaponId":"hash-rail"} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 267.00 Tm (| Spread LTC Specialist | spread-ltc-specialist | silver | medium | weapon | {"weaponId":"spread-ltc"} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 258.00 Tm (| Power-Up Collector | powerup-collector | silver | medium | collection | {"uniquePowerUps":3} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 249.00 Tm (| 5K Scorecard | score-5000 | silver | medium | score | {"score":5000} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 240.00 Tm (| 10K Neon Run | score-10000 | silver | medium | score | {"score":10000} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 231.00 Tm (| Boss Breaker | boss-breaker | gold | hard | boss | {"bossId":"any"} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 222.00 Tm (| Untouchable Boss Clear | no-damage-boss | gold | hard | skill | {"bossId":"any","noDamage":true} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 213.00 Tm (| Slums Clear | slums-clear | gold | hard | level-clear | {"stageIndexReached":4} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 204.00 Tm (| Foundry Clear | foundry-clear | gold | hard | level-clear | {"stageIndexReached":8} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 195.00 Tm (| Getaway Clear | getaway-clear | gold | hard | level-clear | {"stageIndexReached":13,"bossId":"any"} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 186.00 Tm (| Big Combo | big-combo | gold | hard | combo | {"maxCombo":15} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 177.00 Tm (| Damage Chain | damage-chain | gold | hard | combo | {"maxDamageCombo":250} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 168.00 Tm (| Weapon Collector | weapon-collector | gold | hard | collection | {"uniqueWeapons":3} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 159.00 Tm (| Lucky Survivor | lucky-survivor | gold | hard | survival | {"elapsedSeconds":600,"lowHealthSurvival":true} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 150.00 Tm (| Ranked Regular | ten-paid-runs | gold | hard | volume | {"paidRuns":10} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 141.00 Tm (| Master Survivor | master-survivor | platinum | expert | survival | {"elapsedSeconds":900} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 132.00 Tm (| 25K Riot | score-25000 | platinum | expert | score | {"score":25000} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 123.00 Tm (| 50K Legend Run | score-50000 | platinum | expert | score | {"score":50000} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 114.00 Tm (| Glass Cannon Saint | no-damage-10-minutes | platinum | expert | skill | {"elapsedSeconds":600,"noDamage":true} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 105.00 Tm (| Full Boss Roster Scouted | all-bosses-scouted | platinum | expert | collection | {"bossesDefeatedCount":10} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 96.00 Tm (| Enemy Reaper 250 | enemy-reaper-250 | platinum | expert | kill | {"cumulativeKills":250} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 87.00 Tm (| Enemy Reaper 500 | enemy-reaper-500 | platinum | expert | kill | {"cumulativeKills":500} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 78.00 Tm (| Grenade Demolitionist | grenade-demolitionist | platinum | expert | grenade | {"cumulativeGrenadeKills":250} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 69.00 Tm (| Blade Samurai | blade-samurai | platinum | expert | melee | {"cumulativeMeleeKills":250} |) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 16 of 21) Tj ET
+endstream
+endobj
+37 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 36 0 R >>
+endobj
+38 0 obj
+<< /Length 6115 >>
+stream
+BT /F3 6.70 Tf 1 0 0 1 48.00 738.00 Tm (| Power-Up Hoarder | powerup-hoarder | platinum | expert | collection | {"cumulativePowerUps":250} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 729.00 Tm (| Ranked Regular+ | ranked-regular | diamond | long-haul | volume | {"paidRuns":50} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 720.00 Tm (| Boss Rush Ten | boss-rush-ten | diamond | long-haul | boss | {"cumulativeBossKills":10} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 711.00 Tm (| Speed Clear | speed-clear | diamond | long-haul | skill | {"bossId":"any","elapsedSecondsAtMost":480} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 702.00 Tm (| Hard Fork Hero | hard-fork-hero | diamond | long-haul | grenade | {"stageIndexReached":13,"grenadeKills":20} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 693.00 Tm (| 30-Combo Signal | max-combo-30 | diamond | long-haul | combo | {"maxCombo":30} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 684.00 Tm (| 200 Ranked Runs | two-hundred-ranked-runs | mythic | endgame | volume | {"paidRuns":200} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 675.00 Tm (| 250 Ranked Runs | two-fifty-ranked-runs | mythic | endgame | volume | {"paidRuns":250} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 666.00 Tm (| Marathon Wallet | marathon-wallet | mythic | endgame | volume | {"cumulativeSeconds":36000} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 657.00 Tm (| Perfect Boss Gauntlet | perfect-boss-gauntlet | mythic | endgame | skill | {"perfectBossKills":3} |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 648.00 Tm (| Arcade Legend 500 | arcade-legend-500 | mythic | endgame | volume | {"paidRuns":500} |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 639.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 624.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 611.00 Tm (- Re-map side-scroller achievements like Slums Clear / Foundry Clear / Getaway Clear to) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 598.00 Tm (  isometric biome milestones or timed boss/arena clears.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 585.00 Tm (- Decide which achievements unlock cosmetics, characters, music, cabinet art, or profile) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 572.00 Tm (  badges.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 559.00 Tm (- Decide if achievements are purely wallet/profile metadata or mintable badges.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 546.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 531.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 512.00 Tm (17. Balancing Sheet) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 492.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 477.00 Tm (Difficulty ramp samples from current model) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 462.00 Tm (| Time | Tier | AI level | Spawn mult | Projectile mult | Player health mult | Power-up scarcity | Bonus life chance |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 453.00 Tm (Boss freq mult |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 444.00 Tm (| --- | --- | --- | --- | --- | --- | --- | --- | --- |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 435.00 Tm (| 0s | 1 | 1 | 1 | 1 | 1 | 0 | 0.18 | 1 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 426.00 Tm (| 120s | 1 | 2 | 1.3333333333333333 | 1.2 | 0.9299999999999999 | 0.08 | 0.16399999999999998 | 1.25 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 417.00 Tm (| 300s | 3 | 3 | 1.8333333333333335 | 1.5 | 0.825 | 0.2 | 0.13999999999999999 | 1.625 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 408.00 Tm (| 600s | 5 | 6 | 2.666666666666667 | 2 | 0.6499999999999999 | 0.4 | 0.09999999999999999 | 2.25 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 399.00 Tm (| 900s | 7 | 8 | 3.5 | 2.5 | 0.475 | 0.6 | 0.06 | 2.875 |) Tj ET
+BT /F3 6.70 Tf 1 0 0 1 48.00 390.00 Tm (| 1200s | 9 | 10 | 4.333333333333334 | 3 | 0.35 | 0.8 | 0.02 | 3.5 |) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 381.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 366.00 Tm (Current hard numbers) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 351.00 Tm (- Target FPS: see performance target.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 338.00 Tm (- Target survival run: 20 minutes.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 325.00 Tm (- Pressure curve minute marks: 0, 3, 5, 10, 15, 20.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 312.00 Tm (- Skill stat step: +5% per rank.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 299.00 Tm (- Skill count/ranks: 40 skills x 5 ranks = 200 possible ranks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 286.00 Tm (- Base XP per kill: 12.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 273.00 Tm (- XP cost: 100 + 25 per level after level 1.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 260.00 Tm (- Health model in legacy combat: paid lives 3, free lives Infinity, invulnerability 900ms.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 247.00 Tm (- Current tactical side-scroll room guidance: 0-4 enemies on screen, 56-frame spawn delay,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 234.00 Tm (  132-frame ranged cooldown, 100% player HP with 5% normal hit damage.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 221.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 206.00 Tm (Balance questions for Opus) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 191.00 Tm (1. What should a new player's median survival time be after 3 runs?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 178.00 Tm (2. Should the 20-minute wall be a hard win, soft overwhelm, or endless scaling breakpoint?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 165.00 Tm (3. How often should level-ups occur at 1, 5, 10, 15, and 20 minutes?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 152.00 Tm (4. How many upgrades should a strong 20-minute run earn?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 139.00 Tm (5. Should flat +5% ranks remain, or should each skill have bespoke per-rank values?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 126.00 Tm (6. What is the desired enemy density ceiling for readability?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 113.00 Tm (7. Should bosses reward large score bursts, unique skills, or only achievements?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 100.00 Tm (8. Should ranked mode alter spawn/drop RNG, or use identical mechanics with official) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 87.00 Tm (   tracking only?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 74.00 Tm (9. What anti-cheat data must be captured for replay/verification?) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 17 of 21) Tj ET
+endstream
+endobj
+39 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 38 0 R >>
+endobj
+40 0 obj
+<< /Length 4395 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (10. How should free local scores be visually separated from official paid scores?) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 710.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 691.00 Tm (18. Art, Animation, Audio, and Asset Pipeline Status) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm () Tj ET
+BT /F2 11.00 Tf 1 0 0 1 48.00 656.00 Tm (PixelLab isometric production wave 1) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 641.00 Tm (- Jobs manifest: `apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 628.00 Tm (  wave-1-jobs.json`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 615.00 Tm (- Runtime manifest: `apps/portal/assets/generated/hmh-isometric-pixellab/hmh-isometric-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 602.00 Tm (  pixellab-wave-1.mjs`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 589.00 Tm (- Contact sheet: `apps/portal/assets/generated/hmh-isometric-pixellab/contact-sheets/hmh-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 576.00 Tm (  isometric-pixellab-wave-1-contact-sheet.png`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 563.00 Tm (- Job counts: `{"completed": 35, "failed": 16}`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 550.00 Tm (- Local PNG count discovered: `105`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 537.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 522.00 Tm (Current completed asset groups include:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 509.00 Tm (- 8-direction Lester isometric hero.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 496.00 Tm (- 8-direction Lilly isometric alt hero.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 483.00 Tm (- 8-direction enemy/boss candidates: Trench Degen Chaser, Evil Banker Ranged Shooter, Crypto) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 470.00 Tm (  Bro Rusher, Gas Beast Tank, Rugpull Summoner, Warren Spear Rider Mini-boss, Bit Whale) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 457.00 Tm (  Boss, Chain Reaper Boss.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 444.00 Tm (- Isometric floor/road tiles: asphalt, sidewalk, alley, foundry metal, rooftop tar,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 431.00 Tm (  financial plaza, sewer grate, neon puddle, curb, chainlink footprint, stairs/ramp, road) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 418.00 Tm (  markings.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 405.00 Tm (- Props: dumpster, garbage can, wood crate, streetlight, traffic barricade, blank neon sign,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 392.00 Tm (  terminal kiosk, vending machine, dead urban tree, cyber palm tree, broken car.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 379.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 364.00 Tm (Failed/missing from Wave 1 include several important gameplay/UI assets:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 351.00 Tm (- Explosive barrel.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 338.00 Tm (- XP shard.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 325.00 Tm (- Health pack.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 312.00 Tm (- Ammo pack.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 299.00 Tm (- Crypto bomb.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 286.00 Tm (- Muzzle flash.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 273.00 Tm (- Impact sparks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 260.00 Tm (- Projectile trail.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 247.00 Tm (- Level-up burst.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 234.00 Tm (- Boss telegraph ring.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 221.00 Tm (- Upgrade card frame.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 208.00 Tm (- Level-up modal frame.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 195.00 Tm (- Reroll button frame.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 182.00 Tm (- Mobile controls.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 169.00 Tm (- XP bar frame.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 156.00 Tm (- 8-direction cabinet and loot crate objects.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 143.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 128.00 Tm (Audio direction:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 115.00 Tm (- Brand spine: synthwave.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 102.00 Tm (- Combat: darksynth / arcade-techno.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 89.00 Tm (- Bosses: heavier riffs, alarms, industrial percussion, phase stingers.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 76.00 Tm (- Voice bark examples: THE SETTLER, BLOCK BREAKER, HASHSTORM, MISSION COMPLETE, HARD MONEY) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 18 of 21) Tj ET
+endstream
+endobj
+41 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 40 0 R >>
+endobj
+42 0 obj
+<< /Length 4563 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (  HERO.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 710.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 697.00 Tm (- Decide which PixelLab actors become official canon names vs reference-only generation) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 684.00 Tm (  labels.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 671.00 Tm (- Write a manifest-ready acceptance checklist for each asset: dimensions, directions,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 658.00 Tm (  anchors, collision footprints, hitboxes, QA status.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 645.00 Tm (- Define sound effects for XP pickup, level-up, reroll, elite spawn, boss warning, and) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 632.00 Tm (  official score submit.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 619.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 604.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 585.00 Tm (19. Current Technical Implementation Surfaces) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 565.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 550.00 Tm (Current architecture:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 537.00 Tm (- Portal: vanilla HTML/CSS/JavaScript.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 524.00 Tm (- Gameplay: Canvas/Web Canvas prototype.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 511.00 Tm (- State/tests: JavaScript modules + Node test runner.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 498.00 Tm (- Contracts: Solidity MVP skeletons.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 485.00 Tm (- Web3 network target: LitVM LiteForge public testnet.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 472.00 Tm (- Smart-contract helper candidate: dappit.io.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 459.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 444.00 Tm (Primary source module:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 431.00 Tm (- `apps/portal/src/arcade-core.mjs`) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 418.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 403.00 Tm (Important exported constants/functions for future agents:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 390.00 Tm (- Canon/constants: HARD_MONEY_HEROES_CANON, LESTER_BLASTER_ISOMETRIC_ROGUELIKE,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 377.00 Tm (  LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY, LESTER_BLASTER_ENEMY_CATALOG,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 364.00 Tm (  LESTER_BLASTER_BOSS_SYSTEM, LESTER_BLASTER_POWER_UPS, LESTER_BLASTER_WEAPON_SYSTEM.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 351.00 Tm (- Platform: LESTER_ARCADE_WALLET_RAILS, LESTERS_ARCADE_V2_APP_SHELL,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 338.00 Tm (  LITVM_LITEFORGE_NETWORK.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 325.00 Tm (- State: createInitialArcadeState, createPlayerProfile, connectPlayerAccount,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 312.00 Tm (  startPlaySession, recordScore, buildPlayerArcadeSnapshot.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 299.00 Tm (- Roguelike: buildIsometricRoguelikeRunConfig, createRoguelikeRunState, grantRoguelikeXp,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 286.00 Tm (  chooseRoguelikeUpgradeOptions, applyRoguelikeSkillUpgrade, getRoguelikeSpawnDirectorAt.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 273.00 Tm (- Balance/scoring: getLesterBlasterDifficultyAt, chooseEnemySpawn, scheduleBossEncounter,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 260.00 Tm (  calculateLesterBlasterScore, simulateLesterBlasterRun.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 247.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 232.00 Tm (Recommended verification commands from repo docs:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 219.00 Tm (- npm test) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 206.00 Tm (- npm run check) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 193.00 Tm (- npm run contracts:check) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 180.00 Tm (- npm run assets:verify) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 167.00 Tm (- npm run smoke:portal) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 154.00 Tm (- npm run smoke:portal:interactions) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 141.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 126.00 Tm (OPUS NOTES:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 113.00 Tm (- Recommend a migration plan that moves isometric design from docs into tests, constants,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 100.00 Tm (  runtime, and UI without breaking current portal flow.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 87.00 Tm (- Add tests that assert active genre/camera/XP/level-up/free-vs-ranked behavior so old side-) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 74.00 Tm (  scroll assumptions do not reappear.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 19 of 21) Tj ET
+endstream
+endobj
+43 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 42 0 R >>
+endobj
+44 0 obj
+<< /Length 4638 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 723.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 704.00 Tm (20. Claude Opus 4.8 Work Packet: Missing Areas to Fill) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 684.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 669.00 Tm (High-priority missing design details:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 656.00 Tm (1. Final roguelike design pillars and one-paragraph pitch.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 643.00 Tm (2. Full enemy descriptions, silhouette notes, AI patterns, spawn weights, elite variants,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 630.00 Tm (   and biome-specific spawn pools.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 617.00 Tm (3. First 3 bosses as complete sheets with phase-by-phase attacks and counterplay.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 604.00 Tm (4. Skill rarity, weights, synergies, evolved upgrades, and non-flat effects.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 591.00 Tm (5. Power-up drop tables and pickup spawn rules.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 578.00 Tm (6. Procedural chunk schema with collision, props, hazards, safe spawn radius, and biome) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 565.00 Tm (   transitions.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 552.00 Tm (7. Score rebalance for isometric survival.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 539.00 Tm (8. Achievement remap from side-scroller stages to roguelike milestones.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 526.00 Tm (9. Anti-cheat/verifier strategy for official ranked score submission.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 513.00 Tm (10. UI states for level-up modal, reroll, XP bar, boss warning, game over, official score) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 500.00 Tm (   submit, and wallet/profile panels.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 487.00 Tm (11. Fullscreen behavior: browser Fullscreen API, canvas resizing, HUD/menu scaling, Esc) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 474.00 Tm (   behavior.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 461.00 Tm (12. Art acceptance checklist for 8-way sprites, VFX, props, and tiles.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 448.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 433.00 Tm (Suggested Opus output format:) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 420.00 Tm (- Section A: contradictions and stale assumptions.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 407.00 Tm (- Section B: upgraded game design spec.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 394.00 Tm (- Section C: balancing recommendations with tables.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 381.00 Tm (- Section D: enemy/boss design sheets.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 368.00 Tm (- Section E: wallet/platform/anti-cheat recommendations.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 355.00 Tm (- Section F: prioritized implementation backlog with P0/P1/P2 tasks.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 342.00 Tm (- Section G: tests/verification needed before next handoff.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 329.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 314.00 Tm (Do not recommend live funds, contract deployment, recurring automations, or public launch) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 301.00 Tm (changes without explicit Justin approval.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 288.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 273.00 Tm () Tj ET
+BT /F2 13.00 Tf 1 0 0 1 48.00 254.00 Tm (21. Open Questions Already in Repo) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 234.00 Tm () Tj ET
+BT /F2 17.00 Tf 1 0 0 1 48.00 219.00 Tm (Open Questions) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 191.00 Tm () Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 176.00 Tm (- [ ] Confirm LitVM current RPC URL, chain ID, faucet/testnet bridge, and supported) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 163.00 Tm (  stablecoin/token addresses before any contract deployment.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 150.00 Tm (- [ ] Decide first real paid asset: USDC on LitVM, zkLTC, ETH, or multi-asset routing.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 137.00 Tm (- [ ] Decide whether player handles are unique globally and whether they require) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 124.00 Tm (  moderation/reservation.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 111.00 Tm (- [ ] Decide whether achievements start as off-chain records, ERC-1155 badges, or hybrid.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 98.00 Tm (- [ ] Define anti-cheat tolerance for MVP: trusted verifier only, replay upload,) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 85.00 Tm (  deterministic input log, or server simulation.) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 72.00 Tm (- [x] Choose first cabinet name: **Hard Money Heroes**.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 20 of 21) Tj ET
+endstream
+endobj
+45 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 44 0 R >>
+endobj
+46 0 obj
+<< /Length 374 >>
+stream
+BT /F1 9.40 Tf 1 0 0 1 48.00 738.00 Tm (- [ ] Decide Lester/Lilly art ownership/licensing and get written brand/legal sign-off) Tj ET
+BT /F1 9.40 Tf 1 0 0 1 48.00 725.00 Tm (  before any commercial Litecoin-logo/name-heavy/LTC-heavy or pay-to-play launch usage.) Tj ET
+BT /F1 7.00 Tf 1 0 0 1 48.00 28.00 Tm (Hard Money Heroes / Lester's Arcade handoff - page 21 of 21) Tj ET
+endstream
+endobj
+47 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 46 0 R >>
+endobj
+xref
+0 48
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000261 00000 n 
+0000000331 00000 n 
+0000000406 00000 n 
+0000000474 00000 n 
+0000005190 00000 n 
+0000005336 00000 n 
+0000009598 00000 n 
+0000009744 00000 n 
+0000014265 00000 n 
+0000014413 00000 n 
+0000019315 00000 n 
+0000019463 00000 n 
+0000024114 00000 n 
+0000024262 00000 n 
+0000028933 00000 n 
+0000029081 00000 n 
+0000033436 00000 n 
+0000033584 00000 n 
+0000039125 00000 n 
+0000039273 00000 n 
+0000045769 00000 n 
+0000045917 00000 n 
+0000052707 00000 n 
+0000052855 00000 n 
+0000060168 00000 n 
+0000060316 00000 n 
+0000065600 00000 n 
+0000065748 00000 n 
+0000071444 00000 n 
+0000071592 00000 n 
+0000078968 00000 n 
+0000079116 00000 n 
+0000084111 00000 n 
+0000084259 00000 n 
+0000092215 00000 n 
+0000092363 00000 n 
+0000098531 00000 n 
+0000098679 00000 n 
+0000103127 00000 n 
+0000103275 00000 n 
+0000107891 00000 n 
+0000108039 00000 n 
+0000112730 00000 n 
+0000112878 00000 n 
+0000113304 00000 n 
+trailer
+<< /Size 48 /Root 1 0 R >>
+startxref
+113452
+%%EOF

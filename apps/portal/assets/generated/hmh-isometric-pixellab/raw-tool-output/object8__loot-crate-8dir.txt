@@ -1,0 +1,23 @@
+status: completed
+id: 84f6e3cb-551a-432a-b6d3-29deabf17afd
+name: glowing loot crate chest for roguelike upgrades, m
+directions: 8
+size: 97x97px
+view: low top-down
+
+rotations:
+  east: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/east.png
+  west: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/west.png
+  north: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/north.png
+  south: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/south.png
+  north-east: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/north-east.png
+  north-west: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/north-west.png
+  south-east: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/south-east.png
+  south-west: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/84f6e3cb-551a-432a-b6d3-29deabf17afd/rotations/south-west.png
+
+animations: none
+
+download: https://api.pixellab.ai/mcp/objects/84f6e3cb-551a-432a-b6d3-29deabf17afd/download
+
+actions: animate_object(object_id="84f6e3cb-551a-432a-b6d3-29deabf17afd", ...) | create_object_state(object_id="84f6e3cb-551a-432a-b6d3-29deabf17afd", ...) | delete_object(object_id="84f6e3cb-551a-432a-b6d3-29deabf17afd")
+hint: animate_object(object_id="84f6e3cb-551a-432a-b6d3-29deabf17afd", animation_description="...")

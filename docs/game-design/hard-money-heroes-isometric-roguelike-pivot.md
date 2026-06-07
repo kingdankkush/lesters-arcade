@@ -1,5 +1,9 @@
 # Hard Money Heroes — Isometric Roguelike Pivot
 
+> **2026-06-07 v2.1 update:** This pivot remains historical/strategic context. Current content canon lives in `docs/game-design/hard-money-heroes-design-bible-v2.md`; current implementation/QA/UX guidance lives in `docs/game-design/hard-money-heroes-build-risk-review-v2-1.md`. Treat this file as the original pivot capture, not the full active build plan.
+
+> **2026-06-07 update:** This pivot remains valid, but its latest expanded authority is now `docs/game-design/hard-money-heroes-design-bible-v2.md` from Claude Opus 4.8. Treat this file as the original pivot capture and art-agent handoff. For current balance, enemy/boss canon, scoring, UX, wallet/anti-cheat, and implementation priorities, use the v2 design bible first.
+
 - Status: active design pivot requested by Justin Pinter
 - Date: 2026-06-07
 - Parent portal: Lester's Arcade

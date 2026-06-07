@@ -1,4 +1,6 @@
 import { HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST } from './assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs';
+import { HMH_ISOMETRIC_PIXELLAB_WAVE_1 } from './assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs';
+import { HMH_PRODUCTION_ART_PASS } from './assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -221,17 +223,150 @@ function buildEnemyArtFromManifest(enemyKey) {
   };
 }
 
+function loadProductionAnimation(animation) {
+  return (animation?.frames ?? []).map((frame) => loadImageAsset(frame.src));
+}
+
+function buildProductionCharacterArt(characterKey, fallbackArt) {
+  const character = HMH_PRODUCTION_ART_PASS.characters?.[characterKey];
+  if (!character) return fallbackArt;
+  const animations = {
+    idle: loadProductionAnimation(character.animations?.idle),
+    walk: loadProductionAnimation(character.animations?.run),
+    run: loadProductionAnimation(character.animations?.run),
+    jump: loadProductionAnimation(character.animations?.run),
+    attack: loadProductionAnimation(character.animations?.shoot),
+    shoot: loadProductionAnimation(character.animations?.shoot),
+    knifeStab: loadProductionAnimation(character.animations?.shoot),
+    hit: loadProductionAnimation(character.animations?.hit),
+    death: loadProductionAnimation(character.animations?.death),
+  };
+  const stills = Object.fromEntries(Object.entries(character.stills ?? {}).map(([direction, src]) => [direction, loadImageAsset(src)]));
+  const eastStill = stills.east ?? stills['south-east'] ?? Object.values(stills)[0] ?? animations.idle[0] ?? null;
+  const westStill = stills.west ?? stills['south-west'] ?? eastStill;
+  const facingStill = stills.south ?? eastStill;
+  const animationMeta = Object.fromEntries(Object.entries(character.animations ?? {}).map(([name, meta]) => [name, {
+    fps: meta.fps,
+    frameCount: meta.frameCount,
+    loop: meta.loop !== false,
+  }]));
+  return {
+    ...fallbackArt,
+    productionSlug: character.slug,
+    sourceJobKey: character.sourceJobKey,
+    animationMeta,
+    animations: {
+      ...fallbackArt.animations,
+      ...Object.fromEntries(Object.entries(animations).filter(([, frames]) => frames.length)),
+    },
+    stills: Array.isArray(fallbackArt.stills)
+      ? [eastStill, westStill, facingStill].filter(Boolean)
+      : {
+          ...fallbackArt.stills,
+          machineGun: eastStill,
+          knife: eastStill,
+          grenade: eastStill,
+          pistol: eastStill,
+          shotgun: eastStill,
+          shoot: animations.shoot[0] ?? eastStill,
+          facing: facingStill,
+          leftSide: westStill,
+          rightSide: eastStill,
+        },
+    fallback: fallbackArt.fallback && typeof fallbackArt.fallback === 'object' && !('src' in fallbackArt.fallback)
+      ? {
+          ...fallbackArt.fallback,
+          idle: animations.idle[0] ?? eastStill ?? fallbackArt.fallback.idle,
+          run1: animations.run[0] ?? eastStill ?? fallbackArt.fallback.run1,
+          run2: animations.run[1] ?? animations.run[0] ?? eastStill ?? fallbackArt.fallback.run2,
+          shoot: animations.shoot[0] ?? eastStill ?? fallbackArt.fallback.shoot,
+          blade: animations.shoot[0] ?? eastStill ?? fallbackArt.fallback.blade,
+          jump: animations.run[0] ?? eastStill ?? fallbackArt.fallback.jump,
+        }
+      : (animations.idle[0] ?? eastStill ?? fallbackArt.fallback),
+  };
+}
+
+function buildProductionSpriteIndex(items = []) {
+  return Object.fromEntries(items.map((item) => [item.slug, {
+    ...item,
+    image: item.src ? loadImageAsset(item.src) : null,
+    frames: (item.frames ?? []).map((frame) => ({ ...frame, image: loadImageAsset(frame.src) })),
+  }]));
+}
+
+function buildProductionArtPass() {
+  return {
+    sourceAssetCount: HMH_ISOMETRIC_PIXELLAB_WAVE_1.assets?.length ?? 0,
+    manifestGeneratedAt: HMH_PRODUCTION_ART_PASS.generatedAt,
+    targetFps: HMH_PRODUCTION_ART_PASS.targetFps,
+    tiles: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.tiles),
+    props: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.props),
+    rotatingProps: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.rotatingProps),
+    pickups: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.pickups),
+    weapons: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.weapons),
+    vfx: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.vfx),
+    ui: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.ui),
+    levels: HMH_PRODUCTION_ART_PASS.levels ?? [],
+    cabinet: HMH_PRODUCTION_ART_PASS.cabinet,
+    animationPass: HMH_PRODUCTION_ART_PASS.animationPass,
+  };
+}
+
+function productionAssetSrc(collection, slug) {
+  const list = HMH_PRODUCTION_ART_PASS[collection] ?? [];
+  return list.find((item) => item.slug === slug)?.src ?? '';
+}
+
+function productionImage(collection, slug) {
+  return combatArt.production?.[collection]?.[slug]?.image ?? null;
+}
+
+function productionSpriteFrame(sprite, frame = combat.frame, fpsFallback = 8) {
+  const frames = sprite?.frames ?? [];
+  if (!frames.length) return sprite?.image ?? null;
+  const frameDuration = Number(sprite.frameDurationMs ?? frames[0]?.durationMs ?? 1000 / fpsFallback);
+  const fps = Number(sprite.fps ?? (frameDuration > 0 ? 1000 / frameDuration : fpsFallback));
+  const ticksPerFrame = Math.max(1, Math.round(LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps / Math.max(1, fps)));
+  return frames[Math.floor(frame / ticksPerFrame) % frames.length]?.image ?? sprite.image ?? null;
+}
+
+function productionVfxFrame(slug, frame = combat.frame) {
+  const vfx = combatArt.production?.vfx?.[slug];
+  if (!vfx?.frames?.length) return null;
+  const fps = vfx.fps ?? 18;
+  const ticksPerFrame = Math.max(1, Math.round(LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps / fps));
+  return vfx.frames[Math.floor(frame / ticksPerFrame) % vfx.frames.length]?.image ?? null;
+}
+
+function productionAnimationFps(art, name, fallback = 12) {
+  return art?.animationMeta?.[name]?.fps ?? fallback;
+}
+
+function productionCabinetSprite() {
+  return HMH_PRODUCTION_ART_PASS.cabinet?.frames?.length ? HMH_PRODUCTION_ART_PASS.cabinet : null;
+}
+
 function hardMoneyHeroScreenStyle(screenId) {
   const screen = HARD_MONEY_HEROES_ASSET_MANIFEST.screens[screenId];
   if (!screen?.src) return '';
-  return `linear-gradient(120deg, rgba(4, 11, 26, 0.86), rgba(8, 6, 22, 0.5)), url("${screen.src}")`;
+  const overlayByScreen = {
+    splash: 'pause-menu-panel',
+    mainMenu: 'pause-menu-panel',
+    modeSelect: 'level-up-modal-frame',
+    options: 'upgrade-card-frame',
+  };
+  const overlaySrc = productionAssetSrc('ui', overlayByScreen[screenId]);
+  return overlaySrc
+    ? `linear-gradient(120deg, rgba(4, 11, 26, 0.86), rgba(8, 6, 22, 0.5)), url("${overlaySrc}"), url("${screen.src}")`
+    : `linear-gradient(120deg, rgba(4, 11, 26, 0.86), rgba(8, 6, 22, 0.5)), url("${screen.src}")`;
 }
 
 function hardMoneyHeroScreenBackgroundProfile(screenId) {
   const safeDefaults = {
-    backgroundSize: 'cover, contain',
-    backgroundPosition: 'center, center top',
-    backgroundRepeat: 'no-repeat, no-repeat',
+    backgroundSize: 'cover, min(42vw, 520px) auto, contain',
+    backgroundPosition: 'center, right 5% bottom 8%, center top',
+    backgroundRepeat: 'no-repeat, no-repeat, no-repeat',
     backgroundColor: '#030617',
   };
   const profiles = {
@@ -521,18 +656,22 @@ function playSfxCue(cue, volume = 0.05) {
 }
 
 const combatArt = {
+  production: buildProductionArtPass(),
   characters: {
-    lester: buildCharacterArtFromManifest('lester'),
+    lester: buildProductionCharacterArt('lester', buildCharacterArtFromManifest('lester')),
     lesterPixelLabCalibration: buildPixelLabLesterCalibrationArt(),
-    lilly: buildCharacterArtFromManifest('lilly'),
+    lilly: buildProductionCharacterArt('lilly', buildCharacterArtFromManifest('lilly')),
   },
   hero: null,
   enemies: {
-    trenchDegen: buildEnemyArtFromManifest('trenchDegen'),
-    evilBanker: buildEnemyArtFromManifest('evilBanker'),
-    warrenSpearRider: buildEnemyArtFromManifest('warrenSpearRider'),
-    cryptoBro: buildEnemyArtFromManifest('cryptoBro'),
-    gasBeast: buildEnemyArtFromManifest('gasBeast'),
+    trenchDegen: buildProductionCharacterArt('trenchDegen', buildEnemyArtFromManifest('trenchDegen')),
+    evilBanker: buildProductionCharacterArt('evilBanker', buildEnemyArtFromManifest('evilBanker')),
+    warrenSpearRider: buildProductionCharacterArt('warrenSpearRider', buildEnemyArtFromManifest('warrenSpearRider')),
+    cryptoBro: buildProductionCharacterArt('cryptoBro', buildEnemyArtFromManifest('cryptoBro')),
+    gasBeast: buildProductionCharacterArt('gasBeast', buildEnemyArtFromManifest('gasBeast')),
+    rugpullSummoner: buildProductionCharacterArt('rugpullSummoner', buildEnemyArtFromManifest('trenchDegen')),
+    bitWhale: buildProductionCharacterArt('bitWhale', buildEnemyArtFromManifest('warrenSpearRider')),
+    chainReaper: buildProductionCharacterArt('chainReaper', buildEnemyArtFromManifest('warrenSpearRider')),
     goblin: loadImageAsset('./assets/generated/sliced/enemy-goblin-idle.png'),
     wisp: loadImageAsset('./assets/generated/sliced/enemy-wisp-idle.png'),
     bruiser: loadImageAsset('./assets/generated/sliced/enemy-bruiser-idle.png'),
@@ -577,7 +716,7 @@ const combatArt = {
     buildEnvironmentStageArt(stage),
   ])),
 };
-combatArt.hero = combatArt.characters.lesterPixelLabCalibration;
+combatArt.hero = combatArt.characters.lester;
 
 const dom = {
   officialApp: document.querySelector('#officialApp'),
@@ -1625,8 +1764,9 @@ function renderOfficialWalletSplash() {
   if (!dom.officialWalletSplash) return;
   applyHardMoneyHeroScreenBackground(dom.officialWalletSplash, 'splash');
   const featuredCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
-  if (dom.splashFeaturedCabinet && featuredCabinet?.desktopCabinetSprite) {
-    dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredCabinet.desktopCabinetSprite, 'splash'));
+  const featuredSprite = productionCabinetSprite() ?? featuredCabinet?.desktopCabinetSprite;
+  if (dom.splashFeaturedCabinet && featuredSprite) {
+    dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
   }
   const copy = connectedWallet
     ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`
@@ -1638,7 +1778,10 @@ function renderOfficialWalletSplash() {
 function renderOfficialCabinets() {
   dom.officialCabinetGrid.replaceChildren();
   for (const cabinet of LESTERS_ARCADE_V2_APP_SHELL.cabinets) {
-    const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'} ${cabinet.desktopCabinetSprite ? 'featured-cabinet-card' : ''}` });
+    const cabinetSprite = cabinet.id === 'hard-money-heroes'
+      ? (productionCabinetSprite() ?? cabinet.desktopCabinetSprite)
+      : cabinet.desktopCabinetSprite;
+    const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'} ${cabinetSprite ? 'featured-cabinet-card' : ''}` });
     card.type = 'button';
     card.disabled = !cabinet.playable;
     card.addEventListener('click', () => {
@@ -1649,9 +1792,9 @@ function renderOfficialCabinets() {
       lastRunResult = null;
       setOfficialView('mode-select');
     });
-    if (cabinet.desktopCabinetSprite) {
+    if (cabinetSprite) {
       const media = el('div', { className: 'cabinet-card-media' });
-      media.append(renderRotatingCabinetSprite(cabinet.desktopCabinetSprite, 'card'));
+      media.append(renderRotatingCabinetSprite(cabinetSprite, 'card'));
       card.append(media);
     }
     const copy = el('div', { className: 'cabinet-card-copy' });
@@ -3006,21 +3149,45 @@ function collectCombatPowerUp(power) {
   spawnText(power.title, power.x, power.y - 28, '#45ff8a');
 }
 
+function spawnSpriteParticle(type, x, y, options = {}) {
+  const life = options.life ?? 0.45;
+  combat.particles.push({
+    type,
+    x,
+    y,
+    vx: options.vx ?? 0,
+    vy: options.vy ?? 0,
+    color: options.color ?? '#ffe84d',
+    size: options.size ?? 48,
+    scale: options.scale ?? 1,
+    rotation: options.rotation ?? 0,
+    life,
+    maxLife: life,
+  });
+}
+
 function spawnMuzzleFlash(x, y, weaponId) {
-  combat.particles.push({ x, y, vx: 1.2, vy: -0.2, color: weaponId === 'hash-rail' ? '#19f7ff' : '#ffe84d', size: weaponId === 'scatter-shotgun' ? 12 : 8, life: 0.22 });
-  for (let i = 0; i < 3; i += 1) combat.particles.push({ x: x - 8, y: y + 5, vx: -1 - i * 0.2, vy: 1 + i * 0.15, color: '#c78c48', size: 2, life: 0.55 });
+  spawnSpriteParticle('muzzle-flash', x, y, {
+    vx: 1.2,
+    vy: -0.2,
+    color: weaponId === 'hash-rail' ? '#19f7ff' : '#ffe84d',
+    size: weaponId === 'scatter-shotgun' ? 68 : 54,
+    life: 0.26,
+  });
+  for (let i = 0; i < 3; i += 1) combat.particles.push({ type: 'impact-sparks', x: x - 8, y: y + 5, vx: -1 - i * 0.2, vy: 1 + i * 0.15, color: '#c78c48', size: 18, life: 0.55, maxLife: 0.55 });
 }
 
 function spawnSlash(x, y) {
-  for (let i = 0; i < 7; i += 1) combat.particles.push({ x: x + i * 4, y: y - i * 2, vx: 1.4, vy: -0.4, color: i % 2 ? '#f9f7ff' : '#ff7b2f', size: 4, life: 0.25 });
+  for (let i = 0; i < 7; i += 1) combat.particles.push({ type: 'impact-sparks', x: x + i * 4, y: y - i * 2, vx: 1.4, vy: -0.4, color: i % 2 ? '#f9f7ff' : '#ff7b2f', size: 28, life: 0.25, maxLife: 0.25 });
 }
 
 function spawnBlood(x, y, color) {
-  for (let i = 0; i < 9; i += 1) combat.particles.push({ x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 2 + Math.random() * 3, life: 0.65 + Math.random() * 0.3 });
+  for (let i = 0; i < 9; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
 }
 
 function spawnExplosion(x, y, color) {
-  for (let i = 0; i < 18; i += 1) combat.particles.push({ x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 3 + Math.random() * 6, life: 0.8 + Math.random() * 0.35 });
+  spawnSpriteParticle('level-up-burst', x, y, { color, size: 112, life: 0.72 });
+  for (let i = 0; i < 12; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 22 + Math.random() * 20, life: 0.8 + Math.random() * 0.35, maxLife: 1.15 });
 }
 
 function spawnText(text, x, y, color) {
@@ -3315,6 +3482,62 @@ function drawIsoTile(ctx, cx, cy, color, stroke = 'rgba(25,247,255,.12)') {
   ctx.stroke();
 }
 
+function currentProductionLevel() {
+  const levels = combatArt.production?.levels ?? [];
+  if (!levels.length) return null;
+  const index = Math.min(levels.length - 1, Math.floor(combat.elapsedGameSeconds / 240));
+  return levels[index];
+}
+
+function productionTileForWorld(worldX, worldY) {
+  const level = currentProductionLevel();
+  const slugs = level?.tiles?.length ? level.tiles : Object.keys(combatArt.production?.tiles ?? {});
+  if (!slugs.length) return null;
+  const index = Math.abs((worldX * 7 + worldY * 11 + (worldX - worldY) * 3)) % slugs.length;
+  return combatArt.production.tiles[slugs[index]] ?? null;
+}
+
+function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
+  const tile = productionTileForWorld(worldX, worldY);
+  if (!imageReady(tile?.image)) {
+    const checker = Math.abs((worldX + worldY) % 4);
+    drawIsoTile(ctx, cx, cy, checker === 0 ? 'rgba(36,48,79,.82)' : 'rgba(18,31,55,.88)');
+    return;
+  }
+  const drawWidth = Math.max(72, Math.round((tile.width ?? 64) * 1.18));
+  const drawHeight = Math.max(44, Math.round((tile.height ?? 48) * 1.05));
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(tile.image, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
+  ctx.restore();
+}
+
+function productionPropForIndex(index) {
+  const level = currentProductionLevel();
+  const slugs = level?.props?.length ? level.props : Object.keys(combatArt.production?.props ?? {});
+  if (!slugs.length) return null;
+  return combatArt.production.props[slugs[index % slugs.length]] ?? null;
+}
+
+function drawProductionIsoProp(ctx, prop, x, y, index) {
+  const frameImage = productionSpriteFrame(prop, combat.frame + index * 9, prop?.fps ?? 8);
+  if (!imageReady(frameImage)) return false;
+  const activeFrame = prop?.frames?.length ? prop.frames[Math.floor((combat.frame + index * 9) / Math.max(1, Math.round(LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps / Math.max(1, prop.fps ?? 8)))) % prop.frames.length] : null;
+  const baseWidth = activeFrame?.width ?? prop.width ?? 80;
+  const baseHeight = activeFrame?.height ?? prop.height ?? 88;
+  const scale = prop.role?.includes('pickup_container') ? 0.72 : prop.role?.includes('occluder') ? 1.05 : prop.role?.includes('vehicle') ? 0.78 : 0.86;
+  const drawWidth = Math.round(baseWidth * scale);
+  const drawHeight = Math.round(baseHeight * scale);
+  const sway = prop.role?.includes('occluder') ? Math.sin((combat.frame + index * 17) * 0.045) * 2 : 0;
+  const bob = prop.role?.includes('hazard') || prop.role?.includes('pickup_container') ? Math.sin((combat.frame + index * 11) * 0.08) * 1.5 : 0;
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.globalAlpha = prop.role?.includes('decor') ? 0.92 : 1;
+  ctx.drawImage(frameImage, Math.round(x - drawWidth / 2 + sway), Math.round(y - drawHeight + bob), drawWidth, drawHeight);
+  ctx.restore();
+  return true;
+}
+
 function drawRoguelikeScene(ctx, width, height) {
   const palette = ['#06142e', '#12072d', '#030711'];
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
@@ -3329,29 +3552,33 @@ function drawRoguelikeScene(ctx, width, height) {
       const worldX = Math.floor(combat.playerMapX) + x;
       const worldY = Math.floor(combat.playerMapY) + y;
       const projected = isoToScreen(worldX, worldY);
-      const checker = Math.abs((worldX + worldY) % 4);
-      drawIsoTile(ctx, projected.x, projected.y + 64, checker === 0 ? 'rgba(36,48,79,.82)' : 'rgba(18,31,55,.88)');
+      drawProductionIsoTile(ctx, projected.x, projected.y + 64, worldX, worldY);
     }
   }
 
-  const propLabels = ['TREE', 'CAN', 'SHOP', 'SIGN', 'BIN', 'ROOF'];
-  ctx.font = '10px monospace';
   for (let i = 0; i < 18; i += 1) {
     const px = Math.round(combat.playerMapX / 6) * 6 + ((i * 7) % 22) - 11;
     const py = Math.round(combat.playerMapY / 6) * 6 + ((i * 11) % 22) - 11;
     if (Math.hypot(px - combat.playerMapX, py - combat.playerMapY) < 3) continue;
     const projected = isoToScreen(px, py);
-    ctx.fillStyle = i % 3 === 0 ? '#365f3a' : i % 3 === 1 ? '#79512c' : '#263b69';
-    ctx.fillRect(projected.x - 14, projected.y + 28, 28, 30 + (i % 3) * 12);
-    ctx.fillStyle = '#ffe84d';
-    ctx.fillText(propLabels[i % propLabels.length], projected.x - 13, projected.y + 44);
+    const prop = productionPropForIndex(i);
+    if (!drawProductionIsoProp(ctx, prop, projected.x, projected.y + 48, i)) {
+      ctx.fillStyle = i % 3 === 0 ? '#365f3a' : i % 3 === 1 ? '#79512c' : '#263b69';
+      ctx.fillRect(projected.x - 14, projected.y + 28, 28, 30 + (i % 3) * 12);
+    }
   }
 
   drawPowerUps(ctx);
+  const xpShard = productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback');
   for (const gem of combat.xpGems) {
     const projected = isoToScreen(gem.worldX, gem.worldY);
-    ctx.fillStyle = '#19f7ff';
-    ctx.fillRect(projected.x - 4, projected.y + 26, 8, 8);
+    const bob = Math.sin((combat.frame + gem.worldX * 13 + gem.worldY * 7) * 0.12) * 3;
+    if (imageReady(xpShard)) {
+      ctx.drawImage(xpShard, Math.round(projected.x - 16), Math.round(projected.y + 10 + bob), 32, 32);
+    } else {
+      ctx.fillStyle = '#19f7ff';
+      ctx.fillRect(projected.x - 4, projected.y + 26, 8, 8);
+    }
   }
   drawEnemies(ctx);
   drawBullets(ctx);
@@ -3363,6 +3590,8 @@ function drawRoguelikeScene(ctx, width, height) {
   if (combat.levelUpPaused) {
     ctx.fillStyle = 'rgba(0,0,0,.48)';
     ctx.fillRect(0, 0, width, height);
+    const modalFrame = productionImage('ui', 'level-up-modal-frame');
+    if (imageReady(modalFrame)) ctx.drawImage(modalFrame, Math.round(width / 2 - 180), 88, 360, 236);
     ctx.fillStyle = '#ffe84d';
     ctx.font = '24px monospace';
     ctx.fillText('LEVEL UP - CHOOSE AUGMENT', 216, 122);
@@ -3532,10 +3761,15 @@ function drawProps(ctx) {
   ctx.font = '11px monospace';
   for (let i = 0; i < environment.props.length; i += 1) {
     const x = ((i * 190 + 240) - combat.scroll * 0.36) % 900;
-    ctx.fillStyle = i % 2 ? 'rgba(36,48,79,.42)' : 'rgba(45,26,70,.38)';
-    ctx.fillRect(x, GROUND_Y - 34 - (i % 3) * 12, 48, 42 + (i % 3) * 12);
-    ctx.fillStyle = 'rgba(25,247,255,.72)';
-    ctx.fillText(environment.props[i].slice(0, 9).toUpperCase(), x + 4, GROUND_Y - 10);
+    const propSprite = productionPropForIndex(i);
+    if (imageReady(propSprite?.image)) {
+      drawProductionIsoProp(ctx, propSprite, x + 30, GROUND_Y + 5, i);
+    } else {
+      ctx.fillStyle = i % 2 ? 'rgba(36,48,79,.42)' : 'rgba(45,26,70,.38)';
+      ctx.fillRect(x, GROUND_Y - 34 - (i % 3) * 12, 48, 42 + (i % 3) * 12);
+      ctx.fillStyle = 'rgba(25,247,255,.72)';
+      ctx.fillText(environment.props[i].slice(0, 9).toUpperCase(), x + 4, GROUND_Y - 10);
+    }
   }
 
   for (const platform of combat.platforms) {
@@ -3559,7 +3793,17 @@ function drawProps(ctx) {
     }
     const box = propHitbox(prop);
     const hpRatio = Math.max(0, Math.min(1, (prop.hp ?? prop.maxHp ?? 1) / (prop.maxHp ?? prop.hp ?? 1)));
-    if (prop.kind === 'barrel') {
+    const propSpriteSlug = prop.kind === 'barrel' ? 'explosive-barrel' : prop.kind === 'wall' ? 'traffic-barricade' : prop.cover ? 'wood-crate' : 'dumpster';
+    const propSprite = combatArt.production?.props?.[propSpriteSlug] ?? null;
+    if (imageReady(propSprite?.image)) {
+      const drawWidth = Math.max(box.w + 24, Math.round((propSprite.width ?? 80) * 0.72));
+      const drawHeight = Math.max(box.h + 26, Math.round((propSprite.height ?? 80) * 0.72));
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.globalAlpha = prop.hp !== undefined ? 0.86 + hpRatio * 0.14 : 1;
+      ctx.drawImage(propSprite.image, Math.round(box.x + box.w / 2 - drawWidth / 2), Math.round(box.y + box.h - drawHeight + 8), drawWidth, drawHeight);
+      ctx.restore();
+    } else if (prop.kind === 'barrel') {
       ctx.fillStyle = '#ff7b2f';
       ctx.fillRect(box.x, box.y, box.w, box.h);
       ctx.fillStyle = '#ffe84d';
@@ -3587,20 +3831,20 @@ function drawProps(ctx) {
 
 function selectHeroFrame() {
   const hero = combatArt.hero;
-  if (combat.playerY < GROUND_Y - 4) return selectAnimationFrame(hero.animations.jump, combat.frame, 12, false) ?? hero.fallback.jump;
-  if (combat.crouching && combat.playerY >= GROUND_Y - 2) return selectAnimationFrame(hero.animations.idle, combat.frame, 8) ?? hero.fallback.idle;
+  if (combat.playerY < GROUND_Y - 4) return selectAnimationFrame(hero.animations.jump, combat.frame, productionAnimationFps(hero, 'run', 16), false) ?? hero.fallback.jump;
+  if (combat.crouching && combat.playerY >= GROUND_Y - 2) return selectAnimationFrame(hero.animations.idle, combat.frame, productionAnimationFps(hero, 'idle', 12)) ?? hero.fallback.idle;
   const meleeFrameAge = combat.frame - combat.lastMeleeFrame;
   if (meleeFrameAge >= 0 && meleeFrameAge < 18) {
-    return selectAnimationFrame(hero.animations.knifeStab, meleeFrameAge, 18, false) ?? hero.stills.knife ?? hero.fallback.blade;
+    return selectAnimationFrame(hero.animations.knifeStab, meleeFrameAge, productionAnimationFps(hero, 'shoot', 18), false) ?? hero.stills.knife ?? hero.fallback.blade;
   }
   if (combat.shots > 0 && combat.frame % 36 < 10) {
     const shootFrameAge = combat.frame % 18;
-    return selectAnimationFrame(hero.animations.shoot, shootFrameAge, 18, false) ?? hero.stills.shoot ?? hero.fallback.shoot;
+    return selectAnimationFrame(hero.animations.shoot, shootFrameAge, productionAnimationFps(hero, 'shoot', 18), false) ?? hero.stills.shoot ?? hero.fallback.shoot;
   }
   if (combat.keys.has('a') || combat.keys.has('d') || combat.keys.has('arrowleft') || combat.keys.has('arrowright')) {
-    return selectAnimationFrame(hero.animations.run, combat.frame, 14) ?? (combat.frame % 20 < 10 ? hero.fallback.run1 : hero.fallback.run2);
+    return selectAnimationFrame(hero.animations.run, combat.frame, productionAnimationFps(hero, 'run', 16)) ?? (combat.frame % 20 < 10 ? hero.fallback.run1 : hero.fallback.run2);
   }
-  return selectAnimationFrame(hero.animations.idle, combat.frame, 8) ?? hero.fallback.idle;
+  return selectAnimationFrame(hero.animations.idle, combat.frame, productionAnimationFps(hero, 'idle', 12)) ?? hero.fallback.idle;
 }
 
 function playerFacingLeft() {
@@ -3614,16 +3858,19 @@ function drawPlayer(ctx) {
   const y = combat.playerY;
   const bob = combat.active ? Math.sin(combat.frame * 0.28) * 2 : 0;
   const heroFrame = selectHeroFrame();
+  const hero = combatArt.hero;
   const shadowY = combat.roguelikeRun ? y + 3 : GROUND_Y + 2;
   const blink = combat.invulnerableFrames > 0 && Math.floor(combat.invulnerableFrames / 6) % 2 === 0;
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   if (blink) ctx.globalAlpha = 0.54;
+
   if (imageReady(heroFrame)) {
-    const drawWidth = 104;
-    const drawHeight = 104;
-    const drawX = x - 34;
-    const drawY = y - drawHeight + bob;
+    const productionHero = Boolean(hero.productionSlug);
+    const drawWidth = productionHero ? 132 : 104;
+    const drawHeight = productionHero ? 132 : 104;
+    const drawX = x - (productionHero ? 48 : 34);
+    const drawY = y - drawHeight + (productionHero ? 16 : 0) + bob;
     ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
     ctx.fillRect(x + 3, shadowY, 38, 8);
     if (playerFacingLeft()) {
@@ -3678,7 +3925,8 @@ function manifestEnemyArtFor(enemy) {
     : moving
       ? (art.animations.run?.length ? art.animations.run : art.animations.walk)
       : art.animations.idle;
-  return selectAnimationFrame(frames, combat.frame + Math.floor(enemy.x), attacking ? 7 : 10)
+  const animationName = attacking ? 'attack' : moving ? 'run' : 'idle';
+  return selectAnimationFrame(frames, combat.frame + Math.floor(enemy.x), productionAnimationFps(art, animationName, attacking ? 15 : 16))
     ?? art.stills[0]
     ?? art.fallback
     ?? null;
@@ -3702,7 +3950,13 @@ function drawEnemies(ctx) {
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
     const enemyFrame = enemyArtFor(enemy);
     if (imageReady(enemyFrame)) {
-      ctx.drawImage(enemyFrame, enemy.x - 20, enemy.y - h - 36, 78, 78);
+      const enemyKey = manifestEnemyKeyFor(enemy);
+      const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
+      const drawSize = productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78;
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(enemyFrame, Math.round(enemy.x + w / 2 - drawSize / 2), Math.round(enemy.y - drawSize + 12), drawSize, drawSize);
+      ctx.restore();
     } else {
       ctx.fillStyle = isMini ? '#ff7b2f' : enemy.class?.includes('flying') ? '#6d3cff' : enemy.class === 'armored' ? '#aab6d3' : '#ff476f';
       ctx.fillRect(enemy.x, enemy.y - h, w, h);
@@ -3718,13 +3972,47 @@ function drawEnemies(ctx) {
   }
 }
 
+function bossArtFor(boss) {
+  if (!boss) return null;
+  const id = `${boss.id ?? ''} ${boss.title ?? ''}`.toLowerCase();
+  const key = id.includes('whale') || id.includes('bank') || id.includes('tycoon')
+    ? 'bitWhale'
+    : id.includes('chain') || id.includes('reaper')
+      ? 'chainReaper'
+      : 'warrenSpearRider';
+  const art = combatArt.enemies[key];
+  if (!art) return null;
+  const attacking = boss.attackTimer < 34;
+  const animationName = attacking ? 'shoot' : 'idle';
+  const frames = attacking ? (art.animations.shoot ?? art.animations.attack) : art.animations.idle;
+  return selectAnimationFrame(frames, combat.frame + Math.floor(boss.x), productionAnimationFps(art, animationName, attacking ? 18 : 12))
+    ?? art.stills?.[0]
+    ?? art.fallback
+    ?? null;
+}
+
 function drawBoss(ctx) {
   if (!combat.boss) return;
   const x = combat.boss.x;
-  ctx.fillStyle = combat.boss.phase === 3 ? '#ff236d' : combat.boss.phase === 2 ? '#ff7b2f' : '#7b2fff';
-  ctx.fillRect(x, GROUND_Y - 108, 94, 90);
-  ctx.fillStyle = '#ffe84d';
-  ctx.fillRect(x + 12, GROUND_Y - 130, 68, 18);
+  const bossFrame = bossArtFor(combat.boss);
+  if (imageReady(bossFrame)) {
+    const phaseScale = 1 + (combat.boss.phase - 1) * 0.08;
+    const drawWidth = Math.round(150 * phaseScale);
+    const drawHeight = Math.round(150 * phaseScale);
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    if (combat.boss.attackTimer < 34) {
+      const telegraph = productionVfxFrame('boss-telegraph-ring');
+      if (imageReady(telegraph)) ctx.drawImage(telegraph, x - 26, GROUND_Y - 92, 178, 112);
+    }
+    ctx.drawImage(bossFrame, x - 28, GROUND_Y - drawHeight - 2, drawWidth, drawHeight);
+    ctx.restore();
+  } else {
+    ctx.fillStyle = combat.boss.phase === 3 ? '#ff236d' : combat.boss.phase === 2 ? '#ff7b2f' : '#7b2fff';
+    ctx.fillRect(x, GROUND_Y - 108, 94, 90);
+    ctx.fillStyle = '#ffe84d';
+    ctx.fillRect(x + 12, GROUND_Y - 130, 68, 18);
+  }
   ctx.fillStyle = '#45ff8a';
   ctx.fillRect(x, GROUND_Y - 143, 94 * Math.max(0, combat.boss.hp / combat.boss.maxHp), 6);
   ctx.fillStyle = '#f9f7ff';
@@ -3734,22 +4022,32 @@ function drawBoss(ctx) {
 
 function drawBullets(ctx) {
   for (const bullet of combat.bullets) {
-    ctx.fillStyle = bullet.weaponId === 'hash-rail' ? '#19f7ff' : bullet.weaponId === 'oracle-slayer' ? '#b86cff' : '#ffe84d';
+    const trail = productionVfxFrame('projectile-trail', combat.frame + Math.floor(bullet.x));
     const w = bullet.weaponId === 'hash-rail' ? 34 : Math.round(20 * (combat.roguelikeRun?.stats.bulletSize ?? 1));
     const h = bullet.weaponId === 'hash-rail' ? 7 : 5;
-    ctx.fillRect(bullet.x - (combat.roguelikeRun ? w / 2 : 0), bullet.y - (combat.roguelikeRun ? h / 2 : 0), w, h);
+    const drawX = bullet.x - (combat.roguelikeRun ? w / 2 : 0);
+    const drawY = bullet.y - (combat.roguelikeRun ? h / 2 : 0);
+    if (imageReady(trail)) {
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(trail, Math.round(drawX - 18), Math.round(drawY - 18), bullet.weaponId === 'hash-rail' ? 92 : 70, 36);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = bullet.weaponId === 'hash-rail' ? '#19f7ff' : bullet.weaponId === 'oracle-slayer' ? '#b86cff' : '#ffe84d';
+      ctx.fillRect(drawX, drawY, w, h);
+    }
   }
   ctx.fillStyle = '#ff476f';
   for (const shot of combat.enemyShots) ctx.fillRect(shot.x - (combat.roguelikeRun ? 7 : 0), shot.y - (combat.roguelikeRun ? 3 : 0), 14, 5);
 }
 
 function powerUpIconFor(power) {
-  if (power.effect === 'heal') return combatArt.icons.health;
-  if (power.effect === 'shield') return combatArt.icons.shield;
-  if (power.effect === 'ammo') return combatArt.icons.ammo;
-  if (power.effect === 'life') return combatArt.icons.oneUp;
-  if (power.effect === 'weapon') return combatArt.icons.weapon;
-  if (power.effect === 'scoreMultiplier') return combatArt.icons.score;
+  if (power.effect === 'heal') return productionImage('pickups', 'health-pack') ?? combatArt.icons.health;
+  if (power.effect === 'shield') return productionImage('pickups', 'crypto-bomb') ?? combatArt.icons.shield;
+  if (power.effect === 'ammo') return productionImage('pickups', 'ammo-pack') ?? combatArt.icons.ammo;
+  if (power.effect === 'life') return productionImage('pickups', 'crypto-bomb') ?? combatArt.icons.oneUp;
+  if (power.effect === 'weapon') return productionImage('weapons', combat.weaponId) ?? productionImage('weapons', 'coin-blaster') ?? combatArt.icons.weapon;
+  if (power.effect === 'scoreMultiplier') return productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback') ?? combatArt.icons.score;
   return null;
 }
 
@@ -3767,8 +4065,31 @@ function drawPowerUps(ctx) {
   }
 }
 
+function drawParticleSprite(ctx, particle) {
+  const sprite = combatArt.production?.vfx?.[particle.type];
+  if (!sprite?.frames?.length) return false;
+  const lifeRatio = 1 - Math.max(0, Math.min(1, particle.life / Math.max(0.01, particle.maxLife ?? particle.life ?? 1)));
+  const frameIndex = Math.min(sprite.frames.length - 1, Math.floor(lifeRatio * sprite.frames.length));
+  const image = sprite.frames[frameIndex]?.image;
+  if (!imageReady(image)) return false;
+  const size = particle.size ?? Math.max(sprite.frames[frameIndex]?.width ?? 32, sprite.frames[frameIndex]?.height ?? 32);
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.globalAlpha = Math.max(0.25, Math.min(1, (particle.life / Math.max(0.01, particle.maxLife ?? particle.life ?? 1)) + 0.1));
+  if (particle.rotation) {
+    ctx.translate(particle.x, particle.y);
+    ctx.rotate(particle.rotation);
+    ctx.drawImage(image, -size / 2, -size / 2, size, size);
+  } else {
+    ctx.drawImage(image, Math.round(particle.x - size / 2), Math.round(particle.y - size / 2), size, size);
+  }
+  ctx.restore();
+  return true;
+}
+
 function drawParticles(ctx) {
   for (const particle of combat.particles) {
+    if (drawParticleSprite(ctx, particle)) continue;
     ctx.fillStyle = particle.color;
     ctx.fillRect(particle.x, particle.y, particle.size, particle.size);
   }
@@ -3788,6 +4109,8 @@ function drawHud(ctx) {
   ctx.font = '16px monospace';
   if (combat.roguelikeRun) {
     const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+    const hudPanel = productionImage('ui', 'hud-panel');
+    if (imageReady(hudPanel)) ctx.drawImage(hudPanel, 10, 8, 660, 120);
     ctx.fillStyle = '#19f7ff';
     ctx.fillText(`ISO SURVIVE ${formatSeconds(combat.elapsedGameSeconds)} / 20:00 // ${director.difficultyLabel.toUpperCase()} // ${combat.fps}FPS`, 20, 28);
     ctx.fillStyle = '#ffe84d';
@@ -3796,6 +4119,11 @@ function drawHud(ctx) {
     ctx.fillText(`LV ${combat.roguelikeRun.level} // XP ${Math.floor(combat.roguelikeRun.xp)}/${combat.roguelikeRun.xpToNextLevel} // ${weapon.title.toUpperCase()} // GRENADES ${combat.grenades}`, 20, 76);
     ctx.fillStyle = '#ff7b2f';
     ctx.fillText(`AUGMENTS ${Object.values(combat.roguelikeRun.skills).reduce((sum, level) => sum + level, 0)} // REROLL ${combat.roguelikeRun.rerollsRemaining} // MAP ${Math.round(combat.playerMapX)},${Math.round(combat.playerMapY)}`, 20, 100);
+    const xpFrame = productionImage('ui', 'xp-bar-frame');
+    const xpRatio = Math.max(0, Math.min(1, combat.roguelikeRun.xp / Math.max(1, combat.roguelikeRun.xpToNextLevel)));
+    if (imageReady(xpFrame)) ctx.drawImage(xpFrame, 20, 108, 320, 36);
+    ctx.fillStyle = 'rgba(69,255,138,.82)';
+    ctx.fillRect(39, 121, Math.round(282 * xpRatio), 6);
     return;
   }
   ctx.fillStyle = '#19f7ff';

@@ -72,6 +72,19 @@ function assertIncludes(label, source, needle) {
   }
 }
 
+function parseFrozenManifest(label, source) {
+  const marker = 'Object.freeze(';
+  const start = source.indexOf(marker);
+  const end = source.lastIndexOf(');');
+  if (start < 0 || end < start) throw new Error(`${label} does not contain an Object.freeze manifest payload`);
+  return JSON.parse(source.slice(start + marker.length, end));
+}
+
+function portalManifestPath(src) {
+  if (!src) throw new Error('Manifest asset path is missing');
+  return src.replace(/^\.\//, '');
+}
+
 const server = externalRootUrl
   ? null
   : spawn('python', ['-m', 'http.server', String(smokePort), '--bind', '127.0.0.1'], {
@@ -90,6 +103,11 @@ try {
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
   const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
+  const isometricWaveManifest = await fetchText(`${portalUrl}assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs`);
+  const productionArtManifest = await fetchText(`${portalUrl}assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs`);
+  const productionArt = parseFrozenManifest('HMH production art pass manifest', productionArtManifest);
+  const xpBarFramePath = portalManifestPath(productionArt.ui.find((item) => item.slug === 'xp-bar-frame')?.src);
+  const cabinetFramePath = portalManifestPath(productionArt.cabinet?.frames?.[0]?.src);
 
   for (const marker of [
     'officialConnectButton',
@@ -124,7 +142,13 @@ try {
     "startArcadeMusicForGame('hard-money-heroes')",
     'buildPixelLabLesterCalibrationArt',
     'lesterPixelLabCalibration',
-    'combatArt.hero = combatArt.characters.lesterPixelLabCalibration',
+    'HMH_ISOMETRIC_PIXELLAB_WAVE_1',
+    'HMH_PRODUCTION_ART_PASS',
+    'buildProductionArtPass',
+    'combatArt.hero = combatArt.characters.lester',
+    'productionTileForWorld',
+    'productionPropForIndex',
+    'productionVfxFrame',
     'hero.animations.shoot',
   ]) {
     assertIncludes('portal main.js', main, marker);
@@ -154,6 +178,28 @@ try {
     assertIncludes('PixelLab Lester runtime manifest', pixelLabRuntimeManifest, marker);
   }
 
+  for (const marker of [
+    'HMH_ISOMETRIC_PIXELLAB_WAVE_1',
+    'isometric-production-wave-1',
+    'lester-iso-hero',
+    'trench-degen-chaser',
+    'xp-bar-frame',
+    'contactSheet',
+  ]) {
+    assertIncludes('PixelLab isometric wave manifest', isometricWaveManifest, marker);
+  }
+
+  for (const marker of [
+    'HMH_PRODUCTION_ART_PASS',
+    'PixelLab wave 1 plus deterministic Python/Pillow UI and animation derivatives',
+    'characters/lester-iso-hero/run/frame-00.png',
+    'xp-bar-frame',
+    'hard-money-heroes-production-cabinet',
+    'boss-telegraph-ring',
+  ]) {
+    assertIncludes('HMH production art pass manifest', productionArtManifest, marker);
+  }
+
   const pixelLabSpriteProbePaths = [
     'assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/east.png',
     'assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/00.png',
@@ -166,6 +212,18 @@ try {
     if (width <= 0 || height <= 0) throw new Error(`PixelLab sprite probe ${spritePath} has invalid dimensions ${width}x${height}`);
   }
 
+  const productionSpriteProbePaths = [
+    'assets/generated/hmh-isometric-pixellab/contact-sheets/hmh-isometric-pixellab-wave-1-contact-sheet.png',
+    'assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/east.png',
+    'assets/generated/hmh-production-art-pass/characters/lester-iso-hero/run/frame-00.png',
+    xpBarFramePath,
+    cabinetFramePath,
+  ];
+  for (const spritePath of productionSpriteProbePaths) {
+    const [width, height] = await fetchPngSize(`${portalUrl}${spritePath}`);
+    if (width <= 0 || height <= 0) throw new Error(`HMH production sprite probe ${spritePath} has invalid dimensions ${width}x${height}`);
+  }
+
   const playlist = JSON.parse(playlistManifest);
   if (playlist.tracks.length < 20) throw new Error(`playlist manifest expected 20 tracks, got ${playlist.tracks.length}`);
   const firstHmhSrc = playlist.tracks.find((track) => track.id === 'hard-money-heroes-16-bit-arcade-music')?.src;
@@ -174,7 +232,7 @@ try {
 
   console.log('Portal smoke gate passed.');
   console.log(`Checked ${portalUrl}`);
-  console.log('Covered: wallet entry markers, free/ranked buttons, gameplay canvas, HUD overlay, options popup, return/exit controls, player-led camera wiring, and PixelLab Lester calibration sprite/runtime asset loading.');
+  console.log('Covered: wallet entry markers, free/ranked buttons, gameplay canvas, HUD overlay, options popup, return/exit controls, player-led camera wiring, PixelLab Lester calibration assets, and Hard Money Heroes isometric production asset loading.');
 } finally {
   if (server && !server.killed) server.kill();
 }

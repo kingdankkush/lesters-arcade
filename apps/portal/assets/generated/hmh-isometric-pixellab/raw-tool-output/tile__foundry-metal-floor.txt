@@ -1,6 +1,6 @@
 status: completed
 id: d27466ca-23a2-4550-8d48-c2eeb6283483
-name: industrial foundry diamond-plate metal floor tile
+name: industrial foundry diamond-plate metal floor tile 
 description: industrial foundry diamond-plate metal floor tile with warm orange rim light; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background
 size: 48x48px
 shape: thin tile

@@ -1,0 +1,23 @@
+status: completed
+id: ba287635-daab-4741-a63e-8d4653e072f7
+name: upright retro arcade cabinet prop for Hard Money H
+directions: 8
+size: 170x170px
+view: low top-down
+
+rotations:
+  east: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/east.png
+  west: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/west.png
+  north: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/north.png
+  south: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/south.png
+  north-east: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/north-east.png
+  north-west: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/north-west.png
+  south-east: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/south-east.png
+  south-west: https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ba287635-daab-4741-a63e-8d4653e072f7/rotations/south-west.png
+
+animations: none
+
+download: https://api.pixellab.ai/mcp/objects/ba287635-daab-4741-a63e-8d4653e072f7/download
+
+actions: animate_object(object_id="ba287635-daab-4741-a63e-8d4653e072f7", ...) | create_object_state(object_id="ba287635-daab-4741-a63e-8d4653e072f7", ...) | delete_object(object_id="ba287635-daab-4741-a63e-8d4653e072f7")
+hint: animate_object(object_id="ba287635-daab-4741-a63e-8d4653e072f7", animation_description="...")

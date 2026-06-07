@@ -1,6 +1,6 @@
 status: completed
 id: 42c1f9c0-58e5-4a66-8fa6-31bcff031c6b
-name: raised curb edge collision tile, sidewalk meeting
+name: raised curb edge collision tile, sidewalk meeting 
 description: raised curb edge collision tile, sidewalk meeting street; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background
 size: 48x48px
 shape: thin tile

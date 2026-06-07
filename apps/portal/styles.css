@@ -1912,3 +1912,54 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   .player-summary { grid-template-columns: 1fr; }
   .ticker { overflow-x: auto; }
 }
+
+/* Generated Hard Money Heroes production UI art pass */
+.mode-card,
+.official-info-card,
+.combat-menu-panel {
+  background-image:
+    linear-gradient(160deg, rgba(4, 11, 26, 0.84), rgba(10, 5, 28, 0.72)),
+    url('./assets/generated/hmh-production-art-pass/ui/pause-menu-panel.png');
+  background-size: cover, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.level-up-upgrade-card {
+  min-height: 112px;
+  background-image:
+    linear-gradient(160deg, rgba(5, 10, 24, 0.5), rgba(25, 247, 255, 0.08)),
+    url('./assets/generated/hmh-production-art-pass/ui/upgrade-card-frame.png');
+  background-size: cover, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-color: rgba(255, 232, 77, 0.52);
+  box-shadow: 0 0 32px rgba(255, 232, 77, 0.12), inset 0 0 24px rgba(25, 247, 255, 0.12);
+}
+
+.combat-menu-action[data-action="level-up-reroll"] {
+  background-image:
+    linear-gradient(90deg, rgba(255, 232, 77, 0.78), rgba(25, 247, 255, 0.28)),
+    url('./assets/generated/hmh-production-art-pass/ui/reroll-button-frame.png');
+  background-size: cover, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#combatMenuPanel[data-state="level-up"] {
+  background-image:
+    linear-gradient(160deg, rgba(4, 11, 26, 0.78), rgba(10, 5, 28, 0.7)),
+    url('./assets/generated/hmh-production-art-pass/ui/level-up-modal-frame.png');
+  background-size: cover, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.combat-touch-hint::before {
+  background-image: url('./assets/generated/hmh-production-art-pass/ui/mobile-joystick-ring.png');
+}
+
+.combat-touch-hint::after {
+  background-image: url('./assets/generated/hmh-production-art-pass/ui/mobile-fire-button.png');
+}
+

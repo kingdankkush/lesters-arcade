@@ -573,7 +573,10 @@ def download_job_assets(job: dict[str, Any], text: str, headers: dict[str, str])
             if signature.startswith(b"\x89PNG\r\n\x1a\n") and dest.suffix.lower() != ".png":
                 png_dest = dest.with_suffix(".png")
                 if png_dest.exists():
-                    png_dest.unlink()
+                    try:
+                        png_dest.unlink()
+                    except PermissionError:
+                        png_dest = dest.with_name(f"{dest.stem}-{int(time.time())}.png")
                 dest.rename(png_dest)
                 dest = png_dest
                 record["local_path"] = rel(dest)
@@ -581,7 +584,10 @@ def download_job_assets(job: dict[str, Any], text: str, headers: dict[str, str])
             elif signature[:2] == b"\xff\xd8" and dest.suffix.lower() not in {".jpg", ".jpeg"}:
                 jpg_dest = dest.with_suffix(".jpg")
                 if jpg_dest.exists():
-                    jpg_dest.unlink()
+                    try:
+                        jpg_dest.unlink()
+                    except PermissionError:
+                        jpg_dest = dest.with_name(f"{dest.stem}-{int(time.time())}.jpg")
                 dest.rename(jpg_dest)
                 dest = jpg_dest
                 record["local_path"] = rel(dest)
@@ -600,8 +606,8 @@ def download_job_assets(job: dict[str, Any], text: str, headers: dict[str, str])
     images = []
     for p in sorted(asset_dir.rglob("*.png")):
         try:
-            im = Image.open(p)
-            images.append({"local_path": rel(p), "width": im.width, "height": im.height, "mode": im.mode, "bytes": p.stat().st_size})
+            with Image.open(p) as im:
+                images.append({"local_path": rel(p), "width": im.width, "height": im.height, "mode": im.mode, "bytes": p.stat().st_size})
         except Exception:
             pass
     job["local_images"] = images
@@ -647,7 +653,8 @@ def make_contact_sheet() -> None:
         x = pad + col * (thumb_w + pad)
         y = pad + row * (thumb_h + label_h + pad)
         try:
-            im = Image.open(path).convert("RGBA")
+            with Image.open(path) as opened:
+                im = opened.convert("RGBA")
             im.thumbnail((thumb_w, thumb_h), Image.Resampling.NEAREST)
             bg = Image.new("RGBA", (thumb_w, thumb_h), (34, 34, 48, 255))
             bg.alpha_composite(im, ((thumb_w - im.width)//2, (thumb_h - im.height)//2))

@@ -1,6 +1,6 @@
 # Hard Money Heroes — PixelLab Isometric Production Wave 1
 
-Generated/updated: 2026-06-07T19:59:57.400227+00:00
+Generated/updated: 2026-06-07T20:55:05.173862+00:00
 
 ## Scope
 
@@ -11,8 +11,8 @@ This wave begins the approved PixelLab production batch for the isometric roguel
 - Jobs manifest: `apps/portal/assets/generated/hmh-isometric-pixellab/pixellab-isometric-wave-1-jobs.json`
 - Runtime manifest: `apps/portal/assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs`
 - Contact sheet: `apps/portal/assets/generated/hmh-isometric-pixellab/contact-sheets/hmh-isometric-pixellab-wave-1-contact-sheet.png`
-- Job counts: `{"completed": 30, "failed": 21}`
-- Local PNG count discovered: `99`
+- Job counts: `{"completed": 51}`
+- Local PNG count discovered: `135`
 
 ## QA rules
 
@@ -51,25 +51,25 @@ This wave begins the approved PixelLab production batch for the isometric roguel
 - `map_object:traffic-barricade` — completed — 1 PNG(s)
 - `map_object:blank-neon-sign` — completed — 1 PNG(s)
 - `map_object:terminal-kiosk` — completed — 1 PNG(s)
-- `map_object:vending-machine` — completed — 0 PNG(s)
-- `map_object:dead-urban-tree` — failed — 0 PNG(s)
-- `map_object:cyber-palm-tree` — failed — 0 PNG(s)
-- `map_object:broken-car` — failed — 0 PNG(s)
-- `map_object:explosive-barrel` — failed — 0 PNG(s)
-- `map_object:xp-shard` — failed — 0 PNG(s)
-- `map_object:health-pack` — failed — 0 PNG(s)
-- `map_object:ammo-pack` — failed — 0 PNG(s)
-- `map_object:crypto-bomb` — failed — 0 PNG(s)
-- `map_object:muzzle-flash` — failed — 0 PNG(s)
-- `map_object:impact-sparks` — failed — 0 PNG(s)
-- `map_object:projectile-trail` — failed — 0 PNG(s)
-- `map_object:level-up-burst` — failed — 0 PNG(s)
-- `map_object:boss-telegraph-ring` — failed — 0 PNG(s)
-- `map_object:upgrade-card-frame` — failed — 0 PNG(s)
-- `map_object:level-up-modal-frame` — failed — 0 PNG(s)
-- `map_object:reroll-button-frame` — failed — 0 PNG(s)
-- `map_object:mobile-joystick-ring` — failed — 0 PNG(s)
-- `map_object:mobile-fire-button` — failed — 0 PNG(s)
-- `map_object:xp-bar-frame` — failed — 0 PNG(s)
-- `object8:hard-money-heroes-arcade-cabinet-8dir` — failed — 0 PNG(s)
-- `object8:loot-crate-8dir` — failed — 0 PNG(s)
+- `map_object:vending-machine` — completed — 1 PNG(s)
+- `map_object:dead-urban-tree` — completed — 1 PNG(s)
+- `map_object:cyber-palm-tree` — completed — 1 PNG(s)
+- `map_object:broken-car` — completed — 1 PNG(s)
+- `map_object:explosive-barrel` — completed — 1 PNG(s)
+- `map_object:xp-shard` — completed — 1 PNG(s)
+- `map_object:health-pack` — completed — 1 PNG(s)
+- `map_object:ammo-pack` — completed — 1 PNG(s)
+- `map_object:crypto-bomb` — completed — 1 PNG(s)
+- `map_object:muzzle-flash` — completed — 1 PNG(s)
+- `map_object:impact-sparks` — completed — 1 PNG(s)
+- `map_object:projectile-trail` — completed — 1 PNG(s)
+- `map_object:level-up-burst` — completed — 1 PNG(s)
+- `map_object:boss-telegraph-ring` — completed — 1 PNG(s)
+- `map_object:upgrade-card-frame` — completed — 1 PNG(s)
+- `map_object:level-up-modal-frame` — completed — 1 PNG(s)
+- `map_object:reroll-button-frame` — completed — 1 PNG(s)
+- `map_object:mobile-joystick-ring` — completed — 1 PNG(s)
+- `map_object:mobile-fire-button` — completed — 1 PNG(s)
+- `map_object:xp-bar-frame` — completed — 1 PNG(s)
+- `object8:hard-money-heroes-arcade-cabinet-8dir` — completed — 8 PNG(s)
+- `object8:loot-crate-8dir` — completed — 8 PNG(s)
