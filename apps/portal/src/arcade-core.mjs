@@ -1,4 +1,7 @@
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../assets/generated/hmh-hd-sprite-atlas.mjs';
+import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
+
+export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
 
 export const DEFAULT_ENTRY_FEE_MICRO_USDC = 250_000;
 
@@ -240,7 +243,7 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
     Object.freeze({ title: 'Keep the combo alive', body: 'Damage chains and kills without taking damage grow your score faster.' }),
     Object.freeze({ title: 'Use the blade up close', body: 'The Litecoin Blade is Lester\'s signature high-risk melee move: one-shot basic grunts, save ammo, and pop Ł sparks.' }),
     Object.freeze({ title: 'Save rare weapons for bosses', body: 'The Hashstorm suppresses waves; rare charged weapons are intended for armor, boss phases, and clutch survival moments.' }),
-    Object.freeze({ title: 'Watch for scroll locks', body: 'Mini-boss and boss arenas pause side-scrolling until the threat is defeated.' }),
+    Object.freeze({ title: 'Watch for arena locks', body: 'Mini-boss and boss rooms pause forward progression until the threat is defeated; use cover and vertical space before pushing right again.' }),
   ]),
   tooltips: Object.freeze([
     Object.freeze({ anchor: 'connectWalletButton', title: 'Wallet login', copy: 'Tries MetaMask/Rabby first, requests LitVM LiteForge if needed, then falls back to a local mock wallet. No funds or live game transaction.' }),
@@ -286,17 +289,149 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
   ]),
 });
 
+export const LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP = Object.freeze({
+  name: "Lester's Arcade public player loop",
+  playerPromise: 'A player should understand the wallet/profile gate, pick Hard Money Heroes, choose Free or Ranked, and begin Level 1 in under 30 seconds.',
+  stageOrder: Object.freeze([
+    'wallet-splash',
+    'arcade-entry',
+    'cabinet-select',
+    'mode-select',
+    'level-intro',
+    'gameplay',
+    'game-over-summary',
+    'return-to-arcade',
+  ]),
+  modeBoundaries: Object.freeze({
+    free: Object.freeze({
+      label: 'Free Practice',
+      tracks: false,
+      writes: Object.freeze([]),
+      replayCost: 'free',
+      copy: 'Local-only practice; never writes progress, achievements, official scores, or transaction receipts.',
+    }),
+    ranked: Object.freeze({
+      label: 'Ranked Testnet',
+      tracks: true,
+      writes: Object.freeze(['profile progress', 'achievements', 'official scores', 'transaction receipts']),
+      replayCost: 'new testnet credit',
+      submissionTrigger: 'explicit-game-over-submit',
+      copy: 'Official state is deferred until the player presses Submit Official Score on the game-over screen.',
+    }),
+  }),
+  exitRamps: Object.freeze([
+    Object.freeze({ id: 'pause-menu', label: 'Pause Menu', target: 'gameplay', copy: 'Resume, restart, audio, character swap, viewport, game menu, and exit actions remain one click away.' }),
+    Object.freeze({ id: 'game-menu', label: 'Return to Game Menu', target: 'mode-select', copy: 'Leave the current attempt and re-pick Free or Ranked before starting again.' }),
+    Object.freeze({ id: 'return-to-arcade', label: 'Exit to Lester’s Arcade', target: 'cabinet-select', copy: 'No hidden paid-run sync occurs when a player exits back to Lester’s Arcade.' }),
+  ]),
+  firstImpressionChecklist: Object.freeze([
+    'One obvious primary action per step.',
+    'Free and Ranked copy must be short, visual, and impossible to confuse.',
+    'Game-over screen shows score, time, kills, bosses, replay cost, submit state, and arcade exit.',
+    'The public route hides developer/codex/debug panels behind an explicit backstage toggle.',
+  ]),
+});
+
+export const LESTER_BLASTER_ENEMY_AI_STATE_MACHINE = Object.freeze({
+  requiredStates: Object.freeze(['spawn', 'seek', 'telegraph', 'attack', 'recover', 'reposition', 'defeated']),
+  globalFairness: Object.freeze({
+    maxActiveAttackers: 2,
+    minTelegraphFrames: 24,
+    recoveryFramesAfterAttack: 20,
+    readableTellRule: 'Every damaging action must spend telegraph frames on-screen before collision or projectile release.',
+    roleCapRule: 'Prefer fewer active attackers with stronger tells; staged rooms should not dogpile more than two simultaneous attacks.',
+  }),
+  roles: Object.freeze({
+    coverShooter: Object.freeze({
+      displayName: 'Cover Shooter',
+      transitions: Object.freeze([
+        Object.freeze({ from: 'spawn', to: 'seek', trigger: 'enters stage from right lane' }),
+        Object.freeze({ from: 'seek', to: 'take-cover', trigger: 'cover prop available between enemy and player' }),
+        Object.freeze({ from: 'take-cover', to: 'telegraph', trigger: 'line of sight plus attack cooldown ready' }),
+        Object.freeze({ from: 'telegraph', to: 'attack', trigger: 'muzzle flash / warning bar completes' }),
+        Object.freeze({ from: 'attack', to: 'recover', trigger: 'projectile burst fired' }),
+        Object.freeze({ from: 'recover', to: 'reposition', trigger: 'cover destroyed or player closes distance' }),
+      ]),
+      tells: Object.freeze(['muzzle flash', 'attack-windup-bar', 'cover peek frame']),
+      preferredRange: 'mid',
+      counters: Object.freeze(['crouch', 'jump lane', 'destroy cover', 'grenade']),
+    }),
+    meleeRusher: Object.freeze({
+      displayName: 'Melee Rusher',
+      transitions: Object.freeze([
+        Object.freeze({ from: 'spawn', to: 'seek', trigger: 'player inside stage lock' }),
+        Object.freeze({ from: 'seek', to: 'telegraph', trigger: 'within lunge distance or after panic charge wind-up' }),
+        Object.freeze({ from: 'telegraph', to: 'attack', trigger: 'hands/weapon shake completes' }),
+        Object.freeze({ from: 'attack', to: 'recover', trigger: 'lunge/swing resolves' }),
+        Object.freeze({ from: 'recover', to: 'reposition', trigger: 'missed attack or player jumps over' }),
+      ]),
+      tells: Object.freeze(['shake pose', 'lunge crouch', 'yellow attack bar']),
+      preferredRange: 'close',
+      counters: Object.freeze(['jump', 'blade timing', 'knockback shot']),
+    }),
+    flyerHarasser: Object.freeze({
+      displayName: 'Flyer Harasser',
+      transitions: Object.freeze([
+        Object.freeze({ from: 'spawn', to: 'seek', trigger: 'upper lane entry' }),
+        Object.freeze({ from: 'seek', to: 'telegraph', trigger: 'safe lane found and cooldown ready' }),
+        Object.freeze({ from: 'telegraph', to: 'attack', trigger: 'glow pulse completes' }),
+        Object.freeze({ from: 'attack', to: 'recover', trigger: 'tax pulse / projectile released' }),
+        Object.freeze({ from: 'recover', to: 'reposition', trigger: 'lane overlaps another attacker or player holds aim' }),
+      ]),
+      safeLaneRule: 'Flyer hazards should never overlap every jump/crouch lane; always leave at least one readable safe lane.',
+      preferredRange: 'upper-mid',
+      counters: Object.freeze(['jump timing', 'anti-air shots', 'safe-lane read']),
+    }),
+    armoredPressure: Object.freeze({
+      displayName: 'Armored Pressure',
+      transitions: Object.freeze([
+        Object.freeze({ from: 'spawn', to: 'seek', trigger: 'mini-boss or elite enters lock' }),
+        Object.freeze({ from: 'seek', to: 'telegraph', trigger: 'stomp/charge cooldown ready' }),
+        Object.freeze({ from: 'telegraph', to: 'attack', trigger: 'heavy flash completes' }),
+        Object.freeze({ from: 'attack', to: 'recover', trigger: 'shockwave/charge resolves' }),
+        Object.freeze({ from: 'recover', to: 'reposition', trigger: 'player reaches rear/vertical lane' }),
+      ]),
+      armorRule: 'Armored enemies move slowly, telegraph heavily, and reward rare weapons or explosives instead of spam fire.',
+      counters: Object.freeze(['Hash Rail', 'grenade', 'cover bait', 'vertical reposition']),
+    }),
+  }),
+});
+
+export const LESTER_ARCADE_WORKFLOW_AUTOMATION = Object.freeze({
+  goal: 'Create a repeatable improvement pipeline that turns game-design research into canon, assets, runtime balance, tests, browser smoke evidence, and next-slice tickets.',
+  loops: Object.freeze([
+    Object.freeze({ id: 'research-to-canon', cadence: 'per feature batch', input: 'articles, playtest notes, competitor references', automation: 'summarize principles into scored recommendations', output: 'docs/game-design improvement canon plus model/test updates' }),
+    Object.freeze({ id: 'asset-ingestion', cadence: 'per art/audio drop', input: 'source sheets, stills, SFX, music', automation: 'deterministic copy/slice/manifest generation with dimensions and missing-asset flags', output: 'manifest-backed runtime assets' }),
+    Object.freeze({ id: 'balance-sim', cadence: 'before every playable preview', input: 'enemy stats, stage caps, score weights', automation: 'unit tests and small simulations for pacing, damage, caps, and reward timing', output: 'tuning notes and protected contracts' }),
+    Object.freeze({ id: 'browser-smoke', cadence: 'before handoff', input: 'local portal URL', automation: 'scripted public flow click-through, console scan, screenshots, and public flow assertions', output: 'verified wallet → cabinet → mode → play → game-over → exit evidence' }),
+  ]),
+  gates: Object.freeze([
+    Object.freeze({ command: 'npm test', purpose: 'model, scoring, free/ranked separation, AI contracts, and public loop tests' }),
+    Object.freeze({ command: 'npm run check', purpose: 'JavaScript syntax plus Python asset script compilation' }),
+    Object.freeze({ command: 'npm run assets:verify', purpose: 'generated/runtime art and audio manifest integrity' }),
+    Object.freeze({ command: 'npm run contracts:check', purpose: 'contract file structure and safety rails' }),
+    Object.freeze({ command: 'browser smoke public flow', purpose: 'real DOM/user path evidence from Lester’s Arcade splash into gameplay and back out' }),
+  ]),
+  backlogTemplate: Object.freeze(['design intent', 'player-facing change', 'model/test contract', 'runtime/CSS work', 'asset/audio need', 'verification evidence']),
+});
+
 export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   layout: 'full-screen-arcade-app',
   productionDomain: 'lestersarcade.io',
   principle: 'Most prototype/debug/network/codex material is hidden behind menus; the default player experience is login → animated arcade entry → cabinet select → mode select → Level 1 intro → play/profile/leaderboards/settings.',
   initialFlow: Object.freeze(['wallet-login', 'profile-activation', 'cabinet-select', 'game-menu', 'run-or-leaderboards']),
+  publicFlow: Object.freeze(['connect-wallet', 'select-game', 'choose-mode', 'begin-level', 'play']),
   officialFlow: Object.freeze(['wallet-splash', 'arcade-walk-in', 'cabinet-select', 'mode-select', 'level-one-intro', 'begin-level']),
-  hiddenByDefault: Object.freeze(['build-stack-panels', 'network-rails', 'debug-codex', 'generated-gallery', 'prototype-test-buttons']),
+  hiddenByDefault: Object.freeze(['build-stack-panels', 'network-rails', 'debug-codex', 'generated-gallery', 'prototype-test-buttons', 'developer-backstage']),
+  primaryNav: Object.freeze([
+    Object.freeze({ id: 'cabinets', label: 'Play', purpose: 'Select Hard Money Heroes and start playing.' }),
+    Object.freeze({ id: 'profile', label: 'Profile', purpose: 'View the active wallet profile and run history.' }),
+    Object.freeze({ id: 'leaderboards', label: 'Scores', purpose: 'Browse global boards plus the current wallet profile placement.' }),
+  ]),
   navigation: Object.freeze([
-    Object.freeze({ id: 'cabinets', label: 'Cabinets', purpose: 'Select Hard Money Heroes or future Lester arcade cabinets.' }),
+    Object.freeze({ id: 'cabinets', label: 'Play', purpose: 'Select Hard Money Heroes or future Lester arcade cabinets.' }),
     Object.freeze({ id: 'profile', label: 'Profile', purpose: 'Edit username/avatar, view wallet-bound progress, achievements, and high scores.' }),
-    Object.freeze({ id: 'leaderboards', label: 'Leaderboards', purpose: 'Browse global boards plus the current wallet profile placement.' }),
+    Object.freeze({ id: 'leaderboards', label: 'Scores', purpose: 'Browse global boards plus the current wallet profile placement.' }),
     Object.freeze({ id: 'settings', label: 'Settings', purpose: 'Controls, audio, accessibility, network status, and sign-out.' }),
   ]),
   cabinets: Object.freeze([
@@ -348,9 +483,29 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
     miniBossEnemiesOnScreenRange: Object.freeze([4, 5]),
     miniBossEveryStages: Object.freeze([3, 4]),
     finalBoss: 'randomized-from-boss-pool',
-    baseScrollPace: 'slow-cinematic-auto-scroll',
-    stageLoop: Object.freeze(['smooth-parallax-travel', 'scroll-lock-engagement', '1-3 enemy waves', 'clear gate', 'platforming-transition']),
+    baseScrollPace: 'player-led-rightward-camera-with-no-idle-autoscroll',
+    stageLoop: Object.freeze(['player-led tactical travel', 'scroll-lock engagement room', '1-3 enemy waves', 'clear gate', 'platforming-transition']),
     platformingSections: Object.freeze(['timed gap jumps', 'short wall hops', 'obstacle vaults', 'power-up pickup lanes']),
+    tacticalRoomTuning: Object.freeze({
+      engagementArenaWidthPixels: 1320,
+      playerStrafeLanePixels: 390,
+      minCoverSpacingPixels: 132,
+      enemySpawnDelayFrames: 56,
+      rangedShotCooldownFrames: 132,
+      requiredCoverKinds: Object.freeze(['player-cover', 'enemy-cover', 'destructible-crate', 'explosive-barrel', 'vertical-platform']),
+      coverPlacements: Object.freeze([
+        Object.freeze({ id: 'player-cover', kind: 'cover', label: 'Player Cover', x: 168, yOffset: 42, w: 50, h: 54, hp: 30, cover: true }),
+        Object.freeze({ id: 'enemy-cover-a', kind: 'crate', label: 'Enemy Crate', x: 500, yOffset: 46, w: 56, h: 54, hp: 28, cover: true }),
+        Object.freeze({ id: 'explosive-barrel', kind: 'barrel', label: 'Explosive Barrel', x: 664, yOffset: 34, w: 32, h: 42, hp: 12, cover: false, explosive: true }),
+        Object.freeze({ id: 'enemy-cover-b', kind: 'crate', label: 'Tall Crate', x: 820, yOffset: 62, w: 58, h: 70, hp: 34, cover: true }),
+        Object.freeze({ id: 'mid-wall', kind: 'wall', label: 'Half Wall', x: 1048, yOffset: 50, w: 34, h: 58, hp: 24, cover: true }),
+      ]),
+      platformPlacements: Object.freeze([
+        Object.freeze({ id: 'low-platform', x: 420, yOffset: 76, w: 104, h: 12, label: 'low cover platform' }),
+        Object.freeze({ id: 'high-platform', x: 708, yOffset: 122, w: 92, h: 12, label: 'high dodge platform' }),
+        Object.freeze({ id: 'exit-platform', x: 986, yOffset: 88, w: 118, h: 12, label: 'exit platform' }),
+      ]),
+    }),
   }),
   health: Object.freeze({
     playerMaxPercent: 100,
@@ -364,10 +519,16 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
     rateOfFire: 'reduced-readable',
     coverDecision: 'defensive enemies attempt cover first; aggressive enemies rush Lester/Lilly for delayed melee attacks',
     spawnRule: 'spawn from the right side during staged locks; keep only the allowed stage cap alive on screen',
+    readableTells: Object.freeze(['attack-windup-bar', 'muzzle-flash-before-shot', 'melee-lunge-pose', 'boss-phase-flash', 'safe-lane-warning']),
   }),
   gameplayMenu: Object.freeze({
     pauseAvailableAnytime: true,
-    actions: Object.freeze(['Restart', 'Toggle Music On/Off', 'Swap Characters', 'Return to Game Menu', 'Exit Game']),
+    actions: Object.freeze(['Resume', 'Restart', 'Toggle Music On/Off', 'Swap Characters', 'Windowed / Fullscreen', 'Return to Game Menu', 'Exit Game']),
+    screens: Object.freeze({
+      pause: Object.freeze({ title: 'Paused', purpose: 'Pause action and expose clear resume/restart/audio/window/exit controls.' }),
+      gameOver: Object.freeze({ title: 'Game Over', purpose: 'Summarize score, explain free/ranked restart cost, and provide Play Again or exit.' }),
+    }),
+    exitGameTarget: 'cabinet-select',
     restart: Object.freeze({
       freeModeCost: 'free-restart-from-level-start',
       paidModeCost: 'requires-new-paid-credit',
@@ -375,7 +536,7 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
   }),
   viewportModes: Object.freeze({
     default: 'fullscreen',
-    available: Object.freeze(['fullscreen', 'embedded-window', 'expanded-fullscreen']),
+    available: Object.freeze(['fullscreen', 'windowed', 'expanded-fullscreen', 'embedded-window']),
   }),
   runStateSeparation: Object.freeze({
     freeMode: 'local-sandbox-only',
@@ -389,11 +550,48 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
     Object.freeze({ section: 8, goal: 'main boss arena after tactical escalation', enemyCount: [0, 2], boss: true, lock: 'boss-scroll-lock' }),
   ]),
   pacingRules: Object.freeze([
+    'Use player-led rightward camera advancement instead of constant auto-scroll so players can read threats before committing.',
+    'Keep a short backward allowance on screen, but never rewind world progress once the camera has advanced.',
     'Keep 0–4 enemies on screen; prefer fewer enemies with stronger tells over spam.',
     'Reduce enemy movement speed and rate of fire so crouch/cover/jump decisions matter.',
     'Enemy melee counters should lag player melee by roughly 1–2 seconds after a readable tell.',
     'Use destructible cover, explosive props, platforms, and ground gaps to create tactical decisions.',
     'Scroll resumes only after staged enemies, mini-bosses, or bosses are cleared.',
+  ]),
+});
+
+export const LESTER_BLASTER_TACTICAL_CAMERA_MODEL = Object.freeze({
+  mode: 'player-led-rightward-scroll',
+  canvasWidth: 760,
+  autoScrollWhenIdle: false,
+  playerStartScreenX: 108,
+  playerMinScreenX: 72,
+  cameraLeadStartX: 300,
+  playerMaxScreenX: 420,
+  engagementPlayerMaxScreenX: 520,
+  backwardAllowancePixels: 128,
+  backtrackFloorScreenX: 172,
+  engagementArenaWidthPixels: LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning.engagementArenaWidthPixels,
+  stageTravelGoalBasePixels: 220,
+  stageTravelGoalPerStagePixels: 34,
+  scrollAdvanceMultiplier: 1.12,
+  objectScrollMultiplier: 1.15,
+  principles: Object.freeze([
+    'Camera only advances when the player presses right past the lead zone.',
+    'World progress never rewinds; left/back movement is limited to a few meters of tactical repositioning.',
+    'Engagements become wider arena locks with cover, vertical props, and readable enemy tells.',
+    'Sprites stay large, but the playable lane is wider so dodging, crouching, and cover choices have room to breathe.',
+  ]),
+});
+
+export const LESTER_BLASTER_HUD_OVERLAY_MODEL = Object.freeze({
+  purpose: 'Always-visible browser HUD overlay for player health, score, timer, throwables/power-ups, weapon state, stage progress, and current lock/status.',
+  requiredWidgets: Object.freeze(['health', 'score', 'timer', 'power-ups', 'weapon', 'stage', 'status']),
+  refresh: 'every fixed-step HUD sync and every pause/options state change',
+  readabilityRules: Object.freeze([
+    'Use short labels and high contrast so players do not read a dashboard mid-fight.',
+    'Keep official/free sync copy outside the combat HUD; the HUD is moment-to-moment gameplay only.',
+    'Expose pause/options through an overlay popup, not a hidden browser menu.',
   ]),
 });
 
@@ -422,59 +620,111 @@ export const LESTER_BLASTER_AUDIO_ASSET_PLAN = Object.freeze({
   ]),
 });
 
-const PRODUCTION_FRAME_SIZE = Object.freeze([128, 128]);
-const productionFrameRange = (state, prefix, count = 8) => Object.freeze(Array.from({ length: count }, (_, index) => Object.freeze({
-  src: `./assets/lester-production/frames/${state}/${prefix}-${state}-${String(index).padStart(2, '0')}.png`,
-  size: PRODUCTION_FRAME_SIZE,
+const HARD_MONEY_FRAME_SIZE = Object.freeze([128, 128]);
+const hardMoneyFrameRange = (actor, state, count = 8) => Object.freeze(Array.from({ length: count }, (_, index) => Object.freeze({
+  src: `./assets/hard-money-heroes/frames/${actor}/${state}/${actor}-${state}-${String(index).padStart(2, '0')}.png`,
+  size: HARD_MONEY_FRAME_SIZE,
 })));
+
+const hardMoneyAnimationSet = (actor, sourcePrefix) => Object.freeze({
+  idle: Object.freeze({ selectedFrom: `${sourcePrefix}-idle.png`, frames: hardMoneyFrameRange(actor, 'idle') }),
+  walk: Object.freeze({ selectedFrom: `${sourcePrefix}-walk.png`, frames: hardMoneyFrameRange(actor, 'walk') }),
+  run: Object.freeze({ selectedFrom: `${sourcePrefix}-run.png`, frames: hardMoneyFrameRange(actor, 'run') }),
+  jump: Object.freeze({ selectedFrom: `${sourcePrefix}-jump.png`, frames: hardMoneyFrameRange(actor, 'jump') }),
+  attack: Object.freeze({ selectedFrom: `${sourcePrefix}-attack.png`, frames: hardMoneyFrameRange(actor, 'attack') }),
+});
+
+const hardMoneyEnemyArt = (actor, sourcePrefix) => Object.freeze({
+  animations: hardMoneyAnimationSet(actor, sourcePrefix),
+  stills: Object.freeze([
+    Object.freeze({ src: `./assets/hard-money-heroes/stills/${actor}/${actor}-00.png` }),
+    Object.freeze({ src: `./assets/hard-money-heroes/stills/${actor}/${actor}-01.png` }),
+    Object.freeze({ src: `./assets/hard-money-heroes/stills/${actor}/${actor}-02.png` }),
+  ]),
+});
 
 const lesterCharacterAssetManifest = Object.freeze({
   weapons: Object.freeze({
-    machineGun: Object.freeze({ available: true, selectedFrom: './assets/generated/sliced/icon-weapon-settler.png' }),
-    knife: Object.freeze({ available: true, selectedFrom: './assets/generated/sliced/icon-weapon-litecoin-blade.png' }),
-    grenade: Object.freeze({ available: true, selectedFrom: './assets/generated/sliced/icon-weapon-crypto-bomb.png' }),
+    machineGun: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lester/lester-machineGunRight.png' }),
+    knife: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lester/lester-knifeRight.png' }),
+    grenade: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lester/lester-grenadeRight.png' }),
     pistol: Object.freeze({ available: true, preservedFromPreviousPass: true, selectedFrom: './assets/generated/sliced/lester-shoot.png' }),
     shotgun: Object.freeze({ available: true, preservedFromPreviousPass: true, selectedFrom: './assets/lester-production/stills/lester-right-side-shotgun.png' }),
   }),
-  animations: Object.freeze({
-    idle: Object.freeze({ selectedFrom: './assets/lester-production/frames/idle/lester-idle-00.png', frames: productionFrameRange('idle', 'lester') }),
-    walk: Object.freeze({ selectedFrom: './assets/lester-production/frames/walk/lester-walk-00.png', frames: productionFrameRange('walk', 'lester') }),
-    run: Object.freeze({ selectedFrom: './assets/lester-production/frames/run/lester-run-00.png', frames: productionFrameRange('run', 'lester') }),
-    jump: Object.freeze({ selectedFrom: './assets/lester-production/frames/jump/lester-jump-00.png', frames: productionFrameRange('jump', 'lester') }),
-    attack: Object.freeze({ selectedFrom: './assets/lester-production/frames/run/lester-run-00.png', frames: productionFrameRange('run', 'lester') }),
+  stills: Object.freeze({
+    facing: './assets/hard-money-heroes/stills/lester/lester-machineGunFacing.png',
+    leftSide: './assets/hard-money-heroes/stills/lester/lester-machineGunLeft.png',
+    rightSide: './assets/hard-money-heroes/stills/lester/lester-machineGunRight.png',
+    knife: './assets/hard-money-heroes/stills/lester/lester-knifeRight.png',
+    grenade: './assets/hard-money-heroes/stills/lester/lester-grenadeRight.png',
   }),
+  animations: hardMoneyAnimationSet('lester', 'Lester'),
+});
+
+const lillyCharacterAssetManifest = Object.freeze({
+  weapons: Object.freeze({
+    machineGun: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lilly/lilly-machineGunRight.png' }),
+    knife: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lilly/lilly-knifeRight.png' }),
+    grenade: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lilly/lilly-grenadeRight.png' }),
+    pistol: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lilly/lilly-pistolFacing.png' }),
+    shotgun: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lilly/lilly-shotgunFacing.png' }),
+  }),
+  stills: Object.freeze({
+    facing: './assets/hard-money-heroes/stills/lilly/lilly-machineGunFacing.png',
+    leftSide: './assets/hard-money-heroes/stills/lilly/lilly-machineGunLeft.png',
+    rightSide: './assets/hard-money-heroes/stills/lilly/lilly-machineGunRight.png',
+    knife: './assets/hard-money-heroes/stills/lilly/lilly-knifeRight.png',
+    grenade: './assets/hard-money-heroes/stills/lilly/lilly-grenadeRight.png',
+  }),
+  animations: hardMoneyAnimationSet('lilly', 'Lilly'),
 });
 
 export const HARD_MONEY_HEROES_ASSET_MANIFEST = Object.freeze({
   id: 'hard-money-heroes-justin-assets-v1',
-  generatedFrom: 'C:/Users/just_/Desktop/Projects/Web3 Gaming/Hard Money Heroes/Art Assets plus Lester\'s Arcade generated/sliced assets',
+  generatedFrom: 'C:/Users/just_/Desktop/My Stuff/Lester\'s Arcade/Hard Money Heroes/Art Assets ingested by scripts/ingest-hard-money-heroes-user-assets.py',
+  runtimeManifest: './assets/hard-money-heroes/hard-money-heroes-user-asset-manifest.json',
   playableCharacters: Object.freeze({
     lester: lesterCharacterAssetManifest,
-    lilly: Object.freeze({
-      ...lesterCharacterAssetManifest,
-      sourceNote: 'Lilly currently reuses verified Lester-size gameplay frames until a production Lilly sheet is sliced; teal reference art remains in the art-redo brief.',
-    }),
+    lilly: lillyCharacterAssetManifest,
   }),
   enemies: Object.freeze({
-    trenchDegen: Object.freeze({ behavior: Object.freeze({ primary: 'slow-readable-melee', secondary: 'occasional-low-rate-pistol' }) }),
-    evilBanker: Object.freeze({ behavior: Object.freeze({ primary: 'fast-briefcase-melee-rusher' }) }),
-    warrenSpearRider: Object.freeze({ behavior: Object.freeze({ primary: 'mounted-spear-pressure', spearThrowAccuracy: 0.6, dodgeRequired: true }) }),
+    trenchDegen: Object.freeze({
+      id: 'trench-degen',
+      title: 'Trench Degen',
+      art: hardMoneyEnemyArt('trench-degen', 'Trench Degen'),
+      behavior: Object.freeze({ primary: 'slow-readable-melee', secondary: 'occasional-low-rate-pistol', moveSpeed: 0.72, pistolChance: 0.18, tellFrames: 34 }),
+    }),
+    evilBanker: Object.freeze({
+      id: 'evil-banker',
+      title: 'Evil Banker',
+      art: hardMoneyEnemyArt('evil-banker', 'Evil Banker'),
+      behavior: Object.freeze({ primary: 'fast-briefcase-melee-rusher', moveSpeed: 1.42, tellFrames: 22 }),
+    }),
+    warrenSpearRider: Object.freeze({
+      id: 'warren-spear-rider',
+      title: 'Warren Spear Rider',
+      art: hardMoneyEnemyArt('warren-spear-rider', 'Evil Boss'),
+      behavior: Object.freeze({ primary: 'mounted-spear-pressure', spearThrowAccuracy: 0.6, dodgeRequired: true, moveSpeed: 0.52, meleeRange: 86, throwCooldownFrames: 185, tellFrames: 46 }),
+    }),
   }),
   screens: Object.freeze({
-    splash: Object.freeze({ src: './assets/generated/lesters-arcade-parent-portal-hero-textfree.png' }),
-    mainMenu: Object.freeze({ src: './assets/generated/hmh-cabinet-key-art-textfree.png' }),
-    options: Object.freeze({ src: './assets/generated/hmh-generated-textfree-contact-sheet.png' }),
-    modeSelect: Object.freeze({ src: './assets/generated/hmh-boss-roster-concept-textfree.png' }),
+    splash: Object.freeze({ src: './assets/hard-money-heroes/screens/boot-splash.png' }),
+    mainMenu: Object.freeze({ src: './assets/hard-money-heroes/screens/main-menu.png' }),
+    options: Object.freeze({ src: './assets/hard-money-heroes/screens/options.png' }),
+    modeSelect: Object.freeze({ src: './assets/hard-money-heroes/screens/mode-select.png' }),
   }),
   audio: Object.freeze({
     musicTracks: Object.freeze([
-      Object.freeze({ id: 'getting-lit', title: 'Lester and Lilly Rap - Getting Lit', src: './assets/audio/music/lester-and-lilly-rap-getting-lit.mp3' }),
-      Object.freeze({ id: 'underchain-loop', title: 'Underchain District Loop', source: 'planned free/CC0 loop' }),
-      Object.freeze({ id: 'mini-boss-sting', title: 'Mini-Boss Captain Sting', source: 'planned free/CC0 sting' }),
-      Object.freeze({ id: 'game-over-sting', title: 'Game Over Sting', source: 'planned free/CC0 sting' }),
+      Object.freeze({ id: 'getting-lit-vocals', title: 'Lester and Lilly Rap - Getting Lit (Vocals)', src: './assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3' }),
+      Object.freeze({ id: 'going-to-the-moon', title: 'LitVM Going To The Moon', src: './assets/audio/music/litvm-going-to-the-moon-new-2.mp3' }),
+      Object.freeze({ id: 'testnet-teaser', title: 'LitVM TestNet Teaser', src: './assets/audio/music/litvm-testnet-teaser.mp3' }),
+      Object.freeze({ id: 'rise-to-the-occasion', title: 'Rise to the Occasion', src: './assets/audio/music/rise-to-the-occasion.mp3' }),
     ]),
     sfxPlan: Object.freeze({
       weaponFire: Object.freeze(['pistol', 'machine-gun', 'shotgun', 'grenade-launch']),
+      melee: Object.freeze(['knife-swipe', 'knife-hit-spark']),
+      damageTypes: Object.freeze(['bullet-hit', 'blade-hit', 'grenade-blast', 'spear-stab', 'spear-throw-dodge-window', 'briefcase-smack']),
+      powerUps: Object.freeze(['health-pickup', 'shield-pulse', 'ammo-restock', 'score-multiplier-chime']),
       enemyBarks: Object.freeze(['trench-degen-grunt', 'evil-banker-charge', 'warren-spear-rider-horse']),
     }),
   }),
@@ -1165,6 +1415,16 @@ function clone(value) {
     : structuredClone(value);
 }
 
+function clampNumber(value, min, max) {
+  const safeValue = Number.isFinite(value) ? value : min;
+  return Math.max(min, Math.min(max, safeValue));
+}
+
+function formatClock(seconds) {
+  const safeSeconds = Math.max(0, Math.round(Number(seconds) || 0));
+  return `${Math.floor(safeSeconds / 60)}:${String(safeSeconds % 60).padStart(2, '0')}`;
+}
+
 function getCharacter(characterId = 'lester') {
   const character = LESTER_BLASTER_CHARACTER_ROSTER.find((candidate) => candidate.id === characterId);
   if (!character) throw new Error(`Unknown Hard Money Heroes character: ${characterId}`);
@@ -1261,6 +1521,14 @@ export function applyPowerUp(runState, powerUpId) {
   return runState;
 }
 
+function aiStateMachineRoleForEnemy(enemy) {
+  const signature = `${enemy.aiArchetype ?? ''} ${enemy.class ?? ''}`;
+  if (/fly|hover|drone|wisp/i.test(signature)) return 'flyerHarasser';
+  if (/armored|golem|elite|mini-boss|pressure|turret/i.test(signature)) return 'armoredPressure';
+  if (/melee|charge|rusher|skater|rat|panic/i.test(signature)) return 'meleeRusher';
+  return 'coverShooter';
+}
+
 export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0 } = {}) {
   const difficulty = getLesterBlasterDifficultyAt(elapsedSeconds);
   const rawIndex = Math.abs(Math.floor(seed)) % LESTER_BLASTER_ENEMY_CATALOG.length;
@@ -1270,6 +1538,8 @@ export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0 } = {}) {
   const environmentIndex = Math.min(LESTER_BLASTER_ENVIRONMENTS.length - 1, Math.floor((elapsedSeconds / 60) / 4));
   const environment = LESTER_BLASTER_ENVIRONMENTS[environmentIndex];
   const scaledHealth = Math.ceil(enemy.baseHealth * (1 + difficulty.tier * 0.18));
+  const stateMachineRole = aiStateMachineRoleForEnemy(enemy);
+  const fairness = LESTER_BLASTER_ENEMY_AI_STATE_MACHINE.globalFairness;
 
   return {
     enemy: clone(enemy),
@@ -1277,10 +1547,14 @@ export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0 } = {}) {
     scaledDamage: Math.ceil(enemy.damage * (1 + difficulty.tier * 0.08)),
     ai: {
       archetype: enemy.aiArchetype,
+      stateMachineRole,
       aggression: Number((0.8 + difficulty.enemyAiLevel * 0.13).toFixed(2)),
       projectileSpeedMultiplier: difficulty.enemyProjectileSpeedMultiplier,
       spawnMultiplier: difficulty.enemySpawnMultiplier,
       fairnessTell: enemy.tells,
+      telegraphFrames: fairness.minTelegraphFrames + Math.min(18, difficulty.enemyAiLevel),
+      recoveryFrames: fairness.recoveryFramesAfterAttack + (stateMachineRole === 'armoredPressure' ? 12 : 0),
+      maxActiveAttackers: fairness.maxActiveAttackers,
     },
     environment: clone(environment),
     difficulty,
@@ -1396,6 +1670,229 @@ export function buildCombatSandboxStatusModel({ running = false, elapsedSeconds 
     state: 'running',
     heading: 'Local combat sandbox running',
     details: `${Math.round(fps)}fps preview · ${Math.floor(elapsedSeconds)}s accelerated ${activeMode} combat · this does not overwrite official paid-run state.`,
+  });
+}
+
+export function advanceTacticalCameraModel({
+  playerX = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX,
+  scroll = 0,
+  furthestScroll = 0,
+  inputDirection = 0,
+  stagePhase = 'travel',
+  scrollLocked = false,
+  speed = 3.1,
+  camera = LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
+} = {}) {
+  const direction = Math.sign(Number(inputDirection) || 0);
+  const currentScroll = Math.max(0, Number(scroll) || 0);
+  const currentFurthestScroll = Math.max(currentScroll, Number(furthestScroll) || 0);
+  const rightCap = stagePhase === 'engagement' || stagePhase === 'boss' || scrollLocked
+    ? camera.engagementPlayerMaxScreenX
+    : camera.playerMaxScreenX;
+  const minX = camera.backtrackFloorScreenX;
+  let nextPlayerX = clampNumber((Number(playerX) || camera.playerStartScreenX) + direction * speed, minX, rightCap);
+  let nextScroll = currentScroll;
+  let scrollDelta = 0;
+  let movementMode = 'screen-space';
+  const canAdvanceCamera = direction > 0 && !scrollLocked && stagePhase === 'travel';
+
+  if (canAdvanceCamera && nextPlayerX > camera.cameraLeadStartX) {
+    const overflow = nextPlayerX - camera.cameraLeadStartX;
+    scrollDelta = overflow * camera.scrollAdvanceMultiplier;
+    nextScroll += scrollDelta;
+    nextPlayerX = camera.cameraLeadStartX;
+    movementMode = 'camera-advance';
+  }
+
+  const nextFurthest = Math.max(currentFurthestScroll, nextScroll);
+  return Object.freeze({
+    playerX: Number(nextPlayerX.toFixed(3)),
+    scroll: Number(nextScroll.toFixed(3)),
+    furthestScroll: Number(nextFurthest.toFixed(3)),
+    scrollDelta: Number(scrollDelta.toFixed(3)),
+    movementMode,
+    backtrackFloorScreenX: camera.backtrackFloorScreenX,
+    rightCap,
+    worldProgressLocked: nextScroll >= currentScroll,
+  });
+}
+
+export function buildCombatHudOverlayModel({
+  health = 100,
+  score = 0,
+  elapsedSeconds = 0,
+  grenades = 0,
+  ammo = Infinity,
+  weaponTitle = 'The Settler',
+  powerUpsCollected = 0,
+  stageIndex = 1,
+  stageCount = 13,
+  status = 'TRAVEL',
+  fps = 60,
+} = {}) {
+  const healthValue = `${clampNumber(Math.round(Number(health) || 0), 0, 100)}%`;
+  const scoreValue = Math.max(0, Math.round(Number(score) || 0)).toLocaleString();
+  const ammoValue = ammo === Infinity || ammo === '∞' ? '∞' : Math.max(0, Math.round(Number(ammo) || 0)).toLocaleString();
+  const widgets = Object.freeze([
+    Object.freeze({ id: 'health', label: 'HP', value: healthValue, tone: healthValue === '0%' ? 'danger' : 'vital' }),
+    Object.freeze({ id: 'score', label: 'Score', value: scoreValue, tone: 'score' }),
+    Object.freeze({ id: 'timer', label: 'Time', value: formatClock(elapsedSeconds), tone: 'time' }),
+    Object.freeze({ id: 'power-ups', label: 'Power', value: `THROW ${Math.max(0, Math.round(Number(grenades) || 0))} // PICKUPS ${Math.max(0, Math.round(Number(powerUpsCollected) || 0))}`, tone: 'power' }),
+    Object.freeze({ id: 'weapon', label: 'Weapon', value: `${String(weaponTitle).toUpperCase()} // AMMO ${ammoValue}`, tone: 'weapon' }),
+    Object.freeze({ id: 'stage', label: 'Stage', value: `${Math.max(1, Math.round(Number(stageIndex) || 1))}/${Math.max(1, Math.round(Number(stageCount) || 1))} // ${Math.round(Number(fps) || 60)}FPS`, tone: 'stage' }),
+    Object.freeze({ id: 'status', label: 'Status', value: String(status || 'TRAVEL'), tone: String(status || '').includes('LOCK') ? 'warning' : 'status' }),
+  ]);
+
+  return Object.freeze({
+    model: LESTER_BLASTER_HUD_OVERLAY_MODEL.purpose,
+    widgets,
+    widgetMap: Object.freeze(Object.fromEntries(widgets.map((widget) => [widget.id, widget]))),
+  });
+}
+
+export function buildCombatOptionsMenuModel({
+  paused = false,
+  gameOver = false,
+  musicEnabled = true,
+  viewportMode = 'fullscreen',
+  currentMode = 'free',
+  officialScoreSubmitted = false,
+} = {}) {
+  const official = currentMode === 'paid' || currentMode === 'ranked';
+  const actions = [
+    ...(gameOver ? [] : [Object.freeze({ id: 'resume', label: 'Resume', icon: '▶', enabled: paused })]),
+    ...(gameOver && official ? [Object.freeze({ id: 'submit-official-score', label: officialScoreSubmitted ? 'Score Synced' : 'Submit Official Score', icon: '★', enabled: !officialScoreSubmitted })] : []),
+    Object.freeze({ id: 'restart', label: gameOver ? 'Play Again' : (official ? 'Restart: New Credit' : 'Restart Free'), icon: '⟲', enabled: true }),
+    Object.freeze({ id: 'toggle-music', label: musicEnabled ? 'Music On' : 'Music Off', icon: musicEnabled ? '♪' : '⊘', enabled: true }),
+    Object.freeze({ id: 'toggle-fullscreen', label: viewportMode === 'fullscreen' || viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', icon: '▣', enabled: true }),
+    Object.freeze({ id: 'return-to-game-menu', label: 'Game Menu', icon: '☰', enabled: true }),
+    Object.freeze({ id: 'exit-to-arcade', label: 'Exit to Lester’s Arcade', icon: '⏏', enabled: true, danger: true }),
+  ];
+
+  return Object.freeze({
+    title: gameOver ? 'Game Over' : 'Paused',
+    state: gameOver ? 'game-over' : paused ? 'paused' : 'running',
+    copy: gameOver
+      ? 'Review the run summary, submit eligible ranked scores, restart, or exit cleanly back to Lester’s Arcade.'
+      : 'Resume, restart, toggle music, switch fullscreen/windowed, return to the game menu, or exit back to Lester’s Arcade.',
+    actions: Object.freeze(actions),
+  });
+}
+
+function availableAnimationStates(animationMap = {}) {
+  return Object.entries(animationMap)
+    .filter(([, animation]) => (animation?.frames?.length ?? 0) > 0)
+    .map(([state]) => state);
+}
+
+function deriveStillCoveredHeroStates(character = {}) {
+  const stills = character.stills ?? {};
+  const weapons = character.weapons ?? {};
+  const covered = [];
+  if (stills.rightSide || weapons.machineGun?.selectedFrom || weapons.pistol?.selectedFrom || weapons.shotgun?.selectedFrom) covered.push('shoot');
+  if (stills.knife || weapons.knife?.selectedFrom) covered.push('melee');
+  if (stills.grenade || weapons.grenade?.selectedFrom) covered.push('throw');
+  return covered;
+}
+
+export function buildHardMoneyHeroesAnimationCoverageReport(manifest = HARD_MONEY_HEROES_ASSET_MANIFEST) {
+  const requiredHeroStates = [...LESTER_BLASTER_ART_REDO_BRIEF.requiredHeroStates];
+  const requiredEnemyStates = [...LESTER_BLASTER_ART_REDO_BRIEF.enemySpriteUpgrade];
+  const enemyStateAliases = Object.freeze({
+    'walk-or-fly': Object.freeze(['walk', 'fly', 'run']),
+    'attack-tell': Object.freeze(['attack-tell', 'tell', 'telegraph']),
+    'melee-counter': Object.freeze(['melee-counter', 'counter']),
+    'optional-gore-overlay': Object.freeze(['gore', 'gore-overlay']),
+  });
+
+  const characters = Object.fromEntries(Object.entries(manifest.playableCharacters ?? {}).map(([id, character]) => {
+    const animated = availableAnimationStates(character.animations ?? {});
+    const stillCovered = deriveStillCoveredHeroStates(character);
+    const allCovered = new Set([...animated, ...stillCovered, animated.includes('attack') ? 'melee' : null].filter(Boolean));
+    return [id, Object.freeze({
+      id,
+      availableAnimatedStates: Object.freeze(animated),
+      coveredByStillStates: Object.freeze(stillCovered),
+      missingStates: Object.freeze(requiredHeroStates.filter((state) => !allCovered.has(state))),
+      missingAnimatedStates: Object.freeze(requiredHeroStates.filter((state) => !animated.includes(state))),
+      nextArtPriority: Object.freeze(['crouch', 'hurt', 'death', 'victory', 'fall'].filter((state) => !animated.includes(state))),
+    })];
+  }));
+
+  const enemies = Object.fromEntries(Object.entries(manifest.enemies ?? {}).map(([key, enemy]) => {
+    const art = enemy.art ?? enemy;
+    const animated = availableAnimationStates(art.animations ?? {});
+    const satisfies = (state) => {
+      const aliases = enemyStateAliases[state] ?? [state];
+      return aliases.some((alias) => animated.includes(alias));
+    };
+    return [key, Object.freeze({
+      id: enemy.id ?? key,
+      title: enemy.title ?? key,
+      availableAnimatedStates: Object.freeze(animated),
+      missingAnimatedStates: Object.freeze(requiredEnemyStates.filter((state) => !satisfies(state))),
+      behavior: clone(enemy.behavior ?? {}),
+    })];
+  }));
+
+  return Object.freeze({
+    manifestId: manifest.id,
+    requiredHeroStates: Object.freeze(requiredHeroStates),
+    requiredEnemyStates: Object.freeze(requiredEnemyStates),
+    characters: Object.freeze(characters),
+    enemies: Object.freeze(enemies),
+    recommendations: Object.freeze([
+      'Use Aseprite or LibreSprite to slice every new sheet into the manifest states before runtime integration.',
+      'Prioritize crouch, hurt, death, fall, and victory loops for Lester/Lilly because current provided art covers core motion but relies on stills for weapon poses.',
+      'Add enemy attack-tell, hit, death, and melee-counter frames so AI fairness reads visually instead of only through timers.',
+      'Keep the manifest audit in CI so missing states become visible immediately after new art drops.',
+    ]),
+  });
+}
+
+export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false } = {}) {
+  const official = Boolean(session?.isPaid || session?.mode === 'paid' || session?.leaderboardEligible);
+  const safeScore = Number.isFinite(score) ? Math.max(0, Math.round(score)) : 0;
+  const safeElapsed = Number.isFinite(elapsedSeconds) ? Math.max(0, Math.round(elapsedSeconds)) : 0;
+  const safeKills = Number.isFinite(kills) ? Math.max(0, Math.round(kills)) : 0;
+  const safeBosses = Number.isFinite(bossesDefeated) ? Math.max(0, Math.round(bossesDefeated)) : 0;
+  const metrics = Object.freeze([
+    Object.freeze({ id: 'score', label: 'Score', value: safeScore.toLocaleString() }),
+    Object.freeze({ id: 'time', label: 'Time', value: `${Math.floor(safeElapsed / 60)}:${String(safeElapsed % 60).padStart(2, '0')}` }),
+    Object.freeze({ id: 'kills', label: 'Enemies', value: safeKills.toLocaleString() }),
+    Object.freeze({ id: 'bosses', label: 'Bosses', value: safeBosses.toLocaleString() }),
+  ]);
+  const baseActions = [
+    Object.freeze({ id: official ? 'play-again-ranked' : 'play-again-free', label: official ? 'Play Again Ranked' : 'Play Again Free', cost: official ? 'requires new testnet credit' : 'free', target: 'level-intro', enabled: true }),
+    Object.freeze({ id: 'return-to-game-menu', label: 'Game Menu', cost: 'none', target: 'mode-select', enabled: true }),
+    Object.freeze({ id: 'return-to-arcade', label: 'Exit to Lester’s Arcade', cost: 'none', target: 'cabinet-select', enabled: true }),
+  ];
+
+  if (!official) {
+    return Object.freeze({
+      channel: 'practice',
+      state: 'free-practice-game-over',
+      title: 'Practice Run Complete',
+      metrics,
+      trackingCopy: 'Free practice result is not tracked: no progress, achievements, official scores, or transactions were written.',
+      actions: Object.freeze(baseActions),
+      exitRampCopy: LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.find((ramp) => ramp.id === 'return-to-arcade')?.copy,
+    });
+  }
+
+  return Object.freeze({
+    channel: 'official',
+    state: acceptedForGlobalLeaderboard ? 'official-score-synced' : 'official-submit-ready',
+    title: acceptedForGlobalLeaderboard ? 'Official Score Synced' : 'Ranked Run Complete',
+    metrics,
+    trackingCopy: acceptedForGlobalLeaderboard
+      ? 'Official score synced to parent progress, achievements, leaderboard, and transaction history.'
+      : 'Submit Official Score to write this ranked result. Until then, nothing is synced to the official leaderboard.',
+    actions: Object.freeze([
+      Object.freeze({ id: 'submit-official-score', label: acceptedForGlobalLeaderboard ? 'Score Already Synced' : 'Submit Official Score', cost: 'paid run receipt', target: 'parent-sync', enabled: !acceptedForGlobalLeaderboard }),
+      ...baseActions,
+    ]),
+    exitRampCopy: LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.find((ramp) => ramp.id === 'return-to-arcade')?.copy,
   });
 }
 

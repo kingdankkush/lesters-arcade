@@ -1,5 +1,7 @@
 import {
   ACHIEVEMENTS,
+  HARD_MONEY_HEROES_ASSET_MANIFEST,
+  HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST,
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BUILD_STACK,
   LESTER_ARCADE_WALLET_RAILS,
@@ -17,11 +19,17 @@ import {
   LESTER_BLASTER_PERFORMANCE_TARGETS,
   LESTER_BLASTER_POWER_UPS,
   LESTER_BLASTER_SOUND_DESIGN,
+  LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
   LESTER_BLASTER_TACTICAL_COMBAT_V2,
   LESTER_BLASTER_UNLOCKABLES,
   LESTER_BLASTER_WEAPON_SYSTEM,
+  advanceTacticalCameraModel,
+  buildGameOverSummaryModel,
+  buildHardMoneyHeroesAnimationCoverageReport,
   buildLeaderboardModel,
   buildLesterBlasterControlDisplayModel,
+  buildCombatHudOverlayModel,
+  buildCombatOptionsMenuModel,
   buildCombatSandboxStatusModel,
   buildLoginMenuModel,
   buildOfficialRunStatusModel,
@@ -43,7 +51,7 @@ import {
 } from './src/arcade-core.mjs';
 
 const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
-const PLAYER_X = 108;
+const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
 const GROUND_Y = 276;
 const FIXED_STEP_MS = 1000 / LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps;
 const NORMAL_HIT_DAMAGE = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.damagePerNormalHitPercent;
@@ -72,6 +80,24 @@ function loadAnimationFrames(pattern, count) {
   return Array.from({ length: count }, (_, index) => loadImageAsset(pattern.replace('{index}', String(index).padStart(2, '0'))));
 }
 
+function loadManifestFrames(animation) {
+  return (animation?.frames ?? []).map((frame) => loadImageAsset(frame.src));
+}
+
+function buildEnvironmentStageArt(stage) {
+  return {
+    ...stage,
+    layers: stage.layers.map((layer) => ({
+      ...layer,
+      image: loadImageAsset(layer.src),
+    })),
+    props: stage.props.map((prop) => ({
+      ...prop,
+      image: loadImageAsset(prop.src),
+    })),
+  };
+}
+
 function selectAnimationFrame(frames, frame, fps = 10, loop = true) {
   if (!frames?.length) return null;
   const ticksPerFrame = Math.max(1, Math.round(LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps / fps));
@@ -80,19 +106,31 @@ function selectAnimationFrame(frames, frame, fps = 10, loop = true) {
   return frames[index];
 }
 
-const combatArt = {
-  hero: {
+function loadManifestImage(src, fallbackSrc = null) {
+  return loadImageAsset(src ?? fallbackSrc);
+}
+
+function buildCharacterArtFromManifest(characterId) {
+  const character = HARD_MONEY_HEROES_ASSET_MANIFEST.playableCharacters[characterId] ?? HARD_MONEY_HEROES_ASSET_MANIFEST.playableCharacters.lester;
+  const weaponAssets = character.weapons ?? {};
+  return {
     animations: {
-      idle: loadAnimationFrames('./assets/lester-production/frames/idle/lester-idle-{index}.png', 25),
-      walk: loadAnimationFrames('./assets/lester-production/frames/walk/lester-walk-{index}.png', 25),
-      run: loadAnimationFrames('./assets/lester-production/frames/run/lester-run-{index}.png', 25),
-      jump: loadAnimationFrames('./assets/lester-production/frames/jump/lester-jump-{index}.png', 25),
+      idle: loadManifestFrames(character.animations?.idle),
+      walk: loadManifestFrames(character.animations?.walk),
+      run: loadManifestFrames(character.animations?.run),
+      jump: loadManifestFrames(character.animations?.jump),
+      attack: loadManifestFrames(character.animations?.attack),
     },
     stills: {
-      shoot: loadImageAsset('./assets/lester-production/stills/lester-right-side-shotgun.png'),
-      facing: loadImageAsset('./assets/lester-production/stills/lester-facing.png'),
-      leftSide: loadImageAsset('./assets/lester-production/stills/lester-left-side-profile.png'),
-      rightSide: loadImageAsset('./assets/lester-production/stills/lester-right-side-profile.png'),
+      machineGun: loadManifestImage(weaponAssets.machineGun?.selectedFrom, character.stills?.rightSide),
+      knife: loadManifestImage(weaponAssets.knife?.selectedFrom, character.stills?.knife),
+      grenade: loadManifestImage(weaponAssets.grenade?.selectedFrom, character.stills?.grenade),
+      pistol: loadManifestImage(weaponAssets.pistol?.selectedFrom, character.stills?.rightSide),
+      shotgun: loadManifestImage(weaponAssets.shotgun?.selectedFrom, character.stills?.rightSide),
+      shoot: loadManifestImage(weaponAssets.machineGun?.selectedFrom, character.stills?.rightSide),
+      facing: loadManifestImage(character.stills?.facing),
+      leftSide: loadManifestImage(character.stills?.leftSide),
+      rightSide: loadManifestImage(character.stills?.rightSide),
     },
     fallback: {
       idle: loadImageAsset('./assets/generated/sliced/lester-idle.png'),
@@ -102,12 +140,153 @@ const combatArt = {
       blade: loadImageAsset('./assets/generated/sliced/lester-blade.png'),
       jump: loadImageAsset('./assets/generated/sliced/lester-jump.png'),
     },
+  };
+}
+
+function buildEnemyArtFromManifest(enemyKey) {
+  const enemy = HARD_MONEY_HEROES_ASSET_MANIFEST.enemies[enemyKey];
+  return {
+    animations: {
+      idle: loadManifestFrames(enemy?.art?.animations?.idle),
+      walk: loadManifestFrames(enemy?.art?.animations?.walk),
+      run: loadManifestFrames(enemy?.art?.animations?.run),
+      jump: loadManifestFrames(enemy?.art?.animations?.jump),
+      attack: loadManifestFrames(enemy?.art?.animations?.attack),
+    },
+    stills: (enemy?.art?.stills ?? []).map((still) => loadImageAsset(still.src)),
+    fallback: loadImageAsset('./assets/generated/sliced/enemy-goblin-idle.png'),
+  };
+}
+
+function hardMoneyHeroScreenStyle(screenId) {
+  const screen = HARD_MONEY_HEROES_ASSET_MANIFEST.screens[screenId];
+  if (!screen?.src) return '';
+  return `linear-gradient(120deg, rgba(4, 11, 26, 0.84), rgba(8, 6, 22, 0.48)), url("${screen.src}")`;
+}
+
+function applyHardMoneyHeroScreenBackground(node, screenId) {
+  if (!node) return;
+  node.style.backgroundImage = hardMoneyHeroScreenStyle(screenId);
+  node.style.backgroundSize = 'cover';
+  node.style.backgroundPosition = 'center';
+}
+
+const combatAudio = {
+  musicTracks: (HARD_MONEY_HEROES_ASSET_MANIFEST.audio.musicTracks ?? [])
+    .map((track) => {
+      const audio = typeof Audio === 'function' ? new Audio(track.src) : null;
+      if (audio) {
+        audio.loop = true;
+        audio.preload = 'auto';
+        audio.volume = 0.34;
+      }
+      return { ...track, audio };
+    }),
+  currentTrackIndex: 0,
+  unlocked: false,
+  sfxEnabled: true,
+  audioContext: null,
+  lastSfxAt: new Map(),
+};
+
+function currentMusicTrack() {
+  return combatAudio.musicTracks[combatAudio.currentTrackIndex % Math.max(1, combatAudio.musicTracks.length)];
+}
+
+async function ensureCombatMusic(reason = 'menu') {
+  combatAudio.unlocked = true;
+  if (!combat.musicEnabled) return false;
+  const track = currentMusicTrack();
+  if (!track?.audio) return false;
+  for (const other of combatAudio.musicTracks) {
+    if (other.audio && other.audio !== track.audio) other.audio.pause();
+  }
+  track.audio.volume = reason === 'game-over' ? 0.18 : reason === 'gameplay' ? 0.38 : 0.28;
+  try {
+    await track.audio.play();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function pauseCombatMusic() {
+  for (const track of combatAudio.musicTracks) track.audio?.pause();
+}
+
+function nextCombatMusicTrack() {
+  if (!combatAudio.musicTracks.length) return null;
+  pauseCombatMusic();
+  combatAudio.currentTrackIndex = (combatAudio.currentTrackIndex + 1) % combatAudio.musicTracks.length;
+  ensureCombatMusic(combat.active ? 'gameplay' : 'menu');
+  return currentMusicTrack();
+}
+
+function sfxToneFor(cue) {
+  const tones = {
+    'wallet-connect': [523, 659, 784],
+    'menu-click': [392, 523],
+    'level-start': [330, 494, 660],
+    jump: [420, 630],
+    land: [120],
+    'weapon-fire': [180, 900],
+    melee: [760, 420],
+    grenade: [110, 220],
+    pickup: [660, 880, 990],
+    'enemy-hit': [220, 165],
+    'player-hit': [90, 70],
+    'boss-warning': [70, 140, 70],
+    'game-over': [196, 146, 98],
+  };
+  return tones[cue] ?? [440];
+}
+
+function playSfxCue(cue, volume = 0.05) {
+  if (!combatAudio.sfxEnabled || typeof window === 'undefined') return false;
+  const now = performance.now();
+  if ((now - (combatAudio.lastSfxAt.get(cue) ?? 0)) < 55) return false;
+  combatAudio.lastSfxAt.set(cue, now);
+  const Context = window.AudioContext || window.webkitAudioContext;
+  if (!Context) return false;
+  combatAudio.audioContext ??= new Context();
+  const ctx = combatAudio.audioContext;
+  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  const gain = ctx.createGain();
+  gain.gain.value = volume;
+  gain.connect(ctx.destination);
+  sfxToneFor(cue).forEach((frequency, index) => {
+    const oscillator = ctx.createOscillator();
+    oscillator.type = cue.includes('hit') || cue === 'grenade' ? 'square' : 'triangle';
+    oscillator.frequency.value = frequency;
+    oscillator.connect(gain);
+    const start = ctx.currentTime + index * 0.045;
+    oscillator.start(start);
+    oscillator.stop(start + 0.075);
+  });
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
+  return true;
+}
+
+const combatArt = {
+  characters: {
+    lester: buildCharacterArtFromManifest('lester'),
+    lilly: buildCharacterArtFromManifest('lilly'),
   },
+  hero: null,
   enemies: {
+    trenchDegen: buildEnemyArtFromManifest('trenchDegen'),
+    evilBanker: buildEnemyArtFromManifest('evilBanker'),
+    warrenSpearRider: buildEnemyArtFromManifest('warrenSpearRider'),
     goblin: loadImageAsset('./assets/generated/sliced/enemy-goblin-idle.png'),
     wisp: loadImageAsset('./assets/generated/sliced/enemy-wisp-idle.png'),
     bruiser: loadImageAsset('./assets/generated/sliced/enemy-bruiser-idle.png'),
     scambot: loadImageAsset('./assets/generated/sliced/enemy-scambot-idle.png'),
+  },
+  screens: {
+    splash: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.splash.src),
+    mainMenu: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.mainMenu.src),
+    options: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.options.src),
+    modeSelect: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.modeSelect.src),
   },
   icons: {
     health: loadImageAsset('./assets/generated/sliced/icon-weapon-health.png'),
@@ -137,7 +316,12 @@ const combatArt = {
       { image: loadImageAsset('./assets/generated/sliced/level3-getaway-street.png'), y: 202, h: 104, speed: 1.12 },
     ],
   },
+  environmentStages: Object.fromEntries(HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST.levelOneStages.map((stage) => [
+    stage.id,
+    buildEnvironmentStageArt(stage),
+  ])),
 };
+combatArt.hero = combatArt.characters.lester;
 
 const dom = {
   officialApp: document.querySelector('#officialApp'),
@@ -171,6 +355,9 @@ const dom = {
   combatMenuPanel: document.querySelector('#combatMenuPanel'),
   combatMenuTitle: document.querySelector('#combatMenuTitle'),
   combatMenuCopy: document.querySelector('#combatMenuCopy'),
+  combatMenuActionGrid: document.querySelector('#combatMenuActionGrid'),
+  combatGameOverSummary: document.querySelector('#combatGameOverSummary'),
+  combatHudOverlay: document.querySelector('#combatHudOverlay'),
   officialCombatMount: document.querySelector('#officialCombatMount'),
   accountFlowSteps: document.querySelector('#accountFlowSteps'),
   walletStatus: document.querySelector('#walletStatus'),
@@ -283,12 +470,13 @@ const combat = {
   miniBossLock: false,
   scrollLockReason: null,
   scroll: 0,
+  furthestScroll: 0,
   scrollSpeed: 0,
   stageIndex: 1,
   stageCount: STAGE_COUNT,
   stagePhase: 'travel',
   stageTravel: 0,
-  stageTravelGoal: 160,
+  stageTravelGoal: LESTER_BLASTER_TACTICAL_CAMERA_MODEL.stageTravelGoalBasePixels + LESTER_BLASTER_TACTICAL_CAMERA_MODEL.stageTravelGoalPerStagePixels,
   waveIndex: 0,
   wavesThisStage: 1,
   waveSpawnQueue: 0,
@@ -303,6 +491,7 @@ const combat = {
   frameTimes: [],
   fps: 60,
   status: 'Attract mode: choose free or paid, then start the 60fps combat test.',
+  gameOverSubmitted: false,
 };
 
 function el(tagName, options = {}) {
@@ -329,6 +518,11 @@ function el(tagName, options = {}) {
 function appendText(parent, tagName, text, className) {
   const node = el(tagName, { textContent: text, className });
   parent.append(node);
+  return node;
+}
+
+function renderArcadeIcon(icon, label = '') {
+  const node = el('span', { className: 'arcade-icon', textContent: icon, ariaLabel: label || icon, role: 'img' });
   return node;
 }
 
@@ -412,13 +606,178 @@ function gameplaySyncCopy() {
     ? 'Ranked testnet: official score sync is held until game-over submission; restart requires a new paid credit.'
     : 'Free practice: local sandbox only; restart is free and never writes profile/leaderboard state.';
   const phase = combat.stagePhase === 'travel'
-    ? `slow scroll to Stage ${combat.stageIndex} engagement`
+    ? `player-led advance to Stage ${combat.stageIndex} engagement`
     : combat.stagePhase === 'boss'
       ? 'level boss lock'
       : `Wave ${combat.waveIndex}/${combat.wavesThisStage || 1}`;
   const lockCopy = combat.scrollLockReason ? ` // ${combat.scrollLockReason}` : '';
   const healthCopy = `HP ${Math.max(0, Math.round(combat.health))}%`;
   return `${modeCopy} // ${healthCopy} // Stage ${combat.stageIndex}/${combat.stageCount} // ${phase}${lockCopy}`;
+}
+
+function currentGameOverSummaryModel() {
+  const session = currentSession ?? lastCompletedSession;
+  return buildGameOverSummaryModel({
+    session,
+    score: combat.score || lastRunScore,
+    elapsedSeconds: combat.elapsedGameSeconds || lastRunElapsedSeconds,
+    kills: combat.kills,
+    bossesDefeated: (combat.bossDefeated || Boolean(lastBossId)) ? 1 : 0,
+    acceptedForGlobalLeaderboard: Boolean(combat.gameOverSubmitted || lastRunResult?.acceptedForGlobalLeaderboard),
+  });
+}
+
+function renderGameOverSummary() {
+  if (!dom.combatGameOverSummary) return;
+  dom.combatGameOverSummary.hidden = !combat.gameOver;
+  if (!combat.gameOver) {
+    dom.combatGameOverSummary.replaceChildren();
+    return;
+  }
+
+  const summary = currentGameOverSummaryModel();
+  dom.combatGameOverSummary.dataset.channel = summary.channel;
+  dom.combatGameOverSummary.replaceChildren();
+  appendText(dom.combatGameOverSummary, 'strong', summary.title, 'game-over-summary-title');
+  appendText(dom.combatGameOverSummary, 'p', summary.trackingCopy, 'game-over-summary-copy');
+
+  const metricGrid = el('div', { className: 'game-over-summary-grid' });
+  for (const metric of summary.metrics) {
+    const card = el('article', { className: 'summary-metric-card' });
+    appendText(card, 'span', metric.label);
+    appendText(card, 'strong', metric.value);
+    metricGrid.append(card);
+  }
+  dom.combatGameOverSummary.append(metricGrid);
+
+  const actionNote = el('p', { className: 'game-over-action-copy' });
+  actionNote.textContent = `${summary.actions.map((action) => `${action.label}: ${action.cost}`).join(' // ')}. ${summary.exitRampCopy}`;
+  dom.combatGameOverSummary.append(actionNote);
+}
+
+function submitCombatGameOver() {
+  if (!combat.gameOver || !currentSession?.isPaid || combat.gameOverSubmitted) return;
+  const result = recordScore(state, currentSession, Math.max(0, Math.round(combat.score)), {
+    distanceMeters: Math.round((combat.elapsedGameSeconds || 0) * 2.7),
+    elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
+    kills: combat.kills,
+    maxCombo: combat.maxCombo,
+    bossId: lastBossId,
+    weaponId: combat.weaponId,
+    noDamage: combat.noDamageSeconds >= combat.elapsedGameSeconds - 1,
+    collectedPowerUps: [...combat.collectedPowerUpTypes],
+  });
+  lastCompletedSession = currentSession;
+  lastRunResult = {
+    score: combat.score,
+    elapsedSeconds: combat.elapsedGameSeconds,
+    acceptedForGlobalLeaderboard: result.acceptedForGlobalLeaderboard,
+  };
+  lastRunScore = combat.score;
+  lastRunElapsedSeconds = combat.elapsedGameSeconds;
+  combat.gameOverSubmitted = true;
+  dom.combatStatus.textContent = 'Submit Official Score complete: ranked result synced to parent progress, achievements, leaderboard, and transaction history. No hidden paid-run sync happened before this button.';
+  renderOfficialRunStatus();
+  renderGameOverSummary();
+  renderCombatMenuActionGrid();
+}
+
+function renderCombatMenuActionGrid() {
+  if (!dom.combatMenuActionGrid) return;
+  const menu = buildCombatOptionsMenuModel({
+    paused: combat.paused,
+    gameOver: combat.gameOver,
+    musicEnabled: combat.musicEnabled,
+    viewportMode: combat.viewportMode,
+    currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
+    officialScoreSubmitted: combat.gameOverSubmitted,
+  });
+  const actions = menu.actions.map((action) => {
+    if (action.id === 'resume') return { ...action, run: () => toggleCombatPause(false) };
+    if (action.id === 'submit-official-score') return { ...action, run: submitCombatGameOver };
+    if (action.id === 'restart') return { ...action, run: restartCombatRun };
+    if (action.id === 'toggle-music') return { ...action, run: toggleCombatMusic };
+    if (action.id === 'toggle-fullscreen') return { ...action, run: cycleCombatViewport };
+    if (action.id === 'return-to-game-menu') return { ...action, run: returnToOfficialGameMenu };
+    if (action.id === 'exit-to-arcade') return { ...action, run: exitToArcade };
+    return { ...action, run: () => {} };
+  });
+  const signature = actions.map((action) => `${action.id}:${action.label}:${action.enabled}`).join('|');
+  if (dom.combatMenuActionGrid.dataset.signature === signature) return;
+  dom.combatMenuActionGrid.dataset.signature = signature;
+  dom.combatMenuActionGrid.replaceChildren();
+  for (const action of actions) {
+    const button = el('button', { className: `combat-menu-action ${action.danger ? 'danger-action' : ''}`, type: 'button' });
+    button.disabled = action.enabled === false;
+    button.append(renderArcadeIcon(action.icon, action.label), document.createTextNode(action.label));
+    button.addEventListener('click', () => {
+      if (button.disabled) return;
+      playSfxCue('menu-click');
+      action.run();
+    });
+    dom.combatMenuActionGrid.append(button);
+  }
+}
+
+function combatHudStatus() {
+  if (combat.gameOver) return combat.bossDefeated ? 'LEVEL CLEAR' : 'GAME OVER';
+  if (combat.paused) return 'PAUSED // OPTIONS OPEN';
+  if (combat.scrollLockReason) return combat.scrollLockReason;
+  if (combat.stagePhase === 'travel') {
+    return `ADVANCE RIGHT // ${Math.round(combat.stageTravel)}/${Math.round(combat.stageTravelGoal)}M // BACKTRACK LIMIT ${LESTER_BLASTER_TACTICAL_CAMERA_MODEL.backwardAllowancePixels}px`;
+  }
+  return `STAGE ${combat.stageIndex} ${combat.stagePhase.toUpperCase()}`;
+}
+
+function renderCombatHudOverlay() {
+  if (!dom.combatHudOverlay) return;
+  const weapon = weaponById(combat.weaponId);
+  const hud = buildCombatHudOverlayModel({
+    health: combat.health,
+    score: combat.score,
+    elapsedSeconds: combat.elapsedGameSeconds,
+    grenades: combat.grenades,
+    ammo: combat.ammo,
+    weaponTitle: weapon.title,
+    powerUpsCollected: combat.powerUpsCollected,
+    stageIndex: combat.stageIndex,
+    stageCount: combat.stageCount,
+    status: combatHudStatus(),
+    fps: combat.fps,
+  });
+  const signature = hud.widgets.map((widget) => `${widget.id}:${widget.value}`).join('|');
+  if (dom.combatHudOverlay.dataset.signature === signature) return;
+  dom.combatHudOverlay.dataset.signature = signature;
+  dom.combatHudOverlay.replaceChildren();
+  for (const widget of hud.widgets) {
+    const card = el('article', { className: 'hud-widget', dataset: { tone: widget.tone, widget: widget.id } });
+    appendText(card, 'span', widget.label);
+    appendText(card, 'strong', widget.value);
+    dom.combatHudOverlay.append(card);
+  }
+}
+
+function clearInactiveCombatOverlay() {
+  if (combat.active || combat.gameOver) return false;
+  if (dom.combatMenuPanel) {
+    dom.combatMenuPanel.hidden = true;
+    dom.combatMenuPanel.dataset.state = 'inactive';
+  }
+  if (dom.combatHudOverlay) {
+    delete dom.combatHudOverlay.dataset.signature;
+    dom.combatHudOverlay.replaceChildren();
+  }
+  if (dom.combatMenuActionGrid) {
+    delete dom.combatMenuActionGrid.dataset.signature;
+    dom.combatMenuActionGrid.replaceChildren();
+  }
+  if (dom.combatGameOverSummary) {
+    dom.combatGameOverSummary.hidden = true;
+    dom.combatGameOverSummary.replaceChildren();
+  }
+  if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = '';
+  if (dom.combatMenuCopy) dom.combatMenuCopy.textContent = '';
+  return true;
 }
 
 function syncCombatOverlay() {
@@ -434,29 +793,47 @@ function syncCombatOverlay() {
   if (dom.combatMusicButton) dom.combatMusicButton.textContent = combat.musicEnabled ? 'Music On' : 'Music Off';
   if (dom.combatCharacterButton) dom.combatCharacterButton.textContent = `Swap: ${combat.characterId === 'lester' ? 'Lester' : 'Lilly'}`;
   if (dom.combatViewportButton) {
-    const label = combat.viewportMode === 'fullscreen' ? 'Embedded Window' : combat.viewportMode === 'embedded-window' ? 'Expand Fullscreen' : 'Fullscreen';
+    const label = combat.viewportMode === 'fullscreen'
+      ? 'Windowed Mode'
+      : combat.viewportMode === 'windowed'
+        ? 'Expand Fullscreen'
+        : 'Fullscreen';
     dom.combatViewportButton.textContent = label;
   }
+  if (clearInactiveCombatOverlay()) return;
   if (dom.combatMenuPanel) {
     dom.combatMenuPanel.hidden = !(combat.paused || combat.gameOver);
     dom.combatMenuPanel.dataset.state = combat.gameOver ? 'game-over' : 'paused';
   }
-  if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.gameOver ? 'Game Over' : 'Paused';
+  const menu = buildCombatOptionsMenuModel({
+    paused: combat.paused,
+    gameOver: combat.gameOver,
+    musicEnabled: combat.musicEnabled,
+    viewportMode: combat.viewportMode,
+    currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
+    officialScoreSubmitted: combat.gameOverSubmitted,
+  });
+  if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = menu.title;
   if (dom.combatMenuCopy) {
     dom.combatMenuCopy.textContent = combat.gameOver
       ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again restarts free mode immediately; ranked mode requires a new paid credit.`
-      : 'Restart, toggle music, swap Lester/Lilly skins, return to the pre-match game menu, or exit back to Lester’s Arcade.';
+      : menu.copy;
   }
+  renderCombatHudOverlay();
+  renderGameOverSummary();
+  renderCombatMenuActionGrid();
 }
 
 async function toggleCombatPause(forcePaused) {
   if (!combat.active && !combat.gameOver) return;
   combat.paused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
+  playSfxCue('menu-click');
   if (combat.paused) spawnText('PAUSED', 350, 132, '#ffe84d');
   syncCombatOverlay();
 }
 
 async function restartCombatRun() {
+  playSfxCue('level-start');
   const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
   if (wasPaid) {
     dom.combatStatus.textContent = 'Ranked restart selected: this starts a fresh local ranked attempt and represents a new testnet credit in the official flow. Prior paid-run state is not silently resubmitted.';
@@ -473,22 +850,27 @@ async function restartCombatRun() {
 
 function toggleCombatMusic() {
   combat.musicEnabled = !combat.musicEnabled;
+  if (combat.musicEnabled) ensureCombatMusic(combat.active ? 'gameplay' : 'menu');
+  else pauseCombatMusic();
+  playSfxCue('menu-click');
   spawnText(combat.musicEnabled ? 'MUSIC ON' : 'MUSIC OFF', combat.playerX + 24, combat.playerY - 92, combat.musicEnabled ? '#45ff8a' : '#ff476f');
   syncCombatOverlay();
 }
 
 function swapCombatCharacter() {
   combat.characterId = combat.characterId === 'lester' ? 'lilly' : 'lester';
+  playSfxCue('pickup');
   spawnText(combat.characterId === 'lester' ? 'LESTER' : 'LILLY SKIN', combat.playerX + 24, combat.playerY - 104, '#19f7ff');
   syncCombatOverlay();
 }
 
 function cycleCombatViewport() {
   combat.viewportMode = combat.viewportMode === 'fullscreen'
-    ? 'embedded-window'
-    : combat.viewportMode === 'embedded-window'
-      ? 'windowed'
+    ? 'windowed'
+    : combat.viewportMode === 'windowed'
+      ? 'expanded-fullscreen'
       : 'fullscreen';
+  playSfxCue('menu-click');
   syncCombatOverlay();
 }
 
@@ -497,6 +879,7 @@ function returnToOfficialGameMenu() {
   combat.paused = false;
   combat.gameOver = false;
   combat.keys.clear();
+  pauseCombatMusic();
   officialAppStep = 'mode-select';
   dom.combatStatus.textContent = currentSession?.isPaid
     ? 'Returned to the pre-match game menu. Ranked restart/payment choices stay explicit.'
@@ -510,9 +893,21 @@ function exitToArcade() {
   combat.paused = false;
   combat.gameOver = false;
   combat.keys.clear();
-  officialAppStep = connectedWallet ? 'cabinet' : 'login';
+  pauseCombatMusic();
+  currentSession = null;
+  selectedGameId = 'hmh';
+  officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash';
   officialSelectedMode = 'free';
-  dom.combatStatus.textContent = 'Exited Hard Money Heroes back to Lester’s Arcade. No hidden paid-run sync occurred.';
+  if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
+  if (dom.combatHudOverlay) dom.combatHudOverlay.replaceChildren();
+  if (dom.combatMenuActionGrid) dom.combatMenuActionGrid.replaceChildren();
+  if (dom.combatGameOverSummary) {
+    dom.combatGameOverSummary.hidden = true;
+    dom.combatGameOverSummary.replaceChildren();
+  }
+  dom.combatStatus.textContent = connectedWallet
+    ? 'Exited Hard Money Heroes back to the Lester’s Arcade cabinet row. No hidden paid-run sync occurred.'
+    : 'Exited Hard Money Heroes back to the Lester’s Arcade splash. No hidden paid-run sync occurred.';
   renderOfficialApp();
   syncCombatOverlay();
 }
@@ -528,6 +923,15 @@ function currentLevel() {
     const minutes = combat.elapsedGameSeconds / 60;
     return minutes >= start && minutes < end;
   }) ?? LESTER_BLASTER_LEVEL_PLAN.at(-1);
+}
+
+function currentLevelOneEnvironmentStage(stageIndex = combat.stageIndex) {
+  if (currentLevel()?.id !== 'level-1-the-slums') return null;
+  const manifestStage = HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST.levelOneStages.find((stage) => {
+    const [start, end] = stage.stageRange;
+    return stageIndex >= start && stageIndex <= end;
+  }) ?? HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST.levelOneStages.at(-1);
+  return combatArt.environmentStages[manifestStage.id] ?? null;
 }
 
 function rectsOverlap(a, b) {
@@ -623,37 +1027,54 @@ function enemyCapForStage(stageIndex = combat.stageIndex) {
 }
 
 function createTravelHazards(stageIndex) {
-  const gapWidth = 42 + (stageIndex % 3) * 8;
+  const gapWidth = 48 + (stageIndex % 3) * 10;
+  const room = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
   return [
-    { id: `gap-${stageIndex}`, kind: 'gap', label: 'Gap', x: 620, y: GROUND_Y + 5, w: gapWidth, h: 34, damage: NORMAL_HIT_DAMAGE, active: true },
-    { id: `wall-${stageIndex}`, kind: 'wall', label: 'Wall', x: 735, y: GROUND_Y - 44, w: 26, h: 52, hp: 18, maxHp: 18, cover: true, active: true },
+    { id: `gap-${stageIndex}`, kind: 'gap', label: 'Gap', x: 690, y: GROUND_Y + 5, w: gapWidth, h: 34, damage: NORMAL_HIT_DAMAGE, active: true },
+    { id: `wall-${stageIndex}`, kind: 'wall', label: 'Wall', x: 690 + room.minCoverSpacingPixels + 42, y: GROUND_Y - 44, w: 30, h: 54, hp: 20, maxHp: 20, cover: true, active: true },
   ];
 }
 
 function createStageProps(stageIndex, phase = 'travel') {
-  const enemyCoverShift = (stageIndex % 3) * 18;
-  const common = [
-    { id: `player-cover-${stageIndex}`, kind: 'cover', label: 'Cover', x: 154, y: GROUND_Y - 42, w: 42, h: 50, hp: 26, maxHp: 26, cover: true, active: true },
-    { id: `enemy-cover-a-${stageIndex}`, kind: 'crate', label: 'Crate', x: 470 + enemyCoverShift, y: GROUND_Y - 44, w: 48, h: 52, hp: 24, maxHp: 24, cover: true, active: true },
-    { id: `enemy-cover-b-${stageIndex}`, kind: 'crate', label: 'Crate', x: 610 + enemyCoverShift, y: GROUND_Y - 56, w: 48, h: 64, hp: 28, maxHp: 28, cover: true, active: true },
-    { id: `barrel-${stageIndex}`, kind: 'barrel', label: 'Barrel', x: 560 + enemyCoverShift, y: GROUND_Y - 32, w: 28, h: 40, hp: 10, maxHp: 10, cover: false, explosive: true, active: true },
-  ];
+  const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
+  const enemyCoverShift = (stageIndex % 3) * 22;
+  const common = tacticalRoomTuning.coverPlacements.map((placement) => ({
+    id: `${placement.id}-${stageIndex}`,
+    kind: placement.kind,
+    label: placement.label,
+    x: placement.x + enemyCoverShift,
+    y: GROUND_Y - placement.yOffset,
+    w: placement.w,
+    h: placement.h,
+    hp: placement.hp,
+    maxHp: placement.hp,
+    cover: placement.cover,
+    explosive: placement.explosive,
+    active: true,
+  }));
   if (phase === 'travel') return [...common.slice(0, 1), ...createTravelHazards(stageIndex)];
   return common;
 }
 
 function createStagePlatforms(stageIndex) {
-  return [
-    { id: `platform-low-${stageIndex}`, x: 380, y: GROUND_Y - 72, w: 90, h: 12, label: 'low platform' },
-    { id: `platform-high-${stageIndex}`, x: 585, y: GROUND_Y - 112, w: 76, h: 12, label: 'high platform' },
-  ];
+  const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
+  const stageShift = (stageIndex % 2) * 18;
+  return tacticalRoomTuning.platformPlacements.map((placement) => ({
+    id: `${placement.id}-${stageIndex}`,
+    x: placement.x + stageShift,
+    y: GROUND_Y - placement.yOffset,
+    w: placement.w,
+    h: placement.h,
+    label: placement.label,
+  }));
 }
 
 function beginStage(stageIndex = 1) {
   combat.stageIndex = clamp(stageIndex, 1, combat.stageCount);
   combat.stagePhase = 'travel';
   combat.stageTravel = 0;
-  combat.stageTravelGoal = 135 + combat.stageIndex * 18;
+  combat.stageTravelGoal = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.stageTravelGoalBasePixels
+    + combat.stageIndex * LESTER_BLASTER_TACTICAL_CAMERA_MODEL.stageTravelGoalPerStagePixels;
   combat.waveIndex = 0;
   combat.wavesThisStage = isFinalBossStage() ? 0 : wavesForStage();
   combat.waveSpawnQueue = 0;
@@ -703,7 +1124,7 @@ function startNextWave() {
   const target = minEnemies + ((combat.stageIndex + combat.waveIndex) % (maxEnemies - minEnemies + 1));
   combat.waveSpawnQueue = target;
   combat.waveEnemiesSpawned = 0;
-  combat.nextWaveSpawnFrame = combat.frame + 14;
+  combat.nextWaveSpawnFrame = combat.frame + Math.round(LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning.enemySpawnDelayFrames / 2);
   spawnText(`WAVE ${combat.waveIndex}/${combat.wavesThisStage}`, 330, 112, '#ffe84d');
 }
 
@@ -714,6 +1135,9 @@ function completeStage() {
     combat.gameOverReason = 'Level 1 cleared — boss defeated';
     combat.scrollLockReason = 'LEVEL CLEAR';
     spawnText('LEVEL CLEAR', 318, 120, '#45ff8a');
+    playSfxCue('game-over', 0.08);
+    ensureCombatMusic('game-over');
+    syncCombatOverlay();
     return;
   }
   releaseScrollLock(`Stage ${combat.stageIndex} clear`);
@@ -750,11 +1174,14 @@ function showOfficialPanel(activePanel) {
 function renderOfficialNav() {
   if (!dom.officialNavTabs) return;
   dom.officialNavTabs.replaceChildren();
-  for (const item of LESTERS_ARCADE_V2_APP_SHELL.navigation) {
-    const button = el('button', { className: `official-nav-tab ${officialAppStep === item.id ? 'active' : ''}`, textContent: item.label });
+  const iconById = { cabinets: '🕹️', profile: '👤', leaderboards: '🏆', settings: '⚙️' };
+  for (const item of (LESTERS_ARCADE_V2_APP_SHELL.primaryNav ?? LESTERS_ARCADE_V2_APP_SHELL.navigation)) {
+    const button = el('button', { className: `official-nav-tab ${officialAppStep === item.id || (item.id === 'cabinets' && ['arcade-walk-in', 'cabinet-select', 'mode-select', 'level-one-intro', 'gameplay'].includes(officialAppStep)) ? 'active' : ''}` });
     button.type = 'button';
     button.disabled = !connectedWallet && item.id !== 'cabinets';
+    button.append(renderArcadeIcon(iconById[item.id] ?? '◆', item.label), document.createTextNode(item.label));
     button.addEventListener('click', () => {
+      playSfxCue('menu-click');
       if (item.id === 'cabinets') setOfficialView(connectedWallet ? 'cabinet-select' : 'wallet-splash');
       if (item.id === 'profile') setOfficialView('profile');
       if (item.id === 'leaderboards') setOfficialView('leaderboards');
@@ -766,6 +1193,7 @@ function renderOfficialNav() {
 
 function renderOfficialWalletSplash() {
   if (!dom.officialWalletSplash) return;
+  applyHardMoneyHeroScreenBackground(dom.officialWalletSplash, 'splash');
   const copy = connectedWallet
     ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`
     : LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy;
@@ -788,6 +1216,7 @@ function renderOfficialCabinets() {
       setOfficialView('mode-select');
     });
     appendText(card, 'span', cabinet.playable ? 'PLAYABLE NOW' : 'COMING SOON', 'cabinet-status-label');
+    card.prepend(renderArcadeIcon(cabinet.playable ? '⚡' : '🔒', cabinet.playable ? 'Playable' : 'Locked'));
     appendText(card, 'strong', cabinet.title);
     appendText(card, 'small', cabinet.description);
     dom.officialCabinetGrid.append(card);
@@ -835,6 +1264,7 @@ function renderOfficialSettings() {
 }
 
 function renderOfficialArcadeFloor() {
+  applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, officialAppStep === 'settings' ? 'options' : 'mainMenu');
   const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
   const titleByStep = {
     'arcade-walk-in': 'Entering the Arcade...',
@@ -859,6 +1289,7 @@ function renderOfficialArcadeFloor() {
 }
 
 function renderOfficialModeSelect() {
+  applyHardMoneyHeroScreenBackground(dom.officialModeSelect, 'modeSelect');
   const ranked = LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked;
   dom.officialRankedTooltip.replaceChildren();
   appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: needs testnet ${ranked.token}`);
@@ -902,6 +1333,7 @@ function renderOfficialApp() {
 
 async function connectOfficialWallet() {
   if (!connectedWallet) await connectWallet();
+  playSfxCue('wallet-connect', 0.055);
   officialAppStep = 'arcade-walk-in';
   render();
   setTimeout(() => {
@@ -909,7 +1341,17 @@ async function connectOfficialWallet() {
   }, 900);
 }
 
+async function enterOfficialArcadeFromSplash() {
+  if (connectedWallet) {
+    playSfxCue('menu-click', 0.05);
+    setOfficialView('cabinet-select');
+    return;
+  }
+  await connectOfficialWallet();
+}
+
 async function startOfficialMode(mode) {
+  playSfxCue('menu-click');
   officialSelectedMode = mode;
   await startMode(mode === 'ranked' ? 'paid' : 'free');
   officialAppStep = 'level-one-intro';
@@ -917,6 +1359,7 @@ async function startOfficialMode(mode) {
 }
 
 async function beginOfficialLevel() {
+  playSfxCue('level-start');
   if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
   officialAppStep = 'gameplay';
   render();
@@ -1411,6 +1854,7 @@ async function startCombat() {
   combat.active = true;
   combat.paused = false;
   combat.gameOver = false;
+  combat.gameOverSubmitted = false;
   combat.gameOverReason = '';
   combat.startedAt = performance.now();
   combat.frame = 0;
@@ -1453,12 +1897,13 @@ async function startCombat() {
   combat.miniBossLock = false;
   combat.scrollLockReason = null;
   combat.scroll = 0;
+  combat.furthestScroll = 0;
   combat.scrollSpeed = 0;
   combat.stageCount = STAGE_COUNT;
   combat.stageIndex = 1;
   combat.stagePhase = 'travel';
   combat.stageTravel = 0;
-  combat.stageTravelGoal = 160;
+  combat.stageTravelGoal = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.stageTravelGoalBasePixels + LESTER_BLASTER_TACTICAL_CAMERA_MODEL.stageTravelGoalPerStagePixels;
   combat.waveIndex = 0;
   combat.wavesThisStage = 1;
   combat.waveSpawnQueue = 0;
@@ -1468,6 +1913,8 @@ async function startCombat() {
   combat.keys.clear();
   lastBossId = null;
   beginStage(1);
+  playSfxCue('level-start');
+  ensureCombatMusic('gameplay');
   renderCombatSandboxStatus();
   syncCombatOverlay();
 }
@@ -1476,6 +1923,7 @@ function jump() {
   if (combat.jumpsLeft > 0) {
     combat.velocityY = combat.jumpsLeft === 2 ? -12 : -10;
     combat.jumpsLeft -= 1;
+    playSfxCue('jump');
     spawnText('JUMP', combat.playerX, combat.playerY - 70, '#19f7ff');
   }
 }
@@ -1490,6 +1938,7 @@ function shoot() {
     combat.ammo -= 1;
   }
   combat.shots += 1;
+  playSfxCue('weapon-fire', weapon.id === 'hash-rail' ? 0.045 : 0.035);
   const pellets = weapon.pellets ?? 1;
   const spread = pellets > 1 ? pellets : 1;
   for (let i = 0; i < spread; i += 1) {
@@ -1509,6 +1958,7 @@ function shoot() {
 
 function melee() {
   combat.meleeSwings += 1;
+  playSfxCue('melee');
   spawnSlash(combat.playerX + 48, combat.playerY - 42);
   const meleeBox = {
     x: combat.playerX + 34,
@@ -1533,6 +1983,7 @@ function melee() {
 function grenade() {
   if (combat.grenades <= 0) return;
   combat.grenades -= 1;
+  playSfxCue('grenade', 0.075);
   const blastBox = { x: combat.playerX + 52, y: GROUND_Y - 154, w: 304, h: 166 };
   for (const enemy of combat.enemies) {
     if (rectsOverlap(blastBox, enemyHitbox(enemy))) damageEnemy(enemy, 18, 'grenade');
@@ -1545,6 +1996,7 @@ function grenade() {
 function dropPowerUp() {
   const powerUp = LESTER_BLASTER_POWER_UPS[(combat.frame + combat.powerUps.length) % LESTER_BLASTER_POWER_UPS.length];
   combat.powerUps.push({ ...powerUp, x: combat.playerX + 220, y: GROUND_Y - 38, vy: -3, ttl: 480 });
+  playSfxCue('pickup', 0.025);
   spawnText(powerUp.title, combat.playerX + 210, GROUND_Y - 74, '#ffe84d');
 }
 
@@ -1552,14 +2004,46 @@ function reload() {
   const weapon = weaponById(combat.weaponId);
   if (weapon.ammo === 'infinite') return;
   combat.ammo = weapon.ammo;
+  playSfxCue('menu-click', 0.025);
   spawnText('RELOAD', combat.playerX + 20, combat.playerY - 80, '#45ff8a');
 }
 
 function moveStageObjects(scrollDelta) {
   if (!scrollDelta) return;
-  for (const prop of combat.props) prop.x -= scrollDelta * 1.15;
-  for (const platform of combat.platforms) platform.x -= scrollDelta * 1.15;
+  const multiplier = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.objectScrollMultiplier;
+  for (const prop of combat.props) prop.x -= scrollDelta * multiplier;
+  for (const platform of combat.platforms) platform.x -= scrollDelta * multiplier;
   for (const power of combat.powerUps) power.x -= scrollDelta * 0.28;
+}
+
+function applyPlayerLedCameraMovement(playerSpeed) {
+  const inputDirection = (combat.keys.has('d') || combat.keys.has('arrowright') ? 1 : 0)
+    - (combat.keys.has('a') || combat.keys.has('arrowleft') ? 1 : 0);
+  if (!inputDirection) {
+    combat.scrollSpeed += (0 - combat.scrollSpeed) * 0.22;
+    return;
+  }
+
+  const previousScroll = combat.scroll;
+  const result = advanceTacticalCameraModel({
+    playerX: combat.playerX,
+    scroll: combat.scroll,
+    furthestScroll: combat.furthestScroll,
+    inputDirection,
+    stagePhase: combat.stagePhase,
+    scrollLocked: Boolean(combat.scrollLockReason),
+    speed: playerSpeed,
+  });
+  combat.playerX = result.playerX;
+  combat.scroll = result.scroll;
+  combat.furthestScroll = result.furthestScroll;
+  combat.scrollSpeed = result.scrollDelta;
+  if (result.scrollDelta > 0) {
+    combat.stageTravel += result.scrollDelta;
+    moveStageObjects(result.scrollDelta);
+  } else if (result.scroll !== previousScroll) {
+    moveStageObjects(result.scroll - previousScroll);
+  }
 }
 
 function updatePlatformingAndProps() {
@@ -1606,11 +2090,7 @@ function updatePlatformingAndProps() {
 function updateStageDirector() {
   if (combat.paused || combat.gameOver) return;
   if (combat.stagePhase === 'travel') {
-    const targetSpeed = 0.72 + Math.min(0.32, combat.stageIndex * 0.018);
-    combat.scrollSpeed += (targetSpeed - combat.scrollSpeed) * 0.08;
-    combat.scroll += combat.scrollSpeed;
-    combat.stageTravel += combat.scrollSpeed;
-    moveStageObjects(combat.scrollSpeed);
+    combat.scrollSpeed += (0 - combat.scrollSpeed) * 0.12;
     if (combat.stageTravel >= combat.stageTravelGoal) beginStageEngagement();
     return;
   }
@@ -1631,7 +2111,7 @@ function updateStageDirector() {
     if (spawned) {
       combat.waveSpawnQueue -= 1;
       combat.waveEnemiesSpawned += 1;
-      combat.nextWaveSpawnFrame = combat.frame + 42;
+      combat.nextWaveSpawnFrame = combat.frame + LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning.enemySpawnDelayFrames;
     }
   }
 
@@ -1656,8 +2136,7 @@ function updateCombatStep(stepMs) {
   combat.crouching = combat.keys.has('control') || combat.keys.has('s') || combat.keys.has('arrowdown');
   combat.crouchFrames = combat.crouching ? combat.crouchFrames + 1 : 0;
   const playerSpeed = combat.crouching ? 1.65 : 3.1;
-  if (combat.keys.has('a') || combat.keys.has('arrowleft')) combat.playerX = Math.max(62, combat.playerX - playerSpeed);
-  if (combat.keys.has('d') || combat.keys.has('arrowright')) combat.playerX = Math.min(214, combat.playerX + playerSpeed);
+  applyPlayerLedCameraMovement(playerSpeed);
 
   combat.velocityY += 0.72;
   combat.playerY = Math.min(GROUND_Y, combat.playerY + combat.velocityY);
@@ -1699,6 +2178,7 @@ function spawnEnemy(options = {}) {
   const liveStageEnemies = combat.enemies.filter((enemy) => enemy.stageIndex === (options.stageIndex ?? combat.stageIndex)).length;
   if (liveStageEnemies >= cap) return null;
   const spawn = chooseEnemySpawn({ elapsedSeconds: combat.elapsedGameSeconds, seed: combat.frame + combat.kills + combat.waveEnemiesSpawned });
+  const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
   const role = options.role ?? (spawn.ai?.aggression > 1.2 ? 'aggressive-melee-rusher' : 'cover-shooter');
   const flying = spawn.enemy.class?.includes('flying');
   const laneOffset = flying ? 70 : (combat.waveEnemiesSpawned % 3) * 8;
@@ -1709,7 +2189,9 @@ function spawnEnemy(options = {}) {
     y: flying ? GROUND_Y - 52 - laneOffset : GROUND_Y - laneOffset,
     hp: Math.max(12, Math.round(spawn.scaledHealth * 0.72)),
     maxHp: Math.max(12, Math.round(spawn.scaledHealth * 0.72)),
-    attackTimer: role === 'aggressive-melee-rusher' ? 68 : 116 + (combat.frame % 34),
+    attackTimer: role === 'aggressive-melee-rusher'
+      ? Math.max(82, Math.round(tacticalRoomTuning.rangedShotCooldownFrames * 0.72))
+      : tacticalRoomTuning.rangedShotCooldownFrames + (combat.frame % 34),
     tellFrames: 0,
     ai: spawn.ai,
     role,
@@ -1833,6 +2315,7 @@ function updateBullets() {
 
 function updateEnemies(difficulty) {
   const playerBox = playerHitbox();
+  const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
   for (const enemy of combat.enemies) {
     const enemyBox = enemyHitbox(enemy);
     const distanceToPlayer = enemy.x - (combat.playerX + playerBox.w);
@@ -1856,7 +2339,7 @@ function updateEnemies(difficulty) {
       if (distanceToPlayer <= 58 && enemy.attackTimer <= 28) enemy.tellFrames = 28 - enemy.attackTimer;
       if (distanceToPlayer <= 58 && enemy.attackTimer <= 0) {
         if (combat.invulnerableFrames <= 0 && rectsOverlap(enemyBox, playerHitbox())) damagePlayer(NORMAL_HIT_DAMAGE, 'enemy-melee');
-        enemy.attackTimer = 118;
+        enemy.attackTimer = Math.max(118, Math.round(tacticalRoomTuning.rangedShotCooldownFrames * 0.9));
         enemy.tellFrames = 0;
       }
     } else {
@@ -1880,7 +2363,7 @@ function updateEnemies(difficulty) {
           damage: NORMAL_HIT_DAMAGE,
           ttl: 190,
         });
-        enemy.attackTimer = 128 + (enemy.stageIndex % 3) * 18;
+        enemy.attackTimer = tacticalRoomTuning.rangedShotCooldownFrames + (enemy.stageIndex % 3) * 18;
         enemy.tellFrames = 0;
       }
     }
@@ -1982,6 +2465,7 @@ function damageEnemy(enemy, damage, source) {
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   combat.damageCombo += damage;
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
+  playSfxCue('enemy-hit', 0.035);
   spawnBlood(enemy.x + 12, enemy.y - 30, source === 'knife' ? '#ff1f4f' : '#ff7b2f');
 }
 
@@ -1991,6 +2475,7 @@ function damageBoss(damage, source) {
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   combat.damageCombo += damage;
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
+  playSfxCue('boss-warning', 0.035);
   spawnBlood(combat.boss.x + 40, GROUND_Y - 70, source === 'hash-rail' ? '#19f7ff' : '#ff236d');
 }
 
@@ -2002,6 +2487,7 @@ function damagePlayer(damage, source = 'hit') {
   combat.damageCombo = 0;
   combat.noDamageSeconds = 0;
   combat.invulnerableFrames = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.invulnerabilityAfterHitFrames;
+  playSfxCue('player-hit', 0.06);
   spawnText(`-${applied}% HP`, combat.playerX, combat.playerY - 80, '#ff476f');
   spawnBlood(combat.playerX + 12, combat.playerY - 40, '#ff476f');
   if (source === 'enemy-melee') spawnText('MELEE HIT', combat.playerX + 24, combat.playerY - 96, '#ffe84d');
@@ -2016,6 +2502,8 @@ function damagePlayer(damage, source = 'hit') {
       : 'Lester was defeated. Free practice can restart from the beginning at no cost.';
     dom.combatRunStatus.textContent = 'Local combat sandbox game over';
     dom.combatStatus.textContent = `Game Over: ${combat.score.toLocaleString()} score, ${combat.kills} kills, ${formatSeconds(combat.elapsedGameSeconds)} survived. Official paid-run state remains separated until explicit game-over submission.`;
+    playSfxCue('game-over', 0.08);
+    ensureCombatMusic('game-over');
     syncCombatOverlay();
   }
   return true;
@@ -2048,6 +2536,7 @@ function collectCombatPowerUp(power) {
     combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
   }
   if (power.effect === 'scoreMultiplier') spawnText('2X SCORE', power.x, power.y - 20, '#ffe84d');
+  playSfxCue('pickup', 0.055);
   spawnText(power.title, power.x, power.y - 28, '#45ff8a');
 }
 
@@ -2107,27 +2596,80 @@ function drawCombatScene(timestamp = 0) {
   requestAnimationFrame(drawCombatScene);
 }
 
-function drawParallaxAssetLayer(ctx, layer, width) {
+function drawEnvironmentLayer(ctx, layer, width) {
   if (!imageReady(layer.image)) return false;
-  const scaledWidth = width * 1.35;
-  const offset = -((combat.scroll * layer.speed) % scaledWidth);
+  const naturalRatio = layer.naturalSize?.[0] && layer.naturalSize?.[1]
+    ? layer.naturalSize[0] / layer.naturalSize[1]
+    : layer.image.naturalWidth / Math.max(1, layer.image.naturalHeight);
+  const scaledWidth = Math.max(width * 1.18, Math.round(layer.h * naturalRatio));
+  const scrollSpeed = layer.speed ?? 0.35;
+  const drift = layer.animation === 'slow-drift' ? Math.sin(combat.frame * 0.006) * 8 : 0;
+  const offset = -((combat.scroll * scrollSpeed + drift) % scaledWidth);
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.globalAlpha = layer.opacity ?? 1;
+  ctx.globalCompositeOperation = layer.role === 'background' ? 'source-over' : 'multiply';
   for (let x = offset - scaledWidth; x < width + scaledWidth; x += scaledWidth) {
-    ctx.drawImage(layer.image, x, layer.y, scaledWidth, layer.h);
+    ctx.drawImage(layer.image, Math.round(x), layer.y, scaledWidth, layer.h);
   }
+  ctx.restore();
   return true;
+}
+
+function drawAmbientEnvironmentProps(ctx, width, height, environmentStage) {
+  if (!environmentStage?.props?.length) return;
+  for (const [index, prop] of environmentStage.props.entries()) {
+    const draw = prop.draw ?? {};
+    const drawWidth = draw.width ?? 118;
+    const drawHeight = draw.height ?? 118;
+    const scrollSpeed = draw.scrollSpeed ?? 0.42;
+    const wrap = width + (draw.spacing ?? 320);
+    const rawX = (draw.slotOffset ?? 140) + index * (draw.spacing ?? 280) - combat.scroll * scrollSpeed;
+    const x = ((rawX % wrap) + wrap) % wrap - drawWidth * 0.5;
+    const sway = prop.animation?.includes('sway') ? Math.sin((combat.frame + index * 23) * 0.045) * 3 : 0;
+    const bob = prop.animation?.includes('heat') ? Math.sin((combat.frame + index * 17) * 0.035) * 1.8 : 0;
+    const flicker = prop.animation?.includes('flicker') || prop.animation?.includes('spark')
+      ? 0.78 + Math.sin((combat.frame + index * 31) * 0.21) * 0.12
+      : 0.86;
+    const y = Math.min(height - drawHeight - 6, GROUND_Y - drawHeight + (draw.groundOffset ?? 8) + bob);
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.globalAlpha = Math.max(0.45, Math.min(1, flicker));
+    ctx.globalCompositeOperation = prop.role?.includes('prop-card') || prop.role?.includes('vehicle')
+      ? 'multiply'
+      : 'source-over';
+    if (prop.animation?.includes('sway')) {
+      ctx.translate(Math.round(x + drawWidth / 2), Math.round(y + drawHeight));
+      ctx.rotate((sway / Math.max(1, drawHeight)) * 0.16);
+      if (imageReady(prop.image)) {
+        ctx.drawImage(prop.image, Math.round(-drawWidth / 2), -drawHeight, drawWidth, drawHeight);
+      } else {
+        ctx.fillStyle = environmentStage.palette?.[2] ?? '#8b6a3c';
+        ctx.fillRect(Math.round(-drawWidth / 2), -drawHeight, drawWidth, drawHeight);
+      }
+    } else if (imageReady(prop.image)) {
+      ctx.drawImage(prop.image, Math.round(x + sway), Math.round(y), drawWidth, drawHeight);
+    } else {
+      ctx.fillStyle = environmentStage.palette?.[2] ?? '#8b6a3c';
+      ctx.fillRect(Math.round(x + sway), Math.round(y), drawWidth, drawHeight);
+    }
+    ctx.restore();
+  }
 }
 
 function drawBackground(ctx, width, height) {
   const level = currentLevel();
+  const environmentStage = currentLevelOneEnvironmentStage();
+  const palette = environmentStage?.palette ?? ['#06142e', '#12072d', '#030711'];
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, level.id.includes('metro') ? '#071a2e' : level.id.includes('finality') ? '#180525' : '#06142e');
-  gradient.addColorStop(0.58, '#12072d');
+  gradient.addColorStop(0, palette[0] ?? '#06142e');
+  gradient.addColorStop(0.58, palette[1] ?? '#12072d');
   gradient.addColorStop(1, '#030711');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
 
-  const generatedLayers = combatArt.parallax[level.id] ?? combatArt.parallax['level-the-slums'];
-  const drewGeneratedArt = generatedLayers?.every((layer) => drawParallaxAssetLayer(ctx, layer, width));
+  const generatedLayers = environmentStage?.layers ?? combatArt.parallax[level.id] ?? combatArt.parallax['level-the-slums'];
+  const drewGeneratedArt = generatedLayers?.every((layer) => drawEnvironmentLayer(ctx, layer, width));
 
   if (!drewGeneratedArt) {
     for (const [index, layer] of level.parallaxLayers.entries()) {
@@ -2142,18 +2684,21 @@ function drawBackground(ctx, width, height) {
     }
   }
 
-  ctx.fillStyle = '#101827';
+  const ground = environmentStage?.ground;
+  ctx.fillStyle = ground?.roadColor ?? '#101827';
   ctx.fillRect(0, GROUND_Y + 34, width, height - GROUND_Y - 34);
-  ctx.fillStyle = '#1a2440';
+  ctx.fillStyle = environmentStage?.palette?.[0] ?? '#1a2440';
   ctx.fillRect(0, GROUND_Y + 8, width, 34);
-  ctx.fillStyle = '#ffe84d';
+  ctx.fillStyle = ground?.stripeColor ?? '#ffe84d';
   for (let x = -80; x < width + 120; x += 80) {
     ctx.fillRect((x - combat.scroll * 1.2) % (width + 80), GROUND_Y + 46, 42, 6);
   }
+  drawAmbientEnvironmentProps(ctx, width, height, environmentStage);
 
   ctx.font = '12px monospace';
   ctx.fillStyle = '#19f7ff';
-  ctx.fillText(level.title.toUpperCase(), 20, height - 18);
+  const label = environmentStage ? `${level.title} // ${environmentStage.title}` : level.title;
+  ctx.fillText(label.toUpperCase(), 20, height - 18);
   if (combat.miniBossLock) {
     ctx.fillStyle = 'rgba(255,71,111,.14)';
     ctx.fillRect(0, 0, width, height);
@@ -2280,7 +2825,36 @@ function drawPlayer(ctx) {
   ctx.restore();
 }
 
+function manifestEnemyKeyFor(enemy) {
+  if (enemy.enemyKey && combatArt.enemies[enemy.enemyKey]) return enemy.enemyKey;
+  const id = enemy.id ?? '';
+  const title = enemy.title ?? '';
+  if (id.includes('trench') || title.includes('Degen') || id.includes('fud') || id.includes('paper') || id.includes('rug')) return 'trenchDegen';
+  if (id.includes('bank') || title.includes('Banker') || id.includes('sybil') || id.includes('bot') || id.includes('drone')) return 'evilBanker';
+  if (id.includes('warren') || id.includes('spear') || id.includes('boss') || enemy.class === 'armored' || enemy.role === 'armored-pressure') return 'warrenSpearRider';
+  return null;
+}
+
+function manifestEnemyArtFor(enemy) {
+  const key = manifestEnemyKeyFor(enemy);
+  const art = key ? combatArt.enemies[key] : null;
+  if (!art) return null;
+  const moving = enemy.state === 'rushing' || enemy.state === 'seeking-cover';
+  const attacking = enemy.tellFrames > 0 || enemy.state === 'melee-tell';
+  const frames = attacking
+    ? art.animations.attack
+    : moving
+      ? (art.animations.run?.length ? art.animations.run : art.animations.walk)
+      : art.animations.idle;
+  return selectAnimationFrame(frames, combat.frame + Math.floor(enemy.x), attacking ? 7 : 10)
+    ?? art.stills[0]
+    ?? art.fallback
+    ?? null;
+}
+
 function enemyArtFor(enemy) {
+  const manifestFrame = manifestEnemyArtFor(enemy);
+  if (imageReady(manifestFrame)) return manifestFrame;
   if (enemy.miniBoss) return null;
   if (enemy.id?.includes('goblin')) return combatArt.enemies.goblin;
   if (enemy.id?.includes('wisp') || enemy.class?.includes('flying')) return combatArt.enemies.wisp;
@@ -2407,7 +2981,7 @@ function render() {
   renderOfficialApp();
 }
 
-dom.officialConnectButton.addEventListener('click', connectOfficialWallet);
+dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
 dom.developerBackstageToggle.addEventListener('click', () => {
   developerBackstageOpen = !developerBackstageOpen;
   renderOfficialApp();

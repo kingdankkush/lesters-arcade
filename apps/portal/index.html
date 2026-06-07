@@ -11,10 +11,10 @@
     <main class="arcade-shell official-shell">
       <section id="officialApp" class="official-app" aria-label="Lester's Arcade official app">
         <div class="official-scanline" aria-hidden="true"></div>
-        <nav class="official-nav" aria-label="Lester's Arcade main navigation">
+        <nav class="official-nav official-simplified-nav" aria-label="Lester's Arcade main navigation">
           <strong>Lester's Arcade</strong>
           <div id="officialNavTabs" class="official-nav-tabs"></div>
-          <button id="developerBackstageToggle" class="ghost-button" type="button">Dev Backstage</button>
+          <button id="developerBackstageToggle" class="ghost-button dev-tool-toggle" type="button" hidden>Tools</button>
         </nav>
 
         <section id="officialWalletSplash" class="official-view wallet-splash-view">
@@ -49,10 +49,12 @@
           </div>
           <div class="official-mode-grid">
             <button id="officialFreeModeButton" class="mode-card" type="button">
+              <span class="arcade-icon" aria-hidden="true">∞</span>
               <strong>Free Mode</strong>
               <span>Practice only. No official score, progress, achievements, or chain writes.</span>
             </button>
             <button id="officialRankedModeButton" class="mode-card ranked-card" type="button">
+              <span class="arcade-icon" aria-hidden="true">★</span>
               <strong>Play Ranked</strong>
               <span>Requires a little testnet zkLTC for now. Scores submit only at game over.</span>
             </button>
@@ -73,7 +75,7 @@
               <span>E/right click melee</span>
               <span>F throwable</span>
             </div>
-            <p class="tiny-note">8-second intro target. Click Begin when ready; gameplay starts slow and builds into staged scroll-locked sections.</p>
+            <p class="tiny-note">8-second intro target. Click Begin when ready; push right to advance into larger tactical rooms with scroll-locked engagements.</p>
             <button id="officialBeginLevelButton" class="primary-button big-action" type="button">Begin Level 1</button>
           </div>
         </section>
@@ -99,7 +101,10 @@
             <p class="eyebrow">Game Menu</p>
             <h3 id="combatMenuTitle">Paused</h3>
             <p id="combatMenuCopy">Restart, music, character, and exit controls are always available during gameplay.</p>
+            <div id="combatGameOverSummary" class="game-over-summary" hidden aria-live="polite"></div>
+            <div id="combatMenuActionGrid" class="combat-menu-action-grid" aria-label="Pause and game-over actions"></div>
           </div>
+          <div id="combatHudOverlay" class="combat-hud-overlay" aria-label="Hard Money Heroes health score timer power-ups and status" aria-live="polite"></div>
           <div id="officialCombatMount" class="official-combat-mount"></div>
         </section>
       </section>
@@ -304,11 +309,11 @@
           <div class="panel-heading split-heading">
             <div>
               <p class="label">First Game Vertical Slice</p>
-              <h2>60fps Side-Scrolling Shooter</h2>
+              <h2>60fps Tactical Run-and-Gun Shooter</h2>
             </div>
             <span id="fpsPill" class="system-pill">60fps target</span>
           </div>
-          <canvas id="combatCanvas" width="760" height="340" aria-label="Hard Money Heroes side-scrolling shooter prototype"></canvas>
+          <canvas id="combatCanvas" width="760" height="340" aria-label="Hard Money Heroes tactical run-and-gun prototype"></canvas>
           <div class="combat-controls" aria-label="Combat controls">
             <button id="startCombatButton" class="primary-button">Start Combat Test</button>
             <button id="jumpButton" class="secondary-button">Jump / Double Jump</button>
@@ -363,6 +368,6 @@
       </div>
     </main>
 
-    <script type="module" src="./main.js"></script>
+    <script type="module" src="./main.js?v=hmh-tactical-exit-v2"></script>
   </body>
 </html>

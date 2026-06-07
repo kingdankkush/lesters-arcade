@@ -10,13 +10,19 @@ import {
   ARCADE_GAMES,
   DEFAULT_REVENUE_SPLIT_BPS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
+  HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST,
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BRAND_SYSTEM,
+  LESTER_BLASTER_HUD_OVERLAY_MODEL,
+  LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
   LESTER_ARCADE_BUILD_STACK,
+  LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP,
   LESTER_ARCADE_UI_QUALITY_SYSTEM,
   LESTER_ARCADE_WALLET_RAILS,
+  LESTER_ARCADE_WORKFLOW_AUTOMATION,
   LESTERS_ARCADE_V2_APP_SHELL,
   LESTER_BLASTER_ANIMATION_PLAN,
+  LESTER_BLASTER_ENEMY_AI_STATE_MACHINE,
   LITVM_LITEFORGE_NETWORK,
   LESTER_BLASTER_BOSS_SYSTEM,
   LESTER_BLASTER_CHARACTER_ROSTER,
@@ -35,14 +41,19 @@ import {
   LESTER_BLASTER_TACTICAL_COMBAT_V2,
   LESTER_BLASTER_UNLOCKABLES,
   LESTER_BLASTER_WEAPON_SYSTEM,
+  advanceTacticalCameraModel,
   applyPowerUp,
   buildLeaderboardModel,
   buildLesterBlasterControlDisplayModel,
+  buildCombatHudOverlayModel,
+  buildCombatOptionsMenuModel,
   buildCombatSandboxStatusModel,
   buildLesterBlasterDesignCodex,
   buildLoginMenuModel,
   buildOfficialRunStatusModel,
+  buildGameOverSummaryModel,
   buildParentSyncPacket,
+  buildHardMoneyHeroesAnimationCoverageReport,
   buildPlayerArcadeSnapshot,
   buildRunLoadout,
   buildUiQualityGuideModel,
@@ -671,14 +682,42 @@ test('deeper combat spec codifies staged waves, health, pause menu, fullscreen m
   assert.equal(enemyAi.roles.includes('aggressive-melee-rusher'), true);
   assert.equal(enemyAi.rateOfFire, 'reduced-readable');
   assert.equal(enemyAi.coverDecision.includes('defensive'), true);
+  assert.equal(enemyAi.readableTells.includes('attack-windup-bar'), true);
 
-  assert.deepEqual(gameplayMenu.actions, ['Restart', 'Toggle Music On/Off', 'Swap Characters', 'Return to Game Menu', 'Exit Game']);
+  assert.deepEqual(gameplayMenu.actions, ['Resume', 'Restart', 'Toggle Music On/Off', 'Swap Characters', 'Windowed / Fullscreen', 'Return to Game Menu', 'Exit Game']);
+  assert.equal(gameplayMenu.screens.pause.title, 'Paused');
+  assert.equal(gameplayMenu.screens.gameOver.title, 'Game Over');
+  assert.equal(gameplayMenu.exitGameTarget, 'cabinet-select');
   assert.equal(gameplayMenu.restart.freeModeCost, 'free-restart-from-level-start');
   assert.equal(gameplayMenu.restart.paidModeCost, 'requires-new-paid-credit');
   assert.equal(viewportModes.default, 'fullscreen');
-  assert.equal(viewportModes.available.includes('embedded-window'), true);
+  assert.equal(viewportModes.available.includes('windowed'), true);
+  assert.equal(viewportModes.available.includes('expanded-fullscreen'), true);
   assert.equal(runStateSeparation.freeMode, 'local-sandbox-only');
   assert.equal(runStateSeparation.paidMode, 'official-sync-only-at-game-over');
+});
+
+test('streamlined Lester arcade UX keeps public flow simple while preserving hidden tools and audio/gameplay polish hooks', () => {
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
+
+  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.publicFlow, ['connect-wallet', 'select-game', 'choose-mode', 'begin-level', 'play']);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.primaryNav.length, 3);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.hiddenByDefault.includes('developer-backstage'), true);
+  assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
+  assert.equal(mainSource.includes('ensureCombatMusic'), true);
+  assert.equal(mainSource.includes('playSfxCue'), true);
+  assert.equal(mainSource.includes("officialAppStep = 'wallet-splash'"), true);
+  assert.equal(mainSource.includes('enterOfficialArcadeFromSplash'), true);
+  assert.equal(mainSource.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
+  assert.equal(mainSource.includes('clearInactiveCombatOverlay'), true);
+  assert.equal(mainSource.includes("setOfficialView('cabinet-select')"), true);
+  assert.equal(mainSource.includes('renderArcadeIcon'), true);
+  assert.equal(indexSource.includes('combatMenuActionGrid'), true);
+  assert.equal(indexSource.includes('./main.js?v=hmh-tactical-exit-v2'), true);
+  assert.equal(styleSource.includes('.official-simplified-nav'), true);
+  assert.equal(styleSource.includes('@keyframes arcadePulse'), true);
 });
 
 test('V2 art and audio plans track Justin reference assets, Lester redo, 150x150 profile direction, and free SFX sources', () => {
@@ -738,6 +777,46 @@ test('Hard Money Heroes manifest ingests Lester/Lilly weapon frames, first enemi
   assert.equal(manifest.audio.sfxPlan.enemyBarks.includes('warren-spear-rider-horse'), true);
 });
 
+test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city source trove for runtime staging', () => {
+  const manifest = HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST;
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+
+  assert.equal(manifest.id, 'hard-money-heroes-level1-environment-assets-v1');
+  assert.equal(manifest.assetCount, 148);
+  assert.equal(manifest.runtimeAssetCount, 148);
+  assert.deepEqual(manifest.stageOrder, ['desert_approach', 'ghost_town', 'country_road', 'residential_edge', 'inner_city']);
+  assert.equal(manifest.levelOneStages.length, 5);
+  assert.equal(manifest.levelOneStages.every((stage) => stage.layers.length >= 4), true);
+  assert.equal(manifest.levelOneStages.every((stage) => stage.props.length >= 3), true);
+  assert.equal(manifest.levelOneStages.some((stage) => stage.ambient.includes('tree-wind-sway')), true);
+  assert.equal(manifest.levelOneStages.some((stage) => stage.ambient.includes('neon-flicker')), true);
+
+  for (const asset of manifest.assets.slice(0, 12)) {
+    const assetPath = fileURLToPath(new URL(`../apps/portal/${asset.runtimeSrc.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(assetPath) && statSync(assetPath).size > 0, true, `${asset.id} runtime PNG exists`);
+  }
+
+  assert.equal(mainSource.includes('currentLevelOneEnvironmentStage'), true);
+  assert.equal(mainSource.includes('drawAmbientEnvironmentProps'), true);
+  assert.equal(mainSource.includes('drawEnvironmentLayer'), true);
+});
+
+test('Hard Money Heroes runtime wires manifest art into official menus, character swap, first enemy visuals, and gameplay controls', () => {
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
+
+  assert.equal(mainSource.includes('HARD_MONEY_HEROES_ASSET_MANIFEST'), true);
+  assert.equal(mainSource.includes('buildCharacterArtFromManifest'), true);
+  assert.equal(mainSource.includes('combatArt.characters'), true);
+  assert.equal(mainSource.includes('hardMoneyHeroScreenStyle'), true);
+  assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
+  assert.equal(mainSource.includes('warrenSpearRider'), true);
+  assert.equal(mainSource.includes('combat.characterId'), true);
+  assert.equal(indexSource.includes('officialGameplayControls'), true);
+  assert.equal(styleSource.includes('.gameplay-control-bar'), true);
+});
+
 test('control display model does not leak undefined labels into the visible controls guide', () => {
   const controls = buildLesterBlasterControlDisplayModel();
   const move = controls.find((control) => control.label === 'Move');
@@ -769,4 +848,265 @@ test('official run and combat sandbox status models stay visually separate', () 
   assert.equal(combat.heading, 'Local combat sandbox running');
   assert.equal(combat.channel, 'sandbox');
   assert.equal(combat.details.includes('does not overwrite official paid-run state'), true);
+});
+
+test('public experience loop gives players a clean arcade entry, game over, and exit path without hidden Web3 writes', () => {
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.name, "Lester's Arcade public player loop");
+  assert.deepEqual(
+    LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.stageOrder,
+    ['wallet-splash', 'arcade-entry', 'cabinet-select', 'mode-select', 'level-intro', 'gameplay', 'game-over-summary', 'return-to-arcade'],
+  );
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.playerPromise.includes('under 30 seconds'), true);
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.modeBoundaries.free.tracks, false);
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.modeBoundaries.ranked.submissionTrigger, 'explicit-game-over-submit');
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.some((ramp) => ramp.id === 'return-to-arcade' && ramp.target === 'cabinet-select'), true);
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.some((ramp) => ramp.copy.includes('No hidden paid-run sync')), true);
+});
+
+test('game-over summary model separates free practice from ranked submit, replay, and arcade-exit actions', () => {
+  const freeSession = startPlaySession({ wallet: '0x9999999999999999999999999999999999999999', gameId: 'lester-blaster', mode: 'free' });
+  const paidSession = startPlaySession({ wallet: '0x9999999999999999999999999999999999999999', gameId: 'lester-blaster', mode: 'paid' });
+
+  const freeSummary = buildGameOverSummaryModel({
+    session: freeSession,
+    score: 2440,
+    elapsedSeconds: 184,
+    kills: 14,
+    bossesDefeated: 0,
+    acceptedForGlobalLeaderboard: false,
+  });
+  const rankedSummary = buildGameOverSummaryModel({
+    session: paidSession,
+    score: 12840,
+    elapsedSeconds: 402,
+    kills: 37,
+    bossesDefeated: 1,
+    acceptedForGlobalLeaderboard: false,
+  });
+  const syncedSummary = buildGameOverSummaryModel({
+    session: paidSession,
+    score: 12840,
+    elapsedSeconds: 402,
+    kills: 37,
+    bossesDefeated: 1,
+    acceptedForGlobalLeaderboard: true,
+  });
+
+  assert.equal(freeSummary.channel, 'practice');
+  assert.equal(freeSummary.trackingCopy.includes('not tracked'), true);
+  assert.equal(freeSummary.actions.some((action) => action.id === 'submit-official-score'), false);
+  assert.equal(freeSummary.actions.some((action) => action.id === 'play-again-free' && action.cost === 'free'), true);
+  assert.equal(freeSummary.actions.some((action) => action.id === 'return-to-arcade' && action.target === 'cabinet-select'), true);
+
+  assert.equal(rankedSummary.channel, 'official');
+  assert.equal(rankedSummary.trackingCopy.includes('Submit Official Score'), true);
+  assert.equal(rankedSummary.actions.some((action) => action.id === 'submit-official-score' && action.enabled), true);
+  assert.equal(rankedSummary.actions.some((action) => action.id === 'play-again-ranked' && action.cost.includes('new testnet credit')), true);
+
+  assert.equal(syncedSummary.actions.find((action) => action.id === 'submit-official-score').enabled, false);
+  assert.equal(syncedSummary.trackingCopy.includes('synced'), true);
+});
+
+test('enemy AI state machine formalizes readable tells, cover choices, role caps, and recovery windows', () => {
+  const ai = LESTER_BLASTER_ENEMY_AI_STATE_MACHINE;
+
+  assert.deepEqual(ai.requiredStates, ['spawn', 'seek', 'telegraph', 'attack', 'recover', 'reposition', 'defeated']);
+  assert.equal(ai.globalFairness.maxActiveAttackers, 2);
+  assert.equal(ai.globalFairness.minTelegraphFrames >= 22, true);
+  assert.equal(ai.globalFairness.recoveryFramesAfterAttack >= 18, true);
+  assert.equal(ai.roles.coverShooter.transitions.some((transition) => transition.from === 'seek' && transition.to === 'take-cover'), true);
+  assert.equal(ai.roles.meleeRusher.transitions.some((transition) => transition.to === 'telegraph'), true);
+  assert.equal(ai.roles.flyerHarasser.safeLaneRule.includes('never overlap'), true);
+  assert.equal(ai.roles.armoredPressure.counters.includes('Hash Rail'), true);
+
+  const spawn = chooseEnemySpawn({ elapsedSeconds: 260, seed: 6 });
+  assert.equal(spawn.ai.stateMachineRole in ai.roles, true);
+  assert.equal(spawn.ai.telegraphFrames >= ai.globalFairness.minTelegraphFrames, true);
+  assert.equal(spawn.ai.recoveryFrames >= ai.globalFairness.recoveryFramesAfterAttack, true);
+});
+
+test('workflow automation model turns future game-design improvements into repeatable research, asset, balance, and smoke-test gates', () => {
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.goal.includes('repeatable improvement pipeline'), true);
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.gates.some((gate) => gate.command === 'npm test'), true);
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.gates.some((gate) => gate.command === 'npm run check'), true);
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.gates.some((gate) => gate.command === 'npm run assets:verify'), true);
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.gates.some((gate) => gate.command === 'npm run contracts:check'), true);
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.loops.some((loop) => loop.id === 'research-to-canon' && loop.output.includes('docs/game-design')), true);
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.loops.some((loop) => loop.id === 'asset-ingestion' && loop.automation.includes('manifest')), true);
+  assert.equal(LESTER_ARCADE_WORKFLOW_AUTOMATION.loops.some((loop) => loop.id === 'browser-smoke' && loop.automation.includes('public flow')), true);
+});
+
+test('player-led tactical camera advances only with rightward player pressure and limits backward travel', () => {
+  const camera = LESTER_BLASTER_TACTICAL_CAMERA_MODEL;
+
+  assert.equal(camera.mode, 'player-led-rightward-scroll');
+  assert.equal(camera.autoScrollWhenIdle, false);
+  assert.equal(camera.playerMaxScreenX >= 380, true);
+  assert.equal(camera.engagementArenaWidthPixels >= 1000, true);
+  assert.equal(camera.backwardAllowancePixels <= 160, true);
+
+  const idle = advanceTacticalCameraModel({
+    playerX: camera.cameraLeadStartX,
+    scroll: 120,
+    furthestScroll: 120,
+    inputDirection: 0,
+    stagePhase: 'travel',
+  });
+  assert.equal(idle.scrollDelta, 0);
+  assert.equal(idle.scroll, 120);
+
+  const advancing = advanceTacticalCameraModel({
+    playerX: camera.cameraLeadStartX + 16,
+    scroll: 120,
+    furthestScroll: 120,
+    inputDirection: 1,
+    stagePhase: 'travel',
+  });
+  assert.equal(advancing.scroll > 120, true);
+  assert.equal(advancing.scrollDelta > 0, true);
+  assert.equal(advancing.playerX <= camera.cameraLeadStartX + 1, true);
+  assert.equal(advancing.movementMode, 'camera-advance');
+
+  const locked = advanceTacticalCameraModel({
+    playerX: camera.cameraLeadStartX + 40,
+    scroll: 240,
+    furthestScroll: 260,
+    inputDirection: 1,
+    stagePhase: 'engagement',
+    scrollLocked: true,
+  });
+  assert.equal(locked.scrollDelta, 0);
+  assert.equal(locked.scroll, 240);
+  assert.equal(locked.playerX <= camera.engagementPlayerMaxScreenX, true);
+
+  const backingUp = advanceTacticalCameraModel({
+    playerX: camera.backtrackFloorScreenX - 24,
+    scroll: 260,
+    furthestScroll: 520,
+    inputDirection: -1,
+    stagePhase: 'travel',
+  });
+  assert.equal(backingUp.playerX, camera.backtrackFloorScreenX);
+  assert.equal(backingUp.scroll, 260);
+  assert.equal(backingUp.furthestScroll, 520);
+});
+
+test('combat HUD and options models expose health, score, timer, power-ups, pause, audio, fullscreen, restart, and exit controls', () => {
+  assert.deepEqual(LESTER_BLASTER_HUD_OVERLAY_MODEL.requiredWidgets, ['health', 'score', 'timer', 'power-ups', 'weapon', 'stage', 'status']);
+
+  const hud = buildCombatHudOverlayModel({
+    health: 73,
+    score: 2450,
+    elapsedSeconds: 95,
+    grenades: 2,
+    ammo: Infinity,
+    weaponTitle: 'The Settler',
+    powerUpsCollected: 3,
+    stageIndex: 2,
+    stageCount: 13,
+    status: 'SCROLL LOCK // clear Stage 2 engagement',
+  });
+
+  assert.equal(hud.widgets.find((widget) => widget.id === 'health').value, '73%');
+  assert.equal(hud.widgets.find((widget) => widget.id === 'score').value, '2,450');
+  assert.equal(hud.widgets.find((widget) => widget.id === 'timer').value, '1:35');
+  assert.equal(hud.widgets.find((widget) => widget.id === 'power-ups').value, 'THROW 2 // PICKUPS 3');
+  assert.equal(hud.widgets.find((widget) => widget.id === 'weapon').value, 'THE SETTLER // AMMO ∞');
+  assert.equal(hud.widgets.find((widget) => widget.id === 'status').value.includes('SCROLL LOCK'), true);
+
+  const menu = buildCombatOptionsMenuModel({
+    paused: true,
+    gameOver: false,
+    musicEnabled: false,
+    viewportMode: 'windowed',
+    currentMode: 'free',
+  });
+  const actionIds = menu.actions.map((action) => action.id);
+  assert.equal(menu.title, 'Paused');
+  assert.equal(actionIds.includes('resume'), true);
+  assert.equal(actionIds.includes('restart'), true);
+  assert.equal(actionIds.includes('toggle-music'), true);
+  assert.equal(actionIds.includes('toggle-fullscreen'), true);
+  assert.equal(actionIds.includes('return-to-game-menu'), true);
+  assert.equal(actionIds.includes('exit-to-arcade'), true);
+  assert.equal(menu.actions.find((action) => action.id === 'toggle-music').label, 'Music Off');
+  assert.equal(menu.actions.find((action) => action.id === 'toggle-fullscreen').label, 'Full Screen');
+});
+
+test('asset coverage report identifies which playable and enemy animation states still need production art', () => {
+  const report = buildHardMoneyHeroesAnimationCoverageReport(HARD_MONEY_HEROES_ASSET_MANIFEST);
+
+  assert.deepEqual(report.requiredHeroStates, LESTER_BLASTER_ART_REDO_BRIEF.requiredHeroStates);
+  assert.equal(report.characters.lester.availableAnimatedStates.includes('idle'), true);
+  assert.equal(report.characters.lester.availableAnimatedStates.includes('run'), true);
+  assert.equal(report.characters.lester.availableAnimatedStates.includes('jump'), true);
+  assert.equal(report.characters.lester.coveredByStillStates.includes('shoot'), true);
+  assert.equal(report.characters.lester.coveredByStillStates.includes('melee'), true);
+  assert.equal(report.characters.lester.coveredByStillStates.includes('throw'), true);
+  assert.equal(report.characters.lester.missingAnimatedStates.includes('crouch'), true);
+  assert.equal(report.characters.lester.missingAnimatedStates.includes('hurt'), true);
+  assert.equal(report.characters.lester.missingAnimatedStates.includes('death'), true);
+  assert.equal(report.characters.lilly.missingAnimatedStates.includes('victory'), true);
+
+  assert.equal(Object.keys(report.enemies).length >= 3, true);
+  assert.equal(report.enemies.trenchDegen.availableAnimatedStates.includes('attack'), true);
+  assert.equal(report.enemies.trenchDegen.missingAnimatedStates.includes('attack-tell'), true);
+  assert.equal(report.enemies.evilBanker.missingAnimatedStates.includes('death'), true);
+  assert.equal(report.recommendations.some((item) => item.includes('Aseprite')), true);
+});
+
+test('runtime exposes tactical HUD overlay, options popup, player-led camera, and animation coverage audit in the public app', () => {
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
+
+  assert.equal(mainSource.includes('buildGameOverSummaryModel'), true);
+  assert.equal(mainSource.includes('submitCombatGameOver'), true);
+  assert.equal(mainSource.includes('renderGameOverSummary'), true);
+  assert.equal(mainSource.includes('No hidden paid-run sync'), true);
+  assert.equal(mainSource.includes('advanceTacticalCameraModel'), true);
+  assert.equal(mainSource.includes('applyPlayerLedCameraMovement'), true);
+  assert.equal(mainSource.includes('renderCombatHudOverlay'), true);
+  assert.equal(mainSource.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
+  assert.equal(indexSource.includes('combatGameOverSummary'), true);
+  assert.equal(indexSource.includes('combatHudOverlay'), true);
+  assert.equal(styleSource.includes('.game-over-summary-grid'), true);
+  assert.equal(styleSource.includes('.summary-metric-card'), true);
+  assert.equal(styleSource.includes('.combat-hud-overlay'), true);
+  assert.equal(styleSource.includes('.hud-widget'), true);
+});
+
+test('tactical level tuning expands rooms with cover lanes, prop spacing, and slower readable enemy pacing', () => {
+  const tuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
+  assert.equal(tuning.engagementArenaWidthPixels >= 1320, true);
+  assert.equal(tuning.playerStrafeLanePixels >= 360, true);
+  assert.equal(tuning.minCoverSpacingPixels >= 120, true);
+  assert.deepEqual(tuning.requiredCoverKinds, ['player-cover', 'enemy-cover', 'destructible-crate', 'explosive-barrel', 'vertical-platform']);
+  assert.equal(tuning.enemySpawnDelayFrames >= 50, true);
+  assert.equal(tuning.rangedShotCooldownFrames >= 120, true);
+  assert.equal(LESTER_BLASTER_TACTICAL_CAMERA_MODEL.engagementArenaWidthPixels, tuning.engagementArenaWidthPixels);
+
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.equal(mainSource.includes('tacticalRoomTuning.coverPlacements'), true);
+  assert.equal(mainSource.includes('tacticalRoomTuning.platformPlacements'), true);
+  assert.equal(mainSource.includes('tacticalRoomTuning.enemySpawnDelayFrames'), true);
+});
+
+test('workflow automation scripts emit animation coverage, balance snapshots, and public smoke gates', () => {
+  const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'));
+  assert.equal(packageJson.scripts['design:audit'], 'node scripts/report-hmh-animation-coverage.mjs');
+  assert.equal(packageJson.scripts['design:balance'], 'node scripts/write-hmh-balance-snapshot.mjs');
+  assert.equal(packageJson.scripts['smoke:portal'], 'node scripts/smoke-portal-flow.mjs');
+  assert.equal(packageJson.scripts['verify:full'].includes('npm run design:audit'), true);
+  assert.equal(packageJson.scripts['verify:full'].includes('npm run smoke:portal'), true);
+
+  const animationScript = readFileSync(fileURLToPath(new URL('../scripts/report-hmh-animation-coverage.mjs', import.meta.url)), 'utf8');
+  const balanceScript = readFileSync(fileURLToPath(new URL('../scripts/write-hmh-balance-snapshot.mjs', import.meta.url)), 'utf8');
+  const smokeScript = readFileSync(fileURLToPath(new URL('../scripts/smoke-portal-flow.mjs', import.meta.url)), 'utf8');
+  assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
+  assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
+  assert.equal(smokeScript.includes('officialConnectButton'), true);
+  assert.equal(smokeScript.includes('hmh-tactical-exit-v2'), true);
+  assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
+  assert.equal(smokeScript.includes('combatHudOverlay'), true);
 });

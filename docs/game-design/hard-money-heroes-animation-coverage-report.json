@@ -1,0 +1,189 @@
+{
+  "manifestId": "hard-money-heroes-justin-assets-v1",
+  "requiredHeroStates": [
+    "idle",
+    "run",
+    "crouch",
+    "jump",
+    "fall",
+    "shoot",
+    "melee",
+    "throw",
+    "hurt",
+    "death",
+    "victory"
+  ],
+  "requiredEnemyStates": [
+    "idle",
+    "walk-or-fly",
+    "attack-tell",
+    "attack",
+    "melee-counter",
+    "hit",
+    "death",
+    "optional-gore-overlay"
+  ],
+  "characters": {
+    "lester": {
+      "id": "lester",
+      "availableAnimatedStates": [
+        "idle",
+        "walk",
+        "run",
+        "jump",
+        "attack"
+      ],
+      "coveredByStillStates": [
+        "shoot",
+        "melee",
+        "throw"
+      ],
+      "missingStates": [
+        "crouch",
+        "fall",
+        "hurt",
+        "death",
+        "victory"
+      ],
+      "missingAnimatedStates": [
+        "crouch",
+        "fall",
+        "shoot",
+        "melee",
+        "throw",
+        "hurt",
+        "death",
+        "victory"
+      ],
+      "nextArtPriority": [
+        "crouch",
+        "hurt",
+        "death",
+        "victory",
+        "fall"
+      ]
+    },
+    "lilly": {
+      "id": "lilly",
+      "availableAnimatedStates": [
+        "idle",
+        "walk",
+        "run",
+        "jump",
+        "attack"
+      ],
+      "coveredByStillStates": [
+        "shoot",
+        "melee",
+        "throw"
+      ],
+      "missingStates": [
+        "crouch",
+        "fall",
+        "hurt",
+        "death",
+        "victory"
+      ],
+      "missingAnimatedStates": [
+        "crouch",
+        "fall",
+        "shoot",
+        "melee",
+        "throw",
+        "hurt",
+        "death",
+        "victory"
+      ],
+      "nextArtPriority": [
+        "crouch",
+        "hurt",
+        "death",
+        "victory",
+        "fall"
+      ]
+    }
+  },
+  "enemies": {
+    "trenchDegen": {
+      "id": "trench-degen",
+      "title": "Trench Degen",
+      "availableAnimatedStates": [
+        "idle",
+        "walk",
+        "run",
+        "jump",
+        "attack"
+      ],
+      "missingAnimatedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death",
+        "optional-gore-overlay"
+      ],
+      "behavior": {
+        "primary": "slow-readable-melee",
+        "secondary": "occasional-low-rate-pistol",
+        "moveSpeed": 0.72,
+        "pistolChance": 0.18,
+        "tellFrames": 34
+      }
+    },
+    "evilBanker": {
+      "id": "evil-banker",
+      "title": "Evil Banker",
+      "availableAnimatedStates": [
+        "idle",
+        "walk",
+        "run",
+        "jump",
+        "attack"
+      ],
+      "missingAnimatedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death",
+        "optional-gore-overlay"
+      ],
+      "behavior": {
+        "primary": "fast-briefcase-melee-rusher",
+        "moveSpeed": 1.42,
+        "tellFrames": 22
+      }
+    },
+    "warrenSpearRider": {
+      "id": "warren-spear-rider",
+      "title": "Warren Spear Rider",
+      "availableAnimatedStates": [
+        "idle",
+        "walk",
+        "run",
+        "jump",
+        "attack"
+      ],
+      "missingAnimatedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death",
+        "optional-gore-overlay"
+      ],
+      "behavior": {
+        "primary": "mounted-spear-pressure",
+        "spearThrowAccuracy": 0.6,
+        "dodgeRequired": true,
+        "moveSpeed": 0.52,
+        "meleeRange": 86,
+        "throwCooldownFrames": 185,
+        "tellFrames": 46
+      }
+    }
+  },
+  "recommendations": [
+    "Use Aseprite or LibreSprite to slice every new sheet into the manifest states before runtime integration.",
+    "Prioritize crouch, hurt, death, fall, and victory loops for Lester/Lilly because current provided art covers core motion but relies on stills for weapon poses.",
+    "Add enemy attack-tell, hit, death, and melee-counter frames so AI fairness reads visually instead of only through timers.",
+    "Keep the manifest audit in CI so missing states become visible immediately after new art drops."
+  ]
+}

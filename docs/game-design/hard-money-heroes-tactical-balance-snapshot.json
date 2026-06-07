@@ -1,0 +1,156 @@
+{
+  "generatedBy": "npm run design:balance",
+  "camera": {
+    "mode": "player-led-rightward-scroll",
+    "canvasWidth": 760,
+    "autoScrollWhenIdle": false,
+    "playerStartScreenX": 108,
+    "playerMinScreenX": 72,
+    "cameraLeadStartX": 300,
+    "playerMaxScreenX": 420,
+    "engagementPlayerMaxScreenX": 520,
+    "backwardAllowancePixels": 128,
+    "backtrackFloorScreenX": 172,
+    "engagementArenaWidthPixels": 1320,
+    "stageTravelGoalBasePixels": 220,
+    "stageTravelGoalPerStagePixels": 34,
+    "scrollAdvanceMultiplier": 1.12,
+    "objectScrollMultiplier": 1.15,
+    "principles": [
+      "Camera only advances when the player presses right past the lead zone.",
+      "World progress never rewinds; left/back movement is limited to a few meters of tactical repositioning.",
+      "Engagements become wider arena locks with cover, vertical props, and readable enemy tells.",
+      "Sprites stay large, but the playable lane is wider so dodging, crouching, and cover choices have room to breathe."
+    ]
+  },
+  "tacticalRoomTuning": {
+    "engagementArenaWidthPixels": 1320,
+    "playerStrafeLanePixels": 390,
+    "minCoverSpacingPixels": 132,
+    "enemySpawnDelayFrames": 56,
+    "rangedShotCooldownFrames": 132,
+    "requiredCoverKinds": [
+      "player-cover",
+      "enemy-cover",
+      "destructible-crate",
+      "explosive-barrel",
+      "vertical-platform"
+    ],
+    "coverPlacements": [
+      {
+        "id": "player-cover",
+        "kind": "cover",
+        "label": "Player Cover",
+        "x": 168,
+        "yOffset": 42,
+        "w": 50,
+        "h": 54,
+        "hp": 30,
+        "cover": true
+      },
+      {
+        "id": "enemy-cover-a",
+        "kind": "crate",
+        "label": "Enemy Crate",
+        "x": 500,
+        "yOffset": 46,
+        "w": 56,
+        "h": 54,
+        "hp": 28,
+        "cover": true
+      },
+      {
+        "id": "explosive-barrel",
+        "kind": "barrel",
+        "label": "Explosive Barrel",
+        "x": 664,
+        "yOffset": 34,
+        "w": 32,
+        "h": 42,
+        "hp": 12,
+        "cover": false,
+        "explosive": true
+      },
+      {
+        "id": "enemy-cover-b",
+        "kind": "crate",
+        "label": "Tall Crate",
+        "x": 820,
+        "yOffset": 62,
+        "w": 58,
+        "h": 70,
+        "hp": 34,
+        "cover": true
+      },
+      {
+        "id": "mid-wall",
+        "kind": "wall",
+        "label": "Half Wall",
+        "x": 1048,
+        "yOffset": 50,
+        "w": 34,
+        "h": 58,
+        "hp": 24,
+        "cover": true
+      }
+    ],
+    "platformPlacements": [
+      {
+        "id": "low-platform",
+        "x": 420,
+        "yOffset": 76,
+        "w": 104,
+        "h": 12,
+        "label": "low cover platform"
+      },
+      {
+        "id": "high-platform",
+        "x": 708,
+        "yOffset": 122,
+        "w": 92,
+        "h": 12,
+        "label": "high dodge platform"
+      },
+      {
+        "id": "exit-platform",
+        "x": 986,
+        "yOffset": 88,
+        "w": 118,
+        "h": 12,
+        "label": "exit platform"
+      }
+    ]
+  },
+  "pacingRules": [
+    "Use player-led rightward camera advancement instead of constant auto-scroll so players can read threats before committing.",
+    "Keep a short backward allowance on screen, but never rewind world progress once the camera has advanced.",
+    "Keep 0–4 enemies on screen; prefer fewer enemies with stronger tells over spam.",
+    "Reduce enemy movement speed and rate of fire so crouch/cover/jump decisions matter.",
+    "Enemy melee counters should lag player melee by roughly 1–2 seconds after a readable tell.",
+    "Use destructible cover, explosive props, platforms, and ground gaps to create tactical decisions.",
+    "Scroll resumes only after staged enemies, mini-bosses, or bosses are cleared."
+  ],
+  "enemyAiFairness": {
+    "maxActiveAttackers": 2,
+    "minTelegraphFrames": 24,
+    "recoveryFramesAfterAttack": 20,
+    "readableTellRule": "Every damaging action must spend telegraph frames on-screen before collision or projectile release.",
+    "roleCapRule": "Prefer fewer active attackers with stronger tells; staged rooms should not dogpile more than two simultaneous attacks."
+  },
+  "hudWidgets": [
+    "health",
+    "score",
+    "timer",
+    "power-ups",
+    "weapon",
+    "stage",
+    "status"
+  ],
+  "nextBalanceQuestions": [
+    "Does rightward pressure advance the room quickly enough without feeling like auto-scroll?",
+    "Can a new player identify safe crouch-cover positions before the first enemy shot?",
+    "Are enemy tell frames visible for melee and ranged attacks before damage lands?",
+    "Do explosive barrels solve crowd pressure without trivializing waves?",
+    "Can the player exit back to Lester’s Arcade from pause or game-over without confusion?"
+  ]
+}

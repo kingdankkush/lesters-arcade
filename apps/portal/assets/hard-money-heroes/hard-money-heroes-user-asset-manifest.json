@@ -1,0 +1,1960 @@
+{
+  "id": "hard-money-heroes-user-assets-v1",
+  "sourceDir": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets",
+  "frameSize": [
+    128,
+    128
+  ],
+  "referencePngCount": 134,
+  "characters": {
+    "lester": {
+      "animations": {
+        "idle": {
+          "selectedFrom": "Lester-idle.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-00.png",
+              "source": "Lester-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-01.png",
+              "source": "Lester-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-02.png",
+              "source": "Lester-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-03.png",
+              "source": "Lester-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-04.png",
+              "source": "Lester-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-05.png",
+              "source": "Lester-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-06.png",
+              "source": "Lester-idle (3).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/idle/lester-idle-07.png",
+              "source": "Lester-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "walk": {
+          "selectedFrom": "Lester-walk.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-00.png",
+              "source": "Lester-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-01.png",
+              "source": "Lester-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-02.png",
+              "source": "Lester-walk (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-03.png",
+              "source": "Lester-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-04.png",
+              "source": "Lester-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-05.png",
+              "source": "Lester-walk (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-06.png",
+              "source": "Lester-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/walk/lester-walk-07.png",
+              "source": "Lester-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "run": {
+          "selectedFrom": "Lester-run-v1.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-00.png",
+              "source": "Lester-run-v1.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-01.png",
+              "source": "Lester-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-02.png",
+              "source": "Lester-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-03.png",
+              "source": "Lester-run-v1.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-04.png",
+              "source": "Lester-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-05.png",
+              "source": "Lester-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-06.png",
+              "source": "Lester-run-v1.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/run/lester-run-07.png",
+              "source": "Lester-run.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "jump": {
+          "selectedFrom": "Lester-jump.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-00.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-01.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-02.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-03.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-04.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-05.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-06.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/jump/lester-jump-07.png",
+              "source": "Lester-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "attack": {
+          "selectedFrom": "Lester-attack.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-00.png",
+              "source": "Lester-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-01.png",
+              "source": "Lester-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-02.png",
+              "source": "Lester-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-03.png",
+              "source": "Lester-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-04.png",
+              "source": "Lester-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-05.png",
+              "source": "Lester-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-06.png",
+              "source": "Lester-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lester/attack/lester-attack-07.png",
+              "source": "Lester-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        }
+      },
+      "stills": {
+        "machineGunFacing": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-machineGunFacing.png",
+          "source": "Lester-Facing-Machine-Gun.png",
+          "bytes": 1241756
+        },
+        "machineGunRight": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-machineGunRight.png",
+          "source": "Lester-RightSide-Machine-Gun.png",
+          "bytes": 1092774
+        },
+        "machineGunLeft": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-machineGunLeft.png",
+          "source": "Lester-LeftSide-Machine-Gun.png",
+          "bytes": 1304536
+        },
+        "knifeFacing": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-knifeFacing.png",
+          "source": "Lester-Facing-Melee-Knife.png",
+          "bytes": 1332664
+        },
+        "knifeRight": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-knifeRight.png",
+          "source": "Lester-RightSide-Melee-Knife.png",
+          "bytes": 1322441
+        },
+        "grenadeFacing": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-grenadeFacing.png",
+          "source": "Lester-Facing-Grenade.png",
+          "bytes": 1168616
+        },
+        "grenadeRight": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-grenadeRight.png",
+          "source": "Lester-RightSide-Grenade.png",
+          "bytes": 1152134
+        },
+        "grenadeLeft": {
+          "src": "./assets/hard-money-heroes/stills/lester/lester-grenadeLeft.png",
+          "source": "Lester-LeftSide-Grenade.png",
+          "bytes": 1289043
+        }
+      }
+    },
+    "lilly": {
+      "animations": {
+        "idle": {
+          "selectedFrom": "Lilly-idle.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-00.png",
+              "source": "Lilly-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-01.png",
+              "source": "Lilly-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-02.png",
+              "source": "Lilly-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-03.png",
+              "source": "Lilly-idle (3).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-04.png",
+              "source": "Lilly-idle (4).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-05.png",
+              "source": "Lilly-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-06.png",
+              "source": "Lilly-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/idle/lilly-idle-07.png",
+              "source": "Lilly-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "walk": {
+          "selectedFrom": "Lilly-walk.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-00.png",
+              "source": "Lilly-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-01.png",
+              "source": "Lilly-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-02.png",
+              "source": "Lilly-walk (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-03.png",
+              "source": "Lilly-walk (3).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-04.png",
+              "source": "Lilly-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-05.png",
+              "source": "Lilly-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-06.png",
+              "source": "Lilly-walk (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/walk/lilly-walk-07.png",
+              "source": "Lilly-walk (3).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "run": {
+          "selectedFrom": "Lilly-run.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-00.png",
+              "source": "Lilly-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-01.png",
+              "source": "Lilly-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-02.png",
+              "source": "Lilly-run (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-03.png",
+              "source": "Lilly-run (3).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-04.png",
+              "source": "Lilly-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-05.png",
+              "source": "Lilly-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-06.png",
+              "source": "Lilly-run (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/run/lilly-run-07.png",
+              "source": "Lilly-run (3).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "jump": {
+          "selectedFrom": "Lilly-jump.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-00.png",
+              "source": "Lilly-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-01.png",
+              "source": "Lilly-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-02.png",
+              "source": "Lilly-jump (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-03.png",
+              "source": "Lilly-jump (3).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-04.png",
+              "source": "Lilly-jump (4).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-05.png",
+              "source": "Lilly-jump (5).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-06.png",
+              "source": "Lilly-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/jump/lilly-jump-07.png",
+              "source": "Lilly-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "attack": {
+          "selectedFrom": "Lilly-attack.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-00.png",
+              "source": "Lilly-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-01.png",
+              "source": "Lilly-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-02.png",
+              "source": "Lilly-attack (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-03.png",
+              "source": "Lilly-attack (3).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-04.png",
+              "source": "Lilly-attack (4).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-05.png",
+              "source": "Lilly-attack (5).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-06.png",
+              "source": "Lilly-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/lilly/attack/lilly-attack-07.png",
+              "source": "Lilly-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        }
+      },
+      "stills": {
+        "machineGunFacing": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-machineGunFacing.png",
+          "source": "Lilly-Facing-MachineGun.png",
+          "bytes": 1578291
+        },
+        "machineGunRight": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-machineGunRight.png",
+          "source": "Lilly-RightSide-MachineGun.png",
+          "bytes": 1523225
+        },
+        "machineGunLeft": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-machineGunLeft.png",
+          "source": "Lilly-LeftSide-MachineGun.png",
+          "bytes": 1657233
+        },
+        "knifeFacing": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-knifeFacing.png",
+          "source": "Lilly-Facing-Melee-Knife.png",
+          "bytes": 1176852
+        },
+        "knifeRight": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-knifeRight.png",
+          "source": "Lilly-RightSide-Melee-Knife.png",
+          "bytes": 1428655
+        },
+        "knifeLeft": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-knifeLeft.png",
+          "source": "Lilly-LeftSide-Melee-Knife.png",
+          "bytes": 1401221
+        },
+        "grenadeFacing": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-grenadeFacing.png",
+          "source": "Lilly-Facing-Grenade.png",
+          "bytes": 1182293
+        },
+        "grenadeRight": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-grenadeRight.png",
+          "source": "Lilly-RightSide-Grenade.png",
+          "bytes": 1127482
+        },
+        "grenadeLeft": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-grenadeLeft.png",
+          "source": "Lilly-LeftSide-Grenade.png",
+          "bytes": 1616396
+        },
+        "pistolFacing": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-pistolFacing.png",
+          "source": "Lilly-Facing-Pistol.png",
+          "bytes": 1171835
+        },
+        "shotgunFacing": {
+          "src": "./assets/hard-money-heroes/stills/lilly/lilly-shotgunFacing.png",
+          "source": "Lilly-Facing-Shotgun.png",
+          "bytes": 1510597
+        }
+      }
+    }
+  },
+  "enemies": {
+    "trench-degen": {
+      "animations": {
+        "idle": {
+          "selectedFrom": "Trench Degen-idle.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-00.png",
+              "source": "Trench Degen-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-01.png",
+              "source": "Trench Degen-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-02.png",
+              "source": "Trench Degen-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-03.png",
+              "source": "Trench Degen-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-04.png",
+              "source": "Trench Degen-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-05.png",
+              "source": "Trench Degen-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-06.png",
+              "source": "Trench Degen-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/idle/trench-degen-idle-07.png",
+              "source": "Trench Degen-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "walk": {
+          "selectedFrom": "Trench Degen-walk.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-00.png",
+              "source": "Trench Degen-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-01.png",
+              "source": "Trench Degen-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-02.png",
+              "source": "Trench Degen-walk (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-03.png",
+              "source": "Trench Degen-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-04.png",
+              "source": "Trench Degen-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-05.png",
+              "source": "Trench Degen-walk (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-06.png",
+              "source": "Trench Degen-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/walk/trench-degen-walk-07.png",
+              "source": "Trench Degen-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "run": {
+          "selectedFrom": "Trench Degen-run.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-00.png",
+              "source": "Trench Degen-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-01.png",
+              "source": "Trench Degen-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-02.png",
+              "source": "Trench Degen-run (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-03.png",
+              "source": "Trench Degen-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-04.png",
+              "source": "Trench Degen-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-05.png",
+              "source": "Trench Degen-run (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-06.png",
+              "source": "Trench Degen-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/run/trench-degen-run-07.png",
+              "source": "Trench Degen-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "jump": {
+          "selectedFrom": "Trench Degen-jump.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-00.png",
+              "source": "Trench Degen-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-01.png",
+              "source": "Trench Degen-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-02.png",
+              "source": "Trench Degen-jump (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-03.png",
+              "source": "Trench Degen-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-04.png",
+              "source": "Trench Degen-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-05.png",
+              "source": "Trench Degen-jump (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-06.png",
+              "source": "Trench Degen-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/jump/trench-degen-jump-07.png",
+              "source": "Trench Degen-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "attack": {
+          "selectedFrom": "Trench Degen-attack.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-00.png",
+              "source": "Trench Degen-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-01.png",
+              "source": "Trench Degen-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-02.png",
+              "source": "Trench Degen-attack (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-03.png",
+              "source": "Trench Degen-attack (3).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-04.png",
+              "source": "Trench Degen-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-05.png",
+              "source": "Trench Degen-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-06.png",
+              "source": "Trench Degen-attack (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/trench-degen/attack/trench-degen-attack-07.png",
+              "source": "Trench Degen-attack (3).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        }
+      },
+      "stills": [
+        {
+          "src": "./assets/hard-money-heroes/stills/trench-degen/trench-degen-00.png",
+          "source": "Enemy-Facing-Trench-Degen.png",
+          "bytes": 1743252
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/trench-degen/trench-degen-01.png",
+          "source": "Enemy-LeftSide-Trench-Degen.png",
+          "bytes": 1732323
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/trench-degen/trench-degen-02.png",
+          "source": "Enemy-RightSide-Trench-Degen.png",
+          "bytes": 1611570
+        }
+      ]
+    },
+    "evil-banker": {
+      "animations": {
+        "idle": {
+          "selectedFrom": "Evil Banker-idle.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-00.png",
+              "source": "Evil Banker-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-01.png",
+              "source": "Evil Banker-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-02.png",
+              "source": "Evil Banker-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-03.png",
+              "source": "Evil Banker-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-04.png",
+              "source": "Evil Banker-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-05.png",
+              "source": "Evil Banker-idle (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-06.png",
+              "source": "Evil Banker-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/idle/evil-banker-idle-07.png",
+              "source": "Evil Banker-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "walk": {
+          "selectedFrom": "Evil Banker-walk.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-00.png",
+              "source": "Evil Banker-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-01.png",
+              "source": "Evil Banker-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-02.png",
+              "source": "Evil Banker-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-03.png",
+              "source": "Evil Banker-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-04.png",
+              "source": "Evil Banker-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-05.png",
+              "source": "Evil Banker-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-06.png",
+              "source": "Evil Banker-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/walk/evil-banker-walk-07.png",
+              "source": "Evil Banker-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "run": {
+          "selectedFrom": "Evil Banker-run.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-00.png",
+              "source": "Evil Banker-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-01.png",
+              "source": "Evil Banker-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-02.png",
+              "source": "Evil Banker-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-03.png",
+              "source": "Evil Banker-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-04.png",
+              "source": "Evil Banker-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-05.png",
+              "source": "Evil Banker-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-06.png",
+              "source": "Evil Banker-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/run/evil-banker-run-07.png",
+              "source": "Evil Banker-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "jump": {
+          "selectedFrom": "Evil Banker-jump.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-00.png",
+              "source": "Evil Banker-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-01.png",
+              "source": "Evil Banker-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-02.png",
+              "source": "Evil Banker-jump (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-03.png",
+              "source": "Evil Banker-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-04.png",
+              "source": "Evil Banker-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-05.png",
+              "source": "Evil Banker-jump (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-06.png",
+              "source": "Evil Banker-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/jump/evil-banker-jump-07.png",
+              "source": "Evil Banker-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "attack": {
+          "selectedFrom": "Evil Banker-attack.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-00.png",
+              "source": "Evil Banker-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-01.png",
+              "source": "Evil Banker-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-02.png",
+              "source": "Evil Banker-attack (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-03.png",
+              "source": "Evil Banker-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-04.png",
+              "source": "Evil Banker-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-05.png",
+              "source": "Evil Banker-attack (2).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-06.png",
+              "source": "Evil Banker-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/evil-banker/attack/evil-banker-attack-07.png",
+              "source": "Evil Banker-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        }
+      },
+      "stills": [
+        {
+          "src": "./assets/hard-money-heroes/stills/evil-banker/evil-banker-00.png",
+          "source": "Enemy-Facing-EvilBanker.png",
+          "bytes": 1262994
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/evil-banker/evil-banker-01.png",
+          "source": "Enemy-LeftSide-EvilBanker.png",
+          "bytes": 1302781
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/evil-banker/evil-banker-02.png",
+          "source": "Enemy-RightSide-EvilBanker.png",
+          "bytes": 1142044
+        }
+      ]
+    },
+    "warren-spear-rider": {
+      "animations": {
+        "idle": {
+          "selectedFrom": "Evil Boss-idle.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-00.png",
+              "source": "Evil Boss-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-01.png",
+              "source": "Evil Boss-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-02.png",
+              "source": "Evil Boss-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-03.png",
+              "source": "Evil Boss-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-04.png",
+              "source": "Evil Boss-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-05.png",
+              "source": "Evil Boss-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-06.png",
+              "source": "Evil Boss-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-07.png",
+              "source": "Evil Boss-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "walk": {
+          "selectedFrom": "Evil Boss-walk.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-00.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-01.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-02.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-03.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-04.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-05.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-06.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-07.png",
+              "source": "Evil Boss-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "run": {
+          "selectedFrom": "Evil Boss-run.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-00.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-01.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-02.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-03.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-04.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-05.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-06.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-07.png",
+              "source": "Evil Boss-run.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "jump": {
+          "selectedFrom": "Evil Boss-jump.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-00.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-01.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-02.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-03.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-04.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-05.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-06.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-07.png",
+              "source": "Evil Boss-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "attack": {
+          "selectedFrom": "Evil Boss-attack.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-00.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-01.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-02.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-03.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-04.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-05.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-06.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/attack/warren-spear-rider-attack-07.png",
+              "source": "Evil Boss-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        }
+      },
+      "stills": [
+        {
+          "src": "./assets/hard-money-heroes/stills/warren-spear-rider/warren-spear-rider-00.png",
+          "source": "Enemy-Boss-WarrenIndian-Facing.png",
+          "bytes": 1882499
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/warren-spear-rider/warren-spear-rider-01.png",
+          "source": "Enemy-Boss-WarrenIndian-LeftSide.png",
+          "bytes": 2022101
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/warren-spear-rider/warren-spear-rider-02.png",
+          "source": "Enemy-Boss-WarrenIndian-RightSide.png",
+          "bytes": 2033182
+        }
+      ]
+    }
+  },
+  "screens": {
+    "splash": {
+      "src": "./assets/hard-money-heroes/screens/boot-splash.png",
+      "source": "Hard-Money-Heroes-KeyArt.png",
+      "bytes": 2802404
+    },
+    "mainMenu": {
+      "src": "./assets/hard-money-heroes/screens/main-menu.png",
+      "source": "Hard-Money-Heroes-KeyArt-GameMenu.png",
+      "bytes": 2718247
+    },
+    "options": {
+      "src": "./assets/hard-money-heroes/screens/options.png",
+      "source": "Hard-Money-Heroes-KeyArt-GameOptions.png",
+      "bytes": 2786379
+    },
+    "modeSelect": {
+      "src": "./assets/hard-money-heroes/screens/mode-select.png",
+      "source": "Hard-Money-Heroes-KeyArt-StartScreen.png",
+      "bytes": 2942959
+    }
+  },
+  "musicTracks": [
+    {
+      "id": "getting-lit-vocals",
+      "title": "Lester and Lilly Rap - Getting Lit (Vocals)",
+      "src": "./assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
+      "source": "Lester and Lilly Rap - Getting Lit (Vocals).mp3",
+      "bytes": 3236543
+    },
+    {
+      "id": "going-to-the-moon",
+      "title": "LitVM Going To The Moon",
+      "src": "./assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
+      "source": "LitVM Going To The Moon (New 2).mp3",
+      "bytes": 4106147
+    },
+    {
+      "id": "testnet-teaser",
+      "title": "LitVM TestNet Teaser",
+      "src": "./assets/audio/music/litvm-testnet-teaser.mp3",
+      "source": "LitVM TestNet Teaser.mp3",
+      "bytes": 1481997
+    },
+    {
+      "id": "rise-to-the-occasion",
+      "title": "Rise to the Occasion",
+      "src": "./assets/audio/music/rise-to-the-occasion.mp3",
+      "source": "Rise to the Occasion.mp3",
+      "bytes": 5704877
+    }
+  ]
+}
