@@ -1,11 +1,11 @@
 {
   "id": "hard-money-heroes-user-assets-v1",
-  "sourceDir": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets",
+  "sourceDir": "user-provided Hard Money Heroes art assets (source path redacted)",
   "frameSize": [
     128,
     128
   ],
-  "referencePngCount": 134,
+  "referencePngCount": 311,
   "characters": {
     "lester": {
       "animations": {
@@ -395,6 +395,79 @@
           "src": "./assets/hard-money-heroes/stills/lester/lester-grenadeLeft.png",
           "source": "Lester-LeftSide-Grenade.png",
           "bytes": 1289043
+        }
+      },
+      "weaponAnimations": {
+        "knife": {
+          "stabAnimation": {
+            "selectedFrom": "Lester-stab.png",
+            "frames": [
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-00.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              },
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-01.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              },
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-02.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              },
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-03.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              },
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-04.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              },
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-05.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              },
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-06.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              },
+              {
+                "src": "./assets/hard-money-heroes/frames/lester/stab/lester-stab-07.png",
+                "source": "Lester-stab.png",
+                "size": [
+                  128,
+                  128
+                ]
+              }
+            ]
+          }
         }
       }
     },
@@ -802,7 +875,8 @@
           "source": "Lilly-Facing-Shotgun.png",
           "bytes": 1510597
         }
-      }
+      },
+      "weaponAnimations": {}
     }
   },
   "enemies": {
@@ -1541,11 +1615,11 @@
     "warren-spear-rider": {
       "animations": {
         "idle": {
-          "selectedFrom": "Evil Boss-idle.png",
+          "selectedFrom": "Evil Boss-idle-extra.png",
           "frames": [
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-00.png",
-              "source": "Evil Boss-idle.png",
+              "source": "Evil Boss-idle-extra.png",
               "size": [
                 128,
                 128
@@ -1553,14 +1627,6 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-01.png",
-              "source": "Evil Boss-idle (1).png",
-              "size": [
-                128,
-                128
-              ]
-            },
-            {
-              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-02.png",
               "source": "Evil Boss-idle.png",
               "size": [
                 128,
@@ -1568,8 +1634,16 @@
               ]
             },
             {
-              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-03.png",
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-02.png",
               "source": "Evil Boss-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-03.png",
+              "source": "Evil Boss-idle-extra.png",
               "size": [
                 128,
                 128
@@ -1593,7 +1667,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-06.png",
-              "source": "Evil Boss-idle.png",
+              "source": "Evil Boss-idle-extra.png",
               "size": [
                 128,
                 128
@@ -1601,7 +1675,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/idle/warren-spear-rider-idle-07.png",
-              "source": "Evil Boss-idle (1).png",
+              "source": "Evil Boss-idle.png",
               "size": [
                 128,
                 128
@@ -1610,11 +1684,11 @@
           ]
         },
         "walk": {
-          "selectedFrom": "Evil Boss-walk.png",
+          "selectedFrom": "Evil Boss-walk-extra.png",
           "frames": [
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-00.png",
-              "source": "Evil Boss-walk.png",
+              "source": "Evil Boss-walk-extra.png",
               "size": [
                 128,
                 128
@@ -1630,7 +1704,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-02.png",
-              "source": "Evil Boss-walk.png",
+              "source": "Evil Boss-walk-extra.png",
               "size": [
                 128,
                 128
@@ -1646,7 +1720,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-04.png",
-              "source": "Evil Boss-walk.png",
+              "source": "Evil Boss-walk-extra.png",
               "size": [
                 128,
                 128
@@ -1662,7 +1736,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/walk/warren-spear-rider-walk-06.png",
-              "source": "Evil Boss-walk.png",
+              "source": "Evil Boss-walk-extra.png",
               "size": [
                 128,
                 128
@@ -1679,11 +1753,11 @@
           ]
         },
         "run": {
-          "selectedFrom": "Evil Boss-run.png",
+          "selectedFrom": "Evil Boss-run-extra.png",
           "frames": [
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-00.png",
-              "source": "Evil Boss-run.png",
+              "source": "Evil Boss-run-extra.png",
               "size": [
                 128,
                 128
@@ -1699,7 +1773,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-02.png",
-              "source": "Evil Boss-run.png",
+              "source": "Evil Boss-run-extra.png",
               "size": [
                 128,
                 128
@@ -1715,7 +1789,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-04.png",
-              "source": "Evil Boss-run.png",
+              "source": "Evil Boss-run-extra.png",
               "size": [
                 128,
                 128
@@ -1731,7 +1805,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/run/warren-spear-rider-run-06.png",
-              "source": "Evil Boss-run.png",
+              "source": "Evil Boss-run-extra.png",
               "size": [
                 128,
                 128
@@ -1748,11 +1822,11 @@
           ]
         },
         "jump": {
-          "selectedFrom": "Evil Boss-jump.png",
+          "selectedFrom": "Evil Boss-jump-extra.png",
           "frames": [
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-00.png",
-              "source": "Evil Boss-jump.png",
+              "source": "Evil Boss-jump-extra.png",
               "size": [
                 128,
                 128
@@ -1768,7 +1842,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-02.png",
-              "source": "Evil Boss-jump.png",
+              "source": "Evil Boss-jump-extra.png",
               "size": [
                 128,
                 128
@@ -1784,7 +1858,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-04.png",
-              "source": "Evil Boss-jump.png",
+              "source": "Evil Boss-jump-extra.png",
               "size": [
                 128,
                 128
@@ -1800,7 +1874,7 @@
             },
             {
               "src": "./assets/hard-money-heroes/frames/warren-spear-rider/jump/warren-spear-rider-jump-06.png",
-              "source": "Evil Boss-jump.png",
+              "source": "Evil Boss-jump-extra.png",
               "size": [
                 128,
                 128
@@ -1901,6 +1975,739 @@
           "src": "./assets/hard-money-heroes/stills/warren-spear-rider/warren-spear-rider-02.png",
           "source": "Enemy-Boss-WarrenIndian-RightSide.png",
           "bytes": 2033182
+        }
+      ],
+      "extraFramesIngested": true
+    },
+    "crypto-bro": {
+      "animations": {
+        "idle": {
+          "selectedFrom": "Crypto Bro-idle.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-00.png",
+              "source": "Crypto Bro-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-01.png",
+              "source": "Crypto Bro-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-02.png",
+              "source": "Crypto Bro-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-03.png",
+              "source": "Crypto Bro-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-04.png",
+              "source": "Crypto Bro-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-05.png",
+              "source": "Crypto Bro-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-06.png",
+              "source": "Crypto Bro-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/idle/crypto-bro-idle-07.png",
+              "source": "Crypto Bro-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "walk": {
+          "selectedFrom": "Crypto Bro-walk.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-00.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-01.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-02.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-03.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-04.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-05.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-06.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/walk/crypto-bro-walk-07.png",
+              "source": "Crypto Bro-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "run": {
+          "selectedFrom": "Crypto Bro-run.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-00.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-01.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-02.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-03.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-04.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-05.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-06.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/run/crypto-bro-run-07.png",
+              "source": "Crypto Bro-run.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "jump": {
+          "selectedFrom": "Crypto Bro-jump.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-00.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-01.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-02.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-03.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-04.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-05.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-06.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/jump/crypto-bro-jump-07.png",
+              "source": "Crypto Bro-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "attack": {
+          "selectedFrom": "Crypto Bro-attack.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-00.png",
+              "source": "Crypto Bro-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-01.png",
+              "source": "Crypto Bro-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-02.png",
+              "source": "Crypto Bro-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-03.png",
+              "source": "Crypto Bro-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-04.png",
+              "source": "Crypto Bro-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-05.png",
+              "source": "Crypto Bro-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-06.png",
+              "source": "Crypto Bro-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/crypto-bro/attack/crypto-bro-attack-07.png",
+              "source": "Crypto Bro-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        }
+      },
+      "stills": [
+        {
+          "src": "./assets/hard-money-heroes/stills/crypto-bro/crypto-bro-00.png",
+          "source": "CryptoBroKOL-Facing.png",
+          "bytes": 1720101
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/crypto-bro/crypto-bro-01.png",
+          "source": "CryptoBroKOL-LeftProfile.png",
+          "bytes": 1516138
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/crypto-bro/crypto-bro-02.png",
+          "source": "CryptoBroKOL-Facing-CharacterSheet.png",
+          "bytes": 1750673
+        }
+      ]
+    },
+    "gas-beast": {
+      "animations": {
+        "idle": {
+          "selectedFrom": "Gas Beast-idle.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-00.png",
+              "source": "Gas Beast-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-01.png",
+              "source": "Gas Beast-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-02.png",
+              "source": "Gas Beast-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-03.png",
+              "source": "Gas Beast-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-04.png",
+              "source": "Gas Beast-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-05.png",
+              "source": "Gas Beast-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-06.png",
+              "source": "Gas Beast-idle.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/idle/gas-beast-idle-07.png",
+              "source": "Gas Beast-idle (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "walk": {
+          "selectedFrom": "Gas Beast-walk.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-00.png",
+              "source": "Gas Beast-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-01.png",
+              "source": "Gas Beast-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-02.png",
+              "source": "Gas Beast-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-03.png",
+              "source": "Gas Beast-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-04.png",
+              "source": "Gas Beast-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-05.png",
+              "source": "Gas Beast-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-06.png",
+              "source": "Gas Beast-walk.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/walk/gas-beast-walk-07.png",
+              "source": "Gas Beast-walk (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "run": {
+          "selectedFrom": "Gas Beast-run.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-00.png",
+              "source": "Gas Beast-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-01.png",
+              "source": "Gas Beast-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-02.png",
+              "source": "Gas Beast-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-03.png",
+              "source": "Gas Beast-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-04.png",
+              "source": "Gas Beast-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-05.png",
+              "source": "Gas Beast-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-06.png",
+              "source": "Gas Beast-run.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/run/gas-beast-run-07.png",
+              "source": "Gas Beast-run (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "jump": {
+          "selectedFrom": "Gas Beast-jump.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-00.png",
+              "source": "Gas Beast-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-01.png",
+              "source": "Gas Beast-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-02.png",
+              "source": "Gas Beast-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-03.png",
+              "source": "Gas Beast-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-04.png",
+              "source": "Gas Beast-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-05.png",
+              "source": "Gas Beast-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-06.png",
+              "source": "Gas Beast-jump.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/jump/gas-beast-jump-07.png",
+              "source": "Gas Beast-jump (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        },
+        "attack": {
+          "selectedFrom": "Gas Beast-attack.png",
+          "frames": [
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-00.png",
+              "source": "Gas Beast-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-01.png",
+              "source": "Gas Beast-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-02.png",
+              "source": "Gas Beast-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-03.png",
+              "source": "Gas Beast-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-04.png",
+              "source": "Gas Beast-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-05.png",
+              "source": "Gas Beast-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-06.png",
+              "source": "Gas Beast-attack.png",
+              "size": [
+                128,
+                128
+              ]
+            },
+            {
+              "src": "./assets/hard-money-heroes/frames/gas-beast/attack/gas-beast-attack-07.png",
+              "source": "Gas Beast-attack (1).png",
+              "size": [
+                128,
+                128
+              ]
+            }
+          ]
+        }
+      },
+      "stills": [
+        {
+          "src": "./assets/hard-money-heroes/stills/gas-beast/gas-beast-00.png",
+          "source": "Eth-Gas-Beast-Facing.png",
+          "bytes": 1964413
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/gas-beast/gas-beast-01.png",
+          "source": "Eth-Gas-Beast-LeftProfile.png",
+          "bytes": 1950901
+        },
+        {
+          "src": "./assets/hard-money-heroes/stills/gas-beast/gas-beast-02.png",
+          "source": "Eth-Gas-Beast-CharacterSheet.png",
+          "bytes": 1659180
         }
       ]
     }

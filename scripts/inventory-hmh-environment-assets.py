@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Inventory Justin-provided Hard Money Heroes Level 1 environment assets.
+"""Inventory user-provided Hard Money Heroes Level 1 environment assets.
 
 The source drop uses timestamped filenames, so this script creates repeatable
 metadata plus visual contact sheets before the deterministic ingest step assigns
@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,7 +17,9 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SOURCE_DIR = Path(r"C:/Users/just_/Desktop/My Stuff/Lester's Arcade/Hard Money Heroes/Art Assets/Level Environment Assets")
+SOURCE_DIR_ENV = "HMH_ENVIRONMENT_SOURCE_DIR"
+SOURCE_DIR = Path(os.environ[SOURCE_DIR_ENV]) if os.environ.get(SOURCE_DIR_ENV) else None
+SOURCE_DIR_LABEL = "user-provided Hard Money Heroes Level 1 environment art assets (source path redacted)"
 DOC_DIR = REPO_ROOT / "docs" / "game-design"
 CONTACT_DIR = DOC_DIR / "hmh-environment-contact-sheets"
 INVENTORY_JSON = DOC_DIR / "hard-money-heroes-environment-asset-inventory.json"
@@ -149,7 +152,7 @@ def inspect_asset(index: int, path: Path) -> AssetMetrics:
             id=slug_for(index, path),
             index=index,
             filename=path.name,
-            sourcePath=str(path),
+            sourcePath=f"source path redacted/{path.name}",
             width=width,
             height=height,
             mode=image.mode,
@@ -229,7 +232,7 @@ def write_markdown(metrics: list[AssetMetrics], sheet_paths: list[str]) -> None:
     lines = [
         "# Hard Money Heroes Level Environment Asset Inventory",
         "",
-        f"Source: `{SOURCE_DIR}`",
+        f"Source: `{SOURCE_DIR_LABEL}`",
         f"Assets inventoried: **{len(metrics)}** PNGs",
         "",
         "## Contact sheets",
@@ -257,6 +260,8 @@ def write_markdown(metrics: list[AssetMetrics], sheet_paths: list[str]) -> None:
 
 
 def main() -> None:
+    if SOURCE_DIR is None:
+        raise FileNotFoundError(f"Set {SOURCE_DIR_ENV} to the Hard Money Heroes Level 1 environment source folder before running this inventory script.")
     if not SOURCE_DIR.exists():
         raise FileNotFoundError(f"Environment source folder not found: {SOURCE_DIR}")
     paths = sorted(SOURCE_DIR.glob("*.png"), key=sort_key)
@@ -266,7 +271,7 @@ def main() -> None:
     sheet_paths = draw_contact_sheet(paths, metrics)
     payload = {
         "id": "hard-money-heroes-environment-inventory-v1",
-        "sourceDir": str(SOURCE_DIR),
+        "sourceDir": SOURCE_DIR_LABEL,
         "assetCount": len(metrics),
         "contactSheets": [str(Path(path).relative_to(REPO_ROOT).as_posix()) for path in sheet_paths],
         "assets": [meta.__dict__ for meta in metrics],

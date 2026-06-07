@@ -1,5 +1,7 @@
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../assets/generated/hmh-hd-sprite-atlas.mjs';
 import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
+import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
+import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 
 export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
 
@@ -98,8 +100,8 @@ export const HARD_MONEY_HEROES_CANON = Object.freeze({
     legalFlag: 'before launch, get explicit written brand sign-off for Litecoin name/logo/Ł usage, Litecoin City, Lester mascot, and pay-to-play monetization',
   }),
   spriteReferences: Object.freeze([
-    Object.freeze({ file: 'C:/Users/just_/Downloads/Lester-Sprites-01.png', purpose: 'provided Lester reference for future production sprite pass' }),
-    Object.freeze({ file: 'C:/Users/just_/Downloads/Lester-Sprites-02.png', purpose: 'provided Lester reference for future production sprite pass' }),
+    Object.freeze({ file: './assets/hard-money-heroes/reference/Lester/Lester-Sprites-01.png', purpose: 'repo-local Lester reference for future production sprite pass' }),
+    Object.freeze({ file: './assets/hard-money-heroes/reference/Lester/Lester-Sprites-02.png', purpose: 'repo-local Lester reference for future production sprite pass' }),
   ]),
 });
 
@@ -291,11 +293,12 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
 
 export const LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP = Object.freeze({
   name: "Lester's Arcade public player loop",
-  playerPromise: 'A player should understand the wallet/profile gate, pick Hard Money Heroes, choose Free or Ranked, and begin Level 1 in under 30 seconds.',
+  playerPromise: 'A player should understand the wallet/profile gate, pick Hard Money Heroes, watch or skip the intro splash, choose Free or Ranked, and begin Level 1 in under 45 seconds.',
   stageOrder: Object.freeze([
     'wallet-splash',
     'arcade-entry',
     'cabinet-select',
+    'game-intro-splash',
     'mode-select',
     'level-intro',
     'gameplay',
@@ -418,10 +421,10 @@ export const LESTER_ARCADE_WORKFLOW_AUTOMATION = Object.freeze({
 export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   layout: 'full-screen-arcade-app',
   productionDomain: 'lestersarcade.io',
-  principle: 'Most prototype/debug/network/codex material is hidden behind menus; the default player experience is login → animated arcade entry → cabinet select → mode select → Level 1 intro → play/profile/leaderboards/settings.',
-  initialFlow: Object.freeze(['wallet-login', 'profile-activation', 'cabinet-select', 'game-menu', 'run-or-leaderboards']),
-  publicFlow: Object.freeze(['connect-wallet', 'select-game', 'choose-mode', 'begin-level', 'play']),
-  officialFlow: Object.freeze(['wallet-splash', 'arcade-walk-in', 'cabinet-select', 'mode-select', 'level-one-intro', 'begin-level']),
+  principle: 'Most prototype/debug/network/codex material is hidden behind menus; the default player experience is login → animated arcade entry → cabinet select → Hard Money Heroes intro splash → mode select → Level 1 intro → play/profile/leaderboards/settings.',
+  initialFlow: Object.freeze(['wallet-login', 'profile-activation', 'cabinet-select', 'game-intro-splash', 'game-menu', 'run-or-leaderboards']),
+  publicFlow: Object.freeze(['connect-wallet', 'select-game', 'watch-or-skip-intro', 'choose-mode', 'begin-level', 'play']),
+  officialFlow: Object.freeze(['wallet-splash', 'arcade-walk-in', 'cabinet-select', 'hard-money-heroes-intro', 'mode-select', 'level-one-intro', 'begin-level']),
   hiddenByDefault: Object.freeze(['build-stack-panels', 'network-rails', 'debug-codex', 'generated-gallery', 'prototype-test-buttons', 'developer-backstage']),
   primaryNav: Object.freeze([
     Object.freeze({ id: 'cabinets', label: 'Play', purpose: 'Select Hard Money Heroes and start playing.' }),
@@ -435,13 +438,28 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
     Object.freeze({ id: 'settings', label: 'Settings', purpose: 'Controls, audio, accessibility, network status, and sign-out.' }),
   ]),
   cabinets: Object.freeze([
-    Object.freeze({ id: 'hard-money-heroes', gameId: 'lester-blaster', title: 'Hard Money Heroes', status: 'playable', playable: true, description: 'The first playable Lester arcade cabinet: tactical run-and-gun score survival on LitVM LiteForge.' }),
+    Object.freeze({
+      id: 'hard-money-heroes',
+      gameId: 'lester-blaster',
+      title: 'Hard Money Heroes',
+      status: 'playable',
+      playable: true,
+      description: 'The first playable Lester arcade cabinet: tactical run-and-gun score survival on LitVM LiteForge.',
+      desktopCabinetSprite: HMH_CABINET_SPRITE_MANIFEST,
+    }),
     Object.freeze({ id: 'lilly-lightning', gameId: 'lilly-lightning', title: 'Lilly Lightning', status: 'coming-soon', playable: false, description: 'Future Lilly cabinet using the teal sprite direction.' }),
     Object.freeze({ id: 'mempool-mayhem', gameId: 'mempool-mayhem', title: 'Mempool Mayhem', status: 'coming-soon', playable: false, description: 'Future score-attack cabinet for wallet-profile expansion.' }),
   ]),
   modeSelect: Object.freeze({
-    free: Object.freeze({ label: 'Free Mode', official: false, copy: 'Practice locally with no official leaderboard, achievement, progress, or transaction writes.' }),
-    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked testnet runs require a small amount of zkLTC for now. Get testnet zkLTC from the LitVM LiteForge faucet; it has no real value.' }),
+    free: Object.freeze({ label: 'Free Mode', official: false, copy: 'Practice locally with no official leaderboard, achievement, progress, or transaction writes. The parent Lester’s Arcade wallet profile is already active.' }),
+    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked testnet runs use the already-active Lester’s Arcade profile and require a small amount of zkLTC for now. Get testnet zkLTC from the LitVM LiteForge faucet; it has no real value.' }),
+  }),
+  gameIntro: Object.freeze({
+    id: 'hard-money-heroes-intro-splash',
+    videoSrc: './assets/video/hard-money-heroes-intro.mp4',
+    transition: 'fade-to-black-then-mode-select',
+    skipAllowed: true,
+    targetStep: 'mode-select',
   }),
   levelIntro: Object.freeze({
     levelId: 'level-1-underchain',
@@ -595,6 +613,27 @@ export const LESTER_BLASTER_HUD_OVERLAY_MODEL = Object.freeze({
   ]),
 });
 
+export const LESTER_BLASTER_DEV_BALANCE_OVERLAY = Object.freeze({
+  enabledByDefault: false,
+  publicUiDefault: 'hidden',
+  queryParam: 'hmhDebug',
+  queryValue: 'balance',
+  keyboardToggle: 'F10',
+  purpose: 'Developer-only tactical readability overlay for camera bounds, player lanes, arena locks, enemy AI tells, and cover/prop placement.',
+  layers: Object.freeze([
+    Object.freeze({ id: 'camera-bounds', label: 'Camera Bounds', color: '#19f7ff' }),
+    Object.freeze({ id: 'player-lanes', label: 'Player Lanes', color: '#45ff8a' }),
+    Object.freeze({ id: 'arena-locks', label: 'Arena Locks', color: '#ffe84d' }),
+    Object.freeze({ id: 'enemy-ai', label: 'Enemy AI', color: '#ff5c7a' }),
+    Object.freeze({ id: 'cover-props', label: 'Cover + Props', color: '#b76cff' }),
+  ]),
+  safeguards: Object.freeze([
+    'Never enable by default in the public player flow.',
+    'Expose only runtime tuning data; do not include wallet, score-submission, or private player data.',
+    'Use hmhDebug=balance or F10 in local/dev smoke only.',
+  ]),
+});
+
 export const LESTER_BLASTER_ART_REDO_BRIEF = Object.freeze({
   priority: 'Redo production character art before polishing enemy sheets; Lester must match Justin-provided references more closely.',
   referenceAssets: Object.freeze([
@@ -607,6 +646,100 @@ export const LESTER_BLASTER_ART_REDO_BRIEF = Object.freeze({
   enemySpriteUpgrade: Object.freeze(['idle', 'walk-or-fly', 'attack-tell', 'attack', 'melee-counter', 'hit', 'death', 'optional-gore-overlay']),
   aiSpriteToolingCandidates: Object.freeze(['manual pixel cleanup from reference sheets', 'Aseprite/LibreSprite slicing and animation validation', 'image-generation reference-to-sprite pass only after license/consistency review']),
 });
+
+export const LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS = Object.freeze({
+  placeholderPolicy: 'briefs-only-no-shipping-placeholder-sprites',
+  heroPriorityStates: Object.freeze(['crouch', 'hurt', 'death', 'victory', 'fall', 'shoot', 'melee', 'throw']),
+  enemyPriorityStates: Object.freeze(['attack-tell', 'hit', 'death', 'melee-counter', 'optional-gore-overlay']),
+  defaultFrameCounts: Object.freeze({
+    hero: Object.freeze({ crouch: 6, hurt: 6, death: 10, victory: 8, fall: 6, shoot: 8, melee: 8, throw: 8 }),
+    enemy: Object.freeze({ 'attack-tell': 6, 'melee-counter': 8, hit: 4, death: 8, 'optional-gore-overlay': 4 }),
+  }),
+  sheetRequirements: Object.freeze([
+    '128x128 transparent PNG frames or an Aseprite-exported sheet with JSON frame tags.',
+    'Frame names must match manifest states exactly before runtime integration.',
+    'Use silhouette-first readability: crouch, hurt, death, and attack-tell must read at canvas scale.',
+    'No generated placeholder sprites should be shipped as production art; create briefs, then ingest approved art drops.',
+  ]),
+  approvalNeeded: Object.freeze(['final character likeness/style sign-off', 'gore/optional overlay level', 'enemy faction visual escalation', 'audio pack licensing before production import']),
+});
+
+export const LESTER_ARCADE_MUSIC_LIBRARY = Object.freeze({
+  id: LESTER_ARCADE_PLAYLIST_MANIFEST.id,
+  title: LESTER_ARCADE_PLAYLIST_MANIFEST.title,
+  tracks: Object.freeze(LESTER_ARCADE_PLAYLIST_MANIFEST.tracks.map((track) => Object.freeze({ ...track }))),
+  defaultQueue: Object.freeze([...LESTER_ARCADE_PLAYLIST_MANIFEST.defaultQueue]),
+  gameQueues: Object.freeze(Object.fromEntries(
+    Object.entries(LESTER_ARCADE_PLAYLIST_MANIFEST.gameQueues).map(([key, queue]) => [key, Object.freeze([...queue])]),
+  )),
+  playerUi: Object.freeze({
+    position: 'global-overlay',
+    minimalByDefault: true,
+    expandable: true,
+    controls: Object.freeze(['previous', 'play-pause', 'mute', 'next', 'expand']),
+    purpose: 'Parent Lester\'s Arcade music player shared by cabinets so games can use arcade-level queues instead of owning separate background music.',
+  }),
+});
+
+function formatArcadeMusicTime(seconds = 0) {
+  const safeSeconds = Math.max(0, Number.isFinite(seconds) ? seconds : 0);
+  const rounded = Math.floor(safeSeconds);
+  return `${Math.floor(rounded / 60)}:${String(rounded % 60).padStart(2, '0')}`;
+}
+
+function arcadeMusicTrackById(trackId) {
+  return LESTER_ARCADE_MUSIC_LIBRARY.tracks.find((track) => track.id === trackId) ?? LESTER_ARCADE_MUSIC_LIBRARY.tracks[0] ?? null;
+}
+
+export function buildArcadeMusicQueueForContext(context = 'arcade') {
+  const queueIds = LESTER_ARCADE_MUSIC_LIBRARY.gameQueues[context]
+    ?? LESTER_ARCADE_MUSIC_LIBRARY.gameQueues[String(context).replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)]
+    ?? LESTER_ARCADE_MUSIC_LIBRARY.defaultQueue;
+  const tracks = queueIds.map(arcadeMusicTrackById).filter(Boolean);
+  return tracks.length ? tracks : [...LESTER_ARCADE_MUSIC_LIBRARY.tracks];
+}
+
+export function buildArcadeMusicPlayerModel({
+  context = 'arcade',
+  currentTrackId = null,
+  currentTimeSeconds = 0,
+  playing = false,
+  muted = false,
+  expanded = false,
+} = {}) {
+  const queue = buildArcadeMusicQueueForContext(context);
+  const currentTrack = queue.find((track) => track.id === currentTrackId) ?? queue[0] ?? null;
+  const durationSeconds = currentTrack?.durationSeconds ?? 0;
+  const safeTime = Math.min(Math.max(0, currentTimeSeconds), durationSeconds || currentTimeSeconds || 0);
+  const percent = durationSeconds > 0 ? Math.max(0, Math.min(100, (safeTime / durationSeconds) * 100)) : 0;
+  return Object.freeze({
+    context,
+    title: currentTrack?.title ?? 'Lester\'s Arcade Playlist',
+    trackId: currentTrack?.id ?? null,
+    src: currentTrack?.src ?? '',
+    durationSeconds,
+    durationLabel: currentTrack?.durationLabel ?? '0:00',
+    playing,
+    muted,
+    expanded,
+    queue: Object.freeze(queue.map((track) => Object.freeze({ id: track.id, title: track.title, durationLabel: track.durationLabel, src: track.src }))),
+    progress: Object.freeze({
+      currentSeconds: safeTime,
+      currentLabel: formatArcadeMusicTime(safeTime),
+      durationSeconds,
+      durationLabel: currentTrack?.durationLabel ?? '0:00',
+      percent,
+      label: `${formatArcadeMusicTime(safeTime)} / ${currentTrack?.durationLabel ?? '0:00'}`,
+    }),
+    controls: Object.freeze([
+      Object.freeze({ id: 'previous', label: 'Previous song', compactLabel: '⏮' }),
+      Object.freeze({ id: 'play-pause', label: playing ? 'Pause music' : 'Play music', compactLabel: playing ? '⏸' : '▶' }),
+      Object.freeze({ id: 'mute', label: muted ? 'Unmute music' : 'Mute music', compactLabel: muted ? '🔇' : '🔊' }),
+      Object.freeze({ id: 'next', label: 'Next song', compactLabel: '⏭' }),
+      Object.freeze({ id: 'expand', label: expanded ? 'Collapse playlist controls' : 'Expand playlist controls', compactLabel: expanded ? '▴' : '▾' }),
+    ]),
+  });
+}
 
 export const LESTER_BLASTER_AUDIO_ASSET_PLAN = Object.freeze({
   prototypeMusic: Object.freeze([
@@ -626,12 +759,17 @@ const hardMoneyFrameRange = (actor, state, count = 8) => Object.freeze(Array.fro
   size: HARD_MONEY_FRAME_SIZE,
 })));
 
+const hardMoneyAnimationState = (actor, state, selectedFrom, count = 8) => Object.freeze({
+  selectedFrom,
+  frames: hardMoneyFrameRange(actor, state, count),
+});
+
 const hardMoneyAnimationSet = (actor, sourcePrefix) => Object.freeze({
-  idle: Object.freeze({ selectedFrom: `${sourcePrefix}-idle.png`, frames: hardMoneyFrameRange(actor, 'idle') }),
-  walk: Object.freeze({ selectedFrom: `${sourcePrefix}-walk.png`, frames: hardMoneyFrameRange(actor, 'walk') }),
-  run: Object.freeze({ selectedFrom: `${sourcePrefix}-run.png`, frames: hardMoneyFrameRange(actor, 'run') }),
-  jump: Object.freeze({ selectedFrom: `${sourcePrefix}-jump.png`, frames: hardMoneyFrameRange(actor, 'jump') }),
-  attack: Object.freeze({ selectedFrom: `${sourcePrefix}-attack.png`, frames: hardMoneyFrameRange(actor, 'attack') }),
+  idle: hardMoneyAnimationState(actor, 'idle', `${sourcePrefix}-idle.png`),
+  walk: hardMoneyAnimationState(actor, 'walk', `${sourcePrefix}-walk.png`),
+  run: hardMoneyAnimationState(actor, 'run', `${sourcePrefix}-run.png`),
+  jump: hardMoneyAnimationState(actor, 'jump', `${sourcePrefix}-jump.png`),
+  attack: hardMoneyAnimationState(actor, 'attack', `${sourcePrefix}-attack.png`),
 });
 
 const hardMoneyEnemyArt = (actor, sourcePrefix) => Object.freeze({
@@ -646,7 +784,11 @@ const hardMoneyEnemyArt = (actor, sourcePrefix) => Object.freeze({
 const lesterCharacterAssetManifest = Object.freeze({
   weapons: Object.freeze({
     machineGun: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lester/lester-machineGunRight.png' }),
-    knife: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lester/lester-knifeRight.png' }),
+    knife: Object.freeze({
+      available: true,
+      selectedFrom: './assets/hard-money-heroes/stills/lester/lester-knifeRight.png',
+      stabAnimation: hardMoneyAnimationState('lester', 'stab', 'Lester-stab.png'),
+    }),
     grenade: Object.freeze({ available: true, selectedFrom: './assets/hard-money-heroes/stills/lester/lester-grenadeRight.png' }),
     pistol: Object.freeze({ available: true, preservedFromPreviousPass: true, selectedFrom: './assets/generated/sliced/lester-shoot.png' }),
     shotgun: Object.freeze({ available: true, preservedFromPreviousPass: true, selectedFrom: './assets/lester-production/stills/lester-right-side-shotgun.png' }),
@@ -681,7 +823,7 @@ const lillyCharacterAssetManifest = Object.freeze({
 
 export const HARD_MONEY_HEROES_ASSET_MANIFEST = Object.freeze({
   id: 'hard-money-heroes-justin-assets-v1',
-  generatedFrom: 'C:/Users/just_/Desktop/My Stuff/Lester\'s Arcade/Hard Money Heroes/Art Assets ingested by scripts/ingest-hard-money-heroes-user-assets.py',
+  generatedFrom: 'user-provided Hard Money Heroes art assets ingested by scripts/ingest-hard-money-heroes-user-assets.py',
   runtimeManifest: './assets/hard-money-heroes/hard-money-heroes-user-asset-manifest.json',
   playableCharacters: Object.freeze({
     lester: lesterCharacterAssetManifest,
@@ -704,7 +846,20 @@ export const HARD_MONEY_HEROES_ASSET_MANIFEST = Object.freeze({
       id: 'warren-spear-rider',
       title: 'Warren Spear Rider',
       art: hardMoneyEnemyArt('warren-spear-rider', 'Evil Boss'),
+      extraFramesIngested: true,
       behavior: Object.freeze({ primary: 'mounted-spear-pressure', spearThrowAccuracy: 0.6, dodgeRequired: true, moveSpeed: 0.52, meleeRange: 86, throwCooldownFrames: 185, tellFrames: 46 }),
+    }),
+    cryptoBro: Object.freeze({
+      id: 'crypto-bro',
+      title: 'Crypto Bro',
+      art: hardMoneyEnemyArt('crypto-bro', 'Crypto Bro'),
+      behavior: Object.freeze({ primary: 'kol-ranged-taunt', secondary: 'jumping-knife-dodge-pressure', moveSpeed: 1.04, tellFrames: 30, rangedChance: 0.38, tauntCooldownFrames: 150 }),
+    }),
+    gasBeast: Object.freeze({
+      id: 'gas-beast',
+      title: 'Gas Beast',
+      art: hardMoneyEnemyArt('gas-beast', 'Gas Beast'),
+      behavior: Object.freeze({ primary: 'slow-gas-cloud-bruiser', secondary: 'area-denial-tax-pulse', moveSpeed: 0.68, tellFrames: 42, hazardRadius: 72, armor: 'medium' }),
     }),
   }),
   screens: Object.freeze({
@@ -725,7 +880,7 @@ export const HARD_MONEY_HEROES_ASSET_MANIFEST = Object.freeze({
       melee: Object.freeze(['knife-swipe', 'knife-hit-spark']),
       damageTypes: Object.freeze(['bullet-hit', 'blade-hit', 'grenade-blast', 'spear-stab', 'spear-throw-dodge-window', 'briefcase-smack']),
       powerUps: Object.freeze(['health-pickup', 'shield-pulse', 'ammo-restock', 'score-multiplier-chime']),
-      enemyBarks: Object.freeze(['trench-degen-grunt', 'evil-banker-charge', 'warren-spear-rider-horse']),
+      enemyBarks: Object.freeze(['trench-degen-grunt', 'evil-banker-charge', 'warren-spear-rider-horse', 'crypto-bro-taunt', 'gas-beast-growl']),
     }),
   }),
 });
@@ -808,7 +963,7 @@ export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
     personality: 'stubborn, brave, goofy-gritty arcade tough guy; says little, solves scams with steel and gunfire',
     spriteSheet: './assets/sprite-lester-commando.svg',
     portraitAsset: './assets/sprite-lester-commando.svg',
-    referenceImages: Object.freeze(['C:/Users/just_/Downloads/Lester-Sprites-01.png', 'C:/Users/just_/Downloads/Lester-Sprites-02.png']),
+    referenceImages: Object.freeze(['./assets/hard-money-heroes/reference/Lester/Lester-Sprites-01.png', './assets/hard-money-heroes/reference/Lester/Lester-Sprites-02.png']),
     unlock: 'starter',
     stats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
     artDirection: 'high-detail 16-bit/Neo-Geo chunky commando silhouette, clean Litecoin blue/silver hero accents, optional rain/cyberpunk grime, readable blade arc and muzzle flashes.',
@@ -1058,6 +1213,8 @@ export const LESTER_BLASTER_ENEMY_CATALOG = Object.freeze([
   Object.freeze({ id: 'fud-goblin', title: 'FUD Goblin', class: 'grunt', baseHealth: 7, damage: 7, speed: 1.8, score: 80, spawnAfterSeconds: 0, aiArchetype: 'swarm-shambler', animationStates: Object.freeze(['shamble', 'lob-sell', 'hit', 'red-candle-pop']), attackPatterns: Object.freeze(['slow-sell-arc', 'swarm-body-block']), deathEffect: 'puff of red candle smoke + always-on silver impact sparks', tells: 'mouth opens with SELL bubble wind-up' }),
   Object.freeze({ id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 35, aiArchetype: 'hover-taxer', animationStates: Object.freeze(['float', 'tax-pulse', 'tar-drop', 'hit', 'pop']), attackPatterns: Object.freeze(['resource-tax', 'sticky-tar-puddle']), deathEffect: 'orange flame pop + pump handle fragments', tells: 'gas-pump body glows before taxing' }),
   Object.freeze({ id: 'paper-hand', title: 'Paper Hands', class: 'panic-melee', baseHealth: 12, damage: 9, speed: 2.0, score: 120, spawnAfterSeconds: 0, aiArchetype: 'panic-charge-flee', animationStates: Object.freeze(['tremble', 'panic-charge', 'wild-swing', 'flee', 'crumple']), attackPatterns: Object.freeze(['wild-melee', 'ally-collision-chaos']), deathEffect: 'white paper confetti + optional red flecks if gore enabled', tells: 'crumpled hands shake before charge' }),
+  Object.freeze({ id: 'crypto-bro', title: 'Crypto Bro', class: 'kol-ranged-grunt', baseHealth: 18, damage: 12, speed: 1.9, score: 210, spawnAfterSeconds: 55, aiArchetype: 'taunt-strafe-shooter', enemyKey: 'cryptoBro', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack', 'hit']), attackPatterns: Object.freeze(['phone-taunt-shot', 'jump-back-flex', 'close-knife-panic']), deathEffect: 'shattered phone pixels + green candle confetti', tells: 'phone screen flashes before the shot/taunt' }),
+  Object.freeze({ id: 'gas-beast', title: 'Gas Beast', class: 'armored-bruiser', baseHealth: 32, damage: 16, speed: 0.95, score: 340, spawnAfterSeconds: 115, aiArchetype: 'gas-cloud-area-denial', enemyKey: 'gasBeast', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack', 'hit']), attackPatterns: Object.freeze(['gas-tax-pulse', 'slow-claw-swipe', 'short-hop-body-check']), deathEffect: 'orange/blue gas burst + ETH fee shards', tells: 'chest vents glow orange before gas pulse' }),
   Object.freeze({ id: 'sybil-drone', title: 'Bot Swarm (Sybil Drones)', class: 'formation-flyer', baseHealth: 9, damage: 10, speed: 2.4, score: 150, spawnAfterSeconds: 80, aiArchetype: 'parent-drone-formation', animationStates: Object.freeze(['hover', 'sync-strafe', 'laser-ping', 'scatter', 'explode']), attackPatterns: Object.freeze(['formation-laser-ping', 'parent-drone-scatter']), deathEffect: 'cyan electric shards + wallet-address pixels', tells: 'blank wallet face flashes red target dot' }),
   Object.freeze({ id: 'rug-rat', title: 'Rug Rat', class: 'disruptor', baseHealth: 8, damage: 7, speed: 3.3, score: 130, spawnAfterSeconds: 70, aiArchetype: 'platform-yanker', animationStates: Object.freeze(['scurry', 'rug-drag', 'floor-yank', 'hit', 'escape']), attackPatterns: Object.freeze(['platform-yank', 'low-dash-knockback']), deathEffect: 'torn carpet scraps + red dust puff', tells: 'tiny rolled rug lifts before dash' }),
   Object.freeze({ id: 'honeypot-turret', title: 'Honeypot Turret', class: 'stationary-trap', baseHealth: 18, damage: 13, speed: 0, score: 220, spawnAfterSeconds: 90, aiArchetype: 'loot-bait-trap', animationStates: Object.freeze(['fake-loot', 'snap-open', 'clamp-fire', 'hit', 'shatter']), attackPatterns: Object.freeze(['short-range-spread', 'clamp-burst']), deathEffect: 'golden hex shards + blue reveal sparks', tells: 'too-perfect loot glow pulses twice' }),
@@ -1779,6 +1936,82 @@ export function buildCombatOptionsMenuModel({
   });
 }
 
+export function buildTacticalBalanceDebugOverlayModel({
+  debugEnabled = false,
+  playerX = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX,
+  scroll = 0,
+  furthestScroll = 0,
+  stagePhase = 'travel',
+  scrollLocked = false,
+  stageTravel = 0,
+  stageTravelGoal = 1,
+  enemies = [],
+  props = [],
+  camera = LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
+} = {}) {
+  const safeEnemies = Array.isArray(enemies) ? enemies : [];
+  const safeProps = Array.isArray(props) ? props : [];
+  const enemyItems = safeEnemies.map((enemy, index) => {
+    const role = enemy.role ?? enemy.kind ?? enemy.type ?? 'enemy';
+    const state = enemy.state ?? enemy.aiState ?? enemy.phase ?? 'seek';
+    const timer = Number.isFinite(enemy.attackTimer) ? ` timer ${Math.round(enemy.attackTimer)}` : '';
+    const x = Number.isFinite(enemy.x) ? ` @${Math.round(enemy.x)}px` : '';
+    return `${index + 1}. ${role} ${state}${x}${timer}`;
+  });
+  const coverCount = safeProps.filter((prop) => prop.cover || prop.kind === 'crate' || prop.kind === 'wall').length;
+  const explosiveCount = safeProps.filter((prop) => prop.explosive || prop.kind === 'barrel').length;
+  const telegraphing = safeEnemies.filter((enemy) => /tell|telegraph|windup/i.test(String(enemy.state ?? enemy.aiState ?? enemy.phase ?? ''))).length;
+  const safeStageGoal = Math.max(1, Math.round(Number(stageTravelGoal) || 1));
+  const safeStageTravel = Math.max(0, Math.round(Number(stageTravel) || 0));
+  const layerItems = Object.freeze({
+    'camera-bounds': Object.freeze([
+      `${camera.mode} // scroll ${Math.round(Number(scroll) || 0)}px`,
+      `furthest ${Math.round(Number(furthestScroll) || 0)}px // backtrack ${camera.backwardAllowancePixels}px`,
+      `lead ${camera.cameraLeadStartX}px // player cap ${camera.playerMaxScreenX}px`,
+    ]),
+    'player-lanes': Object.freeze([
+      `player x ${Math.round(Number(playerX) || camera.playerStartScreenX)}px`,
+      `min ${camera.playerMinScreenX}px // floor ${camera.backtrackFloorScreenX}px`,
+      `engagement cap ${camera.engagementPlayerMaxScreenX}px`,
+    ]),
+    'arena-locks': Object.freeze([
+      `${stagePhase}${scrollLocked ? ' // LOCKED' : ' // open travel'}`,
+      `stage travel ${safeStageTravel}/${safeStageGoal}M`,
+      `arena width ${camera.engagementArenaWidthPixels}px`,
+    ]),
+    'enemy-ai': Object.freeze(enemyItems.length ? enemyItems : ['no enemies active']),
+    'cover-props': Object.freeze([
+      `${coverCount} cover props`,
+      `${explosiveCount} explosive props`,
+      `${safeProps.length} total tactical props`,
+    ]),
+  });
+  const layers = Object.freeze(LESTER_BLASTER_DEV_BALANCE_OVERLAY.layers.map((layer) => Object.freeze({
+    ...clone(layer),
+    items: layerItems[layer.id] ?? Object.freeze([]),
+  })));
+
+  return Object.freeze({
+    enabled: Boolean(debugEnabled),
+    publicUiDefault: LESTER_BLASTER_DEV_BALANCE_OVERLAY.publicUiDefault,
+    queryParam: LESTER_BLASTER_DEV_BALANCE_OVERLAY.queryParam,
+    layers,
+    metrics: Object.freeze({
+      camera: Object.freeze({
+        mode: camera.mode,
+        scroll: Math.round(Number(scroll) || 0),
+        furthestScroll: Math.round(Number(furthestScroll) || 0),
+        backtrackLimit: `${camera.backwardAllowancePixels}px`,
+      }),
+      stage: Object.freeze({ phase: stagePhase, locked: Boolean(scrollLocked), progress: `${safeStageTravel}/${safeStageGoal}M` }),
+      player: Object.freeze({ x: Math.round(Number(playerX) || camera.playerStartScreenX), backtrackFloor: camera.backtrackFloorScreenX }),
+      enemies: Object.freeze({ count: safeEnemies.length, telegraphing }),
+      cover: Object.freeze({ coverCount, explosiveCount, propCount: safeProps.length }),
+    }),
+    safeguards: LESTER_BLASTER_DEV_BALANCE_OVERLAY.safeguards,
+  });
+}
+
 function availableAnimationStates(animationMap = {}) {
   return Object.entries(animationMap)
     .filter(([, animation]) => (animation?.frames?.length ?? 0) > 0)
@@ -1846,6 +2079,95 @@ export function buildHardMoneyHeroesAnimationCoverageReport(manifest = HARD_MONE
       'Prioritize crouch, hurt, death, fall, and victory loops for Lester/Lilly because current provided art covers core motion but relies on stills for weapon poses.',
       'Add enemy attack-tell, hit, death, and melee-counter frames so AI fairness reads visually instead of only through timers.',
       'Keep the manifest audit in CI so missing states become visible immediately after new art drops.',
+    ]),
+  });
+}
+
+export function buildHardMoneyHeroesAnimationProductionBriefs(coverage = buildHardMoneyHeroesAnimationCoverageReport()) {
+  const heroFrameCounts = LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.defaultFrameCounts.hero;
+  const enemyFrameCounts = LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.defaultFrameCounts.enemy;
+  const heroReadability = Object.freeze({
+    crouch: 'must visibly lower the hitbox behind cover and read at 128px canvas scale',
+    hurt: 'damage reaction must flash/tilt clearly so players understand they were hit',
+    death: 'defeat pose must read quickly without gore dependency',
+    victory: 'short celebration loop for level clear and arcade identity',
+    fall: 'falling silhouette must separate from jump for platform timing',
+    shoot: 'muzzle/recoil pose must point clearly to the right with chunky arcade timing',
+    melee: 'blade arc must communicate close-range risk/reward',
+    throw: 'throw anticipation and release should sync with projectile spawn',
+  });
+  const enemyPurpose = Object.freeze({
+    'attack-tell': 'telegraph danger before damage so enemy AI feels fair instead of random',
+    'melee-counter': 'show delayed counter timing after player closes distance',
+    hit: 'confirm player shots/melee connect before score/combo feedback',
+    death: 'clean removal/readability for kills, combo chains, and arena clear state',
+    'optional-gore-overlay': 'optional pre-run intensity layer only; keep base death readable without it',
+  });
+
+  const heroEntries = Object.fromEntries(Object.entries(coverage.characters ?? {}).map(([id, character]) => {
+    const priorityStates = LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.heroPriorityStates
+      .filter((state) => character.missingAnimatedStates?.includes(state));
+    const remainingStates = (character.missingAnimatedStates ?? []).filter((state) => !priorityStates.includes(state));
+    const requests = [...priorityStates, ...remainingStates].map((state, index) => Object.freeze({
+      id: `${id}-${state}`,
+      actorId: id,
+      actorType: 'hero',
+      state,
+      manifestState: state,
+      priority: index < priorityStates.length ? 'high' : 'normal',
+      frameCount: heroFrameCounts[state] ?? 6,
+      readabilityGoal: heroReadability[state] ?? 'match existing 128px side-scroller silhouette and action timing',
+      delivery: 'transparent PNG frames or Aseprite sheet tag ready for manifest ingestion',
+    }));
+    return [id, Object.freeze({
+      id,
+      title: id === 'lester' ? 'Lester' : id === 'lilly' ? 'Lilly' : id,
+      currentAnimatedStates: character.availableAnimatedStates,
+      stillCoveredStates: character.coveredByStillStates,
+      requests: Object.freeze(requests),
+    })];
+  }));
+
+  const enemyEntries = Object.fromEntries(Object.entries(coverage.enemies ?? {}).map(([key, enemy]) => {
+    const priorityStates = LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.enemyPriorityStates
+      .filter((state) => enemy.missingAnimatedStates?.includes(state));
+    const remainingStates = (enemy.missingAnimatedStates ?? []).filter((state) => !priorityStates.includes(state));
+    const requests = [...priorityStates, ...remainingStates].map((state, index) => Object.freeze({
+      id: `${enemy.id}-${state}`,
+      actorId: enemy.id,
+      actorKey: key,
+      actorType: 'enemy',
+      state,
+      manifestState: state,
+      priority: index < priorityStates.length ? 'high' : 'normal',
+      frameCount: enemyFrameCounts[state] ?? 6,
+      aiPurpose: enemyPurpose[state] ?? 'make enemy role readable before damage or removal',
+      behavior: clone(enemy.behavior ?? {}),
+      delivery: 'transparent PNG frames or Aseprite sheet tag ready for manifest ingestion',
+    }));
+    return [key, Object.freeze({
+      id: enemy.id,
+      title: enemy.title,
+      currentAnimatedStates: enemy.availableAnimatedStates,
+      requests: Object.freeze(requests),
+    })];
+  }));
+
+  const heroRequestCount = Object.values(heroEntries).reduce((total, hero) => total + hero.requests.length, 0);
+  const enemyRequestCount = Object.values(enemyEntries).reduce((total, enemy) => total + enemy.requests.length, 0);
+
+  return Object.freeze({
+    generatedFromManifest: coverage.manifestId,
+    placeholderPolicy: 'No placeholder production sprites are generated by this tool; it emits art-direction briefs and manifest requirements only.',
+    sheetRequirements: LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.sheetRequirements,
+    approvalNeeded: LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.approvalNeeded,
+    heroes: Object.freeze(heroEntries),
+    enemies: Object.freeze(enemyEntries),
+    summary: Object.freeze({ heroRequestCount, enemyRequestCount, totalRequestCount: heroRequestCount + enemyRequestCount }),
+    pipeline: Object.freeze([
+      Object.freeze({ command: 'npm run design:audit', purpose: 'regenerate missing animation coverage and action plan' }),
+      Object.freeze({ command: 'npm run assets:verify', purpose: 'verify manifests/frames after approved art ingestion' }),
+      Object.freeze({ command: 'npm test', purpose: 'keep animation coverage, fairness, and runtime contracts green' }),
     ]),
   });
 }

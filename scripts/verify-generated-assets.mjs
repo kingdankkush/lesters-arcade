@@ -5,6 +5,8 @@ import process from 'node:process';
 const root = process.cwd();
 const reportPath = path.resolve(root, 'apps/portal/assets/generated/sliced/asset-slice-report.json');
 const lesterManifestPath = path.resolve(root, 'apps/portal/assets/lester-production/lester-production-sprite-manifest.json');
+const cabinetManifestPath = path.resolve(root, 'apps/portal/assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.json');
+const playlistManifestPath = path.resolve(root, 'apps/portal/assets/audio/playlist/arcade-playlist-manifest.json');
 
 function fail(message) {
   throw new Error(`Generated asset verification failed: ${message}`);
@@ -136,6 +138,63 @@ function validateLesterProductionSprites() {
   return { productionFrameCount, stillCount: Object.keys(stills).length };
 }
 
-const lesterProduction = validateLesterProductionSprites();
+function resolvePortalAsset(src) {
+  return path.resolve(root, 'apps/portal', src.replace(/^\.\//, ''));
+}
 
-console.log(`Generated sliced asset verification passed: ${report.generatedCount} PNGs (${Object.entries(categoryCounts).map(([key, value]) => `${key}=${value}`).join(', ')}); production Lester=${lesterProduction.productionFrameCount} frames/${lesterProduction.stillCount} stills.`);
+function validateHardMoneyHeroesCabinetSprites() {
+  if (!existsSync(cabinetManifestPath)) {
+    fail(`missing Hard Money Heroes cabinet manifest ${path.relative(root, cabinetManifestPath)}`);
+  }
+  const manifest = readJson(cabinetManifestPath);
+  if (manifest.id !== 'hard-money-heroes-arcade-cabinet-rotation') fail('cabinet manifest has wrong id');
+  if (!existsSync(resolvePortalAsset(manifest.source))) fail(`missing cabinet source ${manifest.source}`);
+  if (!Array.isArray(manifest.frames) || manifest.frames.length !== 6) {
+    fail(`cabinet rotation expected 6 frames, got ${manifest.frames?.length ?? 0}`);
+  }
+  for (const frame of manifest.frames) {
+    const framePath = resolvePortalAsset(frame.src);
+    if (!existsSync(framePath)) fail(`missing cabinet rotation frame ${frame.src}`);
+    if (statSync(framePath).size <= 0) fail(`cabinet rotation frame ${frame.src} is empty`);
+    const [width, height] = readPngSize(framePath);
+    if (width !== frame.width || height !== frame.height) {
+      fail(`cabinet frame ${frame.src} dimensions ${width}x${height} do not match manifest ${frame.width}x${frame.height}`);
+    }
+    if (width !== manifest.canvas?.width || height !== manifest.canvas?.height) {
+      fail(`cabinet frame ${frame.src} should match shared canvas ${manifest.canvas?.width}x${manifest.canvas?.height}`);
+    }
+  }
+  return { frameCount: manifest.frames.length, loopDurationMs: manifest.loopDurationMs };
+}
+
+function validateArcadePlaylistMusic() {
+  if (!existsSync(playlistManifestPath)) {
+    fail(`missing arcade playlist manifest ${path.relative(root, playlistManifestPath)}`);
+  }
+  const manifest = readJson(playlistManifestPath);
+  if (manifest.id !== 'lesters-arcade-custom-mp3-playlist-v1') fail('arcade playlist manifest has wrong id');
+  if (!Array.isArray(manifest.tracks) || manifest.tracks.length !== 20) {
+    fail(`arcade playlist expected 20 tracks, got ${manifest.tracks?.length ?? 0}`);
+  }
+  const hmhQueue = manifest.gameQueues?.hardMoneyHeroes ?? [];
+  if (hmhQueue[0] !== 'hard-money-heroes-16-bit-arcade-music' || hmhQueue[1] !== 'hard-money-heroes-16-bit-arcade-music-alt') {
+    fail('Hard Money Heroes queue must start with the two Hard Money Heroes tracks');
+  }
+  let totalBytes = 0;
+  for (const track of manifest.tracks) {
+    if (!track.id || !track.title || !track.src?.endsWith('.mp3')) fail(`invalid playlist track entry ${JSON.stringify(track)}`);
+    if (typeof track.durationSeconds !== 'number' || track.durationSeconds <= 30) fail(`track ${track.id} has invalid duration`);
+    const trackPath = resolvePortalAsset(track.src);
+    if (!existsSync(trackPath)) fail(`missing playlist MP3 ${track.src}`);
+    const size = statSync(trackPath).size;
+    if (size <= 0) fail(`playlist MP3 ${track.src} is empty`);
+    totalBytes += size;
+  }
+  return { trackCount: manifest.tracks.length, totalBytes };
+}
+
+const lesterProduction = validateLesterProductionSprites();
+const hmhCabinet = validateHardMoneyHeroesCabinetSprites();
+const arcadePlaylist = validateArcadePlaylistMusic();
+
+console.log(`Generated sliced asset verification passed: ${report.generatedCount} PNGs (${Object.entries(categoryCounts).map(([key, value]) => `${key}=${value}`).join(', ')}); production Lester=${lesterProduction.productionFrameCount} frames/${lesterProduction.stillCount} stills; HMH cabinet=${hmhCabinet.frameCount} frames/${hmhCabinet.loopDurationMs}ms loop; arcade playlist=${arcadePlaylist.trackCount} MP3s/${Math.round(arcadePlaylist.totalBytes / 1024 / 1024)}MB.`);

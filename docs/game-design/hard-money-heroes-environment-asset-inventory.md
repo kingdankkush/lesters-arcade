@@ -1,6 +1,6 @@
 # Hard Money Heroes Level Environment Asset Inventory
 
-Source: `C:\Users\just_\Desktop\My Stuff\Lester's Arcade\Hard Money Heroes\Art Assets\Level Environment Assets`
+Source: `user-provided Hard Money Heroes Level 1 environment art assets (source path redacted)`
 Assets inventoried: **148** PNGs
 
 ## Contact sheets

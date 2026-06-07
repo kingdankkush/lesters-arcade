@@ -30,9 +30,12 @@ import {
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
   buildCombatOptionsMenuModel,
+  buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
   buildLoginMenuModel,
   buildOfficialRunStatusModel,
+  buildArcadeMusicPlayerModel,
+  buildArcadeMusicQueueForContext,
   buildPlayerArcadeSnapshot,
   buildUiQualityGuideModel,
   buildWalletConnectionModel,
@@ -60,6 +63,9 @@ const STAGE_COUNT = 13;
 const NORMAL_STAGE_CAP = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.normalEnemiesOnScreenRange[1];
 const MINI_BOSS_STAGE_CAP = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.miniBossEnemiesOnScreenRange[1];
 const DEFAULT_VIEWPORT_MODE = LESTER_BLASTER_TACTICAL_COMBAT_V2.viewportModes.default;
+const DEBUG_BALANCE_QUERY = 'hmhDebug=balance';
+const debugSearchParams = new URLSearchParams(window.location.search);
+let tacticalBalanceDebugEnabled = debugSearchParams.get('hmhDebug') === 'balance';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -120,6 +126,7 @@ function buildCharacterArtFromManifest(characterId) {
       run: loadManifestFrames(character.animations?.run),
       jump: loadManifestFrames(character.animations?.jump),
       attack: loadManifestFrames(character.animations?.attack),
+      knifeStab: loadManifestFrames(weaponAssets.knife?.stabAnimation),
     },
     stills: {
       machineGun: loadManifestImage(weaponAssets.machineGun?.selectedFrom, character.stills?.rightSide),
@@ -161,65 +168,235 @@ function buildEnemyArtFromManifest(enemyKey) {
 function hardMoneyHeroScreenStyle(screenId) {
   const screen = HARD_MONEY_HEROES_ASSET_MANIFEST.screens[screenId];
   if (!screen?.src) return '';
-  return `linear-gradient(120deg, rgba(4, 11, 26, 0.84), rgba(8, 6, 22, 0.48)), url("${screen.src}")`;
+  return `linear-gradient(120deg, rgba(4, 11, 26, 0.86), rgba(8, 6, 22, 0.5)), url("${screen.src}")`;
+}
+
+function hardMoneyHeroScreenBackgroundProfile(screenId) {
+  const safeDefaults = {
+    backgroundSize: 'cover, contain',
+    backgroundPosition: 'center, center top',
+    backgroundRepeat: 'no-repeat, no-repeat',
+    backgroundColor: '#030617',
+  };
+  const profiles = {
+    splash: { ...safeDefaults, backgroundPosition: 'center, center top' },
+    mainMenu: { ...safeDefaults, backgroundPosition: 'center, center 2%' },
+    modeSelect: { ...safeDefaults, backgroundPosition: 'center, center top' },
+    options: { ...safeDefaults, backgroundPosition: 'center, center top' },
+  };
+  return profiles[screenId] ?? safeDefaults;
 }
 
 function applyHardMoneyHeroScreenBackground(node, screenId) {
   if (!node) return;
+  const profile = hardMoneyHeroScreenBackgroundProfile(screenId);
   node.style.backgroundImage = hardMoneyHeroScreenStyle(screenId);
-  node.style.backgroundSize = 'cover';
-  node.style.backgroundPosition = 'center';
+  node.style.backgroundSize = profile.backgroundSize;
+  node.style.backgroundPosition = profile.backgroundPosition;
+  node.style.backgroundRepeat = profile.backgroundRepeat;
+  node.style.backgroundColor = profile.backgroundColor;
 }
 
-const combatAudio = {
-  musicTracks: (HARD_MONEY_HEROES_ASSET_MANIFEST.audio.musicTracks ?? [])
-    .map((track) => {
-      const audio = typeof Audio === 'function' ? new Audio(track.src) : null;
-      if (audio) {
-        audio.loop = true;
-        audio.preload = 'auto';
-        audio.volume = 0.34;
-      }
-      return { ...track, audio };
-    }),
+const arcadeMusic = {
+  context: 'arcade',
+  queue: buildArcadeMusicQueueForContext('arcade'),
   currentTrackIndex: 0,
   unlocked: false,
+  playing: false,
+  muted: false,
+  expanded: false,
+  renderQueued: false,
+};
+
+const combatAudio = {
   sfxEnabled: true,
   audioContext: null,
   lastSfxAt: new Map(),
 };
 
-function currentMusicTrack() {
-  return combatAudio.musicTracks[combatAudio.currentTrackIndex % Math.max(1, combatAudio.musicTracks.length)];
+function currentArcadeMusicTrack() {
+  if (!arcadeMusic.queue.length) return null;
+  return arcadeMusic.queue[arcadeMusic.currentTrackIndex % arcadeMusic.queue.length] ?? arcadeMusic.queue[0];
 }
 
-async function ensureCombatMusic(reason = 'menu') {
-  combatAudio.unlocked = true;
-  if (!combat.musicEnabled) return false;
-  const track = currentMusicTrack();
-  if (!track?.audio) return false;
-  for (const other of combatAudio.musicTracks) {
-    if (other.audio && other.audio !== track.audio) other.audio.pause();
+function arcadeMusicAudio() {
+  return dom.arcadeMusicAudio ?? null;
+}
+
+function loadArcadeMusicTrack(track = currentArcadeMusicTrack()) {
+  const audio = arcadeMusicAudio();
+  if (!audio || !track) return null;
+  if (audio.dataset.trackId !== track.id) {
+    audio.pause();
+    audio.src = track.src;
+    audio.dataset.trackId = track.id;
+    audio.preload = 'metadata';
+    audio.load();
   }
-  track.audio.volume = reason === 'game-over' ? 0.18 : reason === 'gameplay' ? 0.38 : 0.28;
+  audio.loop = false;
+  audio.muted = arcadeMusic.muted;
+  return audio;
+}
+
+function renderArcadeMusicPlayer() {
+  if (!dom.arcadeMusicPlayer) return;
+  const track = currentArcadeMusicTrack();
+  const audio = arcadeMusicAudio();
+  if (audio && track && audio.dataset.trackId !== track.id) loadArcadeMusicTrack(track);
+  const isCurrentAudio = audio?.dataset.trackId === track?.id;
+  const currentTimeSeconds = isCurrentAudio ? audio.currentTime : 0;
+  const playing = Boolean(audio && !audio.paused && !audio.ended);
+  arcadeMusic.playing = playing;
+  const model = buildArcadeMusicPlayerModel({
+    context: arcadeMusic.context,
+    currentTrackId: track?.id,
+    currentTimeSeconds,
+    playing,
+    muted: arcadeMusic.muted,
+    expanded: arcadeMusic.expanded,
+  });
+  dom.arcadeMusicPlayer.dataset.expanded = String(model.expanded);
+  dom.arcadeMusicPlayer.dataset.playing = String(model.playing);
+  dom.arcadeMusicPlayer.dataset.muted = String(model.muted);
+  dom.arcadeMusicPlayer.dataset.context = model.context;
+  if (dom.arcadeMusicTitle) dom.arcadeMusicTitle.textContent = model.title;
+  if (dom.arcadeMusicTime) dom.arcadeMusicTime.textContent = model.progress.label;
+  if (dom.arcadeMusicDuration) dom.arcadeMusicDuration.textContent = model.durationLabel;
+  if (dom.arcadeMusicProgressFill) dom.arcadeMusicProgressFill.style.width = `${model.progress.percent.toFixed(1)}%`;
+  if (dom.arcadeMusicPlayButton) {
+    dom.arcadeMusicPlayButton.textContent = model.playing ? '⏸' : '▶';
+    dom.arcadeMusicPlayButton.setAttribute('aria-label', model.playing ? 'Pause arcade music' : 'Play arcade music');
+  }
+  if (dom.arcadeMusicMuteButton) {
+    dom.arcadeMusicMuteButton.textContent = model.muted ? '🔇' : '🔊';
+    dom.arcadeMusicMuteButton.setAttribute('aria-label', model.muted ? 'Unmute arcade music' : 'Mute arcade music');
+  }
+  if (dom.arcadeMusicExpandButton) {
+    dom.arcadeMusicExpandButton.textContent = model.expanded ? '▴' : '▾';
+    dom.arcadeMusicExpandButton.setAttribute('aria-label', model.expanded ? 'Collapse arcade music player' : 'Expand arcade music player');
+  }
+  if (dom.arcadeMusicQueueList) {
+    dom.arcadeMusicQueueList.replaceChildren(...model.queue.slice(0, 8).map((queueTrack, index) => {
+      const item = el('li', { className: queueTrack.id === model.trackId ? 'active' : '' });
+      item.textContent = `${index + 1}. ${queueTrack.title} // ${queueTrack.durationLabel}`;
+      return item;
+    }));
+  }
+}
+
+function scheduleArcadeMusicRender() {
+  if (arcadeMusic.renderQueued) return;
+  arcadeMusic.renderQueued = true;
+  requestAnimationFrame(() => {
+    arcadeMusic.renderQueued = false;
+    renderArcadeMusicPlayer();
+  });
+}
+
+async function ensureArcadeMusicPlayer(reason = 'menu', autoplay = false) {
+  const audio = loadArcadeMusicTrack();
+  if (!audio) {
+    renderArcadeMusicPlayer();
+    return false;
+  }
+  audio.volume = reason === 'game-over' ? 0.18 : reason === 'gameplay' ? 0.38 : 0.26;
+  audio.muted = arcadeMusic.muted;
+  if (!autoplay) {
+    renderArcadeMusicPlayer();
+    return false;
+  }
+  arcadeMusic.unlocked = true;
   try {
-    await track.audio.play();
+    await audio.play();
+    arcadeMusic.playing = true;
+    renderArcadeMusicPlayer();
     return true;
   } catch {
+    arcadeMusic.playing = false;
+    renderArcadeMusicPlayer();
     return false;
   }
 }
 
+function setArcadeMusicContext(context = 'arcade', { reset = false } = {}) {
+  const previousTrackId = currentArcadeMusicTrack()?.id;
+  arcadeMusic.context = context;
+  arcadeMusic.queue = buildArcadeMusicQueueForContext(context);
+  const existingIndex = arcadeMusic.queue.findIndex((track) => track.id === previousTrackId);
+  arcadeMusic.currentTrackIndex = reset || existingIndex < 0 ? 0 : existingIndex;
+  loadArcadeMusicTrack();
+  renderArcadeMusicPlayer();
+}
+
+async function startArcadeMusicForGame(gameId = 'hard-money-heroes') {
+  setArcadeMusicContext(gameId, { reset: true });
+  combat.musicEnabled = !arcadeMusic.muted;
+  return ensureArcadeMusicPlayer('gameplay', combat.musicEnabled);
+}
+
+async function ensureCombatMusic(reason = 'menu') {
+  return ensureArcadeMusicPlayer(reason, combat.musicEnabled && (arcadeMusic.playing || reason === 'gameplay' || reason === 'game-over'));
+}
+
+function pauseArcadeMusic() {
+  const audio = arcadeMusicAudio();
+  audio?.pause();
+  arcadeMusic.playing = false;
+  renderArcadeMusicPlayer();
+}
+
 function pauseCombatMusic() {
-  for (const track of combatAudio.musicTracks) track.audio?.pause();
+  pauseArcadeMusic();
+}
+
+async function toggleArcadeMusicPlay() {
+  const audio = loadArcadeMusicTrack();
+  if (!audio) return false;
+  if (!audio.paused && !audio.ended) {
+    pauseArcadeMusic();
+    return false;
+  }
+  return ensureArcadeMusicPlayer(combat.active ? 'gameplay' : 'menu', true);
+}
+
+function toggleArcadeMusicMute() {
+  arcadeMusic.muted = !arcadeMusic.muted;
+  combat.musicEnabled = !arcadeMusic.muted;
+  const audio = arcadeMusicAudio();
+  if (audio) audio.muted = arcadeMusic.muted;
+  renderArcadeMusicPlayer();
+  syncCombatOverlay();
+  return !arcadeMusic.muted;
+}
+
+async function nextArcadeMusicTrack({ autoplay = arcadeMusic.playing } = {}) {
+  if (!arcadeMusic.queue.length) return null;
+  const audio = arcadeMusicAudio();
+  audio?.pause();
+  arcadeMusic.currentTrackIndex = (arcadeMusic.currentTrackIndex + 1) % arcadeMusic.queue.length;
+  loadArcadeMusicTrack();
+  await ensureArcadeMusicPlayer(combat.active ? 'gameplay' : 'menu', autoplay);
+  return currentArcadeMusicTrack();
+}
+
+async function previousArcadeMusicTrack() {
+  if (!arcadeMusic.queue.length) return null;
+  const audio = arcadeMusicAudio();
+  const autoplay = arcadeMusic.playing;
+  audio?.pause();
+  arcadeMusic.currentTrackIndex = (arcadeMusic.currentTrackIndex - 1 + arcadeMusic.queue.length) % arcadeMusic.queue.length;
+  loadArcadeMusicTrack();
+  await ensureArcadeMusicPlayer(combat.active ? 'gameplay' : 'menu', autoplay);
+  return currentArcadeMusicTrack();
 }
 
 function nextCombatMusicTrack() {
-  if (!combatAudio.musicTracks.length) return null;
-  pauseCombatMusic();
-  combatAudio.currentTrackIndex = (combatAudio.currentTrackIndex + 1) % combatAudio.musicTracks.length;
-  ensureCombatMusic(combat.active ? 'gameplay' : 'menu');
-  return currentMusicTrack();
+  return nextArcadeMusicTrack();
+}
+
+function toggleArcadeMusicExpanded() {
+  arcadeMusic.expanded = !arcadeMusic.expanded;
+  renderArcadeMusicPlayer();
 }
 
 function sfxToneFor(cue) {
@@ -277,6 +454,8 @@ const combatArt = {
     trenchDegen: buildEnemyArtFromManifest('trenchDegen'),
     evilBanker: buildEnemyArtFromManifest('evilBanker'),
     warrenSpearRider: buildEnemyArtFromManifest('warrenSpearRider'),
+    cryptoBro: buildEnemyArtFromManifest('cryptoBro'),
+    gasBeast: buildEnemyArtFromManifest('gasBeast'),
     goblin: loadImageAsset('./assets/generated/sliced/enemy-goblin-idle.png'),
     wisp: loadImageAsset('./assets/generated/sliced/enemy-wisp-idle.png'),
     bruiser: loadImageAsset('./assets/generated/sliced/enemy-bruiser-idle.png'),
@@ -325,10 +504,23 @@ combatArt.hero = combatArt.characters.lester;
 
 const dom = {
   officialApp: document.querySelector('#officialApp'),
+  arcadeMusicPlayer: document.querySelector('#arcadeMusicPlayer'),
+  arcadeMusicAudio: document.querySelector('#arcadeMusicAudio'),
+  arcadeMusicTitle: document.querySelector('#arcadeMusicTitle'),
+  arcadeMusicTime: document.querySelector('#arcadeMusicTime'),
+  arcadeMusicDuration: document.querySelector('#arcadeMusicDuration'),
+  arcadeMusicProgressFill: document.querySelector('#arcadeMusicProgressFill'),
+  arcadeMusicPreviousButton: document.querySelector('#arcadeMusicPreviousButton'),
+  arcadeMusicPlayButton: document.querySelector('#arcadeMusicPlayButton'),
+  arcadeMusicMuteButton: document.querySelector('#arcadeMusicMuteButton'),
+  arcadeMusicNextButton: document.querySelector('#arcadeMusicNextButton'),
+  arcadeMusicExpandButton: document.querySelector('#arcadeMusicExpandButton'),
+  arcadeMusicQueueList: document.querySelector('#arcadeMusicQueueList'),
   officialNavTabs: document.querySelector('#officialNavTabs'),
   developerBackstageToggle: document.querySelector('#developerBackstageToggle'),
   developerBackstage: document.querySelector('#developerBackstage'),
   officialWalletSplash: document.querySelector('#officialWalletSplash'),
+  splashFeaturedCabinet: document.querySelector('#splashFeaturedCabinet'),
   officialConnectButton: document.querySelector('#officialConnectButton'),
   officialWalletCopy: document.querySelector('#officialWalletCopy'),
   officialArcadeFloor: document.querySelector('#officialArcadeFloor'),
@@ -358,6 +550,7 @@ const dom = {
   combatMenuActionGrid: document.querySelector('#combatMenuActionGrid'),
   combatGameOverSummary: document.querySelector('#combatGameOverSummary'),
   combatHudOverlay: document.querySelector('#combatHudOverlay'),
+  tacticalBalanceDebugOverlay: document.querySelector('#tacticalBalanceDebugOverlay'),
   officialCombatMount: document.querySelector('#officialCombatMount'),
   accountFlowSteps: document.querySelector('#accountFlowSteps'),
   walletStatus: document.querySelector('#walletStatus'),
@@ -465,6 +658,7 @@ const combat = {
   characterId: 'lester',
   shots: 0,
   meleeSwings: 0,
+  lastMeleeFrame: -999,
   boss: null,
   bossDefeated: false,
   miniBossLock: false,
@@ -524,6 +718,31 @@ function appendText(parent, tagName, text, className) {
 function renderArcadeIcon(icon, label = '') {
   const node = el('span', { className: 'arcade-icon', textContent: icon, ariaLabel: label || icon, role: 'img' });
   return node;
+}
+
+function renderRotatingCabinetSprite(sprite, variant = 'splash') {
+  const rotator = el('div', {
+    className: `hmh-cabinet-rotator ${variant === 'card' ? 'cabinet-card-rotator' : 'splash-cabinet-rotator'}`,
+    ariaLabel: `${sprite?.id ?? 'Hard Money Heroes cabinet'} rotating sprite`,
+    role: 'img',
+  });
+  const frames = sprite?.frames ?? [];
+  const frameDuration = Math.max(240, Number(sprite?.frameDurationMs ?? frames[0]?.durationMs ?? 720));
+  rotator.style.setProperty('--cabinet-frame-count', String(Math.max(1, frames.length)));
+  rotator.style.setProperty('--cabinet-loop-duration', `${frameDuration * Math.max(1, frames.length)}ms`);
+  frames.forEach((frame, index) => {
+    const image = el('img', {
+      className: 'cabinet-rotation-frame',
+      src: frame.src,
+      alt: '',
+    });
+    image.loading = 'eager';
+    image.decoding = 'async';
+    image.style.setProperty('--cabinet-frame-index', String(index));
+    image.style.setProperty('--cabinet-frame-delay', `${frameDuration * index}ms`);
+    rotator.append(image);
+  });
+  return rotator;
 }
 
 function formatSeconds(seconds) {
@@ -757,6 +976,44 @@ function renderCombatHudOverlay() {
   }
 }
 
+function renderTacticalBalanceDebugOverlay() {
+  if (!dom.tacticalBalanceDebugOverlay) return;
+  const overlay = buildTacticalBalanceDebugOverlayModel({
+    debugEnabled: tacticalBalanceDebugEnabled,
+    playerX: combat.playerX,
+    scroll: combat.scroll,
+    furthestScroll: combat.furthestScroll,
+    stagePhase: combat.stagePhase,
+    scrollLocked: Boolean(combat.scrollLockReason),
+    stageTravel: combat.stageTravel,
+    stageTravelGoal: combat.stageTravelGoal,
+    enemies: combat.enemies,
+    props: [...combat.props, ...combat.hazards, ...combat.platforms],
+  });
+  dom.tacticalBalanceDebugOverlay.hidden = !(overlay.enabled && (combat.active || combat.gameOver));
+  dom.tacticalBalanceDebugOverlay.dataset.enabled = String(overlay.enabled);
+  dom.tacticalBalanceDebugOverlay.dataset.query = DEBUG_BALANCE_QUERY;
+  if (dom.tacticalBalanceDebugOverlay.hidden) {
+    delete dom.tacticalBalanceDebugOverlay.dataset.signature;
+    dom.tacticalBalanceDebugOverlay.replaceChildren();
+    return;
+  }
+  const signature = JSON.stringify(overlay.metrics);
+  if (dom.tacticalBalanceDebugOverlay.dataset.signature === signature) return;
+  dom.tacticalBalanceDebugOverlay.dataset.signature = signature;
+  dom.tacticalBalanceDebugOverlay.replaceChildren();
+  appendText(dom.tacticalBalanceDebugOverlay, 'strong', 'DEV BALANCE // F10');
+  appendText(dom.tacticalBalanceDebugOverlay, 'span', DEBUG_BALANCE_QUERY);
+  for (const layer of overlay.layers) {
+    const section = el('section', { className: 'debug-layer', dataset: { layer: layer.id } });
+    appendText(section, 'b', layer.label);
+    const list = el('ul');
+    for (const item of layer.items) appendText(list, 'li', item);
+    section.append(list);
+    dom.tacticalBalanceDebugOverlay.append(section);
+  }
+}
+
 function clearInactiveCombatOverlay() {
   if (combat.active || combat.gameOver) return false;
   if (dom.combatMenuPanel) {
@@ -775,8 +1032,14 @@ function clearInactiveCombatOverlay() {
     dom.combatGameOverSummary.hidden = true;
     dom.combatGameOverSummary.replaceChildren();
   }
+  if (dom.tacticalBalanceDebugOverlay) {
+    dom.tacticalBalanceDebugOverlay.hidden = true;
+    delete dom.tacticalBalanceDebugOverlay.dataset.signature;
+    dom.tacticalBalanceDebugOverlay.replaceChildren();
+  }
   if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = '';
   if (dom.combatMenuCopy) dom.combatMenuCopy.textContent = '';
+  if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = '';
   return true;
 }
 
@@ -791,7 +1054,10 @@ function syncCombatOverlay() {
   if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Return to Game' : 'Pause';
   if (dom.combatRestartButton) dom.combatRestartButton.textContent = currentSession?.isPaid ? 'Restart (New Credit)' : 'Restart Free';
   if (dom.combatMusicButton) dom.combatMusicButton.textContent = combat.musicEnabled ? 'Music On' : 'Music Off';
-  if (dom.combatCharacterButton) dom.combatCharacterButton.textContent = `Swap: ${combat.characterId === 'lester' ? 'Lester' : 'Lilly'}`;
+  if (dom.combatCharacterButton) {
+    dom.combatCharacterButton.textContent = 'Lilly Locked';
+    dom.combatCharacterButton.dataset.unlock = 'future-lilly-character';
+  }
   if (dom.combatViewportButton) {
     const label = combat.viewportMode === 'fullscreen'
       ? 'Windowed Mode'
@@ -820,6 +1086,7 @@ function syncCombatOverlay() {
       : menu.copy;
   }
   renderCombatHudOverlay();
+  renderTacticalBalanceDebugOverlay();
   renderGameOverSummary();
   renderCombatMenuActionGrid();
 }
@@ -849,18 +1116,19 @@ async function restartCombatRun() {
 }
 
 function toggleCombatMusic() {
-  combat.musicEnabled = !combat.musicEnabled;
-  if (combat.musicEnabled) ensureCombatMusic(combat.active ? 'gameplay' : 'menu');
-  else pauseCombatMusic();
+  const musicOn = toggleArcadeMusicMute();
   playSfxCue('menu-click');
-  spawnText(combat.musicEnabled ? 'MUSIC ON' : 'MUSIC OFF', combat.playerX + 24, combat.playerY - 92, combat.musicEnabled ? '#45ff8a' : '#ff476f');
+  spawnText(musicOn ? 'MUSIC ON' : 'MUSIC MUTED', combat.playerX + 24, combat.playerY - 92, musicOn ? '#45ff8a' : '#ff476f');
   syncCombatOverlay();
 }
 
-function swapCombatCharacter() {
-  combat.characterId = combat.characterId === 'lester' ? 'lilly' : 'lester';
-  playSfxCue('pickup');
-  spawnText(combat.characterId === 'lester' ? 'LESTER' : 'LILLY SKIN', combat.playerX + 24, combat.playerY - 104, '#19f7ff');
+function showLillyTeaser() {
+  combat.characterId = 'lester';
+  combat.status = 'Lilly is a future unlockable character. Lester remains the playable hero for this Level 1 test.';
+  if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
+  playSfxCue('menu-click');
+  spawnText('LILLY UNLOCK LATER', combat.playerX + 24, combat.playerY - 104, '#ff3df2');
+  spawnText('LESTER READY', combat.playerX + 30, combat.playerY - 76, '#19f7ff');
   syncCombatOverlay();
 }
 
@@ -879,7 +1147,7 @@ function returnToOfficialGameMenu() {
   combat.paused = false;
   combat.gameOver = false;
   combat.keys.clear();
-  pauseCombatMusic();
+  setArcadeMusicContext('arcade');
   officialAppStep = 'mode-select';
   dom.combatStatus.textContent = currentSession?.isPaid
     ? 'Returned to the pre-match game menu. Ranked restart/payment choices stay explicit.'
@@ -893,7 +1161,7 @@ function exitToArcade() {
   combat.paused = false;
   combat.gameOver = false;
   combat.keys.clear();
-  pauseCombatMusic();
+  setArcadeMusicContext('arcade');
   currentSession = null;
   selectedGameId = 'hmh';
   officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash';
@@ -1194,6 +1462,10 @@ function renderOfficialNav() {
 function renderOfficialWalletSplash() {
   if (!dom.officialWalletSplash) return;
   applyHardMoneyHeroScreenBackground(dom.officialWalletSplash, 'splash');
+  const featuredCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
+  if (dom.splashFeaturedCabinet && featuredCabinet?.desktopCabinetSprite) {
+    dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredCabinet.desktopCabinetSprite, 'splash'));
+  }
   const copy = connectedWallet
     ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`
     : LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy;
@@ -1204,7 +1476,7 @@ function renderOfficialWalletSplash() {
 function renderOfficialCabinets() {
   dom.officialCabinetGrid.replaceChildren();
   for (const cabinet of LESTERS_ARCADE_V2_APP_SHELL.cabinets) {
-    const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'}` });
+    const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'} ${cabinet.desktopCabinetSprite ? 'featured-cabinet-card' : ''}` });
     card.type = 'button';
     card.disabled = !cabinet.playable;
     card.addEventListener('click', () => {
@@ -1215,10 +1487,17 @@ function renderOfficialCabinets() {
       lastRunResult = null;
       setOfficialView('mode-select');
     });
-    appendText(card, 'span', cabinet.playable ? 'PLAYABLE NOW' : 'COMING SOON', 'cabinet-status-label');
-    card.prepend(renderArcadeIcon(cabinet.playable ? '⚡' : '🔒', cabinet.playable ? 'Playable' : 'Locked'));
-    appendText(card, 'strong', cabinet.title);
-    appendText(card, 'small', cabinet.description);
+    if (cabinet.desktopCabinetSprite) {
+      const media = el('div', { className: 'cabinet-card-media' });
+      media.append(renderRotatingCabinetSprite(cabinet.desktopCabinetSprite, 'card'));
+      card.append(media);
+    }
+    const copy = el('div', { className: 'cabinet-card-copy' });
+    appendText(copy, 'span', cabinet.playable ? 'PLAYABLE NOW' : 'COMING SOON', 'cabinet-status-label');
+    copy.append(renderArcadeIcon(cabinet.playable ? '⚡' : '🔒', cabinet.playable ? 'Playable' : 'Locked'));
+    appendText(copy, 'strong', cabinet.title);
+    appendText(copy, 'small', cabinet.description);
+    card.append(copy);
     dom.officialCabinetGrid.append(card);
   }
 }
@@ -1892,6 +2171,7 @@ async function startCombat() {
   combat.weaponId = 'coin-blaster';
   combat.shots = 0;
   combat.meleeSwings = 0;
+  combat.lastMeleeFrame = -999;
   combat.boss = null;
   combat.bossDefeated = false;
   combat.miniBossLock = false;
@@ -1914,7 +2194,7 @@ async function startCombat() {
   lastBossId = null;
   beginStage(1);
   playSfxCue('level-start');
-  ensureCombatMusic('gameplay');
+  await startArcadeMusicForGame('hard-money-heroes');
   renderCombatSandboxStatus();
   syncCombatOverlay();
 }
@@ -1958,6 +2238,7 @@ function shoot() {
 
 function melee() {
   combat.meleeSwings += 1;
+  combat.lastMeleeFrame = combat.frame;
   playSfxCue('melee');
   spawnSlash(combat.playerX + 48, combat.playerY - 42);
   const meleeBox = {
@@ -2774,7 +3055,10 @@ function selectHeroFrame() {
   const hero = combatArt.hero;
   if (combat.playerY < GROUND_Y - 4) return selectAnimationFrame(hero.animations.jump, combat.frame, 12, false) ?? hero.fallback.jump;
   if (combat.crouching && combat.playerY >= GROUND_Y - 2) return selectAnimationFrame(hero.animations.idle, combat.frame, 8) ?? hero.fallback.idle;
-  if (combat.meleeSwings > 0 && combat.frame - combat.meleeSwings < 18) return hero.fallback.blade;
+  const meleeFrameAge = combat.frame - combat.lastMeleeFrame;
+  if (meleeFrameAge >= 0 && meleeFrameAge < 18) {
+    return selectAnimationFrame(hero.animations.knifeStab, meleeFrameAge, 18, false) ?? hero.stills.knife ?? hero.fallback.blade;
+  }
   if (combat.shots > 0 && combat.frame % 36 < 10) return hero.stills.shoot ?? hero.fallback.shoot;
   if (combat.keys.has('a') || combat.keys.has('d') || combat.keys.has('arrowleft') || combat.keys.has('arrowright')) {
     return selectAnimationFrame(hero.animations.run, combat.frame, 14) ?? (combat.frame % 20 < 10 ? hero.fallback.run1 : hero.fallback.run2);
@@ -2834,6 +3118,8 @@ function manifestEnemyKeyFor(enemy) {
   if (enemy.enemyKey && combatArt.enemies[enemy.enemyKey]) return enemy.enemyKey;
   const id = enemy.id ?? '';
   const title = enemy.title ?? '';
+  if (id.includes('crypto-bro') || id.includes('crypto') || title.includes('Crypto Bro') || title.includes('KOL') || enemy.class === 'kol-ranged-grunt') return 'cryptoBro';
+  if (id.includes('gas-beast') || title.includes('Gas Beast') || enemy.class === 'armored-bruiser' || enemy.aiArchetype === 'gas-cloud-area-denial') return 'gasBeast';
   if (id.includes('trench') || title.includes('Degen') || id.includes('fud') || id.includes('paper') || id.includes('rug')) return 'trenchDegen';
   if (id.includes('bank') || title.includes('Banker') || id.includes('sybil') || id.includes('bot') || id.includes('drone')) return 'evilBanker';
   if (id.includes('warren') || id.includes('spear') || id.includes('boss') || enemy.class === 'armored' || enemy.role === 'armored-pressure') return 'warrenSpearRider';
@@ -2984,6 +3270,7 @@ function render() {
   renderControlScheme();
   renderCodexPanels();
   renderOfficialApp();
+  renderArcadeMusicPlayer();
 }
 
 dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
@@ -3008,13 +3295,47 @@ dom.powerUpButton.addEventListener('click', dropPowerUp);
 dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatRestartButton?.addEventListener('click', restartCombatRun);
 dom.combatMusicButton?.addEventListener('click', toggleCombatMusic);
-dom.combatCharacterButton?.addEventListener('click', swapCombatCharacter);
+dom.combatCharacterButton?.addEventListener('click', showLillyTeaser);
 dom.combatViewportButton?.addEventListener('click', cycleCombatViewport);
 dom.combatReturnMenuButton?.addEventListener('click', returnToOfficialGameMenu);
 dom.combatExitButton?.addEventListener('click', exitToArcade);
+dom.arcadeMusicPreviousButton?.addEventListener('click', () => {
+  playSfxCue('menu-click');
+  previousArcadeMusicTrack();
+});
+dom.arcadeMusicPlayButton?.addEventListener('click', () => {
+  playSfxCue('menu-click');
+  toggleArcadeMusicPlay();
+});
+dom.arcadeMusicMuteButton?.addEventListener('click', () => {
+  playSfxCue('menu-click');
+  toggleArcadeMusicMute();
+});
+dom.arcadeMusicNextButton?.addEventListener('click', () => {
+  playSfxCue('menu-click');
+  nextArcadeMusicTrack();
+});
+dom.arcadeMusicExpandButton?.addEventListener('click', () => {
+  playSfxCue('menu-click');
+  toggleArcadeMusicExpanded();
+});
+dom.arcadeMusicAudio?.addEventListener('loadedmetadata', renderArcadeMusicPlayer);
+dom.arcadeMusicAudio?.addEventListener('durationchange', renderArcadeMusicPlayer);
+dom.arcadeMusicAudio?.addEventListener('timeupdate', scheduleArcadeMusicRender);
+dom.arcadeMusicAudio?.addEventListener('play', renderArcadeMusicPlayer);
+dom.arcadeMusicAudio?.addEventListener('pause', renderArcadeMusicPlayer);
+dom.arcadeMusicAudio?.addEventListener('ended', () => {
+  nextArcadeMusicTrack({ autoplay: true });
+});
 
 document.addEventListener('keydown', (event) => {
   const key = event.key.toLowerCase();
+  if (event.key === 'F10') {
+    event.preventDefault();
+    tacticalBalanceDebugEnabled = !tacticalBalanceDebugEnabled;
+    renderTacticalBalanceDebugOverlay();
+    return;
+  }
   if (key === 'enter' || key === 'escape') {
     event.preventDefault();
     toggleCombatPause();

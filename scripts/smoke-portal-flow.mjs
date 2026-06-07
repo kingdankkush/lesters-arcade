@@ -1,8 +1,32 @@
 import { spawn } from 'node:child_process';
+import { createServer } from 'node:net';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url));
-const rootUrl = process.env.PORTAL_SMOKE_ROOT ?? 'http://127.0.0.1:8791';
+
+async function findOpenSmokePort(preferredPort = 8791) {
+  return new Promise((resolve) => {
+    const probe = createServer();
+    probe.unref();
+    probe.on('error', () => {
+      const fallback = createServer();
+      fallback.listen(0, '127.0.0.1', () => {
+        const { port } = fallback.address();
+        fallback.close(() => resolve(port));
+      });
+    });
+    probe.listen(preferredPort, '127.0.0.1', () => {
+      const { port } = probe.address();
+      probe.close(() => resolve(port));
+    });
+  });
+}
+
+const externalRootUrl = process.env.PORTAL_SMOKE_ROOT;
+const configuredSmokePort = Number.parseInt(process.env.PORTAL_SMOKE_PORT ?? '8791', 10);
+const preferredSmokePort = Number.isInteger(configuredSmokePort) ? configuredSmokePort : 8791;
+const smokePort = externalRootUrl ? null : await findOpenSmokePort(preferredSmokePort);
+const rootUrl = externalRootUrl ?? `http://127.0.0.1:${smokePort}`;
 const portalUrl = `${rootUrl.replace(/\/$/, '')}/apps/portal/`;
 
 function sleep(ms) {
@@ -30,20 +54,23 @@ function assertIncludes(label, source, needle) {
   }
 }
 
-const server = spawn('python', ['-m', 'http.server', '8791', '--bind', '127.0.0.1'], {
-  cwd: repoRoot,
-  stdio: 'pipe',
-});
+const server = externalRootUrl
+  ? null
+  : spawn('python', ['-m', 'http.server', String(smokePort), '--bind', '127.0.0.1'], {
+    cwd: repoRoot,
+    stdio: 'pipe',
+  });
 
 let serverError = '';
-server.stderr.on('data', (chunk) => {
+server?.stderr.on('data', (chunk) => {
   serverError += chunk.toString();
 });
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=hmh-tactical-exit-v2`);
+  const main = await fetchText(`${portalUrl}main.js?v=hmh-intro-splash-v5`);
   const styles = await fetchText(`${portalUrl}styles.css`);
+  const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
 
   for (const marker of [
     'officialConnectButton',
@@ -52,8 +79,12 @@ try {
     'officialCombatMount',
     'combatCanvas',
     'combatHudOverlay',
+    'arcadeMusicPlayer',
+    'arcadeMusicProgressFill',
+    'arcadeMusicNextButton',
     'combatMenuPanel',
-    'hmh-tactical-exit-v2',
+    'splashFeaturedCabinet',
+    'hmh-intro-splash-v5',
   ]) {
     assertIncludes('portal html', html, marker);
   }
@@ -66,19 +97,39 @@ try {
     'combatReturnMenuButton',
     "officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'",
     'player-led advance',
+    'renderRotatingCabinetSprite',
+    'hardMoneyHeroScreenBackgroundProfile',
+    'buildArcadeMusicPlayerModel',
+    'startArcadeMusicForGame',
+    "startArcadeMusicForGame('hard-money-heroes')",
   ]) {
     assertIncludes('portal main.js', main, marker);
   }
 
-  for (const marker of ['combat-hud-overlay', 'hud-widget', 'combat-menu-panel']) {
+  for (const marker of ['combat-hud-overlay', 'hud-widget', 'combat-menu-panel', 'hmh-cabinet-rotator', 'arcade-music-player', 'arcade-music-progress-fill', '[data-expanded="true"]', '@keyframes hmhCabinetFloat']) {
     assertIncludes('portal styles.css', styles, marker);
   }
+
+  for (const marker of [
+    'lesters-arcade-custom-mp3-playlist-v1',
+    'Hard Money Heroes 16-BIT Arcade Music',
+    'Hard Money Heroes 16-BIT Arcade Music Alt',
+    './assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3',
+  ]) {
+    assertIncludes('playlist manifest', playlistManifest, marker);
+  }
+
+  const playlist = JSON.parse(playlistManifest);
+  if (playlist.tracks.length < 20) throw new Error(`playlist manifest expected 20 tracks, got ${playlist.tracks.length}`);
+  const firstHmhSrc = playlist.tracks.find((track) => track.id === 'hard-money-heroes-16-bit-arcade-music')?.src;
+  if (!firstHmhSrc) throw new Error('playlist manifest missing first Hard Money Heroes track');
+  await fetchText(`${portalUrl}${firstHmhSrc.replace(/^\.\//, '')}`, 3);
 
   console.log('Portal smoke gate passed.');
   console.log(`Checked ${portalUrl}`);
   console.log('Covered: wallet entry markers, free/ranked buttons, gameplay canvas, HUD overlay, options popup, return/exit controls, and player-led camera wiring.');
 } finally {
-  if (!server.killed) server.kill();
+  if (server && !server.killed) server.kill();
 }
 
 if (serverError && !serverError.includes('Address already in use')) {

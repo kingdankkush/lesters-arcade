@@ -178,6 +178,58 @@
         "throwCooldownFrames": 185,
         "tellFrames": 46
       }
+    },
+    "cryptoBro": {
+      "id": "crypto-bro",
+      "title": "Crypto Bro",
+      "availableAnimatedStates": [
+        "idle",
+        "walk",
+        "run",
+        "jump",
+        "attack"
+      ],
+      "missingAnimatedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death",
+        "optional-gore-overlay"
+      ],
+      "behavior": {
+        "primary": "kol-ranged-taunt",
+        "secondary": "jumping-knife-dodge-pressure",
+        "moveSpeed": 1.04,
+        "tellFrames": 30,
+        "rangedChance": 0.38,
+        "tauntCooldownFrames": 150
+      }
+    },
+    "gasBeast": {
+      "id": "gas-beast",
+      "title": "Gas Beast",
+      "availableAnimatedStates": [
+        "idle",
+        "walk",
+        "run",
+        "jump",
+        "attack"
+      ],
+      "missingAnimatedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death",
+        "optional-gore-overlay"
+      ],
+      "behavior": {
+        "primary": "slow-gas-cloud-bruiser",
+        "secondary": "area-denial-tax-pulse",
+        "moveSpeed": 0.68,
+        "tellFrames": 42,
+        "hazardRadius": 72,
+        "armor": "medium"
+      }
     }
   },
   "recommendations": [

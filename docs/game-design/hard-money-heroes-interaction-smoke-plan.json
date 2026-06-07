@@ -1,0 +1,71 @@
+{
+  "flowId": "wallet-profile-free-ranked-exit",
+  "checkedUrl": "http://127.0.0.1:63163/apps/portal/",
+  "mode": "static-interaction-contract",
+  "note": "This gate verifies all selectors/handlers required for the live browser flow: wallet/profile/free/ranked/exit. Browser tool smoke still exercises actual clicks during handoff.",
+  "requiredSteps": [
+    {
+      "id": "connect-wallet",
+      "selector": "#officialConnectButton",
+      "expectedHandler": "enterOfficialArcadeFromSplash"
+    },
+    {
+      "id": "profile-tab",
+      "selector": "[data-tab=\"profile\"]",
+      "expectedVisibleCopy": "connected wallet profile"
+    },
+    {
+      "id": "free-start",
+      "selector": "#officialFreeModeButton",
+      "expectedNext": "#officialBeginLevelButton"
+    },
+    {
+      "id": "rightward-scroll",
+      "key": "d",
+      "expectedHud": "combatHudOverlay"
+    },
+    {
+      "id": "pause-options",
+      "selector": "#combatPauseButton",
+      "expectedPanel": "#combatMenuPanel"
+    },
+    {
+      "id": "restart",
+      "selector": "#combatRestartButton",
+      "expectedCleanHud": true
+    },
+    {
+      "id": "game-menu",
+      "selector": "#combatReturnMenuButton",
+      "expectedStep": "mode-select"
+    },
+    {
+      "id": "ranked-start",
+      "selector": "#officialRankedModeButton",
+      "expectedSeparation": "official score sync only at game over"
+    },
+    {
+      "id": "exit-cleanup",
+      "selector": "#combatExitButton",
+      "expectedStep": "cabinet-select",
+      "expectedCleanup": [
+        "combatHudOverlay",
+        "clearInactiveCombatOverlay"
+      ]
+    },
+    {
+      "id": "dev-balance-overlay",
+      "query": "hmhDebug=balance",
+      "toggle": "F10",
+      "model": "buildTacticalBalanceDebugOverlayModel"
+    }
+  ],
+  "overlayProbe": {
+    "enabled": true,
+    "cameraMode": "player-led-rightward-scroll",
+    "stageProgress": "73/254M",
+    "enemyCount": 1,
+    "telegraphing": 1,
+    "coverCount": 1
+  }
+}

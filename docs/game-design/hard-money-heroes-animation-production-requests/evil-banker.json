@@ -1,0 +1,137 @@
+{
+  "key": "evilBanker",
+  "slug": "evil-banker",
+  "title": "Evil Banker",
+  "role": "fast briefcase melee rusher enemy",
+  "currentAnimatedStates": [
+    "idle",
+    "walk",
+    "run",
+    "jump",
+    "attack"
+  ],
+  "stillCoveredStates": [],
+  "requestCount": 5,
+  "requests": [
+    {
+      "order": 1,
+      "id": "evil-banker-attack-tell",
+      "actorKey": "evilBanker",
+      "actorTitle": "Evil Banker",
+      "actorSlug": "evil-banker",
+      "actorRole": "fast briefcase melee rusher enemy",
+      "state": "attack-tell",
+      "manifestState": "attack-tell",
+      "priority": "high",
+      "frameCount": 6,
+      "readabilityGoal": "telegraph danger before damage so enemy AI feels fair instead of random",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Evil Banker, fast briefcase melee rusher enemy. Create 6 frames for the \"attack-tell\" state, manifest tag \"attack-tell\". Character read: sharp banker/rusher silhouette with briefcase weapon readable in a side-scroller lane. Palette/readability: dark suit contrast with bright attack accents; keep briefcase and face readable at small scale. Motion direction: faster attack anticipation than Trench Degen, but still has an unmistakable pre-hit tell. Gameplay purpose: telegraph danger before damage so enemy AI feels fair instead of random. AI behavior context: primary=fast-briefcase-melee-rusher, moveSpeed=1.42, tellFrames=22. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "6 distinct frames for attack-tell",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 2,
+      "id": "evil-banker-hit",
+      "actorKey": "evilBanker",
+      "actorTitle": "Evil Banker",
+      "actorSlug": "evil-banker",
+      "actorRole": "fast briefcase melee rusher enemy",
+      "state": "hit",
+      "manifestState": "hit",
+      "priority": "high",
+      "frameCount": 4,
+      "readabilityGoal": "confirm player shots/melee connect before score/combo feedback",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Evil Banker, fast briefcase melee rusher enemy. Create 4 frames for the \"hit\" state, manifest tag \"hit\". Character read: sharp banker/rusher silhouette with briefcase weapon readable in a side-scroller lane. Palette/readability: dark suit contrast with bright attack accents; keep briefcase and face readable at small scale. Motion direction: faster attack anticipation than Trench Degen, but still has an unmistakable pre-hit tell. Gameplay purpose: confirm player shots/melee connect before score/combo feedback. AI behavior context: primary=fast-briefcase-melee-rusher, moveSpeed=1.42, tellFrames=22. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "4 distinct frames for hit",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 3,
+      "id": "evil-banker-death",
+      "actorKey": "evilBanker",
+      "actorTitle": "Evil Banker",
+      "actorSlug": "evil-banker",
+      "actorRole": "fast briefcase melee rusher enemy",
+      "state": "death",
+      "manifestState": "death",
+      "priority": "high",
+      "frameCount": 8,
+      "readabilityGoal": "clean removal/readability for kills, combo chains, and arena clear state",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Evil Banker, fast briefcase melee rusher enemy. Create 8 frames for the \"death\" state, manifest tag \"death\". Character read: sharp banker/rusher silhouette with briefcase weapon readable in a side-scroller lane. Palette/readability: dark suit contrast with bright attack accents; keep briefcase and face readable at small scale. Motion direction: faster attack anticipation than Trench Degen, but still has an unmistakable pre-hit tell. Gameplay purpose: clean removal/readability for kills, combo chains, and arena clear state. AI behavior context: primary=fast-briefcase-melee-rusher, moveSpeed=1.42, tellFrames=22. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "8 distinct frames for death",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 4,
+      "id": "evil-banker-melee-counter",
+      "actorKey": "evilBanker",
+      "actorTitle": "Evil Banker",
+      "actorSlug": "evil-banker",
+      "actorRole": "fast briefcase melee rusher enemy",
+      "state": "melee-counter",
+      "manifestState": "melee-counter",
+      "priority": "high",
+      "frameCount": 8,
+      "readabilityGoal": "show delayed counter timing after player closes distance",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Evil Banker, fast briefcase melee rusher enemy. Create 8 frames for the \"melee-counter\" state, manifest tag \"melee-counter\". Character read: sharp banker/rusher silhouette with briefcase weapon readable in a side-scroller lane. Palette/readability: dark suit contrast with bright attack accents; keep briefcase and face readable at small scale. Motion direction: faster attack anticipation than Trench Degen, but still has an unmistakable pre-hit tell. Gameplay purpose: show delayed counter timing after player closes distance. AI behavior context: primary=fast-briefcase-melee-rusher, moveSpeed=1.42, tellFrames=22. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "8 distinct frames for melee-counter",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 5,
+      "id": "evil-banker-optional-gore-overlay",
+      "actorKey": "evilBanker",
+      "actorTitle": "Evil Banker",
+      "actorSlug": "evil-banker",
+      "actorRole": "fast briefcase melee rusher enemy",
+      "state": "optional-gore-overlay",
+      "manifestState": "optional-gore-overlay",
+      "priority": "high",
+      "frameCount": 4,
+      "readabilityGoal": "optional pre-run intensity layer only; keep base death readable without it",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Evil Banker, fast briefcase melee rusher enemy. Create 4 frames for the \"optional-gore-overlay\" state, manifest tag \"optional-gore-overlay\". Character read: sharp banker/rusher silhouette with briefcase weapon readable in a side-scroller lane. Palette/readability: dark suit contrast with bright attack accents; keep briefcase and face readable at small scale. Motion direction: faster attack anticipation than Trench Degen, but still has an unmistakable pre-hit tell. Gameplay purpose: optional pre-run intensity layer only; keep base death readable without it. AI behavior context: primary=fast-briefcase-melee-rusher, moveSpeed=1.42, tellFrames=22. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "4 distinct frames for optional-gore-overlay",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    }
+  ]
+}

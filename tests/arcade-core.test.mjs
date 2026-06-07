@@ -15,6 +15,8 @@ import {
   LESTER_ARCADE_BRAND_SYSTEM,
   LESTER_BLASTER_HUD_OVERLAY_MODEL,
   LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
+  LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS,
+  LESTER_BLASTER_DEV_BALANCE_OVERLAY,
   LESTER_ARCADE_BUILD_STACK,
   LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP,
   LESTER_ARCADE_UI_QUALITY_SYSTEM,
@@ -47,6 +49,8 @@ import {
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
   buildCombatOptionsMenuModel,
+  buildHardMoneyHeroesAnimationProductionBriefs,
+  buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
   buildLesterBlasterDesignCodex,
   buildLoginMenuModel,
@@ -639,8 +643,20 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'cabinets'), true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'profile'), true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.navigation.some((item) => item.id === 'leaderboards'), true);
-  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.officialFlow, ['wallet-splash', 'arcade-walk-in', 'cabinet-select', 'mode-select', 'level-one-intro', 'begin-level']);
-  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes').playable, true);
+  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.officialFlow, ['wallet-splash', 'arcade-walk-in', 'cabinet-select', 'hard-money-heroes-intro', 'mode-select', 'level-one-intro', 'begin-level']);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.gameIntro.videoSrc, './assets/video/hard-money-heroes-intro.mp4');
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.gameIntro.skipAllowed, true);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.gameIntro.targetStep, 'mode-select');
+  const hardMoneyHeroesCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
+  assert.equal(hardMoneyHeroesCabinet.playable, true);
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.id, 'hard-money-heroes-arcade-cabinet-rotation');
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.generatedFrom.includes('C:'), false);
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.length >= 6, true);
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.every((frame) => frame.src.endsWith('.png') && frame.width > 0 && frame.height > 0), true);
+  for (const frame of hardMoneyHeroesCabinet.desktopCabinetSprite.frames) {
+    const framePath = fileURLToPath(new URL(`../apps/portal/${frame.src.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
+  }
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 1);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.requiresZkLtc, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);
@@ -702,7 +718,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
 
-  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.publicFlow, ['connect-wallet', 'select-game', 'choose-mode', 'begin-level', 'play']);
+  assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.publicFlow, ['connect-wallet', 'select-game', 'watch-or-skip-intro', 'choose-mode', 'begin-level', 'play']);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.primaryNav.length, 3);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.hiddenByDefault.includes('developer-backstage'), true);
   assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
@@ -712,12 +728,78 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('enterOfficialArcadeFromSplash'), true);
   assert.equal(mainSource.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
   assert.equal(mainSource.includes('clearInactiveCombatOverlay'), true);
+  assert.equal(mainSource.includes("dom.officialGameStateCopy.textContent = ''"), true);
   assert.equal(mainSource.includes("setOfficialView('cabinet-select')"), true);
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
-  assert.equal(indexSource.includes('./main.js?v=hmh-tactical-exit-v2'), true);
+  assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
+  assert.equal(indexSource.includes('./main.js?v=hmh-intro-splash-v5'), true);
+  assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
+  assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
+  assert.equal(mainSource.includes('desktopCabinetSprite'), true);
+  assert.equal(mainSource.includes("node.style.backgroundSize = profile.backgroundSize"), true);
   assert.equal(styleSource.includes('.official-simplified-nav'), true);
+  assert.equal(styleSource.includes('.hmh-cabinet-rotator'), true);
+  assert.equal(styleSource.includes('object-fit: contain'), true);
+  assert.equal(styleSource.includes('@keyframes hmhCabinetFloat'), true);
   assert.equal(styleSource.includes('@keyframes arcadePulse'), true);
+});
+
+test('Lester Arcade custom MP3 playlist manifest drives a global minimal music player and Hard Money Heroes queue', async () => {
+  const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'));
+  assert.equal(packageJson.scripts['assets:playlist'], 'python scripts/ingest-arcade-playlist-music.py');
+  assert.equal(packageJson.scripts['assets:verify'].includes('verify-generated-assets'), true);
+  assert.equal(packageJson.scripts.check.includes('scripts/ingest-arcade-playlist-music.py'), true);
+
+  const manifestPath = fileURLToPath(new URL('../apps/portal/assets/audio/playlist/arcade-playlist-manifest.json', import.meta.url));
+  const manifestModulePath = fileURLToPath(new URL('../apps/portal/src/arcade-playlist-manifest.mjs', import.meta.url));
+  assert.equal(existsSync(manifestPath), true, 'playlist JSON manifest exists');
+  assert.equal(existsSync(manifestModulePath), true, 'playlist ESM manifest exists');
+
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  assert.equal(manifest.id, 'lesters-arcade-custom-mp3-playlist-v1');
+  assert.equal(manifest.tracks.length, 20);
+  assert.equal(manifest.defaultQueue.length, 20);
+  assert.deepEqual(manifest.gameQueues.hardMoneyHeroes.slice(0, 2), ['hard-money-heroes-16-bit-arcade-music', 'hard-money-heroes-16-bit-arcade-music-alt']);
+  assert.equal(manifest.tracks.every((track) => track.src.startsWith('./assets/audio/playlist/') && track.src.endsWith('.mp3')), true);
+  assert.equal(manifest.tracks.every((track) => track.durationSeconds > 30 && track.durationLabel.includes(':')), true);
+  for (const track of manifest.tracks) {
+    const trackPath = fileURLToPath(new URL(`../apps/portal/${track.src.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(trackPath) && statSync(trackPath).size > 0, true, `${track.src} exists`);
+  }
+
+  const core = await import('../apps/portal/src/arcade-core.mjs');
+  assert.equal(core.LESTER_ARCADE_MUSIC_LIBRARY.tracks.length, 20);
+  assert.equal(core.LESTER_ARCADE_MUSIC_LIBRARY.playerUi.position, 'global-overlay');
+  assert.deepEqual(core.buildArcadeMusicQueueForContext('hard-money-heroes').slice(0, 2).map((track) => track.id), ['hard-money-heroes-16-bit-arcade-music', 'hard-money-heroes-16-bit-arcade-music-alt']);
+  const player = core.buildArcadeMusicPlayerModel({ context: 'hard-money-heroes', currentTrackId: 'hard-money-heroes-16-bit-arcade-music', currentTimeSeconds: 67, playing: true, muted: false, expanded: false });
+  assert.equal(player.title, 'Hard Money Heroes 16-BIT Arcade Music');
+  assert.equal(player.controls.map((control) => control.id).join(','), 'previous,play-pause,mute,next,expand');
+  assert.equal(player.progress.percent > 40 && player.progress.percent < 60, true);
+  assert.equal(player.progress.label.includes('/'), true);
+});
+
+test('Lester Arcade music player overlay is wired into the public UI without forcing individual game music', () => {
+  const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
+  const smokeScript = readFileSync(fileURLToPath(new URL('../scripts/smoke-portal-flow.mjs', import.meta.url)), 'utf8');
+
+  assert.equal(indexSource.includes('arcadeMusicPlayer'), true);
+  assert.equal(indexSource.includes('arcadeMusicProgressFill'), true);
+  assert.equal(indexSource.includes('arcadeMusicPreviousButton'), true);
+  assert.equal(indexSource.includes('arcadeMusicNextButton'), true);
+  assert.equal(indexSource.includes('arcadeMusicMuteButton'), true);
+  assert.equal(mainSource.includes('buildArcadeMusicPlayerModel'), true);
+  assert.equal(mainSource.includes('ensureArcadeMusicPlayer'), true);
+  assert.equal(mainSource.includes('startArcadeMusicForGame'), true);
+  assert.equal(mainSource.includes("startArcadeMusicForGame('hard-money-heroes')"), true);
+  assert.equal(mainSource.includes('arcadeMusicAudio'), true);
+  assert.equal(styleSource.includes('.arcade-music-player'), true);
+  assert.equal(styleSource.includes('.arcade-music-progress-fill'), true);
+  assert.equal(styleSource.includes('[data-expanded="true"]'), true);
+  assert.equal(smokeScript.includes('arcadeMusicPlayer'), true);
+  assert.equal(smokeScript.includes('Hard Money Heroes 16-BIT Arcade Music'), true);
 });
 
 test('V2 art and audio plans track Justin reference assets, Lester redo, 150x150 profile direction, and free SFX sources', () => {
@@ -739,7 +821,8 @@ test('V2 art and audio plans track Justin reference assets, Lester redo, 150x150
 test('Hard Money Heroes manifest ingests Lester/Lilly weapon frames, first enemies, menu screens, and prototype music', () => {
   const manifest = HARD_MONEY_HEROES_ASSET_MANIFEST;
   assert.equal(manifest.id, 'hard-money-heroes-justin-assets-v1');
-  assert.equal(manifest.generatedFrom.includes('Hard Money Heroes/Art Assets'), true);
+  assert.equal(manifest.generatedFrom.includes('source path redacted') || manifest.generatedFrom.includes('C:'), false);
+  assert.equal(manifest.generatedFrom.includes('user-provided Hard Money Heroes art assets'), true);
 
   for (const actorId of ['lester', 'lilly']) {
     const actor = manifest.playableCharacters[actorId];
@@ -760,6 +843,14 @@ test('Hard Money Heroes manifest ingests Lester/Lilly weapon frames, first enemi
 
   assert.equal(manifest.playableCharacters.lester.weapons.pistol.preservedFromPreviousPass, true);
   assert.equal(manifest.playableCharacters.lester.weapons.shotgun.preservedFromPreviousPass, true);
+  assert.equal(manifest.playableCharacters.lester.weapons.knife.stabAnimation.selectedFrom, 'Lester-stab.png');
+  assert.equal(manifest.playableCharacters.lester.weapons.knife.stabAnimation.frames.length >= 8, true);
+  for (const frame of manifest.playableCharacters.lester.weapons.knife.stabAnimation.frames.slice(0, 4)) {
+    const framePath = fileURLToPath(new URL(`../apps/portal/${frame.src.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
+    const png = readFileSync(framePath);
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], frame.size, `${frame.src} dimensions match`);
+  }
 
   assert.equal(manifest.enemies.trenchDegen.behavior.primary, 'slow-readable-melee');
   assert.equal(manifest.enemies.trenchDegen.behavior.secondary, 'occasional-low-rate-pistol');
@@ -775,6 +866,53 @@ test('Hard Money Heroes manifest ingests Lester/Lilly weapon frames, first enemi
   assert.equal(manifest.audio.musicTracks.length >= 4, true);
   assert.equal(manifest.audio.sfxPlan.weaponFire.includes('machine-gun'), true);
   assert.equal(manifest.audio.sfxPlan.enemyBarks.includes('warren-spear-rider-horse'), true);
+});
+
+test('Hard Money Heroes adds Crypto Bro and Gas Beast enemies plus extra Warren boss frames from the new art drop', () => {
+  const manifest = HARD_MONEY_HEROES_ASSET_MANIFEST;
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+
+  // New enemies present in the canonical manifest with readable behaviors.
+  assert.equal(manifest.enemies.cryptoBro.id, 'crypto-bro');
+  assert.equal(manifest.enemies.cryptoBro.title, 'Crypto Bro');
+  assert.equal(typeof manifest.enemies.cryptoBro.behavior.primary, 'string');
+  assert.equal(manifest.enemies.gasBeast.id, 'gas-beast');
+  assert.equal(manifest.enemies.gasBeast.title, 'Gas Beast');
+  assert.equal(typeof manifest.enemies.gasBeast.behavior.primary, 'string');
+
+  // Every animation state for the two new enemies must resolve to real PNG frames on disk.
+  for (const enemyKey of ['cryptoBro', 'gasBeast']) {
+    const animations = manifest.enemies[enemyKey].art.animations;
+    for (const state of ['idle', 'walk', 'run', 'jump', 'attack']) {
+      assert.equal(animations[state].frames.length >= 8, true, `${enemyKey} ${state} has frames`);
+      for (const frame of animations[state].frames.slice(0, 4)) {
+        const framePath = fileURLToPath(new URL(`../apps/portal/${frame.src.replace('./', '')}`, import.meta.url));
+        assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
+        const png = readFileSync(framePath);
+        assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], frame.size, `${frame.src} dimensions match`);
+      }
+    }
+    for (const still of manifest.enemies[enemyKey].art.stills) {
+      const stillPath = fileURLToPath(new URL(`../apps/portal/${still.src.replace('./', '')}`, import.meta.url));
+      assert.equal(existsSync(stillPath) && statSync(stillPath).size > 0, true, `${still.src} exists`);
+    }
+  }
+
+  // The extra Warren Spear Rider boss frames must be folded into the boss animation set.
+  const bossAnimations = manifest.enemies.warrenSpearRider.art.animations;
+  for (const state of ['idle', 'walk', 'run', 'jump']) {
+    assert.equal(bossAnimations[state].frames.length >= 8, true, `warren ${state} retains frames`);
+    const firstFrame = bossAnimations[state].frames[0];
+    const framePath = fileURLToPath(new URL(`../apps/portal/${firstFrame.src.replace('./', '')}`, import.meta.url));
+    assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `warren ${state} frame exists`);
+  }
+  assert.equal(manifest.enemies.warrenSpearRider.extraFramesIngested, true);
+
+  // Runtime must build art for the two new enemies and route them via the manifest key resolver.
+  assert.equal(mainSource.includes("buildEnemyArtFromManifest('cryptoBro')"), true);
+  assert.equal(mainSource.includes("buildEnemyArtFromManifest('gasBeast')"), true);
+  assert.equal(mainSource.includes("'cryptoBro'"), true);
+  assert.equal(mainSource.includes("'gasBeast'"), true);
 });
 
 test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city source trove for runtime staging', () => {
@@ -803,20 +941,28 @@ test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city 
   assert.equal(mainSource.includes("scenic-prop-card"), true);
 });
 
-test('Hard Money Heroes runtime wires manifest art into official menus, character swap, first enemy visuals, and gameplay controls', () => {
+test('Hard Money Heroes runtime wires manifest art into official menus, locked Lilly teaser, first enemy visuals, and gameplay controls', () => {
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
 
   assert.equal(mainSource.includes('HARD_MONEY_HEROES_ASSET_MANIFEST'), true);
   assert.equal(mainSource.includes('buildCharacterArtFromManifest'), true);
+  assert.equal(mainSource.includes('weaponAssets.knife?.stabAnimation'), true);
+  assert.equal(mainSource.includes('hero.animations.knifeStab'), true);
+  assert.equal(mainSource.includes('lastMeleeFrame'), true);
   assert.equal(mainSource.includes('combatArt.characters'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenStyle'), true);
   assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
   assert.equal(mainSource.includes('warrenSpearRider'), true);
   assert.equal(mainSource.includes('combat.characterId'), true);
+  assert.equal(mainSource.includes('showLillyTeaser'), true);
+  assert.equal(mainSource.includes('function swapCombatCharacter'), false);
+  assert.equal(mainSource.includes("combat.characterId = combat.characterId === 'lester' ? 'lilly' : 'lester'"), false);
+  assert.equal(indexSource.includes('Lilly Locked'), true);
   assert.equal(indexSource.includes('officialGameplayControls'), true);
   assert.equal(styleSource.includes('.gameplay-control-bar'), true);
+  assert.equal(styleSource.includes('.lilly-teaser-button'), true);
 });
 
 test('control display model does not leak undefined labels into the visible controls guide', () => {
@@ -856,9 +1002,9 @@ test('public experience loop gives players a clean arcade entry, game over, and 
   assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.name, "Lester's Arcade public player loop");
   assert.deepEqual(
     LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.stageOrder,
-    ['wallet-splash', 'arcade-entry', 'cabinet-select', 'mode-select', 'level-intro', 'gameplay', 'game-over-summary', 'return-to-arcade'],
+    ['wallet-splash', 'arcade-entry', 'cabinet-select', 'game-intro-splash', 'mode-select', 'level-intro', 'gameplay', 'game-over-summary', 'return-to-arcade'],
   );
-  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.playerPromise.includes('under 30 seconds'), true);
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.playerPromise.includes('under 45 seconds'), true);
   assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.modeBoundaries.free.tracks, false);
   assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.modeBoundaries.ranked.submissionTrigger, 'explicit-game-over-submit');
   assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.some((ramp) => ramp.id === 'return-to-arcade' && ramp.target === 'cabinet-select'), true);
@@ -1094,6 +1240,104 @@ test('tactical level tuning expands rooms with cover lanes, prop spacing, and sl
   assert.equal(mainSource.includes('tacticalRoomTuning.enemySpawnDelayFrames'), true);
 });
 
+test('animation production briefs convert missing coverage into no-placeholder art requests', () => {
+  const coverage = buildHardMoneyHeroesAnimationCoverageReport();
+  const briefs = buildHardMoneyHeroesAnimationProductionBriefs(coverage);
+
+  assert.equal(LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.placeholderPolicy, 'briefs-only-no-shipping-placeholder-sprites');
+  assert.deepEqual(LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS.heroPriorityStates.slice(0, 5), ['crouch', 'hurt', 'death', 'victory', 'fall']);
+  assert.equal(briefs.placeholderPolicy, 'No placeholder production sprites are generated by this tool; it emits art-direction briefs and manifest requirements only.');
+  assert.equal(briefs.heroes.lester.requests.some((request) => request.state === 'crouch' && request.frameCount >= 6), true);
+  assert.equal(briefs.heroes.lilly.requests.some((request) => request.state === 'hurt' && request.readabilityGoal.includes('damage')), true);
+  assert.equal(briefs.enemies.trenchDegen.requests.some((request) => request.state === 'attack-tell' && request.aiPurpose.includes('telegraph')), true);
+  assert.equal(briefs.enemies.evilBanker.requests.some((request) => request.state === 'death' && request.manifestState === 'death'), true);
+  assert.equal(briefs.summary.heroRequestCount >= 10, true);
+  assert.equal(briefs.summary.enemyRequestCount >= 12, true);
+  assert.equal(briefs.pipeline.some((step) => step.command === 'npm run design:audit'), true);
+  assert.equal(briefs.pipeline.some((step) => step.command === 'npm run assets:verify'), true);
+});
+
+test('dev tactical balance overlay exposes camera, cover, and enemy AI diagnostics without leaking into default public UI', () => {
+  assert.equal(LESTER_BLASTER_DEV_BALANCE_OVERLAY.enabledByDefault, false);
+  assert.equal(LESTER_BLASTER_DEV_BALANCE_OVERLAY.queryParam, 'hmhDebug');
+  assert.deepEqual(LESTER_BLASTER_DEV_BALANCE_OVERLAY.layers.map((layer) => layer.id), ['camera-bounds', 'player-lanes', 'arena-locks', 'enemy-ai', 'cover-props']);
+
+  const overlay = buildTacticalBalanceDebugOverlayModel({
+    debugEnabled: true,
+    playerX: 318,
+    scroll: 144,
+    furthestScroll: 200,
+    stagePhase: 'travel',
+    scrollLocked: false,
+    stageTravel: 73,
+    stageTravelGoal: 254,
+    enemies: [
+      { role: 'cover-shooter', state: 'telegraph', x: 520, attackTimer: 44 },
+      { role: 'aggressive-melee-rusher', state: 'seek', x: 390, attackTimer: 91 },
+    ],
+    props: [
+      { kind: 'crate', cover: true, x: 180, w: 54 },
+      { kind: 'barrel', explosive: true, x: 340, w: 34 },
+    ],
+  });
+
+  assert.equal(overlay.enabled, true);
+  assert.equal(overlay.publicUiDefault, 'hidden');
+  assert.equal(overlay.metrics.camera.mode, 'player-led-rightward-scroll');
+  assert.equal(overlay.metrics.camera.backtrackLimit, '128px');
+  assert.equal(overlay.metrics.stage.progress, '73/254M');
+  assert.equal(overlay.metrics.enemies.count, 2);
+  assert.equal(overlay.metrics.enemies.telegraphing, 1);
+  assert.equal(overlay.metrics.cover.coverCount, 1);
+  assert.equal(overlay.metrics.cover.explosiveCount, 1);
+  assert.equal(overlay.layers.some((layer) => layer.id === 'enemy-ai' && layer.items.some((item) => item.includes('telegraph'))), true);
+});
+
+test('next-move workflow automation includes interaction smoke and weekly design review outputs', () => {
+  const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'));
+  assert.equal(packageJson.scripts['smoke:portal:interactions'], 'node scripts/smoke-portal-interactions.mjs');
+  assert.equal(packageJson.scripts['design:weekly'], 'node scripts/write-hmh-weekly-design-review.mjs');
+  assert.equal(packageJson.scripts['verify:full'].includes('npm run smoke:portal:interactions'), true);
+  assert.equal(packageJson.scripts['verify:full'].includes('npm run design:weekly'), true);
+
+  const interactionSmokeScript = readFileSync(fileURLToPath(new URL('../scripts/smoke-portal-interactions.mjs', import.meta.url)), 'utf8');
+  const weeklyScript = readFileSync(fileURLToPath(new URL('../scripts/write-hmh-weekly-design-review.mjs', import.meta.url)), 'utf8');
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
+
+  assert.equal(interactionSmokeScript.includes('wallet-profile-free-ranked-exit'), true);
+  assert.equal(interactionSmokeScript.includes('combatHudOverlay'), true);
+  assert.equal(interactionSmokeScript.includes('clearInactiveCombatOverlay'), true);
+  assert.equal(interactionSmokeScript.includes('buildTacticalBalanceDebugOverlayModel'), true);
+  assert.equal(weeklyScript.includes('hard-money-heroes-weekly-design-review.md'), true);
+  assert.equal(weeklyScript.includes('animation-coverage-action-plan'), true);
+  assert.equal(weeklyScript.includes('tactical-balance-snapshot'), true);
+  assert.equal(mainSource.includes('renderTacticalBalanceDebugOverlay'), true);
+  assert.equal(mainSource.includes('hmhDebug=balance'), true);
+  assert.equal(mainSource.includes('playerX: combat.playerX'), true);
+  assert.equal(mainSource.includes('combat.player.x'), false);
+  assert.equal(indexSource.includes('tacticalBalanceDebugOverlay'), true);
+  assert.equal(styleSource.includes('.tactical-debug-overlay'), true);
+});
+
+test('animation production prompt generator writes per-character and per-enemy request docs', () => {
+  const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'));
+  assert.equal(packageJson.scripts['design:animation-prompts'], 'node scripts/write-hmh-animation-production-requests.mjs');
+  assert.equal(packageJson.scripts['verify:full'].includes('npm run design:animation-prompts'), true);
+  assert.equal(packageJson.scripts.check.includes('scripts/write-hmh-animation-production-requests.mjs'), true);
+
+  const promptScript = readFileSync(fileURLToPath(new URL('../scripts/write-hmh-animation-production-requests.mjs', import.meta.url)), 'utf8');
+  assert.equal(promptScript.includes('buildHardMoneyHeroesAnimationProductionBriefs'), true);
+  assert.equal(promptScript.includes('hard-money-heroes-animation-production-requests.md'), true);
+  for (const actor of ['lester', 'lilly', 'trenchDegen', 'evilBanker', 'warrenSpearRider']) {
+    assert.equal(promptScript.includes(actor), true);
+  }
+  assert.equal(promptScript.includes('negativePrompt'), true);
+  assert.equal(promptScript.includes('transparent PNG frames'), true);
+  assert.equal(promptScript.includes('Do not generate shipping placeholder sprites'), true);
+});
+
 test('workflow automation scripts emit animation coverage, balance snapshots, and public smoke gates', () => {
   const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'));
   assert.equal(packageJson.scripts['design:audit'], 'node scripts/report-hmh-animation-coverage.mjs');
@@ -1108,7 +1352,9 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-tactical-exit-v2'), true);
+  assert.equal(smokeScript.includes('hmh-intro-splash-v5'), true);
+  assert.equal(smokeScript.includes('findOpenSmokePort'), true);
+  assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
   assert.equal(smokeScript.includes('combatHudOverlay'), true);
 });

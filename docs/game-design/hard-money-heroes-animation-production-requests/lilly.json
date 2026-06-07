@@ -1,0 +1,213 @@
+{
+  "key": "lilly",
+  "slug": "lilly",
+  "title": "Lilly",
+  "role": "alternate playable hero",
+  "currentAnimatedStates": [
+    "idle",
+    "walk",
+    "run",
+    "jump",
+    "attack"
+  ],
+  "stillCoveredStates": [
+    "shoot",
+    "melee",
+    "throw"
+  ],
+  "requestCount": 8,
+  "requests": [
+    {
+      "order": 1,
+      "id": "lilly-crouch",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "crouch",
+      "manifestState": "crouch",
+      "priority": "high",
+      "frameCount": 6,
+      "readabilityGoal": "must visibly lower the hitbox behind cover and read at 128px canvas scale",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 6 frames for the \"crouch\" state, manifest tag \"crouch\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: must visibly lower the hitbox behind cover and read at 128px canvas scale. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "6 distinct frames for crouch",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 2,
+      "id": "lilly-hurt",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "hurt",
+      "manifestState": "hurt",
+      "priority": "high",
+      "frameCount": 6,
+      "readabilityGoal": "damage reaction must flash/tilt clearly so players understand they were hit",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 6 frames for the \"hurt\" state, manifest tag \"hurt\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: damage reaction must flash/tilt clearly so players understand they were hit. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "6 distinct frames for hurt",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 3,
+      "id": "lilly-death",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "death",
+      "manifestState": "death",
+      "priority": "high",
+      "frameCount": 10,
+      "readabilityGoal": "defeat pose must read quickly without gore dependency",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 10 frames for the \"death\" state, manifest tag \"death\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: defeat pose must read quickly without gore dependency. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "10 distinct frames for death",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 4,
+      "id": "lilly-victory",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "victory",
+      "manifestState": "victory",
+      "priority": "high",
+      "frameCount": 8,
+      "readabilityGoal": "short celebration loop for level clear and arcade identity",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 8 frames for the \"victory\" state, manifest tag \"victory\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: short celebration loop for level clear and arcade identity. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "8 distinct frames for victory",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 5,
+      "id": "lilly-fall",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "fall",
+      "manifestState": "fall",
+      "priority": "high",
+      "frameCount": 6,
+      "readabilityGoal": "falling silhouette must separate from jump for platform timing",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 6 frames for the \"fall\" state, manifest tag \"fall\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: falling silhouette must separate from jump for platform timing. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "6 distinct frames for fall",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 6,
+      "id": "lilly-shoot",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "shoot",
+      "manifestState": "shoot",
+      "priority": "high",
+      "frameCount": 8,
+      "readabilityGoal": "muzzle/recoil pose must point clearly to the right with chunky arcade timing",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 8 frames for the \"shoot\" state, manifest tag \"shoot\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: muzzle/recoil pose must point clearly to the right with chunky arcade timing. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "8 distinct frames for shoot",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 7,
+      "id": "lilly-melee",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "melee",
+      "manifestState": "melee",
+      "priority": "high",
+      "frameCount": 8,
+      "readabilityGoal": "blade arc must communicate close-range risk/reward",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 8 frames for the \"melee\" state, manifest tag \"melee\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: blade arc must communicate close-range risk/reward. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "8 distinct frames for melee",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    },
+    {
+      "order": 8,
+      "id": "lilly-throw",
+      "actorKey": "lilly",
+      "actorTitle": "Lilly",
+      "actorSlug": "lilly",
+      "actorRole": "alternate playable hero",
+      "state": "throw",
+      "manifestState": "throw",
+      "priority": "high",
+      "frameCount": 8,
+      "readabilityGoal": "throw anticipation and release should sync with projectile spawn",
+      "delivery": "transparent PNG frames or Aseprite sheet tag ready for manifest ingestion",
+      "prompt": "Hard Money Heroes inside Lester's Arcade production pixel-art animation request for Lilly, alternate playable hero. Create 8 frames for the \"throw\" state, manifest tag \"throw\". Character read: nimble alternate hero silhouette, same hitbox readability as Lester, distinct from Lester at a glance. Palette/readability: match current Lilly frames; keep her silhouette and accent colors readable against desert/city backgrounds. Motion direction: slightly quicker-feeling anticipation while preserving identical gameplay timing and fairness. Gameplay purpose: throw anticipation and release should sync with projectile spawn. Existing still-covered states to upgrade without changing identity: shoot, melee, throw. Frame language: crisp pixel art, no antialias blur, no painterly smear; consistent sprite proportions with the existing runtime frames; clean transparent background, no baked scenery, no UI text inside sprites; readable at 128px canvas scale and still clear when scaled up in the browser; include anticipation, contact/action, and recovery silhouettes when the state implies impact. Delivery: transparent PNG frames or Aseprite sheet tag ready for manifest ingestion.",
+      "negativePrompt": "photorealistic rendering, 3D model render, smooth vector art, anime illustration sheet with anti-aliased outlines, muddy palette, tiny unreadable limbs, background scenery baked into frames, watermark, caption text, logo text, UI elements, different character design from existing Hard Money Heroes assets, extra weapons not requested by the animation state",
+      "checklist": [
+        "8 distinct frames for throw",
+        "transparent background in every frame",
+        "right-facing side-view alignment unless the existing sheet requires mirrored variants",
+        "same baseline/feet position as current runtime actor frames where applicable",
+        "state is readable before adding particles, gore, or hit flashes",
+        "Do not generate shipping placeholder sprites; mark draft/test frames clearly if used internally"
+      ]
+    }
+  ]
+}

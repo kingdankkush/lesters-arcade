@@ -17,6 +17,29 @@
           <button id="developerBackstageToggle" class="ghost-button dev-tool-toggle" type="button" hidden>Tools</button>
         </nav>
 
+        <aside id="arcadeMusicPlayer" class="arcade-music-player" data-expanded="false" data-playing="false" data-muted="false" aria-label="Lester's Arcade music player">
+          <audio id="arcadeMusicAudio" preload="metadata"></audio>
+          <div class="arcade-music-now">
+            <span class="arcade-music-kicker">Arcade Jukebox</span>
+            <strong id="arcadeMusicTitle">Lester's Arcade Playlist</strong>
+            <span id="arcadeMusicTime" class="arcade-music-time">0:00 / 0:00</span>
+          </div>
+          <div class="arcade-music-progress" aria-hidden="true">
+            <span id="arcadeMusicProgressFill" class="arcade-music-progress-fill"></span>
+          </div>
+          <div class="arcade-music-controls" aria-label="Arcade music controls">
+            <button id="arcadeMusicPreviousButton" class="arcade-music-button" type="button" aria-label="Previous song">⏮</button>
+            <button id="arcadeMusicPlayButton" class="arcade-music-button primary" type="button" aria-label="Play arcade music">▶</button>
+            <button id="arcadeMusicMuteButton" class="arcade-music-button" type="button" aria-label="Mute arcade music">🔊</button>
+            <button id="arcadeMusicNextButton" class="arcade-music-button" type="button" aria-label="Next song">⏭</button>
+            <button id="arcadeMusicExpandButton" class="arcade-music-button" type="button" aria-label="Expand arcade music player">▾</button>
+          </div>
+          <div class="arcade-music-expanded-panel">
+            <span class="arcade-music-duration-label">Length <strong id="arcadeMusicDuration">0:00</strong></span>
+            <ol id="arcadeMusicQueueList" class="arcade-music-queue"></ol>
+          </div>
+        </aside>
+
         <section id="officialWalletSplash" class="official-view wallet-splash-view">
           <div class="splash-copy">
             <p class="eyebrow">Official Testnet App // lestersarcade.io</p>
@@ -25,8 +48,15 @@
             <button id="officialConnectButton" class="primary-button big-action" type="button">Connect Wallet</button>
             <p id="officialWalletCopy" class="tiny-note">Your wallet is your profile. Scores, achievements, usernames, avatars, and ranked runs attach to the connected wallet.</p>
           </div>
-          <div class="splash-cabinet-stack" aria-hidden="true">
-            <div class="neon-cabinet cabinet-live"><span>Hard Money Heroes</span></div>
+          <div class="splash-cabinet-stack" aria-label="Featured arcade cabinet selection">
+            <div class="splash-featured-cabinet">
+              <div id="splashFeaturedCabinet" class="splash-featured-cabinet-art" aria-hidden="true"></div>
+              <div class="splash-featured-cabinet-copy">
+                <span class="cabinet-status-label">Selected Cabinet</span>
+                <strong>Hard Money Heroes</strong>
+                <small>Desktop sprite rotation from Justin’s cabinet art.</small>
+              </div>
+            </div>
             <div class="neon-cabinet cabinet-locked"><span>Lilly Lightning</span></div>
             <div class="neon-cabinet cabinet-locked"><span>Mempool Mayhem</span></div>
           </div>
@@ -41,11 +71,29 @@
           <div id="officialCabinetGrid" class="official-cabinet-grid" aria-label="Arcade cabinet selection"></div>
         </section>
 
+        <section id="officialGameIntroSplash" class="official-view game-intro-splash-view" hidden>
+          <div class="game-intro-shell">
+            <div class="game-intro-heading">
+              <p class="eyebrow">Cabinet Boot Sequence</p>
+              <h2>Hard Money Heroes</h2>
+              <p id="hardMoneyHeroesIntroStatus" class="machine-copy">Loading Lester’s intro transmission. The clip fades to black before the game menu appears.</p>
+            </div>
+            <div class="game-intro-video-frame" aria-label="Hard Money Heroes intro splash video">
+              <video id="hardMoneyHeroesIntroVideo" class="game-intro-video" src="./assets/video/hard-money-heroes-intro.mp4" poster="./assets/hard-money-heroes/screens/boot-splash.png" preload="auto" playsinline controls></video>
+              <div id="hardMoneyHeroesIntroFade" class="game-intro-fade" aria-hidden="true"></div>
+            </div>
+            <div class="game-intro-controls">
+              <button id="hardMoneyHeroesIntroSkipButton" class="primary-button big-action" type="button">Skip to Game Menu</button>
+              <p class="tiny-note">Wallet/profile is already active from Lester’s Arcade. Hard Money Heroes no longer asks for a second connect-wallet step.</p>
+            </div>
+          </div>
+        </section>
+
         <section id="officialModeSelect" class="official-view mode-select-view" hidden>
           <div>
             <p class="eyebrow">Selected Cabinet</p>
             <h2>Hard Money Heroes</h2>
-            <p class="machine-copy">Choose Free Mode for local practice, or Play Ranked for an official testnet run. Ranked will eventually submit at game over with wallet, username, avatar, score, and run receipt.</p>
+            <p class="machine-copy">Your Lester’s Arcade profile is already active. Choose Free Mode for local practice, or Play Ranked for an official testnet run that can submit at game over with username, avatar, score, and run receipt.</p>
           </div>
           <div class="official-mode-grid">
             <button id="officialFreeModeButton" class="mode-card" type="button">
@@ -92,7 +140,7 @@
             <button id="combatPauseButton" class="secondary-button" type="button">Pause</button>
             <button id="combatRestartButton" class="secondary-button" type="button">Restart</button>
             <button id="combatMusicButton" class="secondary-button" type="button">Music On</button>
-            <button id="combatCharacterButton" class="secondary-button" type="button">Swap: Lester</button>
+            <button id="combatCharacterButton" class="secondary-button lilly-teaser-button" type="button" aria-label="Lilly future unlock teaser">Lilly Locked</button>
             <button id="combatViewportButton" class="secondary-button" type="button">Fullscreen</button>
             <button id="combatReturnMenuButton" class="secondary-button" type="button">Game Menu</button>
             <button id="combatExitButton" class="secondary-button" type="button">Exit Game</button>
@@ -100,11 +148,12 @@
           <div id="combatMenuPanel" class="combat-menu-panel" hidden>
             <p class="eyebrow">Game Menu</p>
             <h3 id="combatMenuTitle">Paused</h3>
-            <p id="combatMenuCopy">Restart, music, character, and exit controls are always available during gameplay.</p>
+            <p id="combatMenuCopy">Restart, music, Lilly teaser, and exit controls are always available during gameplay.</p>
             <div id="combatGameOverSummary" class="game-over-summary" hidden aria-live="polite"></div>
             <div id="combatMenuActionGrid" class="combat-menu-action-grid" aria-label="Pause and game-over actions"></div>
           </div>
           <div id="combatHudOverlay" class="combat-hud-overlay" aria-label="Hard Money Heroes health score timer power-ups and status" aria-live="polite"></div>
+          <aside id="tacticalBalanceDebugOverlay" class="tactical-debug-overlay" hidden aria-label="Developer tactical balance debug overlay"></aside>
           <div id="officialCombatMount" class="official-combat-mount"></div>
         </section>
       </section>
@@ -368,6 +417,6 @@
       </div>
     </main>
 
-    <script type="module" src="./main.js?v=hmh-tactical-exit-v2"></script>
+    <script type="module" src="./main.js?v=hmh-intro-splash-v5"></script>
   </body>
 </html>
