@@ -1,0 +1,26 @@
+status: completed
+id: 86d135d5-3a9c-4b39-86c6-4d70894e39a6
+name: HMH ISO Warren Spear Rider Mini Boss
+directions: 8 (south, east, north, west, south-east, north-east, north-west, south-west)
+size: 136x136px
+view: low top-down
+style: basic shading, single color black outline, medium detail
+
+rotations:
+  south: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south.png
+  east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/east.png
+  north: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north.png
+  west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/west.png
+  south-east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south-east.png
+  north-east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north-east.png
+  north-west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north-west.png
+  south-west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south-west.png
+
+animations: none
+
+download: https://api.pixellab.ai/mcp/characters/86d135d5-3a9c-4b39-86c6-4d70894e39a6/download
+
+available_animations: backflip, breathing-idle, cross-punch, crouched-walking, crouching, drinking, falling-back-death, fight-stance-idle-8-frames, fireball, flying-kick, front-flip, getting-up +37 more
+
+actions: animate_character(character_id="86d135d5-3a9c-4b39-86c6-4d70894e39a6", ...) | create_character_state(character_id="86d135d5-3a9c-4b39-86c6-4d70894e39a6", ...) | delete_character(character_id="86d135d5-3a9c-4b39-86c6-4d70894e39a6")
+hint: animate_character(character_id="86d135d5-3a9c-4b39-86c6-4d70894e39a6", template_animation_id="backflip")

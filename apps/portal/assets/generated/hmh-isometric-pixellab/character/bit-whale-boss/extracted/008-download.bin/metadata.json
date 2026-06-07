@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "725efd4d-fdcf-4285-95ef-ace4b4a7297f",
+        "name": "HMH ISO Bit Whale Boss",
+        "prompt": "massive Bit Whale boss, humanoid whale tycoon in armored suit with coin cannons, huge readable boss silhouette for isometric arena survival, original crypto satire; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": {
+          "width": 160,
+          "height": 160
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-06-07T19:36:26.194943+00:00"
+      },
+      "folder": "HMH_ISO_Bit_Whale_Boss",
+      "frames": {
+        "rotations": {
+          "south": "HMH_ISO_Bit_Whale_Boss/rotations/south.png",
+          "south-east": "HMH_ISO_Bit_Whale_Boss/rotations/south-east.png",
+          "east": "HMH_ISO_Bit_Whale_Boss/rotations/east.png",
+          "north-east": "HMH_ISO_Bit_Whale_Boss/rotations/north-east.png",
+          "north": "HMH_ISO_Bit_Whale_Boss/rotations/north.png",
+          "north-west": "HMH_ISO_Bit_Whale_Boss/rotations/north-west.png",
+          "west": "HMH_ISO_Bit_Whale_Boss/rotations/west.png",
+          "south-west": "HMH_ISO_Bit_Whale_Boss/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-06-07T20:00:58.114605"
+}

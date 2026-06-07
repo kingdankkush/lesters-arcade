@@ -98,6 +98,7 @@ try {
     'combatExitButton',
     'combatHudOverlay',
     'tacticalBalanceDebugOverlay',
+    'arcadeMusicShuffleButton',
   ];
   const requiredMainMarkers = [
     'enterOfficialArcadeFromSplash',

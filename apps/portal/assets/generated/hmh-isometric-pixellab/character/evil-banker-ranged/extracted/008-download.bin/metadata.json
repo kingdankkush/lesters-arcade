@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "3ba27b41-6a93-4e28-a6cc-57084bb8cdea",
+        "name": "HMH ISO Evil Banker Ranged Shooter",
+        "prompt": "evil banker ranged shooter enemy, suit, red tie, briefcase blaster, slick hair, readable stop-and-shoot silhouette, satirical but original; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": {
+          "width": 96,
+          "height": 96
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-06-07T19:31:59.058464+00:00"
+      },
+      "folder": "HMH_ISO_Evil_Banker_Ranged_Shooter",
+      "frames": {
+        "rotations": {
+          "south": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/south.png",
+          "south-east": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/south-east.png",
+          "east": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/east.png",
+          "north-east": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/north-east.png",
+          "north": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/north.png",
+          "north-west": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/north-west.png",
+          "west": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/west.png",
+          "south-west": "HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-06-07T20:00:39.962318"
+}

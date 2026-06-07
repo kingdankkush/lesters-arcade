@@ -49,6 +49,23 @@ async function fetchText(url, attempts = 10) {
   throw lastError;
 }
 
+async function fetchPngSize(url, attempts = 10) {
+  let lastError = null;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      const png = Buffer.from(await response.arrayBuffer());
+      if (png.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') throw new Error(`${url} is not a PNG`);
+      return [png.readUInt32BE(16), png.readUInt32BE(20)];
+    } catch (error) {
+      lastError = error;
+      await sleep(250);
+    }
+  }
+  throw lastError;
+}
+
 function assertIncludes(label, source, needle) {
   if (!source.includes(needle)) {
     throw new Error(`${label} missing required smoke marker: ${needle}`);
@@ -72,6 +89,7 @@ try {
   const main = await fetchText(`${portalUrl}main.js?v=hmh-intro-splash-v5`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
+  const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
 
   for (const marker of [
     'officialConnectButton',
@@ -83,6 +101,7 @@ try {
     'arcadeMusicPlayer',
     'arcadeMusicProgressFill',
     'arcadeMusicNextButton',
+    'arcadeMusicShuffleButton',
     'combatMenuPanel',
     'splashFeaturedCabinet',
     'hmh-intro-splash-v5',
@@ -103,6 +122,10 @@ try {
     'buildArcadeMusicPlayerModel',
     'startArcadeMusicForGame',
     "startArcadeMusicForGame('hard-money-heroes')",
+    'buildPixelLabLesterCalibrationArt',
+    'lesterPixelLabCalibration',
+    'combatArt.hero = combatArt.characters.lesterPixelLabCalibration',
+    'hero.animations.shoot',
   ]) {
     assertIncludes('portal main.js', main, marker);
   }
@@ -120,6 +143,29 @@ try {
     assertIncludes('playlist manifest', playlistManifest, marker);
   }
 
+  for (const marker of [
+    'HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST',
+    'pixellab-lester-hero-6d6e53e2',
+    'idle/run/shoot',
+    'animations/shoot-blaster/east/00.png',
+    'animations/idle-combat-ready/east/00.png',
+    'animations/run-side-scroll/east/00.png',
+  ]) {
+    assertIncludes('PixelLab Lester runtime manifest', pixelLabRuntimeManifest, marker);
+  }
+
+  const pixelLabSpriteProbePaths = [
+    'assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/east.png',
+    'assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/00.png',
+    'assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/00.png',
+    'assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/00.png',
+    'assets/generated/pixellab-calibration/lester-hero-6d6e53e2/hmh-pixellab-lester-calibration-contact-sheet.png',
+  ];
+  for (const spritePath of pixelLabSpriteProbePaths) {
+    const [width, height] = await fetchPngSize(`${portalUrl}${spritePath}`);
+    if (width <= 0 || height <= 0) throw new Error(`PixelLab sprite probe ${spritePath} has invalid dimensions ${width}x${height}`);
+  }
+
   const playlist = JSON.parse(playlistManifest);
   if (playlist.tracks.length < 20) throw new Error(`playlist manifest expected 20 tracks, got ${playlist.tracks.length}`);
   const firstHmhSrc = playlist.tracks.find((track) => track.id === 'hard-money-heroes-16-bit-arcade-music')?.src;
@@ -128,7 +174,7 @@ try {
 
   console.log('Portal smoke gate passed.');
   console.log(`Checked ${portalUrl}`);
-  console.log('Covered: wallet entry markers, free/ranked buttons, gameplay canvas, HUD overlay, options popup, return/exit controls, and player-led camera wiring.');
+  console.log('Covered: wallet entry markers, free/ranked buttons, gameplay canvas, HUD overlay, options popup, return/exit controls, player-led camera wiring, and PixelLab Lester calibration sprite/runtime asset loading.');
 } finally {
   if (server && !server.killed) server.kill();
 }

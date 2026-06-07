@@ -1035,6 +1035,35 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   max-height: calc(100vh - 166px);
 }
 
+
+.official-combat-mount:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  padding: 0;
+  border-radius: 0;
+  background: #02040a;
+  display: grid;
+  place-items: center;
+}
+
+.official-combat-mount:fullscreen canvas,
+.official-combat-mount[data-viewport="fullscreen"]:fullscreen canvas {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  object-fit: contain;
+}
+
+.level-up-upgrade-card small {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 .official-combat-mount {
   min-height: 0;
   display: grid;
@@ -1773,7 +1802,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .arcade-music-controls {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 6px;
 }
 
@@ -1789,6 +1818,14 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .arcade-music-button.primary {
   border-color: rgba(69, 255, 138, 0.5);
   background: rgba(69, 255, 138, 0.16);
+}
+
+.arcade-music-button.active,
+.arcade-music-player[data-shuffle="true"] #arcadeMusicShuffleButton {
+  border-color: rgba(255, 232, 77, 0.65);
+  color: var(--neon-yellow);
+  background: rgba(255, 232, 77, 0.14);
+  box-shadow: 0 0 12px rgba(255, 232, 77, 0.22);
 }
 
 .arcade-music-button:hover,

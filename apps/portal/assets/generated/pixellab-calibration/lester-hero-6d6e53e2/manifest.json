@@ -1,0 +1,389 @@
+{
+  "source": "PixelLab MCP/API",
+  "project": "Lester's Arcade / Hard Money Heroes",
+  "pack": "calibration-lester-hero-idle-run-shoot",
+  "character_id": "6d6e53e2-504d-435c-bb8b-d7c1e585e4ae",
+  "created_at": "2026-06-07T16:39:19.428751+00:00",
+  "prompt_summary": "Original 16-bit side-scroller hero; no text/logos/watermarks; side-view 8-direction character with east idle/run/shoot calibration animations.",
+  "local_root": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2",
+  "download_zip": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/pixellab-character-download.zip",
+  "download_zip_status": "saved apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/pixellab-character-download.zip (62571 bytes)",
+  "rotations": [
+    {
+      "direction": "south",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/south.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/south.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1818
+      }
+    },
+    {
+      "direction": "east",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/east.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/east.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1223
+      }
+    },
+    {
+      "direction": "north",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/north.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/north.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1167
+      }
+    },
+    {
+      "direction": "west",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/west.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/west.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1299
+      }
+    },
+    {
+      "direction": "south-east",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/south-east.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/south-east.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1609
+      }
+    },
+    {
+      "direction": "north-east",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/north-east.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/north-east.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1262
+      }
+    },
+    {
+      "direction": "north-west",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/north-west.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/north-west.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1374
+      }
+    },
+    {
+      "direction": "south-west",
+      "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/rotations/south-west.png",
+      "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/south-west.png",
+      "image": {
+        "width": 92,
+        "height": 92,
+        "mode": "RGBA",
+        "bytes": 1603
+      }
+    }
+  ],
+  "animations": [
+    {
+      "name": "shoot-blaster",
+      "slug": "shoot-blaster",
+      "direction": "east",
+      "frame_count": 9,
+      "frames": [
+        {
+          "index": 0,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/0.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/00.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1359
+          }
+        },
+        {
+          "index": 1,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/1.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/01.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1364
+          }
+        },
+        {
+          "index": 2,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/2.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/02.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1309
+          }
+        },
+        {
+          "index": 3,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/3.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/03.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1574
+          }
+        },
+        {
+          "index": 4,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/4.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/04.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1362
+          }
+        },
+        {
+          "index": 5,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/5.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/05.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1747
+          }
+        },
+        {
+          "index": 6,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/6.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/06.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1467
+          }
+        },
+        {
+          "index": 7,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/7.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/07.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1460
+          }
+        },
+        {
+          "index": 8,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/595fa167-5f53-4bdb-8b8b-2ed651ba12ca/east/8.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/east/08.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1422
+          }
+        }
+      ],
+      "review_gif": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/shoot-blaster/shoot-blaster-east.gif"
+    },
+    {
+      "name": "fight-stance-idle-8-frames",
+      "slug": "idle-combat-ready",
+      "direction": "east",
+      "frame_count": 8,
+      "frames": [
+        {
+          "index": 0,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/0.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/00.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1952
+          }
+        },
+        {
+          "index": 1,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/1.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/01.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1965
+          }
+        },
+        {
+          "index": 2,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/2.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/02.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1813
+          }
+        },
+        {
+          "index": 3,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/3.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/03.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1796
+          }
+        },
+        {
+          "index": 4,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/4.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/04.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1842
+          }
+        },
+        {
+          "index": 5,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/5.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/05.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1830
+          }
+        },
+        {
+          "index": 6,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/6.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/06.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1877
+          }
+        },
+        {
+          "index": 7,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/1f68b309-5ac4-4c3f-a2eb-f693ef122d5b/east/7.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/east/07.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1830
+          }
+        }
+      ],
+      "review_gif": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/idle-combat-ready/idle-combat-ready-east.gif"
+    },
+    {
+      "name": "running-6-frames",
+      "slug": "run-side-scroll",
+      "direction": "east",
+      "frame_count": 6,
+      "frames": [
+        {
+          "index": 0,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/11e21667-1c42-4d70-aa34-be57c727a875/east/0.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/00.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1649
+          }
+        },
+        {
+          "index": 1,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/11e21667-1c42-4d70-aa34-be57c727a875/east/1.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/01.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1919
+          }
+        },
+        {
+          "index": 2,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/11e21667-1c42-4d70-aa34-be57c727a875/east/2.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/02.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1589
+          }
+        },
+        {
+          "index": 3,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/11e21667-1c42-4d70-aa34-be57c727a875/east/3.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/03.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1826
+          }
+        },
+        {
+          "index": 4,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/11e21667-1c42-4d70-aa34-be57c727a875/east/4.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/04.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1799
+          }
+        },
+        {
+          "index": 5,
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/6d6e53e2-504d-435c-bb8b-d7c1e585e4ae/animations/11e21667-1c42-4d70-aa34-be57c727a875/east/5.png",
+          "local_path": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/east/05.png",
+          "image": {
+            "width": 92,
+            "height": 92,
+            "mode": "RGBA",
+            "bytes": 1665
+          }
+        }
+      ],
+      "review_gif": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/animations/run-side-scroll/run-side-scroll-east.gif"
+    }
+  ],
+  "qa_notes": [
+    "Calibration only; do not treat as final production sprite lock until Justin reviews contact sheet.",
+    "Use east-facing animations for side-scroller runtime; mirror for west-facing movement if accepted.",
+    "Review for silhouette readability, no pseudo-text/logo marks, weapon readability, and animation consistency before production batching."
+  ],
+  "contact_sheet": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/hmh-pixellab-lester-calibration-contact-sheet.png"
+}

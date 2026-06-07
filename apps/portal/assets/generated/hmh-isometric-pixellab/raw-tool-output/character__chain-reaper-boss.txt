@@ -1,0 +1,26 @@
+status: completed
+id: b39745bb-2670-4754-acfb-dfbaf50130fc
+name: HMH ISO Chain Reaper Boss
+directions: 8 (south, east, north, west, south-east, north-east, north-west, south-west)
+size: 160x160px
+view: low top-down
+style: basic shading, single color black outline, medium detail
+
+rotations:
+  south: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south.png
+  east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/east.png
+  north: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north.png
+  west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/west.png
+  south-east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south-east.png
+  north-east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north-east.png
+  north-west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north-west.png
+  south-west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south-west.png
+
+animations: none
+
+download: https://api.pixellab.ai/mcp/characters/b39745bb-2670-4754-acfb-dfbaf50130fc/download
+
+available_animations: backflip, breathing-idle, cross-punch, crouched-walking, crouching, drinking, falling-back-death, fight-stance-idle-8-frames, fireball, flying-kick, front-flip, getting-up +37 more
+
+actions: animate_character(character_id="b39745bb-2670-4754-acfb-dfbaf50130fc", ...) | create_character_state(character_id="b39745bb-2670-4754-acfb-dfbaf50130fc", ...) | delete_character(character_id="b39745bb-2670-4754-acfb-dfbaf50130fc")
+hint: animate_character(character_id="b39745bb-2670-4754-acfb-dfbaf50130fc", template_animation_id="backflip")

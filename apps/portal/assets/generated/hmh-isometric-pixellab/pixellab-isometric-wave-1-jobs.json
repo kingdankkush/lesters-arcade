@@ -1,0 +1,3132 @@
+{
+  "source": "PixelLab MCP/API",
+  "project": "Lester's Arcade / Hard Money Heroes",
+  "pack": "isometric-production-wave-1",
+  "public_root": "apps/portal/assets/generated/hmh-isometric-pixellab",
+  "created_at": "2026-06-07T19:20:12.108806+00:00",
+  "updated_at": "2026-06-07T20:00:20.869674+00:00",
+  "jobs": [
+    {
+      "job_key": "character:lester-iso-hero",
+      "asset_type": "character",
+      "slug": "lester-iso-hero",
+      "name": "Lester Isometric Hero",
+      "role": "hero",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "Lester, stubborn Rambo-like arcade action hero with black cap, dark jacket, blue/silver hard-money highlights, compact readable run-and-gun silhouette, holding a chunky sci-fi blaster at low ready; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Lester Isometric Hero",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"stylized\"}",
+        "size": 72,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "543804c6-bb28-471f-83bc-683d091303ff",
+      "queued_at": "2026-06-07T19:20:15.847552+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 543804c6-bb28-471f-83bc-683d091303ff\nname: HMH ISO Lester Isometric Hero\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 72x72px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"543804c6-bb28-471f-83bc-683d091303ff\")",
+      "last_polled_at": "2026-06-07T19:58:49.713703+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/543804c6-bb28-471f-83bc-683d091303ff/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/543804c6-bb28-471f-83bc-683d091303ff/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/543804c6-bb28-471f-83bc-683d091303ff/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/east.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1372
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/north-east.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1394
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/north-west.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1422
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/north.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1166
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/south-east.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1818
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/south-west.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1883
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/south.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1858
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lester-iso-hero/extracted/008-download.bin/HMH_ISO_Lester_Isometric_Hero/rotations/west.png",
+          "width": 104,
+          "height": 104,
+          "mode": "RGBA",
+          "bytes": 1417
+        }
+      ]
+    },
+    {
+      "job_key": "character:lilly-iso-alt-hero",
+      "asset_type": "character",
+      "slug": "lilly-iso-alt-hero",
+      "name": "Lilly Isometric Alt Hero",
+      "role": "hero_alt",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "Lilly, agile alternate hero/skin for Hard Money Heroes, confident arcade fighter with ponytail or short hair, teal/purple jacket accents, compact run-and-gun silhouette, small blaster at low ready; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Lilly Isometric Alt Hero",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"stylized\"}",
+        "size": 70,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+      "queued_at": "2026-06-07T19:20:17.039765+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 61b040dd-d2cb-4f78-ab59-b1ad703bce84\nname: HMH ISO Lilly Isometric Alt Hero\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 70x70px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"61b040dd-d2cb-4f78-ab59-b1ad703bce84\")",
+      "last_polled_at": "2026-06-07T19:58:53.156447+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/61b040dd-d2cb-4f78-ab59-b1ad703bce84/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/61b040dd-d2cb-4f78-ab59-b1ad703bce84/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/61b040dd-d2cb-4f78-ab59-b1ad703bce84/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/east.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2159
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/north-east.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2459
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/north-west.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2437
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/north.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2241
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/south-east.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2835
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/south-west.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2744
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/south.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2702
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/lilly-iso-alt-hero/extracted/008-download.bin/HMH_ISO_Lilly_Isometric_Alt_Hero/rotations/west.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 2163
+        }
+      ]
+    },
+    {
+      "job_key": "character:trench-degen-chaser",
+      "asset_type": "character",
+      "slug": "trench-degen-chaser",
+      "name": "Trench Degen Chaser",
+      "role": "enemy_chaser",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "feral crypto trench degen chaser enemy, ragged hoodie, glowing scam-phone, hunched aggressive run pose, fast fragile silhouette; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Trench Degen Chaser",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"cartoon\"}",
+        "size": 64,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "9e591394-caf5-498c-886b-1161e1a64043",
+      "queued_at": "2026-06-07T19:20:18.291416+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 9e591394-caf5-498c-886b-1161e1a64043\nname: HMH ISO Trench Degen Chaser\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"9e591394-caf5-498c-886b-1161e1a64043\")",
+      "last_polled_at": "2026-06-07T19:58:56.658274+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/9e591394-caf5-498c-886b-1161e1a64043/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/9e591394-caf5-498c-886b-1161e1a64043/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/9e591394-caf5-498c-886b-1161e1a64043/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/east.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 969
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/north-east.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1031
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/north-west.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 926
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/north.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 974
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/south-east.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1234
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/south-west.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1248
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/south.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1320
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/trench-degen-chaser/extracted/008-download.bin/HMH_ISO_Trench_Degen_Chaser/rotations/west.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 940
+        }
+      ]
+    },
+    {
+      "job_key": "character:evil-banker-ranged",
+      "asset_type": "character",
+      "slug": "evil-banker-ranged",
+      "name": "Evil Banker Ranged Shooter",
+      "role": "enemy_ranged",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "evil banker ranged shooter enemy, suit, red tie, briefcase blaster, slick hair, readable stop-and-shoot silhouette, satirical but original; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Evil Banker Ranged Shooter",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"stylized\"}",
+        "size": 66,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "3ba27b41-6a93-4e28-a6cc-57084bb8cdea",
+      "queued_at": "2026-06-07T19:31:59.925183+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 3ba27b41-6a93-4e28-a6cc-57084bb8cdea\nname: HMH ISO Evil Banker Ranged Shooter\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 66x66px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"3ba27b41-6a93-4e28-a6cc-57084bb8cdea\")",
+      "last_polled_at": "2026-06-07T19:58:59.973049+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/download"
+      ],
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:31:59.925183+00:00",
+          "id": "522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7",
+          "status": "failed",
+          "raw_queue_response": "id: 522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7\nname: HMH ISO Evil Banker Ranged Shooter\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 66x66px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7\")"
+        }
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/3ba27b41-6a93-4e28-a6cc-57084bb8cdea/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/east.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1361
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/north-east.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1470
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/north-west.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1482
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/north.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1366
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/south-east.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1740
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/south-west.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1717
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/south.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1762
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/evil-banker-ranged/extracted/008-download.bin/HMH_ISO_Evil_Banker_Ranged_Shooter/rotations/west.png",
+          "width": 96,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 1373
+        }
+      ]
+    },
+    {
+      "job_key": "character:crypto-bro-rusher",
+      "asset_type": "character",
+      "slug": "crypto-bro-rusher",
+      "name": "Crypto Bro Rusher",
+      "role": "enemy_rusher",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "flashy crypto bro rusher enemy, sleeveless vest, sunglasses, energy sneakers, fast fragile charging silhouette, original parody; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Crypto Bro Rusher",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"cartoon\"}",
+        "size": 64,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "80e070a2-4738-4c1b-890c-46e0c10b394f",
+      "queued_at": "2026-06-07T19:32:01.577686+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 80e070a2-4738-4c1b-890c-46e0c10b394f\nname: HMH ISO Crypto Bro Rusher\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"80e070a2-4738-4c1b-890c-46e0c10b394f\")",
+      "last_polled_at": "2026-06-07T19:59:03.404039+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/80e070a2-4738-4c1b-890c-46e0c10b394f/download"
+      ],
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:32:01.577686+00:00",
+          "id": "170c9928-fcb5-4179-9ab5-768aa12b5f85",
+          "status": "failed",
+          "raw_queue_response": "id: 170c9928-fcb5-4179-9ab5-768aa12b5f85\nname: HMH ISO Crypto Bro Rusher\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"170c9928-fcb5-4179-9ab5-768aa12b5f85\")"
+        }
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/80e070a2-4738-4c1b-890c-46e0c10b394f/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/east.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1656
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/north-east.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1866
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/north-west.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1760
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/north.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1553
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/south-east.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 2188
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/south-west.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 2224
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/south.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 2150
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/crypto-bro-rusher/extracted/008-download.bin/HMH_ISO_Crypto_Bro_Rusher/rotations/west.png",
+          "width": 92,
+          "height": 92,
+          "mode": "RGBA",
+          "bytes": 1538
+        }
+      ]
+    },
+    {
+      "job_key": "character:gas-beast-tank",
+      "asset_type": "character",
+      "slug": "gas-beast-tank",
+      "name": "Gas Beast Tank",
+      "role": "enemy_tank",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "bulky gas beast tank enemy, ogre-like mutant made of metal pipes and fumes, slow heavy silhouette, glowing furnace belly, no gore; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Gas Beast Tank",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"heroic\"}",
+        "size": 84,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "8d17bb3e-e490-466c-986f-2348d7f292ba",
+      "queued_at": "2026-06-07T19:32:03.182683+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 8d17bb3e-e490-466c-986f-2348d7f292ba\nname: HMH ISO Gas Beast Tank\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 84x84px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"8d17bb3e-e490-466c-986f-2348d7f292ba\")",
+      "last_polled_at": "2026-06-07T19:59:06.854900+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/8d17bb3e-e490-466c-986f-2348d7f292ba/download"
+      ],
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:32:03.182683+00:00",
+          "id": "2035aef1-f38c-4e3d-97d3-c09563ba672b",
+          "status": "failed",
+          "raw_queue_response": "id: 2035aef1-f38c-4e3d-97d3-c09563ba672b\nname: HMH ISO Gas Beast Tank\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 84x84px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"2035aef1-f38c-4e3d-97d3-c09563ba672b\")"
+        }
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/8d17bb3e-e490-466c-986f-2348d7f292ba/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/8d17bb3e-e490-466c-986f-2348d7f292ba/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/east.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 3682
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/north-east.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 4505
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/north-west.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 4283
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/north.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 4627
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/south-east.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 4759
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/south-west.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 4896
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/south.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 4586
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/gas-beast-tank/extracted/008-download.bin/HMH_ISO_Gas_Beast_Tank/rotations/west.png",
+          "width": 120,
+          "height": 120,
+          "mode": "RGBA",
+          "bytes": 3784
+        }
+      ]
+    },
+    {
+      "job_key": "character:rugpull-summoner",
+      "asset_type": "character",
+      "slug": "rugpull-summoner",
+      "name": "Rugpull Summoner",
+      "role": "enemy_summoner",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "rugpull summoner enemy, robed scam wizard with shredded contract scrolls and glowing portal device, creates minions, clear caster silhouette; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Rugpull Summoner",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"stylized\"}",
+        "size": 70,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "1fa464c0-aded-44e2-ba7c-b41808222eae",
+      "queued_at": "2026-06-07T19:36:22.384663+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 1fa464c0-aded-44e2-ba7c-b41808222eae\nname: HMH ISO Rugpull Summoner\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 70x70px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"1fa464c0-aded-44e2-ba7c-b41808222eae\")",
+      "last_polled_at": "2026-06-07T19:59:10.304612+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/1fa464c0-aded-44e2-ba7c-b41808222eae/download"
+      ],
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:32:04.777554+00:00",
+          "id": "32f95be2-99d8-4507-8799-df8d14692b08",
+          "status": "failed",
+          "raw_queue_response": "id: 32f95be2-99d8-4507-8799-df8d14692b08\nname: HMH ISO Rugpull Summoner\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 70x70px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"32f95be2-99d8-4507-8799-df8d14692b08\")"
+        },
+        {
+          "archived_at": "2026-06-07T19:36:22.384663+00:00",
+          "id": "ac6df4fc-9d2f-4ba9-b041-739f43dea4e8",
+          "status": "failed",
+          "raw_queue_response": "id: ac6df4fc-9d2f-4ba9-b041-739f43dea4e8\nname: HMH ISO Rugpull Summoner\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 70x70px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"ac6df4fc-9d2f-4ba9-b041-739f43dea4e8\")"
+        }
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/1fa464c0-aded-44e2-ba7c-b41808222eae/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/1fa464c0-aded-44e2-ba7c-b41808222eae/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/east.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1487
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/north-east.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1213
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/north-west.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1122
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/north.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1378
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/south-east.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1804
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/south-west.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1832
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/south.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1991
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/rugpull-summoner/extracted/008-download.bin/HMH_ISO_Rugpull_Summoner/rotations/west.png",
+          "width": 100,
+          "height": 100,
+          "mode": "RGBA",
+          "bytes": 1366
+        }
+      ]
+    },
+    {
+      "job_key": "character:warren-spear-rider-miniboss",
+      "asset_type": "character",
+      "slug": "warren-spear-rider-miniboss",
+      "name": "Warren Spear Rider Mini Boss",
+      "role": "mini_boss",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "Warren Spear Rider mini-boss, armored boar-rider or hover-spear raider, big spear, aggressive charge silhouette, original boss parody without brand marks; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Warren Spear Rider Mini Boss",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"heroic\"}",
+        "size": 96,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "86d135d5-3a9c-4b39-86c6-4d70894e39a6",
+      "queued_at": "2026-06-07T19:36:24.199698+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 86d135d5-3a9c-4b39-86c6-4d70894e39a6\nname: HMH ISO Warren Spear Rider Mini Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 96x96px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"86d135d5-3a9c-4b39-86c6-4d70894e39a6\")",
+      "last_polled_at": "2026-06-07T19:59:13.803261+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/86d135d5-3a9c-4b39-86c6-4d70894e39a6/download"
+      ],
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:32:06.456096+00:00",
+          "id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+          "status": "failed",
+          "raw_queue_response": "id: 1b14807b-8bb7-495c-8ede-aa10c791ca51\nname: HMH ISO Warren Spear Rider Mini Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 96x96px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"1b14807b-8bb7-495c-8ede-aa10c791ca51\")"
+        },
+        {
+          "archived_at": "2026-06-07T19:36:24.199698+00:00",
+          "id": "3d4bf943-fff3-486b-8d61-11d87da34d21",
+          "status": "failed",
+          "raw_queue_response": "id: 3d4bf943-fff3-486b-8d61-11d87da34d21\nname: HMH ISO Warren Spear Rider Mini Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 96x96px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"3d4bf943-fff3-486b-8d61-11d87da34d21\")"
+        }
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/86d135d5-3a9c-4b39-86c6-4d70894e39a6/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/86d135d5-3a9c-4b39-86c6-4d70894e39a6/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/east.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 3486
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/north-east.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 3738
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/north-west.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 3614
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/north.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 3612
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/south-east.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 4505
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/south-west.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 4558
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/south.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 4716
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/warren-spear-rider-miniboss/extracted/008-download.bin/HMH_ISO_Warren_Spear_Rider_Mini_Boss/rotations/west.png",
+          "width": 136,
+          "height": 136,
+          "mode": "RGBA",
+          "bytes": 3187
+        }
+      ]
+    },
+    {
+      "job_key": "character:bit-whale-boss",
+      "asset_type": "character",
+      "slug": "bit-whale-boss",
+      "name": "Bit Whale Boss",
+      "role": "boss",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "massive Bit Whale boss, humanoid whale tycoon in armored suit with coin cannons, huge readable boss silhouette for isometric arena survival, original crypto satire; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Bit Whale Boss",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"heroic\"}",
+        "size": 112,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "725efd4d-fdcf-4285-95ef-ace4b4a7297f",
+      "queued_at": "2026-06-07T19:36:25.865052+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 725efd4d-fdcf-4285-95ef-ace4b4a7297f\nname: HMH ISO Bit Whale Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 112x112px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"725efd4d-fdcf-4285-95ef-ace4b4a7297f\")",
+      "last_polled_at": "2026-06-07T19:59:17.173332+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/725efd4d-fdcf-4285-95ef-ace4b4a7297f/download"
+      ],
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:32:08.058365+00:00",
+          "id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+          "status": "failed",
+          "raw_queue_response": "id: cecc4b9e-5c0a-44e9-9d42-211230c9b61b\nname: HMH ISO Bit Whale Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 112x112px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"cecc4b9e-5c0a-44e9-9d42-211230c9b61b\")"
+        },
+        {
+          "archived_at": "2026-06-07T19:36:25.865052+00:00",
+          "id": "b91b51ac-5f37-4ad1-8f8b-1f3c699ee0b1",
+          "status": "failed",
+          "raw_queue_response": "id: b91b51ac-5f37-4ad1-8f8b-1f3c699ee0b1\nname: HMH ISO Bit Whale Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 112x112px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"b91b51ac-5f37-4ad1-8f8b-1f3c699ee0b1\")"
+        }
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/725efd4d-fdcf-4285-95ef-ace4b4a7297f/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/725efd4d-fdcf-4285-95ef-ace4b4a7297f/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/east.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 6984
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/north-east.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 7896
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/north-west.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 7657
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/north.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 7676
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/south-east.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 8022
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/south-west.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 7894
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/south.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 8195
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/bit-whale-boss/extracted/008-download.bin/HMH_ISO_Bit_Whale_Boss/rotations/west.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 6632
+        }
+      ]
+    },
+    {
+      "job_key": "character:chain-reaper-boss",
+      "asset_type": "character",
+      "slug": "chain-reaper-boss",
+      "name": "Chain Reaper Boss",
+      "role": "boss",
+      "tool": "create_character",
+      "get_tool": "get_character",
+      "id_field": "character_id",
+      "args": {
+        "description": "Chain Reaper boss, skeletal arcade mech with chain-scythe and blue energy core, intimidating but cartoony, clear telegraph silhouette, no gore; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "name": "HMH ISO Chain Reaper Boss",
+        "body_type": "humanoid",
+        "mode": "standard",
+        "n_directions": 8,
+        "proportions": "{\"type\": \"preset\", \"name\": \"heroic\"}",
+        "size": 112,
+        "outline": "single color black outline",
+        "shading": "basic shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5,
+        "view": "low top-down"
+      },
+      "id": "b39745bb-2670-4754-acfb-dfbaf50130fc",
+      "queued_at": "2026-06-07T19:43:47.171052+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: b39745bb-2670-4754-acfb-dfbaf50130fc\nname: HMH ISO Chain Reaper Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 112x112px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"b39745bb-2670-4754-acfb-dfbaf50130fc\")",
+      "last_polled_at": "2026-06-07T19:59:21.728485+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north-east.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north-west.png",
+        "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south-west.png",
+        "https://api.pixellab.ai/mcp/characters/b39745bb-2670-4754-acfb-dfbaf50130fc/download"
+      ],
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:36:27.477110+00:00",
+          "id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+          "status": "failed",
+          "raw_queue_response": "id: 9ce10bf6-a5c4-457a-b485-e4f43fc67e3b\nname: HMH ISO Chain Reaper Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 112x112px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"9ce10bf6-a5c4-457a-b485-e4f43fc67e3b\")"
+        },
+        {
+          "archived_at": "2026-06-07T19:43:47.171052+00:00",
+          "id": "91b26817-bd47-4686-8588-2c5fa3b8bf6a",
+          "status": "failed",
+          "raw_queue_response": "id: 91b26817-bd47-4686-8588-2c5fa3b8bf6a\nname: HMH ISO Chain Reaper Boss\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 112x112px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"91b26817-bd47-4686-8588-2c5fa3b8bf6a\")"
+        }
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/000-south.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/001-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/002-north.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/003-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/004-south-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north-east.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/005-north-east.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/north-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/006-north-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/b39745bb-2670-4754-acfb-dfbaf50130fc/rotations/south-west.png",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/007-south-west.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/characters/b39745bb-2670-4754-acfb-dfbaf50130fc/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/downloads/008-download.bin.zip",
+          "ok": true,
+          "extracted_to": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/east.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 4389
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/north-east.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 5084
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/north-west.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 5201
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/north.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 4671
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/south-east.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 5405
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/south-west.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 5545
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/south.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 5037
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/character/chain-reaper-boss/extracted/008-download.bin/HMH_ISO_Chain_Reaper_Boss/rotations/west.png",
+          "width": 160,
+          "height": 160,
+          "mode": "RGBA",
+          "bytes": 4392
+        }
+      ]
+    },
+    {
+      "job_key": "tile:asphalt-street",
+      "asset_type": "isometric_tile",
+      "slug": "asphalt-street",
+      "name": "Asphalt Street",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "cracked wet asphalt street tile with subtle blue neon reflections; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "a1383d0e-ad37-4f27-b67f-deeea645dc96",
+      "queued_at": "2026-06-07T19:20:28.829584+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: a1383d0e-ad37-4f27-b67f-deeea645dc96\ndescription: cracked wet asphalt street tile with subtle blue neon reflections; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"a1383d0e-ad37-4f27-b67f-deeea645dc96\")",
+      "last_polled_at": "2026-06-07T19:59:25.814214+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/a1383d0e-ad37-4f27-b67f-deeea645dc96/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/a1383d0e-ad37-4f27-b67f-deeea645dc96/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/asphalt-street/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/asphalt-street/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 3146
+        }
+      ]
+    },
+    {
+      "job_key": "tile:sidewalk-concrete",
+      "asset_type": "isometric_tile",
+      "slug": "sidewalk-concrete",
+      "name": "Sidewalk Concrete",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "worn city sidewalk concrete tile with grime, small cracks, curb-readable edge texture; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "a09ed171-3ef7-4af0-9c76-57e04385969f",
+      "queued_at": "2026-06-07T19:20:30.028055+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: a09ed171-3ef7-4af0-9c76-57e04385969f\ndescription: worn city sidewalk concrete tile with grime, small cracks, curb-readable edge texture; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"a09ed171-3ef7-4af0-9c76-57e04385969f\")",
+      "last_polled_at": "2026-06-07T19:59:27.615300+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/a09ed171-3ef7-4af0-9c76-57e04385969f/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/a09ed171-3ef7-4af0-9c76-57e04385969f/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/sidewalk-concrete/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/sidewalk-concrete/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2325
+        }
+      ]
+    },
+    {
+      "job_key": "tile:alley-floor",
+      "asset_type": "isometric_tile",
+      "slug": "alley-floor",
+      "name": "Alley Floor",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "dark alley floor tile with oil stains, small puddles, gritty pavement; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "d36451e4-6203-4261-a0e7-5699220a89a4",
+      "queued_at": "2026-06-07T19:20:31.190037+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: d36451e4-6203-4261-a0e7-5699220a89a4\ndescription: dark alley floor tile with oil stains, small puddles, gritty pavement; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"d36451e4-6203-4261-a0e7-5699220a89a4\")",
+      "last_polled_at": "2026-06-07T19:59:29.355522+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/d36451e4-6203-4261-a0e7-5699220a89a4/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/d36451e4-6203-4261-a0e7-5699220a89a4/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/alley-floor/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/alley-floor/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2904
+        }
+      ]
+    },
+    {
+      "job_key": "tile:foundry-metal-floor",
+      "asset_type": "isometric_tile",
+      "slug": "foundry-metal-floor",
+      "name": "Foundry Metal Floor",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "industrial foundry diamond-plate metal floor tile with warm orange rim light; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "d27466ca-23a2-4550-8d48-c2eeb6283483",
+      "queued_at": "2026-06-07T19:20:32.579192+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: d27466ca-23a2-4550-8d48-c2eeb6283483\ndescription: industrial foundry diamond-plate metal floor tile with warm orange rim light; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"d27466ca-23a2-4550-8d48-c2eeb6283483\")",
+      "last_polled_at": "2026-06-07T19:59:31.192059+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/d27466ca-23a2-4550-8d48-c2eeb6283483/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/d27466ca-23a2-4550-8d48-c2eeb6283483/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/foundry-metal-floor/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/foundry-metal-floor/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 3232
+        }
+      ]
+    },
+    {
+      "job_key": "tile:rooftop-tar",
+      "asset_type": "isometric_tile",
+      "slug": "rooftop-tar",
+      "name": "Rooftop Tar",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "flat rooftop tar paper tile with vents grime and rain sheen; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "81b423dd-062e-4958-9d94-a467069870c3",
+      "queued_at": "2026-06-07T19:20:33.809522+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 81b423dd-062e-4958-9d94-a467069870c3\ndescription: flat rooftop tar paper tile with vents grime and rain sheen; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"81b423dd-062e-4958-9d94-a467069870c3\")",
+      "last_polled_at": "2026-06-07T19:59:32.920021+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/81b423dd-062e-4958-9d94-a467069870c3/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/81b423dd-062e-4958-9d94-a467069870c3/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/rooftop-tar/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/rooftop-tar/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2420
+        }
+      ]
+    },
+    {
+      "job_key": "tile:financial-plaza",
+      "asset_type": "isometric_tile",
+      "slug": "financial-plaza",
+      "name": "Financial Plaza",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "financial district plaza stone tile, clean cold marble, subtle blue reflection; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "2f4037e8-7b98-4f68-ba4c-e5594c432f9d",
+      "queued_at": "2026-06-07T19:43:48.821789+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 2f4037e8-7b98-4f68-ba4c-e5594c432f9d\ndescription: financial district plaza stone tile, clean cold marble, subtle blue reflection; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"2f4037e8-7b98-4f68-ba4c-e5594c432f9d\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:43:48.821789+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:34.656894+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/2f4037e8-7b98-4f68-ba4c-e5594c432f9d/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/2f4037e8-7b98-4f68-ba4c-e5594c432f9d/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/financial-plaza/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/financial-plaza/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2714
+        }
+      ]
+    },
+    {
+      "job_key": "tile:sewer-grate",
+      "asset_type": "isometric_tile",
+      "slug": "sewer-grate",
+      "name": "Sewer Grate",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "street sewer grate tile inset in asphalt, readable metal grid; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "df311f49-0f5c-4c99-a8bf-36996be7f4ae",
+      "queued_at": "2026-06-07T19:43:50.423092+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: df311f49-0f5c-4c99-a8bf-36996be7f4ae\ndescription: street sewer grate tile inset in asphalt, readable metal grid; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"df311f49-0f5c-4c99-a8bf-36996be7f4ae\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:43:50.423092+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:36.441715+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/df311f49-0f5c-4c99-a8bf-36996be7f4ae/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/df311f49-0f5c-4c99-a8bf-36996be7f4ae/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/sewer-grate/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/sewer-grate/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2966
+        }
+      ]
+    },
+    {
+      "job_key": "tile:neon-puddle",
+      "asset_type": "isometric_tile",
+      "slug": "neon-puddle",
+      "name": "Neon Puddle",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "wet road puddle hazard tile with electric blue reflection; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "eec62768-a6e0-48e4-ba29-31cbf0ea55c4",
+      "queued_at": "2026-06-07T19:43:52.003716+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: eec62768-a6e0-48e4-ba29-31cbf0ea55c4\ndescription: wet road puddle hazard tile with electric blue reflection; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"eec62768-a6e0-48e4-ba29-31cbf0ea55c4\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:43:52.003716+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:38.195027+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/eec62768-a6e0-48e4-ba29-31cbf0ea55c4/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/eec62768-a6e0-48e4-ba29-31cbf0ea55c4/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/neon-puddle/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/neon-puddle/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 3056
+        }
+      ]
+    },
+    {
+      "job_key": "tile:curb-edge",
+      "asset_type": "isometric_tile",
+      "slug": "curb-edge",
+      "name": "Curb Edge",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "raised curb edge collision tile, sidewalk meeting street; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "42c1f9c0-58e5-4a66-8fa6-31bcff031c6b",
+      "queued_at": "2026-06-07T19:43:53.673662+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 42c1f9c0-58e5-4a66-8fa6-31bcff031c6b\ndescription: raised curb edge collision tile, sidewalk meeting street; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"42c1f9c0-58e5-4a66-8fa6-31bcff031c6b\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:43:53.673662+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:40.121026+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/42c1f9c0-58e5-4a66-8fa6-31bcff031c6b/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/42c1f9c0-58e5-4a66-8fa6-31bcff031c6b/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/curb-edge/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/curb-edge/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2378
+        }
+      ]
+    },
+    {
+      "job_key": "tile:chainlink-footprint",
+      "asset_type": "isometric_tile",
+      "slug": "chainlink-footprint",
+      "name": "Chainlink Footprint",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "chain-link fence base collision tile with concrete posts; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "1b6e0cfd-2ebd-4453-a1bc-5f645f51422e",
+      "queued_at": "2026-06-07T19:43:55.278531+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 1b6e0cfd-2ebd-4453-a1bc-5f645f51422e\ndescription: chain-link fence base collision tile with concrete posts; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"1b6e0cfd-2ebd-4453-a1bc-5f645f51422e\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:43:55.278531+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:42.063821+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/1b6e0cfd-2ebd-4453-a1bc-5f645f51422e/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/1b6e0cfd-2ebd-4453-a1bc-5f645f51422e/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/chainlink-footprint/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/chainlink-footprint/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2980
+        }
+      ]
+    },
+    {
+      "job_key": "tile:stairs-ramp",
+      "asset_type": "isometric_tile",
+      "slug": "stairs-ramp",
+      "name": "Stairs Ramp",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "small isometric stair ramp tile for street-to-sidewalk height transition; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "2eb7f378-c777-471c-b395-0a808dbd9b7f",
+      "queued_at": "2026-06-07T19:43:56.879853+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 2eb7f378-c777-471c-b395-0a808dbd9b7f\ndescription: small isometric stair ramp tile for street-to-sidewalk height transition; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"2eb7f378-c777-471c-b395-0a808dbd9b7f\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:43:56.879853+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:43.812881+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/2eb7f378-c777-471c-b395-0a808dbd9b7f/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/2eb7f378-c777-471c-b395-0a808dbd9b7f/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/stairs-ramp/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/stairs-ramp/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 3227
+        }
+      ]
+    },
+    {
+      "job_key": "tile:road-marking",
+      "asset_type": "isometric_tile",
+      "slug": "road-marking",
+      "name": "Road Marking",
+      "role": "tile",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "asphalt tile with a single clean lane marking stripe, no letters or symbols; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": 48,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.0
+      },
+      "id": "c7dbc3ed-c17e-499e-9cd7-04d667a0be93",
+      "queued_at": "2026-06-07T19:43:58.506769+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: c7dbc3ed-c17e-499e-9cd7-04d667a0be93\ndescription: asphalt tile with a single clean lane marking stripe, no letters or symbols; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; seamless isometric tile, no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 48x48px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"c7dbc3ed-c17e-499e-9cd7-04d667a0be93\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:43:58.506769+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:45.525037+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/c7dbc3ed-c17e-499e-9cd7-04d667a0be93/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/c7dbc3ed-c17e-499e-9cd7-04d667a0be93/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/road-marking/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/isometric_tile/road-marking/downloads/000-download.bin.png",
+          "width": 48,
+          "height": 48,
+          "mode": "RGBA",
+          "bytes": 2594
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:dumpster",
+      "asset_type": "map_object",
+      "slug": "dumpster",
+      "name": "Dumpster",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "rusty city dumpster prop with openable lid; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 96,
+        "height": 80,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "8ee69f13-cbe2-487d-a76a-603b54e7fff7",
+      "queued_at": "2026-06-07T19:52:48.836687+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 8ee69f13-cbe2-487d-a76a-603b54e7fff7\ndescription: rusty city dumpster prop with openable lid; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 96x80px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"8ee69f13-cbe2-487d-a76a-603b54e7fff7\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:52:48.837688+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:47.259015+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/8ee69f13-cbe2-487d-a76a-603b54e7fff7/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/8ee69f13-cbe2-487d-a76a-603b54e7fff7/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/dumpster/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/dumpster/downloads/000-download.bin.png",
+          "width": 96,
+          "height": 80,
+          "mode": "RGBA",
+          "bytes": 5269
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:garbage-can",
+      "asset_type": "map_object",
+      "slug": "garbage-can",
+      "name": "Garbage Can",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "metal garbage can prop with dented lid; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 64,
+        "height": 72,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "ce7ddbef-7861-41d7-a569-21fccd4d15e9",
+      "queued_at": "2026-06-07T19:52:50.495542+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: ce7ddbef-7861-41d7-a569-21fccd4d15e9\ndescription: metal garbage can prop with dented lid; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 64x72px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ce7ddbef-7861-41d7-a569-21fccd4d15e9\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:52:50.495542+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:49.187741+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/ce7ddbef-7861-41d7-a569-21fccd4d15e9/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/ce7ddbef-7861-41d7-a569-21fccd4d15e9/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/garbage-can/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/garbage-can/downloads/000-download.bin.png",
+          "width": 64,
+          "height": 72,
+          "mode": "RGBA",
+          "bytes": 3063
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:wood-crate",
+      "asset_type": "map_object",
+      "slug": "wood-crate",
+      "name": "Wood Crate",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "stackable wooden crate prop with hard corners; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 64,
+        "height": 64,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "2294e22b-fdc6-4d6b-a1a7-68bf5750f56d",
+      "queued_at": "2026-06-07T19:52:52.112997+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 2294e22b-fdc6-4d6b-a1a7-68bf5750f56d\ndescription: stackable wooden crate prop with hard corners; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 64x64px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2294e22b-fdc6-4d6b-a1a7-68bf5750f56d\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:52:52.112997+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:51.179287+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/2294e22b-fdc6-4d6b-a1a7-68bf5750f56d/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/2294e22b-fdc6-4d6b-a1a7-68bf5750f56d/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/wood-crate/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/wood-crate/downloads/000-download.bin.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 4207
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:streetlight",
+      "asset_type": "map_object",
+      "slug": "streetlight",
+      "name": "Streetlight",
+      "role": "prop_occluder",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "bent streetlight prop with cyan neon glow; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 64,
+        "height": 128,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "926aca39-6160-46ef-a339-09bf32134be9",
+      "queued_at": "2026-06-07T19:52:53.724710+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 926aca39-6160-46ef-a339-09bf32134be9\ndescription: bent streetlight prop with cyan neon glow; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 64x128px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"926aca39-6160-46ef-a339-09bf32134be9\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:52:53.724710+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:52.883831+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/926aca39-6160-46ef-a339-09bf32134be9/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/926aca39-6160-46ef-a339-09bf32134be9/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/streetlight/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/streetlight/downloads/000-download.bin.png",
+          "width": 64,
+          "height": 128,
+          "mode": "RGBA",
+          "bytes": 1359
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:traffic-barricade",
+      "asset_type": "map_object",
+      "slug": "traffic-barricade",
+      "name": "Traffic Barricade",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "orange and black traffic barricade prop; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 96,
+        "height": 64,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "eb854a77-7b96-4803-a6fd-79e6d337e4bc",
+      "queued_at": "2026-06-07T19:56:28.815309+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: eb854a77-7b96-4803-a6fd-79e6d337e4bc\ndescription: orange and black traffic barricade prop; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 96x64px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"eb854a77-7b96-4803-a6fd-79e6d337e4bc\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:52:55.365812+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        },
+        {
+          "archived_at": "2026-06-07T19:56:28.815309+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:54.594165+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/eb854a77-7b96-4803-a6fd-79e6d337e4bc/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/eb854a77-7b96-4803-a6fd-79e6d337e4bc/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/traffic-barricade/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/traffic-barricade/downloads/000-download.bin.png",
+          "width": 96,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 5648
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:blank-neon-sign",
+      "asset_type": "map_object",
+      "slug": "blank-neon-sign",
+      "name": "Blank Neon Sign",
+      "role": "prop_decor",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "blank neon sign frame prop, glowing border but absolutely no text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 128,
+        "height": 80,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "18b6a69a-8dc1-4a25-9fff-dea9b1772505",
+      "queued_at": "2026-06-07T19:56:30.464896+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 18b6a69a-8dc1-4a25-9fff-dea9b1772505\ndescription: blank neon sign frame prop, glowing border but absolutely no text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 128x80px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"18b6a69a-8dc1-4a25-9fff-dea9b1772505\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:52:56.963757+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        },
+        {
+          "archived_at": "2026-06-07T19:56:30.464896+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:56.550880+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/18b6a69a-8dc1-4a25-9fff-dea9b1772505/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/18b6a69a-8dc1-4a25-9fff-dea9b1772505/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/blank-neon-sign/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/blank-neon-sign/downloads/000-download.bin.png",
+          "width": 128,
+          "height": 80,
+          "mode": "RGBA",
+          "bytes": 842
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:terminal-kiosk",
+      "asset_type": "map_object",
+      "slug": "terminal-kiosk",
+      "name": "Terminal Kiosk",
+      "role": "prop_interactive",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "futuristic payment terminal kiosk prop with blank dark screen, no symbols; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 80,
+        "height": 96,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "f0def5d1-0593-4219-9964-c2acb197e69a",
+      "queued_at": "2026-06-07T19:56:32.036909+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: f0def5d1-0593-4219-9964-c2acb197e69a\ndescription: futuristic payment terminal kiosk prop with blank dark screen, no symbols; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 80x96px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"f0def5d1-0593-4219-9964-c2acb197e69a\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:52:58.534971+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        },
+        {
+          "archived_at": "2026-06-07T19:56:32.036909+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T19:59:58.321614+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/f0def5d1-0593-4219-9964-c2acb197e69a/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/f0def5d1-0593-4219-9964-c2acb197e69a/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/terminal-kiosk/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/terminal-kiosk/downloads/000-download.bin.png",
+          "width": 80,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 2524
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:vending-machine",
+      "asset_type": "map_object",
+      "slug": "vending-machine",
+      "name": "Vending Machine",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "retro vending machine prop with blank front panel and neon trim, no text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 80,
+        "height": 128,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "eef68c91-42f2-49c5-8d10-57fac857b935",
+      "queued_at": "2026-06-07T19:56:33.649880+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: eef68c91-42f2-49c5-8d10-57fac857b935\ndescription: retro vending machine prop with blank front panel and neon trim, no text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 80x128px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"eef68c91-42f2-49c5-8d10-57fac857b935\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:53:00.163762+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        },
+        {
+          "archived_at": "2026-06-07T19:56:33.649880+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-07T20:00:00.115307+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/eef68c91-42f2-49c5-8d10-57fac857b935/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/eef68c91-42f2-49c5-8d10-57fac857b935/download",
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/vending-machine/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-isometric-pixellab/map_object/vending-machine/downloads/000-download.bin.png",
+          "width": 80,
+          "height": 128,
+          "mode": "RGBA",
+          "bytes": 4363
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:dead-urban-tree",
+      "asset_type": "map_object",
+      "slug": "dead-urban-tree",
+      "name": "Dead Urban Tree",
+      "role": "prop_occluder",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "leafless urban tree in square planter prop; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 96,
+        "height": 128,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "5ca2406f-d71d-4944-bbc4-b8ae187b4359",
+      "queued_at": "2026-06-07T20:00:09.725080+00:00",
+      "status": "processing",
+      "raw_queue_response": "id: 5ca2406f-d71d-4944-bbc4-b8ae187b4359\ndescription: leafless urban tree in square planter prop; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 96x128px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5ca2406f-d71d-4944-bbc4-b8ae187b4359\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:56:35.285922+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        },
+        {
+          "archived_at": "2026-06-07T20:00:09.725080+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:cyber-palm-tree",
+      "asset_type": "map_object",
+      "slug": "cyber-palm-tree",
+      "name": "Cyber Palm Tree",
+      "role": "prop_occluder",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "small cyberpunk palm tree with planter and blue uplight; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 96,
+        "height": 144,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "cf4c0354-f93b-4f7a-afe9-460fbb66004c",
+      "queued_at": "2026-06-07T20:00:11.356448+00:00",
+      "status": "processing",
+      "raw_queue_response": "id: cf4c0354-f93b-4f7a-afe9-460fbb66004c\ndescription: small cyberpunk palm tree with planter and blue uplight; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 96x144px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"cf4c0354-f93b-4f7a-afe9-460fbb66004c\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:56:36.879662+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        },
+        {
+          "archived_at": "2026-06-07T20:00:11.356448+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:broken-car",
+      "asset_type": "map_object",
+      "slug": "broken-car",
+      "name": "Broken Car",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "abandoned compact car prop, no license plate text, readable collision footprint; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 160,
+        "height": 96,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "18a6ec1a-1c95-4fbe-9685-bf96a750f7b1",
+      "queued_at": "2026-06-07T20:00:12.929096+00:00",
+      "status": "processing",
+      "raw_queue_response": "id: 18a6ec1a-1c95-4fbe-9685-bf96a750f7b1\ndescription: abandoned compact car prop, no license plate text, readable collision footprint; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background\nsize: 160x96px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"18a6ec1a-1c95-4fbe-9685-bf96a750f7b1\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T19:56:38.458972+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        },
+        {
+          "archived_at": "2026-06-07T20:00:12.929096+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:explosive-barrel",
+      "asset_type": "map_object",
+      "slug": "explosive-barrel",
+      "name": "Explosive Barrel",
+      "role": "prop_hazard",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "red-orange explosive barrel prop with no markings; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 64,
+        "height": 80,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T20:00:14.514481+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T20:00:14.514481+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:xp-shard",
+      "asset_type": "map_object",
+      "slug": "xp-shard",
+      "name": "Xp Shard",
+      "role": "pickup",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "floating blue silver XP shard pickup, diamond crystal; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 48,
+        "height": 48,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T20:00:16.097423+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T20:00:16.097423+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:health-pack",
+      "asset_type": "map_object",
+      "slug": "health-pack",
+      "name": "Health Pack",
+      "role": "pickup",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "health pickup with green glow, simple plus-like shape but no readable text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 56,
+        "height": 56,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T20:00:17.696905+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T20:00:17.696905+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:ammo-pack",
+      "asset_type": "map_object",
+      "slug": "ammo-pack",
+      "name": "Ammo Pack",
+      "role": "pickup",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "ammo pickup crate with blue glow, no letters or labels; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 56,
+        "height": 56,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T20:00:19.297650+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T20:00:19.297650+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:crypto-bomb",
+      "asset_type": "map_object",
+      "slug": "crypto-bomb",
+      "name": "Crypto Bomb",
+      "role": "pickup",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "round crypto bomb pickup, fuse and blue energy cracks, no logo; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 56,
+        "height": 56,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T20:00:20.869674+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "attempts": [
+        {
+          "archived_at": "2026-06-07T20:00:20.869674+00:00",
+          "id": null,
+          "status": "failed",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ]
+    },
+    {
+      "job_key": "map_object:muzzle-flash",
+      "asset_type": "map_object",
+      "slug": "muzzle-flash",
+      "name": "Muzzle Flash",
+      "role": "vfx",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "bright yellow-blue muzzle flash VFX starburst; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 64,
+        "height": 64,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:02.244315+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:impact-sparks",
+      "asset_type": "map_object",
+      "slug": "impact-sparks",
+      "name": "Impact Sparks",
+      "role": "vfx",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "orange blue pixel impact sparks VFX burst; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 64,
+        "height": 64,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:03.499891+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:projectile-trail",
+      "asset_type": "map_object",
+      "slug": "projectile-trail",
+      "name": "Projectile Trail",
+      "role": "vfx",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "short blue silver projectile trail VFX; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 96,
+        "height": 48,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:04.687346+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:level-up-burst",
+      "asset_type": "map_object",
+      "slug": "level-up-burst",
+      "name": "Level Up Burst",
+      "role": "vfx",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "circular pixel level-up burst VFX with rays and particles; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 128,
+        "height": 128,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:05.842447+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:boss-telegraph-ring",
+      "asset_type": "map_object",
+      "slug": "boss-telegraph-ring",
+      "name": "Boss Telegraph Ring",
+      "role": "vfx",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "transparent red-orange isometric warning telegraph ring VFX; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 160,
+        "height": 96,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:07.117056+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:upgrade-card-frame",
+      "asset_type": "map_object",
+      "slug": "upgrade-card-frame",
+      "name": "Upgrade Card Frame",
+      "role": "ui",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "blank roguelike upgrade card UI frame with neon border and empty dark center; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 160,
+        "height": 224,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:08.314135+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:level-up-modal-frame",
+      "asset_type": "map_object",
+      "slug": "level-up-modal-frame",
+      "name": "Level Up Modal Frame",
+      "role": "ui",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "large blank level-up modal UI frame with two empty card slots and neon border, no text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 320,
+        "height": 224,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:09.505649+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:reroll-button-frame",
+      "asset_type": "map_object",
+      "slug": "reroll-button-frame",
+      "name": "Reroll Button Frame",
+      "role": "ui",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "small blank reroll button UI frame, no text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 128,
+        "height": 64,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:10.683102+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:mobile-joystick-ring",
+      "asset_type": "map_object",
+      "slug": "mobile-joystick-ring",
+      "name": "Mobile Joystick Ring",
+      "role": "mobile_ui",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "transparent mobile virtual joystick ring and thumbstick UI control; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 128,
+        "height": 128,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:11.939906+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:mobile-fire-button",
+      "asset_type": "map_object",
+      "slug": "mobile-fire-button",
+      "name": "Mobile Fire Button",
+      "role": "mobile_ui",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "transparent mobile fire button circle UI control with blaster icon shape only; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 128,
+        "height": 128,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:13.379635+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "map_object:xp-bar-frame",
+      "asset_type": "map_object",
+      "slug": "xp-bar-frame",
+      "name": "Xp Bar Frame",
+      "role": "ui",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "long blank XP bar UI frame with neon border and empty center; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "width": 320,
+        "height": 48,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:14.598210+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+    },
+    {
+      "job_key": "object8:hard-money-heroes-arcade-cabinet-8dir",
+      "asset_type": "rotating_object",
+      "slug": "hard-money-heroes-arcade-cabinet-8dir",
+      "name": "Hard Money Heroes Arcade Cabinet 8 Direction",
+      "role": "arcade_cabinet",
+      "tool": "create_8_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "upright retro arcade cabinet prop for Hard Money Heroes with blank marquee and blank screen border, chunky coin-op shape, neon blue orange trim, no readable labels, no logos; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; transparent background",
+        "size": 160,
+        "view": "low top-down"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:18.511337+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+    },
+    {
+      "job_key": "object8:loot-crate-8dir",
+      "asset_type": "rotating_object",
+      "slug": "loot-crate-8dir",
+      "name": "Roguelike Loot Crate 8 Direction",
+      "role": "pickup_container",
+      "tool": "create_8_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "glowing loot crate chest for roguelike upgrades, metal box with blue silver energy seam, no symbols or labels; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; transparent background",
+        "size": 96,
+        "view": "low top-down"
+      },
+      "id": null,
+      "queued_at": "2026-06-07T19:21:20.062045+00:00",
+      "status": "failed",
+      "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+    }
+  ],
+  "contact_sheet": "apps/portal/assets/generated/hmh-isometric-pixellab/contact-sheets/hmh-isometric-pixellab-wave-1-contact-sheet.png"
+}

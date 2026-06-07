@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "8d17bb3e-e490-466c-986f-2348d7f292ba",
+        "name": "HMH ISO Gas Beast Tank",
+        "prompt": "bulky gas beast tank enemy, ogre-like mutant made of metal pipes and fumes, slow heavy silhouette, glowing furnace belly, no gore; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": {
+          "width": 120,
+          "height": 120
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-06-07T19:32:03.510205+00:00"
+      },
+      "folder": "HMH_ISO_Gas_Beast_Tank",
+      "frames": {
+        "rotations": {
+          "south": "HMH_ISO_Gas_Beast_Tank/rotations/south.png",
+          "south-east": "HMH_ISO_Gas_Beast_Tank/rotations/south-east.png",
+          "east": "HMH_ISO_Gas_Beast_Tank/rotations/east.png",
+          "north-east": "HMH_ISO_Gas_Beast_Tank/rotations/north-east.png",
+          "north": "HMH_ISO_Gas_Beast_Tank/rotations/north.png",
+          "north-west": "HMH_ISO_Gas_Beast_Tank/rotations/north-west.png",
+          "west": "HMH_ISO_Gas_Beast_Tank/rotations/west.png",
+          "south-west": "HMH_ISO_Gas_Beast_Tank/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-06-07T20:00:48.271257"
+}

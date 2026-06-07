@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { inflateSync } from 'node:zlib';
 
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../apps/portal/assets/generated/hmh-hd-sprite-atlas.mjs';
 
@@ -14,6 +15,8 @@ import {
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BRAND_SYSTEM,
   LESTER_BLASTER_HUD_OVERLAY_MODEL,
+  LESTER_BLASTER_ISOMETRIC_ROGUELIKE,
+  LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY,
   LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
   LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS,
   LESTER_BLASTER_DEV_BALANCE_OVERLAY,
@@ -52,9 +55,12 @@ import {
   buildHardMoneyHeroesAnimationProductionBriefs,
   buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
+  buildFullscreenViewportModel,
+  buildIsometricRoguelikeRunConfig,
   buildLesterBlasterDesignCodex,
   buildLoginMenuModel,
   buildOfficialRunStatusModel,
+  chooseArcadeMusicNextIndex,
   buildGameOverSummaryModel,
   buildParentSyncPacket,
   buildHardMoneyHeroesAnimationCoverageReport,
@@ -65,17 +71,120 @@ import {
   calculateLesterBlasterScore,
   calculateRevenueSplit,
   chooseEnemySpawn,
+  chooseRoguelikeUpgradeOptions,
   connectPlayerAccount,
   createCombatRunState,
   createInitialArcadeState,
   createPlayerProfile,
+  createRoguelikeRunState,
   getCartridgeSelectModel,
   getLesterBlasterDifficultyAt,
+  getRoguelikeSpawnDirectorAt,
+  grantRoguelikeXp,
+  applyRoguelikeSkillUpgrade,
+
   recordScore,
   resolveAchievementUnlocksForRun,
   scheduleBossEncounter,
   startPlaySession,
 } from '../apps/portal/src/arcade-core.mjs';
+
+function readRgbaPng(path) {
+  const png = readFileSync(path);
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let bitDepth = 0;
+  let colorType = 0;
+  const idatChunks = [];
+  while (offset < png.length) {
+    const length = png.readUInt32BE(offset);
+    const type = png.toString('ascii', offset + 4, offset + 8);
+    const data = png.subarray(offset + 8, offset + 8 + length);
+    if (type === 'IHDR') {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+      bitDepth = data[8];
+      colorType = data[9];
+    } else if (type === 'IDAT') {
+      idatChunks.push(data);
+    }
+    offset += length + 12;
+  }
+  assert.equal(bitDepth, 8, `${path} uses 8-bit PNG channels`);
+  assert.equal(colorType, 6, `${path} is saved as RGBA so alpha can be verified`);
+  const raw = inflateSync(Buffer.concat(idatChunks));
+  const stride = width * 4;
+  const pixels = Buffer.alloc(height * stride);
+  let rawOffset = 0;
+  for (let y = 0; y < height; y += 1) {
+    const filter = raw[rawOffset];
+    rawOffset += 1;
+    const row = raw.subarray(rawOffset, rawOffset + stride);
+    rawOffset += stride;
+    const previous = y > 0 ? pixels.subarray((y - 1) * stride, y * stride) : null;
+    const decoded = pixels.subarray(y * stride, (y + 1) * stride);
+    for (let x = 0; x < stride; x += 1) {
+      const left = x >= 4 ? decoded[x - 4] : 0;
+      const up = previous ? previous[x] : 0;
+      const upLeft = previous && x >= 4 ? previous[x - 4] : 0;
+      let value = row[x];
+      if (filter === 1) value = (value + left) & 0xff;
+      else if (filter === 2) value = (value + up) & 0xff;
+      else if (filter === 3) value = (value + Math.floor((left + up) / 2)) & 0xff;
+      else if (filter === 4) {
+        const estimate = left + up - upLeft;
+        const pa = Math.abs(estimate - left);
+        const pb = Math.abs(estimate - up);
+        const pc = Math.abs(estimate - upLeft);
+        value = (value + (pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft)) & 0xff;
+      } else {
+        assert.equal(filter, 0, `${path} uses a supported PNG filter`);
+      }
+      decoded[x] = value;
+    }
+  }
+  return { width, height, pixels };
+}
+
+function alphaComponentMetrics(path) {
+  const { width, height, pixels } = readRgbaPng(path);
+  const seen = new Uint8Array(width * height);
+  const queue = [];
+  const components = [];
+  let opaquePixelCount = 0;
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const start = y * width + x;
+      if (seen[start]) continue;
+      seen[start] = 1;
+      if (pixels[start * 4 + 3] <= 32) continue;
+      let size = 0;
+      queue.push(start);
+      while (queue.length) {
+        const current = queue.pop();
+        size += 1;
+        const cx = current % width;
+        const cy = Math.floor(current / width);
+        for (const neighbor of [current - 1, current + 1, current - width, current + width]) {
+          const nx = neighbor % width;
+          const ny = Math.floor(neighbor / width);
+          if (neighbor < 0 || neighbor >= seen.length || Math.abs(nx - cx) + Math.abs(ny - cy) !== 1 || seen[neighbor]) continue;
+          seen[neighbor] = 1;
+          if (pixels[neighbor * 4 + 3] > 32) queue.push(neighbor);
+        }
+      }
+      opaquePixelCount += size;
+      if (size >= 4) components.push(size);
+    }
+  }
+  components.sort((a, b) => b - a);
+  return {
+    componentCount: components.length,
+    opaquePixelCount,
+    largestComponentRatio: components.length ? components[0] / opaquePixelCount : 0,
+  };
+}
 
 test('createPlayerProfile normalizes EVM wallets and creates a Lester profile shell', () => {
   const profile = createPlayerProfile('0xABCDEFabcdefABCDEFabcdefABCDEFabcdefABCD');
@@ -314,6 +423,72 @@ test('Lester Blaster design targets five-minute average runs and 15-20 minute ma
   assert.equal(LESTER_BLASTER_GAMEPLAY.weaponUpgrades.length >= 2, true);
 });
 
+test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike survival loop', () => {
+  const config = buildIsometricRoguelikeRunConfig({ seed: 42 });
+
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.genre, 'isometric-run-and-gun-roguelike');
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera.projection, 'isometric');
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.movement.directions.length, 8);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes, 20);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.mapGeneration.procedural, true);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.pausesGame, true);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 2);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel, 1);
+  assert.equal(config.seed, 42);
+  assert.equal(config.map.tilesetPerspective, 'isometric');
+  assert.equal(config.player.startWorld.x, 0);
+  assert.equal(config.spawnDirector.targetPressureCurveMinutes.at(-1), 20);
+});
+
+test('roguelike skill library exposes forty five-rank upgrades and deterministic two-choice level-up offers', () => {
+  const run = createRoguelikeRunState({ seed: 11, mode: 'free' });
+  const leveled = grantRoguelikeXp(run, 125);
+  const offered = chooseRoguelikeUpgradeOptions(leveled, { seed: 5 });
+  const upgraded = applyRoguelikeSkillUpgrade(leveled, offered.options[0].id);
+
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length, 40);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.maxLevel === 5), true);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.perLevelPercent === 5), true);
+  assert.equal(leveled.level, 2);
+  assert.equal(leveled.pausedForLevelUp, true);
+  assert.equal(leveled.pendingUpgradeChoices, 2);
+  assert.equal(leveled.rerollsRemaining, 1);
+  assert.equal(offered.options.length, 2);
+  assert.equal(new Set(offered.options.map((option) => option.id)).size, 2);
+  assert.equal(upgraded.pausedForLevelUp, false);
+  assert.equal(upgraded.skills[offered.options[0].id], 1);
+  assert.equal(upgraded.stats[offered.options[0].stat] > leveled.stats[offered.options[0].stat], true);
+});
+
+test('roguelike spawn director escalates enemy pressure toward a twenty minute survival wall', () => {
+  const opening = getRoguelikeSpawnDirectorAt(30);
+  const mid = getRoguelikeSpawnDirectorAt(10 * 60);
+  const endgame = getRoguelikeSpawnDirectorAt(20 * 60);
+
+  assert.equal(opening.elapsedMinutes < mid.elapsedMinutes, true);
+  assert.equal(mid.spawnIntervalSeconds < opening.spawnIntervalSeconds, true);
+  assert.equal(endgame.spawnIntervalSeconds < mid.spawnIntervalSeconds, true);
+  assert.equal(endgame.maxEnemiesOnMap > mid.maxEnemiesOnMap, true);
+  assert.equal(endgame.rangedEnemyShare > opening.rangedEnemyShare, true);
+  assert.equal(endgame.eliteEnemyShare > mid.eliteEnemyShare, true);
+  assert.equal(endgame.difficultyLabel, 'survival-wall');
+});
+
+test('fullscreen viewport model requires real browser fullscreen for expanded monitor/device play', () => {
+  const windowed = buildFullscreenViewportModel({ mode: 'windowed', fullscreenElementActive: false });
+  const expanded = buildFullscreenViewportModel({ mode: 'expanded-fullscreen', fullscreenElementActive: false });
+  const active = buildFullscreenViewportModel({ mode: 'expanded-fullscreen', fullscreenElementActive: true, screenWidth: 2560, screenHeight: 1440 });
+
+  assert.equal(windowed.browserApiAction, 'none');
+  assert.equal(windowed.canvasCss.width, 'min(100%, 660px)');
+  assert.equal(expanded.browserApiAction, 'requestFullscreen');
+  assert.equal(expanded.targetElement, 'officialCombatMount');
+  assert.equal(active.isRealFullscreen, true);
+  assert.equal(active.canvasCss.width, '100vw');
+  assert.equal(active.canvasCss.height, '100vh');
+  assert.equal(active.devicePixels.width, 2560);
+});
+
 test('Lester Blaster difficulty scales over time and schedules boss encounters in the 3-5 minute window', () => {
   const opening = getLesterBlasterDifficultyAt(0);
   const averageRun = getLesterBlasterDifficultyAt(5 * 60);
@@ -549,6 +724,30 @@ test('production Lester sprite manifest slices Justin-provided animation sheets 
   }
 });
 
+test('production Lester runtime art uses cropped per-frame cells instead of drawing whole sprite sheets', () => {
+  const manifestPath = fileURLToPath(new URL('../apps/portal/assets/lester-production/lester-production-sprite-manifest.json', import.meta.url));
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  const lester = HARD_MONEY_HEROES_ASSET_MANIFEST.playableCharacters.lester;
+
+  assert.equal(lester.animations.idle.frameSource, 'cropped-production-sprite-cells');
+  assert.equal(lester.animations.walk.frameSource, 'cropped-production-sprite-cells');
+  assert.equal(lester.animations.run.frameSource, 'cropped-production-sprite-cells');
+  assert.equal(lester.animations.jump.frameSource, 'cropped-production-sprite-cells');
+  assert.equal(lester.animations.idle.frames.length, 25);
+  assert.equal(lester.animations.run.frames.length, 25);
+  assert.equal(lester.animations.idle.frames[0].src.includes('./assets/lester-production/frames/idle/lester-idle-00.png'), true);
+
+  for (const state of ['idle', 'walk', 'run', 'jump']) {
+    for (const frame of [manifest.animations[state].frames[0], manifest.animations[state].frames[7], manifest.animations[state].frames[14], manifest.animations[state].frames[21]]) {
+      const framePath = fileURLToPath(new URL(`../${frame.src}`, import.meta.url));
+      const metrics = alphaComponentMetrics(framePath);
+      assert.deepEqual(frame.size, [128, 128], `${frame.src} is browser-sized`);
+      assert.equal(metrics.opaquePixelCount > 350, true, `${frame.src} contains visible character pixels`);
+      assert.equal(metrics.largestComponentRatio > 0.35, true, `${frame.src} is a single cropped pose, not a full multi-pose sheet`);
+    }
+  }
+});
+
 test('level plan uses the confirmed ground-outward, vertical-upward, and high-speed-getaway campaign rhythm', () => {
   assert.equal(LESTER_BLASTER_LEVEL_PLAN.length, 3);
   assert.equal(LESTER_BLASTER_LEVEL_PLAN[0].title, 'Level 1: The Slums');
@@ -772,11 +971,19 @@ test('Lester Arcade custom MP3 playlist manifest drives a global minimal music p
   assert.equal(core.LESTER_ARCADE_MUSIC_LIBRARY.tracks.length, 20);
   assert.equal(core.LESTER_ARCADE_MUSIC_LIBRARY.playerUi.position, 'global-overlay');
   assert.deepEqual(core.buildArcadeMusicQueueForContext('hard-money-heroes').slice(0, 2).map((track) => track.id), ['hard-money-heroes-16-bit-arcade-music', 'hard-money-heroes-16-bit-arcade-music-alt']);
-  const player = core.buildArcadeMusicPlayerModel({ context: 'hard-money-heroes', currentTrackId: 'hard-money-heroes-16-bit-arcade-music', currentTimeSeconds: 67, playing: true, muted: false, expanded: false });
+  const player = core.buildArcadeMusicPlayerModel({ context: 'hard-money-heroes', currentTrackId: 'hard-money-heroes-16-bit-arcade-music', currentTimeSeconds: 67, playing: true, muted: false, expanded: false, shuffle: true });
   assert.equal(player.title, 'Hard Money Heroes 16-BIT Arcade Music');
-  assert.equal(player.controls.map((control) => control.id).join(','), 'previous,play-pause,mute,next,expand');
+  assert.equal(player.shuffle, true);
+  assert.equal(player.controls.map((control) => control.id).join(','), 'previous,play-pause,mute,next,shuffle,expand');
+  assert.equal(player.controls.find((control) => control.id === 'shuffle').active, true);
   assert.equal(player.progress.percent > 40 && player.progress.percent < 60, true);
   assert.equal(player.progress.label.includes('/'), true);
+  assert.equal(core.chooseArcadeMusicNextIndex({ currentIndex: 0, queueLength: 4, shuffle: false }), 1);
+  assert.equal(core.chooseArcadeMusicNextIndex({ currentIndex: 3, queueLength: 4, shuffle: false }), 0);
+  assert.equal(core.chooseArcadeMusicNextIndex({ currentIndex: 1, queueLength: 4, shuffle: true, random: () => 0 }), 0);
+  assert.equal(core.chooseArcadeMusicNextIndex({ currentIndex: 1, queueLength: 4, shuffle: true, random: () => 0.5 }), 2);
+  assert.notEqual(core.chooseArcadeMusicNextIndex({ currentIndex: 1, queueLength: 4, shuffle: true, random: () => 0.99 }), 1);
+  assert.equal(core.chooseArcadeMusicNextIndex({ currentIndex: -1, queueLength: 4, shuffle: false }), 0);
 });
 
 test('Lester Arcade music player overlay is wired into the public UI without forcing individual game music', () => {
@@ -790,15 +997,22 @@ test('Lester Arcade music player overlay is wired into the public UI without for
   assert.equal(indexSource.includes('arcadeMusicPreviousButton'), true);
   assert.equal(indexSource.includes('arcadeMusicNextButton'), true);
   assert.equal(indexSource.includes('arcadeMusicMuteButton'), true);
+  assert.equal(indexSource.includes('arcadeMusicShuffleButton'), true);
+  assert.equal(indexSource.includes('aria-pressed="false"'), true);
   assert.equal(mainSource.includes('buildArcadeMusicPlayerModel'), true);
   assert.equal(mainSource.includes('ensureArcadeMusicPlayer'), true);
   assert.equal(mainSource.includes('startArcadeMusicForGame'), true);
   assert.equal(mainSource.includes("startArcadeMusicForGame('hard-money-heroes')"), true);
   assert.equal(mainSource.includes('arcadeMusicAudio'), true);
+  assert.equal(mainSource.includes('toggleArcadeMusicShuffle'), true);
+  assert.equal(mainSource.includes('chooseArcadeMusicNextIndex'), true);
+  assert.equal(mainSource.includes('normalizedIndex'), true);
   assert.equal(styleSource.includes('.arcade-music-player'), true);
   assert.equal(styleSource.includes('.arcade-music-progress-fill'), true);
   assert.equal(styleSource.includes('[data-expanded="true"]'), true);
+  assert.equal(styleSource.includes('[data-shuffle="true"]'), true);
   assert.equal(smokeScript.includes('arcadeMusicPlayer'), true);
+  assert.equal(smokeScript.includes('arcadeMusicShuffleButton'), true);
   assert.equal(smokeScript.includes('Hard Money Heroes 16-BIT Arcade Music'), true);
 });
 
@@ -954,6 +1168,8 @@ test('Hard Money Heroes runtime wires manifest art into official menus, locked L
   assert.equal(mainSource.includes('combatArt.characters'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenStyle'), true);
   assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
+  assert.equal(mainSource.includes('ctx.imageSmoothingEnabled = false'), true);
+  assert.equal(mainSource.includes("if (!src) return null"), true);
   assert.equal(mainSource.includes('warrenSpearRider'), true);
   assert.equal(mainSource.includes('combat.characterId'), true);
   assert.equal(mainSource.includes('showLillyTeaser'), true);
@@ -1214,6 +1430,13 @@ test('runtime exposes tactical HUD overlay, options popup, player-led camera, an
   assert.equal(mainSource.includes('No hidden paid-run sync'), true);
   assert.equal(mainSource.includes('advanceTacticalCameraModel'), true);
   assert.equal(mainSource.includes('applyPlayerLedCameraMovement'), true);
+  assert.equal(mainSource.includes('isoToScreen'), true);
+  assert.equal(mainSource.includes('playerMapX'), true);
+  assert.equal(mainSource.includes('playerMapY'), true);
+  assert.equal(mainSource.includes('levelUpChoices'), true);
+  assert.equal(mainSource.includes('openLevelUpMenu'), true);
+  assert.equal(mainSource.includes('requestCombatFullscreen'), true);
+  assert.equal(mainSource.includes('document.fullscreenElement'), true);
   assert.equal(mainSource.includes('renderCombatHudOverlay'), true);
   assert.equal(mainSource.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(indexSource.includes('combatGameOverSummary'), true);
@@ -1222,6 +1445,9 @@ test('runtime exposes tactical HUD overlay, options popup, player-led camera, an
   assert.equal(styleSource.includes('.summary-metric-card'), true);
   assert.equal(styleSource.includes('.combat-hud-overlay'), true);
   assert.equal(styleSource.includes('.hud-widget'), true);
+  assert.equal(styleSource.includes(':fullscreen'), true);
+  assert.equal(styleSource.includes('100vw'), true);
+  assert.equal(styleSource.includes('100vh'), true);
 });
 
 test('tactical level tuning expands rooms with cover lanes, prop spacing, and slower readable enemy pacing', () => {

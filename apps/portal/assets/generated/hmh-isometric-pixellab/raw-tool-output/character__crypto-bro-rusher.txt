@@ -1,0 +1,26 @@
+status: completed
+id: 80e070a2-4738-4c1b-890c-46e0c10b394f
+name: HMH ISO Crypto Bro Rusher
+directions: 8 (south, east, north, west, south-east, north-east, north-west, south-west)
+size: 92x92px
+view: low top-down
+style: basic shading, single color black outline, medium detail
+
+rotations:
+  south: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south.png
+  east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/east.png
+  north: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north.png
+  west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/west.png
+  south-east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south-east.png
+  north-east: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north-east.png
+  north-west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/north-west.png
+  south-west: https://backblaze.pixellab.ai/file/pixellab-characters/646ca7e4-de63-4dd6-a2a2-520323e13484/80e070a2-4738-4c1b-890c-46e0c10b394f/rotations/south-west.png
+
+animations: none
+
+download: https://api.pixellab.ai/mcp/characters/80e070a2-4738-4c1b-890c-46e0c10b394f/download
+
+available_animations: backflip, breathing-idle, cross-punch, crouched-walking, crouching, drinking, falling-back-death, fight-stance-idle-8-frames, fireball, flying-kick, front-flip, getting-up +37 more
+
+actions: animate_character(character_id="80e070a2-4738-4c1b-890c-46e0c10b394f", ...) | create_character_state(character_id="80e070a2-4738-4c1b-890c-46e0c10b394f", ...) | delete_character(character_id="80e070a2-4738-4c1b-890c-46e0c10b394f")
+hint: animate_character(character_id="80e070a2-4738-4c1b-890c-46e0c10b394f", template_animation_id="backflip")

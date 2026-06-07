@@ -7,6 +7,8 @@ const reportPath = path.resolve(root, 'apps/portal/assets/generated/sliced/asset
 const lesterManifestPath = path.resolve(root, 'apps/portal/assets/lester-production/lester-production-sprite-manifest.json');
 const cabinetManifestPath = path.resolve(root, 'apps/portal/assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.json');
 const playlistManifestPath = path.resolve(root, 'apps/portal/assets/audio/playlist/arcade-playlist-manifest.json');
+const pixelLabLesterCalibrationManifestPath = path.resolve(root, 'apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/manifest.json');
+const pixelLabLesterCalibrationRuntimePath = path.resolve(root, 'apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs');
 
 function fail(message) {
   throw new Error(`Generated asset verification failed: ${message}`);
@@ -193,8 +195,71 @@ function validateArcadePlaylistMusic() {
   return { trackCount: manifest.tracks.length, totalBytes };
 }
 
+function validatePixelLabLesterCalibration() {
+  if (!existsSync(pixelLabLesterCalibrationManifestPath)) {
+    fail(`missing PixelLab Lester calibration manifest ${path.relative(root, pixelLabLesterCalibrationManifestPath)}`);
+  }
+  if (!existsSync(pixelLabLesterCalibrationRuntimePath)) {
+    fail(`missing PixelLab Lester runtime manifest ${path.relative(root, pixelLabLesterCalibrationRuntimePath)}`);
+  }
+
+  const manifest = readJson(pixelLabLesterCalibrationManifestPath);
+  if (manifest.source !== 'PixelLab MCP/API') fail('PixelLab calibration manifest has wrong source');
+  if (manifest.pack !== 'calibration-lester-hero-idle-run-shoot') fail('PixelLab calibration manifest has wrong pack id');
+  if (!manifest.character_id) fail('PixelLab calibration manifest is missing character_id');
+  if (!Array.isArray(manifest.rotations) || manifest.rotations.length !== 8) {
+    fail(`PixelLab Lester calibration expected 8 rotations, got ${manifest.rotations?.length ?? 0}`);
+  }
+  const requiredDirections = new Set(['south', 'east', 'north', 'west', 'south-east', 'north-east', 'north-west', 'south-west']);
+  for (const rotation of manifest.rotations) {
+    if (!requiredDirections.delete(rotation.direction)) fail(`unexpected or duplicate PixelLab rotation ${rotation.direction}`);
+    const rotationPath = path.resolve(root, rotation.local_path);
+    if (!existsSync(rotationPath)) fail(`missing PixelLab rotation ${rotation.local_path}`);
+    if (statSync(rotationPath).size <= 0) fail(`PixelLab rotation ${rotation.local_path} is empty`);
+    const [width, height] = readPngSize(rotationPath);
+    if (width !== rotation.image?.width || height !== rotation.image?.height) {
+      fail(`PixelLab rotation ${rotation.local_path} dimensions ${width}x${height} do not match manifest ${rotation.image?.width}x${rotation.image?.height}`);
+    }
+  }
+  if (requiredDirections.size) fail(`missing PixelLab rotations: ${Array.from(requiredDirections).join(', ')}`);
+
+  const expectedAnimationFrames = new Map([
+    ['shoot-blaster', 9],
+    ['idle-combat-ready', 8],
+    ['run-side-scroll', 6],
+  ]);
+  let frameCount = 0;
+  for (const [slug, expectedCount] of expectedAnimationFrames.entries()) {
+    const animation = manifest.animations?.find((entry) => entry.slug === slug);
+    if (!animation) fail(`missing PixelLab animation ${slug}`);
+    if (animation.direction !== 'east') fail(`PixelLab animation ${slug} should be east-facing`);
+    if (!Array.isArray(animation.frames) || animation.frames.length !== expectedCount) {
+      fail(`PixelLab animation ${slug} expected ${expectedCount} frames, got ${animation?.frames?.length ?? 0}`);
+    }
+    for (const frame of animation.frames) {
+      const framePath = path.resolve(root, frame.local_path);
+      if (!existsSync(framePath)) fail(`missing PixelLab frame ${frame.local_path}`);
+      if (statSync(framePath).size <= 0) fail(`PixelLab frame ${frame.local_path} is empty`);
+      const [width, height] = readPngSize(framePath);
+      if (width !== frame.image?.width || height !== frame.image?.height) {
+        fail(`PixelLab frame ${frame.local_path} dimensions ${width}x${height} do not match manifest ${frame.image?.width}x${frame.image?.height}`);
+      }
+      frameCount += 1;
+    }
+    if (animation.review_gif && !existsSync(path.resolve(root, animation.review_gif))) fail(`missing PixelLab review GIF ${animation.review_gif}`);
+  }
+
+  const runtime = readFileSync(pixelLabLesterCalibrationRuntimePath, 'utf8');
+  for (const marker of ['HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST', 'status: \'calibration-review\'', 'animations: Object.freeze']) {
+    if (!runtime.includes(marker)) fail(`PixelLab runtime manifest missing marker ${marker}`);
+  }
+
+  return { rotations: manifest.rotations.length, frameCount };
+}
+
 const lesterProduction = validateLesterProductionSprites();
 const hmhCabinet = validateHardMoneyHeroesCabinetSprites();
 const arcadePlaylist = validateArcadePlaylistMusic();
+const pixelLabLesterCalibration = validatePixelLabLesterCalibration();
 
-console.log(`Generated sliced asset verification passed: ${report.generatedCount} PNGs (${Object.entries(categoryCounts).map(([key, value]) => `${key}=${value}`).join(', ')}); production Lester=${lesterProduction.productionFrameCount} frames/${lesterProduction.stillCount} stills; HMH cabinet=${hmhCabinet.frameCount} frames/${hmhCabinet.loopDurationMs}ms loop; arcade playlist=${arcadePlaylist.trackCount} MP3s/${Math.round(arcadePlaylist.totalBytes / 1024 / 1024)}MB.`);
+console.log(`Generated sliced asset verification passed: ${report.generatedCount} PNGs (${Object.entries(categoryCounts).map(([key, value]) => `${key}=${value}`).join(', ')}); production Lester=${lesterProduction.productionFrameCount} frames/${lesterProduction.stillCount} stills; PixelLab Lester calibration=${pixelLabLesterCalibration.frameCount} frames/${pixelLabLesterCalibration.rotations} rotations; HMH cabinet=${hmhCabinet.frameCount} frames/${hmhCabinet.loopDurationMs}ms loop; arcade playlist=${arcadePlaylist.trackCount} MP3s/${Math.round(arcadePlaylist.totalBytes / 1024 / 1024)}MB.`);

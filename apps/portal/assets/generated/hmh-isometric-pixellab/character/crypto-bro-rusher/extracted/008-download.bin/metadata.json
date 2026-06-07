@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "80e070a2-4738-4c1b-890c-46e0c10b394f",
+        "name": "HMH ISO Crypto Bro Rusher",
+        "prompt": "flashy crypto bro rusher enemy, sleeveless vest, sunglasses, energy sneakers, fast fragile charging silhouette, original parody; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": {
+          "width": 92,
+          "height": 92
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-06-07T19:32:01.904936+00:00"
+      },
+      "folder": "HMH_ISO_Crypto_Bro_Rusher",
+      "frames": {
+        "rotations": {
+          "south": "HMH_ISO_Crypto_Bro_Rusher/rotations/south.png",
+          "south-east": "HMH_ISO_Crypto_Bro_Rusher/rotations/south-east.png",
+          "east": "HMH_ISO_Crypto_Bro_Rusher/rotations/east.png",
+          "north-east": "HMH_ISO_Crypto_Bro_Rusher/rotations/north-east.png",
+          "north": "HMH_ISO_Crypto_Bro_Rusher/rotations/north.png",
+          "north-west": "HMH_ISO_Crypto_Bro_Rusher/rotations/north-west.png",
+          "west": "HMH_ISO_Crypto_Bro_Rusher/rotations/west.png",
+          "south-west": "HMH_ISO_Crypto_Bro_Rusher/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-06-07T20:00:44.865347"
+}

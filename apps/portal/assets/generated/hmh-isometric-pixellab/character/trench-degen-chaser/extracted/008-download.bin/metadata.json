@@ -1,0 +1,36 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "9e591394-caf5-498c-886b-1161e1a64043",
+        "name": "HMH ISO Trench Degen Chaser",
+        "prompt": "feral crypto trench degen chaser enemy, ragged hoodie, glowing scam-phone, hunched aggressive run pose, fast fragile silhouette; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background",
+        "size": {
+          "width": 92,
+          "height": 92
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-06-07T19:20:18.610387+00:00"
+      },
+      "folder": "HMH_ISO_Trench_Degen_Chaser",
+      "frames": {
+        "rotations": {
+          "south": "HMH_ISO_Trench_Degen_Chaser/rotations/south.png",
+          "south-east": "HMH_ISO_Trench_Degen_Chaser/rotations/south-east.png",
+          "east": "HMH_ISO_Trench_Degen_Chaser/rotations/east.png",
+          "north-east": "HMH_ISO_Trench_Degen_Chaser/rotations/north-east.png",
+          "north": "HMH_ISO_Trench_Degen_Chaser/rotations/north.png",
+          "north-west": "HMH_ISO_Trench_Degen_Chaser/rotations/north-west.png",
+          "west": "HMH_ISO_Trench_Degen_Chaser/rotations/west.png",
+          "south-west": "HMH_ISO_Trench_Degen_Chaser/rotations/south-west.png"
+        },
+        "animations": {}
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-06-07T20:00:36.654232"
+}

@@ -1,0 +1,11 @@
+status: completed
+id: 18b6a69a-8dc1-4a25-9fff-dea9b1772505
+description: blank neon sign frame prop, glowing border but absolutely no text; isometric low top-down pixel art, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark neon Litecoin City After Dark mood, blue silver crypto energy accents without official logos; no words, no letters, no numbers, no readable labels, no logos, no watermark, transparent background
+size: 128x128px
+view: low top-down
+background: transparent
+created: 2026-06-07 19:56
+download: https://api.pixellab.ai/mcp/map-objects/18b6a69a-8dc1-4a25-9fff-dea9b1772505/download
+
+warning: auto-deletes after 8 hours
+type='image' data='iVBORw0KGgoAAAANSUhEUgAAAIAAAABQCAYAAADRAH3kAAADEUlEQVR4nO3cMZKbMBSA4SezHtOkcZsqs/dIzrFdfIMcJTdwmRNlJo3LbdOksWcXlMLLhmCBbb0nQPb/VbsYhJAekpCNRAAAAAAAAAAAAAAAAADcDpcy8WK18SnTz1F12DpNuVSHrWmdmSZGhY/HKhBMEmlXvJffFkmih5P1+98WQaBOoFhtvLi9yMtOlY73+2OGXHl2e7MttL/mnKF0u9u83w/mpe862vuHPuvb3mv5KCIi1f6Hqg5tAuD15+A+7UIawyWVN3aetILBsXwU8aWqJXjQZEpExNU7aXf8TSFPWcChczfbcqv4RqhlcdWz+OKjKt2F5uCifPK+/r9AmwwONWeaZvsSqdMfQ+gaTrrHWh/M0QFQrDbeVc9Rx567C/sq8NKKzfUub/S1oMHretmpnr6iA+CSfse5Mvpu7B7bblm0AZJSk79zeel+3j0udO0i9sEdPQYoVhsv9b+Rv2XGLo7+iH1SuzQP3f2Gjuvb1yLgowOgOmzdw/Lze9MTara8Z07AgnPrzv92g2zVILBtDnffvbAsa7MA6JpDf3zLrMpX9RTQ/B3bZyPe5F1A9ymAO35cVuWtnglsXBuRC3+wOvVNqN1qkvOajAG4+/NlEgD09/niKSBDlmWbLABoFdKZ3TwAd3u+krUASMv7vUlLQABkavKZwDb6+/FZlbnZRFDX8RurVKljVi1ACK1CHhgD3DkCIFOTfxvYpvntH+JZBIHJIJD+Pl+TPQVM9fXnLbFodU1+EYR8JX0vAGlYjrnMnwJyffnyXpmMAUJvuYgIM4EJnJT1ohRNMScbBB7fEl6f3xGTShIAQwsvIE6qeZbkM4FU/rwlCYDuW66atQKmmmG8l9lNVQBoV6cQsWshrqmwnCr23HVp68BkjSBX70xWqxhTzKJUsYETGhOZBOEc1ggSeYvCWrdK2NiuWWRCW1l9j8kqb5WvZbdOoMurBchaq+K1M7L8HiA3vpTmZpvFQpFtRfnE3F9qvhT59EWqX1/ns1TsSaIfvhEIifg/3/kSDgAAAAAAAAAAAAAADPoLQXk8Cg81RaQAAAAASUVORK5CYII=' mimeType='image/png' annotations=None meta=None

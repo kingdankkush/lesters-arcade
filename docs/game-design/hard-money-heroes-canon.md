@@ -10,6 +10,24 @@ Status: active first playable cabinet canon for Lester's Arcade.
 - Main playable character: **Lester**.
 - Future unlockable alternate character/skin: **Lilly** with the same moveset, hitbox, and gameplay stats as Lester, but different art/personality.
 
+## Active gameplay direction
+
+As of 2026-06-07, Hard Money Heroes is pivoting from a 2D side-scrolling run-and-gun into an **isometric run-and-gun roguelike / roguelite survival game**.
+
+Confirmed mechanics:
+
+- Free movement around an isometric procedural map, not constant side-scroll.
+- 8-way movement and combat readability for heroes, enemies, and bosses.
+- Enemies spawn over time, chase the player, or fire ranged attacks.
+- Difficulty scales toward a target run length of about 20 minutes before overwhelming the player.
+- Kills grant XP.
+- Level-up pauses the game and presents two random upgrade options plus one reroll.
+- Selecting an upgrade immediately improves stats and resumes gameplay.
+- Target skill library: about 40 skills with 5 upgrade levels each.
+- Windowed mode remains the embedded site game window; fullscreen mode must fill the entire monitor/device screen.
+
+Detailed pivot and art-agent handoff: `docs/game-design/hard-money-heroes-isometric-roguelike-pivot.md`.
+
 ## Tone
 
 Hard Money Heroes should feel like goofy coin-op action mixed with gritty Metal Slug-style crypto satire:
@@ -25,25 +43,21 @@ Primary setting: **Litecoin City After Dark**.
 
 The city should feel like a hostile late-night Web3 arcade metropolis: neon, rain, broken terminals, scam billboards, dark alleys, industrial foundries, financial towers, and runaway infrastructure.
 
-## Level plan
+## Procedural biome/theme plan
 
-1. **Level 1: The Slums**
-   - Traversal rhythm: ground-outward.
-   - Route: Underchain District → Industrial Foundry.
+The old side-scrolling level plan is now treated as biome/theme material for procedural isometric chunks rather than fixed left-to-right stages.
+
+1. **The Slums / Underchain District / Industrial Foundry**
    - Visual language: alleys, broken ticker signs, scam posters, pawnshop terminals, steam pipes, molten silver/blue metal.
-   - Purpose: teach movement, shooting, blade use, throwables, pickups, and the first scroll-lock mini-boss rhythm.
+   - Purpose: onboarding map chunks for movement, shooting, blade use, throwables, pickups, and early mini-boss pressure.
 
-2. **Level 2: The Tower**
-   - Traversal rhythm: vertical-upward.
-   - Route: Financial District street level → lobby/elevators → rooftop/penthouse rain fight.
+2. **The Tower / Financial District**
    - Visual language: glass towers, holo-tickers, trading desks, liquidation waterfalls, drones, security lasers.
-   - Purpose: add vertical platforms, falling hazards, elite enemies, and more deliberate boss phases.
+   - Purpose: mid-run enemy escalation, stronger ranged pressure, elite enemies, and arena-like boss hazards.
 
-3. **Level 3: The Getaway**
-   - Traversal rhythm: horizontal-high-speed.
-   - Route: Mainnet Express train interior → roof sprint → tunnel/bridge finale.
-   - Visual language: high-speed parallax, sparks from rails, tunnel lights, city skyline streaks.
-   - Purpose: master-run pressure, high enemy density, high-score routing, and late-run boss escalation.
+3. **The Getaway / Mainnet Express**
+   - Visual language: train platforms, rail sparks, tunnel lights, city skyline streaks, bridge finale motifs.
+   - Purpose: late-run high enemy density, high-score pressure, and final survival escalation.
 
 ## Weapons and throwables
 
@@ -127,9 +141,9 @@ Do not ship commercial Litecoin-logo, Ł-heavy, Litecoin-name-heavy, or pay-to-p
 
 ## Sprite references already available locally
 
-Verified local reference files:
+Verified Justin-provided reference filenames:
 
-- `C:/Users/just_/Downloads/Lester-Sprites-01.png`
-- `C:/Users/just_/Downloads/Lester-Sprites-02.png`
+- `Lester-Sprites-01.png`
+- `Lester-Sprites-02.png`
 
 These should inform Lester's production sprite pass, but the current repo SVGs remain prototype placeholders.

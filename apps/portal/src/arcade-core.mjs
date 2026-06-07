@@ -1,9 +1,11 @@
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../assets/generated/hmh-hd-sprite-atlas.mjs';
+import { HMH_EXPANDED_PIXEL_PACK_MANIFEST } from '../assets/generated/hmh-expanded-pixel-pack.mjs';
 import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 
 export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
+export const HARD_MONEY_HEROES_EXPANDED_PIXEL_PACK_MANIFEST = HMH_EXPANDED_PIXEL_PACK_MANIFEST;
 
 export const DEFAULT_ENTRY_FEE_MICRO_USDC = 250_000;
 
@@ -578,6 +580,106 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
   ]),
 });
 
+const roguelikeSkill = (id, title, stat, category, description) => Object.freeze({
+  id,
+  title,
+  stat,
+  category,
+  maxLevel: 5,
+  perLevelPercent: 5,
+  description,
+});
+
+export const LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY = Object.freeze([
+  roguelikeSkill('damage-alpha', 'Damage Alpha', 'damage', 'offense', '+5% weapon damage per rank.'),
+  roguelikeSkill('rate-of-fire', 'Rate of Fire', 'rateOfFire', 'offense', '+5% fire-rate per rank.'),
+  roguelikeSkill('reload-hands', 'Reload Hands', 'reloadSpeed', 'offense', '+5% reload speed per rank.'),
+  roguelikeSkill('move-speed', 'Street Runner', 'movementSpeed', 'mobility', '+5% movement speed per rank.'),
+  roguelikeSkill('max-health', 'Diamond Hands HP', 'maxHealth', 'defense', '+5% max health per rank.'),
+  roguelikeSkill('armor', 'Cold Wallet Armor', 'armor', 'defense', '+5% damage reduction per rank.'),
+  roguelikeSkill('pickup-radius', 'Magnet Wallet', 'pickupRadius', 'utility', '+5% XP pickup radius per rank.'),
+  roguelikeSkill('xp-gain', 'Wisdom Candles', 'xpGain', 'economy', '+5% XP gained per rank.'),
+  roguelikeSkill('critical-chance', 'Crit Candle', 'criticalChance', 'offense', '+5% critical chance budget per rank.'),
+  roguelikeSkill('critical-damage', 'Crit Multiplier', 'criticalDamage', 'offense', '+5% critical damage per rank.'),
+  roguelikeSkill('bullet-speed', 'Tracer Velocity', 'bulletSpeed', 'offense', '+5% projectile speed per rank.'),
+  roguelikeSkill('bullet-size', 'Fat Rounds', 'bulletSize', 'offense', '+5% projectile size per rank.'),
+  roguelikeSkill('pierce', 'Piercing Ledger', 'pierce', 'offense', '+5% pierce budget per rank.'),
+  roguelikeSkill('multishot', 'Multi-Sig Burst', 'multishot', 'offense', '+5% multishot chance per rank.'),
+  roguelikeSkill('spread-control', 'Spread Control', 'spreadControl', 'offense', '+5% spread control per rank.'),
+  roguelikeSkill('knockback', 'Hard Rejection', 'knockback', 'control', '+5% knockback per rank.'),
+  roguelikeSkill('dash-cooldown', 'Dash Settlement', 'dashCooldown', 'mobility', '+5% dash cooldown recovery per rank.'),
+  roguelikeSkill('dash-distance', 'Gap Runner', 'dashDistance', 'mobility', '+5% dash distance per rank.'),
+  roguelikeSkill('health-regen', 'Self Custody Regen', 'healthRegen', 'defense', '+5% regeneration budget per rank.'),
+  roguelikeSkill('shield-capacity', 'Shield Capacity', 'shieldCapacity', 'defense', '+5% shield capacity per rank.'),
+  roguelikeSkill('grenade-damage', 'Frag Yield', 'grenadeDamage', 'throwable', '+5% grenade damage per rank.'),
+  roguelikeSkill('grenade-cooldown', 'Fast Fuse', 'grenadeCooldown', 'throwable', '+5% throwable cooldown recovery per rank.'),
+  roguelikeSkill('area-size', 'Blast Radius', 'areaSize', 'throwable', '+5% area size per rank.'),
+  roguelikeSkill('duration', 'Buff Duration', 'duration', 'utility', '+5% buff duration per rank.'),
+  roguelikeSkill('luck', 'Green Candle Luck', 'luck', 'economy', '+5% drop luck per rank.'),
+  roguelikeSkill('reroll-bank', 'Reroll Bank', 'rerollBank', 'economy', '+5% reroll economy per rank.'),
+  roguelikeSkill('coin-score', 'Hard Money Score', 'scoreMultiplier', 'economy', '+5% score multiplier per rank.'),
+  roguelikeSkill('enemy-slow', 'Mempool Tar', 'enemySlow', 'control', '+5% enemy slow power per rank.'),
+  roguelikeSkill('burn-damage', 'Hot Wallet Burn', 'burnDamage', 'status', '+5% burn damage per rank.'),
+  roguelikeSkill('chain-lightning', 'Chain Lightning', 'chainLightning', 'status', '+5% chain proc budget per rank.'),
+  roguelikeSkill('orbitals', 'Satellite Wallets', 'orbitals', 'summon', '+5% orbital uptime per rank.'),
+  roguelikeSkill('drone-damage', 'Drone Damage', 'droneDamage', 'summon', '+5% drone damage per rank.'),
+  roguelikeSkill('turret-speed', 'Turret Speed', 'turretSpeed', 'summon', '+5% turret fire-rate per rank.'),
+  roguelikeSkill('boss-damage', 'Boss Breaker', 'bossDamage', 'offense', '+5% boss damage per rank.'),
+  roguelikeSkill('elite-damage', 'Elite Breaker', 'eliteDamage', 'offense', '+5% elite damage per rank.'),
+  roguelikeSkill('contact-damage', 'Contact Punish', 'contactDamage', 'defense', '+5% contact retaliation per rank.'),
+  roguelikeSkill('invulnerability', 'I-Frame Ledger', 'invulnerability', 'defense', '+5% invulnerability duration per rank.'),
+  roguelikeSkill('revive', 'Second Wallet', 'revive', 'defense', '+5% revive budget per rank.'),
+  roguelikeSkill('loot-quality', 'Loot Quality', 'lootQuality', 'economy', '+5% upgrade rarity weight per rank.'),
+  roguelikeSkill('cooldown-global', 'Global Cooldown', 'globalCooldown', 'utility', '+5% global cooldown recovery per rank.'),
+]);
+
+export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
+  genre: 'isometric-run-and-gun-roguelike',
+  camera: Object.freeze({
+    projection: 'isometric',
+    tileWidth: 64,
+    tileHeight: 32,
+    screenCenter: Object.freeze({ x: 380, y: 164 }),
+    followMode: 'free-roam-map-centered-on-player',
+  }),
+  movement: Object.freeze({
+    model: '8-way-directional-free-roam',
+    directions: Object.freeze(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']),
+    keyboard: 'WASD / arrows normalize diagonals to preserve speed',
+    gamepad: 'left-stick analog movement with right-stick/aim support later',
+  }),
+  combat: Object.freeze({
+    aimModel: 'mouse-directional-run-and-gun',
+    projectileSpace: 'world-x-y converted through isometric projection at render time',
+    enemyBehaviors: Object.freeze(['chase-player', 'circle-strafe', 'ranged-fire', 'elite-pressure', 'boss-patterns']),
+  }),
+  mapGeneration: Object.freeze({
+    procedural: true,
+    tilesetPerspective: 'isometric',
+    chunkSizeTiles: 16,
+    tileAssetNeeds: Object.freeze(['isometric-ground', 'isometric-road', 'isometric-curb', 'isometric-building-base', 'isometric-collision-mask']),
+    reusable2dProps: Object.freeze(['buildings', 'trees', 'garbage-cans', 'street-props', 'signs', 'cars', 'crates']),
+  }),
+  runPacing: Object.freeze({
+    targetSurvivalMinutes: 20,
+    pressureFantasy: 'Vampire-Survivors-style escalating enemy density with Hard Money Heroes guns, bosses, and wallet-safe score runs.',
+    targetPressureCurveMinutes: Object.freeze([0, 3, 5, 10, 15, 20]),
+  }),
+  xp: Object.freeze({
+    source: 'enemy-kills-drop-xp-gems',
+    baseXpPerKill: 12,
+    curve: 'level cost starts at 100 XP and rises by 25 XP per level',
+  }),
+  levelUp: Object.freeze({
+    pausesGame: true,
+    choicesPerLevel: 2,
+    rerollsPerLevel: 1,
+    skills: 40,
+    levelsPerSkill: 5,
+    statStepPercent: 5,
+  }),
+});
+
 export const LESTER_BLASTER_TACTICAL_CAMERA_MODEL = Object.freeze({
   mode: 'player-led-rightward-scroll',
   canvasWidth: 760,
@@ -676,7 +778,7 @@ export const LESTER_ARCADE_MUSIC_LIBRARY = Object.freeze({
     position: 'global-overlay',
     minimalByDefault: true,
     expandable: true,
-    controls: Object.freeze(['previous', 'play-pause', 'mute', 'next', 'expand']),
+    controls: Object.freeze(['previous', 'play-pause', 'mute', 'next', 'shuffle', 'expand']),
     purpose: 'Parent Lester\'s Arcade music player shared by cabinets so games can use arcade-level queues instead of owning separate background music.',
   }),
 });
@@ -699,6 +801,21 @@ export function buildArcadeMusicQueueForContext(context = 'arcade') {
   return tracks.length ? tracks : [...LESTER_ARCADE_MUSIC_LIBRARY.tracks];
 }
 
+export function chooseArcadeMusicNextIndex({
+  currentIndex = 0,
+  queueLength = 0,
+  shuffle = false,
+  random = Math.random,
+} = {}) {
+  const safeLength = Math.max(0, Number.isFinite(queueLength) ? Math.floor(queueLength) : 0);
+  if (safeLength <= 0) return -1;
+  const normalizedCurrent = ((Number.isFinite(currentIndex) ? Math.floor(currentIndex) : 0) % safeLength + safeLength) % safeLength;
+  if (!shuffle || safeLength === 1) return (normalizedCurrent + 1) % safeLength;
+  const randomValue = Math.max(0, Math.min(0.999999, Number(random?.()) || 0));
+  const candidate = Math.floor(randomValue * (safeLength - 1));
+  return candidate >= normalizedCurrent ? candidate + 1 : candidate;
+}
+
 export function buildArcadeMusicPlayerModel({
   context = 'arcade',
   currentTrackId = null,
@@ -706,6 +823,7 @@ export function buildArcadeMusicPlayerModel({
   playing = false,
   muted = false,
   expanded = false,
+  shuffle = false,
 } = {}) {
   const queue = buildArcadeMusicQueueForContext(context);
   const currentTrack = queue.find((track) => track.id === currentTrackId) ?? queue[0] ?? null;
@@ -722,6 +840,7 @@ export function buildArcadeMusicPlayerModel({
     playing,
     muted,
     expanded,
+    shuffle,
     queue: Object.freeze(queue.map((track) => Object.freeze({ id: track.id, title: track.title, durationLabel: track.durationLabel, src: track.src }))),
     progress: Object.freeze({
       currentSeconds: safeTime,
@@ -736,6 +855,7 @@ export function buildArcadeMusicPlayerModel({
       Object.freeze({ id: 'play-pause', label: playing ? 'Pause music' : 'Play music', compactLabel: playing ? '⏸' : '▶' }),
       Object.freeze({ id: 'mute', label: muted ? 'Unmute music' : 'Mute music', compactLabel: muted ? '🔇' : '🔊' }),
       Object.freeze({ id: 'next', label: 'Next song', compactLabel: '⏭' }),
+      Object.freeze({ id: 'shuffle', label: shuffle ? 'Turn shuffle off' : 'Turn shuffle on', compactLabel: shuffle ? '🔀' : '⇄', active: shuffle }),
       Object.freeze({ id: 'expand', label: expanded ? 'Collapse playlist controls' : 'Expand playlist controls', compactLabel: expanded ? '▴' : '▾' }),
     ]),
   });
@@ -772,6 +892,24 @@ const hardMoneyAnimationSet = (actor, sourcePrefix) => Object.freeze({
   attack: hardMoneyAnimationState(actor, 'attack', `${sourcePrefix}-attack.png`),
 });
 
+const lesterProductionAnimationState = (state, selectedFrom, count = 25) => Object.freeze({
+  selectedFrom,
+  frameSource: 'cropped-production-sprite-cells',
+  frames: Object.freeze(Array.from({ length: count }, (_, index) => Object.freeze({
+    src: `./assets/lester-production/frames/${state}/lester-${state}-${String(index).padStart(2, '0')}.png`,
+    size: HARD_MONEY_FRAME_SIZE,
+    frameSource: 'cropped-production-sprite-cell',
+  }))),
+});
+
+const lesterProductionAnimationSet = Object.freeze({
+  idle: lesterProductionAnimationState('idle', 'Lester-idle.png'),
+  walk: lesterProductionAnimationState('walk', 'Lester-walk.png'),
+  run: lesterProductionAnimationState('run', 'Lester-run.png'),
+  jump: lesterProductionAnimationState('jump', 'Lester-jump.png'),
+  attack: hardMoneyAnimationState('lester', 'attack', 'Lester-attack.png'),
+});
+
 const hardMoneyEnemyArt = (actor, sourcePrefix) => Object.freeze({
   animations: hardMoneyAnimationSet(actor, sourcePrefix),
   stills: Object.freeze([
@@ -800,7 +938,7 @@ const lesterCharacterAssetManifest = Object.freeze({
     knife: './assets/hard-money-heroes/stills/lester/lester-knifeRight.png',
     grenade: './assets/hard-money-heroes/stills/lester/lester-grenadeRight.png',
   }),
-  animations: hardMoneyAnimationSet('lester', 'Lester'),
+  animations: lesterProductionAnimationSet,
 });
 
 const lillyCharacterAssetManifest = Object.freeze({
@@ -885,74 +1023,93 @@ export const HARD_MONEY_HEROES_ASSET_MANIFEST = Object.freeze({
   }),
 });
 
-export const ACHIEVEMENTS = Object.freeze({
-  CABINET_PIONEER: {
-    id: 'cabinet-pioneer',
-    title: 'Cabinet Pioneer',
-    description: 'Connected a wallet profile inside Lester\'s Arcade.',
-    unlockType: 'login',
-  },
-  FIRST_PAID_RUN: {
-    id: 'first-paid-run',
-    title: 'First Paid Run',
-    description: 'Inserted an official credit and played a leaderboard-eligible run.',
-    unlockType: 'paid-run',
-  },
-  FIRST_1000_POINTS: {
-    id: 'first-1000-points',
-    title: 'First 1,000 Points',
-    description: 'Scored at least 1,000 points in an official paid run.',
-    unlockType: 'score',
-  },
-  BOSS_BREAKER: {
-    id: 'boss-breaker',
-    title: 'Boss Breaker',
-    description: 'Defeated a rotating Hard Money Heroes boss during an official paid run.',
-    unlockType: 'boss',
-  },
-  FIVE_MINUTE_RUN: {
-    id: 'five-minute-run',
-    title: 'Five-Minute Fighter',
-    description: 'Survived at least the target average five-minute Hard Money Heroes run.',
-    unlockType: 'survival',
-  },
-  MASTER_SURVIVOR: {
-    id: 'master-survivor',
-    title: 'Master Survivor',
-    description: 'Survived at least fifteen minutes in Hard Money Heroes.',
-    unlockType: 'survival',
-  },
-  HASH_RAIL_SPECIALIST: {
-    id: 'hash-rail-specialist',
-    title: 'Hash Rail Specialist',
-    description: 'Completed an official run using the Hash Rail upgrade.',
-    unlockType: 'weapon',
-  },
-  SPREAD_LTC_SPECIALIST: {
-    id: 'spread-ltc-specialist',
-    title: 'Spread LTC Specialist',
-    description: 'Completed an official run using the Spread LTC upgrade.',
-    unlockType: 'weapon',
-  },
-  NO_DAMAGE_BOSS: {
-    id: 'no-damage-boss',
-    title: 'Untouchable Boss Clear',
-    description: 'Beat a boss without taking damage during the boss phase.',
-    unlockType: 'skill',
-  },
-  POWERUP_COLLECTOR: {
-    id: 'powerup-collector',
-    title: 'Power-Up Collector',
-    description: 'Collected three or more different power-up types in one run.',
-    unlockType: 'collection',
-  },
-  ALL_BOSSES_SCOUTED: {
-    id: 'all-bosses-scouted',
-    title: 'Full Boss Roster Scouted',
-    description: 'Encountered or defeated all ten Hard Money Heroes bosses across runs.',
-    unlockType: 'collection',
-  },
-});
+const ACHIEVEMENT_BADGE_BY_ID = new Map((HMH_EXPANDED_PIXEL_PACK_MANIFEST.achievementBadges ?? []).map((badge) => [badge.id, badge]));
+
+function achievementBadgeFor(id) {
+  const badge = ACHIEVEMENT_BADGE_BY_ID.get(id);
+  return Object.freeze({
+    src: badge?.src ?? `./assets/generated/achievement-badges/${id}.png`,
+    lockedSrc: badge?.lockedSrc ?? `./assets/generated/achievement-badges/locked-${id}.png`,
+  });
+}
+
+function defineAchievement({ key, id, title, description, tier, difficulty, unlockType, icon, requirement }) {
+  const badge = achievementBadgeFor(id);
+  return Object.freeze({
+    key,
+    id,
+    title,
+    description,
+    tier,
+    difficulty,
+    unlockType,
+    icon,
+    requirement: Object.freeze({ ...(requirement ?? {}) }),
+    badgeSrc: badge.src,
+    lockedBadgeSrc: badge.lockedSrc,
+  });
+}
+
+const ACHIEVEMENT_DEFINITIONS = Object.freeze([
+  defineAchievement({ key: 'CABINET_PIONEER', id: 'cabinet-pioneer', title: 'Cabinet Pioneer', description: 'Connected a wallet profile inside Lester\'s Arcade.', tier: 'bronze', difficulty: 'easy', unlockType: 'login', icon: '🕹️', requirement: { login: true } }),
+  defineAchievement({ key: 'FIRST_PAID_RUN', id: 'first-paid-run', title: 'First Paid Run', description: 'Inserted an official credit and played a leaderboard-eligible run.', tier: 'bronze', difficulty: 'easy', unlockType: 'paid-run', icon: '◉', requirement: { paidRuns: 1 } }),
+  defineAchievement({ key: 'FIRST_1000_POINTS', id: 'first-1000-points', title: 'First 1,000 Points', description: 'Scored at least 1,000 points in an official run.', tier: 'bronze', difficulty: 'easy', unlockType: 'score', icon: '★', requirement: { score: 1000 } }),
+  defineAchievement({ key: 'FIRST_BLOOD', id: 'first-blood', title: 'First Blood', description: 'Defeated your first Hard Money Heroes enemy.', tier: 'bronze', difficulty: 'easy', unlockType: 'kill', icon: '⚔', requirement: { kills: 1 } }),
+  defineAchievement({ key: 'TEN_ENEMY_KILLS', id: 'ten-enemy-kills', title: 'Ten-Enemy Cleanup', description: 'Defeated 10 enemies in one official run.', tier: 'bronze', difficulty: 'easy', unlockType: 'kill', icon: '☠', requirement: { kills: 10 } }),
+  defineAchievement({ key: 'FIRST_GRENADE_KILL', id: 'first-grenade-kill', title: 'Crypto Bomb Initiate', description: 'Defeated an enemy with a grenade.', tier: 'bronze', difficulty: 'easy', unlockType: 'grenade', icon: '●', requirement: { grenadeKills: 1 } }),
+  defineAchievement({ key: 'FIRST_POWERUP', id: 'first-powerup', title: 'Pickup Ready', description: 'Collected a power-up during a run.', tier: 'bronze', difficulty: 'easy', unlockType: 'collection', icon: '⬢', requirement: { powerUpsCollected: 1 } }),
+  defineAchievement({ key: 'BEAT_LEVEL_1_BOSS', id: 'beat-level-1-boss', title: 'Beat Level 1 Boss', description: 'Defeated the Level 1 boss lock.', tier: 'bronze', difficulty: 'easy', unlockType: 'boss', icon: '⚠', requirement: { bossId: 'any' } }),
+  defineAchievement({ key: 'FIVE_MINUTE_RUN', id: 'five-minute-run', title: 'Five-Minute Fighter', description: 'Survived at least five minutes.', tier: 'bronze', difficulty: 'easy', unlockType: 'survival', icon: '⌛', requirement: { elapsedSeconds: 300 } }),
+  defineAchievement({ key: 'COMBO_STARTER', id: 'combo-starter', title: 'Combo Starter', description: 'Reached a 5-hit combo.', tier: 'bronze', difficulty: 'easy', unlockType: 'combo', icon: '×5', requirement: { maxCombo: 5 } }),
+
+  defineAchievement({ key: 'GAS_BEAST_HUNTER', id: 'gas-beast-hunter', title: 'Gas Beast Hunter', description: 'Defeated 50 Gas Beasts across official runs.', tier: 'silver', difficulty: 'medium', unlockType: 'enemy-hunt', icon: '☣', requirement: { enemyId: 'gas-beast', cumulativeKills: 50 } }),
+  defineAchievement({ key: 'GOBLIN_CLEANUP', id: 'goblin-cleanup', title: 'Goblin Cleanup', description: 'Defeated 75 FUD Goblins, Paper Hands, or Rug Rats.', tier: 'silver', difficulty: 'medium', unlockType: 'enemy-hunt', icon: '☠', requirement: { family: 'goblin', cumulativeKills: 75 } }),
+  defineAchievement({ key: 'DRONE_SWATTER', id: 'drone-swatter', title: 'Drone Swatter', description: 'Defeated 60 Sybil Drones or bot enemies.', tier: 'silver', difficulty: 'medium', unlockType: 'enemy-hunt', icon: '✦', requirement: { family: 'drone', cumulativeKills: 60 } }),
+  defineAchievement({ key: 'GRENADE_CENTURY', id: 'grenade-century', title: 'Grenade Century', description: 'Defeated 100 enemies with grenades across official runs.', tier: 'silver', difficulty: 'medium', unlockType: 'grenade', icon: '●', requirement: { cumulativeGrenadeKills: 100 } }),
+  defineAchievement({ key: 'BLADE_MASTER', id: 'blade-master', title: 'Blade Master', description: 'Defeated 100 enemies with the Litecoin Blade across official runs.', tier: 'silver', difficulty: 'medium', unlockType: 'melee', icon: '⌁', requirement: { cumulativeMeleeKills: 100 } }),
+  defineAchievement({ key: 'HASH_RAIL_SPECIALIST', id: 'hash-rail-specialist', title: 'Hash Rail Specialist', description: 'Completed an official run using the Hash Rail upgrade.', tier: 'silver', difficulty: 'medium', unlockType: 'weapon', icon: '━', requirement: { weaponId: 'hash-rail' } }),
+  defineAchievement({ key: 'SPREAD_LTC_SPECIALIST', id: 'spread-ltc-specialist', title: 'Spread LTC Specialist', description: 'Completed an official run using the Spread LTC upgrade.', tier: 'silver', difficulty: 'medium', unlockType: 'weapon', icon: '⇶', requirement: { weaponId: 'spread-ltc' } }),
+  defineAchievement({ key: 'POWERUP_COLLECTOR', id: 'powerup-collector', title: 'Power-Up Collector', description: 'Collected three or more different power-up types in one run.', tier: 'silver', difficulty: 'medium', unlockType: 'collection', icon: '⬢', requirement: { uniquePowerUps: 3 } }),
+  defineAchievement({ key: 'SCORE_5000', id: 'score-5000', title: '5K Scorecard', description: 'Scored at least 5,000 points in an official run.', tier: 'silver', difficulty: 'medium', unlockType: 'score', icon: '5K', requirement: { score: 5000 } }),
+  defineAchievement({ key: 'SCORE_10000', id: 'score-10000', title: '10K Neon Run', description: 'Scored at least 10,000 points in an official run.', tier: 'silver', difficulty: 'medium', unlockType: 'score', icon: '10K', requirement: { score: 10000 } }),
+
+  defineAchievement({ key: 'BOSS_BREAKER', id: 'boss-breaker', title: 'Boss Breaker', description: 'Defeated any rotating Hard Money Heroes boss during an official run.', tier: 'gold', difficulty: 'hard', unlockType: 'boss', icon: '⚠', requirement: { bossId: 'any' } }),
+  defineAchievement({ key: 'NO_DAMAGE_BOSS', id: 'no-damage-boss', title: 'Untouchable Boss Clear', description: 'Beat a boss without taking damage during the boss phase.', tier: 'gold', difficulty: 'hard', unlockType: 'skill', icon: '◆', requirement: { bossId: 'any', noDamage: true } }),
+  defineAchievement({ key: 'SLUMS_CLEAR', id: 'slums-clear', title: 'Slums Clear', description: 'Cleared the Underchain District stage set.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅰ', requirement: { stageIndexReached: 4 } }),
+  defineAchievement({ key: 'FOUNDRY_CLEAR', id: 'foundry-clear', title: 'Foundry Clear', description: 'Cleared the counterfeit-mint foundry stage set.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅱ', requirement: { stageIndexReached: 8 } }),
+  defineAchievement({ key: 'GETAWAY_CLEAR', id: 'getaway-clear', title: 'Getaway Clear', description: 'Cleared the Level 1 finale route.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅲ', requirement: { stageIndexReached: 13, bossId: 'any' } }),
+  defineAchievement({ key: 'BIG_COMBO', id: 'big-combo', title: 'Big Combo', description: 'Reached a 15-hit combo.', tier: 'gold', difficulty: 'hard', unlockType: 'combo', icon: '×15', requirement: { maxCombo: 15 } }),
+  defineAchievement({ key: 'DAMAGE_CHAIN', id: 'damage-chain', title: 'Damage Chain', description: 'Built a 250-damage chain before it broke.', tier: 'gold', difficulty: 'hard', unlockType: 'combo', icon: '⚡', requirement: { maxDamageCombo: 250 } }),
+  defineAchievement({ key: 'WEAPON_COLLECTOR', id: 'weapon-collector', title: 'Weapon Collector', description: 'Used three different weapon upgrades across official runs.', tier: 'gold', difficulty: 'hard', unlockType: 'collection', icon: '⌁', requirement: { uniqueWeapons: 3 } }),
+  defineAchievement({ key: 'LUCKY_SURVIVOR', id: 'lucky-survivor', title: 'Lucky Survivor', description: 'Survived past 10 minutes after dropping below 20% health.', tier: 'gold', difficulty: 'hard', unlockType: 'survival', icon: '♡', requirement: { elapsedSeconds: 600, lowHealthSurvival: true } }),
+  defineAchievement({ key: 'TEN_PAID_RUNS', id: 'ten-paid-runs', title: 'Ranked Regular', description: 'Completed 10 official ranked runs.', tier: 'gold', difficulty: 'hard', unlockType: 'volume', icon: '10', requirement: { paidRuns: 10 } }),
+
+  defineAchievement({ key: 'MASTER_SURVIVOR', id: 'master-survivor', title: 'Master Survivor', description: 'Survived at least fifteen minutes in Hard Money Heroes.', tier: 'platinum', difficulty: 'expert', unlockType: 'survival', icon: '⌛', requirement: { elapsedSeconds: 900 } }),
+  defineAchievement({ key: 'SCORE_25000', id: 'score-25000', title: '25K Riot', description: 'Scored at least 25,000 points in an official run.', tier: 'platinum', difficulty: 'expert', unlockType: 'score', icon: '25K', requirement: { score: 25000 } }),
+  defineAchievement({ key: 'SCORE_50000', id: 'score-50000', title: '50K Legend Run', description: 'Scored at least 50,000 points in an official run.', tier: 'platinum', difficulty: 'expert', unlockType: 'score', icon: '50K', requirement: { score: 50000 } }),
+  defineAchievement({ key: 'NO_DAMAGE_10_MINUTES', id: 'no-damage-10-minutes', title: 'Glass Cannon Saint', description: 'Survived 10 minutes in an official run without taking damage.', tier: 'platinum', difficulty: 'expert', unlockType: 'skill', icon: '◇', requirement: { elapsedSeconds: 600, noDamage: true } }),
+  defineAchievement({ key: 'ALL_BOSSES_SCOUTED', id: 'all-bosses-scouted', title: 'Full Boss Roster Scouted', description: 'Encountered or defeated all major Hard Money Heroes bosses across runs.', tier: 'platinum', difficulty: 'expert', unlockType: 'collection', icon: '⚠', requirement: { bossesDefeatedCount: 10 } }),
+  defineAchievement({ key: 'ENEMY_REAPER_250', id: 'enemy-reaper-250', title: 'Enemy Reaper 250', description: 'Defeated 250 enemies across official runs.', tier: 'platinum', difficulty: 'expert', unlockType: 'kill', icon: '250', requirement: { cumulativeKills: 250 } }),
+  defineAchievement({ key: 'ENEMY_REAPER_500', id: 'enemy-reaper-500', title: 'Enemy Reaper 500', description: 'Defeated 500 enemies across official runs.', tier: 'platinum', difficulty: 'expert', unlockType: 'kill', icon: '500', requirement: { cumulativeKills: 500 } }),
+  defineAchievement({ key: 'GRENADE_DEMOLITIONIST', id: 'grenade-demolitionist', title: 'Grenade Demolitionist', description: 'Defeated 250 enemies with grenades across official runs.', tier: 'platinum', difficulty: 'expert', unlockType: 'grenade', icon: '●', requirement: { cumulativeGrenadeKills: 250 } }),
+  defineAchievement({ key: 'BLADE_SAMURAI', id: 'blade-samurai', title: 'Blade Samurai', description: 'Defeated 250 enemies with the Litecoin Blade across official runs.', tier: 'platinum', difficulty: 'expert', unlockType: 'melee', icon: '⌁', requirement: { cumulativeMeleeKills: 250 } }),
+  defineAchievement({ key: 'POWERUP_HOARDER', id: 'powerup-hoarder', title: 'Power-Up Hoarder', description: 'Collected 250 power-ups across official runs.', tier: 'platinum', difficulty: 'expert', unlockType: 'collection', icon: '⬢', requirement: { cumulativePowerUps: 250 } }),
+
+  defineAchievement({ key: 'RANKED_REGULAR', id: 'ranked-regular', title: 'Ranked Regular+', description: 'Completed 50 official ranked runs.', tier: 'diamond', difficulty: 'long-haul', unlockType: 'volume', icon: '50', requirement: { paidRuns: 50 } }),
+  defineAchievement({ key: 'BOSS_RUSH_TEN', id: 'boss-rush-ten', title: 'Boss Rush Ten', description: 'Defeated 10 bosses across official runs.', tier: 'diamond', difficulty: 'long-haul', unlockType: 'boss', icon: '10⚠', requirement: { cumulativeBossKills: 10 } }),
+  defineAchievement({ key: 'SPEED_CLEAR', id: 'speed-clear', title: 'Speed Clear', description: 'Beat the Level 1 boss in under 8 minutes.', tier: 'diamond', difficulty: 'long-haul', unlockType: 'skill', icon: '⏱', requirement: { bossId: 'any', elapsedSecondsAtMost: 480 } }),
+  defineAchievement({ key: 'HARD_FORK_HERO', id: 'hard-fork-hero', title: 'Hard Fork Hero', description: 'Reached Stage 13 while carrying a throwable-focused run.', tier: 'diamond', difficulty: 'long-haul', unlockType: 'grenade', icon: '⚒', requirement: { stageIndexReached: 13, grenadeKills: 20 } }),
+  defineAchievement({ key: 'MAX_COMBO_30', id: 'max-combo-30', title: '30-Combo Signal', description: 'Reached a 30-hit combo.', tier: 'diamond', difficulty: 'long-haul', unlockType: 'combo', icon: '×30', requirement: { maxCombo: 30 } }),
+
+  defineAchievement({ key: 'TWO_HUNDRED_RANKED_RUNS', id: 'two-hundred-ranked-runs', title: '200 Ranked Runs', description: 'Completed 200 official ranked runs.', tier: 'mythic', difficulty: 'endgame', unlockType: 'volume', icon: '200', requirement: { paidRuns: 200 } }),
+  defineAchievement({ key: 'TWO_FIFTY_RANKED_RUNS', id: 'two-fifty-ranked-runs', title: '250 Ranked Runs', description: 'Completed 250 official ranked runs.', tier: 'mythic', difficulty: 'endgame', unlockType: 'volume', icon: '250', requirement: { paidRuns: 250 } }),
+  defineAchievement({ key: 'MARATHON_WALLET', id: 'marathon-wallet', title: 'Marathon Wallet', description: 'Survived a cumulative 10 hours across official runs.', tier: 'mythic', difficulty: 'endgame', unlockType: 'volume', icon: '10H', requirement: { cumulativeSeconds: 36000 } }),
+  defineAchievement({ key: 'PERFECT_BOSS_GAUNTLET', id: 'perfect-boss-gauntlet', title: 'Perfect Boss Gauntlet', description: 'Defeated three bosses without taking damage in their boss phases.', tier: 'mythic', difficulty: 'endgame', unlockType: 'skill', icon: '◇⚠', requirement: { perfectBossKills: 3 } }),
+  defineAchievement({ key: 'ARCADE_LEGEND_500', id: 'arcade-legend-500', title: 'Arcade Legend 500', description: 'Completed 500 official ranked runs.', tier: 'mythic', difficulty: 'endgame', unlockType: 'volume', icon: '500', requirement: { paidRuns: 500 } }),
+]);
+
+export const ACHIEVEMENTS = Object.freeze(Object.fromEntries(ACHIEVEMENT_DEFINITIONS.map((achievement) => [achievement.key, achievement])));
+export const ACHIEVEMENT_LIST = Object.freeze(ACHIEVEMENT_DEFINITIONS.map((achievement) => achievement));
 
 export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
   Object.freeze({
@@ -1575,6 +1732,164 @@ function clone(value) {
 function clampNumber(value, min, max) {
   const safeValue = Number.isFinite(value) ? value : min;
   return Math.max(min, Math.min(max, safeValue));
+}
+
+
+const roguelikeStatDefaults = () => Object.fromEntries(
+  LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((skill) => [skill.stat, 1]),
+);
+
+function roguelikeXpCostForLevel(level = 1) {
+  return 100 + Math.max(0, Math.floor(level) - 1) * 25;
+}
+
+function seededIndex(seed, salt, length) {
+  if (length <= 0) return -1;
+  const raw = Math.sin((Number(seed) || 0) * 12.9898 + salt * 78.233) * 43758.5453;
+  return Math.abs(Math.floor(raw)) % length;
+}
+
+function cloneRoguelikeRun(run) {
+  return {
+    ...run,
+    player: { ...run.player },
+    stats: { ...run.stats },
+    skills: { ...run.skills },
+    map: { ...run.map },
+    spawnDirector: { ...run.spawnDirector },
+  };
+}
+
+export function buildIsometricRoguelikeRunConfig({ seed = 1, mapRadiusTiles = 42 } = {}) {
+  const safeSeed = Math.floor(Number(seed) || 1);
+  return Object.freeze({
+    seed: safeSeed,
+    genre: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.genre,
+    camera: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera,
+    map: Object.freeze({
+      procedural: true,
+      radiusTiles: mapRadiusTiles,
+      chunkSizeTiles: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.mapGeneration.chunkSizeTiles,
+      tilesetPerspective: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.mapGeneration.tilesetPerspective,
+      seedLabel: `hmh-iso-${safeSeed}`,
+    }),
+    player: Object.freeze({
+      startWorld: Object.freeze({ x: 0, y: 0 }),
+      movement: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.movement,
+      baseStats: Object.freeze({ damage: 1, rateOfFire: 1, reloadSpeed: 1, movementSpeed: 1, maxHealth: 100 }),
+    }),
+    spawnDirector: Object.freeze({
+      targetPressureCurveMinutes: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetPressureCurveMinutes,
+      targetSurvivalMinutes: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes,
+      enemyBehaviors: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.combat.enemyBehaviors,
+    }),
+    levelUp: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp,
+  });
+}
+
+export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId = 'lester' } = {}) {
+  const config = buildIsometricRoguelikeRunConfig({ seed });
+  return {
+    mode,
+    seed: config.seed,
+    characterId,
+    level: 1,
+    xp: 0,
+    xpToNextLevel: roguelikeXpCostForLevel(1),
+    pausedForLevelUp: false,
+    pendingUpgradeChoices: 0,
+    rerollsRemaining: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel,
+    player: { x: config.player.startWorld.x, y: config.player.startWorld.y, facing: 'E' },
+    stats: roguelikeStatDefaults(),
+    skills: Object.fromEntries(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((skill) => [skill.id, 0])),
+    map: { procedural: true, tilesetPerspective: config.map.tilesetPerspective, seedLabel: config.map.seedLabel },
+    spawnDirector: getRoguelikeSpawnDirectorAt(0),
+  };
+}
+
+export function grantRoguelikeXp(run, amount = 0) {
+  const next = cloneRoguelikeRun(run);
+  const xpMultiplier = next.stats.xpGain ?? 1;
+  next.xp += Math.max(0, Number(amount) || 0) * xpMultiplier;
+  while (!next.pausedForLevelUp && next.xp >= next.xpToNextLevel) {
+    next.xp -= next.xpToNextLevel;
+    next.level += 1;
+    next.xpToNextLevel = roguelikeXpCostForLevel(next.level);
+    next.pausedForLevelUp = true;
+    next.pendingUpgradeChoices = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel;
+    next.rerollsRemaining = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel;
+  }
+  return next;
+}
+
+export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false } = {}) {
+  const available = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => (run.skills?.[skill.id] ?? 0) < skill.maxLevel);
+  const choices = [];
+  const saltBase = (run.level ?? 1) * 17 + (reroll ? 101 : 0);
+  for (let i = 0; i < Math.min(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, available.length); i += 1) {
+    const index = seededIndex(seed, saltBase + i * 13, available.length);
+    const [skill] = available.splice(index, 1);
+    choices.push(Object.freeze({ ...skill, currentLevel: run.skills?.[skill.id] ?? 0, nextLevel: (run.skills?.[skill.id] ?? 0) + 1 }));
+  }
+  return Object.freeze({
+    options: Object.freeze(choices),
+    rerollsRemaining: Math.max(0, (run.rerollsRemaining ?? 0) - (reroll ? 1 : 0)),
+  });
+}
+
+export function applyRoguelikeSkillUpgrade(run, skillId) {
+  const skill = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.find((candidate) => candidate.id === skillId);
+  if (!skill) throw new Error(`Unknown roguelike skill: ${skillId}`);
+  const currentLevel = run.skills?.[skill.id] ?? 0;
+  if (currentLevel >= skill.maxLevel) return cloneRoguelikeRun(run);
+  const next = cloneRoguelikeRun(run);
+  next.skills[skill.id] = currentLevel + 1;
+  next.stats[skill.stat] = (next.stats[skill.stat] ?? 1) + skill.perLevelPercent / 100;
+  next.pausedForLevelUp = false;
+  next.pendingUpgradeChoices = 0;
+  return next;
+}
+
+export function getRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {
+  const seconds = Math.max(0, Number(elapsedSeconds) || 0);
+  const minutes = seconds / 60;
+  const target = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes;
+  const pressure = clampNumber(minutes / target, 0, 1);
+  return Object.freeze({
+    elapsedMinutes: Number(minutes.toFixed(2)),
+    pressure: Number(pressure.toFixed(3)),
+    spawnIntervalSeconds: Number((3.2 - pressure * 2.78).toFixed(2)),
+    maxEnemiesOnMap: Math.round(12 + pressure * 100),
+    chaseEnemyShare: Number((0.68 - pressure * 0.18).toFixed(2)),
+    rangedEnemyShare: Number((0.22 + pressure * 0.35).toFixed(2)),
+    eliteEnemyShare: Number((0.01 + pressure * 0.31).toFixed(2)),
+    projectileSpeedMultiplier: Number((1 + pressure * 0.85).toFixed(2)),
+    healthMultiplier: Number((1 + pressure * 2.1).toFixed(2)),
+    difficultyLabel: pressure >= 1 ? 'survival-wall' : pressure >= 0.75 ? 'panic' : pressure >= 0.5 ? 'market-crash' : pressure >= 0.25 ? 'volatile' : 'opening',
+  });
+}
+
+export function buildFullscreenViewportModel({
+  mode = 'fullscreen',
+  fullscreenElementActive = false,
+  screenWidth = 1920,
+  screenHeight = 1080,
+} = {}) {
+  const isExpanded = mode === 'expanded-fullscreen' || mode === 'fullscreen';
+  const isRealFullscreen = Boolean(fullscreenElementActive && isExpanded);
+  const canvasCss = isRealFullscreen
+    ? Object.freeze({ width: '100vw', height: '100vh', objectFit: 'contain' })
+    : mode === 'windowed'
+      ? Object.freeze({ width: 'min(100%, 660px)', height: 'auto', objectFit: 'contain' })
+      : Object.freeze({ width: 'min(100%, 1180px)', height: 'auto', objectFit: 'contain' });
+  return Object.freeze({
+    mode,
+    targetElement: 'officialCombatMount',
+    browserApiAction: isExpanded && !fullscreenElementActive ? 'requestFullscreen' : mode === 'windowed' && fullscreenElementActive ? 'exitFullscreen' : 'none',
+    isRealFullscreen,
+    canvasCss,
+    devicePixels: Object.freeze({ width: Math.max(1, Math.round(screenWidth)), height: Math.max(1, Math.round(screenHeight)) }),
+  });
 }
 
 function formatClock(seconds) {
@@ -2308,16 +2623,104 @@ export function buildLeaderboardModel(state, { gameId = 'lester-blaster', wallet
   };
 }
 
-export function resolveAchievementUnlocksForRun({ score = 0, elapsedSeconds = 0, bossId = null, weaponId = null, noDamage = false, collectedPowerUps = [] } = {}) {
+export function resolveAchievementUnlocksForRun({
+  score = 0,
+  elapsedSeconds = 0,
+  bossId = null,
+  weaponId = null,
+  rareWeaponId = null,
+  noDamage = false,
+  collectedPowerUps = [],
+  kills = 0,
+  totalKills = 0,
+  grenadeKills = 0,
+  cumulativeGrenadeKills = 0,
+  meleeKills = 0,
+  cumulativeMeleeKills = 0,
+  enemyKillsByType = {},
+  cumulativeEnemyKillsByType = {},
+  maxCombo = 0,
+  maxDamageCombo = 0,
+  powerUpsCollected = 0,
+  cumulativePowerUps = 0,
+  paidRuns = 0,
+  cumulativeSeconds = 0,
+  bossesDefeatedCount = 0,
+  cumulativeBossKills = 0,
+  perfectBossKills = 0,
+  stageIndexReached = 1,
+  lowHealthSurvival = false,
+  uniqueWeapons = 0,
+} = {}) {
   const unlocks = [];
-  if (score >= 1000) unlocks.push(ACHIEVEMENTS.FIRST_1000_POINTS.id);
-  if (bossId) unlocks.push(ACHIEVEMENTS.BOSS_BREAKER.id);
-  if (elapsedSeconds >= 5 * 60) unlocks.push(ACHIEVEMENTS.FIVE_MINUTE_RUN.id);
-  if (elapsedSeconds >= 15 * 60) unlocks.push(ACHIEVEMENTS.MASTER_SURVIVOR.id);
-  if (weaponId === 'hash-rail') unlocks.push(ACHIEVEMENTS.HASH_RAIL_SPECIALIST.id);
-  if (weaponId === 'spread-ltc') unlocks.push(ACHIEVEMENTS.SPREAD_LTC_SPECIALIST.id);
-  if (noDamage && bossId) unlocks.push(ACHIEVEMENTS.NO_DAMAGE_BOSS.id);
-  if (new Set(collectedPowerUps).size >= 3) unlocks.push(ACHIEVEMENTS.POWERUP_COLLECTOR.id);
+  const push = (achievement, condition) => {
+    if (condition && achievement?.id) unlocks.push(achievement.id);
+  };
+  const uniquePowerUps = new Set(collectedPowerUps).size;
+  const cumulativeKills = Math.max(totalKills, kills);
+  const gasBeastKills = (enemyKillsByType['gas-beast'] ?? 0) + (cumulativeEnemyKillsByType['gas-beast'] ?? 0);
+  const goblinKills = ['fud-goblin', 'paper-hand', 'rug-rat', 'trench-degen'].reduce((sum, id) => sum + (enemyKillsByType[id] ?? 0) + (cumulativeEnemyKillsByType[id] ?? 0), 0);
+  const droneKills = ['sybil-drone', 'bot-swarm', 'evil-banker', 'scambot'].reduce((sum, id) => sum + (enemyKillsByType[id] ?? 0) + (cumulativeEnemyKillsByType[id] ?? 0), 0);
+  const grenadeTotal = Math.max(cumulativeGrenadeKills, grenadeKills);
+  const meleeTotal = Math.max(cumulativeMeleeKills, meleeKills);
+  const powerUpTotal = Math.max(cumulativePowerUps, powerUpsCollected);
+  const effectiveWeaponCount = Math.max(uniqueWeapons, weaponId ? 1 : 0, rareWeaponId ? 1 : 0);
+
+  push(ACHIEVEMENTS.FIRST_PAID_RUN, paidRuns >= 1);
+  push(ACHIEVEMENTS.FIRST_1000_POINTS, score >= 1000);
+  push(ACHIEVEMENTS.FIRST_BLOOD, kills >= 1 || cumulativeKills >= 1);
+  push(ACHIEVEMENTS.TEN_ENEMY_KILLS, kills >= 10);
+  push(ACHIEVEMENTS.FIRST_GRENADE_KILL, grenadeKills >= 1 || grenadeTotal >= 1);
+  push(ACHIEVEMENTS.FIRST_POWERUP, powerUpsCollected >= 1 || uniquePowerUps >= 1 || powerUpTotal >= 1);
+  push(ACHIEVEMENTS.BEAT_LEVEL_1_BOSS, Boolean(bossId));
+  push(ACHIEVEMENTS.FIVE_MINUTE_RUN, elapsedSeconds >= 5 * 60);
+  push(ACHIEVEMENTS.COMBO_STARTER, maxCombo >= 5);
+
+  push(ACHIEVEMENTS.GAS_BEAST_HUNTER, gasBeastKills >= 50);
+  push(ACHIEVEMENTS.GOBLIN_CLEANUP, goblinKills >= 75);
+  push(ACHIEVEMENTS.DRONE_SWATTER, droneKills >= 60);
+  push(ACHIEVEMENTS.GRENADE_CENTURY, grenadeTotal >= 100);
+  push(ACHIEVEMENTS.BLADE_MASTER, meleeTotal >= 100);
+  push(ACHIEVEMENTS.HASH_RAIL_SPECIALIST, weaponId === 'hash-rail');
+  push(ACHIEVEMENTS.SPREAD_LTC_SPECIALIST, weaponId === 'spread-ltc');
+  push(ACHIEVEMENTS.POWERUP_COLLECTOR, uniquePowerUps >= 3);
+  push(ACHIEVEMENTS.SCORE_5000, score >= 5000);
+  push(ACHIEVEMENTS.SCORE_10000, score >= 10000);
+
+  push(ACHIEVEMENTS.BOSS_BREAKER, Boolean(bossId));
+  push(ACHIEVEMENTS.NO_DAMAGE_BOSS, noDamage && Boolean(bossId));
+  push(ACHIEVEMENTS.SLUMS_CLEAR, stageIndexReached >= 4);
+  push(ACHIEVEMENTS.FOUNDRY_CLEAR, stageIndexReached >= 8);
+  push(ACHIEVEMENTS.GETAWAY_CLEAR, stageIndexReached >= 13 && Boolean(bossId));
+  push(ACHIEVEMENTS.BIG_COMBO, maxCombo >= 15);
+  push(ACHIEVEMENTS.DAMAGE_CHAIN, maxDamageCombo >= 250);
+  push(ACHIEVEMENTS.WEAPON_COLLECTOR, effectiveWeaponCount >= 3);
+  push(ACHIEVEMENTS.LUCKY_SURVIVOR, elapsedSeconds >= 10 * 60 && lowHealthSurvival);
+  push(ACHIEVEMENTS.TEN_PAID_RUNS, paidRuns >= 10);
+
+  push(ACHIEVEMENTS.MASTER_SURVIVOR, elapsedSeconds >= 15 * 60);
+  push(ACHIEVEMENTS.SCORE_25000, score >= 25000);
+  push(ACHIEVEMENTS.SCORE_50000, score >= 50000);
+  push(ACHIEVEMENTS.NO_DAMAGE_10_MINUTES, noDamage && elapsedSeconds >= 10 * 60);
+  push(ACHIEVEMENTS.ALL_BOSSES_SCOUTED, bossesDefeatedCount >= 10);
+  push(ACHIEVEMENTS.ENEMY_REAPER_250, cumulativeKills >= 250);
+  push(ACHIEVEMENTS.ENEMY_REAPER_500, cumulativeKills >= 500);
+  push(ACHIEVEMENTS.GRENADE_DEMOLITIONIST, grenadeTotal >= 250);
+  push(ACHIEVEMENTS.BLADE_SAMURAI, meleeTotal >= 250);
+  push(ACHIEVEMENTS.POWERUP_HOARDER, powerUpTotal >= 250);
+
+  push(ACHIEVEMENTS.RANKED_REGULAR, paidRuns >= 50);
+  push(ACHIEVEMENTS.BOSS_RUSH_TEN, cumulativeBossKills >= 10);
+  push(ACHIEVEMENTS.SPEED_CLEAR, Boolean(bossId) && elapsedSeconds > 0 && elapsedSeconds <= 8 * 60);
+  push(ACHIEVEMENTS.HARD_FORK_HERO, stageIndexReached >= 13 && grenadeKills >= 20);
+  push(ACHIEVEMENTS.MAX_COMBO_30, maxCombo >= 30);
+
+  push(ACHIEVEMENTS.TWO_HUNDRED_RANKED_RUNS, paidRuns >= 200);
+  push(ACHIEVEMENTS.TWO_FIFTY_RANKED_RUNS, paidRuns >= 250);
+  push(ACHIEVEMENTS.MARATHON_WALLET, cumulativeSeconds >= 10 * 60 * 60);
+  push(ACHIEVEMENTS.PERFECT_BOSS_GAUNTLET, perfectBossKills >= 3);
+  push(ACHIEVEMENTS.ARCADE_LEGEND_500, paidRuns >= 500);
+
   return [...new Set(unlocks)];
 }
 
@@ -2469,6 +2872,18 @@ function createEmptyGameProgress(gameId) {
     freeRuns: 0,
     longestRunSeconds: 0,
     bestDistanceMeters: 0,
+    totalKills: 0,
+    grenadeKills: 0,
+    meleeKills: 0,
+    bossKills: 0,
+    perfectBossKills: 0,
+    cumulativeSeconds: 0,
+    cumulativePowerUps: 0,
+    maxCombo: 0,
+    maxDamageCombo: 0,
+    enemyKillsByType: {},
+    weaponIdsUsed: [],
+    uniquePowerUps: [],
     bossesDefeated: [],
     lastSessionId: null,
     lastPlayedAt: null,
@@ -2714,20 +3129,42 @@ export function buildParentSyncPacket(session, { score = null, runStats = {}, un
   });
 }
 
-function maybeUnlockRunAchievements(profile, score, runStats = {}) {
+function maybeUnlockRunAchievements(profile, score, runStats = {}, progress = null) {
   const unlockedAchievements = [];
 
   if (unlockAchievement(profile, ACHIEVEMENTS.FIRST_PAID_RUN.id)) {
     unlockedAchievements.push(ACHIEVEMENTS.FIRST_PAID_RUN.id);
   }
 
+  const cumulativeProgress = progress ?? { bossesDefeated: [] };
   for (const achievementId of resolveAchievementUnlocksForRun({
     score,
     elapsedSeconds: runStats.elapsedSeconds ?? 0,
     bossId: runStats.bossId,
     weaponId: runStats.weaponId,
+    rareWeaponId: runStats.rareWeaponId,
     noDamage: runStats.noDamage,
     collectedPowerUps: runStats.collectedPowerUps ?? [],
+    kills: runStats.kills ?? 0,
+    totalKills: cumulativeProgress.totalKills ?? runStats.kills ?? 0,
+    grenadeKills: runStats.grenadeKills ?? 0,
+    cumulativeGrenadeKills: cumulativeProgress.grenadeKills ?? runStats.grenadeKills ?? 0,
+    meleeKills: runStats.meleeKills ?? 0,
+    cumulativeMeleeKills: cumulativeProgress.meleeKills ?? runStats.meleeKills ?? 0,
+    enemyKillsByType: runStats.enemyKillsByType ?? {},
+    cumulativeEnemyKillsByType: cumulativeProgress.enemyKillsByType ?? {},
+    maxCombo: runStats.maxCombo ?? runStats.maxKillCombo ?? cumulativeProgress.maxCombo ?? 0,
+    maxDamageCombo: runStats.maxDamageCombo ?? cumulativeProgress.maxDamageCombo ?? 0,
+    powerUpsCollected: runStats.powerUpsCollected ?? (runStats.collectedPowerUps?.length ?? 0),
+    cumulativePowerUps: cumulativeProgress.cumulativePowerUps ?? 0,
+    paidRuns: profile.totalPaidRuns ?? 0,
+    cumulativeSeconds: cumulativeProgress.cumulativeSeconds ?? 0,
+    bossesDefeatedCount: cumulativeProgress.bossesDefeated?.length ?? 0,
+    cumulativeBossKills: cumulativeProgress.bossKills ?? 0,
+    perfectBossKills: cumulativeProgress.perfectBossKills ?? 0,
+    stageIndexReached: runStats.stageIndexReached ?? 1,
+    lowHealthSurvival: runStats.lowHealthSurvival ?? false,
+    uniqueWeapons: cumulativeProgress.weaponIdsUsed?.length ?? 0,
   })) {
     if (unlockAchievement(profile, achievementId)) unlockedAchievements.push(achievementId);
   }
@@ -2740,10 +3177,30 @@ function updateProgressFromRun(progress, session, score, runStats = {}) {
   progress.lastPlayedAt = nowIso();
   progress.longestRunSeconds = Math.max(progress.longestRunSeconds, runStats.elapsedSeconds ?? 0);
   progress.bestDistanceMeters = Math.max(progress.bestDistanceMeters, runStats.distanceMeters ?? 0);
+  progress.totalKills = (progress.totalKills ?? 0) + Math.max(0, Math.floor(runStats.kills ?? 0));
+  progress.grenadeKills = (progress.grenadeKills ?? 0) + Math.max(0, Math.floor(runStats.grenadeKills ?? 0));
+  progress.meleeKills = (progress.meleeKills ?? 0) + Math.max(0, Math.floor(runStats.meleeKills ?? 0));
+  progress.cumulativeSeconds = (progress.cumulativeSeconds ?? 0) + Math.max(0, Math.floor(runStats.elapsedSeconds ?? 0));
+  progress.cumulativePowerUps = (progress.cumulativePowerUps ?? 0) + Math.max(0, Math.floor(runStats.powerUpsCollected ?? (runStats.collectedPowerUps?.length ?? 0)));
+  progress.maxCombo = Math.max(progress.maxCombo ?? 0, runStats.maxCombo ?? runStats.maxKillCombo ?? 0);
+  progress.maxDamageCombo = Math.max(progress.maxDamageCombo ?? 0, runStats.maxDamageCombo ?? 0);
+  progress.enemyKillsByType ??= {};
+  for (const [enemyId, count] of Object.entries(runStats.enemyKillsByType ?? {})) {
+    progress.enemyKillsByType[enemyId] = (progress.enemyKillsByType[enemyId] ?? 0) + Math.max(0, Math.floor(count));
+  }
+  progress.weaponIdsUsed ??= [];
+  if (runStats.weaponId && !progress.weaponIdsUsed.includes(runStats.weaponId)) progress.weaponIdsUsed.push(runStats.weaponId);
+  if (runStats.rareWeaponId && !progress.weaponIdsUsed.includes(runStats.rareWeaponId)) progress.weaponIdsUsed.push(runStats.rareWeaponId);
+  progress.uniquePowerUps ??= [];
+  for (const powerId of runStats.collectedPowerUps ?? []) {
+    if (!progress.uniquePowerUps.includes(powerId)) progress.uniquePowerUps.push(powerId);
+  }
 
   if (runStats.bossId && !progress.bossesDefeated.includes(runStats.bossId)) {
     progress.bossesDefeated.push(runStats.bossId);
   }
+  if (runStats.bossId) progress.bossKills = (progress.bossKills ?? 0) + 1;
+  if (runStats.bossId && runStats.noDamage) progress.perfectBossKills = (progress.perfectBossKills ?? 0) + 1;
 
   if (session.leaderboardEligible) {
     progress.paidRuns += 1;
@@ -2794,7 +3251,7 @@ export function recordScore(state, session, score, runStats = {}) {
   updateProgressFromRun(progress, session, score, runStats);
   profile.totalPaidRuns += 1;
   profile.xp += Math.max(25, Math.floor(score / 20));
-  const unlockedAchievements = maybeUnlockRunAchievements(profile, score, runStats);
+  const unlockedAchievements = maybeUnlockRunAchievements(profile, score, runStats, progress);
   const parentSync = buildParentSyncPacket(session, { score, runStats, unlockedAchievements });
   updateRank(profile);
 
@@ -2870,6 +3327,9 @@ function cloneProgress(progress) {
     {
       ...entry,
       bossesDefeated: [...entry.bossesDefeated],
+      enemyKillsByType: { ...(entry.enemyKillsByType ?? {}) },
+      weaponIdsUsed: [...(entry.weaponIdsUsed ?? [])],
+      uniquePowerUps: [...(entry.uniquePowerUps ?? [])],
       officialLeaderboardRank: null,
     },
   ]));
@@ -2903,10 +3363,20 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
       totalFreeRuns: profile.totalFreeRuns,
     },
     progress,
-    achievements: Object.values(ACHIEVEMENTS).map((achievement) => ({
-      ...achievement,
-      unlocked: profile.achievements.includes(achievement.id),
-    })),
+    achievementSummary: Object.freeze({
+      total: Object.values(ACHIEVEMENTS).length,
+      unlocked: Object.values(ACHIEVEMENTS).filter((achievement) => profile.achievements.includes(achievement.id)).length,
+      locked: Object.values(ACHIEVEMENTS).filter((achievement) => !profile.achievements.includes(achievement.id)).length,
+    }),
+    achievements: Object.values(ACHIEVEMENTS).map((achievement) => {
+      const unlocked = profile.achievements.includes(achievement.id);
+      return {
+        ...achievement,
+        unlocked,
+        locked: !unlocked,
+        iconSrc: unlocked ? achievement.badgeSrc : achievement.lockedBadgeSrc,
+      };
+    }),
     transactions: (state.transactions ?? [])
       .filter((transaction) => transaction.wallet === profile.wallet)
       .map((transaction) => ({ ...transaction, split: transaction.split ? { ...transaction.split } : null })),

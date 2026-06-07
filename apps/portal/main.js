@@ -1,3 +1,4 @@
+import { HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST } from './assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -14,6 +15,7 @@ import {
   LESTER_BLASTER_ENEMY_CATALOG,
   LESTER_BLASTER_ENVIRONMENTS,
   LESTER_BLASTER_GAMEPLAY,
+  LESTER_BLASTER_ISOMETRIC_ROGUELIKE,
   LESTER_BLASTER_LEVEL_PLAN,
   LESTER_BLASTER_MENU_OPTIONS,
   LESTER_BLASTER_PERFORMANCE_TARGETS,
@@ -32,6 +34,7 @@ import {
   buildCombatOptionsMenuModel,
   buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
+  buildFullscreenViewportModel,
   buildLoginMenuModel,
   buildOfficialRunStatusModel,
   buildArcadeMusicPlayerModel,
@@ -40,13 +43,19 @@ import {
   buildUiQualityGuideModel,
   buildWalletConnectionModel,
   calculateLesterBlasterScore,
+  chooseArcadeMusicNextIndex,
   chooseEnemySpawn,
+  chooseRoguelikeUpgradeOptions,
   connectPlayerAccount,
   createInitialArcadeState,
+  createRoguelikeRunState,
   formatMicroUsdc,
   getCartridgeSelectModel,
   getGame,
   getLesterBlasterDifficultyAt,
+  getRoguelikeSpawnDirectorAt,
+  grantRoguelikeXp,
+  applyRoguelikeSkillUpgrade,
   recordScore,
   scheduleBossEncounter,
   simulateLesterBlasterRun,
@@ -72,6 +81,7 @@ function clamp(value, min, max) {
 }
 
 function loadImageAsset(src) {
+  if (!src) return null;
   const image = new Image();
   image.decoding = 'async';
   image.src = src;
@@ -113,7 +123,7 @@ function selectAnimationFrame(frames, frame, fps = 10, loop = true) {
 }
 
 function loadManifestImage(src, fallbackSrc = null) {
-  return loadImageAsset(src ?? fallbackSrc);
+  return loadImageAsset(src ?? fallbackSrc ?? null);
 }
 
 function buildCharacterArtFromManifest(characterId) {
@@ -146,6 +156,52 @@ function buildCharacterArtFromManifest(characterId) {
       shoot: loadImageAsset('./assets/generated/sliced/lester-shoot.png'),
       blade: loadImageAsset('./assets/generated/sliced/lester-blade.png'),
       jump: loadImageAsset('./assets/generated/sliced/lester-jump.png'),
+    },
+  };
+}
+
+function loadPixelLabCalibrationFrames(animation) {
+  return (animation?.frames ?? []).map((src) => loadImageAsset(src));
+}
+
+function buildPixelLabLesterCalibrationArt() {
+  const manifest = HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST;
+  const idleFrames = loadPixelLabCalibrationFrames(manifest.animations.idle);
+  const runFrames = loadPixelLabCalibrationFrames(manifest.animations.run);
+  const shootFrames = loadPixelLabCalibrationFrames(manifest.animations.shoot);
+  const eastStill = loadImageAsset(manifest.rotations.east);
+  const westStill = loadImageAsset(manifest.rotations.west);
+  const facingStill = loadImageAsset(manifest.rotations.south);
+
+  return {
+    manifest,
+    animations: {
+      idle: idleFrames,
+      walk: runFrames,
+      run: runFrames,
+      jump: [],
+      attack: shootFrames,
+      shoot: shootFrames,
+      knifeStab: [],
+    },
+    stills: {
+      machineGun: eastStill,
+      knife: eastStill,
+      grenade: eastStill,
+      pistol: eastStill,
+      shotgun: eastStill,
+      shoot: shootFrames[0] ?? eastStill,
+      facing: facingStill,
+      leftSide: westStill,
+      rightSide: eastStill,
+    },
+    fallback: {
+      idle: idleFrames[0] ?? eastStill,
+      run1: runFrames[0] ?? eastStill,
+      run2: runFrames[1] ?? eastStill,
+      shoot: shootFrames[0] ?? eastStill,
+      blade: eastStill,
+      jump: eastStill,
     },
   };
 }
@@ -205,6 +261,7 @@ const arcadeMusic = {
   playing: false,
   muted: false,
   expanded: false,
+  shuffle: false,
   renderQueued: false,
 };
 
@@ -216,7 +273,8 @@ const combatAudio = {
 
 function currentArcadeMusicTrack() {
   if (!arcadeMusic.queue.length) return null;
-  return arcadeMusic.queue[arcadeMusic.currentTrackIndex % arcadeMusic.queue.length] ?? arcadeMusic.queue[0];
+  const normalizedIndex = ((arcadeMusic.currentTrackIndex % arcadeMusic.queue.length) + arcadeMusic.queue.length) % arcadeMusic.queue.length;
+  return arcadeMusic.queue[normalizedIndex] ?? arcadeMusic.queue[0];
 }
 
 function arcadeMusicAudio() {
@@ -254,10 +312,12 @@ function renderArcadeMusicPlayer() {
     playing,
     muted: arcadeMusic.muted,
     expanded: arcadeMusic.expanded,
+    shuffle: arcadeMusic.shuffle,
   });
   dom.arcadeMusicPlayer.dataset.expanded = String(model.expanded);
   dom.arcadeMusicPlayer.dataset.playing = String(model.playing);
   dom.arcadeMusicPlayer.dataset.muted = String(model.muted);
+  dom.arcadeMusicPlayer.dataset.shuffle = String(model.shuffle);
   dom.arcadeMusicPlayer.dataset.context = model.context;
   if (dom.arcadeMusicTitle) dom.arcadeMusicTitle.textContent = model.title;
   if (dom.arcadeMusicTime) dom.arcadeMusicTime.textContent = model.progress.label;
@@ -270,6 +330,12 @@ function renderArcadeMusicPlayer() {
   if (dom.arcadeMusicMuteButton) {
     dom.arcadeMusicMuteButton.textContent = model.muted ? '🔇' : '🔊';
     dom.arcadeMusicMuteButton.setAttribute('aria-label', model.muted ? 'Unmute arcade music' : 'Mute arcade music');
+  }
+  if (dom.arcadeMusicShuffleButton) {
+    dom.arcadeMusicShuffleButton.textContent = model.shuffle ? '🔀' : '⇄';
+    dom.arcadeMusicShuffleButton.classList.toggle('active', model.shuffle);
+    dom.arcadeMusicShuffleButton.setAttribute('aria-pressed', String(model.shuffle));
+    dom.arcadeMusicShuffleButton.setAttribute('aria-label', model.shuffle ? 'Turn shuffle off' : 'Turn shuffle on');
   }
   if (dom.arcadeMusicExpandButton) {
     dom.arcadeMusicExpandButton.textContent = model.expanded ? '▴' : '▾';
@@ -373,7 +439,11 @@ async function nextArcadeMusicTrack({ autoplay = arcadeMusic.playing } = {}) {
   if (!arcadeMusic.queue.length) return null;
   const audio = arcadeMusicAudio();
   audio?.pause();
-  arcadeMusic.currentTrackIndex = (arcadeMusic.currentTrackIndex + 1) % arcadeMusic.queue.length;
+  arcadeMusic.currentTrackIndex = chooseArcadeMusicNextIndex({
+    currentIndex: arcadeMusic.currentTrackIndex,
+    queueLength: arcadeMusic.queue.length,
+    shuffle: arcadeMusic.shuffle,
+  });
   loadArcadeMusicTrack();
   await ensureArcadeMusicPlayer(combat.active ? 'gameplay' : 'menu', autoplay);
   return currentArcadeMusicTrack();
@@ -397,6 +467,12 @@ function nextCombatMusicTrack() {
 function toggleArcadeMusicExpanded() {
   arcadeMusic.expanded = !arcadeMusic.expanded;
   renderArcadeMusicPlayer();
+}
+
+function toggleArcadeMusicShuffle() {
+  arcadeMusic.shuffle = !arcadeMusic.shuffle;
+  renderArcadeMusicPlayer();
+  return arcadeMusic.shuffle;
 }
 
 function sfxToneFor(cue) {
@@ -447,6 +523,7 @@ function playSfxCue(cue, volume = 0.05) {
 const combatArt = {
   characters: {
     lester: buildCharacterArtFromManifest('lester'),
+    lesterPixelLabCalibration: buildPixelLabLesterCalibrationArt(),
     lilly: buildCharacterArtFromManifest('lilly'),
   },
   hero: null,
@@ -500,7 +577,7 @@ const combatArt = {
     buildEnvironmentStageArt(stage),
   ])),
 };
-combatArt.hero = combatArt.characters.lester;
+combatArt.hero = combatArt.characters.lesterPixelLabCalibration;
 
 const dom = {
   officialApp: document.querySelector('#officialApp'),
@@ -514,6 +591,7 @@ const dom = {
   arcadeMusicPlayButton: document.querySelector('#arcadeMusicPlayButton'),
   arcadeMusicMuteButton: document.querySelector('#arcadeMusicMuteButton'),
   arcadeMusicNextButton: document.querySelector('#arcadeMusicNextButton'),
+  arcadeMusicShuffleButton: document.querySelector('#arcadeMusicShuffleButton'),
   arcadeMusicExpandButton: document.querySelector('#arcadeMusicExpandButton'),
   arcadeMusicQueueList: document.querySelector('#arcadeMusicQueueList'),
   officialNavTabs: document.querySelector('#officialNavTabs'),
@@ -626,6 +704,10 @@ const combat = {
   elapsedGameSeconds: 0,
   playerX: PLAYER_X,
   playerY: GROUND_Y,
+  playerMapX: 0,
+  playerMapY: 0,
+  aimMapX: 1,
+  aimMapY: 0,
   velocityY: 0,
   velocityX: 0,
   jumpsLeft: 2,
@@ -647,6 +729,11 @@ const combat = {
   particles: [],
   floatingTexts: [],
   powerUps: [],
+  xpGems: [],
+  levelUpChoices: [],
+  levelUpPaused: false,
+  roguelikeRun: null,
+  roguelikeSpawnTimer: 0,
   props: [],
   hazards: [],
   platforms: [],
@@ -901,8 +988,34 @@ function submitCombatGameOver() {
   renderCombatMenuActionGrid();
 }
 
+function renderLevelUpActionGrid() {
+  if (!dom.combatMenuActionGrid || !combat.levelUpPaused) return false;
+  const choices = combat.levelUpChoices ?? [];
+  const signature = `level-up:${choices.map((choice) => `${choice.id}:${choice.nextLevel}`).join('|')}:rerolls-${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
+  if (dom.combatMenuActionGrid.dataset.signature === signature) return true;
+  dom.combatMenuActionGrid.dataset.signature = signature;
+  dom.combatMenuActionGrid.replaceChildren();
+  for (const choice of choices) {
+    const button = el('button', { className: 'combat-menu-action level-up-upgrade-card', type: 'button', dataset: { skill: choice.id } });
+    button.append(
+      renderArcadeIcon('▲', choice.title),
+      document.createTextNode(`${choice.title} +${choice.perLevelPercent}%`),
+    );
+    appendText(button, 'small', `Rank ${choice.currentLevel} → ${choice.nextLevel} // ${choice.description}`);
+    button.addEventListener('click', () => selectLevelUpUpgrade(choice.id));
+    dom.combatMenuActionGrid.append(button);
+  }
+  const reroll = el('button', { className: 'combat-menu-action', type: 'button', dataset: { action: 'level-up-reroll' } });
+  reroll.disabled = (combat.roguelikeRun?.rerollsRemaining ?? 0) <= 0;
+  reroll.append(renderArcadeIcon('↻', 'Reroll upgrade choices'), document.createTextNode(`Reroll (${combat.roguelikeRun?.rerollsRemaining ?? 0})`));
+  reroll.addEventListener('click', rerollLevelUpChoices);
+  dom.combatMenuActionGrid.append(reroll);
+  return true;
+}
+
 function renderCombatMenuActionGrid() {
   if (!dom.combatMenuActionGrid) return;
+  if (renderLevelUpActionGrid()) return;
   const menu = buildCombatOptionsMenuModel({
     paused: combat.paused,
     gameOver: combat.gameOver,
@@ -940,6 +1053,11 @@ function renderCombatMenuActionGrid() {
 
 function combatHudStatus() {
   if (combat.gameOver) return combat.bossDefeated ? 'LEVEL CLEAR' : 'GAME OVER';
+  if (combat.levelUpPaused) return `LEVEL ${combat.roguelikeRun?.level ?? 1} UP // PICK ONE AUGMENT // REROLLS ${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
+  if (combat.roguelikeRun) {
+    const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+    return `ISO ROGUELIKE // LV ${combat.roguelikeRun.level} XP ${Math.floor(combat.roguelikeRun.xp)}/${combat.roguelikeRun.xpToNextLevel} // ${director.difficultyLabel.toUpperCase()} // ${combat.kills} KILLS`;
+  }
   if (combat.paused) return 'PAUSED // OPTIONS OPEN';
   if (combat.scrollLockReason) return combat.scrollLockReason;
   if (combat.stagePhase === 'travel') {
@@ -1068,8 +1186,8 @@ function syncCombatOverlay() {
   }
   if (clearInactiveCombatOverlay()) return;
   if (dom.combatMenuPanel) {
-    dom.combatMenuPanel.hidden = !(combat.paused || combat.gameOver);
-    dom.combatMenuPanel.dataset.state = combat.gameOver ? 'game-over' : 'paused';
+    dom.combatMenuPanel.hidden = !(combat.paused || combat.gameOver || combat.levelUpPaused);
+    dom.combatMenuPanel.dataset.state = combat.gameOver ? 'game-over' : combat.levelUpPaused ? 'level-up' : 'paused';
   }
   const menu = buildCombatOptionsMenuModel({
     paused: combat.paused,
@@ -1079,11 +1197,13 @@ function syncCombatOverlay() {
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
     officialScoreSubmitted: combat.gameOverSubmitted,
   });
-  if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = menu.title;
+  if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.levelUpPaused ? `Level ${combat.roguelikeRun?.level ?? 1} Upgrade` : menu.title;
   if (dom.combatMenuCopy) {
     dom.combatMenuCopy.textContent = combat.gameOver
       ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again restarts free mode immediately; ranked mode requires a new paid credit.`
-      : menu.copy;
+      : combat.levelUpPaused
+        ? 'The isometric roguelike run is paused. Pick one of two random +5% skill upgrades, or spend your one reroll for this level.'
+        : menu.copy;
   }
   renderCombatHudOverlay();
   renderTacticalBalanceDebugOverlay();
@@ -1132,17 +1252,58 @@ function showLillyTeaser() {
   syncCombatOverlay();
 }
 
-function cycleCombatViewport() {
-  combat.viewportMode = combat.viewportMode === 'fullscreen'
-    ? 'windowed'
-    : combat.viewportMode === 'windowed'
-      ? 'expanded-fullscreen'
-      : 'fullscreen';
-  playSfxCue('menu-click');
+async function requestCombatFullscreen() {
+  const target = dom.officialCombatMount ?? dom.officialGameplay ?? dom.combatCanvas;
+  const model = buildFullscreenViewportModel({
+    mode: 'fullscreen',
+    fullscreenElementActive: Boolean(document.fullscreenElement),
+    screenWidth: window.screen?.width ?? window.innerWidth,
+    screenHeight: window.screen?.height ?? window.innerHeight,
+  });
+  combat.viewportMode = 'fullscreen';
+  dom.officialCombatMount?.style.setProperty('--combat-fullscreen-width', `${model.devicePixels.width}px`);
+  dom.officialCombatMount?.style.setProperty('--combat-fullscreen-height', `${model.devicePixels.height}px`);
+  try {
+    if (!document.fullscreenElement && target?.requestFullscreen) {
+      await target.requestFullscreen({ navigationUI: 'hide' });
+    }
+  } catch (error) {
+    combat.viewportMode = 'expanded-fullscreen';
+    combat.status = `Browser fullscreen was blocked, so the combat canvas expanded inside the page: ${error?.message ?? 'request failed'}`;
+    if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
+    spawnText('FULLSCREEN BLOCKED', combat.playerX + 4, combat.playerY - 96, '#ff476f');
+  }
   syncCombatOverlay();
 }
 
+async function exitCombatFullscreen() {
+  const model = buildFullscreenViewportModel({
+    mode: 'windowed',
+    fullscreenElementActive: Boolean(document.fullscreenElement),
+    screenWidth: window.screen?.width ?? window.innerWidth,
+    screenHeight: window.screen?.height ?? window.innerHeight,
+  });
+  combat.viewportMode = 'windowed';
+  try {
+    if (model.browserApiAction === 'exitFullscreen' && document.exitFullscreen) await document.exitFullscreen();
+  } catch (error) {
+    combat.status = `Fullscreen exit failed: ${error?.message ?? 'browser request failed'}`;
+    if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
+  }
+  syncCombatOverlay();
+}
+
+async function cycleCombatViewport() {
+  playSfxCue('menu-click');
+  if (document.fullscreenElement || combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen') {
+    await exitCombatFullscreen();
+  } else {
+    await requestCombatFullscreen();
+  }
+}
+
 function returnToOfficialGameMenu() {
+  if (document.fullscreenElement) exitCombatFullscreen();
   combat.active = false;
   combat.paused = false;
   combat.gameOver = false;
@@ -1157,6 +1318,7 @@ function returnToOfficialGameMenu() {
 }
 
 function exitToArcade() {
+  if (document.fullscreenElement) exitCombatFullscreen();
   combat.active = false;
   combat.paused = false;
   combat.gameOver = false;
@@ -2140,6 +2302,10 @@ async function startCombat() {
   combat.elapsedGameSeconds = 0;
   combat.playerX = PLAYER_X;
   combat.playerY = GROUND_Y;
+  combat.playerMapX = 0;
+  combat.playerMapY = 0;
+  combat.aimMapX = 1;
+  combat.aimMapY = 0;
   combat.velocityX = 0;
   combat.velocityY = 0;
   combat.jumpsLeft = 2;
@@ -2161,6 +2327,11 @@ async function startCombat() {
   combat.particles = [];
   combat.floatingTexts = [];
   combat.powerUps = [];
+  combat.xpGems = [];
+  combat.levelUpChoices = [];
+  combat.levelUpPaused = false;
+  combat.roguelikeRun = createRoguelikeRunState({ seed: Date.now(), mode: currentSession?.mode ?? 'free', characterId: combat.characterId });
+  combat.roguelikeSpawnTimer = 0;
   combat.props = [];
   combat.hazards = [];
   combat.platforms = [];
@@ -2193,6 +2364,7 @@ async function startCombat() {
   combat.keys.clear();
   lastBossId = null;
   beginStage(1);
+  combat.status = 'Isometric roguelike run live: survive 20 minutes, kite enemy swarms, collect XP, and pause only for level-up augments.';
   playSfxCue('level-start');
   await startArcadeMusicForGame('hard-money-heroes');
   renderCombatSandboxStatus();
@@ -2209,6 +2381,10 @@ function jump() {
 }
 
 function shoot() {
+  if (combat.roguelikeRun) {
+    shootRoguelike();
+    return;
+  }
   const weapon = weaponById(combat.weaponId);
   if (Number.isFinite(combat.ammo)) {
     if (combat.ammo <= 0) {
@@ -2427,6 +2603,14 @@ function updateCombatStep(stepMs) {
   }
 
   const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
+  if (combat.roguelikeRun) {
+    updateRoguelikeCombatStep(dt, difficulty);
+    if (combat.frame % 30 === 0) {
+      renderCombatSandboxStatus();
+      syncCombatOverlay();
+    }
+    return;
+  }
   updateStageDirector();
   updatePlatformingAndProps();
   updateBullets();
@@ -2762,7 +2946,8 @@ function damageBoss(damage, source) {
 
 function damagePlayer(damage, source = 'hit') {
   if (combat.invulnerableFrames > 0 || damage <= 0 || combat.gameOver) return false;
-  const applied = NORMAL_HIT_DAMAGE;
+  const armorScale = combat.roguelikeRun ? Math.max(1, combat.roguelikeRun.stats.armor ?? 1) : 1;
+  const applied = Math.max(1, Math.round((Number(damage) || NORMAL_HIT_DAMAGE) / armorScale));
   combat.health = clamp(combat.health - applied, 0, PLAYER_MAX_HEALTH);
   combat.combo = 0;
   combat.damageCombo = 0;
@@ -2842,6 +3027,351 @@ function spawnText(text, x, y, color) {
   combat.floatingTexts.push({ text, x, y, color, life: 70 });
 }
 
+
+const ISO_TILE_WIDTH = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera.tileWidth;
+const ISO_TILE_HEIGHT = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera.tileHeight;
+const ISO_CENTER_X = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera.screenCenter.x;
+const ISO_CENTER_Y = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera.screenCenter.y;
+
+function isoToScreen(worldX, worldY) {
+  const dx = worldX - combat.playerMapX;
+  const dy = worldY - combat.playerMapY;
+  return {
+    x: ISO_CENTER_X + (dx - dy) * (ISO_TILE_WIDTH / 2),
+    y: ISO_CENTER_Y + (dx + dy) * (ISO_TILE_HEIGHT / 2),
+  };
+}
+
+function screenToIso(screenX, screenY) {
+  const dx = (screenX - ISO_CENTER_X) / (ISO_TILE_WIDTH / 2);
+  const dy = (screenY - ISO_CENTER_Y) / (ISO_TILE_HEIGHT / 2);
+  return {
+    x: combat.playerMapX + (dx + dy) / 2,
+    y: combat.playerMapY + (dy - dx) / 2,
+  };
+}
+
+function syncProjectedPlayerPosition() {
+  const projected = isoToScreen(combat.playerMapX, combat.playerMapY);
+  combat.playerX = projected.x - 18;
+  combat.playerY = projected.y + 50;
+}
+
+function updateAimFromPointer(event) {
+  const rect = dom.combatCanvas.getBoundingClientRect();
+  const scaleX = dom.combatCanvas.width / Math.max(1, rect.width);
+  const scaleY = dom.combatCanvas.height / Math.max(1, rect.height);
+  const aimWorld = screenToIso((event.clientX - rect.left) * scaleX, (event.clientY - rect.top) * scaleY);
+  const dx = aimWorld.x - combat.playerMapX;
+  const dy = aimWorld.y - combat.playerMapY;
+  const length = Math.hypot(dx, dy) || 1;
+  combat.aimMapX = dx / length;
+  combat.aimMapY = dy / length;
+}
+
+function shootRoguelike() {
+  const weapon = weaponById(combat.weaponId);
+  if (Number.isFinite(combat.ammo)) {
+    if (combat.ammo <= 0) {
+      spawnText('RELOAD!', combat.playerX + 20, combat.playerY - 80, '#ff476f');
+      return;
+    }
+    combat.ammo -= 1;
+  }
+  combat.shots += 1;
+  const damageScale = combat.roguelikeRun?.stats.damage ?? 1;
+  const bulletSpeed = 14 * (combat.roguelikeRun?.stats.bulletSpeed ?? 1);
+  combat.bullets.push({
+    worldX: combat.playerMapX + combat.aimMapX * 0.65,
+    worldY: combat.playerMapY + combat.aimMapY * 0.65,
+    vx: combat.aimMapX * bulletSpeed,
+    vy: combat.aimMapY * bulletSpeed,
+    damage: weapon.damage * damageScale,
+    weaponId: weapon.id,
+    ttl: 92,
+  });
+  const muzzle = isoToScreen(combat.playerMapX + combat.aimMapX * 0.8, combat.playerMapY + combat.aimMapY * 0.8);
+  spawnMuzzleFlash(muzzle.x, muzzle.y, weapon.id);
+  playSfxCue('weapon-fire', weapon.id === 'hash-rail' ? 0.045 : 0.035);
+}
+
+function openLevelUpMenu() {
+  if (!combat.roguelikeRun?.pausedForLevelUp) return;
+  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills });
+  combat.levelUpChoices = [...offer.options];
+  combat.levelUpPaused = true;
+  combat.paused = true;
+  combat.status = 'LEVEL UP: choose one of two random augments. The roguelike run is paused until you pick.';
+  spawnText('LEVEL UP', ISO_CENTER_X - 28, ISO_CENTER_Y - 72, '#ffe84d');
+  syncCombatOverlay();
+}
+
+function rerollLevelUpChoices() {
+  if (!combat.levelUpPaused || !combat.roguelikeRun || combat.roguelikeRun.rerollsRemaining <= 0) return;
+  combat.roguelikeRun = { ...combat.roguelikeRun, rerollsRemaining: combat.roguelikeRun.rerollsRemaining - 1 };
+  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills + 999, reroll: true });
+  combat.levelUpChoices = [...offer.options];
+  syncCombatOverlay();
+}
+
+function selectLevelUpUpgrade(skillId) {
+  if (!combat.levelUpPaused || !combat.roguelikeRun) return;
+  const skill = combat.levelUpChoices.find((choice) => choice.id === skillId);
+  combat.roguelikeRun = applyRoguelikeSkillUpgrade(combat.roguelikeRun, skillId);
+  combat.levelUpChoices = [];
+  combat.levelUpPaused = false;
+  combat.paused = false;
+  combat.status = `${skill?.title ?? 'Upgrade'} applied. Survive the 20-minute wall.`;
+  spawnText(`${skill?.title ?? 'UPGRADE'} +5%`, ISO_CENTER_X - 44, ISO_CENTER_Y - 64, '#45ff8a');
+  syncCombatOverlay();
+}
+
+function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds)) {
+  const spawn = chooseEnemySpawn({ elapsedSeconds: combat.elapsedGameSeconds, seed: combat.frame + combat.kills + combat.enemies.length });
+  const angle = ((combat.frame * 37 + combat.enemies.length * 71) % 360) * Math.PI / 180;
+  const radius = 10 + (combat.frame % 5);
+  const ranged = ((combat.frame + combat.enemies.length) % 100) / 100 < director.rangedEnemyShare;
+  const elite = ((combat.frame + combat.kills) % 100) / 100 < director.eliteEnemyShare;
+  const enemy = {
+    ...spawn.enemy,
+    mapX: combat.playerMapX + Math.cos(angle) * radius,
+    mapY: combat.playerMapY + Math.sin(angle) * radius,
+    hp: Math.max(8, Math.round(spawn.scaledHealth * (elite ? 1.55 : 0.82))),
+    maxHp: Math.max(8, Math.round(spawn.scaledHealth * (elite ? 1.55 : 0.82))),
+    speed: (spawn.enemy.speed ?? 1) * (elite ? 1.08 : 0.9),
+    ranged,
+    elite,
+    attackTimer: ranged ? 70 + (combat.frame % 40) : 36,
+    tellFrames: 0,
+    score: spawn.enemy.score + (elite ? 80 : 0),
+    state: ranged ? 'ranged-fire' : 'chase-player',
+  };
+  const projected = isoToScreen(enemy.mapX, enemy.mapY);
+  enemy.x = projected.x;
+  enemy.y = projected.y + 38;
+  combat.enemies.push(enemy);
+  return enemy;
+}
+
+function updateRoguelikeMovement(dt) {
+  const dx = (combat.keys.has('d') || combat.keys.has('arrowright') ? 1 : 0)
+    - (combat.keys.has('a') || combat.keys.has('arrowleft') ? 1 : 0);
+  const dy = (combat.keys.has('s') || combat.keys.has('arrowdown') ? 1 : 0)
+    - (combat.keys.has('w') || combat.keys.has('arrowup') ? 1 : 0);
+  const length = Math.hypot(dx, dy) || 1;
+  const speed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
+  combat.playerMapX += (dx / length) * speed * dt;
+  combat.playerMapY += (dy / length) * speed * dt;
+  if (dx || dy) {
+    combat.aimMapX = dx / length;
+    combat.aimMapY = dy / length;
+  }
+  combat.roguelikeRun.player.x = combat.playerMapX;
+  combat.roguelikeRun.player.y = combat.playerMapY;
+  syncProjectedPlayerPosition();
+}
+
+function updateRoguelikeBullets(dt) {
+  for (const bullet of combat.bullets) {
+    bullet.worldX += bullet.vx * dt;
+    bullet.worldY += bullet.vy * dt;
+    bullet.ttl -= 1;
+    const projected = isoToScreen(bullet.worldX, bullet.worldY);
+    bullet.x = projected.x;
+    bullet.y = projected.y;
+    for (const enemy of combat.enemies) {
+      if (enemy.hp > 0 && Math.hypot(enemy.mapX - bullet.worldX, enemy.mapY - bullet.worldY) < 0.72) {
+        damageEnemy(enemy, bullet.damage, bullet.weaponId);
+        bullet.ttl = 0;
+        break;
+      }
+    }
+  }
+  combat.bullets = combat.bullets.filter((bullet) => bullet.ttl > 0);
+
+  for (const shot of combat.enemyShots) {
+    shot.worldX += shot.vx * dt;
+    shot.worldY += shot.vy * dt;
+    shot.ttl -= 1;
+    const projected = isoToScreen(shot.worldX, shot.worldY);
+    shot.x = projected.x;
+    shot.y = projected.y;
+    if (Math.hypot(shot.worldX - combat.playerMapX, shot.worldY - combat.playerMapY) < 0.62) {
+      damagePlayer(shot.damage, 'enemy-shot');
+      shot.ttl = 0;
+    }
+  }
+  combat.enemyShots = combat.enemyShots.filter((shot) => shot.ttl > 0);
+}
+
+function updateRoguelikeEnemies(director, dt) {
+  combat.roguelikeSpawnTimer -= dt;
+  while (combat.roguelikeSpawnTimer <= 0 && combat.enemies.length < director.maxEnemiesOnMap) {
+    spawnRoguelikeEnemy(director);
+    combat.roguelikeSpawnTimer += director.spawnIntervalSeconds;
+  }
+
+  for (const enemy of combat.enemies) {
+    const dx = combat.playerMapX - enemy.mapX;
+    const dy = combat.playerMapY - enemy.mapY;
+    const distance = Math.hypot(dx, dy) || 1;
+    const desiredDistance = enemy.ranged ? 5.2 : 0.72;
+    enemy.state = enemy.ranged ? 'ranged-fire' : 'chase-player';
+    if (distance > desiredDistance) {
+      const speed = (enemy.speed ?? 1) * (enemy.elite ? 2.15 : 1.65) * (1 + director.pressure * 0.65);
+      enemy.mapX += (dx / distance) * speed * dt;
+      enemy.mapY += (dy / distance) * speed * dt;
+    } else if (enemy.ranged) {
+      enemy.mapX -= (dx / distance) * 0.55 * dt;
+      enemy.mapY -= (dy / distance) * 0.55 * dt;
+    }
+    enemy.attackTimer -= 1;
+    enemy.tellFrames = enemy.attackTimer < 18 ? 18 - enemy.attackTimer : 0;
+    if (!enemy.ranged && distance < 0.82 && enemy.attackTimer <= 0) {
+      damagePlayer(enemy.elite ? NORMAL_HIT_DAMAGE * 1.5 : NORMAL_HIT_DAMAGE, 'enemy-melee');
+      enemy.attackTimer = 46;
+    }
+    if (enemy.ranged && enemy.attackTimer <= 0) {
+      const shotSpeed = 5.2 * director.projectileSpeedMultiplier;
+      combat.enemyShots.push({
+        worldX: enemy.mapX,
+        worldY: enemy.mapY,
+        vx: (dx / distance) * shotSpeed,
+        vy: (dy / distance) * shotSpeed,
+        damage: NORMAL_HIT_DAMAGE,
+        ttl: 180,
+      });
+      enemy.attackTimer = Math.max(34, Math.round(92 - director.pressure * 38));
+    }
+    const projected = isoToScreen(enemy.mapX, enemy.mapY);
+    enemy.x = projected.x;
+    enemy.y = projected.y + 38;
+  }
+
+  for (const enemy of combat.enemies.filter((enemy) => enemy.hp <= 0)) {
+    killEnemy(enemy);
+    combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: enemy.elite ? 28 : 14, ttl: 900 });
+  }
+  combat.enemies = combat.enemies.filter((enemy) => enemy.hp > 0);
+}
+
+function updateRoguelikeXpGems() {
+  const pickupRadius = 1.4 * (combat.roguelikeRun?.stats.pickupRadius ?? 1);
+  for (const gem of combat.xpGems) {
+    gem.ttl -= 1;
+    const dx = combat.playerMapX - gem.worldX;
+    const dy = combat.playerMapY - gem.worldY;
+    const distance = Math.hypot(dx, dy) || 1;
+    if (distance < pickupRadius) {
+      combat.roguelikeRun = grantRoguelikeXp(combat.roguelikeRun, gem.value);
+      gem.ttl = 0;
+      spawnText(`XP +${gem.value}`, ISO_CENTER_X + 22, ISO_CENTER_Y - 46, '#19f7ff');
+      if (combat.roguelikeRun.pausedForLevelUp) openLevelUpMenu();
+    } else if (distance < pickupRadius * 4) {
+      gem.worldX += (dx / distance) * 0.08;
+      gem.worldY += (dy / distance) * 0.08;
+    }
+  }
+  combat.xpGems = combat.xpGems.filter((gem) => gem.ttl > 0);
+}
+
+function updateRoguelikeCombatStep(dt, difficulty) {
+  if (combat.levelUpPaused) return;
+  const director = getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+  combat.roguelikeRun.spawnDirector = director;
+  updateRoguelikeMovement(dt);
+  updateRoguelikeEnemies(director, dt);
+  updateRoguelikeBullets(dt);
+  updateRoguelikeXpGems();
+  updateParticles(dt);
+  updateFloatingTexts();
+  const xpScore = (combat.roguelikeRun.level - 1) * 250 + Math.round((combat.roguelikeRun.xp || 0) * 1.5);
+  combat.score = calculateLesterBlasterScore({
+    elapsedSeconds: combat.elapsedGameSeconds,
+    kills: combat.kills,
+    maxKillCombo: combat.maxCombo,
+    maxDamageCombo: combat.maxDamageCombo,
+    noDamageSeconds: combat.noDamageSeconds,
+    powerUpsCollected: combat.powerUpsCollected,
+    weaponUpgrades: Object.values(combat.roguelikeRun.skills).some(Boolean) ? ['damage'] : [],
+    rareWeaponId: combat.weaponId === 'oracle-slayer' ? combat.weaponId : null,
+    difficultyTier: difficulty.tier,
+  }).total + xpScore;
+  if (combat.elapsedGameSeconds >= LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60 && !combat.gameOver) {
+    spawnText('SURVIVAL WALL', ISO_CENTER_X - 54, ISO_CENTER_Y - 92, '#ff476f');
+  }
+}
+
+function drawIsoTile(ctx, cx, cy, color, stroke = 'rgba(25,247,255,.12)') {
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - ISO_TILE_HEIGHT / 2);
+  ctx.lineTo(cx + ISO_TILE_WIDTH / 2, cy);
+  ctx.lineTo(cx, cy + ISO_TILE_HEIGHT / 2);
+  ctx.lineTo(cx - ISO_TILE_WIDTH / 2, cy);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = stroke;
+  ctx.stroke();
+}
+
+function drawRoguelikeScene(ctx, width, height) {
+  const palette = ['#06142e', '#12072d', '#030711'];
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, palette[0]);
+  gradient.addColorStop(0.55, palette[1]);
+  gradient.addColorStop(1, palette[2]);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+
+  for (let x = -10; x <= 10; x += 1) {
+    for (let y = -10; y <= 10; y += 1) {
+      const worldX = Math.floor(combat.playerMapX) + x;
+      const worldY = Math.floor(combat.playerMapY) + y;
+      const projected = isoToScreen(worldX, worldY);
+      const checker = Math.abs((worldX + worldY) % 4);
+      drawIsoTile(ctx, projected.x, projected.y + 64, checker === 0 ? 'rgba(36,48,79,.82)' : 'rgba(18,31,55,.88)');
+    }
+  }
+
+  const propLabels = ['TREE', 'CAN', 'SHOP', 'SIGN', 'BIN', 'ROOF'];
+  ctx.font = '10px monospace';
+  for (let i = 0; i < 18; i += 1) {
+    const px = Math.round(combat.playerMapX / 6) * 6 + ((i * 7) % 22) - 11;
+    const py = Math.round(combat.playerMapY / 6) * 6 + ((i * 11) % 22) - 11;
+    if (Math.hypot(px - combat.playerMapX, py - combat.playerMapY) < 3) continue;
+    const projected = isoToScreen(px, py);
+    ctx.fillStyle = i % 3 === 0 ? '#365f3a' : i % 3 === 1 ? '#79512c' : '#263b69';
+    ctx.fillRect(projected.x - 14, projected.y + 28, 28, 30 + (i % 3) * 12);
+    ctx.fillStyle = '#ffe84d';
+    ctx.fillText(propLabels[i % propLabels.length], projected.x - 13, projected.y + 44);
+  }
+
+  drawPowerUps(ctx);
+  for (const gem of combat.xpGems) {
+    const projected = isoToScreen(gem.worldX, gem.worldY);
+    ctx.fillStyle = '#19f7ff';
+    ctx.fillRect(projected.x - 4, projected.y + 26, 8, 8);
+  }
+  drawEnemies(ctx);
+  drawBullets(ctx);
+  drawPlayer(ctx);
+  drawParticles(ctx);
+  drawFloatingTexts(ctx);
+  drawHud(ctx);
+
+  if (combat.levelUpPaused) {
+    ctx.fillStyle = 'rgba(0,0,0,.48)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#ffe84d';
+    ctx.font = '24px monospace';
+    ctx.fillText('LEVEL UP - CHOOSE AUGMENT', 216, 122);
+    ctx.font = '13px monospace';
+    ctx.fillStyle = '#f9f7ff';
+    ctx.fillText('Game is paused. Pick one of two random +5% upgrades or use your reroll.', 126, 150);
+  }
+}
+
 function drawCombatScene(timestamp = 0) {
   const canvas = dom.combatCanvas;
   const ctx = canvas.getContext('2d');
@@ -2863,16 +3393,20 @@ function drawCombatScene(timestamp = 0) {
     combat.accumulatorMs -= FIXED_STEP_MS;
   }
 
-  drawBackground(ctx, width, height);
-  drawProps(ctx);
-  drawPowerUps(ctx);
-  drawEnemies(ctx);
-  drawBoss(ctx);
-  drawBullets(ctx);
-  drawPlayer(ctx);
-  drawParticles(ctx);
-  drawFloatingTexts(ctx);
-  drawHud(ctx);
+  if (combat.roguelikeRun) {
+    drawRoguelikeScene(ctx, width, height);
+  } else {
+    drawBackground(ctx, width, height);
+    drawProps(ctx);
+    drawPowerUps(ctx);
+    drawEnemies(ctx);
+    drawBoss(ctx);
+    drawBullets(ctx);
+    drawPlayer(ctx);
+    drawParticles(ctx);
+    drawFloatingTexts(ctx);
+    drawHud(ctx);
+  }
 
   requestAnimationFrame(drawCombatScene);
 }
@@ -3059,7 +3593,10 @@ function selectHeroFrame() {
   if (meleeFrameAge >= 0 && meleeFrameAge < 18) {
     return selectAnimationFrame(hero.animations.knifeStab, meleeFrameAge, 18, false) ?? hero.stills.knife ?? hero.fallback.blade;
   }
-  if (combat.shots > 0 && combat.frame % 36 < 10) return hero.stills.shoot ?? hero.fallback.shoot;
+  if (combat.shots > 0 && combat.frame % 36 < 10) {
+    const shootFrameAge = combat.frame % 18;
+    return selectAnimationFrame(hero.animations.shoot, shootFrameAge, 18, false) ?? hero.stills.shoot ?? hero.fallback.shoot;
+  }
   if (combat.keys.has('a') || combat.keys.has('d') || combat.keys.has('arrowleft') || combat.keys.has('arrowright')) {
     return selectAnimationFrame(hero.animations.run, combat.frame, 14) ?? (combat.frame % 20 < 10 ? hero.fallback.run1 : hero.fallback.run2);
   }
@@ -3077,23 +3614,27 @@ function drawPlayer(ctx) {
   const y = combat.playerY;
   const bob = combat.active ? Math.sin(combat.frame * 0.28) * 2 : 0;
   const heroFrame = selectHeroFrame();
+  const shadowY = combat.roguelikeRun ? y + 3 : GROUND_Y + 2;
   const blink = combat.invulnerableFrames > 0 && Math.floor(combat.invulnerableFrames / 6) % 2 === 0;
   ctx.save();
+  ctx.imageSmoothingEnabled = false;
   if (blink) ctx.globalAlpha = 0.54;
   if (imageReady(heroFrame)) {
     const drawWidth = 104;
     const drawHeight = 104;
     const drawX = x - 34;
     const drawY = y - drawHeight + bob;
+    ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
+    ctx.fillRect(x + 3, shadowY, 38, 8);
     if (playerFacingLeft()) {
+      ctx.save();
       ctx.translate(drawX + drawWidth / 2, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(heroFrame, -drawWidth / 2, drawY, drawWidth, drawHeight);
+      ctx.restore();
     } else {
       ctx.drawImage(heroFrame, drawX, drawY, drawWidth, drawHeight);
     }
-    ctx.fillStyle = '#f9f7ff';
-    ctx.fillRect(x + 3, GROUND_Y + 2, 38, 8);
     ctx.restore();
     return;
   }
@@ -3108,7 +3649,7 @@ function drawPlayer(ctx) {
   ctx.fillStyle = combat.weaponId === 'hash-rail' ? '#19f7ff' : combat.weaponId === 'oracle-slayer' ? '#b86cff' : '#45ff8a';
   ctx.fillRect(x + 31, y - 43 + bob, 38, 8);
   ctx.fillStyle = '#f9f7ff';
-  ctx.fillRect(x + 3, GROUND_Y + 2, 38, 8);
+  ctx.fillRect(x + 3, shadowY, 38, 8);
   ctx.fillStyle = '#ff476f';
   ctx.fillRect(x + 37, y - 34 + bob, 16, 4);
   ctx.restore();
@@ -3194,10 +3735,12 @@ function drawBoss(ctx) {
 function drawBullets(ctx) {
   for (const bullet of combat.bullets) {
     ctx.fillStyle = bullet.weaponId === 'hash-rail' ? '#19f7ff' : bullet.weaponId === 'oracle-slayer' ? '#b86cff' : '#ffe84d';
-    ctx.fillRect(bullet.x, bullet.y, bullet.weaponId === 'hash-rail' ? 34 : 20, bullet.weaponId === 'hash-rail' ? 7 : 5);
+    const w = bullet.weaponId === 'hash-rail' ? 34 : Math.round(20 * (combat.roguelikeRun?.stats.bulletSize ?? 1));
+    const h = bullet.weaponId === 'hash-rail' ? 7 : 5;
+    ctx.fillRect(bullet.x - (combat.roguelikeRun ? w / 2 : 0), bullet.y - (combat.roguelikeRun ? h / 2 : 0), w, h);
   }
   ctx.fillStyle = '#ff476f';
-  for (const shot of combat.enemyShots) ctx.fillRect(shot.x, shot.y, 14, 5);
+  for (const shot of combat.enemyShots) ctx.fillRect(shot.x - (combat.roguelikeRun ? 7 : 0), shot.y - (combat.roguelikeRun ? 3 : 0), 14, 5);
 }
 
 function powerUpIconFor(power) {
@@ -3243,6 +3786,18 @@ function drawHud(ctx) {
   const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
   const weapon = weaponById(combat.weaponId);
   ctx.font = '16px monospace';
+  if (combat.roguelikeRun) {
+    const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+    ctx.fillStyle = '#19f7ff';
+    ctx.fillText(`ISO SURVIVE ${formatSeconds(combat.elapsedGameSeconds)} / 20:00 // ${director.difficultyLabel.toUpperCase()} // ${combat.fps}FPS`, 20, 28);
+    ctx.fillStyle = '#ffe84d';
+    ctx.fillText(`HP ${Math.max(0, Math.round(combat.health))} // SCORE ${combat.score.toLocaleString()} // KILLS ${combat.kills} // ENEMIES ${combat.enemies.length}/${director.maxEnemiesOnMap}`, 20, 52);
+    ctx.fillStyle = '#45ff8a';
+    ctx.fillText(`LV ${combat.roguelikeRun.level} // XP ${Math.floor(combat.roguelikeRun.xp)}/${combat.roguelikeRun.xpToNextLevel} // ${weapon.title.toUpperCase()} // GRENADES ${combat.grenades}`, 20, 76);
+    ctx.fillStyle = '#ff7b2f';
+    ctx.fillText(`AUGMENTS ${Object.values(combat.roguelikeRun.skills).reduce((sum, level) => sum + level, 0)} // REROLL ${combat.roguelikeRun.rerollsRemaining} // MAP ${Math.round(combat.playerMapX)},${Math.round(combat.playerMapY)}`, 20, 100);
+    return;
+  }
   ctx.fillStyle = '#19f7ff';
   ctx.fillText(`RUN ${formatSeconds(combat.elapsedGameSeconds)} // AI ${difficulty.enemyAiLevel}/10 // TIER ${difficulty.tier} // ${combat.fps}FPS`, 20, 28);
   ctx.fillStyle = '#ffe84d';
@@ -3315,6 +3870,10 @@ dom.arcadeMusicNextButton?.addEventListener('click', () => {
   playSfxCue('menu-click');
   nextArcadeMusicTrack();
 });
+dom.arcadeMusicShuffleButton?.addEventListener('click', () => {
+  playSfxCue('menu-click');
+  toggleArcadeMusicShuffle();
+});
 dom.arcadeMusicExpandButton?.addEventListener('click', () => {
   playSfxCue('menu-click');
   toggleArcadeMusicExpanded();
@@ -3344,12 +3903,13 @@ document.addEventListener('keydown', (event) => {
   if (combat.paused || combat.gameOver) return;
   if (event.code === 'Space') {
     event.preventDefault();
-    jump();
+    if (combat.roguelikeRun) shoot();
+    else jump();
   }
   if (key === 'e') melee();
   if (key === 'f') grenade();
   if (key === 'r') reload();
-  if (['a', 'd', 's', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) {
+  if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) {
     event.preventDefault();
     combat.keys.add(key);
   }
@@ -3357,20 +3917,34 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
   const key = event.key.toLowerCase();
-  if (['a', 'd', 's', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) combat.keys.delete(key);
+  if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) combat.keys.delete(key);
 });
 
 dom.combatCanvas.addEventListener('contextmenu', (event) => {
   event.preventDefault();
 });
 
+dom.combatCanvas.addEventListener('pointermove', (event) => {
+  if (combat.roguelikeRun) updateAimFromPointer(event);
+});
+
 dom.combatCanvas.addEventListener('mousedown', (event) => {
+  if (combat.roguelikeRun) updateAimFromPointer(event);
   if (combat.paused || combat.gameOver) return;
   if (event.button === 0) shoot();
   if (event.button === 2) {
     event.preventDefault();
     melee();
   }
+});
+
+document.addEventListener('fullscreenchange', () => {
+  if (document.fullscreenElement === dom.officialCombatMount) {
+    combat.viewportMode = 'fullscreen';
+  } else if (combat.viewportMode === 'fullscreen') {
+    combat.viewportMode = 'windowed';
+  }
+  syncCombatOverlay();
 });
 
 const injectedProvider = detectEthereumProvider();
