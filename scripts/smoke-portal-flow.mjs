@@ -27,7 +27,8 @@ const configuredSmokePort = Number.parseInt(process.env.PORTAL_SMOKE_PORT ?? '87
 const preferredSmokePort = Number.isInteger(configuredSmokePort) ? configuredSmokePort : 8791;
 const smokePort = externalRootUrl ? null : await findOpenSmokePort(preferredSmokePort);
 const rootUrl = externalRootUrl ?? `http://127.0.0.1:${smokePort}`;
-const portalUrl = `${rootUrl.replace(/\/$/, '')}/apps/portal/`;
+const portalPath = process.env.PORTAL_SMOKE_PATH ?? (externalRootUrl ? '/' : '/apps/portal/');
+const portalUrl = new URL(portalPath, rootUrl.endsWith('/') ? rootUrl : `${rootUrl}/`).toString();
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

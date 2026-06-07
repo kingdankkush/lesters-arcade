@@ -33,7 +33,9 @@ const configuredSmokePort = Number.parseInt(process.env.PORTAL_SMOKE_PORT ?? '87
 const preferredSmokePort = Number.isInteger(configuredSmokePort) ? configuredSmokePort : 8791;
 const smokePort = externalRootUrl ? null : await findOpenSmokePort(preferredSmokePort);
 const rootUrl = externalRootUrl ?? `http://127.0.0.1:${smokePort}`;
-const portalUrl = `${rootUrl.replace(/\/$/, '')}/apps/portal/`;
+const portalPath = process.env.PORTAL_SMOKE_PATH ?? (externalRootUrl ? '/' : '/apps/portal/');
+const portalUrl = new URL(portalPath, rootUrl.endsWith('/') ? rootUrl : `${rootUrl}/`).toString();
+const shouldWritePlan = process.env.PORTAL_SMOKE_WRITE_PLAN === 'true' || !externalRootUrl;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -142,11 +144,15 @@ try {
     },
   };
 
-  await mkdir(outputDir, { recursive: true });
-  await writeFile(outputJson, `${JSON.stringify(plan, null, 2)}\n`);
   console.log('Portal interaction smoke contract passed.');
   console.log(`Flow: ${flowId}`);
-  console.log(`Wrote ${outputJson}`);
+  if (shouldWritePlan) {
+    await mkdir(outputDir, { recursive: true });
+    await writeFile(outputJson, `${JSON.stringify(plan, null, 2)}\n`);
+    console.log(`Wrote ${outputJson}`);
+  } else {
+    console.log('External smoke mode: skipped writing the local interaction smoke plan.');
+  }
 } finally {
   if (server && !server.killed) server.kill();
 }
