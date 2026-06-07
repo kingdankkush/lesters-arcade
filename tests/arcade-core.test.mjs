@@ -799,6 +799,8 @@ test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city 
   assert.equal(mainSource.includes('currentLevelOneEnvironmentStage'), true);
   assert.equal(mainSource.includes('drawAmbientEnvironmentProps'), true);
   assert.equal(mainSource.includes('drawEnvironmentLayer'), true);
+  assert.equal(mainSource.includes('drawableEnvironmentProps'), true);
+  assert.equal(mainSource.includes("scenic-prop-card"), true);
 });
 
 test('Hard Money Heroes runtime wires manifest art into official menus, character swap, first enemy visuals, and gameplay controls', () => {

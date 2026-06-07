@@ -2616,9 +2616,14 @@ function drawEnvironmentLayer(ctx, layer, width) {
   return true;
 }
 
+function drawableEnvironmentProps(props = []) {
+  return props.filter((prop) => !prop.role?.includes('scenic-prop-card'));
+}
+
 function drawAmbientEnvironmentProps(ctx, width, height, environmentStage) {
-  if (!environmentStage?.props?.length) return;
-  for (const [index, prop] of environmentStage.props.entries()) {
+  const props = drawableEnvironmentProps(environmentStage?.props);
+  if (!props.length) return;
+  for (const [index, prop] of props.entries()) {
     const draw = prop.draw ?? {};
     const drawWidth = draw.width ?? 118;
     const drawHeight = draw.height ?? 118;
