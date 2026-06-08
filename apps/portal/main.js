@@ -5431,10 +5431,36 @@ function drawPowerUps(ctx) {
     if (imageReady(icon)) {
       ctx.drawImage(icon, power.x - 8, power.y - 30, 40, 40);
     } else {
-      ctx.fillStyle = power.effect === 'heal' ? '#45ff8a' : power.effect === 'weapon' ? '#19f7ff' : power.effect === 'life' ? '#ffe84d' : '#ff7b2f';
-      ctx.fillRect(power.x, power.y - 16, 24, 24);
+      // Clean fallback: a glowing diamond capsule with a symbol (no raw 2-letter
+      // text box, which read as a stray "CR" debug marker in playtests).
+      const cx = power.x + 12;
+      const cy = power.y - 4;
+      const color = power.effect === 'heal' ? '#45ff8a' : power.effect === 'weapon' ? '#19f7ff' : power.effect === 'life' ? '#ffe84d' : '#ff7b2f';
+      const glyph = power.effect === 'heal' ? '+' : power.effect === 'weapon' ? '⚔' : power.effect === 'life' ? '♥' : '✦';
+      const bob = Math.sin(combat.frame * 0.12 + power.x) * 2;
+      ctx.save();
+      ctx.translate(cx, cy + bob);
+      // soft glow
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 18);
+      g.addColorStop(0, `${color}`);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = 0.4;
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+      // diamond capsule
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(0, -12); ctx.lineTo(11, 0); ctx.lineTo(0, 12); ctx.lineTo(-11, 0); ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1.5; ctx.stroke();
+      // symbol
       ctx.fillStyle = '#080616';
-      ctx.fillText(power.title.slice(0, 2).toUpperCase(), power.x + 4, power.y - 1);
+      ctx.font = 'bold 13px system-ui, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(glyph, 0, 1);
+      ctx.restore();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     }
   }
 }
