@@ -1,0 +1,2591 @@
+{
+  "source": "PixelLab MCP/API",
+  "project": "Lester's Arcade / Hard Money Heroes",
+  "pack": "environment-pixellab-wave-2",
+  "public_root": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2",
+  "created_at": "2026-06-08T00:53:39.892654+00:00",
+  "updated_at": "2026-06-08T01:38:26.724402+00:00",
+  "jobs": [
+    {
+      "job_key": "tileset:urban-ground-road-kit",
+      "asset_type": "tiles_pro",
+      "slug": "urban-ground-road-kit",
+      "name": "Urban Ground And Road Kit",
+      "role": "tileset_urban_roads",
+      "tool": "create_tiles_pro",
+      "get_tool": "get_tiles_pro",
+      "id_field": "tile_id",
+      "args": {
+        "description": "1). cracked dirt ground lot 2). clean concrete road slab 3). dark cracked asphalt road 4). asphalt road with one blank lane stripe and no text 5). gravel shoulder 6). wood plank floor or boardwalk 7). rocky rubble ground 8). oil-stained alley floor; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "low top-down",
+        "outline_mode": "segmentation"
+      },
+      "id": "fdd36065-556a-4210-b807-dee2c70812cc",
+      "queued_at": "2026-06-08T00:53:43.589435+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: fdd36065-556a-4210-b807-dee2c70812cc\ndescription: 1). cracked dirt ground lot 2). clean concrete road slab 3). dark cracked asphalt road 4). asphalt road with one blank lane stripe and no text 5). gravel shoulder 6). wood plank floor or boardwalk 7). rocky rubble ground 8). oil-stained alley floor; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\ntype: isometric\nsize: 64\u00d764px\nview: low top-down\ncost: ~20-40 generations\nstatus: processing (~15-30s)\n\nhint: get_tiles_pro(\"fdd36065-556a-4210-b807-dee2c70812cc\")",
+      "last_polled_at": "2026-06-08T01:37:28.695574+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/tiles-pro/fdd36065-556a-4210-b807-dee2c70812cc/download",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_0.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_1.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_2.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_3.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_4.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_5.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_6.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_7.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_8.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_9.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_10.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_11.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_12.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_13.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_14.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_15.png"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/tiles-pro/fdd36065-556a-4210-b807-dee2c70812cc/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/000-download.bin.zip",
+          "ok": true,
+          "detected_format": "zip",
+          "extracted_to": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin",
+          "extracted_files": 16
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_0.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/001-tile_0.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_1.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/002-tile_1.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_2.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/003-tile_2.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_3.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/004-tile_3.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_4.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/005-tile_4.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_5.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/006-tile_5.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_6.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/007-tile_6.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_7.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/008-tile_7.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_8.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/009-tile_8.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_9.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/010-tile_9.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_10.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/011-tile_10.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_11.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/012-tile_11.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_12.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/013-tile_12.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_13.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/014-tile_13.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_14.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/015-tile_14.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/fdd36065-556a-4210-b807-dee2c70812cc/tile_15.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/downloads/016-tile_15.png",
+          "ok": false
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/000-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2632
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/001-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2793
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/002-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2689
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/003-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2548
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/004-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3940
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/005-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 4194
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/006-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2674
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/007-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2911
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/008-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2152
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/009-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2312
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/010-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2438
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/011-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2589
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/012-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1943
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/013-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2618
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/014-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3561
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/urban-ground-road-kit/extracted/000-download.bin/015-1_._cracked_dirt_ground_lot_2_._clean_co.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3804
+        }
+      ]
+    },
+    {
+      "job_key": "tileset:desert-sand-gravel-nature-kit",
+      "asset_type": "tiles_pro",
+      "slug": "desert-sand-gravel-nature-kit",
+      "name": "Desert Sand Gravel Nature Kit",
+      "role": "tileset_desert_nature",
+      "tool": "create_tiles_pro",
+      "get_tool": "get_tiles_pro",
+      "id_field": "tile_id",
+      "args": {
+        "description": "1). pale sand ground 2). compact sandy trail 3). gray tan gravel wash 4). dry cracked dirt ground 5). cactus desert soil 6). sparse flower meadow patch 7). river mud bank 8). wet sand edge; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "low top-down",
+        "outline_mode": "segmentation"
+      },
+      "id": "0ee5d47d-e98d-4292-b771-0ed59036290d",
+      "queued_at": "2026-06-08T00:53:45.288637+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 0ee5d47d-e98d-4292-b771-0ed59036290d\ndescription: 1). pale sand ground 2). compact sandy trail 3). gray tan gravel wash 4). dry cracked dirt ground 5). cactus desert soil 6). sparse flower meadow patch 7). river mud bank 8). wet sand edge; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\ntype: isometric\nsize: 64\u00d764px\nview: low top-down\ncost: ~20-40 generations\nstatus: processing (~15-30s)\n\nhint: get_tiles_pro(\"0ee5d47d-e98d-4292-b771-0ed59036290d\")",
+      "last_polled_at": "2026-06-08T01:37:29.735224+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/tiles-pro/0ee5d47d-e98d-4292-b771-0ed59036290d/download",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_0.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_1.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_2.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_3.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_4.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_5.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_6.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_7.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_8.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_9.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_10.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_11.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_12.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_13.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_14.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_15.png"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/tiles-pro/0ee5d47d-e98d-4292-b771-0ed59036290d/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/000-download.bin.zip",
+          "ok": true,
+          "detected_format": "zip",
+          "extracted_to": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin",
+          "extracted_files": 16
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_0.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/001-tile_0.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_1.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/002-tile_1.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_2.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/003-tile_2.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_3.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/004-tile_3.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_4.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/005-tile_4.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_5.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/006-tile_5.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_6.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/007-tile_6.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_7.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/008-tile_7.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_8.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/009-tile_8.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_9.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/010-tile_9.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_10.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/011-tile_10.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_11.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/012-tile_11.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_12.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/013-tile_12.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_13.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/014-tile_13.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_14.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/015-tile_14.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/0ee5d47d-e98d-4292-b771-0ed59036290d/tile_15.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/downloads/016-tile_15.png",
+          "ok": false
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/000-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1581
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/001-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1149
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/002-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2116
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/003-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2831
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/004-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2096
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/005-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1928
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/006-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1820
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/007-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1604
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/008-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1639
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/009-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1656
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/010-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3552
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/011-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3485
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/012-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2891
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/013-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1803
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/014-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3274
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/desert-sand-gravel-nature-kit/extracted/000-download.bin/015-1_._pale_sand_ground_2_._compact_sandy_t.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3063
+        }
+      ]
+    },
+    {
+      "job_key": "tileset:water-river-waterfall-kit",
+      "asset_type": "tiles_pro",
+      "slug": "water-river-waterfall-kit",
+      "name": "Water River Waterfall Kit",
+      "role": "tileset_water_edges",
+      "tool": "create_tiles_pro",
+      "get_tool": "get_tiles_pro",
+      "id_field": "tile_id",
+      "args": {
+        "description": "1). deep blue water tile 2). flowing river water tile 3). foamy rapids tile 4). waterfall lip edge tile 5). wet rock tile 6). water to sand bank transition 7). pond corner tile 8). reflective rain puddle tile; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "low top-down",
+        "outline_mode": "segmentation"
+      },
+      "id": "bb8cbafe-35fd-4251-8a25-fcab27d56e39",
+      "queued_at": "2026-06-08T00:53:46.933565+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: bb8cbafe-35fd-4251-8a25-fcab27d56e39\ndescription: 1). deep blue water tile 2). flowing river water tile 3). foamy rapids tile 4). waterfall lip edge tile 5). wet rock tile 6). water to sand bank transition 7). pond corner tile 8). reflective rain puddle tile; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\ntype: isometric\nsize: 64\u00d764px\nview: low top-down\ncost: ~20-40 generations\nstatus: processing (~15-30s)\n\nhint: get_tiles_pro(\"bb8cbafe-35fd-4251-8a25-fcab27d56e39\")",
+      "last_polled_at": "2026-06-08T01:37:30.729000+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/tiles-pro/bb8cbafe-35fd-4251-8a25-fcab27d56e39/download",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_0.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_1.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_2.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_3.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_4.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_5.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_6.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_7.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_8.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_9.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_10.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_11.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_12.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_13.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_14.png",
+        "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_15.png"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/tiles-pro/bb8cbafe-35fd-4251-8a25-fcab27d56e39/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/000-download.bin.zip",
+          "ok": true,
+          "detected_format": "zip",
+          "extracted_to": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin",
+          "extracted_files": 16
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_0.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/001-tile_0.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_1.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/002-tile_1.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_2.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/003-tile_2.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_3.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/004-tile_3.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_4.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/005-tile_4.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_5.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/006-tile_5.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_6.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/007-tile_6.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_7.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/008-tile_7.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_8.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/009-tile_8.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_9.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/010-tile_9.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_10.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/011-tile_10.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_11.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/012-tile_11.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_12.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/013-tile_12.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_13.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/014-tile_13.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_14.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/015-tile_14.png",
+          "ok": false
+        },
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-tiles/646ca7e4-de63-4dd6-a2a2-520323e13484/bb8cbafe-35fd-4251-8a25-fcab27d56e39/tile_15.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/downloads/016-tile_15.png",
+          "ok": false
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/000-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 914
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/001-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 987
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/002-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 3589
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/003-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2452
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/004-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2058
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/005-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 899
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/006-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1580
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/007-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1487
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/008-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2386
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/009-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1818
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/010-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2200
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/011-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 989
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/012-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2314
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/013-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 1952
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/014-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 944
+        },
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/tiles_pro/water-river-waterfall-kit/extracted/000-download.bin/015-1_._deep_blue_water_tile_2_._flowing_riv.png",
+          "width": 64,
+          "height": 64,
+          "mode": "RGBA",
+          "bytes": 2239
+        }
+      ]
+    },
+    {
+      "job_key": "tile:ground-dirt",
+      "asset_type": "isometric_tile",
+      "slug": "ground-dirt",
+      "name": "Ground Dirt",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "plain cracked dirt ground tile for procedural chunks; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "311ac097-043c-499c-bf22-361a21ec0a3d",
+      "queued_at": "2026-06-08T00:53:48.577995+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 311ac097-043c-499c-bf22-361a21ec0a3d\ndescription: plain cracked dirt ground tile for procedural chunks; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"311ac097-043c-499c-bf22-361a21ec0a3d\")",
+      "last_polled_at": "2026-06-08T01:37:31.734720+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/311ac097-043c-499c-bf22-361a21ec0a3d/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/311ac097-043c-499c-bf22-361a21ec0a3d/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/ground-dirt/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/ground-dirt/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3864
+        }
+      ]
+    },
+    {
+      "job_key": "tile:ground-rock",
+      "asset_type": "isometric_tile",
+      "slug": "ground-rock",
+      "name": "Rocky Ground",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "rocky ground tile with embedded stones and rubble; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "cafb9c48-8049-4b5a-a097-ac6cd6edd49c",
+      "queued_at": "2026-06-08T00:53:50.284615+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: cafb9c48-8049-4b5a-a097-ac6cd6edd49c\ndescription: rocky ground tile with embedded stones and rubble; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"cafb9c48-8049-4b5a-a097-ac6cd6edd49c\")",
+      "last_polled_at": "2026-06-08T01:37:32.755887+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/cafb9c48-8049-4b5a-a097-ac6cd6edd49c/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/cafb9c48-8049-4b5a-a097-ac6cd6edd49c/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/ground-rock/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/ground-rock/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 4022
+        }
+      ]
+    },
+    {
+      "job_key": "tile:concrete-road",
+      "asset_type": "isometric_tile",
+      "slug": "concrete-road",
+      "name": "Concrete Road",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "blank concrete road tile with seams and tire grime; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "59fbc101-ca03-4135-9598-dbf7ca318db1",
+      "queued_at": "2026-06-08T00:53:51.929852+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 59fbc101-ca03-4135-9598-dbf7ca318db1\ndescription: blank concrete road tile with seams and tire grime; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"59fbc101-ca03-4135-9598-dbf7ca318db1\")",
+      "last_polled_at": "2026-06-08T01:37:33.769089+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/59fbc101-ca03-4135-9598-dbf7ca318db1/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/59fbc101-ca03-4135-9598-dbf7ca318db1/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/concrete-road/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/concrete-road/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3577
+        }
+      ]
+    },
+    {
+      "job_key": "tile:asphalt-road",
+      "asset_type": "isometric_tile",
+      "slug": "asphalt-road",
+      "name": "Asphalt Road",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "dark asphalt road tile with cracks and oil stains; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "81d57944-42c0-4812-a82d-3760a6d4c7a6",
+      "queued_at": "2026-06-08T00:53:53.581889+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 81d57944-42c0-4812-a82d-3760a6d4c7a6\ndescription: dark asphalt road tile with cracks and oil stains; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"81d57944-42c0-4812-a82d-3760a6d4c7a6\")",
+      "last_polled_at": "2026-06-08T01:37:34.790758+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/81d57944-42c0-4812-a82d-3760a6d4c7a6/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/81d57944-42c0-4812-a82d-3760a6d4c7a6/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/asphalt-road/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/asphalt-road/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3406
+        }
+      ]
+    },
+    {
+      "job_key": "tile:asphalt-road-stripe",
+      "asset_type": "isometric_tile",
+      "slug": "asphalt-road-stripe",
+      "name": "Asphalt Road Stripe",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "asphalt road tile with one clean lane stripe, no letters or symbols; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "95ab348f-6d7b-4afa-a2ad-ddfe9ea44982",
+      "queued_at": "2026-06-08T00:53:55.249675+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 95ab348f-6d7b-4afa-a2ad-ddfe9ea44982\ndescription: asphalt road tile with one clean lane stripe, no letters or symbols; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"95ab348f-6d7b-4afa-a2ad-ddfe9ea44982\")",
+      "last_polled_at": "2026-06-08T01:37:35.794480+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/95ab348f-6d7b-4afa-a2ad-ddfe9ea44982/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/95ab348f-6d7b-4afa-a2ad-ddfe9ea44982/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/asphalt-road-stripe/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/asphalt-road-stripe/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3560
+        }
+      ]
+    },
+    {
+      "job_key": "tile:sand",
+      "asset_type": "isometric_tile",
+      "slug": "sand",
+      "name": "Sand",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "pale desert sand tile with subtle dunes; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "a8af7fbc-2531-46f3-bcfc-bcb2d095b0b7",
+      "queued_at": "2026-06-08T01:12:34.200021+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: a8af7fbc-2531-46f3-bcfc-bcb2d095b0b7\ndescription: pale desert sand tile with subtle dunes; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"a8af7fbc-2531-46f3-bcfc-bcb2d095b0b7\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:12:34.200021+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:36.806782+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/a8af7fbc-2531-46f3-bcfc-bcb2d095b0b7/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/a8af7fbc-2531-46f3-bcfc-bcb2d095b0b7/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/sand/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/sand/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 2356
+        }
+      ]
+    },
+    {
+      "job_key": "tile:gravel",
+      "asset_type": "isometric_tile",
+      "slug": "gravel",
+      "name": "Gravel",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "gray tan gravel tile with readable pebble texture; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "7b1a27e2-e1f0-4199-a507-878cc1c56282",
+      "queued_at": "2026-06-08T01:12:35.897687+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 7b1a27e2-e1f0-4199-a507-878cc1c56282\ndescription: gray tan gravel tile with readable pebble texture; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"7b1a27e2-e1f0-4199-a507-878cc1c56282\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:12:35.897687+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:37.820330+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/7b1a27e2-e1f0-4199-a507-878cc1c56282/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/7b1a27e2-e1f0-4199-a507-878cc1c56282/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/gravel/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/gravel/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3315
+        }
+      ]
+    },
+    {
+      "job_key": "tile:wood-plank",
+      "asset_type": "isometric_tile",
+      "slug": "wood-plank",
+      "name": "Wood Plank Floor",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "wood plank floor tile, boardwalk style, no text; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "35fbaf0d-d273-47f7-aab1-97080008ac52",
+      "queued_at": "2026-06-08T01:12:37.610960+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 35fbaf0d-d273-47f7-aab1-97080008ac52\ndescription: wood plank floor tile, boardwalk style, no text; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"35fbaf0d-d273-47f7-aab1-97080008ac52\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:12:37.610960+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:38.992236+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/35fbaf0d-d273-47f7-aab1-97080008ac52/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/35fbaf0d-d273-47f7-aab1-97080008ac52/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/wood-plank/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/wood-plank/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3941
+        }
+      ]
+    },
+    {
+      "job_key": "tile:shallow-water",
+      "asset_type": "isometric_tile",
+      "slug": "shallow-water",
+      "name": "Shallow Water",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "shallow water tile with subtle blue reflection; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "76f27d0c-9131-4f7e-b8c1-7db2c53689c7",
+      "queued_at": "2026-06-08T01:12:39.270762+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 76f27d0c-9131-4f7e-b8c1-7db2c53689c7\ndescription: shallow water tile with subtle blue reflection; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"76f27d0c-9131-4f7e-b8c1-7db2c53689c7\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:12:39.270762+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:40.462654+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/76f27d0c-9131-4f7e-b8c1-7db2c53689c7/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/76f27d0c-9131-4f7e-b8c1-7db2c53689c7/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/shallow-water/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/shallow-water/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3698
+        }
+      ]
+    },
+    {
+      "job_key": "tile:river-bank",
+      "asset_type": "isometric_tile",
+      "slug": "river-bank",
+      "name": "River Bank",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "muddy river bank edge tile with wet stones; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "0851f2a2-97ba-4f56-b9ef-b8b1941bb9f6",
+      "queued_at": "2026-06-08T01:12:40.941744+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 0851f2a2-97ba-4f56-b9ef-b8b1941bb9f6\ndescription: muddy river bank edge tile with wet stones; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"0851f2a2-97ba-4f56-b9ef-b8b1941bb9f6\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:12:40.941744+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:41.501994+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/0851f2a2-97ba-4f56-b9ef-b8b1941bb9f6/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/0851f2a2-97ba-4f56-b9ef-b8b1941bb9f6/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/river-bank/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/river-bank/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 4003
+        }
+      ]
+    },
+    {
+      "job_key": "tile:waterfall-lip",
+      "asset_type": "isometric_tile",
+      "slug": "waterfall-lip",
+      "name": "Waterfall Lip",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "foamy waterfall lip tile at edge of cliff or river drop; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "e3ce989f-b3b8-4eea-9b50-e6856c50d641",
+      "queued_at": "2026-06-08T01:12:42.649938+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: e3ce989f-b3b8-4eea-9b50-e6856c50d641\ndescription: foamy waterfall lip tile at edge of cliff or river drop; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"e3ce989f-b3b8-4eea-9b50-e6856c50d641\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:12:42.649938+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:42.951604+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/e3ce989f-b3b8-4eea-9b50-e6856c50d641/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/e3ce989f-b3b8-4eea-9b50-e6856c50d641/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/waterfall-lip/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/waterfall-lip/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 3262
+        }
+      ]
+    },
+    {
+      "job_key": "tile:flower-grass-ground",
+      "asset_type": "isometric_tile",
+      "slug": "flower-grass-ground",
+      "name": "Flower Grass Ground",
+      "role": "tile_static",
+      "tool": "create_isometric_tile",
+      "get_tool": "get_isometric_tile",
+      "id_field": "tile_id",
+      "args": {
+        "description": "small patch of grass and tiny flowers as a ground tile; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "size": 56,
+        "tile_shape": "thin tile",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail",
+        "text_guidance_scale": 10.5
+      },
+      "id": "e8638f71-228f-4d7a-aa6f-23352022397f",
+      "queued_at": "2026-06-08T01:17:48.000267+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: e8638f71-228f-4d7a-aa6f-23352022397f\ndescription: small patch of grass and tiny flowers as a ground tile; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; seamless game-ready tile art, transparent background where appropriate; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 56x56px\nshape: thin tile\nstyle: medium detail, medium shading, selective outline\nstatus: processing (~10-20s)\n\nhint: get_isometric_tile(\"e8638f71-228f-4d7a-aa6f-23352022397f\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:17:48.000267+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_isometric_tiles() to see pending work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:44.394039+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/isometric-tile/e8638f71-228f-4d7a-aa6f-23352022397f/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/isometric-tile/e8638f71-228f-4d7a-aa6f-23352022397f/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/flower-grass-ground/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/isometric_tile/flower-grass-ground/downloads/000-download.bin.png",
+          "width": 56,
+          "height": 56,
+          "mode": "RGBA",
+          "bytes": 4340
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:rock-cluster",
+      "asset_type": "static_map_object",
+      "slug": "rock-cluster",
+      "name": "Rock Cluster",
+      "role": "prop_static",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "cluster of small gray brown rocks for cover and collision; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 96,
+        "height": 72,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "8914d97c-d722-4c8b-b1cc-b448a6651799",
+      "queued_at": "2026-06-08T01:17:49.657159+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 8914d97c-d722-4c8b-b1cc-b448a6651799\ndescription: cluster of small gray brown rocks for cover and collision; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 96x72px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"8914d97c-d722-4c8b-b1cc-b448a6651799\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:17:49.657159+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:45.798941+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/8914d97c-d722-4c8b-b1cc-b448a6651799/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/8914d97c-d722-4c8b-b1cc-b448a6651799/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/rock-cluster/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/rock-cluster/downloads/000-download.bin.png",
+          "width": 96,
+          "height": 72,
+          "mode": "RGBA",
+          "bytes": 4369
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:large-boulder",
+      "asset_type": "static_map_object",
+      "slug": "large-boulder",
+      "name": "Large Boulder",
+      "role": "prop_static",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "large rounded boulder prop with readable collision footprint; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 128,
+        "height": 96,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "4ad15d23-1733-4950-acc3-e7a1f9946a6e",
+      "queued_at": "2026-06-08T01:17:51.318010+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 4ad15d23-1733-4950-acc3-e7a1f9946a6e\ndescription: large rounded boulder prop with readable collision footprint; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 128x96px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4ad15d23-1733-4950-acc3-e7a1f9946a6e\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:17:51.318010+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:46.785194+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/4ad15d23-1733-4950-acc3-e7a1f9946a6e/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/4ad15d23-1733-4950-acc3-e7a1f9946a6e/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/large-boulder/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/large-boulder/downloads/000-download.bin.png",
+          "width": 128,
+          "height": 96,
+          "mode": "RGBA",
+          "bytes": 5866
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:concrete-barrier",
+      "asset_type": "static_map_object",
+      "slug": "concrete-barrier",
+      "name": "Concrete Barrier",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "blank concrete road barrier, chipped edges, no markings; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 144,
+        "height": 72,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "13a968d8-5cc7-4206-8180-cb7c2e4bf821",
+      "queued_at": "2026-06-08T01:17:52.978498+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 13a968d8-5cc7-4206-8180-cb7c2e4bf821\ndescription: blank concrete road barrier, chipped edges, no markings; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 144x72px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"13a968d8-5cc7-4206-8180-cb7c2e4bf821\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:17:52.978498+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:48.229695+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/13a968d8-5cc7-4206-8180-cb7c2e4bf821/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/13a968d8-5cc7-4206-8180-cb7c2e4bf821/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/concrete-barrier/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/concrete-barrier/downloads/000-download.bin.png",
+          "width": 144,
+          "height": 72,
+          "mode": "RGBA",
+          "bytes": 3003
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:traffic-cone",
+      "asset_type": "static_map_object",
+      "slug": "traffic-cone",
+      "name": "Traffic Cone",
+      "role": "prop_decor",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "orange traffic cone prop with no text or symbols; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 64,
+        "height": 72,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "aa4ff1ff-3cf8-45e2-83b0-6a9d33814bd3",
+      "queued_at": "2026-06-08T01:17:54.627071+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: aa4ff1ff-3cf8-45e2-83b0-6a9d33814bd3\ndescription: orange traffic cone prop with no text or symbols; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 64x72px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"aa4ff1ff-3cf8-45e2-83b0-6a9d33814bd3\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:17:54.627071+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:49.249060+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/aa4ff1ff-3cf8-45e2-83b0-6a9d33814bd3/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/aa4ff1ff-3cf8-45e2-83b0-6a9d33814bd3/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/traffic-cone/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/traffic-cone/downloads/000-download.bin.png",
+          "width": 64,
+          "height": 72,
+          "mode": "RGBA",
+          "bytes": 2898
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:wood-log-stack",
+      "asset_type": "static_map_object",
+      "slug": "wood-log-stack",
+      "name": "Wood Log Stack",
+      "role": "prop_collision",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "stack of cut logs and rough wood planks for cover; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 128,
+        "height": 88,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "5d672403-96e6-4ba9-92a8-2ecba77b8323",
+      "queued_at": "2026-06-08T01:21:42.033430+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 5d672403-96e6-4ba9-92a8-2ecba77b8323\ndescription: stack of cut logs and rough wood planks for cover; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 128x88px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5d672403-96e6-4ba9-92a8-2ecba77b8323\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:21:42.033430+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:50.494049+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/5d672403-96e6-4ba9-92a8-2ecba77b8323/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/5d672403-96e6-4ba9-92a8-2ecba77b8323/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/wood-log-stack/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/wood-log-stack/downloads/000-download.bin.png",
+          "width": 128,
+          "height": 88,
+          "mode": "RGBA",
+          "bytes": 9562
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:gravel-pile",
+      "asset_type": "static_map_object",
+      "slug": "gravel-pile",
+      "name": "Gravel Pile",
+      "role": "prop_static",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "small pile of gray gravel stones for roadwork; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 112,
+        "height": 80,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "f5dbd384-d388-421d-8ca8-9b9ca511db65",
+      "queued_at": "2026-06-08T01:21:43.693150+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: f5dbd384-d388-421d-8ca8-9b9ca511db65\ndescription: small pile of gray gravel stones for roadwork; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 112x80px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"f5dbd384-d388-421d-8ca8-9b9ca511db65\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:21:43.693150+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:51.485216+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/f5dbd384-d388-421d-8ca8-9b9ca511db65/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/f5dbd384-d388-421d-8ca8-9b9ca511db65/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/gravel-pile/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/gravel-pile/downloads/000-download.bin.png",
+          "width": 112,
+          "height": 80,
+          "mode": "RGBA",
+          "bytes": 6924
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:sand-pile",
+      "asset_type": "static_map_object",
+      "slug": "sand-pile",
+      "name": "Sand Pile",
+      "role": "prop_static",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "small pale sand mound with wind-shaped edge; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 112,
+        "height": 80,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "cadbfeda-7979-42c3-ad64-343d4ff1afe3",
+      "queued_at": "2026-06-08T01:21:45.411575+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: cadbfeda-7979-42c3-ad64-343d4ff1afe3\ndescription: small pale sand mound with wind-shaped edge; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 112x80px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"cadbfeda-7979-42c3-ad64-343d4ff1afe3\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:21:45.411575+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:52.518557+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/cadbfeda-7979-42c3-ad64-343d4ff1afe3/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/cadbfeda-7979-42c3-ad64-343d4ff1afe3/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/sand-pile/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/sand-pile/downloads/000-download.bin.png",
+          "width": 112,
+          "height": 80,
+          "mode": "RGBA",
+          "bytes": 1888
+        }
+      ]
+    },
+    {
+      "job_key": "static_object:blank-street-sign",
+      "asset_type": "static_map_object",
+      "slug": "blank-street-sign",
+      "name": "Blank Street Sign",
+      "role": "prop_decor",
+      "tool": "create_map_object",
+      "get_tool": "get_map_object",
+      "id_field": "object_id",
+      "args": {
+        "description": "blank street sign post with empty face, no text, no symbols; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark",
+        "width": 80,
+        "height": 112,
+        "view": "low top-down",
+        "outline": "selective outline",
+        "shading": "medium shading",
+        "detail": "medium detail"
+      },
+      "id": "63b56e2c-4307-4545-b995-9c63f9aec0c2",
+      "queued_at": "2026-06-08T01:21:47.539410+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 63b56e2c-4307-4545-b995-9c63f9aec0c2\ndescription: blank street sign post with empty face, no text, no symbols; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 80x112px\nview: low top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"63b56e2c-4307-4545-b995-9c63f9aec0c2\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:21:47.539410+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:53.936668+00:00",
+      "urls": [
+        "https://api.pixellab.ai/mcp/map-objects/63b56e2c-4307-4545-b995-9c63f9aec0c2/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://api.pixellab.ai/mcp/map-objects/63b56e2c-4307-4545-b995-9c63f9aec0c2/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/blank-street-sign/downloads/000-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/static_map_object/blank-street-sign/downloads/000-download.bin.png",
+          "width": 80,
+          "height": 112,
+          "mode": "RGBA",
+          "bytes": 3397
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:water-surface-ripple",
+      "asset_type": "animated_object_base",
+      "slug": "water-surface-ripple",
+      "name": "Water Surface Ripple",
+      "role": "animated_water",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "seamless looping water ripples and tiny blue highlights drifting across the surface",
+      "frame_count": 4,
+      "args": {
+        "description": "tileable square patch of blue water surface with transparent-safe edges; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "f54561db-d822-469b-9678-fc01ba1569dd",
+      "queued_at": "2026-06-08T01:25:58.772441+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: f54561db-d822-469b-9678-fc01ba1569dd\ndescription: tileable square patch of blue water surface with transparent-safe edges; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"f54561db-d822-469b-9678-fc01ba1569dd\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:21:49.545808+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        },
+        {
+          "archived_at": "2026-06-08T01:25:58.772441+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:55.352209+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/f54561db-d822-469b-9678-fc01ba1569dd/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/f54561db-d822-469b-9678-fc01ba1569dd/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/f54561db-d822-469b-9678-fc01ba1569dd/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/water-surface-ripple/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/f54561db-d822-469b-9678-fc01ba1569dd/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/water-surface-ripple/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/water-surface-ripple/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16321
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:river-rapids-flow",
+      "asset_type": "animated_object_base",
+      "slug": "river-rapids-flow",
+      "name": "River Rapids Flow",
+      "role": "animated_river",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "seamless looping river flow, foam streaks sliding diagonally and water churning",
+      "frame_count": 4,
+      "args": {
+        "description": "square tileable river rapids patch with white foam streaks; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "18ade06d-69d0-4810-8dbe-5d4699e85365",
+      "queued_at": "2026-06-08T01:26:02.211814+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 18ade06d-69d0-4810-8dbe-5d4699e85365\ndescription: square tileable river rapids patch with white foam streaks; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"18ade06d-69d0-4810-8dbe-5d4699e85365\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:26:02.211814+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:56.825185+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/18ade06d-69d0-4810-8dbe-5d4699e85365/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/18ade06d-69d0-4810-8dbe-5d4699e85365/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/18ade06d-69d0-4810-8dbe-5d4699e85365/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/river-rapids-flow/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/18ade06d-69d0-4810-8dbe-5d4699e85365/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/river-rapids-flow/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/river-rapids-flow/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 32858
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:waterfall-cascade",
+      "asset_type": "animated_object_base",
+      "slug": "waterfall-cascade",
+      "name": "Waterfall Cascade",
+      "role": "animated_waterfall",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "looping falling water cascade with white foam cycling downward and bottom splash pulsing",
+      "frame_count": 6,
+      "args": {
+        "description": "vertical waterfall cascade sheet with foamy bottom splash, readable from low top-down camera; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "e186c58b-77cd-4ff4-a6d0-ce2b0160b2be",
+      "queued_at": "2026-06-08T00:54:31.610098+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: e186c58b-77cd-4ff4-a6d0-ce2b0160b2be\ndescription: vertical waterfall cascade sheet with foamy bottom splash, readable from low top-down camera; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"e186c58b-77cd-4ff4-a6d0-ce2b0160b2be\")",
+      "last_polled_at": "2026-06-08T01:37:57.830565+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/e186c58b-77cd-4ff4-a6d0-ce2b0160b2be/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/e186c58b-77cd-4ff4-a6d0-ce2b0160b2be/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/e186c58b-77cd-4ff4-a6d0-ce2b0160b2be/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/waterfall-cascade/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/e186c58b-77cd-4ff4-a6d0-ce2b0160b2be/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/waterfall-cascade/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/waterfall-cascade/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 24677
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:leafy-tree-wind",
+      "asset_type": "animated_object_base",
+      "slug": "leafy-tree-wind",
+      "name": "Leafy Tree Wind",
+      "role": "animated_tree",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "subtle looping wind sway in the leaves, trunk mostly stable",
+      "frame_count": 4,
+      "args": {
+        "description": "leafy city park tree in square planter, cover prop; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "c0ee25b2-0510-49c8-b052-f64e14330e53",
+      "queued_at": "2026-06-08T01:26:05.307501+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: c0ee25b2-0510-49c8-b052-f64e14330e53\ndescription: leafy city park tree in square planter, cover prop; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"c0ee25b2-0510-49c8-b052-f64e14330e53\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:26:05.307501+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:37:59.293695+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/c0ee25b2-0510-49c8-b052-f64e14330e53/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/c0ee25b2-0510-49c8-b052-f64e14330e53/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/c0ee25b2-0510-49c8-b052-f64e14330e53/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/leafy-tree-wind/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/c0ee25b2-0510-49c8-b052-f64e14330e53/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/leafy-tree-wind/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/leafy-tree-wind/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 19701
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:palm-tree-wind",
+      "asset_type": "animated_object_base",
+      "slug": "palm-tree-wind",
+      "name": "Palm Tree Wind",
+      "role": "animated_tree",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "subtle looping palm frond sway, tiny light shimmer at base",
+      "frame_count": 4,
+      "args": {
+        "description": "small desert palm tree with planter and blue uplight; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "220a9edd-4133-47f2-9e6c-3b2a3465e5b5",
+      "queued_at": "2026-06-08T01:26:07.374737+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 220a9edd-4133-47f2-9e6c-3b2a3465e5b5\ndescription: small desert palm tree with planter and blue uplight; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"220a9edd-4133-47f2-9e6c-3b2a3465e5b5\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:26:07.374737+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:00.493536+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/220a9edd-4133-47f2-9e6c-3b2a3465e5b5/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/220a9edd-4133-47f2-9e6c-3b2a3465e5b5/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/220a9edd-4133-47f2-9e6c-3b2a3465e5b5/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/palm-tree-wind/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/220a9edd-4133-47f2-9e6c-3b2a3465e5b5/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/palm-tree-wind/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/palm-tree-wind/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 9453
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:flower-patch-sway",
+      "asset_type": "animated_object_base",
+      "slug": "flower-patch-sway",
+      "name": "Flower Patch Sway",
+      "role": "animated_flowers",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "gentle looping flower and grass sway in wind",
+      "frame_count": 4,
+      "args": {
+        "description": "small cluster of colorful desert wildflowers and grass tufts; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "46621da7-e391-40df-9448-ab752e22b5b1",
+      "queued_at": "2026-06-08T01:26:09.926912+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 46621da7-e391-40df-9448-ab752e22b5b1\ndescription: small cluster of colorful desert wildflowers and grass tufts; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"46621da7-e391-40df-9448-ab752e22b5b1\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:26:09.926912+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:01.558818+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/46621da7-e391-40df-9448-ab752e22b5b1/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/46621da7-e391-40df-9448-ab752e22b5b1/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/46621da7-e391-40df-9448-ab752e22b5b1/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/flower-patch-sway/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/46621da7-e391-40df-9448-ab752e22b5b1/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/flower-patch-sway/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/flower-patch-sway/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 13497
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:cactus-heat-shimmer",
+      "asset_type": "animated_object_base",
+      "slug": "cactus-heat-shimmer",
+      "name": "Cactus Heat Shimmer",
+      "role": "animated_cactus",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "subtle looping heat shimmer and tiny dust motes around cactus, cactus remains mostly still",
+      "frame_count": 4,
+      "args": {
+        "description": "saguaro cactus and small barrel cactus cluster, desert prop; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "b20c5db0-9e8e-48f6-9805-d6020244dbe7",
+      "queued_at": "2026-06-08T00:54:39.747641+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: b20c5db0-9e8e-48f6-9805-d6020244dbe7\ndescription: saguaro cactus and small barrel cactus cluster, desert prop; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"b20c5db0-9e8e-48f6-9805-d6020244dbe7\")",
+      "last_polled_at": "2026-06-08T01:38:03.373092+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/b20c5db0-9e8e-48f6-9805-d6020244dbe7/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/b20c5db0-9e8e-48f6-9805-d6020244dbe7/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/b20c5db0-9e8e-48f6-9805-d6020244dbe7/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/cactus-heat-shimmer/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/b20c5db0-9e8e-48f6-9805-d6020244dbe7/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/cactus-heat-shimmer/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/cactus-heat-shimmer/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 14107
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:parked-car-blink",
+      "asset_type": "animated_object_base",
+      "slug": "parked-car-blink",
+      "name": "Parked Car Blink",
+      "role": "animated_vehicle",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "looping hazard light blink and small reflective glint, car body still",
+      "frame_count": 4,
+      "args": {
+        "description": "parked compact car prop with no license plate text, readable collision footprint; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef",
+      "queued_at": "2026-06-08T01:29:52.744985+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef\ndescription: parked compact car prop with no license plate text, readable collision footprint; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:29:52.744985+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:04.382481+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/parked-car-blink/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/parked-car-blink/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/parked-car-blink/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16041
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:wrecked-car-smoke",
+      "asset_type": "animated_object_base",
+      "slug": "wrecked-car-smoke",
+      "name": "Wrecked Car Smoke",
+      "role": "animated_vehicle",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "looping thin smoke wisps from hood and faint orange ember flicker, car body still",
+      "frame_count": 6,
+      "args": {
+        "description": "abandoned wrecked car prop with dented hood, no license plate text; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "bffafaae-c0cc-4545-af66-b37808faacc1",
+      "queued_at": "2026-06-08T01:29:54.748931+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: bffafaae-c0cc-4545-af66-b37808faacc1\ndescription: abandoned wrecked car prop with dented hood, no license plate text; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"bffafaae-c0cc-4545-af66-b37808faacc1\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:29:54.748931+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (8/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:05.398298+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/bffafaae-c0cc-4545-af66-b37808faacc1/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/bffafaae-c0cc-4545-af66-b37808faacc1/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/bffafaae-c0cc-4545-af66-b37808faacc1/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/wrecked-car-smoke/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/bffafaae-c0cc-4545-af66-b37808faacc1/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/wrecked-car-smoke/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/wrecked-car-smoke/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 12361
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:garbage-can-wobble",
+      "asset_type": "animated_object_base",
+      "slug": "garbage-can-wobble",
+      "name": "Garbage Can Wobble",
+      "role": "animated_garbage",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "subtle looping lid wobble, tiny flies or stink lines orbiting, can mostly still",
+      "frame_count": 4,
+      "args": {
+        "description": "metal garbage can with dented lid and small trash bags; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "429ad944-1acd-4d0b-b3cd-413e9c725cf5",
+      "queued_at": "2026-06-08T01:29:56.754980+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 429ad944-1acd-4d0b-b3cd-413e9c725cf5\ndescription: metal garbage can with dented lid and small trash bags; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"429ad944-1acd-4d0b-b3cd-413e9c725cf5\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:29:56.754980+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (9/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:06.501541+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/429ad944-1acd-4d0b-b3cd-413e9c725cf5/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/429ad944-1acd-4d0b-b3cd-413e9c725cf5/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/429ad944-1acd-4d0b-b3cd-413e9c725cf5/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/garbage-can-wobble/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/429ad944-1acd-4d0b-b3cd-413e9c725cf5/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/garbage-can-wobble/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/garbage-can-wobble/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11990
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:trash-bag-rustle",
+      "asset_type": "animated_object_base",
+      "slug": "trash-bag-rustle",
+      "name": "Trash Bag Rustle",
+      "role": "animated_garbage",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "looping paper scraps fluttering and bag highlights rustling in wind",
+      "frame_count": 4,
+      "args": {
+        "description": "pile of black trash bags and scattered paper scraps, no readable paper text; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "274ccdf4-d692-4853-8dfc-cb806206369d",
+      "queued_at": "2026-06-08T01:29:58.745290+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 274ccdf4-d692-4853-8dfc-cb806206369d\ndescription: pile of black trash bags and scattered paper scraps, no readable paper text; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"274ccdf4-d692-4853-8dfc-cb806206369d\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:29:58.745290+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (9/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:07.484929+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/274ccdf4-d692-4853-8dfc-cb806206369d/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/274ccdf4-d692-4853-8dfc-cb806206369d/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/274ccdf4-d692-4853-8dfc-cb806206369d/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/trash-bag-rustle/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/274ccdf4-d692-4853-8dfc-cb806206369d/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/trash-bag-rustle/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/trash-bag-rustle/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 13347
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:road-sign-sway",
+      "asset_type": "animated_object_base",
+      "slug": "road-sign-sway",
+      "name": "Road Sign Sway",
+      "role": "animated_sign",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "subtle looping sign sway and small screw glint, absolutely no text appears",
+      "frame_count": 4,
+      "args": {
+        "description": "blank roadside warning sign on metal pole with empty sign face; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "a18bc1d6-5832-47af-898d-278be9411234",
+      "queued_at": "2026-06-08T01:30:00.715935+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: a18bc1d6-5832-47af-898d-278be9411234\ndescription: blank roadside warning sign on metal pole with empty sign face; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"a18bc1d6-5832-47af-898d-278be9411234\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:30:00.715935+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (9/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:08.511751+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/a18bc1d6-5832-47af-898d-278be9411234/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/a18bc1d6-5832-47af-898d-278be9411234/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/a18bc1d6-5832-47af-898d-278be9411234/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/road-sign-sway/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/a18bc1d6-5832-47af-898d-278be9411234/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/road-sign-sway/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/road-sign-sway/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 5330
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:neon-sign-flicker",
+      "asset_type": "animated_object_base",
+      "slug": "neon-sign-flicker",
+      "name": "Neon Sign Flicker",
+      "role": "animated_sign",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "looping neon border flicker and glow pulse, center remains blank with no text",
+      "frame_count": 4,
+      "args": {
+        "description": "blank neon sign frame prop with empty dark center and blue orange border glow; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "ce9da2f1-5818-436f-9932-b468f245c27c",
+      "queued_at": "2026-06-08T01:34:11.820904+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: ce9da2f1-5818-436f-9932-b468f245c27c\ndescription: blank neon sign frame prop with empty dark center and blue orange border glow; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"ce9da2f1-5818-436f-9932-b468f245c27c\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:34:11.820904+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (9/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:09.941833+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ce9da2f1-5818-436f-9932-b468f245c27c/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/ce9da2f1-5818-436f-9932-b468f245c27c/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/ce9da2f1-5818-436f-9932-b468f245c27c/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/neon-sign-flicker/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/ce9da2f1-5818-436f-9932-b468f245c27c/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/neon-sign-flicker/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/neon-sign-flicker/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11573
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:traffic-light-blink",
+      "asset_type": "animated_object_base",
+      "slug": "traffic-light-blink",
+      "name": "Traffic Light Blink",
+      "role": "animated_sign",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "looping colored lens blink and subtle hanging sway",
+      "frame_count": 4,
+      "args": {
+        "description": "small traffic light pole prop with simple colored lenses and no labels; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "54959129-5931-43d0-9159-3d1949890656",
+      "queued_at": "2026-06-08T01:34:14.033063+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 54959129-5931-43d0-9159-3d1949890656\ndescription: small traffic light pole prop with simple colored lenses and no labels; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"54959129-5931-43d0-9159-3d1949890656\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:34:14.033063+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (9/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:10.958952+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/54959129-5931-43d0-9159-3d1949890656/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/54959129-5931-43d0-9159-3d1949890656/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/54959129-5931-43d0-9159-3d1949890656/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/traffic-light-blink/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/54959129-5931-43d0-9159-3d1949890656/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/traffic-light-blink/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/traffic-light-blink/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 5387
+        }
+      ]
+    },
+    {
+      "job_key": "animated_object:tumbleweed-roll",
+      "asset_type": "animated_object_base",
+      "slug": "tumbleweed-roll",
+      "name": "Tumbleweed Roll",
+      "role": "animated_desert_prop",
+      "tool": "create_1_direction_object",
+      "get_tool": "get_object",
+      "id_field": "object_id",
+      "animation_slug": "ambient",
+      "animation_description": "looping rolling tumbleweed spin with dust puffs, centered for sprite-sheet use",
+      "frame_count": 6,
+      "args": {
+        "description": "round desert tumbleweed prop, readable silhouette; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation",
+        "size": 192,
+        "view": "top-down"
+      },
+      "id": "535f15f1-a81e-4c94-ba91-1f81913d9158",
+      "queued_at": "2026-06-08T01:34:16.189323+00:00",
+      "status": "completed",
+      "raw_queue_response": "id: 535f15f1-a81e-4c94-ba91-1f81913d9158\ndescription: round desert tumbleweed prop, readable silhouette; isometric low top-down pixel art for Hard Money Heroes, retro 80s/90s arcade, crisp silhouettes, limited SNES/Neo-Geo palette, dark Litecoin City After Dark mood, blue silver hard-money energy accents without official brand marks; transparent background; no words, no letters, no numbers, no readable labels, no logos, no watermark; composed as a standalone prop for later idle animation\nmode: 1-direction (1 frame 192x192px)\ncost: 20 generations\nstatus: processing (~30-90s)\n\nhint: get_object(object_id=\"535f15f1-a81e-4c94-ba91-1f81913d9158\")",
+      "attempts": [
+        {
+          "archived_at": "2026-06-08T01:34:16.189323+00:00",
+          "id": null,
+          "status": "rate_limited",
+          "raw_queue_response": "error: rate limit exceeded (9/8 jobs)\n\nhint: list_objects() to see in-flight work"
+        }
+      ],
+      "last_polled_at": "2026-06-08T01:38:12.016742+00:00",
+      "urls": [
+        "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/535f15f1-a81e-4c94-ba91-1f81913d9158/rotations/unknown.png",
+        "https://api.pixellab.ai/mcp/objects/535f15f1-a81e-4c94-ba91-1f81913d9158/download"
+      ],
+      "downloads": [
+        {
+          "url": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/646ca7e4-de63-4dd6-a2a2-520323e13484/535f15f1-a81e-4c94-ba91-1f81913d9158/rotations/unknown.png",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/tumbleweed-roll/downloads/000-unknown.png",
+          "ok": false
+        },
+        {
+          "url": "https://api.pixellab.ai/mcp/objects/535f15f1-a81e-4c94-ba91-1f81913d9158/download",
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/tumbleweed-roll/downloads/001-download.bin.png",
+          "ok": true,
+          "detected_format": "png"
+        }
+      ],
+      "local_images": [
+        {
+          "local_path": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/animated_object_base/tumbleweed-roll/downloads/001-download.bin.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 21195
+        }
+      ]
+    }
+  ],
+  "contact_sheet": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2/contact-sheets/hmh-environment-pixellab-wave-2-contact-sheet.png"
+}

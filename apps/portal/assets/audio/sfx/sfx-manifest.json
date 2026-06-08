@@ -1,0 +1,25 @@
+{
+  "pack": "hmh-sfx-cc0",
+  "license": "CC0-1.0",
+  "source": [
+    "https://kenney.nl/assets/interface-sounds",
+    "https://kenney.nl/assets/impact-sounds",
+    "https://kenney.nl/assets/sci-fi-sounds"
+  ],
+  "generatedAt": "2026-06-07T17:57:23-07:00",
+  "cues": {
+    "wallet-connect": { "src": "./assets/audio/sfx/wallet-connect.ogg", "bytes": 9834, "format": "ogg" },
+    "menu-click": { "src": "./assets/audio/sfx/menu-click.ogg", "bytes": 4876, "format": "ogg" },
+    "level-start": { "src": "./assets/audio/sfx/level-start.ogg", "bytes": 8968, "format": "ogg" },
+    "jump": { "src": "./assets/audio/sfx/jump.ogg", "bytes": 12111, "format": "ogg" },
+    "land": { "src": "./assets/audio/sfx/land.ogg", "bytes": 11924, "format": "ogg" },
+    "weapon-fire": { "src": "./assets/audio/sfx/weapon-fire.ogg", "bytes": 7286, "format": "ogg" },
+    "melee": { "src": "./assets/audio/sfx/melee.ogg", "bytes": 8800, "format": "ogg" },
+    "grenade": { "src": "./assets/audio/sfx/grenade.ogg", "bytes": 28274, "format": "ogg" },
+    "pickup": { "src": "./assets/audio/sfx/pickup.ogg", "bytes": 6753, "format": "ogg" },
+    "enemy-hit": { "src": "./assets/audio/sfx/enemy-hit.ogg", "bytes": 15491, "format": "ogg" },
+    "player-hit": { "src": "./assets/audio/sfx/player-hit.ogg", "bytes": 7373, "format": "ogg" },
+    "boss-warning": { "src": "./assets/audio/sfx/boss-warning.ogg", "bytes": 11700, "format": "ogg" },
+    "game-over": { "src": "./assets/audio/sfx/game-over.ogg", "bytes": 9915, "format": "ogg" }
+  }
+}

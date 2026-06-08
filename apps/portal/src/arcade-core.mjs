@@ -3,6 +3,27 @@ import { HMH_EXPANDED_PIXEL_PACK_MANIFEST } from '../assets/generated/hmh-expand
 import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
+import {
+  LEADERBOARD_CADENCES,
+  recordCadenceScore,
+  getLeaderboard,
+  getAllCadenceLeaderboards,
+} from './leaderboard-engine.mjs';
+import {
+  setPlayerUsername,
+  resolveDisplayName,
+  validateUsername,
+  isUsernameAvailable,
+} from './username-registry.mjs';
+
+export {
+  LEADERBOARD_CADENCES,
+  getLeaderboard,
+  getAllCadenceLeaderboards,
+  validateUsername,
+  isUsernameAvailable,
+  resolveDisplayName,
+};
 
 export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
 export const HARD_MONEY_HEROES_EXPANDED_PIXEL_PACK_MANIFEST = HMH_EXPANDED_PIXEL_PACK_MANIFEST;
@@ -677,6 +698,10 @@ export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
     skills: 40,
     levelsPerSkill: 5,
     statStepPercent: 5,
+  }),
+  modeBoundary: Object.freeze({
+    freeWritesOfficialState: false,
+    rankedRequiresExplicitSubmit: true,
   }),
 });
 
@@ -2908,6 +2933,8 @@ export function createPlayerProfile(wallet, options = {}) {
   const profile = {
     wallet: normalizedWallet,
     handle: options.handle || `Player ${normalizedWallet.slice(-4).toUpperCase()}`,
+    usernameSet: false,
+    usernameKey: null,
     avatar: options.avatar || '🕹️',
     rank: 'New Challenger',
     xp: 0,
@@ -2929,13 +2956,16 @@ export function createInitialArcadeState() {
     systemRole: 'parent-arcade-portal',
     games: [...ARCADE_GAMES],
     profiles: {},
+    usernames: {},
     sessions: {},
     localScores: [],
     payments: [],
     transactions: [],
     officialSessions: [],
+    settlements: [],
     loginEvents: [],
     leaderboards: Object.fromEntries(ARCADE_GAMES.map((game) => [game.id, []])),
+    cadenceLeaderboards: Object.fromEntries(ARCADE_GAMES.map((game) => [game.id, Object.fromEntries(LEADERBOARD_CADENCES.map((c) => [c, {}]))])),
   };
 }
 
@@ -3259,6 +3289,7 @@ export function recordScore(state, session, score, runStats = {}) {
     sessionId: session.sessionId,
     wallet: profile.wallet,
     handle: profile.handle,
+    displayName: resolveDisplayName(profile, profile.wallet),
     gameId: game.id,
     gameTitle: game.title,
     score,
@@ -3271,6 +3302,15 @@ export function recordScore(state, session, score, runStats = {}) {
   state.leaderboards[game.id].push(entry);
   state.leaderboards[game.id].sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
   state.leaderboards[game.id] = state.leaderboards[game.id].slice(0, 10);
+
+  // File this ranked score into the daily/weekly/monthly/yearly/all-time boards.
+  const cadenceKeys = recordCadenceScore(state, game.id, {
+    wallet: profile.wallet,
+    score,
+    sessionId: session.sessionId,
+    recordedAt: entry.recordedAt,
+    runStats,
+  });
 
   if (session.revenueSplit) {
     const simulatedTxHash = stablePrototypeHash([session.sessionId, profile.wallet, game.id, score, session.entryFeeMicroUsdc]);
@@ -3316,9 +3356,62 @@ export function recordScore(state, session, score, runStats = {}) {
   return {
     acceptedForGlobalLeaderboard: true,
     leaderboardEntry: entry,
+    cadenceKeys,
     unlockedAchievements,
     parentSync,
+    // Input the runtime feeds to settlement.buildSettlementPlan() so Paid Mode
+    // zkLTC can settle this score + unlocks + (changed) username to LitVM.
+    settlementInput: {
+      wallet: profile.wallet,
+      gameId: game.id,
+      sessionId: session.sessionId,
+      score,
+      cadenceKeys,
+      unlockedAchievements,
+      username: profile.usernameSet ? profile.handle : null,
+      profileChanged: false,
+    },
   };
+}
+
+// Persist a completed settlement result (simulated or live) onto state so score
+// history / achievement reads can pull tx hashes back. Stamps the matching
+// leaderboard + cadence entries with the settlement tx hash.
+export function applySettlement(state, settlement) {
+  if (!state || typeof state !== 'object') throw new Error('state is required');
+  if (!settlement?.sessionId) throw new Error('settlement with sessionId is required');
+
+  state.settlements ??= [];
+  state.settlements.push({ ...settlement, receipts: [...(settlement.receipts ?? [])] });
+
+  const txHash = settlement.primaryTxHash ?? null;
+  const gameId = settlement.gameId;
+
+  // stamp flat board
+  for (const e of state.leaderboards?.[gameId] ?? []) {
+    if (e.sessionId === settlement.sessionId) e.settlementTxHash = txHash;
+  }
+  // stamp cadence buckets
+  const cadenceStore = state.cadenceLeaderboards?.[gameId];
+  if (cadenceStore) {
+    for (const cadence of Object.keys(cadenceStore)) {
+      for (const periodKey of Object.keys(cadenceStore[cadence])) {
+        for (const row of cadenceStore[cadence][periodKey]) {
+          if (row.sessionId === settlement.sessionId) row.settlementTxHash = txHash;
+        }
+      }
+    }
+  }
+  // stamp official session
+  if (state.sessions?.[settlement.sessionId]) {
+    state.sessions[settlement.sessionId].settlement = { mode: settlement.mode, primaryTxHash: txHash, settledAt: settlement.settledAt };
+  }
+  return settlement;
+}
+
+// State-bound username setter that reuses the arcade's own ensureProfile.
+export function setArcadeUsername(state, wallet, rawName) {
+  return setPlayerUsername(state, wallet, rawName, { ensureProfile: ensureProfile });
 }
 
 function cloneProgress(progress) {
@@ -3355,6 +3448,8 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
     profile: {
       wallet: profile.wallet,
       handle: profile.handle,
+      displayName: resolveDisplayName(profile, profile.wallet),
+      usernameSet: Boolean(profile.usernameSet),
       avatar: profile.avatar,
       rank: profile.rank,
       xp: profile.xp,
@@ -3400,6 +3495,17 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
         } : null,
       })),
     highScores,
+    settlements: (state.settlements ?? [])
+      .filter((settlement) => settlement.wallet === profile.wallet)
+      .map((settlement) => ({
+        sessionId: settlement.sessionId,
+        gameId: settlement.gameId,
+        score: settlement.score,
+        mode: settlement.mode,
+        primaryTxHash: settlement.primaryTxHash,
+        settledAt: settlement.settledAt,
+        cadenceKeys: { ...(settlement.cadenceKeys ?? {}) },
+      })),
     loginEvents: (state.loginEvents ?? []).filter((event) => event.wallet === profile.wallet),
   };
 }

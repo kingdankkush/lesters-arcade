@@ -334,6 +334,64 @@ test('paid score submission updates leaderboard, achievements, transactions, and
   assert.equal(snapshot.achievements.some((achievement) => achievement.id === ACHIEVEMENTS.FIRST_1000_POINTS.id && achievement.unlocked), true);
 });
 
+test('ranked score is filed into all five cadence boards and returns a settlement input', async () => {
+  const { getLeaderboard, applySettlement } = await import('../apps/portal/src/arcade-core.mjs');
+  const { buildSettlementPlan, settleRun } = await import('../apps/portal/src/settlement.mjs');
+  const state = createInitialArcadeState();
+  const wallet = '0x4444444444444444444444444444444444444444';
+  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  const result = recordScore(state, session, 2500, { elapsedSeconds: 120, bossId: 'rug-pull-tank' });
+
+  assert.ok(result.cadenceKeys.daily);
+  assert.ok(result.settlementInput);
+  assert.equal(result.settlementInput.score, 2500);
+
+  for (const cadence of ['daily', 'weekly', 'monthly', 'yearly', 'all-time']) {
+    const board = getLeaderboard(state, 'lester-blaster', cadence, { wallet });
+    assert.equal(board.topEntries[0].score, 2500);
+    assert.equal(board.topEntries[0].isCurrentPlayer, true);
+  }
+
+  // settle (simulated) and confirm the tx hash is stamped + recorded
+  const plan = buildSettlementPlan(result.settlementInput);
+  const settlement = await settleRun(plan);
+  applySettlement(state, settlement);
+  const snapshot = buildPlayerArcadeSnapshot(state, wallet);
+  assert.equal(snapshot.settlements[0].mode, 'simulated');
+  assert.ok(snapshot.settlements[0].primaryTxHash.startsWith('0x'));
+  assert.equal(state.leaderboards['lester-blaster'][0].settlementTxHash, settlement.primaryTxHash);
+});
+
+test('setArcadeUsername sets a unique display name shown on leaderboards', async () => {
+  const { setArcadeUsername, getLeaderboard, resolveDisplayName } = await import('../apps/portal/src/arcade-core.mjs');
+  const state = createInitialArcadeState();
+  const wallet = '0x5555555555555555555555555555555555555555';
+  connectPlayerAccount(state, wallet);
+
+  const ok = setArcadeUsername(state, wallet, 'HardMoneyKing');
+  assert.equal(ok.ok, true);
+
+  // duplicate (case-insensitive) from another wallet is rejected
+  const other = '0x6666666666666666666666666666666666666666';
+  connectPlayerAccount(state, other);
+  const dup = setArcadeUsername(state, other, 'hardmoneyking');
+  assert.equal(dup.ok, false);
+  assert.equal(dup.error, 'name-taken');
+
+  // vulgar name rejected
+  const bad = setArcadeUsername(state, other, 'fuckface');
+  assert.equal(bad.ok, false);
+  assert.equal(bad.error, 'blocked-term');
+
+  // the set username appears on the leaderboard for that wallet
+  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  recordScore(state, session, 999, { elapsedSeconds: 30 });
+  const board = getLeaderboard(state, 'lester-blaster', 'all-time', {
+    displayNameFor: (w) => resolveDisplayName(state.profiles[w], w),
+  });
+  assert.equal(board.topEntries[0].displayName, 'HardMoneyKing');
+});
+
 test('child game sync packet describes the exact parent Lester Arcade write sets for Hard Money Heroes paid runs', () => {
   const session = startPlaySession({ wallet: '0x9999999999999999999999999999999999999999', gameId: 'lester-blaster', mode: 'paid' });
   const packet = buildParentSyncPacket(session, {

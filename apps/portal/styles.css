@@ -1021,7 +1021,11 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 }
 
 .official-combat-mount[data-viewport="fullscreen"] canvas {
-  width: min(100%, 1180px);
+  width: var(--combat-fullscreen-width, min(100%, 1180px));
+  height: var(--combat-fullscreen-height, auto);
+  max-width: 100vw;
+  max-height: 100vh;
+  object-fit: contain;
 }
 
 .official-combat-mount[data-viewport="expanded-fullscreen"] {
@@ -1050,8 +1054,8 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .official-combat-mount:fullscreen canvas,
 .official-combat-mount[data-viewport="fullscreen"]:fullscreen canvas {
-  width: 100vw;
-  height: 100vh;
+  width: var(--combat-fullscreen-width, 100vw);
+  height: var(--combat-fullscreen-height, 100vh);
   max-width: 100vw;
   max-height: 100vh;
   object-fit: contain;
@@ -1682,6 +1686,87 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   box-shadow: 0 0 24px rgba(69,255,138,.08);
 }
 
+/* --- Upgraded interactive arcade game menu --- */
+.menu-section-label {
+  grid-column: 1 / -1;
+  margin: 14px 0 2px;
+  font-size: .7rem;
+  letter-spacing: .28em;
+  color: rgba(25,247,255,.7);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(25,247,255,.14);
+  padding-bottom: 4px;
+}
+
+.menu-card.login-status .menu-card-eyebrow {
+  display: block;
+  font-size: .64rem;
+  letter-spacing: .24em;
+  color: var(--neon-yellow);
+  margin-bottom: 6px;
+}
+
+.menu-card.login-status .menu-card-wallet {
+  display: block;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: .82rem;
+  color: rgba(255,255,255,.82);
+}
+
+button.menu-card.menu-option {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: linear-gradient(160deg, rgba(12,18,32,.92), rgba(8,12,22,.92));
+  position: relative;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+
+button.menu-card.menu-option.interactive:hover,
+button.menu-card.menu-option.interactive:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(25,247,255,.6);
+  box-shadow: 0 0 22px rgba(25,247,255,.18);
+  outline: none;
+}
+
+button.menu-card.menu-option.interactive:active {
+  transform: translateY(0);
+}
+
+.menu-card .menu-card-cue {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: var(--neon-yellow);
+  font-size: .8rem;
+  opacity: .75;
+}
+
+.menu-card .menu-card-lock {
+  display: block;
+  margin-top: 8px;
+  font-size: .68rem;
+  letter-spacing: .12em;
+  color: rgba(255,160,160,.8);
+  text-transform: uppercase;
+}
+
+.menu-card.menu-option[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+@keyframes menuSectionFlash {
+  0%, 100% { box-shadow: 0 0 0 rgba(25,247,255,0); }
+  50% { box-shadow: 0 0 30px rgba(25,247,255,.45); }
+}
+
+.menu-section-flash {
+  animation: menuSectionFlash .9s ease;
+  border-radius: 12px;
+}
+
+
 .control-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 12px;
@@ -1963,3 +2048,168 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   background-image: url('./assets/generated/hmh-production-art-pass/ui/mobile-fire-button.png');
 }
 
+/* ===================== Responsive + touch system ===================== */
+:root { --hud-scale: 1; }
+
+/* On-screen touch controls: hidden by default, shown on touch devices in-game. */
+.touch-controls { display: none; }
+body.show-touch-controls .touch-controls {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none; /* only the children capture input */
+}
+/* Only show the touch overlay while gameplay is the active view. */
+html:not([data-ingame="true"]) .touch-controls { display: none; }
+
+.touch-stick-base {
+  position: absolute;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: 132px; height: 132px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(25,247,255,.10), rgba(8,12,22,.55));
+  border: 2px solid rgba(25,247,255,.35);
+  pointer-events: auto;
+  touch-action: none;
+}
+.touch-stick-nub {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 58px; height: 58px;
+  margin: -29px 0 0 -29px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(69,255,138,.85), rgba(25,247,255,.5));
+  box-shadow: 0 0 18px rgba(25,247,255,.4);
+}
+.touch-action-cluster {
+  position: absolute;
+  right: max(18px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+  width: 168px; height: 168px;
+  pointer-events: none;
+}
+.touch-action-button {
+  position: absolute;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,232,77,.5);
+  background: rgba(12,18,32,.78);
+  color: var(--neon-yellow);
+  font-size: .62rem; font-weight: 700; letter-spacing: .06em;
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.touch-action-button:active { transform: scale(.92); background: rgba(25,247,255,.2); }
+.touch-fire    { right: 0;    bottom: 52px; width: 80px; height: 80px; border-color: rgba(255,90,90,.7); color: #ff6a6a; }
+.touch-jump    { right: 86px; bottom: 0; }
+.touch-melee   { right: 86px; bottom: 86px; }
+.touch-grenade { right: 0;    bottom: 0; }
+.touch-pause-button {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  right: max(14px, env(safe-area-inset-right));
+  width: 44px; height: 44px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.3);
+  background: rgba(8,12,22,.7); color: #fff; font-weight: 700;
+  pointer-events: auto;
+}
+
+/* HUD scales up slightly on small screens. */
+.combat-hud-overlay { transform-origin: top left; }
+html[data-device="mobile"] .combat-hud-overlay { transform: scale(var(--hud-scale)); }
+
+/* Landscape suggestion banner for mobile portrait. */
+body.suggest-landscape:not(.hide-rotate-hint) {}
+html[data-ingame="true"] body.suggest-landscape::after,
+body.suggest-landscape.ingame::after {
+  content: "↻ Rotate to landscape for the best experience";
+  position: fixed; left: 50%; top: 8px; transform: translateX(-50%);
+  z-index: 70; padding: 6px 12px; border-radius: 8px;
+  background: rgba(8,12,22,.9); color: var(--neon-yellow);
+  font-size: .72rem; letter-spacing: .04em; border: 1px solid rgba(255,232,77,.4);
+}
+
+/* Tablet: stack the two-column menu/panels into one fluid column. */
+@media (max-width: 1024px) {
+  html[data-device="tablet"] .menu-grid,
+  html[data-device="tablet"] .build-stack-grid { grid-template-columns: 1fr; }
+  html[data-device="tablet"] .arcade-shell { padding: 12px; }
+}
+
+/* Mobile: compact nav, single-column everything, bigger tap targets. */
+@media (max-width: 600px) {
+  html[data-device="mobile"] .menu-grid,
+  html[data-device="mobile"] .build-stack-grid,
+  html[data-device="mobile"] .control-grid,
+  html[data-device="mobile"] .codex-grid { grid-template-columns: 1fr; }
+  html[data-device="mobile"] .official-nav { flex-wrap: wrap; gap: 6px; font-size: .9rem; }
+  html[data-device="mobile"] .official-nav-tabs { flex-wrap: wrap; }
+  html[data-device="mobile"] .arcade-shell,
+  html[data-device="mobile"] .official-app { padding: 8px; }
+  html[data-device="mobile"] button.menu-card.menu-option { min-height: 44px; }
+  html[data-device="mobile"] .gameplay-control-bar { flex-wrap: wrap; gap: 6px; }
+  html[data-device="mobile"] .gameplay-control-bar .secondary-button { flex: 1 1 40%; min-height: 44px; }
+  /* Cabinet/cartridge selection becomes a horizontal scroll strip. */
+  html[data-device="mobile"] #cabinetStage,
+  html[data-device="mobile"] #cartridgeRack {
+    display: flex; overflow-x: auto; gap: 10px; -webkit-overflow-scrolling: touch;
+  }
+  html[data-device="mobile"] #cabinetStage > * { flex: 0 0 70%; }
+}
+
+
+/* --- Username editor + cadence leaderboards + LitVM settlement (v2) --- */
+.username-editor-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 4px;
+}
+.username-input {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #fff;
+  background: rgba(8, 16, 40, 0.85);
+  border: 2px solid #345DCC;
+  border-radius: 4px;
+}
+.username-input:focus { outline: none; border-color: #6f9bff; box-shadow: 0 0 8px rgba(111,155,255,0.6); }
+.username-save-button { flex: 0 0 auto; }
+.username-feedback { margin: 2px 0 0; min-height: 1em; }
+.username-feedback[data-state="ok"] { color: #54e08a; }
+.username-feedback[data-state="error"] { color: #ff7a7a; }
+
+.leaderboard-cadence-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.leaderboard-cadence-tab {
+  font-size: 0.7rem;
+  padding: 6px 10px;
+  opacity: 0.7;
+}
+.leaderboard-cadence-tab.is-active {
+  opacity: 1;
+  border-color: #6f9bff;
+  box-shadow: 0 0 8px rgba(111,155,255,0.5);
+}
+.leaderboard-board-card .leaderboard-entry {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 8px;
+  border-bottom: 1px solid rgba(52,93,204,0.25);
+}
+.leaderboard-board-card .leaderboard-entry.is-current-player {
+  background: rgba(52,93,204,0.22);
+  border-radius: 4px;
+}
+.settlement-history-card { border-left: 3px solid #345DCC; }

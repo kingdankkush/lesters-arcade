@@ -1,6 +1,14 @@
 import { HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST } from './assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs';
 import { HMH_ISOMETRIC_PIXELLAB_WAVE_1 } from './assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs';
 import { HMH_PRODUCTION_ART_PASS } from './assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs';
+import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
+import { buildDeviceProfile, joystickToKeys } from './src/device-model.mjs';
+import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES } from './src/canonical-actors.mjs';
+import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
+import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
+import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
+import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -59,10 +67,17 @@ import {
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
   recordScore,
+  applySettlement,
+  setArcadeUsername,
+  getAllCadenceLeaderboards,
+  getLeaderboard,
+  resolveDisplayName,
+  validateUsername,
   scheduleBossEncounter,
   simulateLesterBlasterRun,
   startPlaySession,
 } from './src/arcade-core.mjs';
+import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 
 const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
 const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
@@ -92,6 +107,65 @@ function loadImageAsset(src) {
 
 function imageReady(image) {
   return Boolean(image?.complete && image.naturalWidth > 0);
+}
+
+// --- Durable sprite pipeline: registry of ALL actors ---
+// Canonical hand-made art (Justin's): heroes Lester/Lilly + enemies/bosses
+// (trench-degen, evil-banker, crypto-bro, gas-beast, evil-boss, warren-boss).
+// Bonus PixelLab-generated enemies are kept as ADDITIONAL roster members.
+const HMH_ACTOR_REGISTRY = buildActorRegistry({
+  ...CANONICAL_ACTOR_MANIFESTS,
+  'bonus-fud-goblin': HMH_BONUS_FUD_GOBLIN,
+  'bonus-gas-fee-wisp': HMH_BONUS_GAS_FEE_WISP,
+  'bonus-whale-dumper': HMH_BONUS_WHALE_DUMPER,
+}, loadImageAsset);
+
+// Map a runtime enemy/boss entity to its registry actor id. Canonical art first.
+function registryActorIdFor(entity) {
+  const id = `${entity?.id ?? ''} ${entity?.title ?? ''}`.toLowerCase();
+  if (id.includes('trench') || id.includes('degen')) return 'trench-degen';
+  if (id.includes('bank')) return 'evil-banker';
+  if (id.includes('crypto') || id.includes('bro') || id.includes('kol')) return 'crypto-bro';
+  if (id.includes('gas') && id.includes('beast')) return 'gas-beast';
+  if (id.includes('warren') || id.includes('spear')) return 'warren-boss';
+  if (id.includes('evil') && id.includes('boss')) return 'evil-boss';
+  // Bonus PixelLab enemies (additional roster).
+  if (id.includes('fud') || id.includes('goblin')) return 'bonus-fud-goblin';
+  if (id.includes('wisp') || (id.includes('gas') && id.includes('fee'))) return 'bonus-gas-fee-wisp';
+  if (id.includes('whale') || id.includes('dumper')) return 'bonus-whale-dumper';
+  return null;
+}
+
+// Pick a health-tier state name if the actor has tiered art for the entity's hp%.
+function healthTierState(actor, entity) {
+  if (entity.hp === undefined || entity.maxHp === undefined || !entity.maxHp) return null;
+  const pct = (entity.hp / entity.maxHp) * 100;
+  for (const [tier, threshold] of [['health-25', 25], ['health-50', 50], ['health-75', 75]]) {
+    if (pct <= threshold && actor.hasState(tier)) return tier;
+  }
+  return null;
+}
+
+// Resolve a generated/canonical-art frame image for an entity, or null for legacy art.
+function pipelineActorFrame(entity, { boss = false } = {}) {
+  const actorId = registryActorIdFor(entity);
+  if (!actorId || !HMH_ACTOR_REGISTRY.has(actorId)) return null;
+  const actor = HMH_ACTOR_REGISTRY.get(actorId);
+  const dying = entity.dying || (entity.hp !== undefined && entity.hp <= 0);
+  let state = enemyStateFromEntity({
+    dying,
+    hitFrames: entity.hitFrames ?? ((entity.flashTimer ?? 0) > 0 ? 1 : 0),
+    attacking: (entity.attackTimer ?? 99) < 18,
+    telegraphing: (entity.attackTimer ?? 99) >= 18 && (entity.attackTimer ?? 99) < 34,
+    moving: true,
+  });
+  // When idle and damaged, prefer the hand-drawn health-tier still if present.
+  if (!dying && (state === 'idle' || state === 'walk')) {
+    const tier = healthTierState(actor, entity);
+    if (tier) state = tier;
+  }
+  const frame = actor.frame({ state, direction: 'south', clock: combat.frame + Math.floor(entity.x ?? 0) });
+  return frame?.image ?? null;
 }
 
 function loadAnimationFrames(pattern, count) {
@@ -404,6 +478,9 @@ const combatAudio = {
   sfxEnabled: true,
   audioContext: null,
   lastSfxAt: new Map(),
+  sfxBuffers: new Map(),
+  sfxLoading: new Map(),
+  sfxLoadAttempted: false,
 };
 
 function currentArcadeMusicTrack() {
@@ -629,16 +706,70 @@ function sfxToneFor(cue) {
   return tones[cue] ?? [440];
 }
 
-function playSfxCue(cue, volume = 0.05) {
-  if (!combatAudio.sfxEnabled || typeof window === 'undefined') return false;
-  const now = performance.now();
-  if ((now - (combatAudio.lastSfxAt.get(cue) ?? 0)) < 55) return false;
-  combatAudio.lastSfxAt.set(cue, now);
+function ensureAudioContext() {
+  if (typeof window === 'undefined') return null;
   const Context = window.AudioContext || window.webkitAudioContext;
-  if (!Context) return false;
+  if (!Context) return null;
   combatAudio.audioContext ??= new Context();
   const ctx = combatAudio.audioContext;
   if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  return ctx;
+}
+
+function loadSfxSample(cue) {
+  const ctx = combatAudio.audioContext;
+  if (!ctx) return;
+  if (combatAudio.sfxBuffers.has(cue) || combatAudio.sfxLoading.has(cue)) return;
+  const src = HMH_SFX_MANIFEST.cues?.[cue];
+  if (!src) return;
+  const promise = fetch(src)
+    .then((res) => {
+      if (!res.ok) throw new Error(`sfx fetch ${res.status}`);
+      return res.arrayBuffer();
+    })
+    .then((data) => new Promise((resolve, reject) => {
+      // Use the callback form so older Safari decodeAudioData also works.
+      ctx.decodeAudioData(data, resolve, reject);
+    }))
+    .then((buffer) => {
+      combatAudio.sfxBuffers.set(cue, buffer);
+      combatAudio.sfxLoading.delete(cue);
+    })
+    .catch(() => {
+      // Leave the cue unloaded so playSfxCue falls back to the synth tone.
+      combatAudio.sfxLoading.delete(cue);
+    });
+  combatAudio.sfxLoading.set(cue, promise);
+}
+
+function preloadSfxSamples() {
+  if (combatAudio.sfxLoadAttempted) return;
+  const ctx = ensureAudioContext();
+  if (!ctx) return;
+  combatAudio.sfxLoadAttempted = true;
+  for (const cue of Object.keys(HMH_SFX_MANIFEST.cues ?? {})) {
+    loadSfxSample(cue);
+  }
+}
+
+function playSfxSample(cue, volume) {
+  const ctx = combatAudio.audioContext;
+  const buffer = combatAudio.sfxBuffers.get(cue);
+  if (!ctx || !buffer) return false;
+  const gain = ctx.createGain();
+  // Sample SFX are full-range; scale relative to the legacy synth volume curve.
+  gain.gain.value = Math.min(1, Math.max(0.02, volume * 8));
+  gain.connect(ctx.destination);
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(gain);
+  source.start();
+  return true;
+}
+
+function playSfxSynth(cue, volume) {
+  const ctx = combatAudio.audioContext;
+  if (!ctx) return false;
   const gain = ctx.createGain();
   gain.gain.value = volume;
   gain.connect(ctx.destination);
@@ -653,6 +784,22 @@ function playSfxCue(cue, volume = 0.05) {
   });
   gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
   return true;
+}
+
+function playSfxCue(cue, volume = 0.05) {
+  if (!combatAudio.sfxEnabled || typeof window === 'undefined') return false;
+  const now = performance.now();
+  if ((now - (combatAudio.lastSfxAt.get(cue) ?? 0)) < 55) return false;
+  combatAudio.lastSfxAt.set(cue, now);
+  const ctx = ensureAudioContext();
+  if (!ctx) return false;
+  // Kick off lazy sample loading on first real user-gesture-driven cue.
+  preloadSfxSamples();
+  // Prefer the real CC0 sample; fall back to the synth tone until it decodes
+  // (or permanently, if the sample failed to load).
+  if (playSfxSample(cue, volume)) return true;
+  loadSfxSample(cue);
+  return playSfxSynth(cue, volume);
 }
 
 const combatArt = {
@@ -1125,6 +1272,33 @@ function submitCombatGameOver() {
   renderOfficialRunStatus();
   renderGameOverSummary();
   renderCombatMenuActionGrid();
+
+  // Settle the tracked run to LitVM. Paid Mode zkLTC funds the gas. The live
+  // on-chain send is gated behind SETTLEMENT_LIVE (off until contracts deploy +
+  // explicit approval); until then this produces a deterministic simulated tx.
+  if (result.acceptedForGlobalLeaderboard && result.settlementInput) {
+    settleRankedRun(result.settlementInput);
+  }
+}
+
+async function settleRankedRun(settlementInput) {
+  try {
+    const plan = buildSettlementPlan(settlementInput);
+    const settlement = await settleRun(plan, { live: SETTLEMENT_LIVE });
+    applySettlement(state, settlement);
+    const shortTx = settlement.primaryTxHash ? `${settlement.primaryTxHash.slice(0, 10)}…${settlement.primaryTxHash.slice(-6)}` : 'pending';
+    const modeLabel = settlement.mode === 'live' ? 'LitVM settlement' : 'LitVM settlement (simulated; enable after contract deploy)';
+    if (dom.combatStatus) {
+      dom.combatStatus.textContent = `Official score settled to ${modeLabel}. zkLTC fee covered ${plan.calls.length} contract call(s). Tx ${shortTx}. Score history & achievements now read from this settlement.`;
+    }
+    if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
+    if (officialAppStep === 'profile') renderOfficialProfile();
+  } catch (err) {
+    if (dom.combatStatus) {
+      dom.combatStatus.textContent = `Score recorded, but settlement is pending: ${err.message}`;
+    }
+    console.warn('[settlement] failed:', err);
+  }
 }
 
 function renderLevelUpActionGrid() {
@@ -1316,11 +1490,12 @@ function syncCombatOverlay() {
     dom.combatCharacterButton.dataset.unlock = 'future-lilly-character';
   }
   if (dom.combatViewportButton) {
-    const label = combat.viewportMode === 'fullscreen'
-      ? 'Windowed Mode'
-      : combat.viewportMode === 'windowed'
-        ? 'Expand Fullscreen'
-        : 'Fullscreen';
+    let label = 'Fullscreen';
+    if (combat.viewportMode === 'fullscreen') {
+      label = 'Exit Fullscreen';
+    } else if (combat.viewportMode === 'expanded-fullscreen') {
+      label = 'Exit Expanded';
+    }
     dom.combatViewportButton.textContent = label;
   }
   if (clearInactiveCombatOverlay()) return;
@@ -1391,13 +1566,28 @@ function showLillyTeaser() {
   syncCombatOverlay();
 }
 
+function resizeCombatCanvas() {
+  const canvas = dom.combatCanvas;
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  const targetWidth = Math.max(1, Math.round(rect.width * dpr));
+  const targetHeight = Math.max(1, Math.round(rect.height * dpr));
+  if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+  }
+}
+
 async function requestCombatFullscreen() {
   const target = dom.officialCombatMount ?? dom.officialGameplay ?? dom.combatCanvas;
+  const screenWidth = window.screen?.width ?? window.innerWidth;
+  const screenHeight = window.screen?.height ?? window.innerHeight;
   const model = buildFullscreenViewportModel({
     mode: 'fullscreen',
     fullscreenElementActive: Boolean(document.fullscreenElement),
-    screenWidth: window.screen?.width ?? window.innerWidth,
-    screenHeight: window.screen?.height ?? window.innerHeight,
+    screenWidth,
+    screenHeight,
   });
   combat.viewportMode = 'fullscreen';
   dom.officialCombatMount?.style.setProperty('--combat-fullscreen-width', `${model.devicePixels.width}px`);
@@ -1405,12 +1595,17 @@ async function requestCombatFullscreen() {
   try {
     if (!document.fullscreenElement && target?.requestFullscreen) {
       await target.requestFullscreen({ navigationUI: 'hide' });
+      // Resize canvas after fullscreen transition completes
+      requestAnimationFrame(() => {
+        resizeCombatCanvas();
+      });
     }
   } catch (error) {
     combat.viewportMode = 'expanded-fullscreen';
     combat.status = `Browser fullscreen was blocked, so the combat canvas expanded inside the page: ${error?.message ?? 'request failed'}`;
     if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
     spawnText('FULLSCREEN BLOCKED', combat.playerX + 4, combat.playerY - 96, '#ff476f');
+    resizeCombatCanvas();
   }
   syncCombatOverlay();
 }
@@ -1429,6 +1624,7 @@ async function exitCombatFullscreen() {
     combat.status = `Fullscreen exit failed: ${error?.message ?? 'browser request failed'}`;
     if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
   }
+  resizeCombatCanvas();
   syncCombatOverlay();
 }
 
@@ -1811,23 +2007,122 @@ function renderOfficialProfile() {
   dom.officialCabinetGrid.replaceChildren();
   const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
   const profile = snapshot?.profile;
+
   const card = el('article', { className: 'official-info-card' });
   appendText(card, 'span', 'Wallet Profile', 'cabinet-status-label');
-  appendText(card, 'strong', profile?.handle ?? 'Connect wallet to activate profile');
-  appendText(card, 'small', connectedWallet ? `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // username + 150x150 avatar editor next` : 'Wallet is the locked identity for progress, high scores, achievements, and avatars.');
+  appendText(card, 'strong', profile?.displayName ?? 'Connect wallet to activate profile');
+  appendText(card, 'small', connectedWallet
+    ? `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // wallet is your locked identity for scores, achievements & settlement`
+    : 'Wallet is the locked identity for progress, high scores, achievements, and avatars.');
   dom.officialCabinetGrid.append(card);
+
+  if (!connectedWallet) return;
+
+  // --- Username / display-name editor ---
+  const editor = el('article', { className: 'official-info-card username-editor-card' });
+  appendText(editor, 'span', 'DISPLAY NAME', 'cabinet-status-label');
+  appendText(editor, 'small', profile?.usernameSet
+    ? 'This name shows on every leaderboard. 3–18 chars, unique, no hate speech.'
+    : 'By default leaderboards show your wallet address. Set a username to display instead. 3–18 chars, unique, no hate speech.');
+
+  const form = el('div', { className: 'username-editor-form' });
+  const input = el('input', { className: 'username-input', type: 'text' });
+  input.maxLength = 18;
+  input.placeholder = 'Your display name';
+  input.value = profile?.usernameSet ? profile.handle : '';
+  input.setAttribute('aria-label', 'Display name');
+  const saveBtn = el('button', { className: 'pixel-button username-save-button', textContent: 'Save Username', type: 'button' });
+  const feedback = el('p', { className: 'username-feedback tiny-note' });
+
+  // live validation
+  input.addEventListener('input', () => {
+    const v = validateUsername(input.value);
+    feedback.textContent = input.value.trim() ? v.message : '';
+    feedback.dataset.state = input.value.trim() ? (v.valid ? 'ok' : 'error') : '';
+  });
+
+  saveBtn.addEventListener('click', () => {
+    const res = setArcadeUsername(state, connectedWallet, input.value);
+    feedback.textContent = res.message;
+    feedback.dataset.state = res.ok ? 'ok' : 'error';
+    if (res.ok) {
+      render();
+      renderOfficialProfile();
+    }
+  });
+
+  form.append(input, saveBtn);
+  editor.append(form, feedback);
+  dom.officialCabinetGrid.append(editor);
+
+  // --- Settlement history (score settles to LitVM via zkLTC) ---
+  const settlements = snapshot?.settlements ?? [];
+  const settleCard = el('article', { className: 'official-info-card settlement-history-card' });
+  appendText(settleCard, 'span', 'LITVM SETTLEMENT', 'cabinet-status-label');
+  if (settlements.length === 0) {
+    appendText(settleCard, 'small', 'No settled runs yet. Paid Mode runs settle your score, achievements, and username to LitVM; the zkLTC fee covers the gas.');
+  } else {
+    appendText(settleCard, 'strong', `${settlements.length} settled run(s)`);
+    for (const s of settlements.slice(-3).reverse()) {
+      const row = el('p', { className: 'tiny-note' });
+      const tx = s.primaryTxHash ? `${s.primaryTxHash.slice(0, 10)}…${s.primaryTxHash.slice(-6)}` : 'pending';
+      row.textContent = `${s.score.toLocaleString()} pts · ${s.mode} · tx ${tx}`;
+      settleCard.append(row);
+    }
+  }
+  dom.officialCabinetGrid.append(settleCard);
 }
+
+let officialLeaderboardCadence = 'all-time';
 
 function renderOfficialLeaderboards() {
   dom.officialCabinetGrid.replaceChildren();
-  const model = buildLeaderboardModel(state, { gameId: selectedGameId, wallet: connectedWallet });
-  for (const cadence of LESTERS_ARCADE_V2_APP_SHELL.leaderboardRules.cadences) {
-    const card = el('article', { className: 'official-info-card leaderboard-cadence-card' });
-    appendText(card, 'span', cadence.toUpperCase(), 'cabinet-status-label');
-    appendText(card, 'strong', model.topEntries[0] ? `#1 ${model.topEntries[0].score.toLocaleString()}` : 'No ranked scores yet');
-    appendText(card, 'small', 'Global board + your wallet placement will appear here after official game-over submissions.');
-    dom.officialCabinetGrid.append(card);
+  const displayNameFor = (wallet) => resolveDisplayName(state.profiles?.[wallet], wallet);
+
+  // cadence tab bar
+  const tabBar = el('div', { className: 'leaderboard-cadence-tabs' });
+  for (const board of getAllCadenceLeaderboards(state, selectedGameId, { wallet: connectedWallet, displayNameFor })) {
+    const tab = el('button', {
+      className: `pixel-button leaderboard-cadence-tab${board.cadence === officialLeaderboardCadence ? ' is-active' : ''}`,
+      textContent: board.cadence.toUpperCase(),
+      type: 'button',
+    });
+    tab.dataset.cadence = board.cadence;
+    tab.addEventListener('click', () => {
+      officialLeaderboardCadence = board.cadence;
+      renderOfficialLeaderboards();
+    });
+    tabBar.append(tab);
   }
+  dom.officialCabinetGrid.append(tabBar);
+
+  const active = getLeaderboard(state, selectedGameId, officialLeaderboardCadence, {
+    wallet: connectedWallet,
+    displayNameFor,
+    limit: 10,
+  });
+
+  const board = el('article', { className: 'official-info-card leaderboard-board-card' });
+  appendText(board, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey}`, 'cabinet-status-label');
+
+  if (active.topEntries.length === 0) {
+    appendText(board, 'small', 'No ranked scores in this period yet. Play a Ranked run and submit your official score at game over.');
+  } else {
+    for (const entry of active.topEntries) {
+      const row = el('div', { className: `leaderboard-entry${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
+      appendText(row, 'strong', `#${entry.rank} ${entry.score.toLocaleString()}`);
+      const settled = entry.settlementTxHash ? ' ✓ settled' : '';
+      appendText(row, 'span', `${entry.displayName}${settled}`);
+      board.append(row);
+    }
+  }
+
+  if (connectedWallet && active.playerEntry) {
+    appendText(board, 'small', `Your placement: #${active.playerRank} · ${active.playerEntry.score.toLocaleString()} pts`);
+  } else if (connectedWallet) {
+    appendText(board, 'small', 'You have no ranked score in this period yet.');
+  }
+  dom.officialCabinetGrid.append(board);
 }
 
 function renderOfficialSettings() {
@@ -1894,6 +2189,8 @@ function renderOfficialGameplay() {
 function renderOfficialApp() {
   if (!dom.officialApp) return;
   dom.officialApp.dataset.step = officialAppStep;
+  // Drive the responsive touch-control overlay: only visible during gameplay.
+  document.documentElement.dataset.ingame = officialAppStep === 'gameplay' ? 'true' : 'false';
   dom.developerBackstage.hidden = !developerBackstageOpen;
   dom.developerBackstageToggle.textContent = developerBackstageOpen ? 'Hide Backstage' : 'Dev Backstage';
   renderOfficialNav();
@@ -2086,6 +2383,9 @@ async function completePrototypeRun() {
     acceptedForGlobalLeaderboard: result.acceptedForGlobalLeaderboard,
   };
   currentSession = null;
+  if (result.acceptedForGlobalLeaderboard && result.settlementInput) {
+    settleRankedRun(result.settlementInput);
+  }
   render();
 }
 
@@ -2273,19 +2573,92 @@ function renderBuildStack() {
   }
 }
 
+function menuActionFor(item) {
+  // Map each canonical menu option id to the runtime action it should trigger.
+  switch (item.id) {
+    case 'connect-wallet':
+      return connectedWallet ? null : () => connectWallet();
+    case 'free-run':
+      return () => startOfficialMode('free');
+    case 'paid-run':
+      return connectedWallet ? () => startOfficialMode('paid') : null;
+    case 'loadout':
+    case 'leaderboard':
+    case 'achievements':
+    case 'sound-options':
+    case 'accessibility':
+      return () => focusMenuSectionPanel(item.id);
+    default:
+      return null;
+  }
+}
+
+function focusMenuSectionPanel(itemId) {
+  // Lightweight in-page navigation: scroll the matching panel into view and
+  // flash it so the menu reads as a real navigation surface, not static cards.
+  const anchors = {
+    loadout: '#cartridgeRack',
+    leaderboard: '#highScoreList',
+    achievements: '#achievementList',
+    'sound-options': '#arcadeMusicPlayer',
+    accessibility: '#menuModelPanel',
+  };
+  const target = document.querySelector(anchors[itemId] ?? '#menuModelPanel');
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  target.classList.add('menu-section-flash');
+  window.setTimeout(() => target.classList.remove('menu-section-flash'), 900);
+}
+
 function renderMenuModel() {
   const model = buildLoginMenuModel({ connected: Boolean(connectedWallet), selectedGameId, wallet: connectedWallet });
   dom.menuModelPanel.replaceChildren();
-  const login = el('article', { className: `menu-card ${model.login.state}` });
+
+  // Login status header card (non-interactive summary of parent account state).
+  const login = el('article', { className: `menu-card login-status ${model.login.state}` });
+  appendText(login, 'span', model.login.state === 'connected' ? 'PARENT ACCOUNT ONLINE' : 'GUEST MODE', 'menu-card-eyebrow');
   appendText(login, 'strong', model.login.primaryAction);
-  appendText(login, 'span', model.login.walletShort ?? 'Guest Mode');
+  appendText(login, 'span', model.login.walletShort ?? 'No wallet connected', 'menu-card-wallet');
   appendText(login, 'p', model.login.copy);
   dom.menuModelPanel.append(login);
 
-  for (const item of model.menuItems) {
-    const card = el('article', { className: `menu-card ${item.disabled ? 'disabled' : ''} ${item.active ? 'active' : ''}` });
+  // Interactive, keyboard-navigable arcade menu buttons grouped by section.
+  const sectionLabels = {
+    login: 'ACCOUNT', play: 'PLAY', prep: 'PREP', scores: 'SCORES', profile: 'PROFILE', options: 'OPTIONS',
+  };
+  const navItems = model.menuItems.filter((item) => item.id !== 'connect-wallet' || !connectedWallet);
+  let lastSection = null;
+  for (const item of navItems) {
+    if (item.section && item.section !== lastSection) {
+      lastSection = item.section;
+      appendText(dom.menuModelPanel, 'p', sectionLabels[item.section] ?? item.section.toUpperCase(), 'menu-section-label');
+    }
+    const action = menuActionFor(item);
+    const interactive = Boolean(action) && !item.disabled;
+    const card = el(interactive ? 'button' : 'article', {
+      className: `menu-card menu-option ${item.disabled ? 'disabled' : ''} ${item.active ? 'active' : ''} ${interactive ? 'interactive' : ''}`.trim(),
+    });
+    if (interactive) {
+      card.type = 'button';
+      card.setAttribute('data-menu-action', item.id);
+      card.addEventListener('mouseenter', () => playSfxCue('menu-click', 0.02));
+      card.addEventListener('click', () => {
+        playSfxCue('menu-click');
+        action();
+      });
+    } else {
+      card.setAttribute('aria-disabled', 'true');
+    }
     appendText(card, 'strong', item.title);
     appendText(card, 'p', item.description);
+    if (item.disabled) {
+      const reason = item.id === 'paid-run' || (item.section === 'play' && !connectedWallet)
+        ? 'Connect a wallet to unlock'
+        : 'Available once Hard Money Heroes is playable';
+      appendText(card, 'span', reason, 'menu-card-lock');
+    } else if (interactive) {
+      appendText(card, 'span', '▶', 'menu-card-cue');
+    }
     dom.menuModelPanel.append(card);
   }
 }
@@ -2351,7 +2724,7 @@ function renderLeaderboard() {
     for (const entry of model.topEntries.slice(0, 4)) {
       const item = el('article', { className: 'leaderboard-entry' });
       appendText(item, 'strong', `#${entry.rank} ${entry.score.toLocaleString()}`);
-      appendText(item, 'span', `${entry.wallet.slice(0, 8)}…${entry.wallet.slice(-6)} · ${formatSeconds(entry.runStats.elapsedSeconds ?? 0)} · boss ${entry.runStats.bossId ?? 'none'}`);
+      appendText(item, 'span', `${entry.displayName ?? `${entry.wallet.slice(0, 6)}…${entry.wallet.slice(-4)}`} · ${formatSeconds(entry.runStats.elapsedSeconds ?? 0)} · boss ${entry.runStats.bossId ?? 'none'}`);
       dom.leaderboardPanel.append(item);
     }
   }
@@ -3061,30 +3434,67 @@ function updateParticles(dt) {
 
 function updateFloatingTexts() {
   for (const text of combat.floatingTexts) {
-    text.y -= 0.7;
+    text.y += (text.vy ?? -0.7);
     text.life -= 1;
   }
   combat.floatingTexts = combat.floatingTexts.filter((text) => text.life > 0);
 }
 
-function damageEnemy(enemy, damage, source) {
-  enemy.hp -= damage;
+function currentDamageType() {
+  // Damage type comes from the active weapon/level-up modifiers when present.
+  return combat.roguelikeRun?.stats?.damageType
+    ?? combat.activeDamageType
+    ?? 'normal';
+}
+
+function rollHitPresentation(baseDamage, source) {
+  // Roll crit + apply type modifier ON TOP of the already-computed base damage
+  // so every existing call site gets crits, types, and a styled number without
+  // changing its signature. Uses the shared balance model.
+  const stats = combat.roguelikeRun?.stats ?? {};
+  const type = currentDamageType();
+  const result = computeDamage({
+    source: source === 'knife' ? 'melee' : (source ?? 'bullet'),
+    type,
+    stats: { ...stats, damage: 1 }, // base already scaled by caller; only roll crit/type here
+    enemyArmored: false,
+    rng: Math.random,
+  });
+  // Scale the caller's flat damage by crit/type multiplier ratio.
+  const ratio = result.amount / Math.max(1, Math.round(DAMAGE_BASE_FOR(source)));
+  const finalDamage = Math.max(1, Math.round(baseDamage * (result.crit ? (1.75 + (stats.critMultiplierBonus ?? 0)) : 1)));
+  return { finalDamage, crit: result.crit, type, color: result.color, label: result.crit ? `${finalDamage}!` : `${finalDamage}` };
+}
+
+function DAMAGE_BASE_FOR(source) {
+  const map = { bullet: 6, 'hash-rail': 9, knife: 11, melee: 11, grenade: 16, axe: 14, explosion: 16 };
+  return map[source] ?? 6;
+}
+
+function damageEnemy(enemy, damage, source, opts = {}) {
+  const present = opts.crit !== undefined ? opts : rollHitPresentation(damage, source);
+  const applied = present.finalDamage ?? damage;
+  enemy.hp -= applied;
   combat.combo += 1;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
-  combat.damageCombo += damage;
+  combat.damageCombo += applied;
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
   playSfxCue('enemy-hit', 0.035);
   spawnBlood(enemy.x + 12, enemy.y - 30, source === 'knife' ? '#ff1f4f' : '#ff7b2f');
+  spawnDamageNumber(present.label ?? `${Math.round(applied)}`, enemy.x + 12, enemy.y - 40, present.color ?? '#ffe84d', Boolean(present.crit));
 }
 
-function damageBoss(damage, source) {
-  combat.boss.hp -= damage;
+function damageBoss(damage, source, opts = {}) {
+  const present = opts.crit !== undefined ? opts : rollHitPresentation(damage, source);
+  const applied = present.finalDamage ?? damage;
+  combat.boss.hp -= applied;
   combat.combo += 1;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
-  combat.damageCombo += damage;
+  combat.damageCombo += applied;
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
   playSfxCue('boss-warning', 0.035);
   spawnBlood(combat.boss.x + 40, GROUND_Y - 70, source === 'hash-rail' ? '#19f7ff' : '#ff236d');
+  spawnDamageNumber(present.label ?? `${Math.round(applied)}`, combat.boss.x + 40, GROUND_Y - 84, present.color ?? '#ffe84d', Boolean(present.crit));
 }
 
 function damagePlayer(damage, source = 'hit') {
@@ -3192,6 +3602,20 @@ function spawnExplosion(x, y, color) {
 
 function spawnText(text, x, y, color) {
   combat.floatingTexts.push({ text, x, y, color, life: 70 });
+}
+
+// Floating combat damage number with crit emphasis (bigger, longer-lived).
+function spawnDamageNumber(text, x, y, color, crit = false) {
+  combat.floatingTexts.push({
+    text,
+    x: x + (Math.random() - 0.5) * 10,
+    y,
+    color,
+    life: crit ? 95 : 70,
+    size: crit ? 22 : 14,
+    crit,
+    vy: crit ? -1.1 : -0.7,
+  });
 }
 
 
@@ -3830,6 +4254,14 @@ function drawProps(ctx) {
 }
 
 function selectHeroFrame() {
+  // Prefer canonical hand-made hero art (Lester/Lilly) via the durable pipeline.
+  const heroActorId = combat.characterId === 'lilly' ? 'lilly' : 'lester';
+  if (HMH_ACTOR_REGISTRY.has(heroActorId)) {
+    const actor = HMH_ACTOR_REGISTRY.get(heroActorId);
+    const state = heroStateFromCombat(combat, GROUND_Y);
+    const frame = actor.frame({ state, direction: 'south', clock: combat.frame });
+    if (frame?.image && imageReady(frame.image)) return frame.image;
+  }
   const hero = combatArt.hero;
   if (combat.playerY < GROUND_Y - 4) return selectAnimationFrame(hero.animations.jump, combat.frame, productionAnimationFps(hero, 'run', 16), false) ?? hero.fallback.jump;
   if (combat.crouching && combat.playerY >= GROUND_Y - 2) return selectAnimationFrame(hero.animations.idle, combat.frame, productionAnimationFps(hero, 'idle', 12)) ?? hero.fallback.idle;
@@ -3948,7 +4380,7 @@ function drawEnemies(ctx) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
-    const enemyFrame = enemyArtFor(enemy);
+    const enemyFrame = pipelineActorFrame(enemy) ?? enemyArtFor(enemy);
     if (imageReady(enemyFrame)) {
       const enemyKey = manifestEnemyKeyFor(enemy);
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
@@ -3974,6 +4406,9 @@ function drawEnemies(ctx) {
 
 function bossArtFor(boss) {
   if (!boss) return null;
+  // Prefer the durable pipeline's generated boss art when available.
+  const pipelineFrame = pipelineActorFrame(boss, { boss: true });
+  if (pipelineFrame) return pipelineFrame;
   const id = `${boss.id ?? ''} ${boss.title ?? ''}`.toLowerCase();
   const key = id.includes('whale') || id.includes('bank') || id.includes('tycoon')
     ? 'bitWhale'
@@ -4096,11 +4531,24 @@ function drawParticles(ctx) {
 }
 
 function drawFloatingTexts(ctx) {
-  ctx.font = '12px monospace';
   for (const text of combat.floatingTexts) {
+    const size = text.size ?? 12;
+    const fade = Math.min(1, text.life / 24);
+    ctx.save();
+    ctx.globalAlpha = fade;
+    ctx.font = `${text.crit ? 'bold ' : ''}${size}px monospace`;
+    ctx.textAlign = 'center';
+    if (text.crit) {
+      // Outline crits for punch.
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(0,0,0,0.65)';
+      ctx.strokeText(text.text, text.x, text.y);
+    }
     ctx.fillStyle = text.color;
     ctx.fillText(text.text, text.x, text.y);
+    ctx.restore();
   }
+  ctx.textAlign = 'left';
 }
 
 function drawHud(ctx) {
@@ -4269,10 +4717,22 @@ dom.combatCanvas.addEventListener('mousedown', (event) => {
 document.addEventListener('fullscreenchange', () => {
   if (document.fullscreenElement === dom.officialCombatMount) {
     combat.viewportMode = 'fullscreen';
-  } else if (combat.viewportMode === 'fullscreen') {
+    // Resize canvas to match new fullscreen dimensions
+    requestAnimationFrame(() => {
+      resizeCombatCanvas();
+    });
+  } else if (combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen') {
     combat.viewportMode = 'windowed';
+    resizeCombatCanvas();
   }
   syncCombatOverlay();
+});
+
+// Handle window resize to update canvas dimensions in fullscreen/expanded modes
+window.addEventListener('resize', () => {
+  if (combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen') {
+    resizeCombatCanvas();
+  }
 });
 
 const injectedProvider = detectEthereumProvider();
@@ -4297,6 +4757,132 @@ if (injectedProvider?.on) {
     render();
   });
 }
+
+// ----- Responsive device detection + mobile/tablet touch controls -----
+const deviceState = { profile: null, touchKeys: new Set() };
+
+function readDeviceSignals() {
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    coarsePointer: window.matchMedia?.('(pointer: coarse)')?.matches ?? false,
+    hasTouch: 'ontouchstart' in window || (navigator.maxTouchPoints ?? 0) > 0,
+    maxTouchPoints: navigator.maxTouchPoints ?? 0,
+  };
+}
+
+function applyDeviceProfile() {
+  const profile = buildDeviceProfile(readDeviceSignals());
+  deviceState.profile = profile;
+  const root = document.documentElement;
+  root.dataset.device = profile.deviceClass;
+  root.dataset.orientation = profile.orientation;
+  root.dataset.touch = profile.isTouch ? 'true' : 'false';
+  root.style.setProperty('--hud-scale', String(profile.hudScale));
+  document.body.classList.toggle('show-touch-controls', profile.showTouchControls);
+  document.body.classList.toggle('suggest-landscape', profile.suggestLandscape);
+  ensureTouchControls(profile);
+  return profile;
+}
+
+function performTouchAction(action) {
+  if (action === 'pause') { toggleCombatPause(); return; }
+  if (combat.paused || combat.gameOver) return;
+  if (action === 'shoot') { if (combat.roguelikeRun) shoot(); else jump(); }
+  else if (action === 'jump') jump();
+  else if (action === 'melee') melee();
+  else if (action === 'grenade') grenade();
+}
+
+let touchControlsBuilt = false;
+function ensureTouchControls(profile) {
+  if (!profile.showTouchControls) {
+    document.getElementById('touchControls')?.style.setProperty('display', 'none');
+    return;
+  }
+  let layer = document.getElementById('touchControls');
+  if (layer) { layer.style.display = ''; return; }
+  layer = el('div', { className: 'touch-controls' });
+  layer.id = 'touchControls';
+  layer.setAttribute('aria-label', 'On-screen touch controls');
+
+  // Virtual joystick (left thumb): drag within the base to move.
+  const stickBase = el('div', { className: 'touch-stick-base' });
+  const stickNub = el('div', { className: 'touch-stick-nub' });
+  stickBase.append(stickNub);
+  layer.append(stickBase);
+
+  let activePointer = null;
+  const updateStick = (clientX, clientY) => {
+    const rect = stickBase.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    let dx = (clientX - cx) / (rect.width / 2);
+    let dy = (clientY - cy) / (rect.height / 2);
+    const mag = Math.hypot(dx, dy) || 1;
+    if (mag > 1) { dx /= mag; dy /= mag; }
+    stickNub.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
+    // Swap previous held movement keys for the new joystick-derived set.
+    for (const k of deviceState.touchKeys) combat.keys.delete(k);
+    deviceState.touchKeys = joystickToKeys(dx, dy);
+    for (const k of deviceState.touchKeys) combat.keys.add(k);
+  };
+  const releaseStick = () => {
+    activePointer = null;
+    stickNub.style.transform = 'translate(0,0)';
+    for (const k of deviceState.touchKeys) combat.keys.delete(k);
+    deviceState.touchKeys = new Set();
+  };
+  stickBase.addEventListener('pointerdown', (e) => {
+    activePointer = e.pointerId;
+    stickBase.setPointerCapture(e.pointerId);
+    updateStick(e.clientX, e.clientY);
+    e.preventDefault();
+  });
+  stickBase.addEventListener('pointermove', (e) => {
+    if (activePointer === e.pointerId) updateStick(e.clientX, e.clientY);
+  });
+  stickBase.addEventListener('pointerup', releaseStick);
+  stickBase.addEventListener('pointercancel', releaseStick);
+
+  // Action buttons (right thumb cluster).
+  const actions = [
+    { id: 'fire', label: 'FIRE', action: 'shoot' },
+    { id: 'jump', label: 'JUMP', action: 'jump' },
+    { id: 'melee', label: 'MELEE', action: 'melee' },
+    { id: 'grenade', label: 'NADE', action: 'grenade' },
+  ];
+  const cluster = el('div', { className: 'touch-action-cluster' });
+  for (const a of actions) {
+    const btn = el('button', { className: `touch-action-button touch-${a.id}`, textContent: a.label });
+    btn.type = 'button';
+    btn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      performTouchAction(a.action);
+      playSfxCue('menu-click', 0.02);
+    });
+    cluster.append(btn);
+  }
+  layer.append(cluster);
+
+  // Pause button (top-right during gameplay).
+  const pauseBtn = el('button', { className: 'touch-pause-button', textContent: 'II' });
+  pauseBtn.type = 'button';
+  pauseBtn.setAttribute('aria-label', 'Pause');
+  pauseBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); toggleCombatPause(); });
+  layer.append(pauseBtn);
+
+  document.body.append(layer);
+  touchControlsBuilt = true;
+}
+
+applyDeviceProfile();
+let deviceResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(deviceResizeTimer);
+  deviceResizeTimer = setTimeout(applyDeviceProfile, 120);
+});
+window.addEventListener('orientationchange', () => setTimeout(applyDeviceProfile, 200));
 
 render();
 requestAnimationFrame(drawCombatScene);
