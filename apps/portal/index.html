@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#05070f" />
     <title>Lester's Arcade — LitVM Web3 Arcade Prototype</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./styles-arcade-polish.css" />
   </head>
   <body>
     <div class="crt-overlay" aria-hidden="true"></div>
@@ -47,8 +48,10 @@
         <section id="officialWalletSplash" class="official-view wallet-splash-view">
           <div class="splash-copy">
             <p class="eyebrow">Official Testnet App // lestersarcade.io</p>
-            <h1>Lester's Arcade</h1>
-            <p class="tagline">Connect your wallet, enter the arcade, pick a cabinet, then boot Hard Money Heroes in Free Mode or Ranked testnet mode.</p>
+            <div class="splash-marquee">
+              <img src="./assets/generated/hmh-key-art/lesters-arcade-marquee.png" alt="Lester's Arcade neon marquee" class="splash-marquee-art" />
+            </div>
+            <p class="tagline">Connect your wallet, step into the arcade, pick a cabinet, then boot Hard Money Heroes in Free Mode or Ranked testnet mode.</p>
             <button id="officialConnectButton" class="primary-button big-action" type="button">Connect Wallet</button>
             <p id="officialWalletCopy" class="tiny-note">Your wallet is your profile. Scores, achievements, usernames, avatars, and ranked runs attach to the connected wallet.</p>
           </div>
@@ -56,9 +59,9 @@
             <div class="splash-featured-cabinet">
               <div id="splashFeaturedCabinet" class="splash-featured-cabinet-art" aria-hidden="true"></div>
               <div class="splash-featured-cabinet-copy">
-                <span class="cabinet-status-label">Selected Cabinet</span>
+                <span class="cabinet-status-label">Featured Cabinet</span>
                 <strong>Hard Money Heroes</strong>
-                <small>Desktop sprite rotation from Justin’s cabinet art.</small>
+                <small>The flagship Lester's Arcade title.</small>
               </div>
             </div>
             <div class="neon-cabinet cabinet-locked"><span>Lilly Lightning</span></div>

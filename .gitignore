@@ -34,3 +34,6 @@ tmp/
 tmp/
 raw-tool-output/
 contact-sheets/
+
+# PixelLab demo-wave work-in-progress (committed once collected)
+apps/portal/assets/generated/hmh-demo-wave/demo-wave-ledger.json

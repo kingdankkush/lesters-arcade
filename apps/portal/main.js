@@ -1964,7 +1964,15 @@ function renderOfficialWalletSplash() {
   const featuredCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
   const featuredSprite = productionCabinetSprite() ?? featuredCabinet?.desktopCabinetSprite;
   if (dom.splashFeaturedCabinet && featuredSprite) {
-    dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
+    // Prefer the painted HMH key art for the featured cabinet; keep the rotating
+    // sprite as a layered accent beneath it.
+    const keyArt = el('img', {
+      className: 'splash-featured-keyart',
+      src: './assets/generated/hmh-key-art/hard-money-heroes-cabinet-side.png',
+      alt: 'Hard Money Heroes key art',
+    });
+    keyArt.addEventListener('error', () => keyArt.remove());
+    dom.splashFeaturedCabinet.replaceChildren(keyArt, renderRotatingCabinetSprite(featuredSprite, 'splash'));
   }
   const copy = connectedWallet
     ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`
