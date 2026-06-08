@@ -2061,6 +2061,21 @@ function renderOfficialNav() {
     });
     dom.officialNavTabs.append(button);
   }
+  // When connected: show the player's avatar chip + a Sign Out button.
+  if (connectedWallet) {
+    const snapshot = buildPlayerArcadeSnapshot(state, connectedWallet);
+    const displayName = snapshot?.profile?.displayName ?? connectedWallet;
+    const account = el('div', { className: 'official-nav-account' });
+    const avatar = renderAvatarChip(connectedWallet, displayName, 'nav-avatar');
+    avatar.title = displayName;
+    const avatarBtn = el('button', { className: 'nav-avatar-button', type: 'button', ariaLabel: 'Open profile' });
+    avatarBtn.append(avatar);
+    avatarBtn.addEventListener('click', () => { playSfxCue('menu-click'); setOfficialView('profile'); });
+    const signOut = el('button', { className: 'nav-signout-button', type: 'button', textContent: 'Sign Out' });
+    signOut.addEventListener('click', signOutWallet);
+    account.append(avatarBtn, signOut);
+    dom.officialNavTabs.append(account);
+  }
 }
 
 function renderOfficialWalletSplash() {
@@ -2163,6 +2178,51 @@ function renderOfficialProfile() {
   editor.append(form, feedback);
   dom.officialCabinetGrid.append(editor);
 
+  // --- Avatar upload (.jpg/.png, 2MB cap) ---
+  const avatarCard = el('article', { className: 'official-info-card avatar-editor-card' });
+  appendText(avatarCard, 'span', 'AVATAR', 'cabinet-status-label');
+  appendText(avatarCard, 'small', 'Upload a .jpg or .png (max 2MB). Shows in the nav and on leaderboards next to your score.');
+  const avatarRow = el('div', { className: 'avatar-editor-row' });
+  const preview = renderAvatarChip(connectedWallet, profile?.displayName, 'profile-avatar');
+  const fileInput = el('input', { className: 'avatar-file-input', type: 'file' });
+  fileInput.accept = 'image/png,image/jpeg';
+  fileInput.setAttribute('aria-label', 'Upload avatar image');
+  const uploadBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Choose Image' });
+  uploadBtn.addEventListener('click', () => fileInput.click());
+  const avatarFeedback = el('p', { className: 'avatar-feedback tiny-note' });
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    if (!['image/png', 'image/jpeg'].includes(file.type)) {
+      avatarFeedback.textContent = 'Only .png or .jpg images are allowed.';
+      avatarFeedback.dataset.state = 'error';
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      avatarFeedback.textContent = `That image is ${(file.size / 1024 / 1024).toFixed(1)}MB — max is 2MB.`;
+      avatarFeedback.dataset.state = 'error';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPlayerAvatar(connectedWallet, reader.result);
+      avatarFeedback.textContent = 'Avatar saved. It now shows in the nav and on leaderboards.';
+      avatarFeedback.dataset.state = 'ok';
+      render();
+      renderOfficialProfile();
+    };
+    reader.onerror = () => {
+      avatarFeedback.textContent = 'Could not read that file. Try another image.';
+      avatarFeedback.dataset.state = 'error';
+    };
+    reader.readAsDataURL(file);
+  });
+  const avatarControls = el('div', { className: 'avatar-editor-controls' });
+  avatarControls.append(uploadBtn, avatarFeedback);
+  avatarRow.append(preview, avatarControls);
+  avatarCard.append(avatarRow, fileInput);
+  dom.officialCabinetGrid.append(avatarCard);
+
   // --- Settlement history (score settles to LitVM via zkLTC) ---
   const settlements = snapshot?.settlements ?? [];
   const settleCard = el('article', { className: 'official-info-card settlement-history-card' });
@@ -2218,6 +2278,8 @@ function renderOfficialLeaderboards() {
   } else {
     for (const entry of active.topEntries) {
       const row = el('div', { className: `leaderboard-entry${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
+      const entryWallet = entry.wallet ?? entry.address ?? null;
+      row.append(renderAvatarChip(entryWallet, entry.displayName, 'leaderboard-row-avatar'));
       appendText(row, 'strong', `#${entry.rank} ${entry.score.toLocaleString()}`);
       const settled = entry.settlementTxHash ? ' ✓ settled' : '';
       appendText(row, 'span', `${entry.displayName}${settled}`);
@@ -2377,6 +2439,44 @@ function connectMockWallet() {
   connectPlayerAccount(state, connectedWallet, { handle: 'Lester Pilot' });
   render();
   return connectedWallet;
+}
+
+// Sign out: clear the connected wallet/session and return to the wallet splash.
+// Local sandbox only — does not touch on-chain state.
+function signOutWallet() {
+  playSfxCue('menu-click', 0.05);
+  connectedWallet = null;
+  connectedChainId = null;
+  walletConnector = 'none';
+  currentSession = null;
+  officialAppStep = 'wallet-splash';
+  render();
+}
+
+// Avatar is stored client-side as a data URL on the player profile object so it
+// survives within the session and shows in nav / profile / leaderboards.
+function playerAvatarDataUrl(wallet = connectedWallet) {
+  if (!wallet) return null;
+  return state.profiles?.[wallet]?.avatarDataUrl ?? null;
+}
+function setPlayerAvatar(wallet, dataUrl) {
+  if (!wallet || !state.profiles?.[wallet]) return;
+  state.profiles[wallet].avatarDataUrl = dataUrl;
+}
+// Build a small avatar element: the uploaded image, or a colored initial chip.
+function renderAvatarChip(wallet, displayName, sizeClass = '') {
+  const url = playerAvatarDataUrl(wallet);
+  if (url) {
+    const img = el('img', { className: `avatar-chip-img ${sizeClass}`, src: url, alt: 'Player avatar' });
+    return img;
+  }
+  const chip = el('span', { className: `avatar-chip-initial ${sizeClass}` });
+  const initial = (displayName || wallet || '?').replace(/^0x/, '').charAt(0).toUpperCase();
+  chip.textContent = initial || '?';
+  // Deterministic hue from the wallet so the fallback chip is stable per player.
+  const hue = wallet ? (parseInt(wallet.slice(2, 8), 16) % 360) : 200;
+  chip.style.background = `hsl(${hue}, 70%, 42%)`;
+  return chip;
 }
 
 async function refreshInjectedChainId(provider = detectEthereumProvider()) {

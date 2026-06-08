@@ -205,3 +205,35 @@
   color: #ffe84d;
 }
 .hero-card.locked .hero-cta { color: rgba(255, 232, 77, 0.6); }
+
+/* ---- Nav account: avatar chip + sign out ---- */
+.official-nav-account { display: inline-flex; align-items: center; gap: 8px; margin-left: 10px; }
+.nav-avatar-button { padding: 0; background: none; border: none; cursor: pointer; line-height: 0; }
+.avatar-chip-img, .avatar-chip-initial {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; object-fit: cover;
+  border: 2px solid rgba(25, 247, 255, 0.6);
+  color: #fff; font-weight: 800;
+}
+.avatar-chip-initial { font-family: system-ui, sans-serif; }
+.nav-avatar { width: 34px; height: 34px; font-size: 0.95rem; }
+.nav-avatar-button:hover .avatar-chip-img,
+.nav-avatar-button:hover .avatar-chip-initial { border-color: rgba(25, 247, 255, 1); box-shadow: 0 0 10px rgba(25,247,255,0.5); }
+.nav-signout-button {
+  padding: 6px 12px; background: rgba(255, 71, 111, 0.16);
+  border: 1px solid rgba(255, 71, 111, 0.5); border-radius: 8px;
+  color: #ff9bb2; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; cursor: pointer; transition: background 0.12s ease;
+}
+.nav-signout-button:hover { background: rgba(255, 71, 111, 0.3); color: #fff; }
+
+/* ---- Avatar editor on profile ---- */
+.avatar-editor-row { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
+.profile-avatar { width: 72px; height: 72px; font-size: 1.8rem; }
+.avatar-editor-controls { display: flex; flex-direction: column; gap: 6px; }
+.avatar-file-input { display: none; }
+.avatar-feedback[data-state="ok"] { color: #45ff8a; }
+.avatar-feedback[data-state="error"] { color: #ff6f8f; }
+
+/* ---- Leaderboard avatar ---- */
+.leaderboard-row-avatar { width: 26px; height: 26px; font-size: 0.7rem; flex: 0 0 auto; }
