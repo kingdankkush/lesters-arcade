@@ -1788,14 +1788,11 @@ function toggleCombatMusic() {
   syncCombatOverlay();
 }
 
-function showLillyTeaser() {
-  combat.characterId = 'lester';
-  combat.status = 'Lilly is a future unlockable character. Lester remains the playable hero for this Level 1 test.';
-  if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
+function switchHero() {
+  // Both heroes are playable now — bounce back to the character-select screen so
+  // the player can pick Lit Commando or Lit Valkyrie for their next run.
   playSfxCue('menu-click');
-  spawnText('LILLY UNLOCK LATER', combat.playerX + 24, combat.playerY - 104, '#ff3df2');
-  spawnText('LESTER READY', combat.playerX + 30, combat.playerY - 76, '#19f7ff');
-  syncCombatOverlay();
+  setOfficialView('character-select');
 }
 
 function resizeCombatCanvas() {
@@ -6574,7 +6571,7 @@ dom.powerUpButton.addEventListener('click', dropPowerUp);
 dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatRestartButton?.addEventListener('click', restartCombatRun);
 dom.combatMusicButton?.addEventListener('click', toggleCombatMusic);
-dom.combatCharacterButton?.addEventListener('click', showLillyTeaser);
+dom.combatCharacterButton?.addEventListener('click', switchHero);
 dom.combatViewportButton?.addEventListener('click', cycleCombatViewport);
 dom.combatReturnMenuButton?.addEventListener('click', returnToOfficialGameMenu);
 dom.combatExitButton?.addEventListener('click', exitToArcade);

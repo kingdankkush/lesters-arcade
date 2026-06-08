@@ -1289,7 +1289,7 @@ test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city 
   assert.equal(mainSource.includes("scenic-prop-card"), true);
 });
 
-test('Hard Money Heroes runtime wires manifest art into official menus, locked Lilly teaser, first enemy visuals, and gameplay controls', () => {
+test('Hard Money Heroes runtime wires manifest art into official menus, hero switching, first enemy visuals, and gameplay controls', () => {
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
@@ -1306,13 +1306,16 @@ test('Hard Money Heroes runtime wires manifest art into official menus, locked L
   assert.equal(mainSource.includes("if (!src) return null"), true);
   assert.equal(mainSource.includes('warrenSpearRider'), true);
   assert.equal(mainSource.includes('combat.characterId'), true);
-  assert.equal(mainSource.includes('showLillyTeaser'), true);
+  // Both heroes are now playable — the old "Lilly locked" teaser was replaced
+  // with a Switch Hero action that returns to character-select.
+  assert.equal(mainSource.includes('function switchHero'), true);
+  assert.equal(mainSource.includes('showLillyTeaser'), false);
   assert.equal(mainSource.includes('function swapCombatCharacter'), false);
   assert.equal(mainSource.includes("combat.characterId = combat.characterId === 'lester' ? 'lilly' : 'lester'"), false);
-  assert.equal(indexSource.includes('Lilly Locked'), true);
+  assert.equal(indexSource.includes('Lilly Locked'), false);
+  assert.equal(indexSource.includes('Switch Hero'), true);
   assert.equal(indexSource.includes('officialGameplayControls'), true);
   assert.equal(styleSource.includes('.gameplay-control-bar'), true);
-  assert.equal(styleSource.includes('.lilly-teaser-button'), true);
 });
 
 test('control display model does not leak undefined labels into the visible controls guide', () => {

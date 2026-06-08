@@ -161,7 +161,7 @@
   inset: 0;
   background:
     linear-gradient(180deg, rgba(5,7,15,0.78), rgba(5,7,15,0.92)),
-    url("./assets/generated/hmh-key-art/hard-money-heroes-keyart.png") center/cover no-repeat;
+    url("./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg") center/cover no-repeat;
   border-radius: 16px;
   opacity: 0.45;
   z-index: 0;
