@@ -1,6 +1,5 @@
-// Canonical level-environment manifest (Justin's hand-made art), biome-tagged.
-// worldProps carry a `biome` tag (town/forest/desert/water/rocky/road); fxAssets
-// are effect/UI sheets excluded from world placement.
+// Canonical level-environment manifest (Justin's hand-made art + PixelLab demo wave), biome-tagged.
+// worldProps carry a `biome` tag; fxAssets/demoWaveFx are effect sheets; demoWavePickups are item art.
 export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
   "id": "hmh-level-environment-v1",
   "source": "Justin canonical hand-made level environment art (trimmed, downscaled)",
@@ -9,7 +8,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
     "prop": 70,
     "decor": 8
   },
-  "total": 148,
+  "total": 140,
   "parallaxBackgrounds": [
     {
       "id": "parallax-bg-671d13a0f62b",
@@ -974,6 +973,492 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "width": 1599,
       "height": 900,
       "biome": "town"
+    },
+    {
+      "id": "wave-desert-02",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-02.png"
+    },
+    {
+      "id": "wave-desert-03",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-03.png"
+    },
+    {
+      "id": "wave-desert-04",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-04.png"
+    },
+    {
+      "id": "wave-desert-05",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-05.png"
+    },
+    {
+      "id": "wave-desert-06",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-06.png"
+    },
+    {
+      "id": "wave-desert-07",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-07.png"
+    },
+    {
+      "id": "wave-desert-08",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-08.png"
+    },
+    {
+      "id": "wave-desert-09",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-09.png"
+    },
+    {
+      "id": "wave-desert-10",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-10.png"
+    },
+    {
+      "id": "wave-desert-11",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-11.png"
+    },
+    {
+      "id": "wave-desert-12",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-12.png"
+    },
+    {
+      "id": "wave-desert-13",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-13.png"
+    },
+    {
+      "id": "wave-desert-14",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-14.png"
+    },
+    {
+      "id": "wave-desert-15",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-15.png"
+    },
+    {
+      "id": "wave-desert-16",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-16.png"
+    },
+    {
+      "id": "wave-desert-17",
+      "kind": "prop",
+      "biome": "desert",
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-17.png"
+    },
+    {
+      "id": "wave-forest-00",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-00.png"
+    },
+    {
+      "id": "wave-forest-01",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-01.png"
+    },
+    {
+      "id": "wave-forest-02",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-02.png"
+    },
+    {
+      "id": "wave-forest-04",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-04.png"
+    },
+    {
+      "id": "wave-forest-05",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-05.png"
+    },
+    {
+      "id": "wave-forest-06",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-06.png"
+    },
+    {
+      "id": "wave-forest-07",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-07.png"
+    },
+    {
+      "id": "wave-forest-08",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-08.png"
+    },
+    {
+      "id": "wave-forest-09",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-09.png"
+    },
+    {
+      "id": "wave-forest-10",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-10.png"
+    },
+    {
+      "id": "wave-forest-11",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-11.png"
+    },
+    {
+      "id": "wave-forest-12",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-12.png"
+    },
+    {
+      "id": "wave-forest-13",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-13.png"
+    },
+    {
+      "id": "wave-forest-14",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-14.png"
+    },
+    {
+      "id": "wave-forest-15",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-15.png"
+    },
+    {
+      "id": "wave-forest-16",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-16.png"
+    },
+    {
+      "id": "wave-forest-17",
+      "kind": "prop",
+      "biome": "forest",
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-17.png"
+    },
+    {
+      "id": "wave-rocky-00",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-00.png"
+    },
+    {
+      "id": "wave-rocky-01",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-01.png"
+    },
+    {
+      "id": "wave-rocky-02",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-02.png"
+    },
+    {
+      "id": "wave-rocky-03",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-03.png"
+    },
+    {
+      "id": "wave-rocky-04",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-04.png"
+    },
+    {
+      "id": "wave-rocky-05",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-05.png"
+    },
+    {
+      "id": "wave-rocky-06",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-06.png"
+    },
+    {
+      "id": "wave-rocky-07",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-07.png"
+    },
+    {
+      "id": "wave-rocky-08",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-08.png"
+    },
+    {
+      "id": "wave-rocky-09",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-09.png"
+    },
+    {
+      "id": "wave-rocky-10",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-10.png"
+    },
+    {
+      "id": "wave-rocky-11",
+      "kind": "prop",
+      "biome": "rocky",
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-11.png"
+    },
+    {
+      "id": "wave-water-00",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-00.png"
+    },
+    {
+      "id": "wave-water-01",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-01.png"
+    },
+    {
+      "id": "wave-water-02",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-02.png"
+    },
+    {
+      "id": "wave-water-03",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-03.png"
+    },
+    {
+      "id": "wave-water-04",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-04.png"
+    },
+    {
+      "id": "wave-water-05",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-05.png"
+    },
+    {
+      "id": "wave-water-06",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-06.png"
+    },
+    {
+      "id": "wave-water-07",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-07.png"
+    },
+    {
+      "id": "wave-water-08",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-08.png"
+    },
+    {
+      "id": "wave-water-09",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-09.png"
+    },
+    {
+      "id": "wave-water-10",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-10.png"
+    },
+    {
+      "id": "wave-water-11",
+      "kind": "prop",
+      "biome": "water",
+      "src": "./assets/generated/hmh-demo-wave/water/water-11.png"
+    },
+    {
+      "id": "wave-town-00",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-00.png"
+    },
+    {
+      "id": "wave-town-01",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-01.png"
+    },
+    {
+      "id": "wave-town-02",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-02.png"
+    },
+    {
+      "id": "wave-town-03",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-03.png"
+    },
+    {
+      "id": "wave-town-04",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-04.png"
+    },
+    {
+      "id": "wave-town-05",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-05.png"
+    },
+    {
+      "id": "wave-town-06",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-06.png"
+    },
+    {
+      "id": "wave-town-07",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-07.png"
+    },
+    {
+      "id": "wave-town-08",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-08.png"
+    },
+    {
+      "id": "wave-town-09",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-09.png"
+    },
+    {
+      "id": "wave-town-10",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-10.png"
+    },
+    {
+      "id": "wave-town-11",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-11.png"
+    },
+    {
+      "id": "wave-town-12",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-12.png"
+    },
+    {
+      "id": "wave-town-13",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-13.png"
+    },
+    {
+      "id": "wave-town-14",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-14.png"
+    },
+    {
+      "id": "wave-town-15",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-15.png"
+    },
+    {
+      "id": "wave-town-16",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-16.png"
+    },
+    {
+      "id": "wave-town-17",
+      "kind": "prop",
+      "biome": "town",
+      "src": "./assets/generated/hmh-demo-wave/town/town-17.png"
+    },
+    {
+      "id": "wave-road-00",
+      "kind": "prop",
+      "biome": "road",
+      "src": "./assets/generated/hmh-demo-wave/road/road-00.png"
+    },
+    {
+      "id": "wave-road-01",
+      "kind": "prop",
+      "biome": "road",
+      "src": "./assets/generated/hmh-demo-wave/road/road-01.png"
+    },
+    {
+      "id": "wave-road-02",
+      "kind": "prop",
+      "biome": "road",
+      "src": "./assets/generated/hmh-demo-wave/road/road-02.png"
+    },
+    {
+      "id": "wave-road-03",
+      "kind": "prop",
+      "biome": "road",
+      "src": "./assets/generated/hmh-demo-wave/road/road-03.png"
+    },
+    {
+      "id": "wave-road-04",
+      "kind": "prop",
+      "biome": "road",
+      "src": "./assets/generated/hmh-demo-wave/road/road-04.png"
+    },
+    {
+      "id": "wave-road-05",
+      "kind": "prop",
+      "biome": "road",
+      "src": "./assets/generated/hmh-demo-wave/road/road-05.png"
     }
   ],
   "fxAssets": [
@@ -1131,10 +1616,131 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
     }
   ],
   "biomeCounts": {
-    "town": 48,
-    "desert": 4,
-    "road": 3,
-    "rocky": 2,
-    "forest": 2
-  }
+    "town": 66,
+    "desert": 20,
+    "road": 9,
+    "rocky": 14,
+    "forest": 19,
+    "water": 12
+  },
+  "demoWavePickups": [
+    {
+      "id": "wave-pickup-00",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-00.png"
+    },
+    {
+      "id": "wave-pickup-01",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-01.png"
+    },
+    {
+      "id": "wave-pickup-02",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-02.png"
+    },
+    {
+      "id": "wave-pickup-03",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-03.png"
+    },
+    {
+      "id": "wave-pickup-04",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-04.png"
+    },
+    {
+      "id": "wave-pickup-05",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-05.png"
+    },
+    {
+      "id": "wave-pickup-06",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-06.png"
+    },
+    {
+      "id": "wave-pickup-07",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-07.png"
+    },
+    {
+      "id": "wave-pickup-08",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-08.png"
+    },
+    {
+      "id": "wave-pickup-10",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-10.png"
+    },
+    {
+      "id": "wave-pickup-11",
+      "src": "./assets/generated/hmh-demo-wave/pickup/pickup-11.png"
+    }
+  ],
+  "demoWaveFx": [
+    {
+      "id": "wave-fx-00",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-00.png"
+    },
+    {
+      "id": "wave-fx-01",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-01.png"
+    },
+    {
+      "id": "wave-fx-02",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-02.png"
+    },
+    {
+      "id": "wave-fx-03",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-03.png"
+    },
+    {
+      "id": "wave-fx-04",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-04.png"
+    },
+    {
+      "id": "wave-fx-05",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-05.png"
+    },
+    {
+      "id": "wave-fx-06",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-06.png"
+    },
+    {
+      "id": "wave-fx-07",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-07.png"
+    },
+    {
+      "id": "wave-fx-08",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-08.png"
+    },
+    {
+      "id": "wave-fx-09",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-09.png"
+    },
+    {
+      "id": "wave-fx-10",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-10.png"
+    },
+    {
+      "id": "wave-fx-11",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-11.png"
+    },
+    {
+      "id": "wave-fx-12",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-12.png"
+    },
+    {
+      "id": "wave-fx-13",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-13.png"
+    },
+    {
+      "id": "wave-fx-14",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-14.png"
+    },
+    {
+      "id": "wave-fx-15",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-15.png"
+    },
+    {
+      "id": "wave-fx-16",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-16.png"
+    },
+    {
+      "id": "wave-fx-17",
+      "src": "./assets/generated/hmh-demo-wave/fx/fx-17.png"
+    }
+  ]
 });

@@ -3584,6 +3584,30 @@ function collectCombatPowerUp(power) {
   spawnText(power.title, power.x, power.y - 28, '#45ff8a');
 }
 
+// --- Generated FX image overlays (PixelLab demo wave) ---
+// Layered impact art on top of the existing particle/blood systems for extra
+// juice. Indices map to descriptive FX in the demo-wave manifest order.
+const fxImageCache = new Map();
+const FX_INDEX = Object.freeze({
+  coin: 0, shockwave: 1, muzzle: 2, fireball: 3, toxic: 4, spark: 5,
+  blood: 6, smoke: 7, sparkle: 8, ice: 9, void: 10, dust: 11,
+  crit: 12, shield: 13, lightning: 14, debris: 15, heal: 16, levelup: 17,
+});
+function fxImageFor(key) {
+  const list = HMH_LEVEL_ENVIRONMENT.demoWaveFx ?? [];
+  if (!list.length) return null;
+  const idx = Math.min(list.length - 1, FX_INDEX[key] ?? 0);
+  const src = list[idx]?.src;
+  if (!src) return null;
+  if (!fxImageCache.has(src)) fxImageCache.set(src, loadImageAsset(src));
+  return fxImageCache.get(src);
+}
+function spawnFxImage(key, x, y, size = 64, life = 0.4) {
+  const img = fxImageFor(key);
+  if (!imageReady(img)) return;
+  combat.particles.push({ type: 'fxImage', fxImage: img, x, y, size, scaleFrom: 0.6, scaleTo: 1.25, life, maxLife: life });
+}
+
 function spawnSpriteParticle(type, x, y, options = {}) {
   const life = options.life ?? 0.45;
   combat.particles.push({
@@ -3618,11 +3642,14 @@ function spawnSlash(x, y) {
 
 function spawnBlood(x, y, color) {
   combat.shake = Math.min(7, (combat.shake ?? 0) + 1.6);
+  spawnFxImage('blood', x, y, 54, 0.38);
   for (let i = 0; i < 9; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
 }
 
 function spawnExplosion(x, y, color) {
   combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
+  spawnFxImage('fireball', x, y, 96, 0.5);
+  spawnFxImage('shockwave', x, y, 120, 0.42);
   spawnSpriteParticle('level-up-burst', x, y, { color, size: 112, life: 0.72 });
   for (let i = 0; i < 12; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 22 + Math.random() * 20, life: 0.8 + Math.random() * 0.35, maxLife: 1.15 });
 }
@@ -4712,6 +4739,21 @@ function drawPowerUps(ctx) {
 }
 
 function drawParticleSprite(ctx, particle) {
+  // Generated FX image overlay (scale-up + fade).
+  if (particle.type === 'fxImage') {
+    const img = particle.fxImage;
+    if (!imageReady(img)) return false;
+    const t = 1 - Math.max(0, Math.min(1, particle.life / Math.max(0.01, particle.maxLife ?? particle.life ?? 1)));
+    const scale = (particle.scaleFrom ?? 0.6) + ((particle.scaleTo ?? 1.2) - (particle.scaleFrom ?? 0.6)) * t;
+    const size = (particle.size ?? 64) * scale;
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.globalAlpha = Math.max(0, Math.min(1, particle.life / Math.max(0.01, particle.maxLife ?? 1)));
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.drawImage(img, Math.round(particle.x - size / 2), Math.round(particle.y - size / 2), size, size);
+    ctx.restore();
+    return true;
+  }
   const sprite = combatArt.production?.vfx?.[particle.type];
   if (!sprite?.frames?.length) return false;
   const lifeRatio = 1 - Math.max(0, Math.min(1, particle.life / Math.max(0.01, particle.maxLife ?? particle.life ?? 1)));
