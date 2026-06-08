@@ -902,9 +902,11 @@ const dom = {
   officialModeSelect: document.querySelector('#officialModeSelect'),
   officialFreeModeButton: document.querySelector('#officialFreeModeButton'),
   officialRankedModeButton: document.querySelector('#officialRankedModeButton'),
+  officialModeBackButton: document.querySelector('#officialModeBackButton'),
   officialRankedTooltip: document.querySelector('#officialRankedTooltip'),
   officialLevelIntro: document.querySelector('#officialLevelIntro'),
   officialBeginLevelButton: document.querySelector('#officialBeginLevelButton'),
+  officialLevelBackButton: document.querySelector('#officialLevelBackButton'),
   officialGameplay: document.querySelector('#officialGameplay'),
   officialGameModeTitle: document.querySelector('#officialGameModeTitle'),
   officialGameStateCopy: document.querySelector('#officialGameStateCopy'),
@@ -5118,6 +5120,8 @@ dom.developerBackstageToggle.addEventListener('click', () => {
 });
 dom.officialFreeModeButton.addEventListener('click', () => startOfficialMode('free'));
 dom.officialRankedModeButton.addEventListener('click', () => startOfficialMode('ranked'));
+dom.officialModeBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('cabinet-select'); });
+dom.officialLevelBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('mode-select'); });
 dom.officialBeginLevelButton.addEventListener('click', beginOfficialLevel);
 
 dom.connectWalletButton.addEventListener('click', connectWallet);
