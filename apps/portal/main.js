@@ -3617,10 +3617,12 @@ function spawnSlash(x, y) {
 }
 
 function spawnBlood(x, y, color) {
+  combat.shake = Math.min(7, (combat.shake ?? 0) + 1.6);
   for (let i = 0; i < 9; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
 }
 
 function spawnExplosion(x, y, color) {
+  combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
   spawnSpriteParticle('level-up-burst', x, y, { color, size: 112, life: 0.72 });
   for (let i = 0; i < 12; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 22 + Math.random() * 20, life: 0.8 + Math.random() * 0.35, maxLife: 1.15 });
 }
@@ -4233,6 +4235,17 @@ function drawCombatScene(timestamp = 0) {
     combat.accumulatorMs -= FIXED_STEP_MS;
   }
 
+  // --- Screen shake (juice): decays each frame, applied as a small translate. ---
+  combat.shake = (combat.shake ?? 0) * 0.82;
+  if (combat.shake < 0.15) combat.shake = 0;
+  const shakeApplied = combat.shake > 0;
+  if (shakeApplied) {
+    const ang = Math.random() * Math.PI * 2;
+    const mag = combat.shake;
+    ctx.save();
+    ctx.translate(Math.cos(ang) * mag, Math.sin(ang) * mag);
+  }
+
   if (combat.roguelikeRun) {
     drawRoguelikeScene(ctx, width, height);
   } else {
@@ -4247,6 +4260,8 @@ function drawCombatScene(timestamp = 0) {
     drawFloatingTexts(ctx);
     drawHud(ctx);
   }
+
+  if (shakeApplied) ctx.restore();
 
   requestAnimationFrame(drawCombatScene);
 }
