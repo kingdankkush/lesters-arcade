@@ -4031,6 +4031,53 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   }
 }
 
+// Per-biome floor palette: { top-left lit face, bottom-right shaded face, seam }.
+// Replaces the old universal "blue checker" that looked broken in every biome.
+const BIOME_FLOOR_PALETTE = {
+  town:   { lit: '#3a3f4d', dark: '#23262f', seam: 'rgba(120,140,180,.14)' },
+  road:   { lit: '#33373f', dark: '#1d2026', seam: 'rgba(200,200,120,.10)' },
+  desert: { lit: '#b9924f', dark: '#7c5e2e', seam: 'rgba(255,225,150,.16)' },
+  forest: { lit: '#3f6b3a', dark: '#274324', seam: 'rgba(150,220,140,.14)' },
+  rocky:  { lit: '#5a5e66', dark: '#3a3d44', seam: 'rgba(180,190,205,.14)' },
+  water:  { lit: '#1f5f8a', dark: '#123c5c', seam: 'rgba(120,210,255,.20)' },
+};
+
+function biomeFloorPalette(worldX, worldY) {
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  const biome = biomeAt(seed, Math.round(worldX), Math.round(worldY));
+  return { biome, ...(BIOME_FLOOR_PALETTE[biome] ?? BIOME_FLOOR_PALETTE.town) };
+}
+
+// Draw an iso tile diamond with a directional-light gradient (lit top-left,
+// shaded bottom-right) so the floor reads as 3D instead of flat color.
+function drawShadedIsoTile(ctx, cx, cy, palette, shimmer = 0) {
+  const grad = ctx.createLinearGradient(
+    cx - ISO_TILE_WIDTH / 2, cy - ISO_TILE_HEIGHT / 2,
+    cx + ISO_TILE_WIDTH / 2, cy + ISO_TILE_HEIGHT / 2,
+  );
+  if (shimmer) {
+    // Animated water shimmer: blend the lit color in/out along the diamond.
+    const t = 0.5 + 0.5 * Math.sin(shimmer);
+    grad.addColorStop(0, palette.lit);
+    grad.addColorStop(Math.min(0.9, 0.35 + t * 0.4), palette.lit);
+    grad.addColorStop(1, palette.dark);
+  } else {
+    grad.addColorStop(0, palette.lit);
+    grad.addColorStop(1, palette.dark);
+  }
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - ISO_TILE_HEIGHT / 2);
+  ctx.lineTo(cx + ISO_TILE_WIDTH / 2, cy);
+  ctx.lineTo(cx, cy + ISO_TILE_HEIGHT / 2);
+  ctx.lineTo(cx - ISO_TILE_WIDTH / 2, cy);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = palette.seam;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
 function drawIsoTile(ctx, cx, cy, color, stroke = 'rgba(25,247,255,.12)') {
   ctx.beginPath();
   ctx.moveTo(cx, cy - ISO_TILE_HEIGHT / 2);
@@ -4062,8 +4109,12 @@ function productionTileForWorld(worldX, worldY) {
 function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   const tile = productionTileForWorld(worldX, worldY);
   if (!imageReady(tile?.image)) {
-    const checker = Math.abs((worldX + worldY) % 4);
-    drawIsoTile(ctx, cx, cy, checker === 0 ? 'rgba(36,48,79,.82)' : 'rgba(18,31,55,.88)');
+    // Biome-aware shaded fallback (replaces the old flat-blue checker).
+    const palette = biomeFloorPalette(worldX, worldY);
+    const shimmer = palette.biome === 'water'
+      ? (combat.frame * 0.06) + (worldX * 0.7 + worldY * 1.3)
+      : 0;
+    drawShadedIsoTile(ctx, cx, cy, palette, shimmer);
     return;
   }
   const drawWidth = Math.max(72, Math.round((tile.width ?? 64) * 1.18));
