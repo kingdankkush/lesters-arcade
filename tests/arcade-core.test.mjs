@@ -65,6 +65,9 @@ import {
   buildParentSyncPacket,
   buildHardMoneyHeroesAnimationCoverageReport,
   buildPlayerArcadeSnapshot,
+  buildHardMoneyHeroesStatsModule,
+  achievementRarityPct,
+  LESTER_BLASTER_POWER_UPS,
   buildRunLoadout,
   buildUiQualityGuideModel,
   buildWalletConnectionModel,
@@ -1677,3 +1680,75 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
   assert.equal(smokeScript.includes('combatHudOverlay'), true);
 });
+
+test('buildHardMoneyHeroesStatsModule returns a game-specific breakdown', () => {
+  const state = createInitialArcadeState();
+  const wallet = '0xabc0000000000000000000000000000000000abc';
+  // Seed a ranked run with per-enemy-type kills, power-ups, and survival time.
+  const profile = createPlayerProfile(wallet);
+  state.profiles[profile.wallet] = profile;
+  const progress = profile.progress['lester-blaster'];
+  progress.enemyKillsByType = { 'fud-goblin': 40, 'gas-beast': 9, 'boss:any': 2 };
+  progress.bossKills = 2;
+  progress.cumulativePowerUps = 17;
+  progress.longestRunSeconds = 372; // 6:12
+  progress.totalKills = 51;
+
+  const mod = buildHardMoneyHeroesStatsModule(state, wallet);
+  assert.equal(mod.gameTitle, 'Hard Money Heroes');
+  assert.equal(mod.powerUpsGrabbed, 17);
+  assert.equal(mod.longestSurvivalLabel, '6:12');
+  assert.equal(mod.bossKills, 2);
+  // Enemy breakdown is sorted by kills desc and resolves readable titles.
+  assert.equal(mod.enemyBreakdown[0].title, 'FUD Goblin');
+  assert.equal(mod.enemyBreakdown[0].kills, 40);
+  // Boss-prefixed keys are separated out.
+  assert.ok(mod.bossBreakdown.some((b) => b.kills === 2));
+  // Top achievement is the rarest unlocked (login achievement on fresh profile).
+  assert.ok(mod.topAchievement === null || typeof mod.topAchievement.rarityPct === 'number');
+  assert.equal(mod.achievementsTotal, Object.values(ACHIEVEMENTS).length);
+});
+
+test('achievementRarityPct orders rarer tiers lower', () => {
+  const bronze = achievementRarityPct({ tier: 'bronze', difficulty: 'easy' });
+  const platinum = achievementRarityPct({ tier: 'platinum', difficulty: 'expert' });
+  assert.ok(platinum < bronze, 'platinum should be rarer (lower %) than bronze');
+  assert.ok(bronze <= 99 && platinum >= 1);
+});
+
+test('roguelike power-ups expose the effect contract the runtime depends on', () => {
+  // main.js applyRoguelikePowerUp() switches on `effect` and reads `durationSeconds`
+  // for timed buffs. These assertions lock the data contract so a rename/removal
+  // in core fails loudly instead of silently breaking the in-game power-ups.
+  const byId = Object.fromEntries(LESTER_BLASTER_POWER_UPS.map((p) => [p.id, p]));
+
+  const magnet = byId['magnet-surge'];
+  assert.ok(magnet, 'magnet-surge power-up must exist');
+  assert.equal(magnet.effect, 'magnet');
+  assert.ok(magnet.durationSeconds > 0, 'magnet is a timed buff');
+
+  const slow = byId['time-dilation'];
+  assert.ok(slow, 'time-dilation power-up must exist');
+  assert.equal(slow.effect, 'slowEnemies');
+  assert.ok(slow.durationSeconds > 0, 'slow is a timed buff');
+
+  const berserk = byId['berserk-candle'];
+  assert.ok(berserk, 'berserk-candle power-up must exist');
+  assert.equal(berserk.effect, 'berserk');
+  assert.ok(berserk.durationSeconds > 0, 'berserk is a timed buff');
+
+  const nuke = byId['nuke-liquidation'];
+  assert.ok(nuke, 'nuke-liquidation power-up must exist');
+  assert.equal(nuke.effect, 'screenNuke');
+  // The nuke is instantaneous (no duration) — clears the screen on pickup.
+  assert.equal(nuke.durationSeconds, undefined);
+
+  // Every power-up carries the fields the icon resolver + collector rely on.
+  for (const p of LESTER_BLASTER_POWER_UPS) {
+    assert.equal(typeof p.id, 'string');
+    assert.equal(typeof p.title, 'string');
+    assert.equal(typeof p.effect, 'string');
+  }
+});
+
+

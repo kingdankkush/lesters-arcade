@@ -1,6 +1,6 @@
 # Hard Money Heroes Weekly Design Review
 
-Generated: 2026-06-08T03:58:25.631Z
+Generated: 2026-06-08T08:37:23.674Z
 
 ## Source Reports
 
@@ -67,7 +67,7 @@ Generated: 2026-06-08T03:58:25.631Z
 ### Interaction Smoke Plan
 > {
 >   "flowId": "wallet-profile-free-ranked-exit",
->   "checkedUrl": "http://127.0.0.1:56147/apps/portal/",
+>   "checkedUrl": "http://127.0.0.1:54306/apps/portal/",
 >   "mode": "static-interaction-contract",
 >   "note": "This gate verifies all selectors/handlers required for the live browser flow: wallet/profile/free/ranked/exit. Browser tool smoke still exercises actual clicks during handoff.",
 >   "requiredSteps": [

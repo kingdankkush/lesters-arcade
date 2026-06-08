@@ -11,6 +11,7 @@ import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
 import { HMH_LEVEL_ENVIRONMENT } from './assets/generated/hmh-level-environment/hmh-level-environment.mjs';
 import { HMH_ENVIRONMENT_PIXELLAB_WAVE_2 } from './assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs';
+import { HMH_FX_POWERUPS_WAVE } from './assets/generated/hmh-fx-powerups-wave.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import {
   ACHIEVEMENTS,
@@ -1035,6 +1036,8 @@ const combat = {
   particles: [],
   floatingTexts: [],
   powerUps: [],
+  // Active timed power-up effects (seconds remaining). 0 = inactive.
+  powerUpTimers: { magnet: 0, slowEnemies: 0, berserk: 0 },
   xpGems: [],
   killsByType: {},
   bossKills: 0,
@@ -3227,6 +3230,7 @@ async function startCombat() {
   combat.particles = [];
   combat.floatingTexts = [];
   combat.powerUps = [];
+  combat.powerUpTimers = { magnet: 0, slowEnemies: 0, berserk: 0 };
   combat.xpGems = [];
   combat.levelUpChoices = [];
   combat.levelUpPaused = false;
@@ -3936,7 +3940,10 @@ function killEnemy(enemy) {
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   spawnText(`+${enemy.score ?? 100}`, enemy.x, enemy.y - 70, '#ffe84d');
   spawnExplosion(enemy.x + 12, enemy.y - 28, enemy.miniBoss ? '#ff7b2f' : '#ff476f');
-  if (enemy.miniBoss) dropPowerUp();
+  // Legacy side-scroller miniboss drop. In the isometric roguelike, power-up
+  // drops are handled by dropRoguelikePowerUp() in updateRoguelikeEnemies()
+  // (world-coordinate pickups), so skip the screen-space legacy drop there.
+  if (enemy.miniBoss && !combat.roguelikeRun) dropPowerUp();
 }
 
 function collectCombatPowerUp(power) {
@@ -4107,7 +4114,8 @@ function updateAutoFire(dt) {
   if (!combat.roguelikeRun || combat.paused || combat.gameOver) return;
   const weapon = weaponById(combat.weaponId);
   const fireStat = combat.roguelikeRun?.stats.fireRate ?? 1;
-  const shotsPerSecond = (weapon.fireRatePerSecond ?? 3) * fireStat;
+  const berserkFire = (combat.powerUpTimers.berserk ?? 0) > 0 ? 1.6 : 1;
+  const shotsPerSecond = (weapon.fireRatePerSecond ?? 3) * fireStat * berserkFire;
   combat.autoFireCooldown = (combat.autoFireCooldown ?? 0) - dt;
   if (combat.autoFireCooldown > 0) return;
   // If the pointer isn't steering aim, lock onto the nearest live enemy so the
@@ -4143,7 +4151,7 @@ function shootRoguelike() {
   }
   combat.shots += 1;
   combat.fireFlash = 4; // brief muzzle-flash brightening for the lighting pass
-  const damageScale = combat.roguelikeRun?.stats.damage ?? 1;
+  const damageScale = (combat.roguelikeRun?.stats.damage ?? 1) * ((combat.powerUpTimers.berserk ?? 0) > 0 ? 1.5 : 1);
   const bulletSpeed = 14 * (combat.roguelikeRun?.stats.bulletSpeed ?? 1);
   combat.bullets.push({
     worldX: combat.playerMapX + combat.aimMapX * 0.65,
@@ -4296,6 +4304,7 @@ function updateRoguelikeEnemies(director, dt) {
     combat.roguelikeSpawnTimer += director.spawnIntervalSeconds;
   }
 
+  const slowFactor = (combat.powerUpTimers.slowEnemies ?? 0) > 0 ? 0.4 : 1;
   for (const enemy of combat.enemies) {
     const dx = combat.playerMapX - enemy.mapX;
     const dy = combat.playerMapY - enemy.mapY;
@@ -4303,12 +4312,12 @@ function updateRoguelikeEnemies(director, dt) {
     const desiredDistance = enemy.ranged ? 5.2 : 0.72;
     enemy.state = enemy.ranged ? 'ranged-fire' : 'chase-player';
     if (distance > desiredDistance) {
-      const speed = (enemy.speed ?? 1) * (enemy.elite ? 2.15 : 1.65) * (1 + director.pressure * 0.65);
+      const speed = (enemy.speed ?? 1) * (enemy.elite ? 2.15 : 1.65) * (1 + director.pressure * 0.65) * slowFactor;
       enemy.mapX += (dx / distance) * speed * dt;
       enemy.mapY += (dy / distance) * speed * dt;
     } else if (enemy.ranged) {
-      enemy.mapX -= (dx / distance) * 0.55 * dt;
-      enemy.mapY -= (dy / distance) * 0.55 * dt;
+      enemy.mapX -= (dx / distance) * 0.55 * dt * slowFactor;
+      enemy.mapY -= (dy / distance) * 0.55 * dt * slowFactor;
     }
     enemy.attackTimer -= 1;
     enemy.tellFrames = enemy.attackTimer < 18 ? 18 - enemy.attackTimer : 0;
@@ -4344,6 +4353,13 @@ function updateRoguelikeEnemies(director, dt) {
     const baseXp = Math.round(8 + (enemy.score ?? 80) * 0.06);
     const xpValue = enemy.elite ? Math.round(baseXp * 1.6) : baseXp;
     combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: xpValue, ttl: 900 });
+    // Power-up drops: elites/mini-bosses always drop a rare run-swinger; normal
+    // grunts have a small chance at a standard drop. Deterministic per frame/kill.
+    if (enemy.elite || enemy.miniBoss) {
+      dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { rare: true });
+    } else if ((combat.frame + combat.kills) % 12 === 0) {
+      dropRoguelikePowerUp(enemy.mapX, enemy.mapY);
+    }
   }
   combat.enemies = combat.enemies.filter((enemy) => enemy.hp > 0);
 }
@@ -4368,15 +4384,141 @@ function updateRoguelikeXpGems() {
   combat.xpGems = combat.xpGems.filter((gem) => gem.ttl > 0);
 }
 
+// --- Roguelike world power-ups -------------------------------------------------
+// Unlike the legacy side-scroller drops (screen-space, gravity, drift-left), the
+// isometric roguelike spawns power-ups at world coordinates where an enemy died,
+// gently attracts them toward the hero, and collects them within a pickup radius
+// (boosted while the Magnet Wallet Surge is active). Effects route through
+// applyRoguelikePowerUp so the 4 roguelike power-ups (magnet / time-dilation /
+// berserk / liquidation-nuke) get real gameplay behavior, not just an icon.
+const ROGUELIKE_POWERUP_POOL = Object.freeze([
+  'heal-pack', 'shield-cache', 'ammo-cache', 'magnet-surge',
+  'time-dilation', 'berserk-candle', 'ltc-cache',
+]);
+// Rarer, run-swinging drops reserved for elites / mini-bosses.
+const ROGUELIKE_POWERUP_RARE = Object.freeze(['nuke-liquidation', 'berserk-candle', 'time-dilation']);
+
+function powerUpById(id) {
+  return LESTER_BLASTER_POWER_UPS.find((p) => p.id === id) ?? null;
+}
+
+function dropRoguelikePowerUp(worldX, worldY, { rare = false } = {}) {
+  const pool = rare ? ROGUELIKE_POWERUP_RARE : ROGUELIKE_POWERUP_POOL;
+  const pick = pool[(combat.frame + combat.kills + combat.powerUps.length) % pool.length];
+  const def = powerUpById(pick);
+  if (!def) return;
+  const projected = isoToScreen(worldX, worldY);
+  combat.powerUps.push({
+    ...def,
+    worldX,
+    worldY,
+    x: projected.x,
+    y: projected.y,
+    ttl: 720,
+    bobSeed: (worldX * 17 + worldY * 31) % 360,
+  });
+}
+
+function updateRoguelikePowerUps() {
+  const magnetActive = (combat.powerUpTimers.magnet ?? 0) > 0;
+  const basePickup = 1.1 * (combat.roguelikeRun?.stats?.pickupRadius ?? 1);
+  const pickupRadius = magnetActive ? basePickup * 3.2 : basePickup;
+  const attractRadius = magnetActive ? pickupRadius * 6 : pickupRadius * 2.4;
+  const attractSpeed = magnetActive ? 0.26 : 0.07;
+  for (const power of combat.powerUps) {
+    power.ttl -= 1;
+    const dx = combat.playerMapX - power.worldX;
+    const dy = combat.playerMapY - power.worldY;
+    const distance = Math.hypot(dx, dy) || 1;
+    if (distance < pickupRadius) {
+      applyRoguelikePowerUp(power);
+      power.ttl = 0;
+      continue;
+    }
+    if (distance < attractRadius) {
+      power.worldX += (dx / distance) * attractSpeed;
+      power.worldY += (dy / distance) * attractSpeed;
+    }
+    const projected = isoToScreen(power.worldX, power.worldY);
+    power.x = projected.x;
+    power.y = projected.y;
+  }
+  combat.powerUps = combat.powerUps.filter((power) => power.ttl > 0);
+}
+
+function applyRoguelikePowerUp(power) {
+  combat.powerUpsCollected += 1;
+  combat.collectedPowerUpTypes.add(power.id ?? power.effect ?? power.title);
+  const px = power.x;
+  const py = power.y - 28;
+  switch (power.effect) {
+    case 'heal':
+      combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 25));
+      break;
+    case 'ammo':
+      combat.ammo = Number.isFinite(combat.ammo) ? combat.ammo + (power.amount ?? 30) : combat.ammo;
+      break;
+    case 'shield':
+      combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 1) * 15);
+      combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
+      break;
+    case 'scoreBonus':
+      combat.score += power.score ?? 500;
+      spawnText(`+${(power.score ?? 500).toLocaleString()}`, px, py, '#ffe84d');
+      break;
+    case 'magnet':
+      combat.powerUpTimers.magnet = power.durationSeconds ?? 8;
+      spawnFxImage('sparkle', px, py, 72, 0.5);
+      break;
+    case 'slowEnemies':
+      combat.powerUpTimers.slowEnemies = power.durationSeconds ?? 6;
+      spawnFxImage('ice', px, py, 96, 0.6);
+      break;
+    case 'berserk':
+      combat.powerUpTimers.berserk = power.durationSeconds ?? 7;
+      spawnFxImage('crit', px, py, 84, 0.55);
+      break;
+    case 'screenNuke': {
+      // Liquidation Nuke: clear every on-screen enemy and reward the kills.
+      const doomed = [...combat.enemies];
+      for (const enemy of doomed) {
+        enemy.hp = 0;
+        spawnExplosion(enemy.x + 12, enemy.y - 28, '#ff476f');
+        const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
+        combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
+        killEnemy(enemy);
+        combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: 6, ttl: 900 });
+      }
+      combat.enemies = [];
+      spawnFxImage('shockwave', ISO_CENTER_X, ISO_CENTER_Y, 220, 0.7);
+      spawnText('LIQUIDATED', px, py, '#ff476f');
+      break;
+    }
+    default:
+      break;
+  }
+  playSfxCue('pickup', 0.055);
+  spawnText(power.title, px, py - 18, '#45ff8a');
+}
+
+function updateRoguelikePowerUpTimers(dt) {
+  const t = combat.powerUpTimers;
+  t.magnet = Math.max(0, (t.magnet ?? 0) - dt);
+  t.slowEnemies = Math.max(0, (t.slowEnemies ?? 0) - dt);
+  t.berserk = Math.max(0, (t.berserk ?? 0) - dt);
+}
+
 function updateRoguelikeCombatStep(dt, difficulty) {
   if (combat.levelUpPaused) return;
   const director = getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
   combat.roguelikeRun.spawnDirector = director;
   updateRoguelikeMovement(dt);
+  updateRoguelikePowerUpTimers(dt);
   updateAutoFire(dt);
   updateRoguelikeEnemies(director, dt);
   updateRoguelikeBullets(dt);
   updateRoguelikeXpGems();
+  updateRoguelikePowerUps();
   updateParticles(dt);
   updateFloatingTexts();
   const xpScore = (combat.roguelikeRun.level - 1) * 250 + Math.round((combat.roguelikeRun.xp || 0) * 1.5);
@@ -5436,14 +5578,39 @@ function drawBullets(ctx) {
   for (const shot of combat.enemyShots) ctx.fillRect(shot.x - (combat.roguelikeRun ? 7 : 0), shot.y - (combat.roguelikeRun ? 3 : 0), 14, 5);
 }
 
+// Maps power-up ids to the PixelLab fx-powerups-wave pickup icons. Falls back to
+// the older production pickup art (and finally the vector capsule) when missing.
+const fxPowerupIconCache = new Map();
+const FX_POWERUP_ICON_BY_ID = Object.freeze({
+  'heal-pack': 'health-pack',
+  'shield-cache': 'shield-cache',
+  'ammo-cache': 'ammo-cache',
+  'ltc-cache': 'ltc-cache',
+  'magnet-surge': 'magnet-surge',
+  'time-dilation': 'time-dilation',
+  'berserk-candle': 'berserk-candle',
+  'nuke-liquidation': 'nuke-liquidation',
+});
+function fxPowerupIcon(slug) {
+  if (!slug) return null;
+  const src = HMH_FX_POWERUPS_WAVE?.powerups?.[slug];
+  if (!src) return null;
+  if (!fxPowerupIconCache.has(src)) fxPowerupIconCache.set(src, loadImageAsset(src));
+  return fxPowerupIconCache.get(src);
+}
+
 function powerUpIconFor(power) {
+  // Prefer the dedicated PixelLab pickup icon for this specific power-up id.
+  const fxSlug = FX_POWERUP_ICON_BY_ID[power.id] ?? null;
+  const fxIcon = fxPowerupIcon(fxSlug);
+  if (imageReady(fxIcon)) return fxIcon;
   if (power.effect === 'heal') return productionImage('pickups', 'health-pack') ?? combatArt.icons.health;
   if (power.effect === 'shield') return productionImage('pickups', 'crypto-bomb') ?? combatArt.icons.shield;
   if (power.effect === 'ammo') return productionImage('pickups', 'ammo-pack') ?? combatArt.icons.ammo;
   if (power.effect === 'life') return productionImage('pickups', 'crypto-bomb') ?? combatArt.icons.oneUp;
   if (power.effect === 'weapon') return productionImage('weapons', combat.weaponId) ?? productionImage('weapons', 'coin-blaster') ?? combatArt.icons.weapon;
-  if (power.effect === 'scoreMultiplier') return productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback') ?? combatArt.icons.score;
-  return null;
+  if (power.effect === 'scoreMultiplier' || power.effect === 'scoreBonus') return productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback') ?? combatArt.icons.score;
+  return fxIcon ?? null;
 }
 
 function drawPowerUps(ctx) {
@@ -5628,6 +5795,31 @@ function drawHud(ctx) {
     ctx.strokeStyle = 'rgba(69,255,138,0.55)';
     ctx.lineWidth = 1;
     ctx.strokeRect(barX, barY, barW, barH);
+    ctx.restore();
+
+    // Active power-up effect badges (magnet / slow / berserk) with countdown.
+    const activeFx = [];
+    if ((combat.powerUpTimers.magnet ?? 0) > 0) activeFx.push({ label: 'MAGNET', t: combat.powerUpTimers.magnet, color: '#19f7ff' });
+    if ((combat.powerUpTimers.slowEnemies ?? 0) > 0) activeFx.push({ label: 'SLOW-TIME', t: combat.powerUpTimers.slowEnemies, color: '#7ad1ff' });
+    if ((combat.powerUpTimers.berserk ?? 0) > 0) activeFx.push({ label: 'BERSERK', t: combat.powerUpTimers.berserk, color: '#ff476f' });
+    let badgeX = 30;
+    const badgeY = 150;
+    ctx.save();
+    ctx.font = 'bold 11px monospace';
+    for (const fx of activeFx) {
+      const text = `${fx.label} ${Math.ceil(fx.t)}s`;
+      const w = ctx.measureText(text).width + 16;
+      ctx.fillStyle = 'rgba(6,12,28,0.72)';
+      ctx.strokeStyle = fx.color;
+      ctx.lineWidth = 1.25;
+      ctx.beginPath();
+      ctx.roundRect(badgeX, badgeY, w, 18, 9);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = fx.color;
+      ctx.fillText(text, badgeX + 8, badgeY + 13);
+      badgeX += w + 8;
+    }
     ctx.restore();
     return;
   }

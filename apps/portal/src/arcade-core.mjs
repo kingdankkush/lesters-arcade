@@ -1340,6 +1340,11 @@ export const LESTER_BLASTER_POWER_UPS = Object.freeze([
   Object.freeze({ id: 'shield-cache', title: 'Cold Wallet Shield', category: 'defense', effect: 'shield', amount: 1, durationSeconds: 12, sprite: 'hovering blue-and-silver hex barrier device', rarity: 'uncommon' }),
   Object.freeze({ id: 'ammo-cache', title: 'Ammo Cache', category: 'ammo', effect: 'ammo', amount: 30, sprite: 'silver magazine crate with orange hazard stripe', rarity: 'common' }),
   Object.freeze({ id: 'ltc-cache', title: 'LTC Cache', category: 'score', effect: 'scoreBonus', score: 500, sprite: 'sparkling silver coin pile used as pickup accent, not wallpaper', rarity: 'common' }),
+  // --- Roguelike power-ups (wave: hmh-fx-powerups) ---
+  Object.freeze({ id: 'magnet-surge', title: 'Magnet Wallet Surge', category: 'utility', effect: 'magnet', durationSeconds: 8, sprite: 'glowing horseshoe magnet with blue pull rings', rarity: 'uncommon' }),
+  Object.freeze({ id: 'time-dilation', title: 'Block-Time Dilation', category: 'utility', effect: 'slowEnemies', durationSeconds: 6, sprite: 'blue hourglass with slow-motion swirl', rarity: 'rare' }),
+  Object.freeze({ id: 'berserk-candle', title: 'Green-Candle Berserk', category: 'offense', effect: 'berserk', durationSeconds: 7, sprite: 'red-and-green flaming candlestick', rarity: 'rare' }),
+  Object.freeze({ id: 'nuke-liquidation', title: 'Liquidation Nuke', category: 'offense', effect: 'screenNuke', sprite: 'red glowing screen-clear nuke', rarity: 'super-rare' }),
 ]);
 
 export const LESTER_BLASTER_ENVIRONMENTS = Object.freeze([
