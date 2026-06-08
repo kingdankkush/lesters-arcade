@@ -1187,16 +1187,16 @@ function heroRotationSprite(characterId) {
 }
 const HERO_ROSTER = [
   {
-    id: 'lester', name: 'Lester', locked: false,
-    tagline: 'Litecoin Commando',
-    bio: 'Rambo-like arcade commando — stubborn, brave, over-the-top. Walks straight into the panic of Litecoin City After Dark with hard money on his side.',
-    stats: [['Power', 4], ['Speed', 3], ['Armor', 4], ['Luck', 3]],
+    id: 'lester', name: 'Lit Commando', locked: false,
+    tagline: 'Tanky Bruiser',
+    bio: 'Litecoin-silver tactical commando in cyan-visor combat armor. More HP, armor, and damage — a touch slower. Walks straight into the panic with hard money on his side.',
+    stats: [['Power', 5], ['Speed', 3], ['Armor', 5], ['Luck', 3]],
   },
   {
-    id: 'lilly', name: 'Lilly', locked: true,
-    tagline: 'Lightning Striker (Locked)',
-    bio: 'A future unlockable hero with the same moveset and a faster, sardonic style. Coming to Hard Money Heroes in a later update.',
-    stats: [['Power', 3], ['Speed', 5], ['Armor', 2], ['Luck', 4]],
+    id: 'lilly', name: 'Lit Valkyrie', locked: false,
+    tagline: 'Agile Glass-Cannon',
+    bio: 'Teal-plasma energy warrior with short teal hair. Faster movement, higher fire-rate and crit chance — but more fragile. Darts through the panic and punishes mistakes.',
+    stats: [['Power', 4], ['Speed', 5], ['Armor', 2], ['Luck', 5]],
   },
 ];
 

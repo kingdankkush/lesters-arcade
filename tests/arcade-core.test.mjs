@@ -658,8 +658,8 @@ test('Lester Blaster design codex covers characters, art, controls, weapons, env
 });
 
 test('combat run state applies character stats, paid/free health rules, controls, and loadout defaults', () => {
-  const freeRun = createCombatRunState({ mode: 'free', characterId: 'lester' });
-  const paidRun = createCombatRunState({ mode: 'paid', characterId: 'lilly' });
+  const freeRun = createCombatRunState({ mode: 'free', characterId: 'lit-commando' });
+  const paidRun = createCombatRunState({ mode: 'paid', characterId: 'lit-valkyrie' });
   const loadout = buildRunLoadout({ characterId: 'max-mempool', weaponId: 'hash-rail', grenadeId: 'chain-cluster' });
 
   assert.equal(freeRun.mode, 'free');
@@ -668,7 +668,9 @@ test('combat run state applies character stats, paid/free health rules, controls
   assert.equal(freeRun.controls.keyboard.jump, 'Space');
   assert.equal(paidRun.mode, 'paid');
   assert.equal(paidRun.lives, 3);
-  assert.equal(paidRun.character.id, 'lilly');
+  assert.equal(paidRun.character.id, 'lit-valkyrie');
+  // Legacy id still resolves to the renamed hero (backward compat).
+  assert.equal(createCombatRunState({ mode: 'free', characterId: 'lilly' }).character.id, 'lit-valkyrie');
   assert.equal(paidRun.loadout.primaryWeapon.id, 'coin-blaster');
   assert.equal(loadout.primaryWeapon.id, 'hash-rail');
   assert.equal(loadout.grenade.id, 'chain-cluster');

@@ -1152,30 +1152,34 @@ export const ACHIEVEMENT_LIST = Object.freeze(ACHIEVEMENT_DEFINITIONS.map((achie
 
 export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
   Object.freeze({
-    id: 'lester',
-    title: 'Lester',
-    role: 'main playable Hard Money Hero',
-    tagline: 'Rambo-like Litecoin City commando walking against the panic.',
+    id: 'lit-commando',
+    title: 'Lit Commando',
+    role: 'main playable Hard Money Hero — tanky bruiser',
+    tagline: 'Litecoin-silver tactical commando: more HP, armor and damage, a touch slower.',
     personality: 'stubborn, brave, goofy-gritty arcade tough guy; says little, solves scams with steel and gunfire',
     spriteSheet: './assets/sprite-lester-commando.svg',
     portraitAsset: './assets/sprite-lester-commando.svg',
-    referenceImages: Object.freeze(['./assets/hard-money-heroes/reference/Lester/Lester-Sprites-01.png', './assets/hard-money-heroes/reference/Lester/Lester-Sprites-02.png']),
+    legacyId: 'lester',
     unlock: 'starter',
-    stats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
-    artDirection: 'high-detail 16-bit/Neo-Geo chunky commando silhouette, clean Litecoin blue/silver hero accents, optional rain/cyberpunk grime, readable blade arc and muzzle flashes.',
-    animations: Object.freeze(['idle', 'run', 'jump', 'double-jump', 'shoot', 'melee', 'grenade', 'hurt', 'death', 'victory']),
+    stats: Object.freeze({ maxHealth: 120, speed: 0.92, jump: 1.0, melee: 1.15, luck: 0.95 }),
+    startStatMods: Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
+    artDirection: 'high-detail 16-bit/Neo-Geo commando: silver + Litecoin-blue armor, glowing cyan visor helmet, readable muzzle flashes and blade arcs, 8-direction isometric.',
+    animations: Object.freeze(['idle', 'walk', 'run', 'fire-pistol', 'melee-knife', 'throw-axe', 'fire-shotgun', 'fire-machinegun', 'hurt', 'stun', 'pickup', 'levelup', 'death']),
   }),
   Object.freeze({
-    id: 'lilly',
-    title: 'Lilly',
-    role: 'future unlockable alternate art hero',
-    tagline: 'Same moveset as Lester, new sprite/personality pass later.',
+    id: 'lit-valkyrie',
+    title: 'Lit Valkyrie',
+    role: 'playable Hard Money Hero — agile glass-cannon',
+    tagline: 'Teal-plasma energy warrior: faster, higher fire-rate and crit, but more fragile.',
+    personality: 'sharp, quick, fearless skirmisher; darts through the panic and punishes mistakes',
     spriteSheet: './assets/sprite-lilly-runner.svg',
     portraitAsset: './assets/sprite-lilly-runner.svg',
-    unlock: 'future unlockable; setup after Lester production sprite pass',
-    stats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
-    artDirection: 'match Lester gameplay silhouette and hitbox while swapping the visible character art/sprites.',
-    animations: Object.freeze(['idle', 'run', 'jump', 'double-jump', 'shoot', 'melee', 'grenade', 'hurt', 'death', 'victory']),
+    legacyId: 'lilly',
+    unlock: 'starter',
+    stats: Object.freeze({ maxHealth: 88, speed: 1.15, jump: 1.0, melee: 0.95, luck: 1.15 }),
+    startStatMods: Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
+    artDirection: 'teal/cyan plasma armor, short teal hair, agile silhouette, glowing energy trim, readable fire/crit VFX, 8-direction isometric.',
+    animations: Object.freeze(['idle', 'walk', 'run', 'fire-pistol', 'melee-knife', 'throw-axe', 'fire-shotgun', 'fire-machinegun', 'hurt', 'stun', 'pickup', 'levelup', 'death']),
   }),
   Object.freeze({
     id: 'max-mempool',
@@ -1783,6 +1787,30 @@ const roguelikeStatDefaults = () => Object.fromEntries(
   LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((skill) => [skill.stat, 1]),
 );
 
+// Per-hero STARTING stat identity (multipliers layered on the level-1 defaults).
+// These give each playable hero a distinct, balanced play style; level-up
+// upgrades stack on top of these starting values. Trade-offs keep them even:
+//   lit-commando = tanky bruiser (more HP/damage/armor, a touch slower)
+//   lit-valkyrie = agile glass-cannon (faster, higher fire-rate/crit, less HP)
+export const HERO_STARTING_STAT_MODIFIERS = Object.freeze({
+  'lit-commando': Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
+  'lit-valkyrie': Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
+  // Legacy ids alias to the new heroes so old saves/links don't break.
+  lester: Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
+  lilly: Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
+});
+
+function roguelikeStartingStatsFor(characterId) {
+  const stats = roguelikeStatDefaults();
+  const mods = HERO_STARTING_STAT_MODIFIERS[characterId];
+  if (mods) {
+    for (const [key, mult] of Object.entries(mods)) {
+      stats[key] = (stats[key] ?? 1) * mult;
+    }
+  }
+  return stats;
+}
+
 function roguelikeXpCostForLevel(level = 1) {
   return 100 + Math.max(0, Math.floor(level) - 1) * 25;
 }
@@ -1831,7 +1859,7 @@ export function buildIsometricRoguelikeRunConfig({ seed = 1, mapRadiusTiles = 42
   });
 }
 
-export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId = 'lester' } = {}) {
+export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId = 'lit-commando' } = {}) {
   const config = buildIsometricRoguelikeRunConfig({ seed });
   return {
     mode,
@@ -1844,7 +1872,7 @@ export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId =
     pendingUpgradeChoices: 0,
     rerollsRemaining: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel,
     player: { x: config.player.startWorld.x, y: config.player.startWorld.y, facing: 'E' },
-    stats: roguelikeStatDefaults(),
+    stats: roguelikeStartingStatsFor(characterId),
     skills: Object.fromEntries(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((skill) => [skill.id, 0])),
     map: { procedural: true, tilesetPerspective: config.map.tilesetPerspective, seedLabel: config.map.seedLabel },
     spawnDirector: getRoguelikeSpawnDirectorAt(0),
@@ -1941,8 +1969,12 @@ function formatClock(seconds) {
   return `${Math.floor(safeSeconds / 60)}:${String(safeSeconds % 60).padStart(2, '0')}`;
 }
 
-function getCharacter(characterId = 'lester') {
-  const character = LESTER_BLASTER_CHARACTER_ROSTER.find((candidate) => candidate.id === characterId);
+function getCharacter(characterId = 'lit-commando') {
+  // Resolve by current id OR legacyId so old links/saves/tests using 'lester'/
+  // 'lilly' still resolve to the renamed Lit Commando / Lit Valkyrie heroes.
+  const character = LESTER_BLASTER_CHARACTER_ROSTER.find(
+    (candidate) => candidate.id === characterId || candidate.legacyId === characterId,
+  );
   if (!character) throw new Error(`Unknown Hard Money Heroes character: ${characterId}`);
   return character;
 }
