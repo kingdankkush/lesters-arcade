@@ -296,15 +296,50 @@ test('paid mode session uses quarter-entry economics and leaderboard eligibility
   assert.equal(session.entryFeeMicroUsdc, 250_000);
 });
 
-test('revenue split routes paid-entry funds to arcade, developer, tournaments, and community', () => {
+test('revenue split reserves settlement gas and routes the rest (dev wallet biggest share)', () => {
   const split = calculateRevenueSplit(250_000, DEFAULT_REVENUE_SPLIT_BPS);
 
   assert.deepEqual(split, {
-    infrastructure: 100_000,
-    developer: 87_500,
-    tournament: 37_500,
-    community: 25_000,
+    settlement: 37_500,   // 15% reserved for on-chain settlement gas
+    dev: 137_500,         // 55% -> dev wallet (biggest share)
+    tournament: 45_000,   // 18% -> tournament pools
+    community: 30_000,    // 12% -> community building
   });
+  // dev is the largest bucket
+  assert.ok(split.dev > split.settlement && split.dev > split.tournament && split.dev > split.community);
+  // total is preserved
+  assert.equal(split.settlement + split.dev + split.tournament + split.community, 250_000);
+});
+
+test('unused settlement-gas reserve rolls into the dev wallet', () => {
+  // actual gas costs only 10,000 micro-units; settlement bucket is 37,500.
+  const split = calculateRevenueSplit(250_000, DEFAULT_REVENUE_SPLIT_BPS, { settlementGasMicroUnits: 10_000 });
+  assert.equal(split.settlement, 10_000);             // only actual gas reserved
+  assert.equal(split.settlementRemainderToDev, 27_500); // leftover
+  assert.equal(split.dev, 137_500 + 27_500);          // remainder rolled into dev
+  assert.equal(split.gasShortfall, 0);
+  // total still preserved
+  assert.equal(split.settlement + split.dev + split.tournament + split.community, 250_000);
+});
+
+test('settlement plan routes the dev share to the dev wallet', async () => {
+  const { buildSettlementPlan } = await import('../apps/portal/src/settlement.mjs');
+  const plan = buildSettlementPlan({
+    wallet: '0x' + '7'.repeat(40),
+    gameId: 'lester-blaster',
+    sessionId: 'sess-dev-1',
+    score: 1000,
+    entryFeeMicroUnits: 250_000,
+    paymentToken: 'zkLTC',
+    devWalletAddress: '0x' + 'd'.repeat(40),
+  });
+  const route = plan.calls.find((c) => c.method === 'routeRevenueSplit');
+  assert.ok(route, 'plan should include a revenue-routing call');
+  assert.equal(route.args.devWallet, '0x' + 'd'.repeat(40));
+  assert.equal(route.args.devAmountMicroUnits, 137_500);
+  assert.equal(route.args.paymentToken, 'zkLTC');
+  assert.equal(plan.revenueSplit.dev, 137_500);
+  assert.equal(plan.devWallet, '0x' + 'd'.repeat(40));
 });
 
 test('paid score submission updates leaderboard, achievements, transactions, and parent progress', () => {

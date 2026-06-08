@@ -17,7 +17,7 @@
 // Per AGENTS.md, no real chain write happens without explicit approval, so the
 // live path is opt-in and inert until contracts are deployed and the flag is on.
 
-import { LITVM_LITEFORGE_NETWORK } from './arcade-core.mjs';
+import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, calculateRevenueSplit } from './arcade-core.mjs';
 
 // HARD GATE. Stays false until Justin deploys contracts to LiteForge and
 // explicitly approves live settlement. Until then, everything is simulated.
@@ -87,6 +87,11 @@ export function buildSettlementPlan({
   unlockedAchievements = [],
   username = null,
   profileChanged = false,
+  entryFeeMicroUnits = 0,
+  paymentToken = 'USDC',
+  splitBps = DEFAULT_REVENUE_SPLIT_BPS,
+  settlementGasMicroUnits = null,
+  devWalletAddress = DEV_WALLET.address,
 } = {}) {
   if (!wallet || !gameId || !sessionId) {
     throw new Error('wallet, gameId, and sessionId are required to build a settlement plan');
@@ -124,6 +129,33 @@ export function buildSettlementPlan({
     profileChanged: Boolean(profileChanged && username),
   });
 
+  // Split the Ranked fee: reserve settlement gas, route the rest. The dev bucket
+  // (biggest share + any unused settlement-gas remainder) goes to the dev wallet
+  // and funds future game dev + community building. Tournament/community pools
+  // get their slices. paymentToken is whatever the player paid in (LTC/zkLTC/ETH/USDC).
+  let revenueSplit = null;
+  let routeCall = null;
+  if (Number.isInteger(entryFeeMicroUnits) && entryFeeMicroUnits > 0) {
+    revenueSplit = calculateRevenueSplit(entryFeeMicroUnits, splitBps, { settlementGasMicroUnits });
+    routeCall = Object.freeze({
+      contract: 'arcadePaymentRouter',
+      method: 'routeRevenueSplit',
+      args: {
+        sessionId,
+        gameId,
+        paymentToken,
+        amountMicroUnits: entryFeeMicroUnits,
+        devWallet: devWalletAddress,
+        devAmountMicroUnits: revenueSplit.dev,
+        settlementGasMicroUnits: revenueSplit.settlement,
+        tournamentMicroUnits: revenueSplit.tournament,
+        communityMicroUnits: revenueSplit.community,
+      },
+      gas: ZKLTC_SETTLEMENT_GAS.profileUpdate,
+    });
+    calls.push(routeCall);
+  }
+
   return {
     wallet,
     gameId,
@@ -138,7 +170,11 @@ export function buildSettlementPlan({
       explorerUrl: LITVM_LITEFORGE_NETWORK.explorerUrl,
     },
     calls,
-    feePurpose: 'Paid Mode zkLTC covers the gas to settle scores, achievements, and profile to LitVM.',
+    feePurpose: 'Paid Mode fee covers settlement gas to write scores/achievements/username to LitVM; the remainder goes to the dev wallet (future game dev + community), with tournament and community slices.',
+    paymentToken,
+    entryFeeMicroUnits,
+    revenueSplit,
+    devWallet: devWalletAddress,
     gas,
   };
 }

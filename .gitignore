@@ -32,3 +32,5 @@ __pycache__/
 .tmp/
 tmp/
 tmp/
+raw-tool-output/
+contact-sheets/

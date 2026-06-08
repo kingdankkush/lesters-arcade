@@ -24,17 +24,31 @@ export {
   isUsernameAvailable,
   resolveDisplayName,
 };
-
 export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
 export const HARD_MONEY_HEROES_EXPANDED_PIXEL_PACK_MANIFEST = HMH_EXPANDED_PIXEL_PACK_MANIFEST;
 
 export const DEFAULT_ENTRY_FEE_MICRO_USDC = 250_000;
 
+// Ranked $0.25 fee split. Cost-first intent: a settlement reserve covers the
+// on-chain gas to write the player's score/achievements/username; the dev bucket
+// is the biggest share and funds future game development, community building, and
+// more. Any settlement-reserve gas left unused rolls into the dev bucket (see
+// calculateRevenueSplit -> settlementRemainderToDev). Must total 10,000 bps.
 export const DEFAULT_REVENUE_SPLIT_BPS = Object.freeze({
-  infrastructure: 4000,
-  developer: 3500,
-  tournament: 1500,
-  community: 1000,
+  settlement: 1500,  // 15% reserved for on-chain settlement gas (zkLTC)
+  dev: 5500,         // 55% -> dev wallet (biggest share)
+  tournament: 1800,  // 18% -> tournament prize pools
+  community: 1200,   // 12% -> community building
+});
+
+// Dev wallet that receives the dev share + unused settlement-gas remainder.
+// Placeholder until Justin provides his real address; settlement stays simulated
+// (SETTLEMENT_LIVE=false) so no funds move until deploy + approval.
+export const DEV_WALLET = Object.freeze({
+  address: null, // set to Justin's dev wallet address before live settlement
+  label: "Justin's Dev Wallet",
+  purpose: 'Funds future game development, community building, and Lester\'s Arcade growth.',
+  receives: Object.freeze(['dev share of every Ranked fee', 'unused settlement-gas remainder']),
 });
 
 export const HARD_MONEY_HEROES_CANON = Object.freeze({
@@ -2994,7 +3008,7 @@ export function getCartridgeSelectModel() {
   }));
 }
 
-export function calculateRevenueSplit(amountMicroUnits, splitBps = DEFAULT_REVENUE_SPLIT_BPS) {
+export function calculateRevenueSplit(amountMicroUnits, splitBps = DEFAULT_REVENUE_SPLIT_BPS, { settlementGasMicroUnits = null } = {}) {
   if (!Number.isInteger(amountMicroUnits) || amountMicroUnits < 0) {
     throw new Error('amountMicroUnits must be a non-negative integer');
   }
@@ -3004,18 +3018,34 @@ export function calculateRevenueSplit(amountMicroUnits, splitBps = DEFAULT_REVEN
     throw new Error(`revenue split must equal 10,000 bps; received ${totalBps}`);
   }
 
-  const infrastructure = Math.floor((amountMicroUnits * splitBps.infrastructure) / 10_000);
-  const developer = Math.floor((amountMicroUnits * splitBps.developer) / 10_000);
+  const settlement = Math.floor((amountMicroUnits * splitBps.settlement) / 10_000);
+  const dev = Math.floor((amountMicroUnits * splitBps.dev) / 10_000);
   const tournament = Math.floor((amountMicroUnits * splitBps.tournament) / 10_000);
   const community = Math.floor((amountMicroUnits * splitBps.community) / 10_000);
-  const allocated = infrastructure + developer + tournament + community;
+  const allocated = settlement + dev + tournament + community;
 
-  return {
-    infrastructure: infrastructure + (amountMicroUnits - allocated),
-    developer,
+  // Dust from flooring goes to dev (largest, owner-facing bucket).
+  const split = {
+    settlement,
+    dev: dev + (amountMicroUnits - allocated),
     tournament,
     community,
   };
+
+  // If we know the actual settlement gas this run needs, reserve exactly that
+  // from the settlement bucket and roll the unused remainder into dev — i.e.
+  // "cover the chain cost, what's left over goes to the dev wallet."
+  if (Number.isInteger(settlementGasMicroUnits) && settlementGasMicroUnits >= 0) {
+    const gasReserved = Math.min(settlement, settlementGasMicroUnits);
+    const settlementRemainderToDev = settlement - gasReserved;
+    split.settlement = gasReserved;
+    split.dev += settlementRemainderToDev;
+    split.settlementGasReserved = gasReserved;
+    split.settlementRemainderToDev = settlementRemainderToDev;
+    split.gasShortfall = Math.max(0, settlementGasMicroUnits - settlement);
+  }
+
+  return split;
 }
 
 export function unlockAchievement(profile, achievementId) {
@@ -3370,6 +3400,8 @@ export function recordScore(state, session, score, runStats = {}) {
       unlockedAchievements,
       username: profile.usernameSet ? profile.handle : null,
       profileChanged: false,
+      entryFeeMicroUnits: session.entryFeeMicroUsdc ?? 0,
+      paymentToken: session.paymentToken ?? 'USDC',
     },
   };
 }

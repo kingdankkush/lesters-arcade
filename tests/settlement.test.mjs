@@ -36,7 +36,8 @@ test('buildSettlementPlan always includes a score submit call', () => {
   assert.ok(methods.includes('submitScore'));
   assert.equal(plan.network.token, 'zkLTC');
   assert.equal(plan.network.chainId, 4441);
-  assert.ok(plan.feePurpose.includes('zkLTC'));
+  assert.ok(plan.feePurpose.includes('settlement gas'));
+  assert.ok(plan.feePurpose.includes('dev wallet'));
 });
 
 test('buildSettlementPlan adds an unlock call per achievement and a profile update', () => {
