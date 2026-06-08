@@ -1,6 +1,6 @@
 # Hard Money Heroes — PixelLab Environment Wave 2
 
-Generated/updated: 2026-06-08T01:38:26.729403+00:00
+Generated/updated: 2026-06-08T07:42:01.126974+00:00
 
 ## Scope
 
@@ -13,8 +13,8 @@ Static ground/tileset/rock assets are intentionally still PNG assets. Water, riv
 - Jobs manifest: `apps/portal/assets/generated/hmh-environment-pixellab-wave-2/pixellab-environment-wave-2-jobs.json`
 - Runtime manifest: `apps/portal/assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs`
 - Contact sheet: `apps/portal/assets/generated/hmh-environment-pixellab-wave-2/contact-sheets/hmh-environment-pixellab-wave-2-contact-sheet.png`
-- Job counts: `{"completed": 38}`
-- Local PNG count discovered: `83`
+- Job counts: `{"completed": 53}`
+- Local PNG count discovered: `179`
 
 ## QA rules
 
@@ -62,3 +62,18 @@ Static ground/tileset/rock assets are intentionally still PNG assets. Water, riv
 - `animated_object:neon-sign-flicker` — completed — 1 PNG(s)
 - `animated_object:traffic-light-blink` — completed — 1 PNG(s)
 - `animated_object:tumbleweed-roll` — completed — 1 PNG(s)
+- `animation:water-surface-ripple:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:river-rapids-flow:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:waterfall-cascade:ambient` — completed — 8 PNG(s) / expected loop frames: 6
+- `animation:leafy-tree-wind:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:palm-tree-wind:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:flower-patch-sway:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:cactus-heat-shimmer:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:parked-car-blink:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:wrecked-car-smoke:ambient` — completed — 8 PNG(s) / expected loop frames: 6
+- `animation:garbage-can-wobble:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:trash-bag-rustle:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:road-sign-sway:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:neon-sign-flicker:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:traffic-light-blink:ambient` — completed — 6 PNG(s) / expected loop frames: 4
+- `animation:tumbleweed-roll:ambient` — completed — 8 PNG(s) / expected loop frames: 6

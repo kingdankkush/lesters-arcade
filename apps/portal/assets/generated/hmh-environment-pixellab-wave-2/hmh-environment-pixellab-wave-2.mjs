@@ -2,7 +2,7 @@ export const HMH_ENVIRONMENT_PIXELLAB_WAVE_2 = Object.freeze({
   "source": "PixelLab MCP/API",
   "pack": "environment-pixellab-wave-2",
   "publicRoot": "apps/portal/assets/generated/hmh-environment-pixellab-wave-2",
-  "generatedAt": "2026-06-08T01:38:26.728404+00:00",
+  "generatedAt": "2026-06-08T07:42:01.124490+00:00",
   "contactSheet": "./assets/generated/hmh-environment-pixellab-wave-2/contact-sheets/hmh-environment-pixellab-wave-2-contact-sheet.png",
   "assets": [
     {
@@ -1115,6 +1115,888 @@ export const HMH_ENVIRONMENT_PIXELLAB_WAVE_2 = Object.freeze({
           "height": 192,
           "mode": "RGBA",
           "bytes": 21195
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:water-surface-ripple:ambient",
+      "assetType": "object_animation",
+      "slug": "water-surface-ripple-ambient",
+      "name": "Water Surface Ripple Ambient Loop",
+      "role": "animated_water",
+      "status": "completed",
+      "id": "f54561db-d822-469b-9678-fc01ba1569dd",
+      "parentSlug": "water-surface-ripple",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/water-surface-ripple-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16321
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/water-surface-ripple-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16321
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/water-surface-ripple-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 34233
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/water-surface-ripple-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 31441
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/water-surface-ripple-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 31129
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/water-surface-ripple-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 25813
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:river-rapids-flow:ambient",
+      "assetType": "object_animation",
+      "slug": "river-rapids-flow-ambient",
+      "name": "River Rapids Flow Ambient Loop",
+      "role": "animated_river",
+      "status": "completed",
+      "id": "18ade06d-69d0-4810-8dbe-5d4699e85365",
+      "parentSlug": "river-rapids-flow",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/river-rapids-flow-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 32858
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/river-rapids-flow-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 32858
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/river-rapids-flow-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 52558
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/river-rapids-flow-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 49544
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/river-rapids-flow-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 53574
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/river-rapids-flow-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 49151
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:waterfall-cascade:ambient",
+      "assetType": "object_animation",
+      "slug": "waterfall-cascade-ambient",
+      "name": "Waterfall Cascade Ambient Loop",
+      "role": "animated_waterfall",
+      "status": "completed",
+      "id": "e186c58b-77cd-4ff4-a6d0-ce2b0160b2be",
+      "parentSlug": "waterfall-cascade",
+      "frameCount": 6,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 24677
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 24677
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 29043
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 27800
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 28620
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 27302
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/006-frame_005.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 28206
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/waterfall-cascade-ambient/extracted/008-download.bin/007-frame_006.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 27191
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:leafy-tree-wind:ambient",
+      "assetType": "object_animation",
+      "slug": "leafy-tree-wind-ambient",
+      "name": "Leafy Tree Wind Ambient Loop",
+      "role": "animated_tree",
+      "status": "completed",
+      "id": "c0ee25b2-0510-49c8-b052-f64e14330e53",
+      "parentSlug": "leafy-tree-wind",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/leafy-tree-wind-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 19701
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/leafy-tree-wind-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 19701
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/leafy-tree-wind-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 24341
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/leafy-tree-wind-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 23889
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/leafy-tree-wind-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 24860
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/leafy-tree-wind-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 25266
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:palm-tree-wind:ambient",
+      "assetType": "object_animation",
+      "slug": "palm-tree-wind-ambient",
+      "name": "Palm Tree Wind Ambient Loop",
+      "role": "animated_tree",
+      "status": "completed",
+      "id": "220a9edd-4133-47f2-9e6c-3b2a3465e5b5",
+      "parentSlug": "palm-tree-wind",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/palm-tree-wind-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 9453
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/palm-tree-wind-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 9453
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/palm-tree-wind-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11964
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/palm-tree-wind-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11923
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/palm-tree-wind-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 10237
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/palm-tree-wind-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 9590
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:flower-patch-sway:ambient",
+      "assetType": "object_animation",
+      "slug": "flower-patch-sway-ambient",
+      "name": "Flower Patch Sway Ambient Loop",
+      "role": "animated_flowers",
+      "status": "completed",
+      "id": "46621da7-e391-40df-9448-ab752e22b5b1",
+      "parentSlug": "flower-patch-sway",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/flower-patch-sway-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 13497
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/flower-patch-sway-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 13497
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/flower-patch-sway-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 19541
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/flower-patch-sway-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 18881
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/flower-patch-sway-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 19413
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/flower-patch-sway-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 18957
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:cactus-heat-shimmer:ambient",
+      "assetType": "object_animation",
+      "slug": "cactus-heat-shimmer-ambient",
+      "name": "Cactus Heat Shimmer Ambient Loop",
+      "role": "animated_cactus",
+      "status": "completed",
+      "id": "b20c5db0-9e8e-48f6-9805-d6020244dbe7",
+      "parentSlug": "cactus-heat-shimmer",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/cactus-heat-shimmer-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 14107
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/cactus-heat-shimmer-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 14107
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/cactus-heat-shimmer-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16037
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/cactus-heat-shimmer-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15827
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/cactus-heat-shimmer-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16117
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/cactus-heat-shimmer-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15794
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:parked-car-blink:ambient",
+      "assetType": "object_animation",
+      "slug": "parked-car-blink-ambient",
+      "name": "Parked Car Blink Ambient Loop",
+      "role": "animated_vehicle",
+      "status": "completed",
+      "id": "98b0eb9a-14fe-4ee8-a09a-b4aea78ae4ef",
+      "parentSlug": "parked-car-blink",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/parked-car-blink-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16041
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/parked-car-blink-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16041
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/parked-car-blink-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 18350
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/parked-car-blink-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 17598
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/parked-car-blink-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 18853
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/parked-car-blink-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 17656
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:wrecked-car-smoke:ambient",
+      "assetType": "object_animation",
+      "slug": "wrecked-car-smoke-ambient",
+      "name": "Wrecked Car Smoke Ambient Loop",
+      "role": "animated_vehicle",
+      "status": "completed",
+      "id": "bffafaae-c0cc-4545-af66-b37808faacc1",
+      "parentSlug": "wrecked-car-smoke",
+      "frameCount": 6,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 12361
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 12361
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15624
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15377
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15129
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15081
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/006-frame_005.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16143
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/wrecked-car-smoke-ambient/extracted/008-download.bin/007-frame_006.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16703
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:garbage-can-wobble:ambient",
+      "assetType": "object_animation",
+      "slug": "garbage-can-wobble-ambient",
+      "name": "Garbage Can Wobble Ambient Loop",
+      "role": "animated_garbage",
+      "status": "completed",
+      "id": "429ad944-1acd-4d0b-b3cd-413e9c725cf5",
+      "parentSlug": "garbage-can-wobble",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/garbage-can-wobble-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11990
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/garbage-can-wobble-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11990
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/garbage-can-wobble-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 14691
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/garbage-can-wobble-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 14597
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/garbage-can-wobble-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15243
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/garbage-can-wobble-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 14227
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:trash-bag-rustle:ambient",
+      "assetType": "object_animation",
+      "slug": "trash-bag-rustle-ambient",
+      "name": "Trash Bag Rustle Ambient Loop",
+      "role": "animated_garbage",
+      "status": "completed",
+      "id": "274ccdf4-d692-4853-8dfc-cb806206369d",
+      "parentSlug": "trash-bag-rustle",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/trash-bag-rustle-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 13347
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/trash-bag-rustle-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 13347
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/trash-bag-rustle-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 17622
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/trash-bag-rustle-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16988
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/trash-bag-rustle-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 17475
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/trash-bag-rustle-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 17014
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:road-sign-sway:ambient",
+      "assetType": "object_animation",
+      "slug": "road-sign-sway-ambient",
+      "name": "Road Sign Sway Ambient Loop",
+      "role": "animated_sign",
+      "status": "completed",
+      "id": "a18bc1d6-5832-47af-898d-278be9411234",
+      "parentSlug": "road-sign-sway",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/road-sign-sway-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 5330
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/road-sign-sway-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 5330
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/road-sign-sway-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 6564
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/road-sign-sway-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 7285
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/road-sign-sway-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 7590
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/road-sign-sway-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 7273
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:neon-sign-flicker:ambient",
+      "assetType": "object_animation",
+      "slug": "neon-sign-flicker-ambient",
+      "name": "Neon Sign Flicker Ambient Loop",
+      "role": "animated_sign",
+      "status": "completed",
+      "id": "ce9da2f1-5818-436f-9932-b468f245c27c",
+      "parentSlug": "neon-sign-flicker",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/neon-sign-flicker-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11573
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/neon-sign-flicker-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 11573
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/neon-sign-flicker-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15891
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/neon-sign-flicker-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 16378
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/neon-sign-flicker-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 15894
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/neon-sign-flicker-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 14820
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:traffic-light-blink:ambient",
+      "assetType": "object_animation",
+      "slug": "traffic-light-blink-ambient",
+      "name": "Traffic Light Blink Ambient Loop",
+      "role": "animated_sign",
+      "status": "completed",
+      "id": "54959129-5931-43d0-9159-3d1949890656",
+      "parentSlug": "traffic-light-blink",
+      "frameCount": 4,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/traffic-light-blink-ambient/extracted/006-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 5387
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/traffic-light-blink-ambient/extracted/006-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 5387
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/traffic-light-blink-ambient/extracted/006-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 6527
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/traffic-light-blink-ambient/extracted/006-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 9068
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/traffic-light-blink-ambient/extracted/006-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 8800
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/traffic-light-blink-ambient/extracted/006-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 6260
+        }
+      ]
+    },
+    {
+      "jobKey": "animation:tumbleweed-roll:ambient",
+      "assetType": "object_animation",
+      "slug": "tumbleweed-roll-ambient",
+      "name": "Tumbleweed Roll Ambient Loop",
+      "role": "animated_desert_prop",
+      "status": "completed",
+      "id": "535f15f1-a81e-4c94-ba91-1f81913d9158",
+      "parentSlug": "tumbleweed-roll",
+      "frameCount": 6,
+      "loop": true,
+      "images": [
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/000-unknown.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 21195
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/001-frame_000.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 21195
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/002-frame_001.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 27390
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/003-frame_002.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 27469
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/004-frame_003.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 26183
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/005-frame_004.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 25875
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/006-frame_005.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 25780
+        },
+        {
+          "src": "./assets/generated/hmh-environment-pixellab-wave-2/object_animation/tumbleweed-roll-ambient/extracted/008-download.bin/007-frame_006.png",
+          "width": 192,
+          "height": 192,
+          "mode": "RGBA",
+          "bytes": 25865
         }
       ]
     }
