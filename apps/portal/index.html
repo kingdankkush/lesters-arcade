@@ -15,6 +15,28 @@
     <main class="arcade-shell official-shell">
       <section id="officialApp" class="official-app" aria-label="Lester's Arcade official app">
         <div class="official-scanline" aria-hidden="true"></div>
+
+        <div id="rankedEntryModal" class="ranked-entry-overlay" hidden role="dialog" aria-modal="true" aria-label="Publish ranked run on-chain">
+          <div class="ranked-entry-card">
+            <p class="eyebrow">Ranked · Publish to LitVM</p>
+            <h2>Settle Your Run On-Chain</h2>
+            <p class="ranked-entry-copy">Ranked is official. Your score, achievements, and display name are published on-chain to LitVM as a permanent run record. On testnet the only cost is the <strong>zkLTC gas</strong> to write it — no entry fee, no real funds.</p>
+            <div class="ranked-entry-rows">
+              <div class="ranked-entry-row"><span>Publishing</span><strong id="rankedEntryFee">Score · Achievements · Name</strong></div>
+              <div class="ranked-entry-row"><span>Cost</span><strong id="rankedEntryGas">zkLTC gas only (testnet)</strong></div>
+              <div class="ranked-entry-row"><span>Network</span><strong id="rankedEntryNetwork">LitVM LiteForge · 4441</strong></div>
+              <div class="ranked-entry-row"><span>Wallet</span><strong id="rankedEntryWallet">—</strong></div>
+            </div>
+            <div id="rankedEntryChainGuard" class="ranked-entry-chainguard" hidden></div>
+            <p id="rankedEntryStatus" class="ranked-entry-status"></p>
+            <div class="ranked-entry-actions">
+              <button id="rankedEntryCancel" class="back-nav-button" type="button">Cancel</button>
+              <button id="rankedEntryApprove" class="primary-button big-action" type="button">Sign &amp; Play Ranked</button>
+            </div>
+            <p class="tiny-note" id="rankedEntryFootnote">Showcasing how Lester's Arcade + Hard Money Heroes publish player data to LitVM. Testnet only — the wallet signs a zkLTC-gas transaction; no purchase is made.</p>
+          </div>
+        </div>
+
         <nav class="official-nav official-simplified-nav" aria-label="Lester's Arcade main navigation">
           <strong>Lester's Arcade</strong>
           <div id="officialNavTabs" class="official-nav-tabs"></div>
@@ -112,7 +134,7 @@
             <button id="officialRankedModeButton" class="mode-card ranked-card" type="button">
               <span class="arcade-icon" aria-hidden="true">★</span>
               <strong>Play Ranked</strong>
-              <span>Requires a little testnet zkLTC for now. Scores submit only at game over.</span>
+              <span>Publishes your run on-chain to LitVM. Testnet: only the zkLTC gas to write it — free from the faucet.</span>
             </button>
           </div>
           <div id="officialRankedTooltip" class="ranked-tooltip"></div>

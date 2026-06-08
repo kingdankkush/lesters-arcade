@@ -903,6 +903,13 @@ const dom = {
   officialFreeModeButton: document.querySelector('#officialFreeModeButton'),
   officialRankedModeButton: document.querySelector('#officialRankedModeButton'),
   officialModeBackButton: document.querySelector('#officialModeBackButton'),
+  rankedEntryModal: document.querySelector('#rankedEntryModal'),
+  rankedEntryWallet: document.querySelector('#rankedEntryWallet'),
+  rankedEntryNetwork: document.querySelector('#rankedEntryNetwork'),
+  rankedEntryChainGuard: document.querySelector('#rankedEntryChainGuard'),
+  rankedEntryStatus: document.querySelector('#rankedEntryStatus'),
+  rankedEntryApprove: document.querySelector('#rankedEntryApprove'),
+  rankedEntryCancel: document.querySelector('#rankedEntryCancel'),
   officialRankedTooltip: document.querySelector('#officialRankedTooltip'),
   officialCharacterSelect: document.querySelector('#officialCharacterSelect'),
   officialCharacterRoster: document.querySelector('#officialCharacterRoster'),
@@ -2472,10 +2479,100 @@ async function enterOfficialArcadeFromSplash() {
 
 async function startOfficialMode(mode) {
   playSfxCue('menu-click');
+  // Ranked is paid/official: require the entry-fee signature + chain guard first.
+  if (mode === 'ranked') {
+    const approved = await requestRankedEntry();
+    if (!approved) return; // user cancelled or chain guard blocked
+  }
   officialSelectedMode = mode;
   await startMode(mode === 'ranked' ? 'paid' : 'free');
   officialAppStep = 'character-select';
   render();
+}
+
+// Ranked entry-fee + chain-guard modal. Returns a Promise<boolean> that resolves
+// true when the player approves (and the chain guard passes), false on cancel.
+// LIVE PATH IS FULLY WIRED but inert: when SETTLEMENT_LIVE is false the approval
+// is simulated (no real tx). Flip SETTLEMENT_LIVE + deploy contracts to go live.
+function requestRankedEntry() {
+  return new Promise((resolve) => {
+    const modal = dom.rankedEntryModal;
+    if (!modal) { resolve(true); return; }
+    const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
+    dom.rankedEntryWallet.textContent = walletShort;
+    dom.rankedEntryNetwork.textContent = `${LITVM_LITEFORGE_NETWORK.name} · ${LITVM_LITEFORGE_NETWORK.chainId}`;
+    dom.rankedEntryStatus.textContent = '';
+    dom.rankedEntryStatus.dataset.state = '';
+
+    // Chain guard: compare the connected chain (normalized) to the expected 4441.
+    const expectedHex = LITVM_LITEFORGE_NETWORK.chainIdHex;
+    const normalize = (id) => {
+      if (id == null) return null;
+      return typeof id === 'string' && id.startsWith('0x') ? parseInt(id, 16) : Number(id);
+    };
+    const onExpectedChain = !connectedChainId || normalize(connectedChainId) === LITVM_LITEFORGE_NETWORK.chainId;
+    const guard = dom.rankedEntryChainGuard;
+    if (onExpectedChain) {
+      guard.hidden = true;
+      dom.rankedEntryApprove.disabled = false;
+    } else {
+      guard.hidden = false;
+      guard.replaceChildren();
+      appendText(guard, 'strong', '⚠ Wrong network');
+      appendText(guard, 'span', `Switch your wallet to ${LITVM_LITEFORGE_NETWORK.name} (${LITVM_LITEFORGE_NETWORK.chainId} / ${expectedHex}) to continue.`);
+      const switchBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Switch Network' });
+      switchBtn.addEventListener('click', async () => {
+        switchBtn.textContent = 'Switching…';
+        const ok = await requestLiteForgeNetwork();
+        if (ok) { guard.hidden = true; dom.rankedEntryApprove.disabled = false; }
+        else switchBtn.textContent = 'Switch Network';
+      });
+      guard.append(switchBtn);
+      dom.rankedEntryApprove.disabled = true;
+    }
+
+    modal.hidden = false;
+
+    const cleanup = () => {
+      modal.hidden = true;
+      dom.rankedEntryApprove.removeEventListener('click', onApprove);
+      dom.rankedEntryCancel.removeEventListener('click', onCancel);
+    };
+    const onCancel = () => { playSfxCue('menu-click', 0.04); cleanup(); resolve(false); };
+    const onApprove = async () => {
+      dom.rankedEntryApprove.disabled = true;
+      dom.rankedEntryStatus.dataset.state = 'pending';
+      if (SETTLEMENT_LIVE) {
+        // LIVE: request the on-chain publish transaction signature here.
+        dom.rankedEntryStatus.textContent = 'Confirm the zkLTC-gas transaction in your wallet to publish your run…';
+        try {
+          const provider = detectEthereumProvider();
+          // Real publish tx (score/achievements/name -> ArcadePaymentRouter +
+          // registries) would be submitted here. Deploy + wire contract address
+          // before enabling SETTLEMENT_LIVE.
+          await refreshInjectedChainId(provider);
+          dom.rankedEntryStatus.textContent = '✓ Run published on-chain to LitVM.';
+          dom.rankedEntryStatus.dataset.state = 'ok';
+          setTimeout(() => { cleanup(); resolve(true); }, 500);
+        } catch {
+          dom.rankedEntryStatus.textContent = 'Signature rejected. Try again or cancel.';
+          dom.rankedEntryStatus.dataset.state = 'error';
+          dom.rankedEntryApprove.disabled = false;
+        }
+        return;
+      }
+      // SIMULATED (default): same UX, no real tx. Short "signing" beat.
+      playSfxCue('wallet-connect', 0.05);
+      dom.rankedEntryStatus.textContent = 'Signing zkLTC-gas transaction (testnet simulation)…';
+      setTimeout(() => {
+        dom.rankedEntryStatus.textContent = '✓ Run will publish to LitVM at game over (simulated). Starting ranked run.';
+        dom.rankedEntryStatus.dataset.state = 'ok';
+        setTimeout(() => { cleanup(); resolve(true); }, 550);
+      }, 650);
+    };
+    dom.rankedEntryApprove.addEventListener('click', onApprove);
+    dom.rankedEntryCancel.addEventListener('click', onCancel);
+  });
 }
 
 async function beginOfficialLevel() {

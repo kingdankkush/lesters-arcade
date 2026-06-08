@@ -489,7 +489,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   ]),
   modeSelect: Object.freeze({
     free: Object.freeze({ label: 'Free Mode', official: false, copy: 'Practice locally with no official leaderboard, achievement, progress, or transaction writes. The parent Lester’s Arcade wallet profile is already active.' }),
-    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked testnet runs use the already-active Lester’s Arcade profile and require a small amount of zkLTC for now. Get testnet zkLTC from the LitVM LiteForge faucet; it has no real value.' }),
+    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked publishes your score, achievements, and name on-chain to LitVM as a permanent run record — showcasing the Lester’s Arcade ↔ LitVM integration. On testnet the only cost is the zkLTC gas to write it (free from the faucet, no real value).' }),
   }),
   gameIntro: Object.freeze({
     id: 'hard-money-heroes-intro-splash',

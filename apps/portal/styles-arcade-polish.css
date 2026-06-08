@@ -303,3 +303,39 @@
 .achievement-icon { font-size: 1.6rem; line-height: 1; }
 .achievement-name { font-size: 0.64rem; color: #d6f6ff; line-height: 1.2; }
 .achievement-badge.locked .achievement-name { color: rgba(214,228,255,0.6); }
+
+/* ---- Ranked entry-fee / signature modal ---- */
+.ranked-entry-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(3, 7, 17, 0.82); backdrop-filter: blur(4px);
+}
+.ranked-entry-card {
+  width: min(440px, 92vw); padding: 26px;
+  background: linear-gradient(160deg, rgba(14,22,46,0.98), rgba(8,12,28,0.98));
+  border: 1px solid rgba(25,247,255,0.4); border-radius: 18px;
+  box-shadow: 0 0 40px rgba(25,247,255,0.25);
+}
+.ranked-entry-card h2 { margin: 2px 0 8px; color: #ffe84d; }
+.ranked-entry-copy { color: rgba(214,228,255,0.85); font-size: 0.85rem; line-height: 1.5; }
+.ranked-entry-rows { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+.ranked-entry-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px; background: rgba(8,14,32,0.6); border-radius: 8px;
+  border: 1px solid rgba(25,247,255,0.12);
+}
+.ranked-entry-row span { color: #9fe9ff; font-size: 0.8rem; }
+.ranked-entry-row strong { color: #d6f6ff; font-size: 0.85rem; }
+.ranked-entry-chainguard {
+  display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; padding: 12px;
+  background: rgba(255,71,111,0.12); border: 1px solid rgba(255,71,111,0.5); border-radius: 10px;
+}
+.ranked-entry-chainguard strong { color: #ff9bb2; }
+.ranked-entry-chainguard span { color: rgba(255,214,224,0.85); font-size: 0.8rem; }
+.ranked-entry-status { min-height: 20px; font-size: 0.82rem; margin: 6px 0; }
+.ranked-entry-status[data-state="pending"] { color: #ffe84d; }
+.ranked-entry-status[data-state="ok"] { color: #45ff8a; }
+.ranked-entry-status[data-state="error"] { color: #ff6f8f; }
+.ranked-entry-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+.ranked-entry-actions .big-action { flex: 1; }
+.ranked-entry-actions .back-nav-button { margin-bottom: 0; }
