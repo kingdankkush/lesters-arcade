@@ -424,11 +424,16 @@ function productionCabinetSprite() {
 }
 
 function hardMoneyHeroScreenStyle(screenId) {
+  // Post-connect screens use the clean Hard Money Heroes key art as a full-bleed
+  // background with NO menu panel baked on top (menus are real DOM controls).
+  const KEY_ART_BG = './assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg';
+  if (screenId === 'mainMenu' || screenId === 'cabinetSelect') {
+    return `linear-gradient(180deg, rgba(4, 11, 26, 0.62), rgba(8, 6, 22, 0.72)), url("${KEY_ART_BG}")`;
+  }
   const screen = HARD_MONEY_HEROES_ASSET_MANIFEST.screens[screenId];
   if (!screen?.src) return '';
   const overlayByScreen = {
     splash: 'pause-menu-panel',
-    mainMenu: 'pause-menu-panel',
     modeSelect: 'level-up-modal-frame',
     options: 'upgrade-card-frame',
   };
