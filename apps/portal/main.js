@@ -1036,6 +1036,9 @@ const combat = {
   floatingTexts: [],
   powerUps: [],
   xpGems: [],
+  killsByType: {},
+  bossKills: 0,
+  longestSurvivalThisRun: 0,
   levelUpChoices: [],
   levelUpPaused: false,
   roguelikeRun: null,
@@ -2740,11 +2743,15 @@ async function completePrototypeRun() {
   const completedSession = currentSession;
   const result = recordScore(state, completedSession, score, {
     distanceMeters: Math.round(elapsedSeconds * 2.7),
-    elapsedSeconds,
+    elapsedSeconds: Math.max(elapsedSeconds, Math.round(combat.longestSurvivalThisRun || 0)),
     kills: combat.kills,
     maxCombo: combat.maxCombo,
+    maxDamageCombo: combat.maxDamageCombo,
     bossId: bossRoll.boss?.id,
     weaponId: combat.weaponId,
+    enemyKillsByType: { ...(combat.killsByType || {}) },
+    powerUpsCollected: combat.powerUpsCollected || 0,
+    collectedPowerUps: [...(combat.collectedPowerUpTypes || [])],
   });
 
   lastRunScore = score;
@@ -3203,6 +3210,9 @@ async function startCombat() {
   combat.lives = 1;
   combat.score = 0;
   combat.kills = 0;
+  combat.killsByType = {};
+  combat.bossKills = 0;
+  combat.longestSurvivalThisRun = 0;
   combat.combo = 0;
   combat.maxCombo = 0;
   combat.damageCombo = 0;
@@ -3785,6 +3795,8 @@ function updateBoss(difficulty) {
     spawnExplosion(combat.boss.x + 40, GROUND_Y - 60, '#ffe84d');
     spawnText('BOSS CLEAR +1500', combat.boss.x - 30, GROUND_Y - 140, '#45ff8a');
     combat.kills += 1;
+    combat.bossKills += 1;
+    combat.killsByType[`boss:${clearedBoss.id ?? 'boss'}`] = (combat.killsByType[`boss:${clearedBoss.id ?? 'boss'}`] ?? 0) + 1;
     combat.combo += 1;
     combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
     combat.boss = null;
@@ -4323,7 +4335,15 @@ function updateRoguelikeEnemies(director, dt) {
 
   for (const enemy of combat.enemies.filter((enemy) => enemy.hp <= 0)) {
     killEnemy(enemy);
-    combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: enemy.elite ? 28 : 14, ttl: 900 });
+    // Per-enemy-type kill tracking (feeds the game-stats module + balanced XP).
+    const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
+    combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
+    // XP scales with the enemy's catalog score value so tougher foes are worth
+    // more progression, instead of a flat 14/28. Baseline grunt (~80 score) -> ~12 XP;
+    // elites and high-value foes scale up. Elite bonus on top.
+    const baseXp = Math.round(8 + (enemy.score ?? 80) * 0.06);
+    const xpValue = enemy.elite ? Math.round(baseXp * 1.6) : baseXp;
+    combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: xpValue, ttl: 900 });
   }
   combat.enemies = combat.enemies.filter((enemy) => enemy.hp > 0);
 }
@@ -4371,6 +4391,7 @@ function updateRoguelikeCombatStep(dt, difficulty) {
     rareWeaponId: combat.weaponId === 'oracle-slayer' ? combat.weaponId : null,
     difficultyTier: difficulty.tier,
   }).total + xpScore;
+  combat.longestSurvivalThisRun = Math.max(combat.longestSurvivalThisRun, combat.elapsedGameSeconds);
   if (combat.elapsedGameSeconds >= LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60 && !combat.gameOver) {
     spawnText('SURVIVAL WALL', ISO_CENTER_X - 54, ISO_CENTER_Y - 92, '#ff476f');
   }

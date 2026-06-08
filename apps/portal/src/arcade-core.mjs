@@ -3543,6 +3543,91 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
   };
 }
 
+// Synthetic "rarity" for a prototype that has no real global unlock index yet.
+// Rarer tiers map to a lower simulated "% of players who've unlocked it", so the
+// stats module can surface a believable "top achievement by rarity". Clearly a
+// prototype heuristic until on-chain/global achievement indexing exists.
+const ACHIEVEMENT_TIER_UNLOCK_PCT = Object.freeze({
+  bronze: 62, silver: 34, gold: 15, platinum: 6, diamond: 2,
+});
+
+export function achievementRarityPct(achievement) {
+  if (!achievement) return 100;
+  const base = ACHIEVEMENT_TIER_UNLOCK_PCT[achievement.tier] ?? 40;
+  // Nudge by difficulty so two same-tier achievements still order deterministically.
+  const diffNudge = { easy: 4, medium: 0, hard: -3, expert: -5 }[achievement.difficulty] ?? 0;
+  return Math.max(1, Math.min(99, base + diffNudge));
+}
+
+function formatSurvival(totalSeconds) {
+  const s = Math.max(0, Math.round(Number(totalSeconds) || 0));
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return `${m}:${String(rem).padStart(2, '0')}`;
+}
+
+/**
+ * Game-specific stats breakdown for the Profile/Leaderboard module.
+ * For Hard Money Heroes: leaderboard rank, per-enemy-type and boss kills (with
+ * readable titles), power-ups grabbed, longest survival (m:ss), and the player's
+ * "top achievement" chosen by rarity (rarest unlocked).
+ */
+export function buildHardMoneyHeroesStatsModule(state, wallet, gameId = 'lester-blaster') {
+  const profile = ensureProfile(state, wallet);
+  const progress = profile.progress?.[gameId] ?? createEmptyGameProgress(gameId);
+
+  // Leaderboard rank among all high scores for this game.
+  const board = (state.leaderboards?.[gameId] ?? []).slice().sort((a, b) => b.score - a.score);
+  const rankIndex = board.findIndex((entry) => entry.wallet === profile.wallet);
+  const rank = rankIndex >= 0 ? rankIndex + 1 : null;
+  const bestScore = Math.max(progress.bestPaidScore ?? 0, progress.bestFreeScore ?? 0);
+
+  // Per-enemy-type kills, resolved to readable titles. Boss keys are prefixed.
+  const enemyTitleById = Object.fromEntries(LESTER_BLASTER_ENEMY_CATALOG.map((e) => [e.id, e.title]));
+  const bossTitleById = Object.fromEntries((LESTER_BLASTER_BOSS_SYSTEM.bosses ?? []).map((b) => [b.id, b.title]));
+  const killsByType = progress.enemyKillsByType ?? {};
+  const enemyBreakdown = [];
+  const bossBreakdown = [];
+  for (const [key, count] of Object.entries(killsByType)) {
+    if (key.startsWith('boss:')) {
+      const bid = key.slice(5);
+      bossBreakdown.push({ id: bid, title: bossTitleById[bid] ?? 'Boss', kills: count });
+    } else {
+      enemyBreakdown.push({ id: key, title: enemyTitleById[key] ?? key, kills: count });
+    }
+  }
+  enemyBreakdown.sort((a, b) => b.kills - a.kills);
+  bossBreakdown.sort((a, b) => b.kills - a.kills);
+
+  // Top achievement by rarity: rarest (lowest unlock %) the player has unlocked.
+  const unlockedAchievements = Object.values(ACHIEVEMENTS)
+    .filter((a) => profile.achievements.includes(a.id))
+    .map((a) => ({ ...a, rarityPct: achievementRarityPct(a) }))
+    .sort((a, b) => a.rarityPct - b.rarityPct);
+  const topAchievement = unlockedAchievements[0] ?? null;
+
+  return {
+    gameId,
+    gameTitle: getGame(gameId).title,
+    rank,
+    totalRanked: board.length,
+    bestScore,
+    totalKills: progress.totalKills ?? 0,
+    enemyBreakdown,
+    bossBreakdown,
+    bossKills: progress.bossKills ?? 0,
+    powerUpsGrabbed: progress.cumulativePowerUps ?? 0,
+    longestSurvivalSeconds: progress.longestRunSeconds ?? 0,
+    longestSurvivalLabel: formatSurvival(progress.longestRunSeconds ?? 0),
+    topAchievement: topAchievement ? {
+      id: topAchievement.id, title: topAchievement.title, description: topAchievement.description,
+      tier: topAchievement.tier, icon: topAchievement.icon, rarityPct: topAchievement.rarityPct,
+    } : null,
+    achievementsUnlocked: unlockedAchievements.length,
+    achievementsTotal: Object.values(ACHIEVEMENTS).length,
+  };
+}
+
 export function getLesterBlasterDifficultyAt(elapsedSeconds) {
   const seconds = Math.max(0, Number(elapsedSeconds) || 0);
   const minutes = seconds / 60;
