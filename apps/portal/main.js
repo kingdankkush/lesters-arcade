@@ -10,6 +10,7 @@ import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-g
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
 import { HMH_LEVEL_ENVIRONMENT } from './assets/generated/hmh-level-environment/hmh-level-environment.mjs';
+import { HMH_ENVIRONMENT_PIXELLAB_WAVE_2 } from './assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import {
   ACHIEVEMENTS,
@@ -4098,43 +4099,58 @@ function currentProductionLevel() {
   return levels[index];
 }
 
-// Map a biome to the production tile slugs that actually look right on it.
-// The production tile art is all URBAN (asphalt/sidewalk/alley/foundry/rooftop),
-// so only town/road cells use sprite tiles; natural biomes (desert/forest/rocky/
-// water) use the biome-shaded gradient floor instead of a mismatched city tile.
-const BIOME_TILE_SLUGS = {
-  town: ['asphalt-street', 'sidewalk-concrete'],
-  road: ['asphalt-street', 'sidewalk-concrete'],
+// --- Wave-2 PixelLab biome ground tiles --------------------------------------
+// Real textured isometric ground tiles (sand, gravel, dirt, rock, grass, water,
+// pavement) generated in the environment wave. Each biome maps to 1-2 tile slugs
+// that read correctly; tiles are lazy-loaded once and cached. When a tile image
+// isn't ready yet, drawProductionIsoTile falls back to the biome-shaded gradient
+// so the floor is never blank/blue.
+const WAVE2_TILE_SRC = (() => {
+  const map = {};
+  for (const a of HMH_ENVIRONMENT_PIXELLAB_WAVE_2.assets ?? []) {
+    if (a.assetType === 'isometric_tile' && a.images?.[0]?.src) map[a.slug] = a.images[0].src;
+  }
+  return map;
+})();
+const BIOME_GROUND_TILES = {
+  town: ['concrete-road', 'asphalt-road'],
+  road: ['asphalt-road', 'asphalt-road-stripe'],
+  desert: ['sand', 'gravel'],
+  forest: ['flower-grass-ground', 'ground-dirt'],
+  rocky: ['ground-rock', 'gravel'],
+  water: ['shallow-water', 'river-bank'],
 };
-
-function productionTileForWorld(worldX, worldY, biome) {
-  // Only town/road biomes get sprite tiles; others fall through to shaded floor.
-  const allowed = biome ? BIOME_TILE_SLUGS[biome] : null;
-  if (!allowed || !allowed.length) return null;
-  const available = allowed.filter((slug) => combatArt.production?.tiles?.[slug]);
-  if (!available.length) return null;
-  const index = Math.abs((worldX * 7 + worldY * 11 + (worldX - worldY) * 3)) % available.length;
-  return combatArt.production.tiles[available[index]] ?? null;
+const wave2TileImages = new Map();
+function wave2TileImage(slug) {
+  if (!slug || !WAVE2_TILE_SRC[slug]) return null;
+  if (!wave2TileImages.has(slug)) wave2TileImages.set(slug, loadImageAsset(WAVE2_TILE_SRC[slug]));
+  return wave2TileImages.get(slug);
+}
+function biomeGroundTileForWorld(worldX, worldY, biome) {
+  const slugs = BIOME_GROUND_TILES[biome] ?? BIOME_GROUND_TILES.town;
+  if (!slugs.length) return null;
+  const index = Math.abs((worldX * 7 + worldY * 11 + (worldX - worldY) * 3)) % slugs.length;
+  return wave2TileImage(slugs[index]);
 }
 
 function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   const palette = biomeFloorPalette(worldX, worldY);
-  const tile = productionTileForWorld(worldX, worldY, palette.biome);
-  if (!imageReady(tile?.image)) {
-    // Biome-shaded gradient floor: desert sand, forest green, rocky grey, water
-    // shimmer, etc. (replaces the old flat-blue checker AND the mismatched urban
-    // tile sprite that drew bright-blue 'ice' on desert/forest cells).
+  // Prefer the real textured biome ground tile; fall back to the shaded gradient
+  // until the image loads (or if a biome has no tile art).
+  const tileImg = biomeGroundTileForWorld(worldX, worldY, palette.biome);
+  if (!imageReady(tileImg)) {
     const shimmer = palette.biome === 'water'
       ? (combat.frame * 0.06) + (worldX * 0.7 + worldY * 1.3)
       : 0;
     drawShadedIsoTile(ctx, cx, cy, palette, shimmer);
     return;
   }
-  const drawWidth = Math.max(72, Math.round((tile.width ?? 64) * 1.18));
-  const drawHeight = Math.max(44, Math.round((tile.height ?? 48) * 1.05));
+  // Draw the diamond tile slightly oversized so neighbors overlap with no seams.
+  const drawWidth = ISO_TILE_WIDTH + 4;
+  const drawHeight = ISO_TILE_HEIGHT * 2 + 6; // 56px source art is taller than the 32px diamond
   ctx.save();
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(tile.image, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
+  ctx.drawImage(tileImg, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
   ctx.restore();
 }
 
