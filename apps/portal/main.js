@@ -1640,6 +1640,21 @@ async function cycleCombatViewport() {
 }
 
 function returnToOfficialGameMenu() {
+  // If a run is in progress, "Game Menu" must NOT discard it. Just open the
+  // in-game pause overlay (or resume if already paused). Progress is preserved.
+  if (combat.active && !combat.gameOver) {
+    if (!combat.paused) {
+      combat.paused = true;
+      combat.keys.clear();
+      combat.status = 'Paused. Your run is preserved — resume, or Exit to Arcade to abandon it.';
+    } else {
+      combat.paused = false;
+      combat.status = 'Run resumed.';
+    }
+    syncCombatOverlay();
+    return;
+  }
+  // No active run: behave as a normal return to the pre-match menu.
   if (document.fullscreenElement) exitCombatFullscreen();
   combat.active = false;
   combat.paused = false;
@@ -2194,6 +2209,13 @@ function renderOfficialGameplay() {
   if (dom.officialCombatMount && !dom.officialCombatMount.contains(dom.combatCanvas)) {
     dom.officialCombatMount.append(dom.combatCanvas);
   }
+  // CRITICAL: size the canvas to its laid-out box now that it's visible. Without
+  // this the canvas keeps a stale/zero size and the scene renders blank until a
+  // fullscreen toggle forces a resize. Run after layout settles (two rAFs).
+  requestAnimationFrame(() => {
+    resizeCombatCanvas();
+    requestAnimationFrame(() => resizeCombatCanvas());
+  });
 }
 
 function renderOfficialApp() {
@@ -3681,15 +3703,21 @@ const ISO_CENTER_Y = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera.screenCenter.y;
 function isoToScreen(worldX, worldY) {
   const dx = worldX - combat.playerMapX;
   const dy = worldY - combat.playerMapY;
+  // Use the live canvas center so the world stays centered on the player at any
+  // canvas size (fixes off-center "drifting tiles" after DPR/fullscreen resize).
+  const cx = combat.viewCenterX ?? ISO_CENTER_X;
+  const cy = combat.viewCenterY ?? ISO_CENTER_Y;
   return {
-    x: ISO_CENTER_X + (dx - dy) * (ISO_TILE_WIDTH / 2),
-    y: ISO_CENTER_Y + (dx + dy) * (ISO_TILE_HEIGHT / 2),
+    x: cx + (dx - dy) * (ISO_TILE_WIDTH / 2),
+    y: cy + (dx + dy) * (ISO_TILE_HEIGHT / 2),
   };
 }
 
 function screenToIso(screenX, screenY) {
-  const dx = (screenX - ISO_CENTER_X) / (ISO_TILE_WIDTH / 2);
-  const dy = (screenY - ISO_CENTER_Y) / (ISO_TILE_HEIGHT / 2);
+  const cx = combat.viewCenterX ?? ISO_CENTER_X;
+  const cy = combat.viewCenterY ?? ISO_CENTER_Y;
+  const dx = (screenX - cx) / (ISO_TILE_WIDTH / 2);
+  const dy = (screenY - cy) / (ISO_TILE_HEIGHT / 2);
   return {
     x: combat.playerMapX + (dx + dy) / 2,
     y: combat.playerMapY + (dy - dx) / 2,
@@ -3707,11 +3735,47 @@ function updateAimFromPointer(event) {
   const scaleX = dom.combatCanvas.width / Math.max(1, rect.width);
   const scaleY = dom.combatCanvas.height / Math.max(1, rect.height);
   const aimWorld = screenToIso((event.clientX - rect.left) * scaleX, (event.clientY - rect.top) * scaleY);
+  combat.pointerWorldX = aimWorld.x;
+  combat.pointerWorldY = aimWorld.y;
+  combat.pointerActive = true;
   const dx = aimWorld.x - combat.playerMapX;
   const dy = aimWorld.y - combat.playerMapY;
   const length = Math.hypot(dx, dy) || 1;
   combat.aimMapX = dx / length;
   combat.aimMapY = dy / length;
+}
+
+// Auto-fire: weapons fire on their own cadence (fire rate / reload), aiming in
+// the player's facing direction (pointer-driven) or at the nearest enemy when
+// idle. The player never manually shoots in the roguelike — only power-ups are
+// manual. Cooldown is tracked in seconds.
+function updateAutoFire(dt) {
+  if (!combat.roguelikeRun || combat.paused || combat.gameOver) return;
+  const weapon = weaponById(combat.weaponId);
+  const fireStat = combat.roguelikeRun?.stats.fireRate ?? 1;
+  const shotsPerSecond = (weapon.fireRatePerSecond ?? 3) * fireStat;
+  combat.autoFireCooldown = (combat.autoFireCooldown ?? 0) - dt;
+  if (combat.autoFireCooldown > 0) return;
+  // If the pointer isn't steering aim, lock onto the nearest live enemy so the
+  // hero still defends himself while the player just positions.
+  if (!combat.pointerActive && combat.enemies.length) {
+    let best = null;
+    let bestD = Infinity;
+    for (const e of combat.enemies) {
+      if (e.hp <= 0) continue;
+      const d = Math.hypot(e.mapX - combat.playerMapX, e.mapY - combat.playerMapY);
+      if (d < bestD) { bestD = d; best = e; }
+    }
+    if (best) {
+      const dx = best.mapX - combat.playerMapX;
+      const dy = best.mapY - combat.playerMapY;
+      const len = Math.hypot(dx, dy) || 1;
+      combat.aimMapX = dx / len;
+      combat.aimMapY = dy / len;
+    }
+  }
+  shootRoguelike();
+  combat.autoFireCooldown = 1 / Math.max(0.5, shotsPerSecond);
 }
 
 function shootRoguelike() {
@@ -3799,17 +3863,38 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
 }
 
 function updateRoguelikeMovement(dt) {
-  const dx = (combat.keys.has('d') || combat.keys.has('arrowright') ? 1 : 0)
+  // Twin-stick-lite auto-movement: the hero walks toward the pointer/touch
+  // target and faces (and fires) that way. WASD/arrows still work as an optional
+  // override for keyboard players. A dead-zone keeps the hero from jittering when
+  // the cursor sits right on top of them.
+  let mx = (combat.keys.has('d') || combat.keys.has('arrowright') ? 1 : 0)
     - (combat.keys.has('a') || combat.keys.has('arrowleft') ? 1 : 0);
-  const dy = (combat.keys.has('s') || combat.keys.has('arrowdown') ? 1 : 0)
+  let my = (combat.keys.has('s') || combat.keys.has('arrowdown') ? 1 : 0)
     - (combat.keys.has('w') || combat.keys.has('arrowup') ? 1 : 0);
-  const length = Math.hypot(dx, dy) || 1;
+  const usingKeys = mx !== 0 || my !== 0;
+
+  if (!usingKeys && combat.pointerActive) {
+    const pdx = (combat.pointerWorldX ?? combat.playerMapX) - combat.playerMapX;
+    const pdy = (combat.pointerWorldY ?? combat.playerMapY) - combat.playerMapY;
+    const pdist = Math.hypot(pdx, pdy);
+    const DEAD_ZONE = 0.45; // world tiles; stop when basically on the cursor
+    if (pdist > DEAD_ZONE) {
+      mx = pdx / pdist;
+      my = pdy / pdist;
+    }
+  }
+
+  const length = Math.hypot(mx, my) || 1;
   const speed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
-  combat.playerMapX += (dx / length) * speed * dt;
-  combat.playerMapY += (dy / length) * speed * dt;
-  if (dx || dy) {
-    combat.aimMapX = dx / length;
-    combat.aimMapY = dy / length;
+  if (mx !== 0 || my !== 0) {
+    combat.playerMapX += (mx / length) * speed * dt;
+    combat.playerMapY += (my / length) * speed * dt;
+  }
+  // Facing/aim: pointer aim already maintained in updateAimFromPointer; for
+  // keyboard movers, face the movement direction.
+  if (usingKeys) {
+    combat.aimMapX = mx / length;
+    combat.aimMapY = my / length;
   }
   combat.roguelikeRun.player.x = combat.playerMapX;
   combat.roguelikeRun.player.y = combat.playerMapY;
@@ -3925,6 +4010,7 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   const director = getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
   combat.roguelikeRun.spawnDirector = director;
   updateRoguelikeMovement(dt);
+  updateAutoFire(dt);
   updateRoguelikeEnemies(director, dt);
   updateRoguelikeBullets(dt);
   updateRoguelikeXpGems();
@@ -4255,6 +4341,10 @@ function drawCombatScene(timestamp = 0) {
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
+  // Keep the isometric world centered on the player for whatever size the canvas
+  // currently is (default 760x340, but DPR/fullscreen can change it).
+  combat.viewCenterX = width / 2;
+  combat.viewCenterY = height / 2;
 
   if (!combat.lastTimestamp) combat.lastTimestamp = timestamp;
   const delta = Math.min(66, timestamp - combat.lastTimestamp);
@@ -4973,6 +5063,12 @@ dom.arcadeMusicAudio?.addEventListener('ended', () => {
 });
 
 document.addEventListener('keydown', (event) => {
+  // Never hijack keys while the user is typing in a form field (username, etc.).
+  const target = event.target;
+  const tag = target?.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target?.isContentEditable) {
+    return;
+  }
   const key = event.key.toLowerCase();
   if (event.key === 'F10') {
     event.preventDefault();
@@ -4981,11 +5077,16 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   if (key === 'enter' || key === 'escape') {
-    event.preventDefault();
-    toggleCombatPause();
+    // Only the in-game pause toggle should consume Enter/Escape — and only
+    // while actually playing, so menus/forms keep normal behavior.
+    if (officialAppStep === 'gameplay' && (combat.active || combat.paused)) {
+      event.preventDefault();
+      toggleCombatPause();
+    }
     return;
   }
   if (combat.paused || combat.gameOver) return;
+  if (officialAppStep !== 'gameplay') return;
   if (event.code === 'Space') {
     event.preventDefault();
     if (combat.roguelikeRun) shoot();
