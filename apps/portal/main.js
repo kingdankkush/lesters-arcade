@@ -4056,6 +4056,8 @@ function drawLevelLoadScreen(ctx, width, height, pct, biomeLabel) {
 // Warm the images the starting region will need, summarize the biome layout,
 // and render a brief load screen. Returns a layout summary for status text.
 async function precomputeBiomeWorld(ctx, width, height) {
+  const loadStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  const MIN_LOAD_MS = 1500; // always show the biome reveal for at least this long
   const seed = combat.roguelikeRun?.seed ?? 0;
   const bgs = HMH_LEVEL_ENVIRONMENT.parallaxBackgrounds ?? [];
   const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
@@ -4092,9 +4094,11 @@ async function precomputeBiomeWorld(ctx, width, height) {
     done += 1;
     drawLevelLoadScreen(ctx, width, height, done / total, label);
   }
-  // Hold the finished bar briefly so the screen reads as intentional.
+  // Hold the finished bar, and enforce a minimum so the biome reveal always shows.
   drawLevelLoadScreen(ctx, width, height, 1, label);
-  await new Promise((resolve) => setTimeout(resolve, 280));
+  const elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - loadStart;
+  const remaining = Math.max(280, MIN_LOAD_MS - elapsed);
+  await new Promise((resolve) => setTimeout(resolve, remaining));
   return { startBiome, regionBiomes: [...regionBiomes], warmed: total };
 }
 
@@ -4121,16 +4125,21 @@ function drawCanonicalLandmarks(ctx) {
       const cellX = baseX + gx * LATTICE;
       const cellY = baseY + gy * LATTICE;
       const h = Math.abs(((cellX * 73856093) ^ (cellY * 19349663)) >>> 0);
-      // Not every cell gets a prop — keeps biomes breathable (≈55% fill).
-      if ((h % 100) > 55) continue;
-      const worldX = cellX + ((h % 5) - 2);
-      const worldY = cellY + (((h >> 3) % 5) - 2);
+      // Biome decides placement style: town clusters into a dense, grid-aligned
+      // settlement; wilderness biomes stay sparse and scattered.
+      const cellBiome = biomeAt(seed, cellX, cellY);
+      const isTown = cellBiome === 'town';
+      const fillThreshold = isTown ? 82 : 50; // town = denser settlement
+      if ((h % 100) > fillThreshold) continue;
+      // Town buildings line up (small jitter); wilderness props scatter freely.
+      const jitter = isTown ? 1 : 2;
+      const worldX = cellX + ((h % (jitter * 2 + 1)) - jitter);
+      const worldY = cellY + (((h >> 3) % (jitter * 2 + 1)) - jitter);
       if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 6) continue;
-      // Biome-coherent prop selection for this cell.
-      const biome = biomeAt(seed, worldX, worldY);
-      const pool = propsForBiome(worldProps, biome);
+      const pool = propsForBiome(worldProps, cellBiome);
       if (!pool.length) continue;
       const prop = pool[h % pool.length];
+      const biome = cellBiome;
       const img = canonicalLandmarkImage(prop.src);
       if (!imageReady(img)) continue;
       const projected = isoToScreen(worldX, worldY);
