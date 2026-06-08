@@ -506,6 +506,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-008c780e5ee0",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-008c780e5ee0.png",
+      "role": "smallprop",
       "width": 115,
       "height": 256,
       "biome": "town"
@@ -514,6 +515,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-33d0ab393a08",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-33d0ab393a08.png",
+      "role": "vehicle",
       "width": 256,
       "height": 140,
       "biome": "town"
@@ -522,6 +524,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-ffc0a4143b8c",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-ffc0a4143b8c.png",
+      "role": "smallprop",
       "width": 256,
       "height": 200,
       "biome": "town"
@@ -530,6 +533,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-89fcbd7879d9",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-89fcbd7879d9.png",
+      "role": "bigprop",
       "width": 256,
       "height": 211,
       "biome": "town"
@@ -538,6 +542,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-d9089443bba9",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-d9089443bba9.png",
+      "role": "bigprop",
       "width": 256,
       "height": 227,
       "biome": "town"
@@ -546,6 +551,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-e316d4af8d1f",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-e316d4af8d1f.png",
+      "role": "smallprop",
       "width": 113,
       "height": 256,
       "biome": "town"
@@ -554,6 +560,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-6b432e8345a9",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-6b432e8345a9.png",
+      "role": "vehicle",
       "width": 256,
       "height": 96,
       "biome": "town"
@@ -562,6 +569,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-6e0f5a33ed07",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-6e0f5a33ed07.png",
+      "role": "bigprop",
       "width": 256,
       "height": 229,
       "biome": "town"
@@ -570,6 +578,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-3f800ed3d86d",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-3f800ed3d86d.png",
+      "role": "smallprop",
       "width": 848,
       "height": 899,
       "biome": "town"
@@ -578,6 +587,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-a4076623b0f1",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-a4076623b0f1.png",
+      "role": "tree",
       "width": 224,
       "height": 256,
       "biome": "desert"
@@ -586,6 +596,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-89fd0b02065d",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-89fd0b02065d.png",
+      "role": "vehicle",
       "width": 256,
       "height": 98,
       "biome": "town"
@@ -594,6 +605,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-9b8a98660972",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-9b8a98660972.png",
+      "role": "vehicle",
       "width": 256,
       "height": 98,
       "biome": "town"
@@ -602,6 +614,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-2cd048e6be11",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-2cd048e6be11.png",
+      "role": "tree",
       "width": 232,
       "height": 256,
       "biome": "desert"
@@ -610,6 +623,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-1bff828cff26",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-1bff828cff26.png",
+      "role": "bigprop",
       "width": 169,
       "height": 256,
       "biome": "town"
@@ -618,6 +632,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-7f0271e68453",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-7f0271e68453.png",
+      "role": "bigprop",
       "width": 137,
       "height": 256,
       "biome": "town"
@@ -626,6 +641,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-f548ae1fb7ac",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f548ae1fb7ac.png",
+      "role": "smallprop",
       "width": 256,
       "height": 216,
       "biome": "town"
@@ -634,6 +650,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-84ac11df4b69",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-84ac11df4b69.png",
+      "role": "vehicle",
       "width": 256,
       "height": 120,
       "biome": "town"
@@ -642,6 +659,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-66098109e33b",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-66098109e33b.png",
+      "role": "building",
       "width": 205,
       "height": 256,
       "biome": "town"
@@ -650,6 +668,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-f8fe53bb2a25",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f8fe53bb2a25.png",
+      "role": "building",
       "width": 207,
       "height": 256,
       "biome": "town"
@@ -658,6 +677,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-2e7fe571a461",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-2e7fe571a461.png",
+      "role": "building",
       "width": 256,
       "height": 188,
       "biome": "town"
@@ -666,6 +686,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-44bda2f4284a",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-44bda2f4284a.png",
+      "role": "smallprop",
       "width": 256,
       "height": 256,
       "biome": "town"
@@ -674,6 +695,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-86654687d8a2",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-86654687d8a2.png",
+      "role": "smallprop",
       "width": 255,
       "height": 256,
       "biome": "town"
@@ -682,6 +704,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-fd11cc9ebab4",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-fd11cc9ebab4.png",
+      "role": "smallprop",
       "width": 256,
       "height": 232,
       "biome": "town"
@@ -690,6 +713,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-700991e1d4bb",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-700991e1d4bb.png",
+      "role": "tree",
       "width": 256,
       "height": 190,
       "biome": "desert"
@@ -698,6 +722,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-dcb894b41fcf",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-dcb894b41fcf.png",
+      "role": "building",
       "width": 256,
       "height": 240,
       "biome": "town"
@@ -706,6 +731,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-ddc1aa8fd8bb",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-ddc1aa8fd8bb.png",
+      "role": "building",
       "width": 256,
       "height": 108,
       "biome": "town"
@@ -714,6 +740,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-809f9e50e030",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-809f9e50e030.png",
+      "role": "building",
       "width": 256,
       "height": 208,
       "biome": "town"
@@ -722,6 +749,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-cb1288373807",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-cb1288373807.png",
+      "role": "building",
       "width": 256,
       "height": 181,
       "biome": "town"
@@ -730,6 +758,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-1f8a1b20e882",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-1f8a1b20e882.png",
+      "role": "building",
       "width": 141,
       "height": 256,
       "biome": "town"
@@ -738,6 +767,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-d1e79498652c",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-d1e79498652c.png",
+      "role": "building",
       "width": 1342,
       "height": 900,
       "biome": "town"
@@ -746,6 +776,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-328bae32627f",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-328bae32627f.png",
+      "role": "building",
       "width": 256,
       "height": 253,
       "biome": "town"
@@ -754,6 +785,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-75d130cb18f6",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-75d130cb18f6.png",
+      "role": "building",
       "width": 256,
       "height": 167,
       "biome": "town"
@@ -762,6 +794,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-8ad1ba4b5844",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-8ad1ba4b5844.png",
+      "role": "building",
       "width": 231,
       "height": 256,
       "biome": "town"
@@ -770,6 +803,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-041a200a1e3d",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-041a200a1e3d.png",
+      "role": "scenery",
       "width": 1350,
       "height": 900,
       "biome": "road"
@@ -778,6 +812,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-dd39bb6f5dfa",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-dd39bb6f5dfa.png",
+      "role": "scenery",
       "width": 600,
       "height": 900,
       "biome": "rocky"
@@ -786,6 +821,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-6dd9b562d9f2",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-6dd9b562d9f2.png",
+      "role": "bigprop",
       "width": 256,
       "height": 231,
       "biome": "town"
@@ -794,6 +830,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-8e790c87fba8",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-8e790c87fba8.png",
+      "role": "scenery",
       "width": 256,
       "height": 194,
       "biome": "rocky"
@@ -802,6 +839,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-a2c659aa4486",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-a2c659aa4486.png",
+      "role": "smallprop",
       "width": 623,
       "height": 900,
       "biome": "town"
@@ -810,6 +848,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-96f2649061e7",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-96f2649061e7.png",
+      "role": "bigprop",
       "width": 230,
       "height": 256,
       "biome": "town"
@@ -818,6 +857,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-b99c1a99896f",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-b99c1a99896f.png",
+      "role": "smallprop",
       "width": 256,
       "height": 189,
       "biome": "town"
@@ -826,6 +866,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-e077e4e9aedf",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-e077e4e9aedf.png",
+      "role": "smallprop",
       "width": 256,
       "height": 185,
       "biome": "town"
@@ -834,6 +875,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-dcf76a515dab",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-dcf76a515dab.png",
+      "role": "bigprop",
       "width": 1313,
       "height": 900,
       "biome": "town"
@@ -842,6 +884,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-7ed91efdcd52",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-7ed91efdcd52.png",
+      "role": "smallprop",
       "width": 256,
       "height": 198,
       "biome": "town"
@@ -850,6 +893,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-18778691eaf8",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-18778691eaf8.png",
+      "role": "smallprop",
       "width": 256,
       "height": 185,
       "biome": "town"
@@ -858,6 +902,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-9ae6aeb8ccab",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-9ae6aeb8ccab.png",
+      "role": "smallprop",
       "width": 256,
       "height": 159,
       "biome": "town"
@@ -866,6 +911,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-833edca606fe",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-833edca606fe.png",
+      "role": "bigprop",
       "width": 201,
       "height": 256,
       "biome": "town"
@@ -874,6 +920,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-f865c47be5ba",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f865c47be5ba.png",
+      "role": "bigprop",
       "width": 137,
       "height": 256,
       "biome": "town"
@@ -882,6 +929,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-13c3ee0e40b0",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-13c3ee0e40b0.png",
+      "role": "bigprop",
       "width": 148,
       "height": 256,
       "biome": "town"
@@ -890,6 +938,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-4eef60b475a1",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-4eef60b475a1.png",
+      "role": "scenery",
       "width": 256,
       "height": 178,
       "biome": "desert"
@@ -898,6 +947,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-719bd26a0499",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-719bd26a0499.png",
+      "role": "bigprop",
       "width": 1351,
       "height": 900,
       "biome": "road"
@@ -906,6 +956,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-90616ae3e455",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-90616ae3e455.png",
+      "role": "bigprop",
       "width": 255,
       "height": 256,
       "biome": "town"
@@ -914,6 +965,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-4b66eb19797e",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-4b66eb19797e.png",
+      "role": "bigprop",
       "width": 256,
       "height": 192,
       "biome": "town"
@@ -922,6 +974,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "prop-f9ff6bfdf1d6",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f9ff6bfdf1d6.png",
+      "role": "bigprop",
       "width": 206,
       "height": 256,
       "biome": "town"
@@ -930,6 +983,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "decor-109715817dfa",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-109715817dfa.png",
+      "role": "scenery",
       "width": 256,
       "height": 58,
       "biome": "town"
@@ -938,6 +992,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "decor-50738e9317f9",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-50738e9317f9.png",
+      "role": "scenery",
       "width": 256,
       "height": 57,
       "biome": "road"
@@ -946,6 +1001,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "decor-34e773e22810",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-34e773e22810.png",
+      "role": "scenery",
       "width": 514,
       "height": 900,
       "biome": "forest"
@@ -954,6 +1010,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "decor-51af90ba0684",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-51af90ba0684.png",
+      "role": "scenery",
       "width": 256,
       "height": 107,
       "biome": "town"
@@ -962,6 +1019,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "decor-3d647b70bc39",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-3d647b70bc39.png",
+      "role": "scenery",
       "width": 256,
       "height": 95,
       "biome": "forest"
@@ -970,6 +1028,7 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "decor-39d9138dd6b5",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-39d9138dd6b5.png",
+      "role": "building",
       "width": 256,
       "height": 140,
       "biome": "town"
@@ -978,487 +1037,568 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "id": "wave-desert-02",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-02.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-02.png",
+      "role": "tree"
     },
     {
       "id": "wave-desert-03",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-03.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-03.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-desert-04",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-04.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-04.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-desert-05",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-05.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-05.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-desert-06",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-06.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-06.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-desert-07",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-07.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-07.png",
+      "role": "tree"
     },
     {
       "id": "wave-desert-08",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-08.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-08.png",
+      "role": "vehicle"
     },
     {
       "id": "wave-desert-09",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-09.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-09.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-desert-10",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-10.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-10.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-desert-11",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-11.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-11.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-desert-12",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-12.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-12.png",
+      "role": "tree"
     },
     {
       "id": "wave-desert-13",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-13.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-13.png",
+      "role": "vehicle"
     },
     {
       "id": "wave-desert-14",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-14.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-14.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-desert-15",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-15.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-15.png",
+      "role": "scenery"
     },
     {
       "id": "wave-desert-16",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-16.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-16.png",
+      "role": "tree"
     },
     {
       "id": "wave-desert-17",
       "kind": "prop",
       "biome": "desert",
-      "src": "./assets/generated/hmh-demo-wave/desert/desert-17.png"
+      "src": "./assets/generated/hmh-demo-wave/desert/desert-17.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-forest-00",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-00.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-00.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-01",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-01.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-01.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-02",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-02.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-02.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-04",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-04.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-04.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-forest-05",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-05.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-05.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-forest-06",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-06.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-06.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-07",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-07.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-07.png",
+      "role": "scenery"
     },
     {
       "id": "wave-forest-08",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-08.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-08.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-09",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-09.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-09.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-10",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-10.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-10.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-11",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-11.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-11.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-forest-12",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-12.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-12.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-13",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-13.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-13.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-14",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-14.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-14.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-15",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-15.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-15.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-16",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-16.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-16.png",
+      "role": "tree"
     },
     {
       "id": "wave-forest-17",
       "kind": "prop",
       "biome": "forest",
-      "src": "./assets/generated/hmh-demo-wave/forest/forest-17.png"
+      "src": "./assets/generated/hmh-demo-wave/forest/forest-17.png",
+      "role": "building"
     },
     {
       "id": "wave-rocky-00",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-00.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-00.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-rocky-01",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-01.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-01.png",
+      "role": "tree"
     },
     {
       "id": "wave-rocky-02",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-02.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-02.png",
+      "role": "building"
     },
     {
       "id": "wave-rocky-03",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-03.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-03.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-rocky-04",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-04.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-04.png",
+      "role": "scenery"
     },
     {
       "id": "wave-rocky-05",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-05.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-05.png",
+      "role": "scenery"
     },
     {
       "id": "wave-rocky-06",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-06.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-06.png",
+      "role": "building"
     },
     {
       "id": "wave-rocky-07",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-07.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-07.png",
+      "role": "scenery"
     },
     {
       "id": "wave-rocky-08",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-08.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-08.png",
+      "role": "scenery"
     },
     {
       "id": "wave-rocky-09",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-09.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-09.png",
+      "role": "scenery"
     },
     {
       "id": "wave-rocky-10",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-10.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-10.png",
+      "role": "building"
     },
     {
       "id": "wave-rocky-11",
       "kind": "prop",
       "biome": "rocky",
-      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-11.png"
+      "src": "./assets/generated/hmh-demo-wave/rocky/rocky-11.png",
+      "role": "scenery"
     },
     {
       "id": "wave-water-00",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-00.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-00.png",
+      "role": "building"
     },
     {
       "id": "wave-water-01",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-01.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-01.png",
+      "role": "building"
     },
     {
       "id": "wave-water-02",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-02.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-02.png",
+      "role": "tree"
     },
     {
       "id": "wave-water-03",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-03.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-03.png",
+      "role": "scenery"
     },
     {
       "id": "wave-water-04",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-04.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-04.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-water-05",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-05.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-05.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-water-06",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-06.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-06.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-water-07",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-07.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-07.png",
+      "role": "vehicle"
     },
     {
       "id": "wave-water-08",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-08.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-08.png",
+      "role": "tree"
     },
     {
       "id": "wave-water-09",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-09.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-09.png",
+      "role": "building"
     },
     {
       "id": "wave-water-10",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-10.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-10.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-water-11",
       "kind": "prop",
       "biome": "water",
-      "src": "./assets/generated/hmh-demo-wave/water/water-11.png"
+      "src": "./assets/generated/hmh-demo-wave/water/water-11.png",
+      "role": "tree"
     },
     {
       "id": "wave-town-00",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-00.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-00.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-town-01",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-01.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-01.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-town-02",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-02.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-02.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-town-03",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-03.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-03.png",
+      "role": "building"
     },
     {
       "id": "wave-town-04",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-04.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-04.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-town-05",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-05.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-05.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-06",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-06.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-06.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-07",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-07.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-07.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-08",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-08.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-08.png",
+      "role": "building"
     },
     {
       "id": "wave-town-09",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-09.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-09.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-10",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-10.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-10.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-11",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-11.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-11.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-12",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-12.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-12.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-town-13",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-13.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-13.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-14",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-14.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-14.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-town-15",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-15.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-15.png",
+      "role": "tree"
     },
     {
       "id": "wave-town-16",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-16.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-16.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-town-17",
       "kind": "prop",
       "biome": "town",
-      "src": "./assets/generated/hmh-demo-wave/town/town-17.png"
+      "src": "./assets/generated/hmh-demo-wave/town/town-17.png",
+      "role": "building"
     },
     {
       "id": "wave-road-00",
       "kind": "prop",
       "biome": "road",
-      "src": "./assets/generated/hmh-demo-wave/road/road-00.png"
+      "src": "./assets/generated/hmh-demo-wave/road/road-00.png",
+      "role": "scenery"
     },
     {
       "id": "wave-road-01",
       "kind": "prop",
       "biome": "road",
-      "src": "./assets/generated/hmh-demo-wave/road/road-01.png"
+      "src": "./assets/generated/hmh-demo-wave/road/road-01.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-road-02",
       "kind": "prop",
       "biome": "road",
-      "src": "./assets/generated/hmh-demo-wave/road/road-02.png"
+      "src": "./assets/generated/hmh-demo-wave/road/road-02.png",
+      "role": "scenery"
     },
     {
       "id": "wave-road-03",
       "kind": "prop",
       "biome": "road",
-      "src": "./assets/generated/hmh-demo-wave/road/road-03.png"
+      "src": "./assets/generated/hmh-demo-wave/road/road-03.png",
+      "role": "bigprop"
     },
     {
       "id": "wave-road-04",
       "kind": "prop",
       "biome": "road",
-      "src": "./assets/generated/hmh-demo-wave/road/road-04.png"
+      "src": "./assets/generated/hmh-demo-wave/road/road-04.png",
+      "role": "smallprop"
     },
     {
       "id": "wave-road-05",
       "kind": "prop",
       "biome": "road",
-      "src": "./assets/generated/hmh-demo-wave/road/road-05.png"
+      "src": "./assets/generated/hmh-demo-wave/road/road-05.png",
+      "role": "smallprop"
     }
   ],
   "fxAssets": [

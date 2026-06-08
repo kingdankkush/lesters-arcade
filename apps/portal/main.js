@@ -5000,18 +5000,48 @@ function currentObstacles() {
   return _obstacleCache;
 }
 
-// Choose stable prop art for an obstacle from its biome pool, keyed by the
-// obstacle's own propIndex so the SAME obstacle always shows the SAME art.
-function obstaclePropImage(obstacle, worldProps) {
-  const pool = propsForBiome(worldProps, obstacle.biome);
-  if (!pool.length) return null;
+// Per-role art sizing + collision footprint for placed obstacles, so a soda can
+// is small and a tower is tall, and the solid radius matches the visual base.
+// targetW = on-screen draw width (px); radius = collision footprint (world tiles).
+const PROP_ROLE_STYLE = Object.freeze({
+  building:  { targetW: 132, radius: 1.15, ground: 56 },
+  bigprop:   { targetW: 104, radius: 0.95, ground: 54 },
+  vehicle:   { targetW: 118, radius: 1.0,  ground: 50 },
+  tree:      { targetW: 92,  radius: 0.7,  ground: 58 },
+  smallprop: { targetW: 60,  radius: 0.5,  ground: 50 },
+});
+
+// World props that are valid as discrete, placeable obstacles — excludes
+// "scenery" (wide parallax-style strips / ground cross-sections) which must NOT
+// be drawn as foreground gameplay props (they'd block the scene as big cards).
+function placeableProps(worldProps) {
+  return worldProps.filter((p) => p.role !== 'scenery');
+}
+
+// Resolve the stable prop art + role styling for an obstacle from its biome pool,
+// keyed by the obstacle's own propIndex so the SAME obstacle always shows the
+// SAME art at the SAME size. "building" obstacles bias toward building/bigprop
+// art; "doodad" obstacles toward trees/small props, matched to the biome.
+function resolveObstacleProp(obstacle, worldProps) {
+  const biomePool = placeableProps(propsForBiome(worldProps, obstacle.biome));
+  if (!biomePool.length) return null;
+  // Bias selection by obstacle kind so settlements read as buildings and
+  // wilderness clusters as trees/rocks, while still allowing variety.
+  const wantBuilding = obstacle.kind === 'building';
+  const preferred = biomePool.filter((p) =>
+    wantBuilding ? (p.role === 'building' || p.role === 'bigprop') : (p.role !== 'building'));
+  const pool = preferred.length ? preferred : biomePool;
   const prop = pool[obstacle.propIndex % pool.length];
-  return prop ? canonicalLandmarkImage(prop.src) : null;
+  if (!prop) return null;
+  const style = PROP_ROLE_STYLE[prop.role] ?? PROP_ROLE_STYLE.smallprop;
+  return { prop, img: canonicalLandmarkImage(prop.src), style };
 }
 
 // Build depth-sorted render entries for the on-screen obstacles. These are
 // pushed into the unified render list so the hero/enemies correctly occlude (or
-// are occluded by) buildings and trees by screen Y.
+// are occluded by) buildings and trees by screen Y. We also write the role-based
+// collision radius back onto the obstacle so movement/bullets use a footprint
+// that matches the art that is actually drawn.
 function buildObstacleRenderEntries(ctx) {
   const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
   if (!worldProps.length) return [];
@@ -5019,15 +5049,17 @@ function buildObstacleRenderEntries(ctx) {
   for (const o of currentObstacles()) {
     // Only draw obstacles within the visible window.
     if (Math.abs(o.worldX - combat.playerMapX) > 11 || Math.abs(o.worldY - combat.playerMapY) > 11) continue;
-    const img = obstaclePropImage(o, worldProps);
-    if (!imageReady(img)) continue;
+    const resolved = resolveObstacleProp(o, worldProps);
+    if (!resolved || !imageReady(resolved.img)) continue;
+    const { img, style } = resolved;
     const projected = isoToScreen(o.worldX, o.worldY);
-    const targetW = o.kind === 'building' ? 124 : 90;
+    const targetW = style.targetW;
     const scale = targetW / img.naturalWidth;
     const w = Math.round(img.naturalWidth * scale);
     const drawH = Math.round(img.naturalHeight * scale);
     const baseX = Math.round(projected.x - w / 2);
-    const baseY = Math.round(projected.y + 56 - drawH);
+    const baseY = Math.round(projected.y + style.ground - drawH);
+    const shadowW = Math.max(14, w * 0.32);
     entries.push({
       depth: projected.y,
       draw: () => {
@@ -5037,13 +5069,16 @@ function buildObstacleRenderEntries(ctx) {
         ctx.globalAlpha = 0.26;
         ctx.fillStyle = '#02040a';
         ctx.beginPath();
-        ctx.ellipse(projected.x, projected.y + 54, Math.max(16, w * 0.34), Math.max(7, w * 0.15), 0, 0, Math.PI * 2);
+        ctx.ellipse(projected.x, projected.y + style.ground - 2, shadowW, Math.max(6, shadowW * 0.42), 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
         ctx.drawImage(img, baseX, baseY, w, drawH);
         ctx.restore();
       },
     });
+    // Keep the obstacle's collision footprint in sync with the art that is
+    // actually drawn (role-based radius), so movement/bullets match the visuals.
+    o.radius = style.radius;
   }
   return entries;
 }
