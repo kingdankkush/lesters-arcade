@@ -427,41 +427,45 @@ function productionCabinetSprite() {
   return HMH_PRODUCTION_ART_PASS.cabinet?.frames?.length ? HMH_PRODUCTION_ART_PASS.cabinet : null;
 }
 
+// Every post-connect screen (and the splash) uses the SAME clean Hard Money
+// Heroes key art as a true full-bleed `cover` background — no menu panels or
+// buttons baked into the image (menus are real DOM controls layered on top).
+const HMH_KEY_ART_BG = './assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg';
+// Screens that use the full-bleed key art background.
+const HMH_KEY_ART_SCREENS = new Set([
+  'splash', 'mainMenu', 'cabinetSelect', 'modeSelect', 'profile', 'leaderboards', 'settings', 'options',
+]);
+
 function hardMoneyHeroScreenStyle(screenId) {
-  // Post-connect screens use the clean Hard Money Heroes key art as a full-bleed
-  // background with NO menu panel baked on top (menus are real DOM controls).
-  const KEY_ART_BG = './assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg';
-  const fullBleedBg = `linear-gradient(180deg, rgba(4, 11, 26, 0.68), rgba(8, 6, 22, 0.76)), url("${KEY_ART_BG}")`;
-  if (screenId === 'mainMenu' || screenId === 'cabinetSelect' || screenId === 'modeSelect' || screenId === 'profile' || screenId === 'leaderboards' || screenId === 'settings') {
-    return fullBleedBg;
+  if (HMH_KEY_ART_SCREENS.has(screenId)) {
+    // A vertical scrim keeps the art readable behind UI while letting the
+    // heroes show through: darker at the very top/bottom (where chrome sits),
+    // lighter across the middle band so the key art is clearly visible.
+    const scrim = 'linear-gradient(180deg, rgba(3,6,23,0.82) 0%, rgba(3,6,23,0.42) 26%, rgba(3,6,23,0.40) 64%, rgba(3,6,23,0.86) 100%)';
+    return `${scrim}, url("${HMH_KEY_ART_BG}")`;
   }
   const screen = HARD_MONEY_HEROES_ASSET_MANIFEST.screens[screenId];
   if (!screen?.src) return '';
-  const overlayByScreen = {
-    splash: 'pause-menu-panel',
-    modeSelect: 'level-up-modal-frame',
-    options: 'upgrade-card-frame',
-  };
-  const overlaySrc = productionAssetSrc('ui', overlayByScreen[screenId]);
-  return overlaySrc
-    ? `linear-gradient(120deg, rgba(4, 11, 26, 0.86), rgba(8, 6, 22, 0.5)), url("${overlaySrc}"), url("${screen.src}")`
-    : `linear-gradient(120deg, rgba(4, 11, 26, 0.86), rgba(8, 6, 22, 0.5)), url("${screen.src}")`;
+  return `linear-gradient(120deg, rgba(4, 11, 26, 0.86), rgba(8, 6, 22, 0.5)), url("${screen.src}")`;
 }
 
 function hardMoneyHeroScreenBackgroundProfile(screenId) {
-  const safeDefaults = {
-    backgroundSize: 'cover, min(42vw, 520px) auto, contain',
-    backgroundPosition: 'center, right 5% bottom 8%, center top',
-    backgroundRepeat: 'no-repeat, no-repeat, no-repeat',
+  // Two layers everywhere now (scrim gradient + key art) -> two-value bg props,
+  // both sized so the key art covers the whole view. `fixed` attachment keeps
+  // the art steady while content scrolls (disabled on mobile via CSS).
+  const keyArt = {
+    backgroundSize: 'cover, cover',
+    backgroundPosition: 'center, center center',
+    backgroundRepeat: 'no-repeat, no-repeat',
     backgroundColor: '#030617',
   };
-  const profiles = {
-    splash: { ...safeDefaults, backgroundPosition: 'center, center top' },
-    mainMenu: { ...safeDefaults, backgroundPosition: 'center, center 2%' },
-    modeSelect: { ...safeDefaults, backgroundPosition: 'center, center top' },
-    options: { ...safeDefaults, backgroundPosition: 'center, center top' },
+  if (HMH_KEY_ART_SCREENS.has(screenId)) return keyArt;
+  return {
+    backgroundSize: 'cover, cover',
+    backgroundPosition: 'center, center',
+    backgroundRepeat: 'no-repeat, no-repeat',
+    backgroundColor: '#030617',
   };
-  return profiles[screenId] ?? safeDefaults;
 }
 
 function applyHardMoneyHeroScreenBackground(node, screenId) {
@@ -2142,6 +2146,12 @@ function renderOfficialCabinets() {
   }
 }
 
+// Set true for one render right after an avatar save so the freshly re-rendered
+// profile can surface a persistent "Avatar saved!" confirmation (the previous
+// code set the message then immediately re-rendered, wiping it before any human
+// could read it).
+let profileAvatarJustSaved = false;
+
 function renderOfficialProfile() {
   dom.officialCabinetGrid.replaceChildren();
   const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
@@ -2180,7 +2190,7 @@ function renderOfficialProfile() {
     feedback.dataset.state = input.value.trim() ? (v.valid ? 'ok' : 'error') : '';
   });
 
-  avatarSaveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', () => {
     const res = setArcadeUsername(state, connectedWallet, input.value);
     feedback.textContent = res.message;
     feedback.dataset.state = res.ok ? 'ok' : 'error';
@@ -2210,9 +2220,22 @@ function renderOfficialProfile() {
   fileInput.accept = 'image/png,image/jpeg';
   fileInput.setAttribute('aria-label', 'Choose avatar image');
   const chooseBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Choose Image' });
-  const avatarSaveBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Save Avatar', disabled: true });
+  const avatarSaveBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Save Avatar' });
+  avatarSaveBtn.disabled = true; // el() ignores `disabled` (not in attr allow-list); set it directly.
   chooseBtn.addEventListener('click', () => fileInput.click());
   const avatarFeedback = el('p', { className: 'avatar-feedback tiny-note' });
+  // Persistent post-save confirmation: if the profile was just re-rendered as a
+  // result of an avatar save, show "Avatar saved!" + flash the card so the user
+  // gets clear visual proof the upload worked.
+  if (profileAvatarJustSaved) {
+    profileAvatarJustSaved = false;
+    avatarFeedback.textContent = '✓ Avatar saved!';
+    avatarFeedback.dataset.state = 'ok';
+    previewHint.textContent = 'Your avatar is now live in the nav and on leaderboards.';
+    requestAnimationFrame(() => {
+      avatarCard.classList.add('avatar-saved-flash');
+    });
+  }
   let pendingAvatarDataUrl = '';
   let pendingAvatarName = '';
   fileInput.addEventListener('change', () => {
@@ -2252,12 +2275,11 @@ function renderOfficialProfile() {
   avatarSaveBtn.addEventListener('click', () => {
     if (!pendingAvatarDataUrl) return;
     setPlayerAvatar(connectedWallet, pendingAvatarDataUrl);
-    avatarFeedback.textContent = 'Avatar saved!';
-    avatarFeedback.dataset.state = 'ok';
-    avatarCard.classList.remove('avatar-saved-flash');
-    void avatarCard.offsetWidth;
-    avatarCard.classList.add('avatar-saved-flash');
-    render();
+    profileAvatarJustSaved = true; // surfaced as a persistent note on re-render
+    // Refresh only the nav avatar chip + the profile panel in place. Do NOT call
+    // the global render() here — it resets officialAppStep and bounces the user
+    // off the profile screen back to the cabinet floor.
+    renderOfficialNav();
     renderOfficialProfile();
   });
   const avatarControls = el('div', { className: 'avatar-editor-controls' });
@@ -2283,9 +2305,9 @@ function renderOfficialProfile() {
     const badge = el('div', {
       className: `achievement-badge tier-${a.tier ?? 'bronze'} ${a.unlocked ? 'unlocked' : 'locked'}`,
       title: `${a.title} — ${a.description}`,
-      tabindex: '0',
-      'aria-label': `${a.title}. ${a.description}`,
     });
+    badge.tabIndex = 0;
+    badge.setAttribute('aria-label', `${a.title}. ${a.description}`);
     const tooltip = el('span', { className: 'achievement-tooltip', textContent: a.description });
     appendText(badge, 'span', a.unlocked ? (a.icon ?? '🏅') : '🔒', 'achievement-icon');
     appendText(badge, 'span', a.title, 'achievement-name');
@@ -4975,11 +4997,11 @@ function drawCanonicalLandmarks(ctx) {
     });
   };
 
-  for (let ax = baseAX - 1; ax <= baseAX + 1; ax += 1) {
-    for (let ay = baseAY - 1; ay <= baseAY + 1; ay += 1) {
+  for (let ax = baseAX - 2; ax <= baseAX + 2; ax += 1) {
+    for (let ay = baseAY - 2; ay <= baseAY + 2; ay += 1) {
       const h = Math.abs(((ax * 73856093) ^ (ay * 19349663)) >>> 0);
-      // ~62% of anchors host a scene; the rest stay open ground.
-      if ((h % 100) > 62) continue;
+      // ~72% of anchors host a scene; the rest stay open ground so the map still breathes.
+      if ((h % 100) > 72) continue;
       const anchorX = ax * ANCHOR + (h % 5) - 2;
       const anchorY = ay * ANCHOR + ((h >> 3) % 5) - 2;
       const biome = biomeAt(seed, anchorX, anchorY);
@@ -4987,9 +5009,9 @@ function drawCanonicalLandmarks(ctx) {
       if (!pool.length) continue;
 
       if (biome === 'town' || biome === 'road') {
-        // Settlement: a short row of buildings flanking a "street", plus a couple
-        // of filler props (lamp/sign/can) near them. Deterministic but varied.
-        const count = 3 + (h % 3); // 3-5 buildings
+        // Settlement: rows of buildings flanking a "street", plus filler props
+        // (lamp/sign/can) scattered between them so the town reads as lived-in.
+        const count = 4 + (h % 3); // 4-6 buildings
         for (let i = 0; i < count; i += 1) {
           const hi = Math.abs(((anchorX * 2654435761) ^ ((anchorY + i) * 40503)) >>> 0);
           // line buildings along a row, alternate sides of the street
@@ -4997,9 +5019,15 @@ function drawCanonicalLandmarks(ctx) {
           const along = Math.floor(i / 2) * 3 - 1;
           pushProp(pool[hi % pool.length], biome, anchorX + along, anchorY + side);
         }
+        // 2-3 small filler props down the middle of the street.
+        const fillers = 2 + (h % 2);
+        for (let f = 0; f < fillers; f += 1) {
+          const hf = Math.abs(((anchorX * 2246822519) ^ ((anchorY + f * 11) * 668265263)) >>> 0);
+          pushProp(pool[hf % pool.length], biome, anchorX + (f * 2) - 1, anchorY + ((hf % 3) - 1));
+        }
       } else {
-        // Wilderness: a small natural cluster of 2-4 props grouped tightly.
-        const count = 2 + (h % 3);
+        // Wilderness: a natural cluster of 3-5 props grouped tightly.
+        const count = 3 + (h % 3);
         for (let i = 0; i < count; i += 1) {
           const hi = Math.abs(((anchorX * 2246822519) ^ ((anchorY + i * 7) * 3266489917)) >>> 0);
           const ox = (hi % 5) - 2;
@@ -5180,6 +5208,21 @@ function drawSceneLighting(ctx, width, height) {
     ctx.arc(l.x, l.y, l.r, 0, Math.PI * 2);
     ctx.fill();
   }
+  ctx.restore();
+  // 4) Edge vignette + atmospheric fog: darken the screen edges with a soft
+  // radial falloff. This hides the abrupt end of the tiled world, focuses the
+  // eye on the player at center, and makes the darker ground accents read as
+  // intentional nocturnal mood instead of stray glitch patches.
+  ctx.save();
+  const vg = ctx.createRadialGradient(
+    width / 2, height / 2, Math.min(width, height) * 0.30,
+    width / 2, height / 2, Math.max(width, height) * 0.72,
+  );
+  vg.addColorStop(0, 'rgba(4, 8, 22, 0)');
+  vg.addColorStop(0.7, 'rgba(4, 8, 22, 0.30)');
+  vg.addColorStop(1, 'rgba(3, 6, 18, 0.72)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, width, height);
   ctx.restore();
 }
 
@@ -5484,8 +5527,31 @@ function drawPlayer(ctx) {
     const drawHeight = productionHero ? 132 : 104;
     const drawX = x - (productionHero ? 48 : 34);
     const drawY = y - drawHeight + (productionHero ? 16 : 0) + bob;
-    ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
-    ctx.fillRect(x + 3, shadowY, 38, 8);
+    // Hero readability pass: a soft cyan "hard-money" ground glow + elliptical
+    // drop shadow under Lester so he pops off the dark isometric floor instead
+    // of blending into the night tint / ground accents. Cheap radial fills.
+    if (combat.roguelikeRun) {
+      const cx = x + 20;
+      const glow = ctx.createRadialGradient(cx, shadowY + 1, 2, cx, shadowY + 1, 46);
+      glow.addColorStop(0, 'rgba(64, 224, 255, 0.42)');
+      glow.addColorStop(0.5, 'rgba(64, 224, 255, 0.16)');
+      glow.addColorStop(1, 'rgba(64, 224, 255, 0)');
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = glow;
+      ctx.fillRect(cx - 46, shadowY - 28, 92, 56);
+      ctx.restore();
+      // soft elliptical shadow
+      ctx.save();
+      ctx.fillStyle = 'rgba(2, 4, 14, 0.45)';
+      ctx.beginPath();
+      ctx.ellipse(cx, shadowY + 4, 22, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
+      ctx.fillRect(x + 3, shadowY, 38, 8);
+    }
     // Mirror when the animated 8-direction frame says so (west-facing aim), else
     // fall back to keyboard side-scroll facing.
     const flip = heroFrame._flip != null ? heroFrame._flip : playerFacingLeft();
@@ -5632,10 +5698,14 @@ function directionalFrames(dirs, facing) {
   // Preference order: exact dir, its mirror twin, south-east, south, then any.
   const twin = { east: 'west', west: 'east', 'south-east': 'south-west',
     'south-west': 'south-east', 'north-east': 'north-west', 'north-west': 'north-east' }[dir];
+  // When we fall back to the head-on south/north frames (the common case while
+  // only `south` is harvested), KEEP the requested horizontal flip so a hero or
+  // enemy aiming west still mirrors left instead of always facing front-right.
+  // This is what makes left-facing work from a south-only sprite set.
   const tryOrder = [
     [dir, flip],
     twin ? [twin, !flip] : null,
-    ['south-east', flip], ['east', flip], ['south', false], ['north', false],
+    ['south-east', flip], ['east', flip], ['south', flip], ['north', flip],
   ].filter(Boolean);
   for (const [d, f] of tryOrder) {
     if (dirs[d]?.length) return { frames: dirs[d], flip: f };
