@@ -281,3 +281,25 @@
 }
 .leaderboard-you-rank { font-weight: 800; letter-spacing: 0.08em; color: #ffe84d; }
 .leaderboard-you-score { margin-left: auto; font-weight: 800; color: #45ff8a; }
+
+/* ---- Achievements grid ---- */
+.achievements-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.achievements-count { color: #45ff8a; font-size: 0.9rem; }
+.achievements-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px;
+}
+.achievement-badge {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 10px 6px; border-radius: 12px; text-align: center;
+  background: rgba(8,14,32,0.6); border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.achievement-badge.unlocked:hover { transform: translateY(-3px); }
+.achievement-badge.locked { opacity: 0.42; filter: grayscale(0.9); }
+.achievement-badge.unlocked.tier-bronze { border-color: #cd7f32; box-shadow: 0 0 10px rgba(205,127,50,0.3); }
+.achievement-badge.unlocked.tier-silver { border-color: #c7d0dc; box-shadow: 0 0 10px rgba(199,208,220,0.3); }
+.achievement-badge.unlocked.tier-gold { border-color: #ffd54a; box-shadow: 0 0 12px rgba(255,213,74,0.45); }
+.achievement-badge.unlocked.tier-platinum { border-color: #7bf6ff; box-shadow: 0 0 14px rgba(123,246,255,0.5); }
+.achievement-icon { font-size: 1.6rem; line-height: 1; }
+.achievement-name { font-size: 0.64rem; color: #d6f6ff; line-height: 1.2; }
+.achievement-badge.locked .achievement-name { color: rgba(214,228,255,0.6); }

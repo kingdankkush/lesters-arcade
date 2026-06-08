@@ -2223,6 +2223,28 @@ function renderOfficialProfile() {
   avatarCard.append(avatarRow, fileInput);
   dom.officialCabinetGrid.append(avatarCard);
 
+  // --- Achievements grid (badges, tier-colored, locked dimmed) ---
+  const achievements = snapshot?.achievements ?? [];
+  const summary = snapshot?.achievementSummary ?? { total: achievements.length, unlocked: 0 };
+  const achCard = el('article', { className: 'official-info-card achievements-card' });
+  const achHead = el('div', { className: 'achievements-head' });
+  appendText(achHead, 'span', 'ACHIEVEMENTS', 'cabinet-status-label');
+  appendText(achHead, 'strong', `${summary.unlocked} / ${summary.total} unlocked`, 'achievements-count');
+  achCard.append(achHead);
+  if (!achievements.length) {
+    appendText(achCard, 'small', 'Play runs to unlock achievements and badges.');
+  } else {
+    const grid = el('div', { className: 'achievements-grid' });
+    for (const a of achievements) {
+      const badge = el('div', { className: `achievement-badge tier-${a.tier ?? 'bronze'} ${a.unlocked ? 'unlocked' : 'locked'}`, title: `${a.title} — ${a.description}` });
+      appendText(badge, 'span', a.unlocked ? (a.icon ?? '🏅') : '🔒', 'achievement-icon');
+      appendText(badge, 'span', a.title, 'achievement-name');
+      grid.append(badge);
+    }
+    achCard.append(grid);
+  }
+  dom.officialCabinetGrid.append(achCard);
+
   // --- Settlement history (score settles to LitVM via zkLTC) ---
   const settlements = snapshot?.settlements ?? [];
   const settleCard = el('article', { className: 'official-info-card settlement-history-card' });
