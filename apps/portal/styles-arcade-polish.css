@@ -339,3 +339,55 @@
 .ranked-entry-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
 .ranked-entry-actions .big-action { flex: 1; }
 .ranked-entry-actions .back-nav-button { margin-bottom: 0; }
+
+/* --- Animated splash loop video (replaces the static marquee PNG) --------- */
+.splash-loop-video {
+  border-radius: 12px;
+  object-fit: cover;
+  background: #05070f;
+  box-shadow: 0 0 0 1px rgba(25,247,255,0.30), 0 18px 60px rgba(0,0,0,0.65), 0 0 70px rgba(255,61,242,0.16);
+}
+
+/* --- Partner ad space (horizontal + vertical) ----------------------------- */
+.ad-banner {
+  display: block;
+  position: relative;
+  text-decoration: none;
+  border-radius: 12px;
+  overflow: hidden;
+  line-height: 0;
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+  box-shadow: 0 0 0 1px rgba(25,247,255,0.20), 0 10px 34px rgba(0,0,0,0.55);
+}
+.ad-banner img { display: block; width: 100%; height: auto; }
+.ad-banner::after {
+  content: "AD";
+  position: absolute;
+  top: 6px; right: 8px;
+  font: 700 9px/1 "Trebuchet MS", Verdana, sans-serif;
+  letter-spacing: 1.5px;
+  color: rgba(154,167,199,0.85);
+  background: rgba(6,10,22,0.6);
+  padding: 2px 5px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.ad-banner:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 1px rgba(25,247,255,0.45), 0 14px 40px rgba(0,0,0,0.6), 0 0 40px rgba(25,247,255,0.25);
+}
+.ad-banner-horizontal {
+  width: 100%;
+  max-width: 728px;
+  margin: 0 auto 18px;
+}
+.ad-banner-vertical {
+  width: 100%;
+  max-width: 300px;
+  margin: 14px auto 0;
+}
+@media (max-width: 720px) {
+  /* Hide the tall rail ad on narrow screens; keep the horizontal one. */
+  .ad-banner-vertical { display: none; }
+}
