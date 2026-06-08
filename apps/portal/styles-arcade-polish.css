@@ -141,3 +141,67 @@
   color: #d6f6ff;
 }
 .back-nav-button:active { transform: translateX(-1px) scale(0.98); }
+
+/* ---- Character-select roster ---- */
+.character-select-view { display: flex; flex-direction: column; gap: 16px; }
+.char-select-head h2 { margin: 4px 0; }
+.character-roster {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  text-align: left;
+  background: rgba(8, 14, 32, 0.78);
+  border: 1px solid rgba(25, 247, 255, 0.3);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+}
+.hero-card.active:hover {
+  transform: translateY(-4px);
+  border-color: rgba(25, 247, 255, 0.8);
+  box-shadow: 0 0 28px rgba(25, 247, 255, 0.28);
+}
+.hero-card.locked { opacity: 0.62; cursor: not-allowed; filter: grayscale(0.85); }
+.hero-card-stage {
+  position: relative;
+  height: 168px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 60%, rgba(25,247,255,0.14), rgba(6,10,28,0) 70%);
+  border-radius: 12px;
+}
+.hero-card-stage .hmh-cabinet-rotator { width: 132px; height: 132px; }
+.hero-locked-badge {
+  position: absolute;
+  bottom: 10px;
+  padding: 4px 14px;
+  background: rgba(255, 71, 111, 0.9);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  border-radius: 6px;
+}
+.hero-name { font-size: 1.3rem; color: #d6f6ff; }
+.hero-tagline { color: #9fe9ff; font-size: 0.82rem; letter-spacing: 0.04em; }
+.hero-bio { color: rgba(214, 228, 255, 0.82); font-size: 0.82rem; line-height: 1.5; margin: 4px 0; }
+.hero-stats { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.hero-stat-row { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; }
+.hero-stat-label { font-size: 0.72rem; color: #9fe9ff; letter-spacing: 0.08em; }
+.hero-stat-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; }
+.hero-stat-fill { height: 100%; background: linear-gradient(90deg, #19f7ff, #45ff8a); border-radius: 5px; }
+.hero-cta {
+  margin-top: 6px;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: #ffe84d;
+}
+.hero-card.locked .hero-cta { color: rgba(255, 232, 77, 0.6); }

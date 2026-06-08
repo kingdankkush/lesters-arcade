@@ -904,6 +904,9 @@ const dom = {
   officialRankedModeButton: document.querySelector('#officialRankedModeButton'),
   officialModeBackButton: document.querySelector('#officialModeBackButton'),
   officialRankedTooltip: document.querySelector('#officialRankedTooltip'),
+  officialCharacterSelect: document.querySelector('#officialCharacterSelect'),
+  officialCharacterRoster: document.querySelector('#officialCharacterRoster'),
+  officialCharacterBackButton: document.querySelector('#officialCharacterBackButton'),
   officialLevelIntro: document.querySelector('#officialLevelIntro'),
   officialBeginLevelButton: document.querySelector('#officialBeginLevelButton'),
   officialLevelBackButton: document.querySelector('#officialLevelBackButton'),
@@ -1127,6 +1130,84 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
     rotator.append(image);
   });
   return rotator;
+}
+
+// --- Character-select roster -------------------------------------------------
+// Lester is the active hero; Lilly is a locked teaser (canon: unlockable-later).
+// Each entry builds a 360-degree rotating sprite from the production character's
+// 8 directional rotation frames.
+function heroRotationSprite(characterId) {
+  const c = HMH_PRODUCTION_ART_PASS.characters?.[characterId];
+  const dirs = c?.directions ?? [];
+  if (!dirs.length) return null;
+  // Order the 8 directions into a smooth spin (E, NE, N, NW, W, SW, S, SE if the
+  // metadata exposes it; otherwise use natural index order).
+  const frames = dirs.map((d) => ({ src: d.src }));
+  return { id: characterId, frames, frameDurationMs: 420 };
+}
+const HERO_ROSTER = [
+  {
+    id: 'lester', name: 'Lester', locked: false,
+    tagline: 'Litecoin Commando',
+    bio: 'Rambo-like arcade commando — stubborn, brave, over-the-top. Walks straight into the panic of Litecoin City After Dark with hard money on his side.',
+    stats: [['Power', 4], ['Speed', 3], ['Armor', 4], ['Luck', 3]],
+  },
+  {
+    id: 'lilly', name: 'Lilly', locked: true,
+    tagline: 'Lightning Striker (Locked)',
+    bio: 'A future unlockable hero with the same moveset and a faster, sardonic style. Coming to Hard Money Heroes in a later update.',
+    stats: [['Power', 3], ['Speed', 5], ['Armor', 2], ['Luck', 4]],
+  },
+];
+
+function renderHeroStatBars(container, stats) {
+  for (const [label, value] of stats) {
+    const row = el('div', { className: 'hero-stat-row' });
+    appendText(row, 'span', label, 'hero-stat-label');
+    const track = el('div', { className: 'hero-stat-track' });
+    const fill = el('div', { className: 'hero-stat-fill' });
+    fill.style.width = `${(value / 5) * 100}%`;
+    track.append(fill);
+    row.append(track);
+    container.append(row);
+  }
+}
+
+function renderOfficialCharacterSelect() {
+  applyHardMoneyHeroScreenBackground(dom.officialCharacterSelect, 'modeSelect');
+  if (!dom.officialCharacterRoster) return;
+  dom.officialCharacterRoster.replaceChildren();
+  for (const hero of HERO_ROSTER) {
+    const card = el('button', { className: `hero-card ${hero.locked ? 'locked' : 'active'}` });
+    card.type = 'button';
+    card.disabled = hero.locked;
+    const stage = el('div', { className: 'hero-card-stage' });
+    const sprite = heroRotationSprite(hero.id);
+    if (sprite) {
+      stage.append(renderRotatingCabinetSprite(sprite, 'card'));
+    }
+    if (hero.locked) {
+      appendText(stage, 'span', 'LOCKED', 'hero-locked-badge');
+    }
+    card.append(stage);
+    const info = el('div', { className: 'hero-card-info' });
+    appendText(info, 'strong', hero.name, 'hero-name');
+    appendText(info, 'span', hero.tagline, 'hero-tagline');
+    appendText(info, 'p', hero.bio, 'hero-bio');
+    const statBox = el('div', { className: 'hero-stats' });
+    renderHeroStatBars(statBox, hero.stats);
+    info.append(statBox);
+    appendText(info, 'span', hero.locked ? 'Coming Soon' : 'SELECT — PLAY AS ' + hero.name.toUpperCase(), 'hero-cta');
+    card.append(info);
+    if (!hero.locked) {
+      card.addEventListener('click', () => {
+        playSfxCue('menu-click', 0.05);
+        combat.characterId = hero.id;
+        setOfficialView('level-one-intro');
+      });
+    }
+    dom.officialCharacterRoster.append(card);
+  }
 }
 
 function formatSeconds(seconds) {
@@ -1957,7 +2038,7 @@ function setOfficialView(step) {
 }
 
 function showOfficialPanel(activePanel) {
-  for (const panel of [dom.officialWalletSplash, dom.officialArcadeFloor, dom.officialModeSelect, dom.officialLevelIntro, dom.officialGameplay]) {
+  for (const panel of [dom.officialWalletSplash, dom.officialArcadeFloor, dom.officialModeSelect, dom.officialCharacterSelect, dom.officialLevelIntro, dom.officialGameplay]) {
     if (panel) panel.hidden = panel !== activePanel;
   }
 }
@@ -1967,7 +2048,7 @@ function renderOfficialNav() {
   dom.officialNavTabs.replaceChildren();
   const iconById = { cabinets: '🕹️', profile: '👤', leaderboards: '🏆', settings: '⚙️' };
   for (const item of (LESTERS_ARCADE_V2_APP_SHELL.primaryNav ?? LESTERS_ARCADE_V2_APP_SHELL.navigation)) {
-    const button = el('button', { className: `official-nav-tab ${officialAppStep === item.id || (item.id === 'cabinets' && ['arcade-walk-in', 'cabinet-select', 'mode-select', 'level-one-intro', 'gameplay'].includes(officialAppStep)) ? 'active' : ''}` });
+    const button = el('button', { className: `official-nav-tab ${officialAppStep === item.id || (item.id === 'cabinets' && ['arcade-walk-in', 'cabinet-select', 'mode-select', 'character-select', 'level-one-intro', 'gameplay'].includes(officialAppStep)) ? 'active' : ''}` });
     button.type = 'button';
     button.disabled = !connectedWallet && item.id !== 'cabinets';
     button.append(renderArcadeIcon(iconById[item.id] ?? '◆', item.label), document.createTextNode(item.label));
@@ -2236,6 +2317,9 @@ function renderOfficialApp() {
   } else if (officialAppStep === 'mode-select') {
     showOfficialPanel(dom.officialModeSelect);
     renderOfficialModeSelect();
+  } else if (officialAppStep === 'character-select') {
+    showOfficialPanel(dom.officialCharacterSelect);
+    renderOfficialCharacterSelect();
   } else if (officialAppStep === 'level-one-intro') {
     showOfficialPanel(dom.officialLevelIntro);
   } else if (officialAppStep === 'gameplay') {
@@ -2269,7 +2353,7 @@ async function startOfficialMode(mode) {
   playSfxCue('menu-click');
   officialSelectedMode = mode;
   await startMode(mode === 'ranked' ? 'paid' : 'free');
-  officialAppStep = 'level-one-intro';
+  officialAppStep = 'character-select';
   render();
 }
 
@@ -5282,7 +5366,8 @@ dom.developerBackstageToggle.addEventListener('click', () => {
 dom.officialFreeModeButton.addEventListener('click', () => startOfficialMode('free'));
 dom.officialRankedModeButton.addEventListener('click', () => startOfficialMode('ranked'));
 dom.officialModeBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('cabinet-select'); });
-dom.officialLevelBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('mode-select'); });
+dom.officialCharacterBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('mode-select'); });
+dom.officialLevelBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('character-select'); });
 dom.officialBeginLevelButton.addEventListener('click', beginOfficialLevel);
 
 dom.connectWalletButton.addEventListener('click', connectWallet);
