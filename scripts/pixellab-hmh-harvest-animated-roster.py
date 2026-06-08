@@ -50,6 +50,9 @@ ROSTER = {
     "evil-banker-ranged": ("522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7", "enemy"),
     "trench-degen": ("9e591394-caf5-498c-886b-1161e1a64043", "enemy"),
     "lilly": ("61b040dd-d2cb-4f78-ab59-b1ad703bce84", "hero"),
+    # New playable heroes (created via pixellab-new-heroes-pipeline.py).
+    "lit-commando": ("c96d19d1-8958-4fcd-b517-9dfded9e0051", "hero"),
+    "lit-valkyrie": ("74b5efc0-e7d8-4400-85f5-9db85ef05db9", "hero"),
 }
 
 DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]

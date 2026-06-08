@@ -15,31 +15,31 @@
       },
       "run": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (running fast forward, weapon in hand)\ndirections: south, south-east, east, north-east, north, north-west, west, south-west (8 jobs"
       },
       "fire-pistol": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
       },
       "melee-knife": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
       },
       "throw-axe": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
       },
       "fire-shotgun": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
       },
       "fire-machinegun": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
       },
       "hurt": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "error: need 8 job slots but only 3 available (17/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
       },
       "stun": {
         "status": "queued",
@@ -47,11 +47,11 @@
       },
       "pickup": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
       },
       "levelup": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (raising arms as energy surges upward, leveling up)\ndirections: south, south-east, east, north-east, north, north-west, west, south"
       },
       "death": {
         "status": "queued",
