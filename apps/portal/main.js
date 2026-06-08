@@ -15,7 +15,7 @@ import { HMH_FX_POWERUPS_WAVE } from './assets/generated/hmh-fx-powerups-wave.mj
 import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs';
 import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
-import { obstaclesNear, resolvePlayerCollision, obstacleHitAt } from './src/world-obstacles.mjs';
+import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -85,6 +85,8 @@ import {
   startPlaySession,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
+import { recordCadenceScore } from './src/leaderboard-engine.mjs';
+import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
 
 const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
 const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
@@ -943,6 +945,7 @@ const dom = {
   combatMenuActionGrid: document.querySelector('#combatMenuActionGrid'),
   combatGameOverSummary: document.querySelector('#combatGameOverSummary'),
   combatHudOverlay: document.querySelector('#combatHudOverlay'),
+  roguelikeStatBar: document.querySelector('#roguelikeStatBar'),
   tacticalBalanceDebugOverlay: document.querySelector('#tacticalBalanceDebugOverlay'),
   officialCombatMount: document.querySelector('#officialCombatMount'),
   accountFlowSteps: document.querySelector('#accountFlowSteps'),
@@ -994,6 +997,14 @@ const dom = {
 };
 
 const state = createInitialArcadeState();
+// Seed the global leaderboard with a believable Top-50 of AI players so the
+// leaderboard UI (podium, rows, sort/filter/search, ranked highlights) can be
+// evaluated with real-looking data. These are local-only synthetic seeds — they
+// never settle on-chain. Idempotent guard so it only seeds once.
+if (!state.__seededLeaderboard) {
+  applySeedLeaderboard(state, 'lester-blaster', recordCadenceScore, { count: 50 });
+  state.__seededLeaderboard = true;
+}
 const cartridges = getCartridgeSelectModel();
 let selectedGameId = 'lester-blaster';
 let connectedWallet = null;
@@ -1008,6 +1019,14 @@ let lastBossId = null;
 let officialAppStep = 'wallet-splash';
 let officialSelectedMode = null;
 let developerBackstageOpen = false;
+
+// Playable hero display names. The in-game roguelike heroes were renamed from
+// the old mascot working titles (lester/lilly) to their combat identities. The
+// internal ids stay stable so saved data / canon keep working.
+const CHARACTER_DISPLAY_NAMES = Object.freeze({
+  lester: 'Lit Commando',
+  lilly: 'Lit Valkyrie',
+});
 
 const combat = {
   active: false,
@@ -1421,17 +1440,46 @@ function renderLevelUpActionGrid() {
   if (dom.combatMenuActionGrid.dataset.signature === signature) return true;
   dom.combatMenuActionGrid.dataset.signature = signature;
   dom.combatMenuActionGrid.replaceChildren();
+  // Category → icon + tone for the upgrade card badge so each augment reads at a glance.
+  const CAT_STYLE = {
+    offense: { icon: '⚔', tone: 'red', label: 'Offense' },
+    defense: { icon: '🛡', tone: 'cyan', label: 'Defense' },
+    mobility: { icon: '🥾', tone: 'green', label: 'Mobility' },
+    utility: { icon: '✦', tone: 'gold', label: 'Utility' },
+    economy: { icon: '💎', tone: 'gold', label: 'Economy' },
+    control: { icon: '🌀', tone: 'cyan', label: 'Control' },
+    throwable: { icon: '💣', tone: 'orange', label: 'Throwable' },
+    status: { icon: '🔥', tone: 'orange', label: 'Status' },
+  };
   for (const choice of choices) {
-    const button = el('button', { className: 'combat-menu-action level-up-upgrade-card', type: 'button', dataset: { skill: choice.id } });
-    button.append(
-      renderArcadeIcon('▲', choice.title),
-      document.createTextNode(`${choice.title} +${choice.perLevelPercent}%`),
-    );
-    appendText(button, 'small', `Rank ${choice.currentLevel} → ${choice.nextLevel} // ${choice.description}`);
+    const cat = CAT_STYLE[choice.category] ?? { icon: '▲', tone: 'cyan', label: 'Augment' };
+    const button = el('button', { className: 'combat-menu-action level-up-upgrade-card', type: 'button', dataset: { skill: choice.id, tone: cat.tone } });
+    // Header row: category icon badge + title + per-rank gain chip.
+    const head = el('div', { className: 'upgrade-card-head' });
+    const badge = el('span', { className: 'upgrade-card-badge', textContent: cat.icon });
+    badge.setAttribute('aria-hidden', 'true');
+    const titleWrap = el('div', { className: 'upgrade-card-titlewrap' });
+    appendText(titleWrap, 'span', cat.label.toUpperCase(), 'upgrade-card-cat');
+    appendText(titleWrap, 'strong', choice.title, 'upgrade-card-title');
+    head.append(badge, titleWrap);
+    appendText(head, 'span', `+${choice.perLevelPercent}%`, 'upgrade-card-gain');
+    button.append(head);
+    // Rank progression pips: filled up to currentLevel, the next rank highlighted.
+    const ranks = el('div', { className: 'upgrade-card-ranks' });
+    const maxLevel = choice.maxLevel ?? 5;
+    for (let r = 1; r <= maxLevel; r += 1) {
+      const pip = el('span', { className: `upgrade-rank-pip${r <= choice.currentLevel ? ' is-filled' : ''}${r === choice.nextLevel ? ' is-next' : ''}` });
+      ranks.append(pip);
+    }
+    const rankLabel = el('span', { className: 'upgrade-card-ranklabel', textContent: `Rank ${choice.currentLevel} → ${choice.nextLevel}` });
+    button.append(ranks, rankLabel);
+    // Description (contained, wraps within the card).
+    appendText(button, 'p', choice.description, 'upgrade-card-desc');
+    button.setAttribute('title', `${choice.title} · ${cat.label} · ${choice.description}`);
     button.addEventListener('click', () => selectLevelUpUpgrade(choice.id));
     dom.combatMenuActionGrid.append(button);
   }
-  const reroll = el('button', { className: 'combat-menu-action', type: 'button', dataset: { action: 'level-up-reroll' } });
+  const reroll = el('button', { className: 'combat-menu-action upgrade-reroll-button', type: 'button', dataset: { action: 'level-up-reroll' } });
   reroll.disabled = (combat.roguelikeRun?.rerollsRemaining ?? 0) <= 0;
   reroll.append(renderArcadeIcon('↻', 'Reroll upgrade choices'), document.createTextNode(`Reroll (${combat.roguelikeRun?.rerollsRemaining ?? 0})`));
   reroll.addEventListener('click', rerollLevelUpChoices);
@@ -1517,6 +1565,71 @@ function renderCombatHudOverlay() {
     appendText(card, 'span', widget.label);
     appendText(card, 'strong', widget.value);
     dom.combatHudOverlay.append(card);
+  }
+}
+
+// Roguelike run stats live in a DOM bar ABOVE the gameplay canvas (not painted on
+// the canvas) so the game window stays fully visible. This replaces the old
+// on-canvas drawHud stat panel.
+function renderRoguelikeStatBar() {
+  const bar = dom.roguelikeStatBar;
+  if (!bar) return;
+  const run = combat.roguelikeRun;
+  const showBar = !!(run && (combat.active || combat.gameOver || combat.levelUpPaused || combat.paused));
+  bar.hidden = !showBar;
+  if (!showBar) {
+    bar.dataset.signature = '';
+    bar.replaceChildren();
+    return;
+  }
+  const director = run.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+  const augments = Object.values(run.skills).reduce((sum, level) => sum + level, 0);
+  const weapon = weaponById(combat.weaponId);
+  const xpToNext = Math.max(0, Math.round(run.xpToNextLevel - run.xp));
+  const xpRatio = Math.max(0, Math.min(1, run.xp / Math.max(1, run.xpToNextLevel)));
+  const heroName = (combat.characterId && CHARACTER_DISPLAY_NAMES[combat.characterId]) || 'Hero';
+  const stats = [
+    { id: 'survive', label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} / 20:00`, tone: 'cyan' },
+    { id: 'tier', label: 'TIER', value: director.difficultyLabel.toUpperCase(), tone: 'cyan' },
+    { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}`, tone: 'red' },
+    { id: 'score', label: 'SCORE', value: combat.score.toLocaleString(), tone: 'gold' },
+    { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
+    { id: 'level', label: 'LEVEL', value: `${run.level}`, tone: 'green' },
+    { id: 'wpn', label: 'WPN', value: weapon.title.toUpperCase(), tone: 'green' },
+    { id: 'aug', label: 'AUG', value: `${augments} · ⟳${run.rerollsRemaining} · ✦${combat.grenades}`, tone: 'orange' },
+  ];
+  const activeFx = [];
+  if ((combat.powerUpTimers.magnet ?? 0) > 0) activeFx.push(`MAGNET ${Math.ceil(combat.powerUpTimers.magnet)}s`);
+  if ((combat.powerUpTimers.slowEnemies ?? 0) > 0) activeFx.push(`SLOW ${Math.ceil(combat.powerUpTimers.slowEnemies)}s`);
+  if ((combat.powerUpTimers.berserk ?? 0) > 0) activeFx.push(`BERSERK ${Math.ceil(combat.powerUpTimers.berserk)}s`);
+  const signature = `${heroName}|${stats.map((s) => s.value).join('|')}|xp${Math.round(xpRatio * 100)}|${activeFx.join(',')}`;
+  if (bar.dataset.signature === signature) return;
+  bar.dataset.signature = signature;
+  bar.replaceChildren();
+  const heroChip = el('span', { className: 'stat-hero' });
+  heroChip.textContent = heroName;
+  bar.append(heroChip);
+  const chips = el('div', { className: 'stat-chips' });
+  for (const s of stats) {
+    const chip = el('div', { className: 'stat-chip', dataset: { tone: s.tone } });
+    appendText(chip, 'span', s.label);
+    appendText(chip, 'strong', s.value);
+    chips.append(chip);
+  }
+  bar.append(chips);
+  // XP-to-next bar with explicit remaining number.
+  const xpWrap = el('div', { className: 'stat-xp' });
+  appendText(xpWrap, 'span', `XP ${xpToNext} to LV ${run.level + 1}`);
+  const track = el('div', { className: 'stat-xp-track' });
+  const fill = el('div', { className: 'stat-xp-fill' });
+  fill.style.width = `${Math.round(xpRatio * 100)}%`;
+  track.append(fill);
+  xpWrap.append(track);
+  bar.append(xpWrap);
+  if (activeFx.length) {
+    const fxWrap = el('div', { className: 'stat-fx' });
+    for (const f of activeFx) appendText(fxWrap, 'span', f);
+    bar.append(fxWrap);
   }
 }
 
@@ -1633,6 +1746,7 @@ function syncCombatOverlay() {
         : menu.copy;
   }
   renderCombatHudOverlay();
+  renderRoguelikeStatBar();
   renderTacticalBalanceDebugOverlay();
   renderGameOverSummary();
   renderCombatMenuActionGrid();
@@ -2152,6 +2266,9 @@ function renderOfficialCabinets() {
 // code set the message then immediately re-rendered, wiping it before any human
 // could read it).
 let profileAvatarJustSaved = false;
+// Same pattern for the display-name save so the confirmation survives the
+// re-render the save triggers (mirrors the avatar "saved!" toast/flash).
+let profileUsernameJustSaved = false;
 
 function renderOfficialProfile() {
   dom.officialCabinetGrid.replaceChildren();
@@ -2184,6 +2301,18 @@ function renderOfficialProfile() {
   const saveBtn = el('button', { className: 'pixel-button username-save-button', textContent: 'Save Username', type: 'button' });
   const feedback = el('p', { className: 'username-feedback tiny-note' });
 
+  // Persistent post-save confirmation: if the profile was just re-rendered as a
+  // result of a username save, show "✓ Username saved!" + flash the card so the
+  // user gets clear visual proof the save worked (mirrors the avatar save UX).
+  if (profileUsernameJustSaved) {
+    profileUsernameJustSaved = false;
+    feedback.textContent = '✓ Display name saved!';
+    feedback.dataset.state = 'ok';
+    requestAnimationFrame(() => {
+      editor.classList.add('username-saved-flash');
+    });
+  }
+
   // live validation
   input.addEventListener('input', () => {
     const v = validateUsername(input.value);
@@ -2193,11 +2322,17 @@ function renderOfficialProfile() {
 
   saveBtn.addEventListener('click', () => {
     const res = setArcadeUsername(state, connectedWallet, input.value);
-    feedback.textContent = res.message;
-    feedback.dataset.state = res.ok ? 'ok' : 'error';
     if (res.ok) {
-      render();
+      profileUsernameJustSaved = true; // surfaced as a persistent note on re-render
+      playSfxCue('menu-click', 0.06);
+      // Refresh the nav (display name) + profile panel in place. Do NOT call the
+      // global render() here — it resets officialAppStep and bounces the user off
+      // the profile screen (same reason as the avatar save below).
+      renderOfficialNav();
       renderOfficialProfile();
+    } else {
+      feedback.textContent = res.message;
+      feedback.dataset.state = 'error';
     }
   });
 
@@ -2337,6 +2472,10 @@ function renderOfficialProfile() {
 }
 
 let officialLeaderboardCadence = 'all-time';
+// Leaderboard sort/filter/search UI state (Top-50 board).
+let leaderboardSortKey = 'score'; // 'score' | 'name' | 'date' | 'kills' | 'survive' | 'level'
+let leaderboardSortDir = 'desc';  // 'asc' | 'desc'
+let leaderboardSearch = '';
 
 function renderOfficialLeaderboards() {
   dom.officialCabinetGrid.replaceChildren();
@@ -2362,57 +2501,140 @@ function renderOfficialLeaderboards() {
   const active = getLeaderboard(state, selectedGameId, officialLeaderboardCadence, {
     wallet: connectedWallet,
     displayNameFor,
-    limit: 10,
+    limit: 50,
   });
 
   const board = el('article', { className: 'official-info-card leaderboard-board-card' });
   const header = el('div', { className: 'leaderboard-header' });
   appendText(header, 'h3', '🏆 GLOBAL LEADERBOARD', 'leaderboard-title');
-  appendText(header, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey}`, 'cabinet-status-label');
+  appendText(header, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${active.total} ranked runs`, 'cabinet-status-label');
   board.append(header);
 
   if (active.topEntries.length === 0) {
     appendText(board, 'small', 'No ranked scores in this period yet. Play a Ranked run and submit your official score at game over to claim the top spot.');
-  } else {
-    // --- Podium for the top 3 (medals + avatars + glow) ---
-    const podiumEntries = active.topEntries.slice(0, 3);
-    if (podiumEntries.length >= 1) {
-      const podium = el('div', { className: 'leaderboard-podium' });
-      // Visual order: 2nd, 1st, 3rd so 1st sits center/tallest.
-      const order = [podiumEntries[1], podiumEntries[0], podiumEntries[2]].filter(Boolean);
-      const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
-      for (const entry of order) {
-        const wallet = entry.wallet ?? entry.address ?? null;
-        const col = el('div', { className: `podium-slot podium-rank-${entry.rank}${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
-        appendText(col, 'span', medals[entry.rank] ?? `#${entry.rank}`, 'podium-medal');
-        col.append(renderAvatarChip(wallet, entry.displayName, 'podium-avatar'));
-        appendText(col, 'strong', entry.displayName, 'podium-name');
-        appendText(col, 'span', entry.score.toLocaleString(), 'podium-score');
-        const stand = el('div', { className: 'podium-stand' });
-        appendText(stand, 'span', `#${entry.rank}`, 'podium-stand-rank');
-        col.append(stand);
-        podium.append(col);
-      }
-      board.append(podium);
-    }
-
-    // --- Remaining ranked rows (4th onward) ---
-    const rest = active.topEntries.slice(3);
-    if (rest.length) {
-      const list = el('div', { className: 'leaderboard-list' });
-      for (const entry of rest) {
-        const wallet = entry.wallet ?? entry.address ?? null;
-        const row = el('div', { className: `leaderboard-entry${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
-        appendText(row, 'span', `#${entry.rank}`, 'leaderboard-rank');
-        row.append(renderAvatarChip(wallet, entry.displayName, 'leaderboard-row-avatar'));
-        appendText(row, 'span', entry.displayName, 'leaderboard-name');
-        if (entry.settlementTxHash) appendText(row, 'span', '✓', 'leaderboard-settled');
-        appendText(row, 'strong', entry.score.toLocaleString(), 'leaderboard-score');
-        list.append(row);
-      }
-      board.append(list);
-    }
+    dom.officialCabinetGrid.append(board);
+    return;
   }
+
+  // --- Podium for the top 3 (medals + avatars + glow) — always by score ---
+  const podiumEntries = active.topEntries.slice(0, 3);
+  if (podiumEntries.length >= 1) {
+    const podium = el('div', { className: 'leaderboard-podium' });
+    const order = [podiumEntries[1], podiumEntries[0], podiumEntries[2]].filter(Boolean);
+    const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
+    for (const entry of order) {
+      const wallet = entry.wallet ?? entry.address ?? null;
+      const col = el('div', { className: `podium-slot podium-rank-${entry.rank}${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
+      appendText(col, 'span', medals[entry.rank] ?? `#${entry.rank}`, 'podium-medal');
+      col.append(renderAvatarChip(wallet, entry.displayName, 'podium-avatar'));
+      appendText(col, 'strong', entry.displayName, 'podium-name');
+      appendText(col, 'span', entry.score.toLocaleString(), 'podium-score');
+      const stand = el('div', { className: 'podium-stand' });
+      appendText(stand, 'span', `#${entry.rank}`, 'podium-stand-rank');
+      col.append(stand);
+      podium.append(col);
+    }
+    board.append(podium);
+  }
+
+  // --- Search + sort controls --------------------------------------------
+  const controls = el('div', { className: 'leaderboard-controls' });
+  const searchInput = el('input', { className: 'leaderboard-search', type: 'search' });
+  searchInput.placeholder = 'Search display name…';
+  searchInput.value = leaderboardSearch;
+  searchInput.setAttribute('aria-label', 'Search leaderboard by display name');
+  searchInput.addEventListener('input', () => {
+    leaderboardSearch = searchInput.value;
+    renderOfficialLeaderboards();
+    // keep focus + caret after re-render
+    const next = document.querySelector('.leaderboard-search');
+    if (next) { next.focus(); next.setSelectionRange(next.value.length, next.value.length); }
+  });
+  controls.append(searchInput);
+  board.append(controls);
+
+  // --- Sortable, searchable Top-50 table ---------------------------------
+  // Each row keeps its TRUE rank-by-score (the leaderboard standing); sorting/
+  // searching only changes the display order/visibility, not the rank number.
+  const ranked = active.topEntries.map((e) => ({ ...e, trueRank: e.rank }));
+  const term = leaderboardSearch.trim().toLowerCase();
+  let rows = term ? ranked.filter((e) => (e.displayName || '').toLowerCase().includes(term)) : ranked.slice();
+  const dir = leaderboardSortDir === 'asc' ? 1 : -1;
+  const getVal = (e, key) => {
+    switch (key) {
+      case 'name': return (e.displayName || '').toLowerCase();
+      case 'date': return e.recordedAt || '';
+      case 'kills': return e.runStats?.kills ?? 0;
+      case 'survive': return e.runStats?.surviveSeconds ?? 0;
+      case 'level': return e.runStats?.level ?? 0;
+      default: return e.score;
+    }
+  };
+  rows.sort((a, b) => {
+    const va = getVal(a, leaderboardSortKey);
+    const vb = getVal(b, leaderboardSortKey);
+    if (va < vb) return -1 * dir;
+    if (va > vb) return 1 * dir;
+    return a.trueRank - b.trueRank;
+  });
+
+  const table = el('div', { className: 'leaderboard-table', role: 'table' });
+  const headRow = el('div', { className: 'leaderboard-table-head', role: 'row' });
+  const cols = [
+    ['rank', '#', 'rank'],
+    ['name', 'DISPLAY NAME', 'name'],
+    ['score', 'SCORE', 'score'],
+    ['kills', 'KILLS', 'kills'],
+    ['survive', 'SURVIVED', 'survive'],
+    ['level', 'LVL', 'level'],
+    ['date', 'POSTED', 'date'],
+  ];
+  for (const [key, label, sortKey] of cols) {
+    const arrow = leaderboardSortKey === sortKey ? (leaderboardSortDir === 'asc' ? ' ▲' : ' ▼') : '';
+    const th = el('button', { className: `leaderboard-th th-${key}${leaderboardSortKey === sortKey ? ' is-sorted' : ''}`, type: 'button', textContent: label + arrow });
+    th.addEventListener('click', () => {
+      if (leaderboardSortKey === sortKey) {
+        leaderboardSortDir = leaderboardSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        leaderboardSortKey = sortKey;
+        leaderboardSortDir = sortKey === 'name' ? 'asc' : 'desc';
+      }
+      renderOfficialLeaderboards();
+    });
+    headRow.append(th);
+  }
+  table.append(headRow);
+
+  const fmtDate = (iso) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '—';
+    const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    if (days <= 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 30) return `${days}d ago`;
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  };
+
+  if (rows.length === 0) {
+    appendText(table, 'div', `No display names match "${leaderboardSearch}".`, 'leaderboard-empty');
+  }
+  for (const entry of rows) {
+    const wallet = entry.wallet ?? entry.address ?? null;
+    const row = el('div', { className: `leaderboard-trow${entry.isCurrentPlayer ? ' is-current-player' : ''}`, role: 'row' });
+    appendText(row, 'span', `#${entry.trueRank}`, 'lt-rank');
+    const nameCell = el('span', { className: 'lt-name' });
+    nameCell.append(renderAvatarChip(wallet, entry.displayName, 'leaderboard-row-avatar'));
+    appendText(nameCell, 'span', entry.displayName, 'lt-name-text');
+    if (entry.settlementTxHash) appendText(nameCell, 'span', '⛓ on-chain', 'lt-settled');
+    row.append(nameCell);
+    appendText(row, 'strong', entry.score.toLocaleString(), 'lt-score');
+    appendText(row, 'span', String(entry.runStats?.kills ?? '—'), 'lt-kills');
+    appendText(row, 'span', formatSurvive(entry.runStats?.surviveSeconds ?? 0), 'lt-survive');
+    appendText(row, 'span', `L${entry.runStats?.level ?? 1}`, 'lt-level');
+    appendText(row, 'span', fmtDate(entry.recordedAt), 'lt-date');
+    table.append(row);
+  }
+  board.append(table);
 
   // --- Sticky "your placement" card ---
   if (connectedWallet && active.playerEntry) {
@@ -4317,7 +4539,11 @@ function updateRoguelikeMovement(dt) {
     const toY = fromY + (my / length) * speed * dt;
     // Solid obstacles (buildings/trees/objects) block movement: the player slides
     // along / stops at their footprint instead of walking through them.
-    const resolved = resolvePlayerCollision(fromX, fromY, toX, toY, 0.42, currentObstacles());
+    const afterObstacles = resolvePlayerCollision(fromX, fromY, toX, toY, 0.42, currentObstacles());
+    // Water is impassable — clamp the move so the player can't walk onto water
+    // tiles (slides along the shoreline where possible).
+    const seed = combat.roguelikeRun?.seed ?? 0;
+    const resolved = resolveWaterCollision(seed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt);
     combat.playerMapX = resolved.x;
     combat.playerMapY = resolved.y;
     combat._heroMoving = true;
@@ -5095,11 +5321,28 @@ function drawRoguelikeScene(ctx, width, height) {
 
   drawParallaxBackground(ctx, width, height);
 
-  for (let x = -10; x <= 10; x += 1) {
-    for (let y = -10; y <= 10; y += 1) {
-      const worldX = Math.floor(combat.playerMapX) + x;
-      const worldY = Math.floor(combat.playerMapY) + y;
+  // Ground tiles: cover the WHOLE canvas plus an overscan margin so the tile
+  // field always extends past the viewport/fullscreen edges — the player should
+  // never see where the tiles stop. We derive the world-space bounding box from
+  // the four screen corners (iso projection) and pad it generously.
+  const corners = [
+    screenToIso(0, 0),
+    screenToIso(width, 0),
+    screenToIso(0, height),
+    screenToIso(width, height),
+  ];
+  const OVERSCAN = 3; // extra tile rings beyond the visible corners
+  const minX = Math.floor(Math.min(...corners.map((c) => c.x))) - OVERSCAN;
+  const maxX = Math.ceil(Math.max(...corners.map((c) => c.x))) + OVERSCAN;
+  const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - OVERSCAN;
+  const maxY = Math.ceil(Math.max(...corners.map((c) => c.y))) + OVERSCAN;
+  for (let worldX = minX; worldX <= maxX; worldX += 1) {
+    for (let worldY = minY; worldY <= maxY; worldY += 1) {
       const projected = isoToScreen(worldX, worldY);
+      // Cheap cull: skip tiles whose diamond is fully off-canvas (after overscan
+      // bbox we still iterate a rectangle, so trim the far corners).
+      if (projected.x < -ISO_TILE_WIDTH || projected.x > width + ISO_TILE_WIDTH) continue;
+      if (projected.y < -ISO_TILE_HEIGHT - 80 || projected.y > height + ISO_TILE_HEIGHT + 80) continue;
       drawProductionIsoTile(ctx, projected.x, projected.y + 64, worldX, worldY);
     }
   }
@@ -6160,84 +6403,14 @@ function hudStat(ctx, x, y, label, value, color) {
 }
 
 function drawHud(ctx) {
+  // Roguelike run stats are now rendered in the DOM stat bar ABOVE the canvas
+  // (renderRoguelikeStatBar) so the gameplay window stays fully visible. The
+  // canvas HUD is intentionally empty for the roguelike path.
+  if (combat.roguelikeRun) return;
+  // Legacy side-scroller fallback HUD (not used by the iso roguelike path).
   const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
   const weapon = weaponById(combat.weaponId);
   ctx.font = '16px monospace';
-  if (combat.roguelikeRun) {
-    const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
-    const run = combat.roguelikeRun;
-    const augments = Object.values(run.skills).reduce((sum, level) => sum + level, 0);
-    // Rounded translucent backdrop panel for contrast over the parallax bg.
-    const panelX = 14, panelY = 12, panelW = 360, panelH = 132, r = 12;
-    ctx.save();
-    ctx.fillStyle = 'rgba(6,12,28,0.62)';
-    ctx.strokeStyle = 'rgba(25,247,255,0.35)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(panelX + r, panelY);
-    ctx.arcTo(panelX + panelW, panelY, panelX + panelW, panelY + panelH, r);
-    ctx.arcTo(panelX + panelW, panelY + panelH, panelX, panelY + panelH, r);
-    ctx.arcTo(panelX, panelY + panelH, panelX, panelY, r);
-    ctx.arcTo(panelX, panelY, panelX + panelW, panelY, r);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
-
-    const col1 = 30;
-    const col2 = 210;
-    // Row 1: survive timer + difficulty
-    hudStat(ctx, col1, 34, 'SURVIVE', `${formatSeconds(combat.elapsedGameSeconds)} / 20:00`, '#19f7ff');
-    hudStat(ctx, col2, 34, 'TIER', director.difficultyLabel.toUpperCase(), '#19f7ff');
-    // Row 2: HP + SCORE
-    hudStat(ctx, col1, 60, 'HP', `${Math.max(0, Math.round(combat.health))}`, '#ff5d6c');
-    hudStat(ctx, col2, 60, 'SCORE', combat.score.toLocaleString(), '#ffe84d');
-    // Row 3: KILLS + LV
-    hudStat(ctx, col1, 86, 'KILLS', `${combat.kills}`, '#ffe84d');
-    hudStat(ctx, col2, 86, 'LV', `${run.level}`, '#45ff8a');
-    // Row 4: weapon + augments/reroll/grenades
-    hudStat(ctx, col1, 112, 'WPN', weapon.title.toUpperCase(), '#45ff8a');
-    hudStat(ctx, col2, 112, 'AUG', `${augments}  ⟳${run.rerollsRemaining}  ✦${combat.grenades}`, '#ff7b2f');
-
-    // XP bar with label
-    const xpRatio = Math.max(0, Math.min(1, run.xp / Math.max(1, run.xpToNextLevel)));
-    const barX = 30, barY = 128, barW = 330, barH = 8;
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.fillRect(barX, barY, barW, barH);
-    ctx.fillStyle = 'rgba(69,255,138,0.9)';
-    ctx.fillRect(barX, barY, Math.round(barW * xpRatio), barH);
-    ctx.strokeStyle = 'rgba(69,255,138,0.55)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(barX, barY, barW, barH);
-    ctx.restore();
-
-    // Active power-up effect badges (magnet / slow / berserk) with countdown.
-    const activeFx = [];
-    if ((combat.powerUpTimers.magnet ?? 0) > 0) activeFx.push({ label: 'MAGNET', t: combat.powerUpTimers.magnet, color: '#19f7ff' });
-    if ((combat.powerUpTimers.slowEnemies ?? 0) > 0) activeFx.push({ label: 'SLOW-TIME', t: combat.powerUpTimers.slowEnemies, color: '#7ad1ff' });
-    if ((combat.powerUpTimers.berserk ?? 0) > 0) activeFx.push({ label: 'BERSERK', t: combat.powerUpTimers.berserk, color: '#ff476f' });
-    let badgeX = 30;
-    const badgeY = 150;
-    ctx.save();
-    ctx.font = 'bold 11px monospace';
-    for (const fx of activeFx) {
-      const text = `${fx.label} ${Math.ceil(fx.t)}s`;
-      const w = ctx.measureText(text).width + 16;
-      ctx.fillStyle = 'rgba(6,12,28,0.72)';
-      ctx.strokeStyle = fx.color;
-      ctx.lineWidth = 1.25;
-      ctx.beginPath();
-      ctx.roundRect(badgeX, badgeY, w, 18, 9);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = fx.color;
-      ctx.fillText(text, badgeX + 8, badgeY + 13);
-      badgeX += w + 8;
-    }
-    ctx.restore();
-    return;
-  }
   ctx.fillStyle = '#19f7ff';
   ctx.fillText(`RUN ${formatSeconds(combat.elapsedGameSeconds)} // AI ${difficulty.enemyAiLevel}/10 // TIER ${difficulty.tier} // ${combat.fps}FPS`, 20, 28);
   ctx.fillStyle = '#ffe84d';
@@ -6247,7 +6420,6 @@ function drawHud(ctx) {
   ctx.fillStyle = '#ff7b2f';
   ctx.fillText(`DMG CHAIN ${combat.maxDamageCombo} // PICKUPS ${combat.powerUpsCollected} // I-FRAMES ${combat.invulnerableFrames}`, 20, 100);
 }
-
 function render() {
   renderFlowSteps();
   renderLogin();

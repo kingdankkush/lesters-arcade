@@ -3,6 +3,103 @@
    Loaded after styles.css so these rules win where they overlap.
    ============================================================ */
 
+/* --- Roguelike run stat bar (DOM HUD above the gameplay canvas) ----------- */
+.roguelike-stat-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 6px 0 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(25, 247, 255, 0.28);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(6, 12, 28, 0.82), rgba(22, 10, 46, 0.7));
+  box-shadow: inset 0 0 18px rgba(25, 247, 255, 0.06);
+}
+.roguelike-stat-bar .stat-hero {
+  font: 800 0.82rem/1 "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #45ff8a;
+  text-shadow: 0 0 10px rgba(69, 255, 138, 0.45);
+  padding-right: 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+.roguelike-stat-bar .stat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  flex: 1 1 auto;
+}
+.roguelike-stat-bar .stat-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: rgba(2, 6, 16, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  white-space: nowrap;
+}
+.roguelike-stat-bar .stat-chip span {
+  font: 700 0.6rem/1 "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.1em;
+  color: rgba(214, 228, 255, 0.6);
+}
+.roguelike-stat-bar .stat-chip strong {
+  font: 800 0.86rem/1 "Segoe UI", system-ui, sans-serif;
+  color: #eaf2ff;
+}
+.roguelike-stat-bar .stat-chip[data-tone="cyan"] strong { color: #19f7ff; }
+.roguelike-stat-bar .stat-chip[data-tone="red"] strong { color: #ff5d6c; }
+.roguelike-stat-bar .stat-chip[data-tone="gold"] strong { color: #ffe84d; }
+.roguelike-stat-bar .stat-chip[data-tone="green"] strong { color: #45ff8a; }
+.roguelike-stat-bar .stat-chip[data-tone="orange"] strong { color: #ff7b2f; }
+.roguelike-stat-bar .stat-xp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+.roguelike-stat-bar .stat-xp span {
+  font: 700 0.62rem/1 "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  color: rgba(69, 255, 138, 0.85);
+  white-space: nowrap;
+}
+.roguelike-stat-bar .stat-xp-track {
+  flex: 1 1 auto;
+  height: 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(69, 255, 138, 0.4);
+  overflow: hidden;
+}
+.roguelike-stat-bar .stat-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(69, 255, 138, 0.7), rgba(25, 247, 255, 0.95));
+  transition: width 200ms ease;
+}
+.roguelike-stat-bar .stat-fx {
+  display: flex;
+  gap: 6px;
+}
+.roguelike-stat-bar .stat-fx span {
+  font: 800 0.6rem/1 "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 8px;
+  color: #04121f;
+  background: linear-gradient(135deg, #19f7ff, #45ff8a);
+}
+@media (max-width: 720px) {
+  .roguelike-stat-bar { gap: 5px 7px; padding: 6px 8px; }
+  .roguelike-stat-bar .stat-chip { padding: 2px 6px; }
+  .roguelike-stat-bar .stat-chip strong { font-size: 0.78rem; }
+}
+
+
 /* Splash marquee key-art banner replaces the plain H1. */
 .splash-marquee {
   position: relative;
@@ -317,6 +414,15 @@
   animation: avatarSavedFlash 0.8s ease;
   box-shadow: 0 0 0 2px rgba(69,255,138,0.6), 0 0 22px rgba(69,255,138,0.45);
 }
+.username-saved-flash {
+  animation: avatarSavedFlash 0.8s ease;
+  box-shadow: 0 0 0 2px rgba(69,255,138,0.6), 0 0 22px rgba(69,255,138,0.45);
+}
+@keyframes avatarSavedFlash {
+  0% { box-shadow: 0 0 0 0 rgba(69,255,138,0.0); }
+  30% { box-shadow: 0 0 0 3px rgba(69,255,138,0.85), 0 0 30px rgba(69,255,138,0.6); }
+  100% { box-shadow: 0 0 0 2px rgba(69,255,138,0.45), 0 0 18px rgba(69,255,138,0.35); }
+}
 
 /* ---- Leaderboard avatar ---- */
 .leaderboard-row-avatar { width: 26px; height: 26px; font-size: 0.7rem; flex: 0 0 auto; }
@@ -364,6 +470,52 @@
 }
 .leaderboard-you-rank { font-weight: 800; letter-spacing: 0.08em; color: #ffe84d; }
 .leaderboard-you-score { margin-left: auto; font-weight: 800; color: #45ff8a; }
+
+/* ---- Leaderboard search + sortable Top-50 table ---- */
+.leaderboard-controls { display: flex; gap: 8px; margin: 4px 0 10px; }
+.leaderboard-search {
+  flex: 1 1 auto; min-width: 0; padding: 8px 12px; border-radius: 10px;
+  background: rgba(6,12,28,0.7); border: 1px solid rgba(25,247,255,0.28);
+  color: #e7f6ff; font-size: 0.85rem; outline: none;
+}
+.leaderboard-search:focus { border-color: rgba(25,247,255,0.6); box-shadow: 0 0 0 2px rgba(25,247,255,0.18); }
+.leaderboard-search::placeholder { color: rgba(159,233,255,0.5); }
+.leaderboard-table { display: flex; flex-direction: column; gap: 4px; }
+/* Shared column template across head + rows so columns line up exactly. */
+.leaderboard-table-head, .leaderboard-trow {
+  display: grid;
+  grid-template-columns: 44px minmax(0,1fr) 72px 52px 72px 44px 70px;
+  align-items: center; gap: 8px;
+}
+.leaderboard-table-head { padding: 4px 12px; border-bottom: 1px solid rgba(25,247,255,0.18); margin-bottom: 2px; }
+.leaderboard-th {
+  background: none; border: none; padding: 2px 0; cursor: pointer; text-align: left;
+  font-family: inherit; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em;
+  color: #7f93b8; text-transform: uppercase; transition: color 0.12s ease;
+}
+.leaderboard-th:hover { color: #9fe9ff; }
+.leaderboard-th.is-sorted { color: #19f7ff; }
+.leaderboard-th.th-score, .leaderboard-th.th-kills, .leaderboard-th.th-survive, .leaderboard-th.th-level, .leaderboard-th.th-date { text-align: right; }
+.leaderboard-trow {
+  padding: 7px 12px; background: rgba(8,14,32,0.55); border: 1px solid rgba(25,247,255,0.1);
+  border-radius: 9px; transition: border-color 0.12s ease, transform 0.12s ease;
+}
+.leaderboard-trow:hover { border-color: rgba(25,247,255,0.36); transform: translateX(2px); }
+.leaderboard-trow.is-current-player { border-color: rgba(255,232,77,0.7); background: rgba(255,232,77,0.08); }
+.lt-rank { font-weight: 800; color: #9fe9ff; font-size: 0.8rem; }
+.lt-name { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.lt-name-text { color: #d6f6ff; font-size: 0.84rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lt-settled { flex: 0 0 auto; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.04em; color: #45ff8a; opacity: 0.85; }
+.lt-score { text-align: right; font-weight: 800; color: #45ff8a; font-size: 0.86rem; }
+.lt-kills, .lt-survive, .lt-level, .lt-date { text-align: right; font-size: 0.76rem; color: #aebdd4; }
+.lt-date { color: #8b9bc0; }
+.leaderboard-empty { padding: 18px 12px; text-align: center; color: #8b9bc0; font-size: 0.85rem; }
+/* On narrow screens, hide the lower-priority highlight columns to keep it readable. */
+@media (max-width: 560px) {
+  .leaderboard-table-head, .leaderboard-trow { grid-template-columns: 36px minmax(0,1fr) 64px 60px; }
+  .leaderboard-th.th-kills, .leaderboard-th.th-level,
+  .lt-kills, .lt-level { display: none; }
+}
 
 /* ---- Achievements grid ---- */
 /* The achievements card is a column flexbox; force its children to span the

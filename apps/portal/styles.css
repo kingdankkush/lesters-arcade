@@ -2064,16 +2064,68 @@ button.menu-card.menu-option.interactive:active {
 }
 
 .level-up-upgrade-card {
-  min-height: 112px;
+  /* Override the base action's centered inline-flex so the card lays out as a
+     left-aligned, contained info card with readable, aligned text. */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 8px;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  min-height: 132px;
+  padding: 12px 13px;
   background-image:
-    linear-gradient(160deg, rgba(5, 10, 24, 0.5), rgba(25, 247, 255, 0.08)),
+    linear-gradient(160deg, rgba(5, 10, 24, 0.62), rgba(25, 247, 255, 0.06)),
     url('./assets/generated/hmh-production-art-pass/ui/upgrade-card-frame.png');
   background-size: cover, 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
-  border-color: rgba(255, 232, 77, 0.52);
-  box-shadow: 0 0 32px rgba(255, 232, 77, 0.12), inset 0 0 24px rgba(25, 247, 255, 0.12);
+  border-color: rgba(255, 232, 77, 0.42);
+  box-shadow: 0 0 28px rgba(255, 232, 77, 0.1), inset 0 0 22px rgba(25, 247, 255, 0.1);
 }
+.level-up-upgrade-card:hover, .level-up-upgrade-card:focus-visible {
+  border-color: rgba(255, 232, 77, 0.85);
+  box-shadow: 0 0 30px rgba(255, 232, 77, 0.28), inset 0 0 22px rgba(25, 247, 255, 0.14);
+}
+.upgrade-card-head { display: flex; align-items: center; gap: 9px; }
+.upgrade-card-badge {
+  flex: 0 0 auto; width: 32px; height: 32px; display: grid; place-items: center;
+  font-size: 1rem; border-radius: 9px;
+  background: rgba(8, 14, 32, 0.7); border: 1px solid rgba(25, 247, 255, 0.35);
+}
+.upgrade-card-titlewrap { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1 1 auto; }
+.upgrade-card-cat { font-size: 0.56rem; font-weight: 800; letter-spacing: 0.14em; color: #7f93b8; }
+.upgrade-card-title {
+  font-size: 0.92rem; font-weight: 800; color: #f4f7ff; line-height: 1.1;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.upgrade-card-gain {
+  flex: 0 0 auto; align-self: flex-start; font-size: 0.74rem; font-weight: 900; color: #0a0e1a;
+  padding: 2px 8px; border-radius: 999px; background: linear-gradient(90deg, #45ff8a, #19f7ff);
+  box-shadow: 0 0 10px rgba(69,255,138,0.4);
+}
+.upgrade-card-ranks { display: flex; gap: 4px; align-items: center; }
+.upgrade-rank-pip {
+  width: 100%; flex: 1 1 0; height: 5px; border-radius: 3px;
+  background: rgba(159, 233, 255, 0.16); border: 1px solid rgba(159,233,255,0.18);
+}
+.upgrade-rank-pip.is-filled { background: rgba(25, 247, 255, 0.7); border-color: rgba(25,247,255,0.7); }
+.upgrade-rank-pip.is-next { background: #ffe84d; border-color: #ffe84d; box-shadow: 0 0 8px rgba(255,232,77,0.7); }
+.upgrade-card-ranklabel { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; color: #9fe9ff; }
+.upgrade-card-desc {
+  margin: 2px 0 0; font-size: 0.72rem; font-weight: 500; line-height: 1.35;
+  letter-spacing: normal; text-transform: none; color: #c2cfe6;
+  /* Contain the description within the card (clamp to 3 lines). */
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* Per-category accent on the badge + title. */
+.level-up-upgrade-card[data-tone="red"] .upgrade-card-badge { border-color: rgba(255,93,108,0.55); }
+.level-up-upgrade-card[data-tone="cyan"] .upgrade-card-badge { border-color: rgba(25,247,255,0.55); }
+.level-up-upgrade-card[data-tone="green"] .upgrade-card-badge { border-color: rgba(69,255,138,0.55); }
+.level-up-upgrade-card[data-tone="gold"] .upgrade-card-badge { border-color: rgba(255,232,77,0.55); }
+.level-up-upgrade-card[data-tone="orange"] .upgrade-card-badge { border-color: rgba(255,123,47,0.55); }
 
 .combat-menu-action[data-action="level-up-reroll"] {
   background-image:

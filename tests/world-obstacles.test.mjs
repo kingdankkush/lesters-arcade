@@ -7,6 +7,8 @@ import {
   obstaclesNear,
   resolvePlayerCollision,
   obstacleHitAt,
+  isWaterAt,
+  resolveWaterCollision,
 } from '../apps/portal/src/world-obstacles.mjs';
 
 // A simple deterministic biome stub so the model is testable without the real one.

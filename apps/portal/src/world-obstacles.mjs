@@ -52,6 +52,10 @@ export function obstaclesInCell(seed, cellX, cellY, biomeAt, opts = {}) {
   const anchorX = cellX * OBSTACLE_CELL + (h % 5) - 2;
   const anchorY = cellY * OBSTACLE_CELL + ((h >> 3) % 5) - 2;
   const biome = biomeAt(seed, anchorX, anchorY);
+  // Don't place buildings/doodads on water — it makes no sense and we have no
+  // water-specific props yet. Water cells stay open (and are impassable, which
+  // the movement code enforces separately).
+  if (biome === 'water') return [];
   const cfg = BIOME_SCENE[biome] ?? BIOME_SCENE.town;
   const [lo, hi] = cfg.count;
   const count = lo + (h % (hi - lo + 1));
@@ -73,6 +77,9 @@ export function obstaclesInCell(seed, cellX, cellY, biomeAt, opts = {}) {
     }
     // Never place an obstacle inside the player's spawn-safe zone (around origin).
     if (Math.hypot(wx, wy) < reserveRadius) continue;
+    // Skip any individual tile that resolves to water (cluster edges can stray
+    // across a biome boundary into a lake/river).
+    if (biomeAt(seed, wx, wy) === 'water') continue;
     out.push({
       id: `obs-${cellX}-${cellY}-${i}`,
       worldX: wx,
@@ -147,3 +154,21 @@ export function obstacleHitAt(worldX, worldY, obstacles, hitScale = 0.82) {
   }
   return null;
 }
+
+// Water is impassable. Returns true if the given world tile resolves to a water
+// biome, so the movement code can block the player from walking onto it.
+export function isWaterAt(seed, worldX, worldY, biomeAt) {
+  return biomeAt(seed, Math.round(worldX), Math.round(worldY)) === 'water';
+}
+
+// Resolve a desired move against water: if the destination tile is water, keep
+// the axis that stays on land where possible (slide along the shoreline), else
+// stay put. `fromX/fromY` must be on non-water ground.
+export function resolveWaterCollision(seed, fromX, fromY, toX, toY, biomeAt) {
+  if (!isWaterAt(seed, toX, toY, biomeAt)) return { x: toX, y: toY };
+  // Try moving on X only, then Y only, so the player slides along the bank.
+  if (!isWaterAt(seed, toX, fromY, biomeAt)) return { x: toX, y: fromY };
+  if (!isWaterAt(seed, fromX, toY, biomeAt)) return { x: fromX, y: toY };
+  return { x: fromX, y: fromY };
+}
+
