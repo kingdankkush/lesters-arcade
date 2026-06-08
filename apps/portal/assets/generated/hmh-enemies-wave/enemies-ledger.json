@@ -4,7 +4,7 @@
       "id": "diamond-hands-whale",
       "biome": "rock",
       "character_id": "91aee5be-ea9b-45f4-b988-6f5a563e2917",
-      "status": "processing",
+      "status": "complete",
       "animations": {
         "walk": {
           "animation_id": null,
@@ -27,7 +27,9 @@
           "raw": "error: template mode requires template_animation_id"
         }
       },
-      "raw": "id: 91aee5be-ea9b-45f4-b988-6f5a563e2917\nname: diamond-hands-whale\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading"
+      "raw": "id: 91aee5be-ea9b-45f4-b988-6f5a563e2917\nname: diamond-hands-whale\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading",
+      "frame_count": 4,
+      "src_dir": "./assets/generated/hmh-enemies-wave/rock/"
     },
     "influencer-shill": {
       "id": "influencer-shill",
@@ -64,7 +66,7 @@
       "id": "rug-pull-dev",
       "biome": "grass",
       "character_id": "ccb07935-d1b9-42a9-9b25-169db9ea7403",
-      "status": "processing",
+      "status": "complete",
       "animations": {
         "walk": {
           "animation_id": null,
@@ -87,13 +89,15 @@
           "raw": "error: template mode requires template_animation_id"
         }
       },
-      "raw": "id: ccb07935-d1b9-42a9-9b25-169db9ea7403\nname: rug-pull-dev\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, singl"
+      "raw": "id: ccb07935-d1b9-42a9-9b25-169db9ea7403\nname: rug-pull-dev\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, singl",
+      "frame_count": 4,
+      "src_dir": "./assets/generated/hmh-enemies-wave/grass/"
     },
     "maxi-zealot": {
       "id": "maxi-zealot",
       "biome": "sand",
       "character_id": "5230b1fd-1f6f-4b15-8bec-9f504986e73d",
-      "status": "processing",
+      "status": "complete",
       "animations": {
         "walk": {
           "animation_id": null,
@@ -116,7 +120,9 @@
           "raw": "error: template mode requires template_animation_id"
         }
       },
-      "raw": "id: 5230b1fd-1f6f-4b15-8bec-9f504986e73d\nname: maxi-zealot\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, single"
+      "raw": "id: 5230b1fd-1f6f-4b15-8bec-9f504986e73d\nname: maxi-zealot\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, single",
+      "frame_count": 4,
+      "src_dir": "./assets/generated/hmh-enemies-wave/sand/"
     },
     "mempool-bot-runner": {
       "id": "mempool-bot-runner",
@@ -153,7 +159,7 @@
       "id": "taxman-validator",
       "biome": "gravel",
       "character_id": "430f18bb-61c3-4a61-a1bc-9412a435ad2f",
-      "status": "processing",
+      "status": "complete",
       "animations": {
         "walk": {
           "animation_id": null,
@@ -176,7 +182,9 @@
           "raw": "error: template mode requires template_animation_id"
         }
       },
-      "raw": "id: 430f18bb-61c3-4a61-a1bc-9412a435ad2f\nname: taxman-validator\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, s"
+      "raw": "id: 430f18bb-61c3-4a61-a1bc-9412a435ad2f\nname: taxman-validator\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, s",
+      "frame_count": 4,
+      "src_dir": "./assets/generated/hmh-enemies-wave/gravel/"
     }
   }
 }

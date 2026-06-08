@@ -12,6 +12,7 @@ import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/wha
 import { HMH_LEVEL_ENVIRONMENT } from './assets/generated/hmh-level-environment/hmh-level-environment.mjs';
 import { HMH_ENVIRONMENT_PIXELLAB_WAVE_2 } from './assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs';
 import { HMH_FX_POWERUPS_WAVE } from './assets/generated/hmh-fx-powerups-wave.mjs';
+import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import {
   ACHIEVEMENTS,
@@ -5479,15 +5480,74 @@ function drawEnemies(ctx) {
   }
 }
 
+// --- Roguelike biome-themed enemy sprites (hmh-enemies-wave) -------------------
+// 6 PixelLab enemies, each tied to a biome, drawn as 4-direction stills. We pick
+// the enemy whose biome matches the tile the foe is standing on (so a desert run
+// shows maxi-zealots, water shows mempool-bot-runners, etc.), and face it using
+// the enemy->player vector so foes visibly turn toward Lester.
+const enemyWaveImageCache = new Map();
+// biome-model biome -> closest enemies-wave biome bucket.
+const ENEMY_WAVE_BIOME_ALIAS = {
+  town: 'pavement', road: 'pavement', pavement: 'pavement',
+  desert: 'sand', sand: 'sand',
+  forest: 'grass', grass: 'grass',
+  rocky: 'rock', rock: 'rock',
+  gravel: 'gravel',
+  water: 'water',
+};
+const ENEMY_WAVE_BY_BIOME = (() => {
+  const byBiome = {};
+  for (const e of Object.values(HMH_ENEMIES_WAVE.enemies ?? {})) byBiome[e.biome] = e;
+  return byBiome;
+})();
+const ENEMY_WAVE_LIST = Object.values(HMH_ENEMIES_WAVE.enemies ?? {});
+
+function enemyWaveStill(src) {
+  if (!src) return null;
+  if (!enemyWaveImageCache.has(src)) enemyWaveImageCache.set(src, loadImageAsset(src));
+  return enemyWaveImageCache.get(src);
+}
+
+// Map an enemy->player vector to one of the 4 generated facings.
+function enemyFacingTowardPlayer(enemy) {
+  const dx = combat.playerMapX - enemy.mapX;
+  const dy = combat.playerMapY - enemy.mapY;
+  if (Math.abs(dx) >= Math.abs(dy)) return dx >= 0 ? 'east' : 'west';
+  return dy >= 0 ? 'south' : 'north';
+}
+
+function roguelikeEnemyWaveArt(enemy) {
+  if (!combat.roguelikeRun || !ENEMY_WAVE_LIST.length) return null;
+  // Resolve which wave enemy to show: stable per-enemy by its biome tile, with a
+  // deterministic fallback so every foe still gets a themed sprite.
+  if (!enemy._waveEnemyId) {
+    const seed = combat.roguelikeRun?.seed ?? 0;
+    const biome = biomeAt(seed, Math.round(enemy.mapX), Math.round(enemy.mapY));
+    const aliased = ENEMY_WAVE_BIOME_ALIAS[biome] ?? null;
+    const chosen = (aliased && ENEMY_WAVE_BY_BIOME[aliased])
+      || ENEMY_WAVE_LIST[(Math.abs(Math.round(enemy.mapX * 7 + enemy.mapY * 13))) % ENEMY_WAVE_LIST.length];
+    enemy._waveEnemyId = chosen?.id ?? null;
+  }
+  const wave = enemy._waveEnemyId ? HMH_ENEMIES_WAVE.enemies[enemy._waveEnemyId] : null;
+  if (!wave) return null;
+  const facing = enemyFacingTowardPlayer(enemy);
+  const src = wave.stills[facing] ?? wave.stills[wave.defaultDirection] ?? wave.stills.south;
+  return enemyWaveStill(src);
+}
+
 function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
-    const enemyFrame = pipelineActorFrame(enemy) ?? enemyArtFor(enemy);
+    // Roguelike biome-themed wave enemies take priority for normal foes; minis
+    // keep their dedicated boss/pipeline art.
+    const waveFrame = isMini ? null : roguelikeEnemyWaveArt(enemy);
+    const enemyFrame = (imageReady(waveFrame) ? waveFrame : null) ?? pipelineActorFrame(enemy) ?? enemyArtFor(enemy);
     if (imageReady(enemyFrame)) {
+      const isWave = enemyFrame === waveFrame;
       const enemyKey = manifestEnemyKeyFor(enemy);
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
-      const drawSize = productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78;
+      const drawSize = isWave ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78;
       ctx.save();
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(enemyFrame, Math.round(enemy.x + w / 2 - drawSize / 2), Math.round(enemy.y - drawSize + 12), drawSize, drawSize);
