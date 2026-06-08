@@ -13,6 +13,7 @@ import { HMH_LEVEL_ENVIRONMENT } from './assets/generated/hmh-level-environment/
 import { HMH_ENVIRONMENT_PIXELLAB_WAVE_2 } from './assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs';
 import { HMH_FX_POWERUPS_WAVE } from './assets/generated/hmh-fx-powerups-wave.mjs';
 import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs';
+import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import {
   ACHIEVEMENTS,
@@ -4152,6 +4153,7 @@ function shootRoguelike() {
   }
   combat.shots += 1;
   combat.fireFlash = 4; // brief muzzle-flash brightening for the lighting pass
+  combat.lastShotFrame = combat.frame; // drives the animated-roster 'shoot' pose
   const damageScale = (combat.roguelikeRun?.stats.damage ?? 1) * ((combat.powerUpTimers.berserk ?? 0) > 0 ? 1.5 : 1);
   const bulletSpeed = 14 * (combat.roguelikeRun?.stats.bulletSpeed ?? 1);
   combat.bullets.push({
@@ -4253,6 +4255,9 @@ function updateRoguelikeMovement(dt) {
   if (mx !== 0 || my !== 0) {
     combat.playerMapX += (mx / length) * speed * dt;
     combat.playerMapY += (my / length) * speed * dt;
+    combat._heroMoving = true;
+  } else {
+    combat._heroMoving = false;
   }
   // Facing/aim: pointer aim already maintained in updateAimFromPointer; for
   // keyboard movers, face the movement direction.
@@ -5353,6 +5358,11 @@ function drawProps(ctx) {
 }
 
 function selectHeroFrame() {
+  // Top priority during a roguelike run: animated PixelLab roster frame
+  // (idle/run/shoot/melee/hurt/death motion). Falls through to canonical art
+  // when the roster has no animation for this character/state.
+  const animFrame = lesterAnimatedFrame();
+  if (imageReady(animFrame)) return animFrame;
   // Prefer canonical hand-made hero art (Lester/Lilly) via the durable pipeline.
   const heroActorId = combat.characterId === 'lilly' ? 'lilly' : 'lester';
   if (HMH_ACTOR_REGISTRY.has(heroActorId)) {
@@ -5480,6 +5490,95 @@ function drawEnemies(ctx) {
   }
 }
 
+// --- Animated PixelLab roster (idle/walk/run/attack/death animations) ---------
+// Harvested 8-dir characters currently expose animated SOUTH frames; we play
+// those as the animation layer for heroes/enemies/bosses (a big upgrade over
+// static stills). Each game entity is mapped to a roster key, and its live
+// combat state is mapped to the best-matching animation name with fallbacks.
+const rosterFrameCache = new Map();
+function rosterFrame(src) {
+  if (!src) return null;
+  if (!rosterFrameCache.has(src)) rosterFrameCache.set(src, loadImageAsset(src));
+  return rosterFrameCache.get(src);
+}
+
+// Map a game enemy/boss to a roster character key by id/title keywords.
+function rosterKeyForEntity(entity, role) {
+  const hay = `${entity.id ?? ''} ${entity.title ?? ''} ${entity.enemyKey ?? ''} ${entity.class ?? ''}`.toLowerCase();
+  if (role === 'boss') {
+    if (hay.includes('whale') || hay.includes('bank') || hay.includes('tycoon')) return 'whale-dumper-boss';
+    return 'whale-dumper-boss';
+  }
+  if (hay.includes('goblin') || hay.includes('fud') || hay.includes('paper') || hay.includes('degen') || hay.includes('rug')) return 'fud-goblin';
+  if (hay.includes('wisp') || hay.includes('gas') || hay.includes('cloud') || hay.includes('flying')) return 'gas-fee-wisp';
+  // Default grunt animation set.
+  return 'fud-goblin';
+}
+
+// Pick the roster animation name for an entity's current combat state, with
+// graceful fallback (e.g. walk -> idle, attack-tell -> attack -> idle).
+function rosterAnimName(roster, desired) {
+  const anims = roster?.animations ?? {};
+  for (const name of desired) {
+    if (anims[name]) return name;
+  }
+  // last resort: any available animation
+  const keys = Object.keys(anims);
+  return keys.length ? keys[0] : null;
+}
+
+// Return the current animation frame image for an entity, or null if no
+// animated roster art applies. `phase` lets callers offset per-entity so a
+// crowd of enemies isn't perfectly synced.
+function animatedRosterFrame(roster, desiredNames, { fps = 12, loop = true, phase = 0 } = {}) {
+  if (!roster) return null;
+  const name = rosterAnimName(roster, desiredNames);
+  if (!name) return null;
+  const dirs = roster.animations[name];
+  // South-facing frames are the animated set we harvested; iso reads fine.
+  const frames = dirs.south ?? dirs[Object.keys(dirs)[0]];
+  if (!frames?.length) return null;
+  const src = selectAnimationFrame(frames, combat.frame + phase, fps, loop);
+  return rosterFrame(src);
+}
+
+function enemyAnimState(enemy) {
+  if (enemy.hp <= 0) return ['death'];
+  if (enemy.tellFrames > 0 || enemy.attackTimer < 18) return ['attack', 'attack-tell', 'walk', 'idle'];
+  const moving = enemy.state === 'chase-player' || enemy.state === 'rushing';
+  return moving ? ['walk', 'idle'] : ['idle', 'walk'];
+}
+
+function roguelikeEnemyAnimatedFrame(enemy) {
+  if (!combat.roguelikeRun) return null;
+  const role = enemy.miniBoss ? 'boss' : 'enemy';
+  const key = rosterKeyForEntity(enemy, role);
+  const roster = HMH_ANIMATED_ROSTER[key];
+  const phase = Math.round((enemy.mapX ?? 0) * 7 + (enemy.mapY ?? 0) * 13);
+  return animatedRosterFrame(roster, enemyAnimState(enemy), { fps: 12, phase });
+}
+
+// Hero (Lester) animation state -> roster animation name priority.
+function heroAnimState() {
+  if (combat.gameOver) return ['death', 'hurt', 'idle'];
+  if (combat.invulnerableFrames > 14) return ['hurt', 'idle'];
+  const recentlyFired = (combat.fireFlash ?? 0) > 0 || (combat.frame - (combat.lastShotFrame ?? -999)) < 10;
+  if ((combat.frame - (combat.lastMeleeFrame ?? -999)) < 14) return ['melee', 'shoot', 'idle'];
+  if (recentlyFired) return ['shoot', 'idle'];
+  const moving = combat._heroMoving;
+  if (moving) return ['run', 'walk', 'idle'];
+  return ['idle', 'run'];
+}
+
+function lesterAnimatedFrame() {
+  if (!combat.roguelikeRun) return null;
+  const key = (combat.characterId === 'lilly' && HMH_ANIMATED_ROSTER.lilly?.animations
+    && Object.keys(HMH_ANIMATED_ROSTER.lilly.animations).length) ? 'lilly' : 'lester';
+  const roster = HMH_ANIMATED_ROSTER[key];
+  const death = combat.gameOver;
+  return animatedRosterFrame(roster, heroAnimState(), { fps: 14, loop: !death });
+}
+
 // --- Roguelike biome-themed enemy sprites (hmh-enemies-wave) -------------------
 // 6 PixelLab enemies, each tied to a biome, drawn as 4-direction stills. We pick
 // the enemy whose biome matches the tile the foe is standing on (so a desert run
@@ -5539,15 +5638,19 @@ function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
-    // Roguelike biome-themed wave enemies take priority for normal foes; minis
-    // keep their dedicated boss/pipeline art.
+    // Priority: animated roster frame (idle/walk/attack/death motion) > biome-themed
+    // wave still (directional variety) > pipeline/legacy art. Minis use boss art.
+    const animFrame = roguelikeEnemyAnimatedFrame(enemy);
     const waveFrame = isMini ? null : roguelikeEnemyWaveArt(enemy);
-    const enemyFrame = (imageReady(waveFrame) ? waveFrame : null) ?? pipelineActorFrame(enemy) ?? enemyArtFor(enemy);
+    const enemyFrame = (imageReady(animFrame) ? animFrame : null)
+      ?? (imageReady(waveFrame) ? waveFrame : null)
+      ?? pipelineActorFrame(enemy) ?? enemyArtFor(enemy);
     if (imageReady(enemyFrame)) {
+      const isAnim = enemyFrame === animFrame;
       const isWave = enemyFrame === waveFrame;
       const enemyKey = manifestEnemyKeyFor(enemy);
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
-      const drawSize = isWave ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78;
+      const drawSize = (isAnim || isWave) ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78;
       ctx.save();
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(enemyFrame, Math.round(enemy.x + w / 2 - drawSize / 2), Math.round(enemy.y - drawSize + 12), drawSize, drawSize);

@@ -1,0 +1,10 @@
+{
+  "base": {
+    "id": "lester",
+    "character_id": "acfab3c6-fb88-472d-ab79-f0c1c44c9d85",
+    "status": "creating",
+    "raw": "id: acfab3c6-fb88-472d-ab79-f0c1c44c9d85\nname: lester-hero\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, single"
+  },
+  "states": {},
+  "animations": {}
+}

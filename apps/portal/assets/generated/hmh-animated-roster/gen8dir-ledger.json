@@ -1,0 +1,8 @@
+{
+  "lester/idle-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "raw": "character: 97185455-d6f8-4108-a0fc-ab90f451ddef\nanimation: v3 custom (standing idle breathing, subtle ready bob)\ndirecti"
+  }
+}
