@@ -137,13 +137,19 @@ async def animate() -> None:
                     if c["animations"].get(aname, {}).get("animation_id"):
                         continue
                     try:
+                        # mode="v3" is the custom action-description animation engine.
+                        # (The old mode="template" failed with "template mode requires
+                        # template_animation_id" since no template id was supplied.)
                         res = await sess.call_tool("animate_character", {
                             "character_id": cid, "action_description": adesc,
-                            "animation_name": aname, "mode": "template", "frame_count": 4,
+                            "animation_name": aname, "mode": "v3", "frame_count": 4,
                         })
                         text = result_text(res)
-                        m = UUID_RE.search(text)
-                        c["animations"][aname] = {"animation_id": m.group(0) if m else None,
+                        # The response often echoes the source character_id first; the
+                        # NEW animation id is the last UUID that is not the character id.
+                        ids = [u for u in UUID_RE.findall(text) if u != cid]
+                        anim_id = ids[-1] if ids else None
+                        c["animations"][aname] = {"animation_id": anim_id,
                                                   "status": "queued", "raw": text[:140]}
                         queued += 1
                         print(f"anim {eid}/{aname} -> {c['animations'][aname]['animation_id']}", flush=True)
