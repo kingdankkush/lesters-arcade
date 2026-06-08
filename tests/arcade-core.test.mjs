@@ -194,7 +194,7 @@ test('createPlayerProfile normalizes EVM wallets and creates a Lester profile sh
 
   assert.equal(profile.wallet, '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd');
   assert.equal(profile.handle, 'Player ABCD');
-  assert.equal(profile.creditsLabel, '0.25 USDC paid runs unlock global boards');
+  assert.equal(profile.creditsLabel, 'Ranked runs publish on-chain to LitVM (testnet: zkLTC gas only)');
   assert.deepEqual(profile.achievements, []);
 });
 

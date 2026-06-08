@@ -287,7 +287,7 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
   tooltips: Object.freeze([
     Object.freeze({ anchor: 'connectWalletButton', title: 'Wallet login', copy: 'Tries MetaMask/Rabby first, requests LitVM LiteForge if needed, then falls back to a local mock wallet. No funds or live game transaction.' }),
     Object.freeze({ anchor: 'freePlayButton', title: 'Free play', copy: 'Practice for free with no official tracking: no progress, achievements, high scores, or transactions.' }),
-    Object.freeze({ anchor: 'paidPlayButton', title: 'Official credit', copy: 'Simulates a $0.25 paid run in USDC/ETH/LTC rails that can sync official leaderboard, achievements, and transaction state.' }),
+    Object.freeze({ anchor: 'paidPlayButton', title: 'Play Ranked', copy: 'Publishes your score, achievements, and name on-chain to LitVM as a permanent run record. On testnet the only cost is the zkLTC gas to write it — free from the faucet, no real funds.' }),
     Object.freeze({ anchor: 'simulateRunButton', title: 'Sync prototype result', copy: 'Completes a generated run summary and writes progress back to the parent account model.' }),
     Object.freeze({ anchor: 'startCombatButton', title: 'Start 60fps combat', copy: 'Starts the Canvas test loop. Target: 60fps, smooth controls, pixel-snapped sprites.' }),
     Object.freeze({ anchor: 'jumpButton', title: 'Jump / double jump', copy: 'Keyboard: Space. Use double jump to reach vertical platforms and dodge boss sweeps.' }),
@@ -1492,7 +1492,7 @@ export const LESTER_BLASTER_MENU_OPTIONS = Object.freeze({
   main: Object.freeze([
     Object.freeze({ id: 'connect-wallet', title: 'Connect Wallet', section: 'login', description: 'Activate the parent Lester account.' }),
     Object.freeze({ id: 'free-run', title: 'Free Run', section: 'play', description: 'Casual infinite run; local score only.' }),
-    Object.freeze({ id: 'paid-run', title: 'Official $0.25 Run', section: 'play', description: 'Leaderboard-eligible paid session.' }),
+    Object.freeze({ id: 'paid-run', title: 'Ranked Run ⛓', section: 'play', description: 'Leaderboard-eligible run published on-chain to LitVM (testnet: zkLTC gas only).' }),
     Object.freeze({ id: 'loadout', title: 'Loadout', section: 'prep', description: 'Choose character, primary weapon, grenade, and cosmetic unlocks.' }),
     Object.freeze({ id: 'leaderboard', title: 'Leaderboard', section: 'scores', description: 'Global paid high-score board.' }),
     Object.freeze({ id: 'achievements', title: 'Achievements', section: 'profile', description: 'Unlock medals, skins, weapons, music, and cabinet art.' }),
@@ -2199,7 +2199,7 @@ export function buildOfficialRunStatusModel({ gameTitle = 'Hard Money Heroes', c
     channel: 'official',
     state: 'connected-idle',
     heading: 'Parent account online.',
-    details: 'Choose Free Play for untracked practice or Insert Credit for an official leaderboard-eligible run. The combat sandbox can run separately for testing controls.',
+    details: 'Choose Free Play for untracked practice or Play Ranked to publish an official, leaderboard-eligible run on-chain to LitVM. The combat sandbox can run separately for testing controls.',
   });
 }
 
@@ -2991,7 +2991,7 @@ export function createPlayerProfile(wallet, options = {}) {
     xp: 0,
     joinedAt: nowIso(),
     achievements: [],
-    creditsLabel: '0.25 USDC paid runs unlock global boards',
+    creditsLabel: 'Ranked runs publish on-chain to LitVM (testnet: zkLTC gas only)',
     totalPaidRuns: 0,
     totalFreeRuns: 0,
     progress: {},
