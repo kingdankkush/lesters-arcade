@@ -1488,8 +1488,8 @@ function syncCombatOverlay() {
   if (dom.combatRestartButton) dom.combatRestartButton.textContent = currentSession?.isPaid ? 'Restart (New Credit)' : 'Restart Free';
   if (dom.combatMusicButton) dom.combatMusicButton.textContent = combat.musicEnabled ? 'Music On' : 'Music Off';
   if (dom.combatCharacterButton) {
-    dom.combatCharacterButton.textContent = 'Lilly Locked';
-    dom.combatCharacterButton.dataset.unlock = 'future-lilly-character';
+    // Character choice now lives on the dedicated character-select screen.
+    dom.combatCharacterButton.hidden = true;
   }
   if (dom.combatViewportButton) {
     let label = 'Fullscreen';
@@ -1979,15 +1979,8 @@ function renderOfficialWalletSplash() {
   const featuredCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
   const featuredSprite = productionCabinetSprite() ?? featuredCabinet?.desktopCabinetSprite;
   if (dom.splashFeaturedCabinet && featuredSprite) {
-    // Prefer the painted HMH key art for the featured cabinet; keep the rotating
-    // sprite as a layered accent beneath it.
-    const keyArt = el('img', {
-      className: 'splash-featured-keyart',
-      src: './assets/generated/hmh-key-art/hard-money-heroes-cabinet-side.png',
-      alt: 'Hard Money Heroes key art',
-    });
-    keyArt.addEventListener('error', () => keyArt.remove());
-    dom.splashFeaturedCabinet.replaceChildren(keyArt, renderRotatingCabinetSprite(featuredSprite, 'splash'));
+    // Show the original 3D rotating cabinet sprite animation (no static banner).
+    dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
   }
   const copy = connectedWallet
     ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)} is active. Enter the arcade to select Hard Money Heroes.`

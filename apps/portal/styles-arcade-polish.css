@@ -26,24 +26,8 @@
   50%      { box-shadow: 0 0 0 1px rgba(25,247,255,0.45), 0 18px 60px rgba(0,0,0,0.65), 0 0 95px rgba(25,247,255,0.30); }
 }
 
-/* Featured cabinet now shows painted key art layered over the sprite. */
-.splash-featured-keyart {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 14px;
-  z-index: 2;
-  box-shadow: inset 0 0 40px rgba(0,0,0,0.55);
-}
+/* Featured cabinet shows the original 3D rotating cabinet sprite (no static banner). */
 .splash-featured-cabinet-art { position: relative; }
-.splash-featured-cabinet-art .cabinet-rotator,
-.splash-featured-cabinet-art img:not(.splash-featured-keyart) {
-  position: relative;
-  z-index: 1;
-  opacity: 0.0; /* key art carries the visual; sprite kept for fallback only */
-}
 
 /* Neon arcade border frame around the whole official app shell. */
 .official-app::after {
