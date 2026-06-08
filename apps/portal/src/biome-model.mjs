@@ -9,11 +9,13 @@
 
 export const BIOMES = Object.freeze(['town', 'desert', 'forest', 'rocky', 'road', 'water']);
 
-// Region size in world tiles. Larger = bigger contiguous biome patches.
-// Kept small enough that a player crosses 2-3 biomes during a single run (the
-// visible window is ~±10 tiles), so biome variety actually reads in gameplay
-// instead of the whole short run sitting inside one giant region.
-export const BIOME_REGION = 7;
+// Region size in world tiles. Large enough that the player spends a long stretch
+// inside ONE coherent biome district instead of crossing a noisy patchwork every
+// few steps. The visible window is ~±10 tiles, so a 22-tile region means the
+// whole screen almost always reads as a single, continuous biome (with only
+// occasional, intentional transitions at district edges). This is the core fix
+// for the "ground tileset changes way too often / checkerboard" problem.
+export const BIOME_REGION = 22;
 
 function hash2(seed, x, y) {
   let h = (seed | 0) ^ 0x9e3779b9;
@@ -34,7 +36,30 @@ const BIOME_WEIGHTS = Object.freeze([
   ['water', 0.05],
 ]);
 
+// Each run has ONE primary biome (decided by seed) that dominates the central
+// play area. Districts far from origin can differ, but the run reads as a
+// coherent themed area ("Underchain District", "Sandcrash Flats", etc.) instead
+// of random noise. This is what makes the level feel designed, not generated.
+export function primaryBiomeForSeed(seed) {
+  const r = hash2(seed >>> 0, 0xa17, 0x5ed);
+  let acc = 0;
+  for (const [name, w] of BIOME_WEIGHTS) {
+    acc += w;
+    if (r < acc) return name;
+  }
+  return 'town';
+}
+
 export function biomeForRegion(seed, regionX, regionY) {
+  // Region (0,0) and its immediate neighbors are forced to the run's primary
+  // biome so the spawn area and most of a 20-minute run stay coherent.
+  if (Math.abs(regionX) <= 1 && Math.abs(regionY) <= 1) {
+    return primaryBiomeForSeed(seed);
+  }
+  // Distant regions: bias heavily toward the primary biome (70%) so transitions
+  // are occasional accents, not constant churn.
+  const bias = hash2(seed >>> 0, regionX * 13 + 1, regionY * 7 + 3);
+  if (bias < 0.7) return primaryBiomeForSeed(seed);
   const r = hash2(seed >>> 0, regionX, regionY);
   let acc = 0;
   for (const [name, w] of BIOME_WEIGHTS) {

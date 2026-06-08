@@ -3,6 +3,553 @@
     "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
     "animation_id": null,
     "status": "queued",
-    "raw": "character: 97185455-d6f8-4108-a0fc-ab90f451ddef\nanimation: v3 custom (standing idle breathing, subtle ready bob)\ndirecti"
+    "directions": 8,
+    "raw": "character: 97185455-d6f8-4108-a0fc-ab90f451ddef\nanimation: v3 custom (standing idle breathing, subtle ready bob)\ndirections: south-east, east, north-east, north"
+  },
+  "lester/walk-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "character: 97185455-d6f8-4108-a0fc-ab90f451ddef\nanimation: v3 custom (walking forward steadily)\ndirections: south-east, east, north-east, north, north-west, wes"
+  },
+  "lester/run-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lester/shoot-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lester/melee-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lester/throw-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lester/hurt-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lester/death-8dir": {
+    "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/idle-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/walk-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/run-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/shoot-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/melee-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/throw-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/hurt-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "lilly/death-8dir": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "fud-goblin/idle-8dir": {
+    "character_id": "d0470066-7d2b-4195-bcb6-9e7c6f4638d8",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "fud-goblin/walk-8dir": {
+    "character_id": "d0470066-7d2b-4195-bcb6-9e7c6f4638d8",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "fud-goblin/attack-8dir": {
+    "character_id": "d0470066-7d2b-4195-bcb6-9e7c6f4638d8",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "fud-goblin/hurt-8dir": {
+    "character_id": "d0470066-7d2b-4195-bcb6-9e7c6f4638d8",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "fud-goblin/death-8dir": {
+    "character_id": "d0470066-7d2b-4195-bcb6-9e7c6f4638d8",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-fee-wisp/idle-8dir": {
+    "character_id": "afb5c6c3-9d0a-48a0-a059-edc00b97aa50",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-fee-wisp/walk-8dir": {
+    "character_id": "afb5c6c3-9d0a-48a0-a059-edc00b97aa50",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-fee-wisp/attack-8dir": {
+    "character_id": "afb5c6c3-9d0a-48a0-a059-edc00b97aa50",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-fee-wisp/hurt-8dir": {
+    "character_id": "afb5c6c3-9d0a-48a0-a059-edc00b97aa50",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-fee-wisp/death-8dir": {
+    "character_id": "afb5c6c3-9d0a-48a0-a059-edc00b97aa50",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "crypto-bro-rusher/idle-8dir": {
+    "character_id": "170c9928-fcb5-4179-9ab5-768aa12b5f85",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "crypto-bro-rusher/walk-8dir": {
+    "character_id": "170c9928-fcb5-4179-9ab5-768aa12b5f85",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "crypto-bro-rusher/attack-8dir": {
+    "character_id": "170c9928-fcb5-4179-9ab5-768aa12b5f85",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "crypto-bro-rusher/hurt-8dir": {
+    "character_id": "170c9928-fcb5-4179-9ab5-768aa12b5f85",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "crypto-bro-rusher/death-8dir": {
+    "character_id": "170c9928-fcb5-4179-9ab5-768aa12b5f85",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "evil-banker-ranged/idle-8dir": {
+    "character_id": "522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "evil-banker-ranged/walk-8dir": {
+    "character_id": "522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "evil-banker-ranged/attack-8dir": {
+    "character_id": "522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "evil-banker-ranged/hurt-8dir": {
+    "character_id": "522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "evil-banker-ranged/death-8dir": {
+    "character_id": "522d99ae-64c3-4e8e-b61c-1b8cbebbe6b7",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "trench-degen/idle-8dir": {
+    "character_id": "9e591394-caf5-498c-886b-1161e1a64043",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "trench-degen/walk-8dir": {
+    "character_id": "9e591394-caf5-498c-886b-1161e1a64043",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "trench-degen/attack-8dir": {
+    "character_id": "9e591394-caf5-498c-886b-1161e1a64043",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "trench-degen/hurt-8dir": {
+    "character_id": "9e591394-caf5-498c-886b-1161e1a64043",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "trench-degen/death-8dir": {
+    "character_id": "9e591394-caf5-498c-886b-1161e1a64043",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-beast-tank/idle-8dir": {
+    "character_id": "2035aef1-f38c-4e3d-97d3-c09563ba672b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-beast-tank/walk-8dir": {
+    "character_id": "2035aef1-f38c-4e3d-97d3-c09563ba672b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-beast-tank/attack-8dir": {
+    "character_id": "2035aef1-f38c-4e3d-97d3-c09563ba672b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-beast-tank/hurt-8dir": {
+    "character_id": "2035aef1-f38c-4e3d-97d3-c09563ba672b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "gas-beast-tank/death-8dir": {
+    "character_id": "2035aef1-f38c-4e3d-97d3-c09563ba672b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "rugpull-summoner/idle-8dir": {
+    "character_id": "32f95be2-99d8-4507-8799-df8d14692b08",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "rugpull-summoner/walk-8dir": {
+    "character_id": "32f95be2-99d8-4507-8799-df8d14692b08",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: 404: Character rotation image not found for direction: south"
+  },
+  "rugpull-summoner/attack-8dir": {
+    "character_id": "32f95be2-99d8-4507-8799-df8d14692b08",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: 404: Character rotation image not found for direction: south"
+  },
+  "rugpull-summoner/hurt-8dir": {
+    "character_id": "32f95be2-99d8-4507-8799-df8d14692b08",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: 404: Character rotation image not found for direction: south"
+  },
+  "rugpull-summoner/death-8dir": {
+    "character_id": "32f95be2-99d8-4507-8799-df8d14692b08",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: 404: Character rotation image not found for direction: south"
+  },
+  "whale-dumper-boss/idle-8dir": {
+    "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "character: 6b17f44f-4c87-48a4-8df3-d8f15a40d2c0\nanimation: v3 custom (standing idle menacingly, powerful)\ndirections: south-east, east, north-east, north, north"
+  },
+  "whale-dumper-boss/walk-8dir": {
+    "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "whale-dumper-boss/attack-8dir": {
+    "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "whale-dumper-boss/attack-ranged-8dir": {
+    "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "whale-dumper-boss/attack-slam-8dir": {
+    "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "whale-dumper-boss/hurt-8dir": {
+    "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "whale-dumper-boss/death-8dir": {
+    "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 7 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "chain-reaper-boss/idle-8dir": {
+    "character_id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "chain-reaper-boss/walk-8dir": {
+    "character_id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "chain-reaper-boss/attack-8dir": {
+    "character_id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "chain-reaper-boss/attack-ranged-8dir": {
+    "character_id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "chain-reaper-boss/attack-slam-8dir": {
+    "character_id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "chain-reaper-boss/hurt-8dir": {
+    "character_id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "chain-reaper-boss/death-8dir": {
+    "character_id": "9ce10bf6-a5c4-457a-b485-e4f43fc67e3b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "bit-whale-boss/idle-8dir": {
+    "character_id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "bit-whale-boss/walk-8dir": {
+    "character_id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "bit-whale-boss/attack-8dir": {
+    "character_id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "bit-whale-boss/attack-ranged-8dir": {
+    "character_id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "bit-whale-boss/attack-slam-8dir": {
+    "character_id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "bit-whale-boss/hurt-8dir": {
+    "character_id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "bit-whale-boss/death-8dir": {
+    "character_id": "cecc4b9e-5c0a-44e9-9d42-211230c9b61b",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "warren-spear-rider/idle-8dir": {
+    "character_id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "warren-spear-rider/walk-8dir": {
+    "character_id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "warren-spear-rider/attack-8dir": {
+    "character_id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "warren-spear-rider/attack-ranged-8dir": {
+    "character_id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "warren-spear-rider/attack-slam-8dir": {
+    "character_id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "warren-spear-rider/hurt-8dir": {
+    "character_id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+  },
+  "warren-spear-rider/death-8dir": {
+    "character_id": "1b14807b-8bb7-495c-8ede-aa10c791ca51",
+    "animation_id": null,
+    "status": "queued",
+    "directions": 8,
+    "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
   }
 }

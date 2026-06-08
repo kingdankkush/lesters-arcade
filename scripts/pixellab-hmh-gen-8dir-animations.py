@@ -73,6 +73,11 @@ TARGETS = {
 
 FRAME_COUNT = 6
 
+# v3 (custom) mode animates SOUTH ONLY unless `directions` is passed explicitly.
+# Pass all 8 so each animation is truly 8-directional.
+ALL_DIRECTIONS = ["south", "south-east", "east", "north-east",
+                  "north", "north-west", "west", "south-west"]
+
 
 def load_server() -> dict[str, Any]:
     d = json.loads((Path.home()/".claude.json").read_text(encoding="utf-8"))
@@ -125,15 +130,17 @@ async def queue(limit):
                 if led.get(jk, {}).get("animation_id"):
                     continue
                 try:
-                    # Omit `directions` => PixelLab animates all 8 directions.
+                    # Pass all 8 directions explicitly — v3/custom mode defaults
+                    # to south-only when `directions` is omitted.
                     res = await sess.call_tool("animate_character", {
                         "character_id": cid, "action_description": desc,
                         "animation_name": name, "mode": "v3", "frame_count": FRAME_COUNT,
+                        "directions": ALL_DIRECTIONS,
                     })
                     text = "\n".join(c.text for c in res.content if hasattr(c, "text"))
                     ids = [u for u in UUID_RE.findall(text) if u != cid]
                     led[jk] = {"character_id": cid, "animation_id": ids[-1] if ids else None,
-                               "status": "queued", "raw": text[:120]}
+                               "status": "queued", "directions": len(ALL_DIRECTIONS), "raw": text[:160]}
                     n += 1
                     print(f"queued {jk} -> {led[jk]['animation_id']}", flush=True)
                     save_ledger(led)
@@ -151,13 +158,38 @@ def status():
     print(json.dumps({"queued_with_ids": have, "total_jobs": len(all_jobs())}, indent=2))
 
 
+async def clean():
+    """Delete the broken south-only *-8dir animations and reset the ledger so
+    the corrected (explicit 8-direction) queue can regenerate them."""
+    server = load_server()
+    deleted = 0
+    names = [f"{name}-8dir" for _, anims in TARGETS.values() for name, _ in anims]
+    async with streamablehttp_client(server["url"], headers=server.get("headers", {})) as (r, w, _):
+        async with ClientSession(r, w) as sess:
+            await sess.initialize()
+            for key, (cid, anims) in TARGETS.items():
+                for name, _ in anims:
+                    atype = f"{name}-8dir"
+                    try:
+                        await sess.call_tool("delete_animation", {"character_id": cid, "animation_type": atype})
+                        deleted += 1
+                        print(f"deleted {key}/{atype}", flush=True)
+                        time.sleep(0.6)
+                    except Exception as exc:
+                        print(f"skip {key}/{atype}: {exc}", flush=True)
+    if LEDGER.exists():
+        LEDGER.write_text("{}", encoding="utf-8")
+    print(json.dumps({"deleted": deleted, "ledger": "reset"}, indent=2))
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("command", choices=["plan","queue","status"])
+    ap.add_argument("command", choices=["plan","queue","status","clean"])
     ap.add_argument("--limit", type=int, default=None)
     a = ap.parse_args()
     if a.command == "plan": plan()
     elif a.command == "queue": asyncio.run(queue(a.limit))
+    elif a.command == "clean": asyncio.run(clean())
     else: status()
 
 

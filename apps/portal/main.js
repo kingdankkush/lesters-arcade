@@ -431,8 +431,9 @@ function hardMoneyHeroScreenStyle(screenId) {
   // Post-connect screens use the clean Hard Money Heroes key art as a full-bleed
   // background with NO menu panel baked on top (menus are real DOM controls).
   const KEY_ART_BG = './assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg';
-  if (screenId === 'mainMenu' || screenId === 'cabinetSelect') {
-    return `linear-gradient(180deg, rgba(4, 11, 26, 0.62), rgba(8, 6, 22, 0.72)), url("${KEY_ART_BG}")`;
+  const fullBleedBg = `linear-gradient(180deg, rgba(4, 11, 26, 0.68), rgba(8, 6, 22, 0.76)), url("${KEY_ART_BG}")`;
+  if (screenId === 'mainMenu' || screenId === 'cabinetSelect' || screenId === 'modeSelect' || screenId === 'profile' || screenId === 'leaderboards' || screenId === 'settings') {
+    return fullBleedBg;
   }
   const screen = HARD_MONEY_HEROES_ASSET_MANIFEST.screens[screenId];
   if (!screen?.src) return '';
@@ -2179,7 +2180,7 @@ function renderOfficialProfile() {
     feedback.dataset.state = input.value.trim() ? (v.valid ? 'ok' : 'error') : '';
   });
 
-  saveBtn.addEventListener('click', () => {
+  avatarSaveBtn.addEventListener('click', () => {
     const res = setArcadeUsername(state, connectedWallet, input.value);
     feedback.textContent = res.message;
     feedback.dataset.state = res.ok ? 'ok' : 'error';
@@ -2198,15 +2199,27 @@ function renderOfficialProfile() {
   appendText(avatarCard, 'span', 'AVATAR', 'cabinet-status-label');
   appendText(avatarCard, 'small', 'Upload a .jpg or .png (max 2MB). Shows in the nav and on leaderboards next to your score.');
   const avatarRow = el('div', { className: 'avatar-editor-row' });
-  const preview = renderAvatarChip(connectedWallet, profile?.displayName, 'profile-avatar');
+  const preview = el('div', { className: 'profile-avatar avatar-preview-shell' });
+  const previewImg = el('img', { className: 'avatar-preview-image', alt: 'Selected avatar preview' });
+  const previewFallback = renderAvatarChip(connectedWallet, profile?.displayName, 'profile-avatar');
+  const previewHint = el('p', { className: 'avatar-preview-hint tiny-note' });
+  previewHint.textContent = 'Choose an image to preview it here before saving.';
+  preview.append(previewFallback, previewImg, previewHint);
+  previewImg.hidden = true;
   const fileInput = el('input', { className: 'avatar-file-input', type: 'file' });
   fileInput.accept = 'image/png,image/jpeg';
-  fileInput.setAttribute('aria-label', 'Upload avatar image');
-  const uploadBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Choose Image' });
-  uploadBtn.addEventListener('click', () => fileInput.click());
+  fileInput.setAttribute('aria-label', 'Choose avatar image');
+  const chooseBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Choose Image' });
+  const avatarSaveBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Save Avatar', disabled: true });
+  chooseBtn.addEventListener('click', () => fileInput.click());
   const avatarFeedback = el('p', { className: 'avatar-feedback tiny-note' });
+  let pendingAvatarDataUrl = '';
+  let pendingAvatarName = '';
   fileInput.addEventListener('change', () => {
     const file = fileInput.files?.[0];
+    pendingAvatarDataUrl = '';
+    pendingAvatarName = '';
+    avatarSaveBtn.disabled = true;
     if (!file) return;
     if (!['image/png', 'image/jpeg'].includes(file.type)) {
       avatarFeedback.textContent = 'Only .png or .jpg images are allowed.';
@@ -2220,11 +2233,15 @@ function renderOfficialProfile() {
     }
     const reader = new FileReader();
     reader.onload = () => {
-      setPlayerAvatar(connectedWallet, reader.result);
-      avatarFeedback.textContent = 'Avatar saved. It now shows in the nav and on leaderboards.';
+      pendingAvatarDataUrl = String(reader.result ?? '');
+      pendingAvatarName = file.name;
+      previewFallback.hidden = true;
+      previewImg.hidden = false;
+      previewImg.src = pendingAvatarDataUrl;
+      previewHint.textContent = `Preview ready: ${file.name}`;
+      avatarFeedback.textContent = 'Preview loaded. Click Save Avatar to upload it.';
       avatarFeedback.dataset.state = 'ok';
-      render();
-      renderOfficialProfile();
+      avatarSaveBtn.disabled = false;
     };
     reader.onerror = () => {
       avatarFeedback.textContent = 'Could not read that file. Try another image.';
@@ -2232,32 +2249,50 @@ function renderOfficialProfile() {
     };
     reader.readAsDataURL(file);
   });
+  avatarSaveBtn.addEventListener('click', () => {
+    if (!pendingAvatarDataUrl) return;
+    setPlayerAvatar(connectedWallet, pendingAvatarDataUrl);
+    avatarFeedback.textContent = 'Avatar saved!';
+    avatarFeedback.dataset.state = 'ok';
+    avatarCard.classList.remove('avatar-saved-flash');
+    void avatarCard.offsetWidth;
+    avatarCard.classList.add('avatar-saved-flash');
+    render();
+    renderOfficialProfile();
+  });
   const avatarControls = el('div', { className: 'avatar-editor-controls' });
-  avatarControls.append(uploadBtn, avatarFeedback);
+  avatarControls.append(chooseBtn, avatarSaveBtn, avatarFeedback);
   avatarRow.append(preview, avatarControls);
   avatarCard.append(avatarRow, fileInput);
   dom.officialCabinetGrid.append(avatarCard);
 
-  // --- Achievements grid (badges, tier-colored, locked dimmed) ---
-  const achievements = snapshot?.achievements ?? [];
-  const summary = snapshot?.achievementSummary ?? { total: achievements.length, unlocked: 0 };
-  const achCard = el('article', { className: 'official-info-card achievements-card' });
+  // --- Achievements module (full-width, below profile cards) ---
+  const unlockedByTitle = new Map((snapshot?.achievements ?? []).map((a) => [a.title, a]));
+  const achievements = Object.values(ACHIEVEMENTS).map((achievement) => {
+    const unlocked = unlockedByTitle.get(achievement.title)?.unlocked ?? false;
+    return { ...achievement, unlocked };
+  });
+  const summary = { total: achievements.length, unlocked: achievements.filter((a) => a.unlocked).length };
+  const achCard = el('article', { className: 'official-info-card achievements-card achievements-module' });
   const achHead = el('div', { className: 'achievements-head' });
   appendText(achHead, 'span', 'ACHIEVEMENTS', 'cabinet-status-label');
   appendText(achHead, 'strong', `${summary.unlocked} / ${summary.total} unlocked`, 'achievements-count');
   achCard.append(achHead);
-  if (!achievements.length) {
-    appendText(achCard, 'small', 'Play runs to unlock achievements and badges.');
-  } else {
-    const grid = el('div', { className: 'achievements-grid' });
-    for (const a of achievements) {
-      const badge = el('div', { className: `achievement-badge tier-${a.tier ?? 'bronze'} ${a.unlocked ? 'unlocked' : 'locked'}`, title: `${a.title} — ${a.description}` });
-      appendText(badge, 'span', a.unlocked ? (a.icon ?? '🏅') : '🔒', 'achievement-icon');
-      appendText(badge, 'span', a.title, 'achievement-name');
-      grid.append(badge);
-    }
-    achCard.append(grid);
+  const grid = el('div', { className: 'achievements-grid' });
+  for (const a of achievements) {
+    const badge = el('div', {
+      className: `achievement-badge tier-${a.tier ?? 'bronze'} ${a.unlocked ? 'unlocked' : 'locked'}`,
+      title: `${a.title} — ${a.description}`,
+      tabindex: '0',
+      'aria-label': `${a.title}. ${a.description}`,
+    });
+    const tooltip = el('span', { className: 'achievement-tooltip', textContent: a.description });
+    appendText(badge, 'span', a.unlocked ? (a.icon ?? '🏅') : '🔒', 'achievement-icon');
+    appendText(badge, 'span', a.title, 'achievement-name');
+    badge.append(tooltip);
+    grid.append(badge);
   }
+  achCard.append(grid);
   dom.officialCabinetGrid.append(achCard);
 
   // --- Settlement history (score settles to LitVM via zkLTC) ---
@@ -4642,8 +4677,18 @@ function wave2TileImage(slug) {
 function biomeGroundTileForWorld(worldX, worldY, biome) {
   const slugs = BIOME_GROUND_TILES[biome] ?? BIOME_GROUND_TILES.town;
   if (!slugs.length) return null;
-  const index = Math.abs((worldX * 7 + worldY * 11 + (worldX - worldY) * 3)) % slugs.length;
-  return wave2TileImage(slugs[index]);
+  // Coherent ground: use the FIRST (dominant) tile almost everywhere, and only
+  // sprinkle the secondary variant in small deterministic clusters. The old code
+  // alternated the tile every single cell (worldX*7+worldY*11 % n), which made
+  // the floor strobe/checkerboard. Cluster the variant on a coarse 3-tile cell
+  // so any variation reads as an intentional patch, not per-tile noise.
+  if (slugs.length === 1) return wave2TileImage(slugs[0]);
+  const cx = Math.floor(worldX / 3);
+  const cy = Math.floor(worldY / 3);
+  const h = Math.abs(((cx * 374761393) ^ (cy * 668265263)) >>> 0) % 100;
+  // ~18% of 3x3 patches use the accent tile; the rest stay the dominant tile.
+  const slug = h < 18 ? slugs[1] : slugs[0];
+  return wave2TileImage(slug);
 }
 
 // --- Wave-2 animated ambient props (wind/water/flicker motion) ---------------
@@ -4896,43 +4941,76 @@ function drawCanonicalLandmarks(ctx) {
   const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
   if (!worldProps.length) return;
   const seed = combat.roguelikeRun?.seed ?? 0;
-  const LATTICE = 11;
-  const baseX = Math.floor(combat.playerMapX / LATTICE) * LATTICE;
-  const baseY = Math.floor(combat.playerMapY / LATTICE) * LATTICE;
-  for (let gx = -2; gx <= 2; gx += 1) {
-    for (let gy = -2; gy <= 2; gy += 1) {
-      const cellX = baseX + gx * LATTICE;
-      const cellY = baseY + gy * LATTICE;
-      const h = Math.abs(((cellX * 73856093) ^ (cellY * 19349663)) >>> 0);
-      // Biome decides placement style: town clusters into a dense, grid-aligned
-      // settlement; wilderness biomes stay sparse and scattered.
-      const cellBiome = biomeAt(seed, cellX, cellY);
-      const isTown = cellBiome === 'town';
-      const fillThreshold = isTown ? 82 : 50; // town = denser settlement
-      if ((h % 100) > fillThreshold) continue;
-      // Town buildings line up (small jitter); wilderness props scatter freely.
-      const jitter = isTown ? 1 : 2;
-      const worldX = cellX + ((h % (jitter * 2 + 1)) - jitter);
-      const worldY = cellY + (((h >> 3) % (jitter * 2 + 1)) - jitter);
-      if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 6) continue;
-      const pool = propsForBiome(worldProps, cellBiome);
+  // Scene-cluster placement: instead of scattering one prop per lattice cell
+  // (which reads as random junk), we place deliberate "scenes" at coarse anchor
+  // points. Town anchors become a small settlement (buildings in a row + filler
+  // props around a square); wilderness anchors become a sparse natural cluster
+  // (a few trees/rocks together). Open ground is left between scenes so the map
+  // breathes and the clusters read as places, not noise.
+  const ANCHOR = 14; // distance between scene anchors, in tiles
+  const baseAX = Math.floor(combat.playerMapX / ANCHOR);
+  const baseAY = Math.floor(combat.playerMapY / ANCHOR);
+  // Collect placements first, then depth-sort so nearer props overlap farther ones.
+  const placements = [];
+  const pushProp = (prop, biome, worldX, worldY) => {
+    if (!prop) return;
+    if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 4.5) return;
+    const img = canonicalLandmarkImage(prop.src);
+    if (!imageReady(img)) return;
+    const projected = isoToScreen(worldX, worldY);
+    const isBuilding = biome === 'town';
+    const targetW = isBuilding ? 124 : 88;
+    const scale = targetW / img.naturalWidth;
+    const w = Math.round(img.naturalWidth * scale);
+    const drawH = Math.round(img.naturalHeight * scale);
+    placements.push({
+      depth: projected.y,
+      draw: () => {
+        ctx.save();
+        ctx.globalAlpha = 0.95;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(img, Math.round(projected.x - w / 2), Math.round(projected.y + 56 - drawH), w, drawH);
+        ctx.restore();
+      },
+    });
+  };
+
+  for (let ax = baseAX - 1; ax <= baseAX + 1; ax += 1) {
+    for (let ay = baseAY - 1; ay <= baseAY + 1; ay += 1) {
+      const h = Math.abs(((ax * 73856093) ^ (ay * 19349663)) >>> 0);
+      // ~62% of anchors host a scene; the rest stay open ground.
+      if ((h % 100) > 62) continue;
+      const anchorX = ax * ANCHOR + (h % 5) - 2;
+      const anchorY = ay * ANCHOR + ((h >> 3) % 5) - 2;
+      const biome = biomeAt(seed, anchorX, anchorY);
+      const pool = propsForBiome(worldProps, biome);
       if (!pool.length) continue;
-      const prop = pool[h % pool.length];
-      const biome = cellBiome;
-      const img = canonicalLandmarkImage(prop.src);
-      if (!imageReady(img)) continue;
-      const projected = isoToScreen(worldX, worldY);
-      // Buildings (town) render larger than scatter props.
-      const targetW = biome === 'town' ? 128 : 92;
-      const scale = targetW / img.naturalWidth;
-      const w = Math.round(img.naturalWidth * scale);
-      const drawH = Math.round(img.naturalHeight * scale);
-      ctx.save();
-      ctx.globalAlpha = 0.92;
-      ctx.drawImage(img, Math.round(projected.x - w / 2), Math.round(projected.y + 56 - drawH), w, drawH);
-      ctx.restore();
+
+      if (biome === 'town' || biome === 'road') {
+        // Settlement: a short row of buildings flanking a "street", plus a couple
+        // of filler props (lamp/sign/can) near them. Deterministic but varied.
+        const count = 3 + (h % 3); // 3-5 buildings
+        for (let i = 0; i < count; i += 1) {
+          const hi = Math.abs(((anchorX * 2654435761) ^ ((anchorY + i) * 40503)) >>> 0);
+          // line buildings along a row, alternate sides of the street
+          const side = i % 2 === 0 ? -2 : 2;
+          const along = Math.floor(i / 2) * 3 - 1;
+          pushProp(pool[hi % pool.length], biome, anchorX + along, anchorY + side);
+        }
+      } else {
+        // Wilderness: a small natural cluster of 2-4 props grouped tightly.
+        const count = 2 + (h % 3);
+        for (let i = 0; i < count; i += 1) {
+          const hi = Math.abs(((anchorX * 2246822519) ^ ((anchorY + i * 7) * 3266489917)) >>> 0);
+          const ox = (hi % 5) - 2;
+          const oy = ((hi >> 4) % 5) - 2;
+          pushProp(pool[hi % pool.length], biome, anchorX + ox, anchorY + oy);
+        }
+      }
     }
   }
+  placements.sort((a, b) => a.depth - b.depth);
+  for (const p of placements) p.draw();
 }
 
 function drawRoguelikeScene(ctx, width, height) {
@@ -4955,17 +5033,11 @@ function drawRoguelikeScene(ctx, width, height) {
     }
   }
 
-  for (let i = 0; i < 18; i += 1) {
-    const px = Math.round(combat.playerMapX / 6) * 6 + ((i * 7) % 22) - 11;
-    const py = Math.round(combat.playerMapY / 6) * 6 + ((i * 11) % 22) - 11;
-    if (Math.hypot(px - combat.playerMapX, py - combat.playerMapY) < 3) continue;
-    const projected = isoToScreen(px, py);
-    const prop = productionPropForIndex(i);
-    if (!drawProductionIsoProp(ctx, prop, projected.x, projected.y + 48, i)) {
-      ctx.fillStyle = i % 3 === 0 ? '#365f3a' : i % 3 === 1 ? '#79512c' : '#263b69';
-      ctx.fillRect(projected.x - 14, projected.y + 28, 28, 30 + (i % 3) * 12);
-    }
-  }
+  // NOTE: the old "18 random production props on a /6 grid with colored-box
+  // fallbacks" scatter loop was removed here — it placed props (and ugly
+  // fallback rectangles) with no spatial logic, which read as random clutter.
+  // All world props are now placed coherently by drawCanonicalLandmarks (town
+  // settlement clusters + sparse wilderness) and collectAnimatedProps (ambient).
 
   drawCanonicalLandmarks(ctx);
 
@@ -5414,7 +5486,10 @@ function drawPlayer(ctx) {
     const drawY = y - drawHeight + (productionHero ? 16 : 0) + bob;
     ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
     ctx.fillRect(x + 3, shadowY, 38, 8);
-    if (playerFacingLeft()) {
+    // Mirror when the animated 8-direction frame says so (west-facing aim), else
+    // fall back to keyboard side-scroll facing.
+    const flip = heroFrame._flip != null ? heroFrame._flip : playerFacingLeft();
+    if (flip) {
       ctx.save();
       ctx.translate(drawX + drawWidth / 2, 0);
       ctx.scale(-1, 1);
@@ -5527,19 +5602,66 @@ function rosterAnimName(roster, desired) {
   return keys.length ? keys[0] : null;
 }
 
+// Map an aim/move vector to a PixelLab facing + horizontal flip. PixelLab
+// generates south, south-east, east, north-east, north, north-west, west,
+// south-west. The west-side facings are mirror images of the east-side ones, so
+// we can render all 8 facings from {south, south-east, east, north-east, north}
+// by flipping horizontally for the western half. When a direction's frames
+// aren't harvested yet, callers fall back through this list, ultimately to
+// south, so the sprite still animates (just not perfectly angled).
+function facingFromVector(dx, dy) {
+  // Screen-space iso: +x = east/right-down, +y = south/down. Use angle buckets.
+  const ang = Math.atan2(dy, dx); // -PI..PI, 0 = east, PI/2 = south
+  const deg = (ang * 180) / Math.PI;
+  // 8 buckets of 45°, centered. Returns {dir, flip} where flip mirrors east->west.
+  if (deg >= -22.5 && deg < 22.5) return { dir: 'east', flip: false };
+  if (deg >= 22.5 && deg < 67.5) return { dir: 'south-east', flip: false };
+  if (deg >= 67.5 && deg < 112.5) return { dir: 'south', flip: false };
+  if (deg >= 112.5 && deg < 157.5) return { dir: 'south-east', flip: true }; // south-west
+  if (deg >= 157.5 || deg < -157.5) return { dir: 'east', flip: true };       // west
+  if (deg >= -157.5 && deg < -112.5) return { dir: 'north-east', flip: true };// north-west
+  if (deg >= -112.5 && deg < -67.5) return { dir: 'north', flip: false };
+  return { dir: 'north-east', flip: false }; // north-east
+}
+
+// Pick the best available direction's frames for an animation, honoring the
+// requested facing with graceful fallback + mirror. Returns {frames, flip}.
+function directionalFrames(dirs, facing) {
+  if (!dirs) return null;
+  const { dir, flip } = facing;
+  // Preference order: exact dir, its mirror twin, south-east, south, then any.
+  const twin = { east: 'west', west: 'east', 'south-east': 'south-west',
+    'south-west': 'south-east', 'north-east': 'north-west', 'north-west': 'north-east' }[dir];
+  const tryOrder = [
+    [dir, flip],
+    twin ? [twin, !flip] : null,
+    ['south-east', flip], ['east', flip], ['south', false], ['north', false],
+  ].filter(Boolean);
+  for (const [d, f] of tryOrder) {
+    if (dirs[d]?.length) return { frames: dirs[d], flip: f };
+  }
+  const anyKey = Object.keys(dirs)[0];
+  return anyKey ? { frames: dirs[anyKey], flip } : null;
+}
+
 // Return the current animation frame image for an entity, or null if no
 // animated roster art applies. `phase` lets callers offset per-entity so a
-// crowd of enemies isn't perfectly synced.
-function animatedRosterFrame(roster, desiredNames, { fps = 12, loop = true, phase = 0 } = {}) {
+// crowd of enemies isn't perfectly synced. `facing` selects the 8-direction
+// sprite; result includes a `flip` flag so the caller mirrors west-facings.
+function animatedRosterFrame(roster, desiredNames, { fps = 12, loop = true, phase = 0, facing = null } = {}) {
   if (!roster) return null;
   const name = rosterAnimName(roster, desiredNames);
   if (!name) return null;
   const dirs = roster.animations[name];
-  // South-facing frames are the animated set we harvested; iso reads fine.
-  const frames = dirs.south ?? dirs[Object.keys(dirs)[0]];
-  if (!frames?.length) return null;
-  const src = selectAnimationFrame(frames, combat.frame + phase, fps, loop);
-  return rosterFrame(src);
+  const sel = facing
+    ? directionalFrames(dirs, facing)
+    : { frames: dirs.south ?? dirs[Object.keys(dirs)[0]], flip: false };
+  if (!sel?.frames?.length) return null;
+  const src = selectAnimationFrame(sel.frames, combat.frame + phase, fps, loop);
+  const img = rosterFrame(src);
+  if (!img) return null;
+  img._flip = sel.flip; // transient hint read by the draw helpers this frame
+  return img;
 }
 
 function enemyAnimState(enemy) {
@@ -5555,7 +5677,12 @@ function roguelikeEnemyAnimatedFrame(enemy) {
   const key = rosterKeyForEntity(enemy, role);
   const roster = HMH_ANIMATED_ROSTER[key];
   const phase = Math.round((enemy.mapX ?? 0) * 7 + (enemy.mapY ?? 0) * 13);
-  return animatedRosterFrame(roster, enemyAnimState(enemy), { fps: 12, phase });
+  // Enemy faces the player (screen-space iso vector).
+  const facing = facingFromVector(
+    (combat.playerMapX ?? 0) - (enemy.mapX ?? 0),
+    (combat.playerMapY ?? 0) - (enemy.mapY ?? 0),
+  );
+  return animatedRosterFrame(roster, enemyAnimState(enemy), { fps: 12, phase, facing });
 }
 
 // Hero (Lester) animation state -> roster animation name priority.
@@ -5576,7 +5703,9 @@ function lesterAnimatedFrame() {
     && Object.keys(HMH_ANIMATED_ROSTER.lilly.animations).length) ? 'lilly' : 'lester';
   const roster = HMH_ANIMATED_ROSTER[key];
   const death = combat.gameOver;
-  return animatedRosterFrame(roster, heroAnimState(), { fps: 14, loop: !death });
+  // Hero faces the aim direction (mouse / movement). aimMapX/Y is the unit aim.
+  const facing = facingFromVector(combat.aimMapX ?? 0, combat.aimMapY ?? 1);
+  return animatedRosterFrame(roster, heroAnimState(), { fps: 14, loop: !death, facing });
 }
 
 // --- Roguelike biome-themed enemy sprites (hmh-enemies-wave) -------------------
@@ -5653,7 +5782,15 @@ function drawSingleEnemy(ctx, enemy) {
       const drawSize = (isAnim || isWave) ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78;
       ctx.save();
       ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(enemyFrame, Math.round(enemy.x + w / 2 - drawSize / 2), Math.round(enemy.y - drawSize + 12), drawSize, drawSize);
+      const ex = Math.round(enemy.x + w / 2 - drawSize / 2);
+      const ey = Math.round(enemy.y - drawSize + 12);
+      if (enemyFrame._flip) {
+        ctx.translate(ex + drawSize / 2, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(enemyFrame, -drawSize / 2, ey, drawSize, drawSize);
+      } else {
+        ctx.drawImage(enemyFrame, ex, ey, drawSize, drawSize);
+      }
       ctx.restore();
     } else {
       ctx.fillStyle = isMini ? '#ff7b2f' : enemy.class?.includes('flying') ? '#6d3cff' : enemy.class === 'armored' ? '#aab6d3' : '#ff476f';

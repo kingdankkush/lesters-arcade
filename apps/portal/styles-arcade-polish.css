@@ -71,6 +71,29 @@
 }
 .game-intro-shell > * { position: relative; z-index: 1; }
 
+.arcade-floor-view .official-cabinet-grid,
+.mode-select-view .official-mode-grid,
+.arcade-floor-view .arcade-walk-in,
+.mode-select-view > div,
+.mode-select-view .ranked-tooltip {
+  background: rgba(5, 7, 15, 0.52);
+  border: 1px solid rgba(25, 247, 255, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.arcade-floor-view .arcade-walk-in,
+.mode-select-view > div,
+.mode-select-view .ranked-tooltip {
+  border-radius: 18px;
+  padding: 16px 18px;
+}
+
+.arcade-floor-view .official-cabinet-grid,
+.mode-select-view .official-mode-grid {
+  padding: 18px;
+  border-radius: 24px;
+}
+
 @media (max-width: 800px) {
   .splash-marquee { margin-bottom: 12px; }
   .official-app::after { inset: 3px; }
@@ -230,10 +253,38 @@
 /* ---- Avatar editor on profile ---- */
 .avatar-editor-row { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
 .profile-avatar { width: 72px; height: 72px; font-size: 1.8rem; }
+.avatar-preview-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: rgba(8,14,32,0.78);
+}
+.avatar-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.avatar-preview-hint {
+  position: absolute;
+  inset: auto 6px 6px 6px;
+  margin: 0;
+  padding: 3px 6px;
+  background: rgba(3,10,24,0.72);
+  border-radius: 999px;
+  font-size: 0.6rem;
+  text-align: center;
+}
 .avatar-editor-controls { display: flex; flex-direction: column; gap: 6px; }
 .avatar-file-input { display: none; }
 .avatar-feedback[data-state="ok"] { color: #45ff8a; }
 .avatar-feedback[data-state="error"] { color: #ff6f8f; }
+.avatar-saved-flash {
+  animation: avatarSavedFlash 0.8s ease;
+  box-shadow: 0 0 0 2px rgba(69,255,138,0.6), 0 0 22px rgba(69,255,138,0.45);
+}
 
 /* ---- Leaderboard avatar ---- */
 .leaderboard-row-avatar { width: 26px; height: 26px; font-size: 0.7rem; flex: 0 0 auto; }
@@ -288,12 +339,18 @@
 .achievements-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px;
 }
+.achievements-module { grid-column: 1 / -1; }
+.achievements-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(108px, 1fr)); gap: 10px;
+}
 .achievement-badge {
+  position: relative;
   display: flex; flex-direction: column; align-items: center; gap: 5px;
   padding: 10px 6px; border-radius: 12px; text-align: center;
   background: rgba(8,14,32,0.6); border: 1px solid rgba(255,255,255,0.08);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
+.achievement-badge:focus-visible { outline: 2px solid var(--neon-cyan); outline-offset: 2px; }
 .achievement-badge.unlocked:hover { transform: translateY(-3px); }
 .achievement-badge.locked { opacity: 0.42; filter: grayscale(0.9); }
 .achievement-badge.unlocked.tier-bronze { border-color: #cd7f32; box-shadow: 0 0 10px rgba(205,127,50,0.3); }
@@ -303,6 +360,42 @@
 .achievement-icon { font-size: 1.6rem; line-height: 1; }
 .achievement-name { font-size: 0.64rem; color: #d6f6ff; line-height: 1.2; }
 .achievement-badge.locked .achievement-name { color: rgba(214,228,255,0.6); }
+.achievement-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  z-index: 3;
+  min-width: 180px;
+  max-width: 240px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(3,10,24,0.96);
+  border: 1px solid rgba(25,247,255,0.35);
+  color: #d6f6ff;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  box-shadow: 0 0 16px rgba(25,247,255,0.18);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s ease;
+}
+.achievement-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(25,247,255,0.35);
+}
+.achievement-badge:hover .achievement-tooltip,
+.achievement-badge:focus-visible .achievement-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-2px);
+}
 
 /* ---- Ranked entry-fee / signature modal ---- */
 .ranked-entry-overlay {
@@ -390,4 +483,124 @@
 @media (max-width: 720px) {
   /* Hide the tall rail ad on narrow screens; keep the horizontal one. */
   .ad-banner-vertical { display: none; }
+
+  .official-app {
+    padding: 10px;
+  }
+
+  .official-nav {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .official-nav > strong {
+    flex: 1 1 100%;
+    margin-right: 0;
+    font-size: 0.92rem;
+  }
+
+  .official-nav-tabs {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .official-nav-tabs > * {
+    flex: 1 1 auto;
+    min-height: 42px;
+  }
+
+  .arcade-music-player {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin: 10px 0 14px;
+  }
+
+  .official-view {
+    padding-inline: 0;
+  }
+
+  .official-cabinet-grid,
+  .official-mode-grid,
+  .character-roster {
+    grid-template-columns: 1fr;
+  }
+
+  .official-cabinet-grid > *,
+  .official-mode-grid > *,
+  .character-roster > * {
+    min-width: 0;
+  }
+
+  .mode-card,
+  .hero-card {
+    min-height: 44px;
+  }
+
+  .gameplay-topbar,
+  .gameplay-control-bar {
+    gap: 8px;
+  }
+
+  .gameplay-control-bar {
+    flex-wrap: wrap;
+  }
+
+  .gameplay-control-bar button,
+  .gameplay-control-strip button,
+  .back-nav-button,
+  .primary-button,
+  .secondary-button,
+  .mode-card,
+  .hero-card {
+    min-height: 44px;
+  }
+
+  .gameplay-control-bar .secondary-button {
+    flex: 1 1 46%;
+  }
+
+  .combat-hud-overlay {
+    max-width: 100%;
+  }
+
+  .official-combat-mount {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .official-combat-mount canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+  }
+
+  .official-footer {
+    gap: 6px 10px;
+    text-align: center;
+    padding-bottom: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .official-nav-tabs > * {
+    flex: 1 1 100%;
+  }
+
+  .official-footer {
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+  }
+
+  .hero-card-stage {
+    height: 148px;
+  }
+
+  .hero-card-stage .hmh-cabinet-rotator {
+    width: 116px;
+    height: 116px;
+  }
 }
