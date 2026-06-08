@@ -1040,6 +1040,7 @@ const combat = {
   weaponId: 'coin-blaster',
   characterId: 'lester',
   shots: 0,
+  fireFlash: 0,
   meleeSwings: 0,
   lastMeleeFrame: -999,
   boss: null,
@@ -3789,6 +3790,7 @@ function shootRoguelike() {
     combat.ammo -= 1;
   }
   combat.shots += 1;
+  combat.fireFlash = 4; // brief muzzle-flash brightening for the lighting pass
   const damageScale = combat.roguelikeRun?.stats.damage ?? 1;
   const bulletSpeed = 14 * (combat.roguelikeRun?.stats.bulletSpeed ?? 1);
   combat.bullets.push({
@@ -4501,6 +4503,13 @@ function drawRoguelikeScene(ctx, width, height) {
   drawPowerUps(ctx);
   for (const entry of renderList) entry.draw();
 
+  // --- Dynamic lighting / shadow pass (Litecoin City After Dark mood) --------
+  // Multiply a soft night tint over the world, then punch out warm light pools
+  // around the player, light-emitting props, and active muzzle/explosion flashes
+  // so the scene reads as a lit nocturnal city instead of flat daylight. Drawn
+  // after the world but before bullets/HUD so projectiles + UI stay crisp.
+  drawSceneLighting(ctx, width, height);
+
   drawBullets(ctx);
   drawParticles(ctx);
   drawFloatingTexts(ctx);
@@ -4518,6 +4527,79 @@ function drawRoguelikeScene(ctx, width, height) {
     ctx.fillStyle = '#f9f7ff';
     ctx.fillText('Game is paused. Pick one of two random +5% upgrades or use your reroll.', 126, 150);
   }
+}
+
+// Build the list of active light sources in screen space for this frame: the
+// player (cool hard-money glow), light-emitting animated props (lamp/neon/
+// traffic), and a brief muzzle flash while firing. Each is {x,y,r,warm}.
+function collectLightSources() {
+  const lights = [];
+  // Player light pool — slightly brighter right after firing.
+  const firing = (combat.fireFlash ?? 0) > 0;
+  lights.push({ x: combat.playerX + 18, y: combat.playerY - 18, r: firing ? 168 : 138, warm: false });
+  // Light-emitting animated props near the player (reuse the deterministic
+  // placement so light pools sit under neon signs / traffic lights / lamps).
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  const LATTICE = 8;
+  const baseX = Math.floor(combat.playerMapX / LATTICE) * LATTICE;
+  const baseY = Math.floor(combat.playerMapY / LATTICE) * LATTICE;
+  const LIGHT_SLUGS = new Set(['neon-sign-flicker', 'traffic-light-blink', 'parked-car-blink', 'wrecked-car-smoke']);
+  for (let gx = -2; gx <= 2; gx += 1) {
+    for (let gy = -2; gy <= 2; gy += 1) {
+      const cellX = baseX + gx * LATTICE;
+      const cellY = baseY + gy * LATTICE;
+      const h = Math.abs(((cellX * 374761393) ^ (cellY * 668265263)) >>> 0);
+      if ((h % 100) > 42) continue;
+      const biome = biomeAt(seed, cellX, cellY);
+      const pool = BIOME_ANIM_PROPS[biome] ?? BIOME_ANIM_PROPS.town;
+      const slug = pool[h % pool.length];
+      if (!LIGHT_SLUGS.has(slug)) continue;
+      const worldX = cellX + ((h % 5) - 2);
+      const worldY = cellY + (((h >> 4) % 5) - 2);
+      const projected = isoToScreen(worldX, worldY);
+      // Neon/traffic flicker: pulse the radius a little so the glow feels alive.
+      const flicker = 0.85 + 0.15 * Math.sin((combat.frame + (h % 17)) * 0.3);
+      lights.push({ x: projected.x, y: projected.y + 8, r: 74 * flicker, warm: true });
+    }
+  }
+  return lights;
+}
+
+// Night ambient + carved light pools. destination-out erases the dark overlay
+// where lights are, leaving soft lit circles over the world.
+function drawSceneLighting(ctx, width, height) {
+  const lights = collectLightSources();
+  ctx.save();
+  // 1) Night tint over the whole world (deep indigo, moderate strength).
+  ctx.fillStyle = 'rgba(6, 10, 28, 0.42)';
+  ctx.fillRect(0, 0, width, height);
+  // 2) Carve light pools out of the darkness.
+  ctx.globalCompositeOperation = 'destination-out';
+  for (const l of lights) {
+    const g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
+    g.addColorStop(0, 'rgba(0,0,0,0.92)');
+    g.addColorStop(0.55, 'rgba(0,0,0,0.45)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(l.x, l.y, l.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+  // 3) Additive warm/cool tint inside the light pools for colored glow.
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (const l of lights) {
+    const g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
+    const tint = l.warm ? 'rgba(255, 176, 64,' : 'rgba(64, 200, 255,';
+    g.addColorStop(0, `${tint} 0.18)`);
+    g.addColorStop(1, `${tint} 0)`);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(l.x, l.y, l.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
 }
 
 function drawCombatScene(timestamp = 0) {
@@ -4547,6 +4629,7 @@ function drawCombatScene(timestamp = 0) {
 
   // --- Screen shake (juice): decays each frame, applied as a small translate. ---
   combat.shake = (combat.shake ?? 0) * 0.82;
+  if (combat.fireFlash > 0) combat.fireFlash -= 1;
   if (combat.shake < 0.15) combat.shake = 0;
   const shakeApplied = combat.shake > 0;
   if (shakeApplied) {
