@@ -1,0 +1,122 @@
+{
+  "lit-commando": {
+    "character_id": "c96d19d1-8958-4fcd-b517-9dfded9e0051",
+    "create_raw": "id: c96d19d1-8958-4fcd-b517-9dfded9e0051\nname: isometric pixel art\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 96x96px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"c96d19d1-8958-4fcd-b517-9dfded9e0051\")",
+    "status": "created",
+    "create_status": "completed",
+    "anims": {
+      "idle": {
+        "status": "queued",
+        "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (standing idle, breathing, weapon ready, subtle bob)\ndirections: south, south-east, east, north-east, north, north-west, west, sout"
+      },
+      "walk": {
+        "status": "queued",
+        "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (walking forward steadily, weapon in hand)\ndirections: south, south-east, east, north-east, north, north-west, west, south-west (8 "
+      },
+      "run": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "fire-pistol": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "melee-knife": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "throw-axe": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "fire-shotgun": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "fire-machinegun": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "hurt": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "stun": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "pickup": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "levelup": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "death": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      }
+    }
+  },
+  "lit-valkyrie": {
+    "character_id": "74b5efc0-e7d8-4400-85f5-9db85ef05db9",
+    "create_raw": "id: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nname: isometric pixel art\nmode: standard (1 generation)\ndirections: 8\nbody: humanoid\nsize: 96x96px\nstyle: basic shading, single color black outline, medium detail\nstatus: processing (~3-5 minutes)\n\nhint: get_character(character_id=\"74b5efc0-e7d8-4400-85f5-9db85ef05db9\")",
+    "status": "created",
+    "create_status": "completed",
+    "anims": {
+      "idle": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "walk": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "run": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "fire-pistol": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "melee-knife": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "throw-axe": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "fire-shotgun": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "fire-machinegun": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "hurt": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "stun": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "pickup": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "levelup": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      },
+      "death": {
+        "status": "queued",
+        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      }
+    }
+  }
+}
