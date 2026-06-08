@@ -819,3 +819,115 @@
   }
   .achievement-name { font-size: 0.58rem; }
 }
+
+/* ---- Coming-soon cabinet key-art banners (MWEB Invaders, LitVM Legends) ---- */
+/* Key art sits behind the COMING SOON headline + title/desc, cropped to fill the
+   card width with a dark overlay so the neon copy stays readable. */
+.official-cabinet-card.banner-cabinet-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+  justify-content: flex-end;
+  filter: none; /* override the generic .locked greyscale so art reads in color */
+}
+.official-cabinet-card.banner-cabinet-card.locked {
+  filter: none;
+}
+.cabinet-card-banner {
+  position: absolute;
+  inset: 0;
+  background-size: cover;          /* fit width, crop to fill */
+  background-position: center top;
+  background-repeat: no-repeat;
+  z-index: 0;
+  transition: transform .4s ease;
+}
+.official-cabinet-card.banner-cabinet-card::after {
+  /* Dark gradient overlay: darker at the bottom where the copy lives. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 11, 26, 0.55) 0%,
+    rgba(4, 11, 26, 0.35) 38%,
+    rgba(4, 11, 26, 0.82) 78%,
+    rgba(4, 11, 26, 0.94) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+.official-cabinet-card.banner-cabinet-card .cabinet-card-copy {
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+}
+.official-cabinet-card.banner-cabinet-card .cabinet-status-label {
+  color: #ffe84d;
+  letter-spacing: 0.14em;
+}
+.official-cabinet-card.banner-cabinet-card:hover:not(:disabled) .cabinet-card-banner {
+  transform: scale(1.05);
+}
+
+/* ---- Free Mode / Play Ranked banner mode buttons ---- */
+/* Key art fills each button (cover/crop), darkened by an inline gradient overlay
+   baked into the background-image stack, with the title + description on top. */
+.mode-row-banners {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.mode-banner-button {
+  position: relative;
+  min-height: 116px;
+  padding: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  text-align: left;
+  border: 1px solid rgba(25, 247, 255, 0.3);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background-size .35s ease;
+}
+.mode-banner-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(255, 232, 77, 0.6);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 28px rgba(25, 247, 255, 0.18);
+}
+.mode-banner-button.primary-button:hover:not(:disabled) {
+  border-color: rgba(69, 255, 138, 0.7);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 28px rgba(69, 255, 138, 0.22);
+}
+.mode-banner-button:disabled {
+  filter: grayscale(0.6) brightness(0.7);
+  cursor: not-allowed;
+}
+.mode-banner-copy {
+  display: grid;
+  gap: 3px;
+  padding: 12px 14px;
+  width: 100%;
+}
+.mode-banner-title {
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #f4faff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.95);
+  line-height: 1.05;
+}
+.mode-banner-button.primary-button .mode-banner-title { color: #d9ffe9; }
+.mode-banner-button.secondary-button .mode-banner-title { color: #e9f6ff; }
+.mode-banner-desc {
+  font-size: 0.64rem;
+  line-height: 1.25;
+  color: rgba(226, 240, 255, 0.92);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.95);
+}
+@media (max-width: 560px) {
+  .mode-row-banners { grid-template-columns: 1fr; }
+}

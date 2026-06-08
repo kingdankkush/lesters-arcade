@@ -399,9 +399,19 @@
             <span id="selectedGameStatus" class="system-pill">playable</span>
           </div>
           <p id="selectedGameTagline" class="machine-copy"></p>
-          <div class="mode-row">
-            <button id="freePlayButton" class="secondary-button">Free Play</button>
-            <button id="paidPlayButton" class="primary-button">Play Ranked ⛓</button>
+          <div class="mode-row mode-row-banners">
+            <button id="freePlayButton" class="secondary-button mode-banner-button" style="background-image: linear-gradient(180deg, rgba(4,11,26,0.45) 0%, rgba(4,11,26,0.55) 45%, rgba(4,11,26,0.9) 100%), url('./assets/generated/hmh-banners/free-mode-banner.jpg');">
+              <span class="mode-banner-copy">
+                <strong class="mode-banner-title">Free Mode</strong>
+                <small class="mode-banner-desc">Untracked practice. No leaderboard, achievements, or on-chain writes.</small>
+              </span>
+            </button>
+            <button id="paidPlayButton" class="primary-button mode-banner-button" style="background-image: linear-gradient(180deg, rgba(4,11,26,0.4) 0%, rgba(4,11,26,0.5) 45%, rgba(4,11,26,0.9) 100%), url('./assets/generated/hmh-banners/ranked-banner.jpg');">
+              <span class="mode-banner-copy">
+                <strong class="mode-banner-title">Play Ranked ⛓</strong>
+                <small class="mode-banner-desc">Publishes your run on-chain to LitVM. Testnet: zkLTC gas only.</small>
+              </span>
+            </button>
           </div>
           <div class="run-terminal">
             <p class="label">Official Run State</p>

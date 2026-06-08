@@ -1588,6 +1588,9 @@ function renderRoguelikeStatBar() {
   const xpToNext = Math.max(0, Math.round(run.xpToNextLevel - run.xp));
   const xpRatio = Math.max(0, Math.min(1, run.xp / Math.max(1, run.xpToNextLevel)));
   const heroName = (combat.characterId && CHARACTER_DISPLAY_NAMES[combat.characterId]) || 'Hero';
+  const ammoValue = combat.reloading
+    ? 'RELOAD…'
+    : `${Math.max(0, combat.clip ?? 0)}/${combat.clipSize ?? 0}`;
   const stats = [
     { id: 'survive', label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} / 20:00`, tone: 'cyan' },
     { id: 'tier', label: 'TIER', value: director.difficultyLabel.toUpperCase(), tone: 'cyan' },
@@ -1596,7 +1599,9 @@ function renderRoguelikeStatBar() {
     { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
     { id: 'level', label: 'LEVEL', value: `${run.level}`, tone: 'green' },
     { id: 'wpn', label: 'WPN', value: weapon.title.toUpperCase(), tone: 'green' },
-    { id: 'aug', label: 'AUG', value: `${augments} · ⟳${run.rerollsRemaining} · ✦${combat.grenades}`, tone: 'orange' },
+    { id: 'ammo', label: 'AMMO', value: ammoValue, tone: combat.reloading ? 'orange' : 'green' },
+    { id: 'thrown', label: 'THROW', value: `💣${combat.grenades} · 🪓${combat.axes ?? 0}`, tone: 'orange' },
+    { id: 'aug', label: 'AUG', value: `${augments} · ⟳${run.rerollsRemaining}`, tone: 'orange' },
   ];
   const activeFx = [];
   if ((combat.powerUpTimers.magnet ?? 0) > 0) activeFx.push(`MAGNET ${Math.ceil(combat.powerUpTimers.magnet)}s`);
@@ -2250,6 +2255,13 @@ function renderOfficialCabinets() {
       const media = el('div', { className: 'cabinet-card-media' });
       media.append(renderRotatingCabinetSprite(cabinetSprite, 'card'));
       card.append(media);
+    } else if (cabinet.bannerArt) {
+      // Coming-soon cabinets render their key art as a cropped, darkened banner
+      // behind the title/description (fit width, crop to fill, dark overlay).
+      const banner = el('div', { className: 'cabinet-card-banner' });
+      banner.style.backgroundImage = `url("${cabinet.bannerArt}")`;
+      card.append(banner);
+      card.classList.add('banner-cabinet-card');
     }
     const copy = el('div', { className: 'cabinet-card-copy' });
     appendText(copy, 'span', cabinet.playable ? 'PLAYABLE NOW' : 'COMING SOON', 'cabinet-status-label');
@@ -3523,9 +3535,18 @@ async function startCombat() {
   combat.platforms = [];
   combat.powerUpsCollected = 0;
   combat.collectedPowerUpTypes = new Set();
-  combat.grenades = currentSession?.isPaid ? 3 : 9;
-  combat.ammo = Infinity;
+  // Throwables start scarce and are found as map pickups: 2 grenades + 6 axes.
+  combat.grenades = currentSession?.isPaid ? 2 : 2;
+  combat.axes = 6;
   combat.weaponId = 'coin-blaster';
+  // Clip/reload model: each weapon has a clip; auto-fire empties it, then a timed
+  // auto-reload refills it. The starter pistol begins fully loaded.
+  const startWeapon = weaponById(combat.weaponId);
+  combat.clipSize = startWeapon.clip ?? 8;
+  combat.clip = combat.clipSize;
+  combat.ammo = combat.clip; // legacy mirror used by older HUD/snapshot paths
+  combat.reloading = false;
+  combat.reloadRemaining = 0;
   combat.shots = 0;
   combat.meleeSwings = 0;
   combat.lastMeleeFrame = -999;
@@ -3639,16 +3660,48 @@ function melee() {
 }
 
 function grenade() {
-  if (combat.grenades <= 0) return;
-  combat.grenades -= 1;
-  playSfxCue('grenade', 0.075);
+  // Manual throwable (the player's only manual action in the roguelike). Throws a
+  // grenade first (bigger blast), then a throwing axe when grenades run out.
+  // Both are scarce and replenished by map ammo pickups.
+  const hasGrenade = (combat.grenades ?? 0) > 0;
+  const hasAxe = (combat.axes ?? 0) > 0;
+  if (!hasGrenade && !hasAxe) {
+    spawnText('NO THROWABLES', combat.playerX + 20, combat.playerY - 80, '#ff476f');
+    return;
+  }
+  const throwingAxe = !hasGrenade && hasAxe;
+  if (throwingAxe) combat.axes -= 1; else combat.grenades -= 1;
+  playSfxCue('grenade', throwingAxe ? 0.05 : 0.075);
+
+  if (combat.roguelikeRun) {
+    // Map-space blast centered slightly ahead of the hero along the aim vector.
+    const cx = combat.playerMapX + combat.aimMapX * 1.4;
+    const cy = combat.playerMapY + combat.aimMapY * 1.4;
+    const radius = throwingAxe ? 1.1 : 2.0; // map tiles
+    const dmg = (throwingAxe ? 22 : 34) * (combat.roguelikeRun?.stats.grenadeDamage ?? 1);
+    for (const enemy of combat.enemies) {
+      if (enemy.hp <= 0) continue;
+      const d = Math.hypot(enemy.mapX - cx, enemy.mapY - cy);
+      if (d <= radius) damageEnemy(enemy, dmg * (throwingAxe ? 1 : (1 - d / (radius + 0.5))) + (throwingAxe ? 0 : dmg * 0.4), throwingAxe ? 'axe' : 'grenade');
+    }
+    if (combat.boss && combat.boss.hp > 0) {
+      const d = Math.hypot((combat.boss.mapX ?? cx) - cx, (combat.boss.mapY ?? cy) - cy);
+      if (d <= radius + 1) damageBoss(throwingAxe ? 26 : 40, throwingAxe ? 'axe' : 'grenade');
+    }
+    const burst = isoToScreen(cx, cy);
+    spawnExplosion(burst.x, burst.y, throwingAxe ? '#c9d6ff' : '#ff7b2f');
+    spawnText(throwingAxe ? '🪓' : '💥', burst.x, burst.y - 30, throwingAxe ? '#c9d6ff' : '#ff7b2f');
+    return;
+  }
+
+  // Legacy side-scroller fallback.
   const blastBox = { x: combat.playerX + 52, y: GROUND_Y - 154, w: 304, h: 166 };
   for (const enemy of combat.enemies) {
-    if (rectsOverlap(blastBox, enemyHitbox(enemy))) damageEnemy(enemy, 18, 'grenade');
+    if (rectsOverlap(blastBox, enemyHitbox(enemy))) damageEnemy(enemy, throwingAxe ? 14 : 18, throwingAxe ? 'axe' : 'grenade');
   }
   const bossBox = bossHitbox();
-  if (bossBox && rectsOverlap(blastBox, bossBox)) damageBoss(24, 'grenade');
-  spawnExplosion(combat.playerX + 210, GROUND_Y - 35, '#ff7b2f');
+  if (bossBox && rectsOverlap(blastBox, bossBox)) damageBoss(throwingAxe ? 18 : 24, throwingAxe ? 'axe' : 'grenade');
+  spawnExplosion(combat.playerX + 210, GROUND_Y - 35, throwingAxe ? '#c9d6ff' : '#ff7b2f');
 }
 
 function dropPowerUp() {
@@ -4233,13 +4286,25 @@ function collectCombatPowerUp(power) {
   combat.collectedPowerUpTypes.add(power.id ?? power.effect ?? power.title);
   if (power.effect === 'heal') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + power.amount);
   if (power.effect === 'grenades') combat.grenades += power.amount;
+  if (power.effect === 'axes') combat.axes = (combat.axes ?? 0) + power.amount;
   if (power.effect === 'life') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + 25);
   if (power.effect === 'weapon') {
     combat.weaponId = power.weaponId;
     const weapon = weaponById(power.weaponId);
-    combat.ammo = weapon.ammo === 'infinite' || weapon.ammo === 'timed upgrade' ? Infinity : weapon.ammo;
+    // Swapping weapons loads a fresh full clip and cancels any in-progress reload.
+    combat.clipSize = weapon.clip ?? (Number.isFinite(weapon.ammo) ? weapon.ammo : 8);
+    combat.clip = combat.clipSize;
+    combat.ammo = combat.clip;
+    combat.reloading = false;
+    combat.reloadRemaining = 0;
   }
-  if (power.effect === 'ammo') combat.ammo = Number.isFinite(combat.ammo) ? combat.ammo + power.amount : combat.ammo;
+  // Ammo pickup tops the current clip back up (capped at clip size) and clears reload.
+  if (power.effect === 'ammo') {
+    combat.clip = Math.min(combat.clipSize ?? combat.clip, (combat.clip ?? 0) + (power.amount ?? combat.clipSize ?? 8));
+    combat.ammo = combat.clip;
+    combat.reloading = false;
+    combat.reloadRemaining = 0;
+  }
   if (power.effect === 'shield') {
     combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + power.amount * 15);
     combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
@@ -4395,6 +4460,31 @@ function updateAimFromPointer(event) {
 function updateAutoFire(dt) {
   if (!combat.roguelikeRun || combat.paused || combat.gameOver) return;
   const weapon = weaponById(combat.weaponId);
+  const reloadStat = combat.roguelikeRun?.stats.reloadSpeed ?? 1;
+
+  // Handle an in-progress reload first: tick the timer down (faster with the
+  // reload-speed stat) and refill the clip when it completes.
+  if (combat.reloading) {
+    combat.reloadRemaining -= dt;
+    if (combat.reloadRemaining <= 0) {
+      combat.reloading = false;
+      combat.clip = combat.clipSize;
+      combat.ammo = combat.clip;
+      playSfxCue('pickup', 0.02);
+      spawnText('RELOADED', combat.playerX + 20, combat.playerY - 80, '#45ff8a');
+    }
+    return; // no firing while reloading
+  }
+
+  // Out of rounds: kick off a timed auto-reload (slowest for the machine gun).
+  if ((combat.clip ?? 0) <= 0) {
+    combat.reloading = true;
+    combat.reloadRemaining = (weapon.reloadSeconds ?? 1.2) / Math.max(0.4, reloadStat);
+    spawnText('RELOAD…', combat.playerX + 20, combat.playerY - 80, '#ffe84d');
+    playSfxCue('menu-click', 0.02);
+    return;
+  }
+
   const fireStat = combat.roguelikeRun?.stats.fireRate ?? 1;
   const berserkFire = (combat.powerUpTimers.berserk ?? 0) > 0 ? 1.6 : 1;
   const shotsPerSecond = (weapon.fireRatePerSecond ?? 3) * fireStat * berserkFire;
@@ -4424,27 +4514,46 @@ function updateAutoFire(dt) {
 
 function shootRoguelike() {
   const weapon = weaponById(combat.weaponId);
-  if (Number.isFinite(combat.ammo)) {
-    if (combat.ammo <= 0) {
-      spawnText('RELOAD!', combat.playerX + 20, combat.playerY - 80, '#ff476f');
-      return;
-    }
-    combat.ammo -= 1;
+  // Clip gate: never fire on an empty clip — updateAutoFire schedules the reload.
+  if ((combat.clip ?? 0) <= 0) {
+    return;
   }
+  combat.clip -= 1;
+  combat.ammo = combat.clip; // keep legacy mirror in sync
   combat.shots += 1;
   combat.fireFlash = 4; // brief muzzle-flash brightening for the lighting pass
   combat.lastShotFrame = combat.frame; // drives the animated-roster 'shoot' pose
   const damageScale = (combat.roguelikeRun?.stats.damage ?? 1) * ((combat.powerUpTimers.berserk ?? 0) > 0 ? 1.5 : 1);
   const bulletSpeed = 14 * (combat.roguelikeRun?.stats.bulletSpeed ?? 1);
-  combat.bullets.push({
-    worldX: combat.playerMapX + combat.aimMapX * 0.65,
-    worldY: combat.playerMapY + combat.aimMapY * 0.65,
-    vx: combat.aimMapX * bulletSpeed,
-    vy: combat.aimMapY * bulletSpeed,
-    damage: weapon.damage * damageScale,
-    weaponId: weapon.id,
-    ttl: 92,
-  });
+  // Shotgun fires a spread of pellets; everything else fires a single round.
+  const pellets = weapon.pellets ?? 1;
+  if (pellets > 1) {
+    const baseAng = Math.atan2(combat.aimMapY, combat.aimMapX);
+    const spread = 0.42; // total cone in radians
+    for (let i = 0; i < pellets; i += 1) {
+      const t = pellets === 1 ? 0 : (i / (pellets - 1)) - 0.5;
+      const ang = baseAng + t * spread;
+      combat.bullets.push({
+        worldX: combat.playerMapX + Math.cos(ang) * 0.65,
+        worldY: combat.playerMapY + Math.sin(ang) * 0.65,
+        vx: Math.cos(ang) * bulletSpeed,
+        vy: Math.sin(ang) * bulletSpeed,
+        damage: weapon.damage * damageScale,
+        weaponId: weapon.id,
+        ttl: 60, // shotgun pellets fall off faster (short range)
+      });
+    }
+  } else {
+    combat.bullets.push({
+      worldX: combat.playerMapX + combat.aimMapX * 0.65,
+      worldY: combat.playerMapY + combat.aimMapY * 0.65,
+      vx: combat.aimMapX * bulletSpeed,
+      vy: combat.aimMapY * bulletSpeed,
+      damage: weapon.damage * damageScale,
+      weaponId: weapon.id,
+      ttl: 92,
+    });
+  }
   const muzzle = isoToScreen(combat.playerMapX + combat.aimMapX * 0.8, combat.playerMapY + combat.aimMapY * 0.8);
   spawnMuzzleFlash(muzzle.x, muzzle.y, weapon.id);
   playSfxCue('weapon-fire', weapon.id === 'hash-rail' ? 0.045 : 0.035);
