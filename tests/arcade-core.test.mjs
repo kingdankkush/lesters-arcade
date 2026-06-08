@@ -372,6 +372,42 @@ test('paid score submission updates leaderboard, achievements, transactions, and
   assert.equal(snapshot.achievements.some((achievement) => achievement.id === ACHIEVEMENTS.FIRST_1000_POINTS.id && achievement.unlocked), true);
 });
 
+test('ranked run unlocks the in-combat gameplay achievements (kills, combo, survival) and they persist into the profile snapshot', () => {
+  // Guards the user-reported concern: achievements must actually unlock when
+  // EARNED through Ranked gameplay (not just the paid-run/score ones). A run
+  // with 10+ kills, a 5-hit combo, a grenade kill, a power-up, and 5+ minutes
+  // survived should flip the matching badges to unlocked in the snapshot that
+  // the Profile achievements grid renders from.
+  const state = createInitialArcadeState();
+  const wallet = '0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a';
+  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+
+  const result = recordScore(state, session, 3200, {
+    elapsedSeconds: 316,
+    kills: 12,
+    maxCombo: 6,
+    grenadeKills: 1,
+    powerUpsCollected: 1,
+    collectedPowerUps: ['magnet'],
+    bossId: 'rug-pull-tank',
+  });
+  assert.equal(result.acceptedForGlobalLeaderboard, true);
+
+  const snapshot = buildPlayerArcadeSnapshot(state, wallet);
+  const unlocked = new Set(snapshot.achievements.filter((a) => a.unlocked).map((a) => a.id));
+  // The gameplay-earned badges the run qualifies for:
+  for (const id of [
+    ACHIEVEMENTS.FIRST_BLOOD.id,
+    ACHIEVEMENTS.TEN_ENEMY_KILLS.id,
+    ACHIEVEMENTS.FIRST_GRENADE_KILL.id,
+    ACHIEVEMENTS.FIRST_POWERUP.id,
+    ACHIEVEMENTS.FIVE_MINUTE_RUN.id,
+    ACHIEVEMENTS.COMBO_STARTER.id,
+  ]) {
+    assert.equal(unlocked.has(id), true, `expected ${id} to be unlocked after the ranked run`);
+  }
+});
+
 test('ranked score is filed into all five cadence boards and returns a settlement input', async () => {
   const { getLeaderboard, applySettlement } = await import('../apps/portal/src/arcade-core.mjs');
   const { buildSettlementPlan, settleRun } = await import('../apps/portal/src/settlement.mjs');
@@ -1028,7 +1064,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./main.js?v=hmh-litvm-publish-v7'), true);
+  assert.equal(indexSource.includes('./main.js?v=hmh-visual-polish-v9'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -1674,7 +1710,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-litvm-publish-v7'), true);
+  assert.equal(smokeScript.includes('hmh-visual-polish-v9'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

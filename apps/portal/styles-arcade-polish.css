@@ -334,14 +334,18 @@
 .leaderboard-you-score { margin-left: auto; font-weight: 800; color: #45ff8a; }
 
 /* ---- Achievements grid ---- */
-.achievements-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
-.achievements-count { color: #45ff8a; font-size: 0.9rem; }
-.achievements-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px;
-}
+/* The achievements card is a column flexbox; force its children to span the
+   full card width so the grid lays out HORIZONTALLY (multi-column) instead of
+   collapsing to a single content-width column. */
 .achievements-module { grid-column: 1 / -1; }
+.achievements-card { align-items: stretch; }
+.achievements-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; width: 100%; }
+.achievements-count { color: #45ff8a; font-size: 0.9rem; white-space: nowrap; }
 .achievements-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(108px, 1fr)); gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 12px;
+  width: 100%;
 }
 .achievement-badge {
   position: relative;
@@ -603,4 +607,12 @@
     width: 116px;
     height: 116px;
   }
+
+  /* Tighten the achievements grid on phones so badges stay tappable but still
+     read as a horizontal grid (not a single stretched column). */
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 8px;
+  }
+  .achievement-name { font-size: 0.58rem; }
 }
