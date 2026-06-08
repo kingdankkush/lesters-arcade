@@ -15,6 +15,7 @@ import { HMH_FX_POWERUPS_WAVE } from './assets/generated/hmh-fx-powerups-wave.mj
 import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs';
 import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
+import { obstaclesNear, resolvePlayerCollision, obstacleHitAt } from './src/world-obstacles.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -4310,8 +4311,15 @@ function updateRoguelikeMovement(dt) {
   const length = Math.hypot(mx, my) || 1;
   const speed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
   if (mx !== 0 || my !== 0) {
-    combat.playerMapX += (mx / length) * speed * dt;
-    combat.playerMapY += (my / length) * speed * dt;
+    const fromX = combat.playerMapX;
+    const fromY = combat.playerMapY;
+    const toX = fromX + (mx / length) * speed * dt;
+    const toY = fromY + (my / length) * speed * dt;
+    // Solid obstacles (buildings/trees/objects) block movement: the player slides
+    // along / stops at their footprint instead of walking through them.
+    const resolved = resolvePlayerCollision(fromX, fromY, toX, toY, 0.42, currentObstacles());
+    combat.playerMapX = resolved.x;
+    combat.playerMapY = resolved.y;
     combat._heroMoving = true;
   } else {
     combat._heroMoving = false;
@@ -4328,6 +4336,7 @@ function updateRoguelikeMovement(dt) {
 }
 
 function updateRoguelikeBullets(dt) {
+  const obstacles = currentObstacles();
   for (const bullet of combat.bullets) {
     bullet.worldX += bullet.vx * dt;
     bullet.worldY += bullet.vy * dt;
@@ -4335,6 +4344,15 @@ function updateRoguelikeBullets(dt) {
     const projected = isoToScreen(bullet.worldX, bullet.worldY);
     bullet.x = projected.x;
     bullet.y = projected.y;
+    // Solid obstacles block bullets (inanimate objects take no damage, but they
+    // stop shots — you have to shoot around buildings/trees, not through them).
+    if (obstacleHitAt(bullet.worldX, bullet.worldY, obstacles)) {
+      for (let i = 0; i < 3; i += 1) {
+        combat.particles.push({ type: 'impact-sparks', x: projected.x, y: projected.y + 18, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2, color: i % 2 ? '#f9f7ff' : '#9aa7c7', size: 12 + Math.random() * 8, life: 0.3, maxLife: 0.3 });
+      }
+      bullet.ttl = 0;
+      continue;
+    }
     for (const enemy of combat.enemies) {
       if (enemy.hp > 0 && Math.hypot(enemy.mapX - bullet.worldX, enemy.mapY - bullet.worldY) < 0.72) {
         damageEnemy(enemy, bullet.damage, bullet.weaponId);
@@ -4349,6 +4367,10 @@ function updateRoguelikeBullets(dt) {
     shot.worldX += shot.vx * dt;
     shot.worldY += shot.vy * dt;
     shot.ttl -= 1;
+    // Enemy shots are also blocked by solid obstacles, so cover protects the player.
+    if (obstacleHitAt(shot.worldX, shot.worldY, obstacles)) {
+      shot.ttl = 0;
+    }
     const projected = isoToScreen(shot.worldX, shot.worldY);
     shot.x = projected.x;
     shot.y = projected.y;
@@ -4959,87 +4981,73 @@ function canonicalLandmarkImage(src) {
   }
   return landmarkImageCache.get(src);
 }
-function drawCanonicalLandmarks(ctx) {
-  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
-  if (!worldProps.length) return;
+// --- Persistent collidable world obstacles --------------------------------
+// Obstacles are derived from (seed, world cell) so a patch of world ALWAYS has
+// the same buildings/trees/objects — they no longer pop in/out as the player
+// moves. Computed once per frame and shared by movement, bullets, and drawing so
+// collision and rendering always agree.
+let _obstacleCacheFrame = -1;
+let _obstacleCache = [];
+function currentObstacles() {
+  if (_obstacleCacheFrame === combat.frame && _obstacleCache.length >= 0 && _obstacleCacheFrame !== -1) {
+    return _obstacleCache;
+  }
   const seed = combat.roguelikeRun?.seed ?? 0;
-  // Scene-cluster placement: instead of scattering one prop per lattice cell
-  // (which reads as random junk), we place deliberate "scenes" at coarse anchor
-  // points. Town anchors become a small settlement (buildings in a row + filler
-  // props around a square); wilderness anchors become a sparse natural cluster
-  // (a few trees/rocks together). Open ground is left between scenes so the map
-  // breathes and the clusters read as places, not noise.
-  const ANCHOR = 14; // distance between scene anchors, in tiles
-  const baseAX = Math.floor(combat.playerMapX / ANCHOR);
-  const baseAY = Math.floor(combat.playerMapY / ANCHOR);
-  // Collect placements first, then depth-sort so nearer props overlap farther ones.
-  const placements = [];
-  const pushProp = (prop, biome, worldX, worldY) => {
-    if (!prop) return;
-    if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 4.5) return;
-    const img = canonicalLandmarkImage(prop.src);
-    if (!imageReady(img)) return;
-    const projected = isoToScreen(worldX, worldY);
-    const isBuilding = biome === 'town';
-    const targetW = isBuilding ? 124 : 88;
+  // Window a bit larger than the visible ±10 tiles so collision is correct just
+  // off-screen and props don't pop at the screen edge.
+  _obstacleCache = obstaclesNear(seed, combat.playerMapX, combat.playerMapY, 13, biomeAt, { spawnSafeRadius: 6 });
+  _obstacleCacheFrame = combat.frame;
+  return _obstacleCache;
+}
+
+// Choose stable prop art for an obstacle from its biome pool, keyed by the
+// obstacle's own propIndex so the SAME obstacle always shows the SAME art.
+function obstaclePropImage(obstacle, worldProps) {
+  const pool = propsForBiome(worldProps, obstacle.biome);
+  if (!pool.length) return null;
+  const prop = pool[obstacle.propIndex % pool.length];
+  return prop ? canonicalLandmarkImage(prop.src) : null;
+}
+
+// Build depth-sorted render entries for the on-screen obstacles. These are
+// pushed into the unified render list so the hero/enemies correctly occlude (or
+// are occluded by) buildings and trees by screen Y.
+function buildObstacleRenderEntries(ctx) {
+  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  if (!worldProps.length) return [];
+  const entries = [];
+  for (const o of currentObstacles()) {
+    // Only draw obstacles within the visible window.
+    if (Math.abs(o.worldX - combat.playerMapX) > 11 || Math.abs(o.worldY - combat.playerMapY) > 11) continue;
+    const img = obstaclePropImage(o, worldProps);
+    if (!imageReady(img)) continue;
+    const projected = isoToScreen(o.worldX, o.worldY);
+    const targetW = o.kind === 'building' ? 124 : 90;
     const scale = targetW / img.naturalWidth;
     const w = Math.round(img.naturalWidth * scale);
     const drawH = Math.round(img.naturalHeight * scale);
-    placements.push({
+    const baseX = Math.round(projected.x - w / 2);
+    const baseY = Math.round(projected.y + 56 - drawH);
+    entries.push({
       depth: projected.y,
       draw: () => {
         ctx.save();
-        ctx.globalAlpha = 0.95;
         ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(img, Math.round(projected.x - w / 2), Math.round(projected.y + 56 - drawH), w, drawH);
+        // Soft contact shadow so solid objects read as planted on the ground.
+        ctx.globalAlpha = 0.26;
+        ctx.fillStyle = '#02040a';
+        ctx.beginPath();
+        ctx.ellipse(projected.x, projected.y + 54, Math.max(16, w * 0.34), Math.max(7, w * 0.15), 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.drawImage(img, baseX, baseY, w, drawH);
         ctx.restore();
       },
     });
-  };
-
-  for (let ax = baseAX - 2; ax <= baseAX + 2; ax += 1) {
-    for (let ay = baseAY - 2; ay <= baseAY + 2; ay += 1) {
-      const h = Math.abs(((ax * 73856093) ^ (ay * 19349663)) >>> 0);
-      // ~72% of anchors host a scene; the rest stay open ground so the map still breathes.
-      if ((h % 100) > 72) continue;
-      const anchorX = ax * ANCHOR + (h % 5) - 2;
-      const anchorY = ay * ANCHOR + ((h >> 3) % 5) - 2;
-      const biome = biomeAt(seed, anchorX, anchorY);
-      const pool = propsForBiome(worldProps, biome);
-      if (!pool.length) continue;
-
-      if (biome === 'town' || biome === 'road') {
-        // Settlement: rows of buildings flanking a "street", plus filler props
-        // (lamp/sign/can) scattered between them so the town reads as lived-in.
-        const count = 4 + (h % 3); // 4-6 buildings
-        for (let i = 0; i < count; i += 1) {
-          const hi = Math.abs(((anchorX * 2654435761) ^ ((anchorY + i) * 40503)) >>> 0);
-          // line buildings along a row, alternate sides of the street
-          const side = i % 2 === 0 ? -2 : 2;
-          const along = Math.floor(i / 2) * 3 - 1;
-          pushProp(pool[hi % pool.length], biome, anchorX + along, anchorY + side);
-        }
-        // 2-3 small filler props down the middle of the street.
-        const fillers = 2 + (h % 2);
-        for (let f = 0; f < fillers; f += 1) {
-          const hf = Math.abs(((anchorX * 2246822519) ^ ((anchorY + f * 11) * 668265263)) >>> 0);
-          pushProp(pool[hf % pool.length], biome, anchorX + (f * 2) - 1, anchorY + ((hf % 3) - 1));
-        }
-      } else {
-        // Wilderness: a natural cluster of 3-5 props grouped tightly.
-        const count = 3 + (h % 3);
-        for (let i = 0; i < count; i += 1) {
-          const hi = Math.abs(((anchorX * 2246822519) ^ ((anchorY + i * 7) * 3266489917)) >>> 0);
-          const ox = (hi % 5) - 2;
-          const oy = ((hi >> 4) % 5) - 2;
-          pushProp(pool[hi % pool.length], biome, anchorX + ox, anchorY + oy);
-        }
-      }
-    }
   }
-  placements.sort((a, b) => a.depth - b.depth);
-  for (const p of placements) p.draw();
+  return entries;
 }
+
 
 function drawRoguelikeScene(ctx, width, height) {
   const palette = ['#06142e', '#12072d', '#030711'];
@@ -5064,20 +5072,22 @@ function drawRoguelikeScene(ctx, width, height) {
   // NOTE: the old "18 random production props on a /6 grid with colored-box
   // fallbacks" scatter loop was removed here — it placed props (and ugly
   // fallback rectangles) with no spatial logic, which read as random clutter.
-  // All world props are now placed coherently by drawCanonicalLandmarks (town
-  // settlement clusters + sparse wilderness) and collectAnimatedProps (ambient).
-
-  drawCanonicalLandmarks(ctx);
+  // World props are now persistent COLLIDABLE obstacles (buildings/trees/objects)
+  // placed by the world-obstacle model and folded into the depth-sorted render
+  // list below, so the hero/enemies occlude correctly against them.
 
   // --- Depth-sorted world pass (painter's algorithm for isometric) ---------
-  // Everything that lives ON the ground plane (pickups, XP gems, enemies, boss,
-  // and the hero) is collected into one list and drawn back-to-front by screen
-  // Y, so a sprite that is "in front" (lower on screen / larger worldX+worldY)
-  // correctly overlaps one that is "behind". Previously these drew in fixed
-  // layers (all enemies, then always the player on top) which read as broken in
-  // an isometric view. Floor tiles/props stay underneath; bullets, particles,
-  // floating text and HUD stay on top as effects/UI.
+  // Everything that lives ON the ground plane (obstacles, pickups, XP gems,
+  // enemies, boss, and the hero) is collected into one list and drawn
+  // back-to-front by screen Y, so a sprite that is "in front" (lower on screen /
+  // larger worldX+worldY) correctly overlaps one that is "behind". Previously
+  // these drew in fixed layers (all enemies, then always the player on top) which
+  // read as broken in an isometric view. Floor tiles stay underneath; bullets,
+  // particles, floating text and HUD stay on top as effects/UI.
   const renderList = [];
+  // Persistent collidable obstacles (buildings/trees/objects) depth-sorted with
+  // everything else so the player walks behind/in-front of them correctly.
+  for (const entry of buildObstacleRenderEntries(ctx)) renderList.push(entry);
   // Animated ambient props (trees/flowers swaying, water rippling, neon flicker,
   // traffic lights, tumbleweeds) depth-sorted with everything else.
   for (const entry of collectAnimatedProps(ctx)) renderList.push(entry);
