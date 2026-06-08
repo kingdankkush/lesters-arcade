@@ -106,20 +106,52 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
   gap: 14px;
   align-self: center;
+  max-width: 720px;
+  margin: 0 auto;
 }
-/* Cap the featured cabinet height so it doesn't stretch the whole view. */
-.wallet-splash-view .splash-cabinet-stack {
-  align-self: center;
+.wallet-splash-view .splash-copy .big-action {
+  margin: 4px auto 0;
 }
-.wallet-splash-view .splash-featured-cabinet {
-  max-height: 62vh;
-  overflow: hidden;
+/* Keep the centered hero compact so the CTA stays above the fold. */
+.wallet-splash-view .splash-marquee {
+  max-width: 560px;
+  margin: 0 auto;
 }
-.wallet-splash-view .splash-featured-cabinet-art {
-  max-height: 48vh;
-  min-height: 300px;
+.wallet-splash-view .splash-marquee .splash-marquee-art {
+  max-height: 26vh;
+  width: auto;
+  margin: 0 auto;
+}
+/* Compact featured-cabinet card under the centered hero CTA. */
+.splash-featured-cabinet-mini {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: min(100%, 420px);
+  margin: 6px auto 0;
+  padding: 8px 14px;
+  text-align: left;
+  border: 1px solid rgba(69, 255, 138, 0.32);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(7, 5, 18, 0.92), rgba(19, 49, 78, 0.5));
+  box-shadow: 0 0 22px rgba(69, 255, 138, 0.14);
+}
+.splash-featured-cabinet-mini .splash-featured-cabinet-art {
+  min-height: 72px;
+  width: 72px;
+  place-items: center;
+}
+.splash-featured-cabinet-mini .splash-featured-cabinet-copy { gap: 1px; }
+.splash-featured-cabinet-mini .splash-featured-cabinet-copy strong { font-size: 0.95rem; }
+.splash-featured-cabinet-mini .splash-featured-cabinet-copy small { font-size: 0.72rem; }
+/* On short viewports, hide the featured card so the CTA clears the bottom ad. */
+@media (max-height: 720px) {
+  .splash-featured-cabinet-mini { display: none; }
 }
 /* Make the locked cabinets read as intentional 'coming soon' tiles, not dead boxes. */
 .splash-cabinet-stack .neon-cabinet.cabinet-locked {
@@ -475,18 +507,37 @@
   box-shadow: 0 0 0 1px rgba(25,247,255,0.45), 0 14px 40px rgba(0,0,0,0.6), 0 0 40px rgba(25,247,255,0.25);
 }
 .ad-banner-horizontal {
-  width: 100%;
-  max-width: 728px;
-  margin: 0 auto 18px;
+  position: fixed;
+  left: 50%;
+  bottom: clamp(8px, 1.6vw, 18px);
+  transform: translateX(-50%);
+  width: min(728px, calc(100vw - 24px));
+  max-height: 72px;
+  z-index: 17;
+  margin: 0;
 }
+.ad-banner-horizontal img { max-height: 72px; width: auto; margin: 0 auto; }
+.ad-banner-horizontal:hover { transform: translateX(-50%) translateY(-2px); }
 .ad-banner-vertical {
-  width: 100%;
-  max-width: 300px;
-  margin: 14px auto 0;
+  position: fixed;
+  right: clamp(12px, 2vw, 28px);
+  /* Sit above the music player: player is ~116px tall at bottom ~24px. */
+  bottom: clamp(150px, 4vw + 140px, 168px);
+  width: clamp(150px, 14vw, 200px);
+  max-height: min(58vh, 320px);
+  z-index: 17;
+  margin: 0;
+}
+.ad-banner-vertical img { max-height: min(58vh, 320px); width: auto; margin: 0 auto; }
+/* Ad banners only belong on the wallet-splash landing, not inside gameplay/menus. */
+#officialApp:not([data-step="wallet-splash"]) .ad-banner-horizontal,
+#officialApp:not([data-step="wallet-splash"]) .ad-banner-vertical {
+  display: none;
 }
 @media (max-width: 720px) {
   /* Hide the tall rail ad on narrow screens; keep the horizontal one. */
-  .ad-banner-vertical { display: none; }
+  .ad-banner-vertical { display: none !important; }
+  .ad-banner-horizontal { bottom: 8px; }
 
   .official-app {
     padding: 10px;

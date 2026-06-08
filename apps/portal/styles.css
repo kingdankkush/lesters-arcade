@@ -345,10 +345,11 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .wallet-splash-view {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 430px);
-  align-items: center;
+  place-items: center;
+  min-height: 100%;
   gap: clamp(18px, 5vw, 54px);
-  padding: clamp(28px, 7vw, 82px);
+  padding: clamp(20px, 5vw, 56px);
+  padding-bottom: clamp(96px, 12vh, 140px);
 }
 
 .wallet-splash-view h1 {

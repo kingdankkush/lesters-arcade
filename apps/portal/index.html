@@ -43,6 +43,18 @@
           <button id="developerBackstageToggle" class="ghost-button dev-tool-toggle" type="button" hidden>Tools</button>
         </nav>
 
+        <!-- Partner ad space (vertical rail). Fixed on the right, above the music player. Hidden on mobile. Swap data-ad-* + img src to sell a slot. -->
+        <a id="adBannerVertical" class="ad-banner ad-banner-vertical" href="mailto:kingdankkush@lestersarcade.io?subject=Lester%27s%20Arcade%20Ad%20Space"
+           target="_blank" rel="noopener sponsored" data-ad-slot="vertical-rail" aria-label="Advertise on Lester's Arcade — place your ad here, contact KingDankKush">
+          <img src="./assets/ads/ad-placeholder-vertical.svg" alt="Place your ad here — contact KingDankKush" />
+        </a>
+
+        <!-- Partner ad space (horizontal). Fixed at the bottom of the page. Swap data-ad-* + img src to sell a slot. -->
+        <a id="adBannerHorizontal" class="ad-banner ad-banner-horizontal" href="mailto:kingdankkush@lestersarcade.io?subject=Lester%27s%20Arcade%20Ad%20Space"
+           target="_blank" rel="noopener sponsored" data-ad-slot="horizontal-bottom" aria-label="Advertise on Lester's Arcade — place your ad here, contact KingDankKush">
+          <img src="./assets/ads/ad-placeholder-horizontal.svg" alt="Place your ad here — contact KingDankKush" />
+        </a>
+
         <aside id="arcadeMusicPlayer" class="arcade-music-player" data-expanded="false" data-playing="false" data-muted="false" aria-label="Lester's Arcade music player">
           <audio id="arcadeMusicAudio" preload="metadata"></audio>
           <div class="arcade-music-now">
@@ -68,11 +80,6 @@
         </aside>
 
         <section id="officialWalletSplash" class="official-view wallet-splash-view">
-          <!-- Partner ad space (horizontal). Swap data-ad-* + img src to sell a slot. -->
-          <a id="adBannerHorizontal" class="ad-banner ad-banner-horizontal" href="mailto:kingdankkush@lestersarcade.io?subject=Lester%27s%20Arcade%20Ad%20Space"
-             target="_blank" rel="noopener sponsored" data-ad-slot="horizontal-top" aria-label="Advertise on Lester's Arcade — place your ad here, contact KingDankKush">
-            <img src="./assets/ads/ad-placeholder-horizontal.svg" alt="Place your ad here — contact KingDankKush" />
-          </a>
           <div class="splash-copy">
             <p class="eyebrow">Official Testnet App // lestersarcade.io</p>
             <div class="splash-marquee">
@@ -85,9 +92,7 @@
             <p class="tagline">Connect your wallet, step into the arcade, pick a cabinet, then boot Hard Money Heroes in Free Mode or Ranked testnet mode.</p>
             <button id="officialConnectButton" class="primary-button big-action" type="button">Connect Wallet</button>
             <p id="officialWalletCopy" class="tiny-note">Your wallet is your profile. Scores, achievements, usernames, avatars, and ranked runs attach to the connected wallet.</p>
-          </div>
-          <div class="splash-cabinet-stack" aria-label="Featured arcade cabinet selection">
-            <div class="splash-featured-cabinet">
+            <div class="splash-featured-cabinet-mini" aria-label="Featured arcade cabinet">
               <div id="splashFeaturedCabinet" class="splash-featured-cabinet-art" aria-hidden="true"></div>
               <div class="splash-featured-cabinet-copy">
                 <span class="cabinet-status-label">Featured Cabinet</span>
@@ -95,13 +100,6 @@
                 <small>The flagship Lester's Arcade title.</small>
               </div>
             </div>
-            <div class="neon-cabinet cabinet-locked"><span>Lilly Lightning</span></div>
-            <div class="neon-cabinet cabinet-locked"><span>Mempool Mayhem</span></div>
-            <!-- Partner ad space (vertical). Swap data-ad-* + img src to sell a slot. -->
-            <a id="adBannerVertical" class="ad-banner ad-banner-vertical" href="mailto:kingdankkush@lestersarcade.io?subject=Lester%27s%20Arcade%20Ad%20Space"
-               target="_blank" rel="noopener sponsored" data-ad-slot="vertical-rail" aria-label="Advertise on Lester's Arcade — place your ad here, contact KingDankKush">
-              <img src="./assets/ads/ad-placeholder-vertical.svg" alt="Place your ad here — contact KingDankKush" />
-            </a>
           </div>
         </section>
 
