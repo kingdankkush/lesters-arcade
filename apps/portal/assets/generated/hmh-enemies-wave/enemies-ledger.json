@@ -1,0 +1,182 @@
+{
+  "characters": {
+    "diamond-hands-whale": {
+      "id": "diamond-hands-whale",
+      "biome": "rock",
+      "character_id": "91aee5be-ea9b-45f4-b988-6f5a563e2917",
+      "status": "processing",
+      "animations": {
+        "walk": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "attack": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "hit": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "death": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        }
+      },
+      "raw": "id: 91aee5be-ea9b-45f4-b988-6f5a563e2917\nname: diamond-hands-whale\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading"
+    },
+    "influencer-shill": {
+      "id": "influencer-shill",
+      "biome": "pavement",
+      "character_id": "ea61a9a4-0d16-4b80-a0b4-5c94b2893fcc",
+      "status": "complete",
+      "animations": {
+        "walk": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "attack": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "hit": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "death": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        }
+      },
+      "raw": "id: ea61a9a4-0d16-4b80-a0b4-5c94b2893fcc\nname: influencer-shill\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, s",
+      "frame_count": 4,
+      "src_dir": "./assets/generated/hmh-enemies-wave/pavement/"
+    },
+    "rug-pull-dev": {
+      "id": "rug-pull-dev",
+      "biome": "grass",
+      "character_id": "ccb07935-d1b9-42a9-9b25-169db9ea7403",
+      "status": "processing",
+      "animations": {
+        "walk": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "attack": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "hit": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "death": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        }
+      },
+      "raw": "id: ccb07935-d1b9-42a9-9b25-169db9ea7403\nname: rug-pull-dev\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, singl"
+    },
+    "maxi-zealot": {
+      "id": "maxi-zealot",
+      "biome": "sand",
+      "character_id": "5230b1fd-1f6f-4b15-8bec-9f504986e73d",
+      "status": "processing",
+      "animations": {
+        "walk": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "attack": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "hit": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "death": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        }
+      },
+      "raw": "id: 5230b1fd-1f6f-4b15-8bec-9f504986e73d\nname: maxi-zealot\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, single"
+    },
+    "mempool-bot-runner": {
+      "id": "mempool-bot-runner",
+      "biome": "water",
+      "character_id": "2e2024d7-2d13-4293-92fd-a8dc328375dc",
+      "status": "complete",
+      "animations": {
+        "walk": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "attack": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "hit": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "death": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        }
+      },
+      "raw": "id: 2e2024d7-2d13-4293-92fd-a8dc328375dc\nname: mempool-bot-runner\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading,",
+      "frame_count": 4,
+      "src_dir": "./assets/generated/hmh-enemies-wave/water/"
+    },
+    "taxman-validator": {
+      "id": "taxman-validator",
+      "biome": "gravel",
+      "character_id": "430f18bb-61c3-4a61-a1bc-9412a435ad2f",
+      "status": "processing",
+      "animations": {
+        "walk": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "attack": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "hit": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        },
+        "death": {
+          "animation_id": null,
+          "status": "queued",
+          "raw": "error: template mode requires template_animation_id"
+        }
+      },
+      "raw": "id: 430f18bb-61c3-4a61-a1bc-9412a435ad2f\nname: taxman-validator\nmode: standard (1 generation)\ndirections: 4\nbody: humanoid\nsize: 64x64px\nstyle: basic shading, s"
+    }
+  }
+}

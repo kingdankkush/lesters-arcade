@@ -1,0 +1,268 @@
+{
+  "jobs": [
+    {
+      "job_key": "muzzle-settler",
+      "category": "vfx",
+      "object_id": "92582508-a530-4f13-ae9b-2f48f9d102b6",
+      "status": "complete",
+      "raw": "id: 92582508-a530-4f13-ae9b-2f48f9d102b6\ndescription: small crisp blue-white pistol muzzle flash burst, star shape; centered pixel-art game VFX sprite on fully ",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/muzzle-settler.png"
+    },
+    {
+      "job_key": "muzzle-shotgun",
+      "category": "vfx",
+      "object_id": "5e86a1e9-ca41-4931-b339-73d724bac873",
+      "status": "complete",
+      "raw": "id: 5e86a1e9-ca41-4931-b339-73d724bac873\ndescription: wide orange shotgun blast cone flash; centered pixel-art game VFX sprite on fully transparent background, ",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/muzzle-shotgun.png"
+    },
+    {
+      "job_key": "muzzle-auto",
+      "category": "vfx",
+      "object_id": "c9d13bf7-6022-420c-adca-25b294dbcc32",
+      "status": "complete",
+      "raw": "id: c9d13bf7-6022-420c-adca-25b294dbcc32\ndescription: rapid silver-blue minigun muzzle flash with energy coil; centered pixel-art game VFX sprite on fully trans",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/muzzle-auto.png"
+    },
+    {
+      "job_key": "muzzle-rail",
+      "category": "vfx",
+      "object_id": "f20aa771-f2f8-4841-b011-f1d3b6457696",
+      "status": "complete",
+      "raw": "id: f20aa771-f2f8-4841-b011-f1d3b6457696\ndescription: thin charged white-cyan rail beam streak, horizontal; centered pixel-art game VFX sprite on fully transpar",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/muzzle-rail.png"
+    },
+    {
+      "job_key": "muzzle-oracle",
+      "category": "vfx",
+      "object_id": "222326a1-25b0-4606-a0b1-cbe5bfe6e9c9",
+      "status": "complete",
+      "raw": "id: 222326a1-25b0-4606-a0b1-cbe5bfe6e9c9\ndescription: huge purple-white dragon energy beam charge burst; centered pixel-art game VFX sprite on fully transparent",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/muzzle-oracle.png"
+    },
+    {
+      "job_key": "tracer-silver",
+      "category": "vfx",
+      "object_id": "60f1bee1-f6e6-4714-8b81-5f3a6e05aeb6",
+      "status": "complete",
+      "raw": "id: 60f1bee1-f6e6-4714-8b81-5f3a6e05aeb6\ndescription: small silver bullet tracer streak; centered pixel-art game VFX sprite on fully transparent background, ret",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/tracer-silver.png"
+    },
+    {
+      "job_key": "tracer-cyan",
+      "category": "vfx",
+      "object_id": "e246213a-c327-40ae-a77b-35021c9ae844",
+      "status": "complete",
+      "raw": "id: e246213a-c327-40ae-a77b-35021c9ae844\ndescription: cyan energy projectile bolt; centered pixel-art game VFX sprite on fully transparent background, retro 80s",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/tracer-cyan.png"
+    },
+    {
+      "job_key": "tracer-purple",
+      "category": "vfx",
+      "object_id": "f2806289-ad18-43e0-818d-f1982025481f",
+      "status": "complete",
+      "raw": "id: f2806289-ad18-43e0-818d-f1982025481f\ndescription: purple heavy oracle bolt with trail; centered pixel-art game VFX sprite on fully transparent background, r",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/tracer-purple.png"
+    },
+    {
+      "job_key": "axe-spin",
+      "category": "vfx",
+      "object_id": "21da83ed-68dd-4c6c-93a2-600a8775ec0c",
+      "status": "complete",
+      "raw": "id: 21da83ed-68dd-4c6c-93a2-600a8775ec0c\ndescription: silver throwing hatchet with Litecoin-blue handle, motion spin blur; centered pixel-art game VFX sprite on",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/axe-spin.png"
+    },
+    {
+      "job_key": "axe-stick-impact",
+      "category": "vfx",
+      "object_id": "c701975a-e8b5-4adc-9d44-dbd70d2cdc40",
+      "status": "complete",
+      "raw": "id: c701975a-e8b5-4adc-9d44-dbd70d2cdc40\ndescription: silver axe-hit impact sparks burst; centered pixel-art game VFX sprite on fully transparent background, re",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/axe-stick-impact.png"
+    },
+    {
+      "job_key": "grenade-bomb",
+      "category": "vfx",
+      "object_id": "d791436a-60c8-439b-a811-263e209224ce",
+      "status": "complete",
+      "raw": "id: d791436a-60c8-439b-a811-263e209224ce\ndescription: matte-black round bomb with lit fuse spark, side view; centered pixel-art game VFX sprite on fully transpa",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/grenade-bomb.png"
+    },
+    {
+      "job_key": "grenade-arc-trail",
+      "category": "vfx",
+      "object_id": "1e7eae90-f1ef-4ea7-a52a-1cdc89782f4b",
+      "status": "complete",
+      "raw": "id: 1e7eae90-f1ef-4ea7-a52a-1cdc89782f4b\ndescription: blue-white arcing throw motion trail dots; centered pixel-art game VFX sprite on fully transparent backgro",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/grenade-arc-trail.png"
+    },
+    {
+      "job_key": "grenade-blast",
+      "category": "vfx",
+      "object_id": "a7f980fc-b8b9-4316-9479-475336c1fa62",
+      "status": "complete",
+      "raw": "id: a7f980fc-b8b9-4316-9479-475336c1fa62\ndescription: big blue-white explosion blast flash ring; centered pixel-art game VFX sprite on fully transparent backgro",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/grenade-blast.png"
+    },
+    {
+      "job_key": "melee-slash",
+      "category": "vfx",
+      "object_id": "3e8d9518-d6d8-4ae9-8598-4e289a583fdb",
+      "status": "complete",
+      "raw": "id: 3e8d9518-d6d8-4ae9-8598-4e289a583fdb\ndescription: clean silver curved sword arc slash trail; centered pixel-art game VFX sprite on fully transparent backgro",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/melee-slash.png"
+    },
+    {
+      "job_key": "impact-spark",
+      "category": "vfx",
+      "object_id": "9aaff1e2-d701-4764-a06a-83c9ec8ad845",
+      "status": "complete",
+      "raw": "id: 9aaff1e2-d701-4764-a06a-83c9ec8ad845\ndescription: bright silver impact spark hit burst; centered pixel-art game VFX sprite on fully transparent background, ",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/impact-spark.png"
+    },
+    {
+      "job_key": "crit-burst",
+      "category": "vfx",
+      "object_id": "9bf06d30-269f-4a51-ad51-9386d027e90c",
+      "status": "complete",
+      "raw": "id: 9bf06d30-269f-4a51-ad51-9386d027e90c\ndescription: yellow-white critical hit star burst; centered pixel-art game VFX sprite on fully transparent background, ",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/crit-burst.png"
+    },
+    {
+      "job_key": "enemy-death-puff",
+      "category": "vfx",
+      "object_id": "68994501-e7d9-4e35-8fcc-0c7b6f8c5607",
+      "status": "complete",
+      "raw": "id: 68994501-e7d9-4e35-8fcc-0c7b6f8c5607\ndescription: grey-red smoke death puff dissipating; centered pixel-art game VFX sprite on fully transparent background,",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/enemy-death-puff.png"
+    },
+    {
+      "job_key": "shockwave-ring",
+      "category": "vfx",
+      "object_id": "f3978fd7-8e7d-485a-9e41-7d2d174880c9",
+      "status": "complete",
+      "raw": "id: f3978fd7-8e7d-485a-9e41-7d2d174880c9\ndescription: expanding cyan shockwave ring; centered pixel-art game VFX sprite on fully transparent background, retro 8",
+      "src": "./assets/generated/hmh-fx-powerups-wave/vfx/shockwave-ring.png"
+    },
+    {
+      "job_key": "health-pack",
+      "category": "powerup",
+      "object_id": "03bb1b2e-68b3-46e2-b388-b51a0ca591c6",
+      "status": "complete",
+      "raw": "id: 03bb1b2e-68b3-46e2-b388-b51a0ca591c6\ndescription: glowing blue hardware-wallet medkit with white heartbeat cross; centered pixel-art game pickup item icon o",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/health-pack.png"
+    },
+    {
+      "job_key": "grenade-crate",
+      "category": "powerup",
+      "object_id": "d70914dc-d360-4887-80ab-730a8103cd48",
+      "status": "complete",
+      "raw": "id: d70914dc-d360-4887-80ab-730a8103cd48\ndescription: matte-black bomb cache crate with small blue accent; centered pixel-art game pickup item icon on fully tra",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/grenade-crate.png"
+    },
+    {
+      "job_key": "bonus-life",
+      "category": "powerup",
+      "object_id": "f3fba4cd-d526-495c-9ed8-ccd80ce71f92",
+      "status": "complete",
+      "raw": "id: f3fba4cd-d526-495c-9ed8-ccd80ce71f92\ndescription: tiny heroic head icon with silver-blue halo, 1-up style; centered pixel-art game pickup item icon on fully",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/bonus-life.png"
+    },
+    {
+      "job_key": "spread-ltc-chip",
+      "category": "powerup",
+      "object_id": "e5e07702-1851-483f-a612-9ca58d44a8fb",
+      "status": "complete",
+      "raw": "id: e5e07702-1851-483f-a612-9ca58d44a8fb\ndescription: cyan fan-shaped weapon chip emitting arcs; centered pixel-art game pickup item icon on fully transparent b",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/spread-ltc-chip.png"
+    },
+    {
+      "job_key": "hash-rail-core",
+      "category": "powerup",
+      "object_id": "bca0fb1e-1fbb-4e75-9f84-7d52bdbfffce",
+      "status": "complete",
+      "raw": "id: bca0fb1e-1fbb-4e75-9f84-7d52bdbfffce\ndescription: glowing white-cyan energy core cylinder; centered pixel-art game pickup item icon on fully transparent bac",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/hash-rail-core.png"
+    },
+    {
+      "job_key": "score-multiplier",
+      "category": "powerup",
+      "object_id": "a3373ca4-5522-4e35-ba3a-8c70b4fcf4a8",
+      "status": "complete",
+      "raw": "id: a3373ca4-5522-4e35-ba3a-8c70b4fcf4a8\ndescription: gold 2x multiplier token coin with blue rim; centered pixel-art game pickup item icon on fully transparent",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/score-multiplier.png"
+    },
+    {
+      "job_key": "shield-cache",
+      "category": "powerup",
+      "object_id": "cd2cc79d-7e8d-4d41-a5c1-42a0d349395e",
+      "status": "complete",
+      "raw": "id: cd2cc79d-7e8d-4d41-a5c1-42a0d349395e\ndescription: hovering blue-silver hexagon barrier shield device; centered pixel-art game pickup item icon on fully tran",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/shield-cache.png"
+    },
+    {
+      "job_key": "ammo-cache",
+      "category": "powerup",
+      "object_id": "fbe413c0-059f-4630-8045-5d7d727de491",
+      "status": "complete",
+      "raw": "id: fbe413c0-059f-4630-8045-5d7d727de491\ndescription: silver ammo magazine crate with orange hazard stripe; centered pixel-art game pickup item icon on fully tr",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/ammo-cache.png"
+    },
+    {
+      "job_key": "ltc-cache",
+      "category": "powerup",
+      "object_id": "51e7e382-45c5-49fb-b666-ebdc09335dea",
+      "status": "complete",
+      "raw": "id: 51e7e382-45c5-49fb-b666-ebdc09335dea\ndescription: small sparkling silver coin pile pickup; centered pixel-art game pickup item icon on fully transparent bac",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/ltc-cache.png"
+    },
+    {
+      "job_key": "magnet-surge",
+      "category": "powerup",
+      "object_id": "66137bec-9a3a-4bbb-8031-55211bf183f9",
+      "status": "complete",
+      "raw": "id: 66137bec-9a3a-4bbb-8031-55211bf183f9\ndescription: glowing horseshoe magnet pickup with blue pull rings, pulls loot; centered pixel-art game pickup item icon",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/magnet-surge.png"
+    },
+    {
+      "job_key": "time-dilation",
+      "category": "powerup",
+      "object_id": "6db841d2-cf8f-4265-9b1d-0cadabd9074a",
+      "status": "complete",
+      "raw": "id: 6db841d2-cf8f-4265-9b1d-0cadabd9074a\ndescription: blue hourglass with slow-motion swirl, bullet-time pickup; centered pixel-art game pickup item icon on ful",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/time-dilation.png"
+    },
+    {
+      "job_key": "berserk-candle",
+      "category": "powerup",
+      "object_id": "3be8edfd-ce46-4a19-94af-ca7d39b89d60",
+      "status": "complete",
+      "raw": "id: 3be8edfd-ce46-4a19-94af-ca7d39b89d60\ndescription: red-and-green flaming candlestick chart pickup, rage buff; centered pixel-art game pickup item icon on ful",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/berserk-candle.png"
+    },
+    {
+      "job_key": "orbital-wallet",
+      "category": "powerup",
+      "object_id": "479f782f-e091-42c1-99eb-76409a9050c2",
+      "status": "complete",
+      "raw": "id: 479f782f-e091-42c1-99eb-76409a9050c2\ndescription: small silver satellite wallet orb that orbits, pickup; centered pixel-art game pickup item icon on fully t",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/orbital-wallet.png"
+    },
+    {
+      "job_key": "nuke-liquidation",
+      "category": "powerup",
+      "object_id": "56223a0b-6ed5-4681-9470-15725fd27997",
+      "status": "complete",
+      "raw": "id: 56223a0b-6ed5-4681-9470-15725fd27997\ndescription: red glowing screen-clear bomb pickup, danger nuke; centered pixel-art game pickup item icon on fully trans",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/nuke-liquidation.png"
+    },
+    {
+      "job_key": "reroll-token",
+      "category": "powerup",
+      "object_id": "fda04a61-6407-4aee-a444-fb0bae818148",
+      "status": "complete",
+      "raw": "id: fda04a61-6407-4aee-a444-fb0bae818148\ndescription: blue circular-arrow reroll token coin pickup; centered pixel-art game pickup item icon on fully transparen",
+      "src": "./assets/generated/hmh-fx-powerups-wave/powerup/reroll-token.png"
+    }
+  ]
+}
