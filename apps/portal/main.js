@@ -4135,6 +4135,81 @@ function biomeGroundTileForWorld(worldX, worldY, biome) {
   return wave2TileImage(slugs[index]);
 }
 
+// --- Wave-2 animated ambient props (wind/water/flicker motion) ---------------
+// Index the multi-frame `-ambient` animations by slug, keeping only the real
+// frame_NNN images (skip the 000-unknown spritesheet base). Each biome gets a
+// set of fitting animated props; placement is deterministic per run seed so the
+// world is stable, and frames cycle on combat.frame for live motion.
+const WAVE2_ANIM = (() => {
+  const bySlug = {};
+  for (const a of HMH_ENVIRONMENT_PIXELLAB_WAVE_2.assets ?? []) {
+    if (!a.slug.endsWith('-ambient')) continue;
+    const frames = (a.images ?? []).filter((im) => /frame_\d+/.test(im.src));
+    if (frames.length) bySlug[a.slug.replace('-ambient', '')] = frames.map((im) => im.src);
+  }
+  return bySlug;
+})();
+const BIOME_ANIM_PROPS = {
+  forest: ['leafy-tree-wind', 'flower-patch-sway'],
+  desert: ['cactus-heat-shimmer', 'tumbleweed-roll', 'palm-tree-wind'],
+  water: ['water-surface-ripple', 'waterfall-cascade', 'river-rapids-flow'],
+  town: ['neon-sign-flicker', 'traffic-light-blink', 'parked-car-blink', 'garbage-can-wobble'],
+  road: ['road-sign-sway', 'traffic-light-blink', 'wrecked-car-smoke'],
+  rocky: ['tumbleweed-roll', 'leafy-tree-wind'],
+};
+const wave2AnimImages = new Map();
+function wave2AnimFrame(slug, frameIdx) {
+  const srcs = WAVE2_ANIM[slug];
+  if (!srcs || !srcs.length) return null;
+  const i = frameIdx % srcs.length;
+  const key = `${slug}#${i}`;
+  if (!wave2AnimImages.has(key)) wave2AnimImages.set(key, loadImageAsset(srcs[i]));
+  return wave2AnimImages.get(key);
+}
+
+// Collect animated ambient props near the player, returning depth-sorted render
+// entries. Sparse lattice, biome-matched, kept clear of the player so they never
+// block combat. Frames advance ~8fps for smooth wind/flicker/water motion.
+function collectAnimatedProps(ctx) {
+  if (!Object.keys(WAVE2_ANIM).length) return [];
+  const out = [];
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  const LATTICE = 8;
+  const baseX = Math.floor(combat.playerMapX / LATTICE) * LATTICE;
+  const baseY = Math.floor(combat.playerMapY / LATTICE) * LATTICE;
+  for (let gx = -2; gx <= 2; gx += 1) {
+    for (let gy = -2; gy <= 2; gy += 1) {
+      const cellX = baseX + gx * LATTICE;
+      const cellY = baseY + gy * LATTICE;
+      const h = Math.abs(((cellX * 374761393) ^ (cellY * 668265263)) >>> 0);
+      if ((h % 100) > 42) continue; // ~42% of lattice cells host an animated prop
+      const biome = biomeAt(seed, cellX, cellY);
+      const pool = BIOME_ANIM_PROPS[biome] ?? BIOME_ANIM_PROPS.town;
+      const slug = pool[h % pool.length];
+      if (!WAVE2_ANIM[slug]) continue;
+      const worldX = cellX + ((h % 5) - 2);
+      const worldY = cellY + (((h >> 4) % 5) - 2);
+      if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 4) continue;
+      const projected = isoToScreen(worldX, worldY);
+      // Per-prop phase offset so they don't all animate in lockstep.
+      const frameIdx = Math.floor((combat.frame + (h % 13)) / 7);
+      const img = wave2AnimFrame(slug, frameIdx);
+      if (!imageReady(img)) continue;
+      const size = 72;
+      out.push({
+        depth: projected.y + 40,
+        draw: () => {
+          ctx.save();
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(img, Math.round(projected.x - size / 2), Math.round(projected.y + 44 - size), size, size);
+          ctx.restore();
+        },
+      });
+    }
+  }
+  return out;
+}
+
 function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   const palette = biomeFloorPalette(worldX, worldY);
   // Prefer the real textured biome ground tile; fall back to the shaded gradient
@@ -4392,6 +4467,9 @@ function drawRoguelikeScene(ctx, width, height) {
   // an isometric view. Floor tiles/props stay underneath; bullets, particles,
   // floating text and HUD stay on top as effects/UI.
   const renderList = [];
+  // Animated ambient props (trees/flowers swaying, water rippling, neon flicker,
+  // traffic lights, tumbleweeds) depth-sorted with everything else.
+  for (const entry of collectAnimatedProps(ctx)) renderList.push(entry);
   const xpShard = productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback');
   for (const gem of combat.xpGems) {
     const projected = isoToScreen(gem.worldX, gem.worldY);
