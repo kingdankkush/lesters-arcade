@@ -10,6 +10,7 @@ import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-g
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
 import { HMH_LEVEL_ENVIRONMENT } from './assets/generated/hmh-level-environment/hmh-level-environment.mjs';
+import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -1370,7 +1371,7 @@ function combatHudStatus() {
   if (combat.levelUpPaused) return `LEVEL ${combat.roguelikeRun?.level ?? 1} UP // PICK ONE AUGMENT // REROLLS ${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
   if (combat.roguelikeRun) {
     const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
-    return `ISO ROGUELIKE // LV ${combat.roguelikeRun.level} XP ${Math.floor(combat.roguelikeRun.xp)}/${combat.roguelikeRun.xpToNextLevel} // ${director.difficultyLabel.toUpperCase()} // ${combat.kills} KILLS`;
+    return `ISO ROGUELIKE // ${director.difficultyLabel.toUpperCase()} // ${combat.biomeLayout?.startBiome ? `BIOME ${combat.biomeLayout.startBiome.toUpperCase()}` : 'SURVIVE 20:00'}`;
   }
   if (combat.paused) return 'PAUSED // OPTIONS OPEN';
   if (combat.scrollLockReason) return combat.scrollLockReason;
@@ -2881,6 +2882,21 @@ async function startCombat() {
   combat.keys.clear();
   lastBossId = null;
   beginStage(1);
+
+  // Level load screen: decide the biome world up front and warm its art so the
+  // map renders coherent and pop-in free. Only for the roguelike survival mode.
+  if (combat.roguelikeRun && dom.combatCanvas) {
+    const ctx = dom.combatCanvas.getContext('2d');
+    if (ctx) {
+      try {
+        const layout = await precomputeBiomeWorld(ctx, dom.combatCanvas.width, dom.combatCanvas.height);
+        combat.biomeLayout = layout;
+      } catch (err) {
+        console.warn('[biome] precompute skipped:', err);
+      }
+    }
+  }
+
   combat.status = 'Isometric roguelike run live: survive 20 minutes, kite enemy swarms, collect XP, and pause only for level-up augments.';
   playSfxCue('level-start');
   await startArcadeMusicForGame('hard-money-heroes');
@@ -3965,17 +3981,18 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
 
 // Canonical parallax background layer (Justin's hand-made level art). Picks a
 // stable strip per run and scrolls it horizontally with the camera for depth.
-const parallaxBgState = { image: null, pickedFor: null };
+const parallaxBgState = { images: new Map(), currentIdx: null };
 function drawParallaxBackground(ctx, width, height) {
   const bgs = HMH_LEVEL_ENVIRONMENT.parallaxBackgrounds ?? [];
   if (!bgs.length) return;
-  const runSeed = combat.roguelikeRun?.seed ?? 0;
-  if (parallaxBgState.pickedFor !== runSeed) {
-    const pick = bgs[Math.abs(runSeed) % bgs.length];
-    parallaxBgState.image = loadImageAsset(pick.src);
-    parallaxBgState.pickedFor = runSeed;
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  // Backdrop follows the player's current biome region for environmental cohesion.
+  const biome = biomeAt(seed, Math.round(combat.playerMapX ?? 0), Math.round(combat.playerMapY ?? 0));
+  const idx = parallaxIndexForBiome(seed, biome, bgs.length);
+  if (!parallaxBgState.images.has(idx)) {
+    parallaxBgState.images.set(idx, loadImageAsset(bgs[idx].src));
   }
-  const img = parallaxBgState.image;
+  const img = parallaxBgState.images.get(idx);
   if (!imageReady(img)) return;
   // Scale strip to cover the upper ~60% of the viewport; scroll at 0.35x camera.
   const bandH = Math.round(height * 0.6);
@@ -3990,10 +4007,91 @@ function drawParallaxBackground(ctx, width, height) {
   ctx.restore();
 }
 
+// --- Level load screen + biome world precompute ---
+// "Decide everything at level start": warm the biome layout and decode the
+// environment images for the starting region behind a load screen, so the world
+// is coherent and pop-in free when gameplay begins. Enemies/power-ups stay
+// procedural at runtime — only the static environment is precomputed here.
+function drawLevelLoadScreen(ctx, width, height, pct, biomeLabel) {
+  ctx.save();
+  const g = ctx.createLinearGradient(0, 0, 0, height);
+  g.addColorStop(0, '#06142e');
+  g.addColorStop(1, '#030711');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, width, height);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#19f7ff';
+  ctx.font = '700 26px "Segoe UI", system-ui, sans-serif';
+  ctx.fillText('GENERATING WORLD', width / 2, height / 2 - 40);
+  ctx.fillStyle = 'rgba(214,228,255,0.85)';
+  ctx.font = '600 15px "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(biomeLabel, width / 2, height / 2 - 12);
+  // progress bar
+  const barW = Math.min(420, width - 80);
+  const barX = (width - barW) / 2;
+  const barY = height / 2 + 14;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(barX, barY, barW, 12);
+  ctx.fillStyle = '#45ff8a';
+  ctx.fillRect(barX, barY, Math.round(barW * Math.max(0, Math.min(1, pct))), 12);
+  ctx.strokeStyle = 'rgba(25,247,255,0.45)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX, barY, barW, 12);
+  ctx.fillStyle = 'rgba(255,255,255,0.65)';
+  ctx.font = '600 12px "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(`${Math.round(pct * 100)}%`, width / 2, barY + 34);
+  ctx.restore();
+}
+
+// Warm the images the starting region will need, summarize the biome layout,
+// and render a brief load screen. Returns a layout summary for status text.
+async function precomputeBiomeWorld(ctx, width, height) {
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  const bgs = HMH_LEVEL_ENVIRONMENT.parallaxBackgrounds ?? [];
+  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  // Collect a coherent set of images for the spawn region + immediate neighbors.
+  const startBiome = biomeAt(seed, 0, 0);
+  const toWarm = new Set();
+  if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, startBiome, bgs.length)].src);
+  const regionBiomes = new Set([startBiome]);
+  for (let rx = -2; rx <= 2; rx += 1) {
+    for (let ry = -2; ry <= 2; ry += 1) {
+      const b = biomeAt(seed, rx * 22, ry * 22);
+      regionBiomes.add(b);
+      for (const p of propsForBiome(worldProps, b).slice(0, 6)) toWarm.add(p.src);
+      if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, b, bgs.length)].src);
+    }
+  }
+  const srcs = [...toWarm];
+  const total = srcs.length || 1;
+  let done = 0;
+  const label = `Biomes: ${[...regionBiomes].join(' · ')}`;
+  drawLevelLoadScreen(ctx, width, height, 0, label);
+  for (const src of srcs) {
+    const img = canonicalLandmarkImage(src);
+    if (!imageReady(img)) {
+      // give the browser a tick to decode
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise((resolve) => {
+        let settled = false;
+        const finish = () => { if (!settled) { settled = true; resolve(); } };
+        if (img && typeof img.decode === 'function') img.decode().then(finish).catch(finish);
+        setTimeout(finish, 120);
+      });
+    }
+    done += 1;
+    drawLevelLoadScreen(ctx, width, height, done / total, label);
+  }
+  // Hold the finished bar briefly so the screen reads as intentional.
+  drawLevelLoadScreen(ctx, width, height, 1, label);
+  await new Promise((resolve) => setTimeout(resolve, 280));
+  return { startBiome, regionBiomes: [...regionBiomes], warmed: total };
+}
+
 // Canonical building/prop set dressing placed at deterministic world-grid
-// landmark cells. Non-colliding background flavor (Justin's hand-made art).
-// Cells sit on a coarse lattice, offset so they ring the play area instead of
-// spawning on top of the player. Drawn before enemies/player.
+// landmark cells, grouped by BIOME. The run seed fixes the biome layout at
+// level start (see biome-model.mjs), so towns cluster with town props, deserts
+// with cacti/rocks, etc. Non-colliding background flavor (Justin's art).
 const landmarkImageCache = new Map();
 function canonicalLandmarkImage(src) {
   if (!landmarkImageCache.has(src)) {
@@ -4002,24 +4100,33 @@ function canonicalLandmarkImage(src) {
   return landmarkImageCache.get(src);
 }
 function drawCanonicalLandmarks(ctx) {
-  const props = HMH_LEVEL_ENVIRONMENT.props ?? [];
-  if (!props.length) return;
-  const LATTICE = 14;
+  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  if (!worldProps.length) return;
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  const LATTICE = 11;
   const baseX = Math.floor(combat.playerMapX / LATTICE) * LATTICE;
   const baseY = Math.floor(combat.playerMapY / LATTICE) * LATTICE;
-  for (let gx = -1; gx <= 1; gx += 1) {
-    for (let gy = -1; gy <= 1; gy += 1) {
+  for (let gx = -2; gx <= 2; gx += 1) {
+    for (let gy = -2; gy <= 2; gy += 1) {
       const cellX = baseX + gx * LATTICE;
       const cellY = baseY + gy * LATTICE;
       const h = Math.abs(((cellX * 73856093) ^ (cellY * 19349663)) >>> 0);
-      const prop = props[h % props.length];
+      // Not every cell gets a prop — keeps biomes breathable (≈55% fill).
+      if ((h % 100) > 55) continue;
       const worldX = cellX + ((h % 5) - 2);
       const worldY = cellY + (((h >> 3) % 5) - 2);
       if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 6) continue;
+      // Biome-coherent prop selection for this cell.
+      const biome = biomeAt(seed, worldX, worldY);
+      const pool = propsForBiome(worldProps, biome);
+      if (!pool.length) continue;
+      const prop = pool[h % pool.length];
       const img = canonicalLandmarkImage(prop.src);
       if (!imageReady(img)) continue;
       const projected = isoToScreen(worldX, worldY);
-      const scale = 120 / img.naturalWidth;
+      // Buildings (town) render larger than scatter props.
+      const targetW = biome === 'town' ? 128 : 92;
+      const scale = targetW / img.naturalWidth;
       const w = Math.round(img.naturalWidth * scale);
       const drawH = Math.round(img.naturalHeight * scale);
       ctx.save();

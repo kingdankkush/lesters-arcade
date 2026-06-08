@@ -1,4 +1,6 @@
-// Canonical level-environment manifest (Justin's hand-made art).
+// Canonical level-environment manifest (Justin's hand-made art), biome-tagged.
+// worldProps carry a `biome` tag (town/forest/desert/water/rocky/road); fxAssets
+// are effect/UI sheets excluded from world placement.
 export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
   "id": "hmh-level-environment-v1",
   "source": "Justin canonical hand-made level environment art (trimmed, downscaled)",
@@ -500,554 +502,639 @@ export const HMH_LEVEL_ENVIRONMENT = Object.freeze({
       "height": 533
     }
   ],
-  "props": [
+  "worldProps": [
     {
       "id": "prop-008c780e5ee0",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-008c780e5ee0.png",
       "width": 600,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-33d0ab393a08",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-33d0ab393a08.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-ffc0a4143b8c",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-ffc0a4143b8c.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-89fcbd7879d9",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-89fcbd7879d9.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-d9089443bba9",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-d9089443bba9.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-e316d4af8d1f",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-e316d4af8d1f.png",
       "width": 600,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-6b432e8345a9",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-6b432e8345a9.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-6e0f5a33ed07",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-6e0f5a33ed07.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-3f800ed3d86d",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-3f800ed3d86d.png",
       "width": 848,
-      "height": 899
+      "height": 899,
+      "biome": "town"
     },
     {
       "id": "prop-a4076623b0f1",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-a4076623b0f1.png",
       "width": 720,
-      "height": 900
+      "height": 900,
+      "biome": "desert"
     },
     {
       "id": "prop-89fd0b02065d",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-89fd0b02065d.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-9b8a98660972",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-9b8a98660972.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-2cd048e6be11",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-2cd048e6be11.png",
       "width": 720,
-      "height": 900
+      "height": 900,
+      "biome": "desert"
     },
     {
       "id": "prop-1bff828cff26",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-1bff828cff26.png",
       "width": 600,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-7f0271e68453",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-7f0271e68453.png",
       "width": 600,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-f548ae1fb7ac",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f548ae1fb7ac.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-84ac11df4b69",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-84ac11df4b69.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-66098109e33b",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-66098109e33b.png",
       "width": 675,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-f8fe53bb2a25",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f8fe53bb2a25.png",
       "width": 600,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-2e7fe571a461",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-2e7fe571a461.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-44bda2f4284a",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-44bda2f4284a.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-86654687d8a2",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-86654687d8a2.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-fd11cc9ebab4",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-fd11cc9ebab4.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-700991e1d4bb",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-700991e1d4bb.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "desert"
     },
     {
       "id": "prop-dcb894b41fcf",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-dcb894b41fcf.png",
       "width": 720,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-ddc1aa8fd8bb",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-ddc1aa8fd8bb.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-809f9e50e030",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-809f9e50e030.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-cb1288373807",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-cb1288373807.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-1f8a1b20e882",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-1f8a1b20e882.png",
       "width": 675,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-d1e79498652c",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-d1e79498652c.png",
       "width": 1342,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-328bae32627f",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-328bae32627f.png",
       "width": 720,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-75d130cb18f6",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-75d130cb18f6.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-8ad1ba4b5844",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-8ad1ba4b5844.png",
       "width": 720,
-      "height": 900
-    },
-    {
-      "id": "prop-2ce7e6138092",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-2ce7e6138092.png",
-      "width": 1355,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-041a200a1e3d",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-041a200a1e3d.png",
       "width": 1350,
-      "height": 900
+      "height": 900,
+      "biome": "road"
     },
     {
       "id": "prop-dd39bb6f5dfa",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-dd39bb6f5dfa.png",
       "width": 600,
-      "height": 900
-    },
-    {
-      "id": "prop-d137f36c1df8",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-d137f36c1df8.png",
-      "width": 600,
-      "height": 900
+      "height": 900,
+      "biome": "rocky"
     },
     {
       "id": "prop-6dd9b562d9f2",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-6dd9b562d9f2.png",
       "width": 900,
-      "height": 900
-    },
-    {
-      "id": "prop-6f8f2ed01ef6",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-6f8f2ed01ef6.png",
-      "width": 600,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-8e790c87fba8",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-8e790c87fba8.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "rocky"
     },
     {
       "id": "prop-a2c659aa4486",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-a2c659aa4486.png",
       "width": 623,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-96f2649061e7",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-96f2649061e7.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-b99c1a99896f",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-b99c1a99896f.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-e077e4e9aedf",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-e077e4e9aedf.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-dcf76a515dab",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-dcf76a515dab.png",
       "width": 1313,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-7ed91efdcd52",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-7ed91efdcd52.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-18778691eaf8",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-18778691eaf8.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-9ae6aeb8ccab",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-9ae6aeb8ccab.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-833edca606fe",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-833edca606fe.png",
       "width": 675,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-f865c47be5ba",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f865c47be5ba.png",
       "width": 675,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-13c3ee0e40b0",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-13c3ee0e40b0.png",
       "width": 675,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-4eef60b475a1",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-4eef60b475a1.png",
       "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-ffa65fd3860b",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-ffa65fd3860b.png",
-      "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "desert"
     },
     {
       "id": "prop-719bd26a0499",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-719bd26a0499.png",
       "width": 1351,
-      "height": 900
-    },
-    {
-      "id": "prop-2e05bf470b39",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-2e05bf470b39.png",
-      "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-719718961e1c",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-719718961e1c.png",
-      "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-21a6a703b1c8",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-21a6a703b1c8.png",
-      "width": 1350,
-      "height": 900
-    },
-    {
-      "id": "prop-91269c5c8134",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-91269c5c8134.png",
-      "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "road"
     },
     {
       "id": "prop-90616ae3e455",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-90616ae3e455.png",
       "width": 900,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-4b66eb19797e",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-4b66eb19797e.png",
       "width": 1200,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
     {
       "id": "prop-f9ff6bfdf1d6",
       "kind": "prop",
       "src": "./assets/generated/hmh-level-environment/prop/prop-f9ff6bfdf1d6.png",
       "width": 720,
-      "height": 900
+      "height": 900,
+      "biome": "town"
     },
-    {
-      "id": "prop-e175b2db6390",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-e175b2db6390.png",
-      "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-8e7bb4e414ae",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-8e7bb4e414ae.png",
-      "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-053b17d01078",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-053b17d01078.png",
-      "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-3f2dea42d8e4",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-3f2dea42d8e4.png",
-      "width": 900,
-      "height": 900
-    },
-    {
-      "id": "prop-e8d5191e6ebc",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-e8d5191e6ebc.png",
-      "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-079b3b1b8410",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-079b3b1b8410.png",
-      "width": 900,
-      "height": 900
-    },
-    {
-      "id": "prop-d0bf75c6a2ff",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-d0bf75c6a2ff.png",
-      "width": 1200,
-      "height": 900
-    },
-    {
-      "id": "prop-66c46dfafed0",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-66c46dfafed0.png",
-      "width": 900,
-      "height": 900
-    },
-    {
-      "id": "prop-a23942244230",
-      "kind": "prop",
-      "src": "./assets/generated/hmh-level-environment/prop/prop-a23942244230.png",
-      "width": 900,
-      "height": 900
-    }
-  ],
-  "decor": [
     {
       "id": "decor-109715817dfa",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-109715817dfa.png",
       "width": 1600,
-      "height": 800
+      "height": 800,
+      "biome": "town"
     },
     {
       "id": "decor-50738e9317f9",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-50738e9317f9.png",
       "width": 1600,
-      "height": 685
+      "height": 685,
+      "biome": "road"
     },
     {
       "id": "decor-34e773e22810",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-34e773e22810.png",
       "width": 514,
-      "height": 900
+      "height": 900,
+      "biome": "forest"
     },
     {
       "id": "decor-51af90ba0684",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-51af90ba0684.png",
       "width": 1600,
-      "height": 685
+      "height": 685,
+      "biome": "town"
     },
     {
       "id": "decor-3d647b70bc39",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-3d647b70bc39.png",
       "width": 1599,
-      "height": 900
+      "height": 900,
+      "biome": "forest"
     },
     {
       "id": "decor-39d9138dd6b5",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-39d9138dd6b5.png",
       "width": 1599,
-      "height": 900
+      "height": 900,
+      "biome": "town"
+    }
+  ],
+  "fxAssets": [
+    {
+      "id": "prop-2ce7e6138092",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-2ce7e6138092.png",
+      "width": 1355,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-d137f36c1df8",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-d137f36c1df8.png",
+      "width": 600,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-6f8f2ed01ef6",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-6f8f2ed01ef6.png",
+      "width": 600,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-ffa65fd3860b",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-ffa65fd3860b.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-2e05bf470b39",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-2e05bf470b39.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-719718961e1c",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-719718961e1c.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-21a6a703b1c8",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-21a6a703b1c8.png",
+      "width": 1350,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-91269c5c8134",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-91269c5c8134.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-e175b2db6390",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-e175b2db6390.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-8e7bb4e414ae",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-8e7bb4e414ae.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-053b17d01078",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-053b17d01078.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-3f2dea42d8e4",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-3f2dea42d8e4.png",
+      "width": 900,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-e8d5191e6ebc",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-e8d5191e6ebc.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-079b3b1b8410",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-079b3b1b8410.png",
+      "width": 900,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-d0bf75c6a2ff",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-d0bf75c6a2ff.png",
+      "width": 1200,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-66c46dfafed0",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-66c46dfafed0.png",
+      "width": 900,
+      "height": 900,
+      "biome": "fx"
+    },
+    {
+      "id": "prop-a23942244230",
+      "kind": "prop",
+      "src": "./assets/generated/hmh-level-environment/prop/prop-a23942244230.png",
+      "width": 900,
+      "height": 900,
+      "biome": "fx"
     },
     {
       "id": "decor-00eff849af8d",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-00eff849af8d.png",
       "width": 1599,
-      "height": 900
+      "height": 900,
+      "biome": "fx"
     },
     {
       "id": "decor-0306bd7733de",
       "kind": "decor",
       "src": "./assets/generated/hmh-level-environment/decor/decor-0306bd7733de.png",
       "width": 1600,
-      "height": 800
+      "height": 800,
+      "biome": "fx"
     }
-  ]
+  ],
+  "biomeCounts": {
+    "town": 48,
+    "desert": 4,
+    "road": 3,
+    "rocky": 2,
+    "forest": 2
+  }
 });
