@@ -99,7 +99,7 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=hmh-intro-splash-v5`);
+  const main = await fetchText(`${portalUrl}main.js?v=hmh-litvm-publish-v7`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
   const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
@@ -122,7 +122,7 @@ try {
     'arcadeMusicShuffleButton',
     'combatMenuPanel',
     'splashFeaturedCabinet',
-    'hmh-intro-splash-v5',
+    'hmh-litvm-publish-v7',
   ]) {
     assertIncludes('portal html', html, marker);
   }
@@ -146,7 +146,7 @@ try {
     'HMH_PRODUCTION_ART_PASS',
     'buildProductionArtPass',
     'combatArt.hero = combatArt.characters.lester',
-    'productionTileForWorld',
+    'biomeGroundTileForWorld',
     'productionPropForIndex',
     'productionVfxFrame',
     'hero.animations.shoot',
