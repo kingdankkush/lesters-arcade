@@ -9,6 +9,7 @@ import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-dama
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
+import { HMH_LEVEL_ENVIRONMENT } from './assets/generated/hmh-level-environment/hmh-level-environment.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -3962,6 +3963,33 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   return true;
 }
 
+// Canonical parallax background layer (Justin's hand-made level art). Picks a
+// stable strip per run and scrolls it horizontally with the camera for depth.
+const parallaxBgState = { image: null, pickedFor: null };
+function drawParallaxBackground(ctx, width, height) {
+  const bgs = HMH_LEVEL_ENVIRONMENT.parallaxBackgrounds ?? [];
+  if (!bgs.length) return;
+  const runSeed = combat.roguelikeRun?.seed ?? 0;
+  if (parallaxBgState.pickedFor !== runSeed) {
+    const pick = bgs[Math.abs(runSeed) % bgs.length];
+    parallaxBgState.image = loadImageAsset(pick.src);
+    parallaxBgState.pickedFor = runSeed;
+  }
+  const img = parallaxBgState.image;
+  if (!imageReady(img)) return;
+  // Scale strip to cover the upper ~60% of the viewport; scroll at 0.35x camera.
+  const bandH = Math.round(height * 0.6);
+  const scale = bandH / img.naturalHeight;
+  const stripW = img.naturalWidth * scale;
+  const scroll = ((combat.playerMapX ?? 0) * 18 * 0.35) % stripW;
+  ctx.save();
+  ctx.globalAlpha = 0.55;
+  for (let x = -scroll; x < width; x += stripW) {
+    ctx.drawImage(img, Math.round(x), 0, Math.round(stripW), bandH);
+  }
+  ctx.restore();
+}
+
 function drawRoguelikeScene(ctx, width, height) {
   const palette = ['#06142e', '#12072d', '#030711'];
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
@@ -3970,6 +3998,8 @@ function drawRoguelikeScene(ctx, width, height) {
   gradient.addColorStop(1, palette[2]);
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, width, height);
+
+  drawParallaxBackground(ctx, width, height);
 
   for (let x = -10; x <= 10; x += 1) {
     for (let y = -10; y <= 10; y += 1) {
