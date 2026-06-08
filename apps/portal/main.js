@@ -6161,10 +6161,29 @@ function heroAnimState() {
   return ['idle', 'run'];
 }
 
+// Resolve the selected hero's characterId to the richest available animated
+// roster key, falling through to art we actually have. New heroes (Lit Commando
+// / Lit Valkyrie) prefer their own frames, then their legacy art, then Lester.
+function heroRosterKey(characterId) {
+  const hasFrames = (k) => {
+    const r = HMH_ANIMATED_ROSTER[k];
+    return !!(r && r.animations && Object.keys(r.animations).length);
+  };
+  const preference = {
+    'lit-commando': ['lit-commando', 'lester'],
+    'lit-valkyrie': ['lit-valkyrie', 'lilly', 'lester'],
+    lilly: ['lilly', 'lester'],
+    lester: ['lester'],
+  }[characterId] || ['lester'];
+  for (const k of preference) {
+    if (hasFrames(k)) return k;
+  }
+  return 'lester';
+}
+
 function lesterAnimatedFrame() {
   if (!combat.roguelikeRun) return null;
-  const key = (combat.characterId === 'lilly' && HMH_ANIMATED_ROSTER.lilly?.animations
-    && Object.keys(HMH_ANIMATED_ROSTER.lilly.animations).length) ? 'lilly' : 'lester';
+  const key = heroRosterKey(combat.characterId);
   const roster = HMH_ANIMATED_ROSTER[key];
   const death = combat.gameOver;
   // Hero faces the aim direction (mouse / movement). aimMapX/Y is the unit aim.

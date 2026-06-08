@@ -3,6 +3,171 @@
     "role": "hero",
     "character_id": "97185455-d6f8-4108-a0fc-ab90f451ddef",
     "animations": {
+      "walk": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/06.png"
+        ]
+      },
+      "walk-2": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/lester/walk-2/west/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-2/west/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-2/west/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-2/west/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-2/west/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-2/west/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-2/west/06.png"
+        ]
+      },
+      "walk-3": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/lester/walk-3/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-3/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-3/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-3/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-3/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-3/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-3/north-west/06.png"
+        ]
+      },
+      "walk-4": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/lester/walk-4/north/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-4/north/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-4/north/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-4/north/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-4/north/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-4/north/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-4/north/06.png"
+        ]
+      },
+      "walk-5": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/lester/walk-5/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-5/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-5/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-5/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-5/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-5/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-5/north-east/06.png"
+        ]
+      },
+      "walk-6": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/lester/walk-6/east/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-6/east/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-6/east/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-6/east/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-6/east/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-6/east/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-6/east/06.png"
+        ]
+      },
+      "walk-7": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/lester/walk-7/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-7/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-7/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-7/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-7/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-7/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-7/south-east/06.png"
+        ]
+      },
+      "walk-8": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lester/walk-8/south/00.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-8/south/01.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-8/south/02.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-8/south/03.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-8/south/04.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-8/south/05.png",
+          "./assets/generated/hmh-animated-roster/lester/walk-8/south/06.png"
+        ]
+      },
+      "idle": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/lester/idle/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/lester/idle/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/lester/idle/south-west/06.png"
+        ]
+      },
+      "idle-2": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/lester/idle-2/west/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-2/west/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-2/west/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-2/west/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-2/west/04.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-2/west/05.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-2/west/06.png"
+        ]
+      },
+      "idle-3": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/lester/idle-3/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-3/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-3/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-3/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-3/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-3/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-3/north-west/06.png"
+        ]
+      },
+      "idle-4": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/lester/idle-4/north/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-4/north/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-4/north/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-4/north/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-4/north/04.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-4/north/05.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-4/north/06.png"
+        ]
+      },
+      "idle-5": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/lester/idle-5/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-5/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-5/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-5/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-5/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-5/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-5/north-east/06.png"
+        ]
+      },
+      "idle-6": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/lester/idle-6/east/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-6/east/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-6/east/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-6/east/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-6/east/04.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-6/east/05.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-6/east/06.png"
+        ]
+      },
+      "idle-7": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/lester/idle-7/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-7/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-7/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-7/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-7/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-7/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-7/south-east/06.png"
+        ]
+      },
       "victory": {
         "south": [
           "./assets/generated/hmh-animated-roster/lester/victory/south/00.png",
@@ -70,13 +235,13 @@
           "./assets/generated/hmh-animated-roster/lester/throw/south/04.png"
         ]
       },
-      "idle": {
+      "idle-8": {
         "south": [
-          "./assets/generated/hmh-animated-roster/lester/idle/south/00.png",
-          "./assets/generated/hmh-animated-roster/lester/idle/south/01.png",
-          "./assets/generated/hmh-animated-roster/lester/idle/south/02.png",
-          "./assets/generated/hmh-animated-roster/lester/idle/south/03.png",
-          "./assets/generated/hmh-animated-roster/lester/idle/south/04.png"
+          "./assets/generated/hmh-animated-roster/lester/idle-8/south/00.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-8/south/01.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-8/south/02.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-8/south/03.png",
+          "./assets/generated/hmh-animated-roster/lester/idle-8/south/04.png"
         ]
       },
       "shoot": {
@@ -94,6 +259,138 @@
     "role": "boss",
     "character_id": "6b17f44f-4c87-48a4-8df3-d8f15a40d2c0",
     "animations": {
+      "idle-8dir": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir/north-west/06.png"
+        ]
+      },
+      "idle-8dir-2": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-2/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-2/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-2/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-2/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-2/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-2/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-2/south-east/06.png"
+        ]
+      },
+      "idle-8dir-3": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-3/north/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-3/north/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-3/north/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-3/north/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-3/north/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-3/north/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-3/north/06.png"
+        ]
+      },
+      "idle-8dir-4": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-4/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-4/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-4/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-4/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-4/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-4/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-4/north-east/06.png"
+        ]
+      },
+      "idle-8dir-5": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-5/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-5/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-5/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-5/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-5/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-5/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-5/south-west/06.png"
+        ]
+      },
+      "idle-8dir-6": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-6/west/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-6/west/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-6/west/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-6/west/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-6/west/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-6/west/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-6/west/06.png"
+        ]
+      },
+      "idle-8dir-7": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-7/east/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-7/east/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-7/east/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-7/east/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-7/east/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-7/east/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-7/east/06.png"
+        ]
+      },
+      "idle-8dir-8": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-8/south/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-8/south/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-8/south/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-8/south/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-8/south/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-8/south/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/idle-8dir-8/south/06.png"
+        ]
+      },
+      "walk-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk-8dir/south/06.png"
+        ]
+      },
+      "death-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/death-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/death-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/death-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/death-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/death-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/death-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/death-8dir/south/06.png"
+        ]
+      },
+      "attack-ranged-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-ranged-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-ranged-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-ranged-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-ranged-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-ranged-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-ranged-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-ranged-8dir/south/06.png"
+        ]
+      },
+      "attack-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/whale-dumper-boss/attack-8dir/south/06.png"
+        ]
+      },
       "walk": {
         "south": [
           "./assets/generated/hmh-animated-roster/whale-dumper-boss/walk/south/00.png",
@@ -359,6 +656,61 @@
     "role": "enemy",
     "character_id": "d0470066-7d2b-4195-bcb6-9e7c6f4638d8",
     "animations": {
+      "death-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/fud-goblin/death-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/death-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/death-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/death-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/death-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/death-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/death-8dir/south/06.png"
+        ]
+      },
+      "idle-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/fud-goblin/idle-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/idle-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/idle-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/idle-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/idle-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/idle-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/idle-8dir/south/06.png"
+        ]
+      },
+      "walk-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/fud-goblin/walk-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/walk-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/walk-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/walk-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/walk-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/walk-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/walk-8dir/south/06.png"
+        ]
+      },
+      "hurt-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/fud-goblin/hurt-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/hurt-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/hurt-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/hurt-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/hurt-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/hurt-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/hurt-8dir/south/06.png"
+        ]
+      },
+      "attack-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/fud-goblin/attack-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/attack-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/attack-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/attack-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/attack-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/attack-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/fud-goblin/attack-8dir/south/06.png"
+        ]
+      },
       "death": {
         "south": [
           "./assets/generated/hmh-animated-roster/fud-goblin/death/south/00.png",
@@ -470,11 +822,464 @@
   "trench-degen": {
     "role": "enemy",
     "character_id": "9e591394-caf5-498c-886b-1161e1a64043",
-    "animations": {}
+    "animations": {
+      "hurt-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/trench-degen/hurt-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/trench-degen/hurt-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/trench-degen/hurt-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/trench-degen/hurt-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/trench-degen/hurt-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/trench-degen/hurt-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/trench-degen/hurt-8dir/south/06.png"
+        ]
+      }
+    }
   },
   "lilly": {
     "role": "hero",
     "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animations": {
+      "death-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/death-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/death-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/death-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/death-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/death-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/death-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/death-8dir/south/06.png"
+        ]
+      },
+      "hurt-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/hurt-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/hurt-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/hurt-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/hurt-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/hurt-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/hurt-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/hurt-8dir/south/06.png"
+        ]
+      },
+      "throw-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/throw-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/throw-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/throw-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/throw-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/throw-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/throw-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/throw-8dir/south/06.png"
+        ]
+      },
+      "run-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/run-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/run-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/run-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/run-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/run-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/run-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/run-8dir/south/06.png"
+        ]
+      },
+      "melee-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/melee-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/melee-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/melee-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/melee-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/melee-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/melee-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/melee-8dir/south/06.png"
+        ]
+      },
+      "idle-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/idle-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/idle-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/idle-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/idle-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/idle-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/idle-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/idle-8dir/south/06.png"
+        ]
+      },
+      "shoot-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/shoot-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/shoot-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/shoot-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/shoot-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/shoot-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/shoot-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/shoot-8dir/south/06.png"
+        ]
+      },
+      "walk-8dir": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lilly/walk-8dir/south/00.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk-8dir/south/01.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk-8dir/south/02.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk-8dir/south/03.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk-8dir/south/04.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk-8dir/south/05.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk-8dir/south/06.png"
+        ]
+      }
+    }
+  },
+  "lit-commando": {
+    "role": "hero",
+    "character_id": "c96d19d1-8958-4fcd-b517-9dfded9e0051",
+    "animations": {
+      "levelup": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup/south-west/06.png"
+        ]
+      },
+      "levelup-2": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-2/west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-2/west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-2/west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-2/west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-2/west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-2/west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-2/west/06.png"
+        ]
+      },
+      "levelup-3": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-3/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-3/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-3/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-3/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-3/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-3/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-3/north-west/06.png"
+        ]
+      },
+      "levelup-4": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-4/north/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-4/north/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-4/north/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-4/north/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-4/north/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-4/north/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-4/north/06.png"
+        ]
+      },
+      "levelup-5": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-5/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-5/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-5/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-5/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-5/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-5/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-5/north-east/06.png"
+        ]
+      },
+      "levelup-6": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-6/east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-6/east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-6/east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-6/east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-6/east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-6/east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-6/east/06.png"
+        ]
+      },
+      "levelup-7": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-7/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-7/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-7/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-7/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-7/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-7/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-7/south-east/06.png"
+        ]
+      },
+      "levelup-8": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-8/south/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-8/south/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-8/south/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-8/south/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-8/south/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-8/south/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/levelup-8/south/06.png"
+        ]
+      },
+      "run": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/06.png"
+        ]
+      },
+      "run-2": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run-2/west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-2/west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-2/west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-2/west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-2/west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-2/west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-2/west/06.png"
+        ]
+      },
+      "run-3": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run-3/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-3/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-3/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-3/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-3/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-3/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-3/north-west/06.png"
+        ]
+      },
+      "run-4": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run-4/north/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-4/north/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-4/north/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-4/north/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-4/north/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-4/north/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-4/north/06.png"
+        ]
+      },
+      "run-5": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run-5/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-5/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-5/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-5/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-5/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-5/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-5/north-east/06.png"
+        ]
+      },
+      "run-6": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run-6/east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-6/east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-6/east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-6/east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-6/east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-6/east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-6/east/06.png"
+        ]
+      },
+      "run-7": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run-7/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-7/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-7/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-7/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-7/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-7/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-7/south-east/06.png"
+        ]
+      },
+      "run-8": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lit-commando/run-8/south/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-8/south/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-8/south/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-8/south/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-8/south/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-8/south/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/run-8/south/06.png"
+        ]
+      },
+      "walk": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/walk/west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk/west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk/west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk/west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk/west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk/west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk/west/06.png"
+        ]
+      },
+      "walk-2": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-2/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-2/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-2/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-2/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-2/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-2/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-2/north-west/06.png"
+        ]
+      },
+      "walk-3": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-3/north/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-3/north/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-3/north/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-3/north/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-3/north/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-3/north/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-3/north/06.png"
+        ]
+      },
+      "walk-4": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-4/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-4/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-4/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-4/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-4/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-4/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-4/north-east/06.png"
+        ]
+      },
+      "walk-5": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-5/east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-5/east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-5/east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-5/east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-5/east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-5/east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-5/east/06.png"
+        ]
+      },
+      "walk-6": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-6/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-6/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-6/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-6/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-6/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-6/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-6/south-east/06.png"
+        ]
+      },
+      "walk-7": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-7/south/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-7/south/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-7/south/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-7/south/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-7/south/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-7/south/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/walk-7/south/06.png"
+        ]
+      },
+      "idle": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/06.png"
+        ]
+      },
+      "idle-2": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-2/west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-2/west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-2/west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-2/west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-2/west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-2/west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-2/west/06.png"
+        ]
+      },
+      "idle-3": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-3/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-3/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-3/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-3/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-3/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-3/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-3/north-west/06.png"
+        ]
+      },
+      "idle-4": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-4/north/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-4/north/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-4/north/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-4/north/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-4/north/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-4/north/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-4/north/06.png"
+        ]
+      },
+      "idle-5": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-5/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-5/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-5/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-5/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-5/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-5/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-5/north-east/06.png"
+        ]
+      },
+      "idle-6": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-6/east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-6/east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-6/east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-6/east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-6/east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-6/east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-6/east/06.png"
+        ]
+      },
+      "idle-7": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-7/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-7/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-7/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-7/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-7/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-7/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-7/south-east/06.png"
+        ]
+      },
+      "idle-8": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-8/south/00.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-8/south/01.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-8/south/02.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-8/south/03.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-8/south/04.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-8/south/05.png",
+          "./assets/generated/hmh-animated-roster/lit-commando/idle-8/south/06.png"
+        ]
+      }
+    }
+  },
+  "lit-valkyrie": {
+    "role": "hero",
+    "character_id": "74b5efc0-e7d8-4400-85f5-9db85ef05db9",
     "animations": {}
   }
 }
