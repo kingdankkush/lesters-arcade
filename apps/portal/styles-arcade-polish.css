@@ -341,14 +341,27 @@
   letter-spacing: 0.16em;
   border-radius: 6px;
 }
-.hero-name { font-size: 1.3rem; color: #d6f6ff; }
-.hero-tagline { color: #9fe9ff; font-size: 0.82rem; letter-spacing: 0.04em; }
-.hero-bio { color: rgba(214, 228, 255, 0.82); font-size: 0.82rem; line-height: 1.5; margin: 4px 0; }
-.hero-stats { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-.hero-stat-row { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 8px; }
-.hero-stat-label { font-size: 0.72rem; color: #9fe9ff; letter-spacing: 0.08em; }
-.hero-stat-track { height: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; }
-.hero-stat-fill { height: 100%; background: linear-gradient(90deg, #19f7ff, #45ff8a); border-radius: 5px; }
+.hero-name { font-size: 1.34rem; color: #d6f6ff; letter-spacing: 0.01em; line-height: 1.15; }
+.hero-tagline {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 3px 10px;
+  color: #061022;
+  background: linear-gradient(90deg, #19f7ff, #45ff8a);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+}
+.hero-bio { color: rgba(214, 228, 255, 0.82); font-size: 0.82rem; line-height: 1.55; margin: 8px 0 4px; }
+.hero-stats { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+.hero-stat-row { display: grid; grid-template-columns: 86px 1fr; align-items: center; gap: 10px; }
+.hero-stat-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #9fe9ff; letter-spacing: 0.06em; }
+.hero-stat-icon { font-size: 0.92rem; line-height: 1; filter: drop-shadow(0 0 4px rgba(25,247,255,0.35)); }
+.hero-stat-name { font-weight: 700; }
+.hero-stat-track { height: 9px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; box-shadow: inset 0 0 4px rgba(0,0,0,0.4); }
+.hero-stat-fill { height: 100%; background: linear-gradient(90deg, #19f7ff, #45ff8a); border-radius: 5px; box-shadow: 0 0 8px rgba(25,247,255,0.5); }
 .hero-cta {
   margin-top: 6px;
   font-weight: 800;

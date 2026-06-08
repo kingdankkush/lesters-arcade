@@ -710,6 +710,7 @@ function sfxToneFor(cue) {
   const tones = {
     'wallet-connect': [523, 659, 784],
     'menu-click': [392, 523],
+    'hero-select': [523, 659, 784, 1047],
     'level-start': [330, 494, 660],
     jump: [420, 630],
     land: [120],
@@ -1200,10 +1201,26 @@ const HERO_ROSTER = [
   },
 ];
 
+// Glyph per hero skill type, shown beside the stat label on the hero cards.
+const HERO_STAT_ICONS = {
+  Power: '💥',
+  Speed: '⚡',
+  Armor: '🛡️',
+  Luck: '🍀',
+  Damage: '💥',
+  Health: '❤️',
+  'Fire Rate': '🔥',
+  Crit: '🎯',
+};
+
 function renderHeroStatBars(container, stats) {
   for (const [label, value] of stats) {
     const row = el('div', { className: 'hero-stat-row' });
-    appendText(row, 'span', label, 'hero-stat-label');
+    const labelWrap = el('div', { className: 'hero-stat-label' });
+    const icon = HERO_STAT_ICONS[label] || '•';
+    labelWrap.append(el('span', { className: 'hero-stat-icon', textContent: icon, ariaHidden: 'true' }));
+    labelWrap.append(el('span', { className: 'hero-stat-name', textContent: label }));
+    row.append(labelWrap);
     const track = el('div', { className: 'hero-stat-track' });
     const fill = el('div', { className: 'hero-stat-fill' });
     fill.style.width = `${(value / 5) * 100}%`;
@@ -1241,7 +1258,7 @@ function renderOfficialCharacterSelect() {
     card.append(info);
     if (!hero.locked) {
       card.addEventListener('click', () => {
-        playSfxCue('menu-click', 0.05);
+        playSfxCue('hero-select', 0.07);
         combat.characterId = hero.id;
         setOfficialView('level-one-intro');
       });
@@ -6172,8 +6189,10 @@ function heroRosterKey(characterId) {
   const preference = {
     'lit-commando': ['lit-commando', 'lester'],
     'lit-valkyrie': ['lit-valkyrie', 'lilly', 'lester'],
-    lilly: ['lilly', 'lester'],
-    lester: ['lester'],
+    // Legacy ids: 'lester' now displays as Lit Commando, 'lilly' as Lit Valkyrie.
+    // Prefer the new heroes' art when harvested, else fall back to legacy frames.
+    lester: ['lit-commando', 'lester'],
+    lilly: ['lit-valkyrie', 'lilly', 'lester'],
   }[characterId] || ['lester'];
   for (const k of preference) {
     if (hasFrames(k)) return k;
