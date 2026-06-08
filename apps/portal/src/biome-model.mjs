@@ -10,7 +10,10 @@
 export const BIOMES = Object.freeze(['town', 'desert', 'forest', 'rocky', 'road', 'water']);
 
 // Region size in world tiles. Larger = bigger contiguous biome patches.
-export const BIOME_REGION = 22;
+// Kept small enough that a player crosses 2-3 biomes during a single run (the
+// visible window is ~±10 tiles), so biome variety actually reads in gameplay
+// instead of the whole short run sitting inside one giant region.
+export const BIOME_REGION = 7;
 
 function hash2(seed, x, y) {
   let h = (seed | 0) ^ 0x9e3779b9;

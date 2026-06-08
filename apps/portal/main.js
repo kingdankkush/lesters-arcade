@@ -4098,19 +4098,32 @@ function currentProductionLevel() {
   return levels[index];
 }
 
-function productionTileForWorld(worldX, worldY) {
-  const level = currentProductionLevel();
-  const slugs = level?.tiles?.length ? level.tiles : Object.keys(combatArt.production?.tiles ?? {});
-  if (!slugs.length) return null;
-  const index = Math.abs((worldX * 7 + worldY * 11 + (worldX - worldY) * 3)) % slugs.length;
-  return combatArt.production.tiles[slugs[index]] ?? null;
+// Map a biome to the production tile slugs that actually look right on it.
+// The production tile art is all URBAN (asphalt/sidewalk/alley/foundry/rooftop),
+// so only town/road cells use sprite tiles; natural biomes (desert/forest/rocky/
+// water) use the biome-shaded gradient floor instead of a mismatched city tile.
+const BIOME_TILE_SLUGS = {
+  town: ['asphalt-street', 'sidewalk-concrete'],
+  road: ['asphalt-street', 'sidewalk-concrete'],
+};
+
+function productionTileForWorld(worldX, worldY, biome) {
+  // Only town/road biomes get sprite tiles; others fall through to shaded floor.
+  const allowed = biome ? BIOME_TILE_SLUGS[biome] : null;
+  if (!allowed || !allowed.length) return null;
+  const available = allowed.filter((slug) => combatArt.production?.tiles?.[slug]);
+  if (!available.length) return null;
+  const index = Math.abs((worldX * 7 + worldY * 11 + (worldX - worldY) * 3)) % available.length;
+  return combatArt.production.tiles[available[index]] ?? null;
 }
 
 function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
-  const tile = productionTileForWorld(worldX, worldY);
+  const palette = biomeFloorPalette(worldX, worldY);
+  const tile = productionTileForWorld(worldX, worldY, palette.biome);
   if (!imageReady(tile?.image)) {
-    // Biome-aware shaded fallback (replaces the old flat-blue checker).
-    const palette = biomeFloorPalette(worldX, worldY);
+    // Biome-shaded gradient floor: desert sand, forest green, rocky grey, water
+    // shimmer, etc. (replaces the old flat-blue checker AND the mismatched urban
+    // tile sprite that drew bright-blue 'ice' on desert/forest cells).
     const shimmer = palette.biome === 'water'
       ? (combat.frame * 0.06) + (worldX * 0.7 + worldY * 1.3)
       : 0;
@@ -4352,21 +4365,47 @@ function drawRoguelikeScene(ctx, width, height) {
 
   drawCanonicalLandmarks(ctx);
 
-  drawPowerUps(ctx);
+  // --- Depth-sorted world pass (painter's algorithm for isometric) ---------
+  // Everything that lives ON the ground plane (pickups, XP gems, enemies, boss,
+  // and the hero) is collected into one list and drawn back-to-front by screen
+  // Y, so a sprite that is "in front" (lower on screen / larger worldX+worldY)
+  // correctly overlaps one that is "behind". Previously these drew in fixed
+  // layers (all enemies, then always the player on top) which read as broken in
+  // an isometric view. Floor tiles/props stay underneath; bullets, particles,
+  // floating text and HUD stay on top as effects/UI.
+  const renderList = [];
   const xpShard = productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback');
   for (const gem of combat.xpGems) {
     const projected = isoToScreen(gem.worldX, gem.worldY);
     const bob = Math.sin((combat.frame + gem.worldX * 13 + gem.worldY * 7) * 0.12) * 3;
-    if (imageReady(xpShard)) {
-      ctx.drawImage(xpShard, Math.round(projected.x - 16), Math.round(projected.y + 10 + bob), 32, 32);
-    } else {
-      ctx.fillStyle = '#19f7ff';
-      ctx.fillRect(projected.x - 4, projected.y + 26, 8, 8);
-    }
+    const drawY = projected.y + 10 + bob;
+    renderList.push({
+      depth: projected.y + 26,
+      draw: () => {
+        if (imageReady(xpShard)) {
+          ctx.drawImage(xpShard, Math.round(projected.x - 16), Math.round(drawY), 32, 32);
+        } else {
+          ctx.fillStyle = '#19f7ff';
+          ctx.fillRect(projected.x - 4, projected.y + 26, 8, 8);
+        }
+      },
+    });
   }
-  drawEnemies(ctx);
+  for (const enemy of combat.enemies) {
+    renderList.push({ depth: enemy.y, draw: () => drawSingleEnemy(ctx, enemy) });
+  }
+  if (combat.boss) {
+    renderList.push({ depth: (combat.boss.y ?? GROUND_Y) + 200, draw: () => drawBoss(ctx) });
+  }
+  // Hero depth = his screen Y (feet). Drawn in-order so enemies below him on
+  // screen render in front and enemies above render behind.
+  renderList.push({ depth: combat.playerY, draw: () => drawPlayer(ctx) });
+  renderList.sort((a, b) => a.depth - b.depth);
+
+  drawPowerUps(ctx);
+  for (const entry of renderList) entry.draw();
+
   drawBullets(ctx);
-  drawPlayer(ctx);
   drawParticles(ctx);
   drawFloatingTexts(ctx);
   drawHud(ctx);
@@ -4754,6 +4793,11 @@ function enemyArtFor(enemy) {
 
 function drawEnemies(ctx) {
   for (const enemy of combat.enemies) {
+    drawSingleEnemy(ctx, enemy);
+  }
+}
+
+function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
@@ -4778,7 +4822,6 @@ function drawEnemies(ctx) {
       ctx.fillStyle = '#ffe84d';
       ctx.fillRect(enemy.x - 3, enemy.y - h - 15, w + 6, 4);
     }
-  }
 }
 
 function bossArtFor(boss) {
