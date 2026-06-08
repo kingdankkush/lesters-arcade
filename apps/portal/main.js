@@ -3990,6 +3990,46 @@ function drawParallaxBackground(ctx, width, height) {
   ctx.restore();
 }
 
+// Canonical building/prop set dressing placed at deterministic world-grid
+// landmark cells. Non-colliding background flavor (Justin's hand-made art).
+// Cells sit on a coarse lattice, offset so they ring the play area instead of
+// spawning on top of the player. Drawn before enemies/player.
+const landmarkImageCache = new Map();
+function canonicalLandmarkImage(src) {
+  if (!landmarkImageCache.has(src)) {
+    landmarkImageCache.set(src, loadImageAsset(src));
+  }
+  return landmarkImageCache.get(src);
+}
+function drawCanonicalLandmarks(ctx) {
+  const props = HMH_LEVEL_ENVIRONMENT.props ?? [];
+  if (!props.length) return;
+  const LATTICE = 14;
+  const baseX = Math.floor(combat.playerMapX / LATTICE) * LATTICE;
+  const baseY = Math.floor(combat.playerMapY / LATTICE) * LATTICE;
+  for (let gx = -1; gx <= 1; gx += 1) {
+    for (let gy = -1; gy <= 1; gy += 1) {
+      const cellX = baseX + gx * LATTICE;
+      const cellY = baseY + gy * LATTICE;
+      const h = Math.abs(((cellX * 73856093) ^ (cellY * 19349663)) >>> 0);
+      const prop = props[h % props.length];
+      const worldX = cellX + ((h % 5) - 2);
+      const worldY = cellY + (((h >> 3) % 5) - 2);
+      if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 6) continue;
+      const img = canonicalLandmarkImage(prop.src);
+      if (!imageReady(img)) continue;
+      const projected = isoToScreen(worldX, worldY);
+      const scale = 120 / img.naturalWidth;
+      const w = Math.round(img.naturalWidth * scale);
+      const drawH = Math.round(img.naturalHeight * scale);
+      ctx.save();
+      ctx.globalAlpha = 0.92;
+      ctx.drawImage(img, Math.round(projected.x - w / 2), Math.round(projected.y + 56 - drawH), w, drawH);
+      ctx.restore();
+    }
+  }
+}
+
 function drawRoguelikeScene(ctx, width, height) {
   const palette = ['#06142e', '#12072d', '#030711'];
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
@@ -4021,6 +4061,8 @@ function drawRoguelikeScene(ctx, width, height) {
       ctx.fillRect(projected.x - 14, projected.y + 28, 28, 30 + (i % 3) * 12);
     }
   }
+
+  drawCanonicalLandmarks(ctx);
 
   drawPowerUps(ctx);
   const xpShard = productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback');
@@ -4581,27 +4623,83 @@ function drawFloatingTexts(ctx) {
   ctx.textAlign = 'left';
 }
 
+// Readable HUD label/value text with outline + drop shadow so it stays legible
+// over the canonical parallax background. `value` is drawn brighter than `label`.
+function hudStat(ctx, x, y, label, value, color) {
+  ctx.save();
+  ctx.font = '700 18px "Segoe UI", system-ui, sans-serif';
+  ctx.textBaseline = 'middle';
+  ctx.lineJoin = 'round';
+  ctx.shadowColor = 'rgba(0,0,0,0.85)';
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 2;
+  ctx.shadowBlur = 3;
+  // dim label
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = 'rgba(0,0,0,0.9)';
+  ctx.strokeText(label, x, y);
+  ctx.fillStyle = 'rgba(214,228,255,0.92)';
+  ctx.fillText(label, x, y);
+  const labelW = ctx.measureText(label).width;
+  // bright value
+  ctx.strokeText(value, x + labelW + 8, y);
+  ctx.fillStyle = color;
+  ctx.fillText(value, x + labelW + 8, y);
+  ctx.restore();
+}
+
 function drawHud(ctx) {
   const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
   const weapon = weaponById(combat.weaponId);
   ctx.font = '16px monospace';
   if (combat.roguelikeRun) {
     const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
-    const hudPanel = productionImage('ui', 'hud-panel');
-    if (imageReady(hudPanel)) ctx.drawImage(hudPanel, 10, 8, 660, 120);
-    ctx.fillStyle = '#19f7ff';
-    ctx.fillText(`ISO SURVIVE ${formatSeconds(combat.elapsedGameSeconds)} / 20:00 // ${director.difficultyLabel.toUpperCase()} // ${combat.fps}FPS`, 20, 28);
-    ctx.fillStyle = '#ffe84d';
-    ctx.fillText(`HP ${Math.max(0, Math.round(combat.health))} // SCORE ${combat.score.toLocaleString()} // KILLS ${combat.kills} // ENEMIES ${combat.enemies.length}/${director.maxEnemiesOnMap}`, 20, 52);
-    ctx.fillStyle = '#45ff8a';
-    ctx.fillText(`LV ${combat.roguelikeRun.level} // XP ${Math.floor(combat.roguelikeRun.xp)}/${combat.roguelikeRun.xpToNextLevel} // ${weapon.title.toUpperCase()} // GRENADES ${combat.grenades}`, 20, 76);
-    ctx.fillStyle = '#ff7b2f';
-    ctx.fillText(`AUGMENTS ${Object.values(combat.roguelikeRun.skills).reduce((sum, level) => sum + level, 0)} // REROLL ${combat.roguelikeRun.rerollsRemaining} // MAP ${Math.round(combat.playerMapX)},${Math.round(combat.playerMapY)}`, 20, 100);
-    const xpFrame = productionImage('ui', 'xp-bar-frame');
-    const xpRatio = Math.max(0, Math.min(1, combat.roguelikeRun.xp / Math.max(1, combat.roguelikeRun.xpToNextLevel)));
-    if (imageReady(xpFrame)) ctx.drawImage(xpFrame, 20, 108, 320, 36);
-    ctx.fillStyle = 'rgba(69,255,138,.82)';
-    ctx.fillRect(39, 121, Math.round(282 * xpRatio), 6);
+    const run = combat.roguelikeRun;
+    const augments = Object.values(run.skills).reduce((sum, level) => sum + level, 0);
+    // Rounded translucent backdrop panel for contrast over the parallax bg.
+    const panelX = 14, panelY = 12, panelW = 360, panelH = 132, r = 12;
+    ctx.save();
+    ctx.fillStyle = 'rgba(6,12,28,0.62)';
+    ctx.strokeStyle = 'rgba(25,247,255,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(panelX + r, panelY);
+    ctx.arcTo(panelX + panelW, panelY, panelX + panelW, panelY + panelH, r);
+    ctx.arcTo(panelX + panelW, panelY + panelH, panelX, panelY + panelH, r);
+    ctx.arcTo(panelX, panelY + panelH, panelX, panelY, r);
+    ctx.arcTo(panelX, panelY, panelX + panelW, panelY, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
+    const col1 = 30;
+    const col2 = 210;
+    // Row 1: survive timer + difficulty
+    hudStat(ctx, col1, 34, 'SURVIVE', `${formatSeconds(combat.elapsedGameSeconds)} / 20:00`, '#19f7ff');
+    hudStat(ctx, col2, 34, 'TIER', director.difficultyLabel.toUpperCase(), '#19f7ff');
+    // Row 2: HP + SCORE
+    hudStat(ctx, col1, 60, 'HP', `${Math.max(0, Math.round(combat.health))}`, '#ff5d6c');
+    hudStat(ctx, col2, 60, 'SCORE', combat.score.toLocaleString(), '#ffe84d');
+    // Row 3: KILLS + LV
+    hudStat(ctx, col1, 86, 'KILLS', `${combat.kills}`, '#ffe84d');
+    hudStat(ctx, col2, 86, 'LV', `${run.level}`, '#45ff8a');
+    // Row 4: weapon + augments/reroll/grenades
+    hudStat(ctx, col1, 112, 'WPN', weapon.title.toUpperCase(), '#45ff8a');
+    hudStat(ctx, col2, 112, 'AUG', `${augments}  ⟳${run.rerollsRemaining}  ✦${combat.grenades}`, '#ff7b2f');
+
+    // XP bar with label
+    const xpRatio = Math.max(0, Math.min(1, run.xp / Math.max(1, run.xpToNextLevel)));
+    const barX = 30, barY = 128, barW = 330, barH = 8;
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(barX, barY, barW, barH);
+    ctx.fillStyle = 'rgba(69,255,138,0.9)';
+    ctx.fillRect(barX, barY, Math.round(barW * xpRatio), barH);
+    ctx.strokeStyle = 'rgba(69,255,138,0.55)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, barW, barH);
+    ctx.restore();
     return;
   }
   ctx.fillStyle = '#19f7ff';
