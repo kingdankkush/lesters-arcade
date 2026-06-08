@@ -2271,26 +2271,63 @@ function renderOfficialLeaderboards() {
   });
 
   const board = el('article', { className: 'official-info-card leaderboard-board-card' });
-  appendText(board, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey}`, 'cabinet-status-label');
+  const header = el('div', { className: 'leaderboard-header' });
+  appendText(header, 'h3', '🏆 GLOBAL LEADERBOARD', 'leaderboard-title');
+  appendText(header, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey}`, 'cabinet-status-label');
+  board.append(header);
 
   if (active.topEntries.length === 0) {
-    appendText(board, 'small', 'No ranked scores in this period yet. Play a Ranked run and submit your official score at game over.');
+    appendText(board, 'small', 'No ranked scores in this period yet. Play a Ranked run and submit your official score at game over to claim the top spot.');
   } else {
-    for (const entry of active.topEntries) {
-      const row = el('div', { className: `leaderboard-entry${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
-      const entryWallet = entry.wallet ?? entry.address ?? null;
-      row.append(renderAvatarChip(entryWallet, entry.displayName, 'leaderboard-row-avatar'));
-      appendText(row, 'strong', `#${entry.rank} ${entry.score.toLocaleString()}`);
-      const settled = entry.settlementTxHash ? ' ✓ settled' : '';
-      appendText(row, 'span', `${entry.displayName}${settled}`);
-      board.append(row);
+    // --- Podium for the top 3 (medals + avatars + glow) ---
+    const podiumEntries = active.topEntries.slice(0, 3);
+    if (podiumEntries.length >= 1) {
+      const podium = el('div', { className: 'leaderboard-podium' });
+      // Visual order: 2nd, 1st, 3rd so 1st sits center/tallest.
+      const order = [podiumEntries[1], podiumEntries[0], podiumEntries[2]].filter(Boolean);
+      const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
+      for (const entry of order) {
+        const wallet = entry.wallet ?? entry.address ?? null;
+        const col = el('div', { className: `podium-slot podium-rank-${entry.rank}${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
+        appendText(col, 'span', medals[entry.rank] ?? `#${entry.rank}`, 'podium-medal');
+        col.append(renderAvatarChip(wallet, entry.displayName, 'podium-avatar'));
+        appendText(col, 'strong', entry.displayName, 'podium-name');
+        appendText(col, 'span', entry.score.toLocaleString(), 'podium-score');
+        const stand = el('div', { className: 'podium-stand' });
+        appendText(stand, 'span', `#${entry.rank}`, 'podium-stand-rank');
+        col.append(stand);
+        podium.append(col);
+      }
+      board.append(podium);
+    }
+
+    // --- Remaining ranked rows (4th onward) ---
+    const rest = active.topEntries.slice(3);
+    if (rest.length) {
+      const list = el('div', { className: 'leaderboard-list' });
+      for (const entry of rest) {
+        const wallet = entry.wallet ?? entry.address ?? null;
+        const row = el('div', { className: `leaderboard-entry${entry.isCurrentPlayer ? ' is-current-player' : ''}` });
+        appendText(row, 'span', `#${entry.rank}`, 'leaderboard-rank');
+        row.append(renderAvatarChip(wallet, entry.displayName, 'leaderboard-row-avatar'));
+        appendText(row, 'span', entry.displayName, 'leaderboard-name');
+        if (entry.settlementTxHash) appendText(row, 'span', '✓', 'leaderboard-settled');
+        appendText(row, 'strong', entry.score.toLocaleString(), 'leaderboard-score');
+        list.append(row);
+      }
+      board.append(list);
     }
   }
 
+  // --- Sticky "your placement" card ---
   if (connectedWallet && active.playerEntry) {
-    appendText(board, 'small', `Your placement: #${active.playerRank} · ${active.playerEntry.score.toLocaleString()} pts`);
+    const you = el('div', { className: 'leaderboard-you-card' });
+    you.append(renderAvatarChip(connectedWallet, active.playerEntry.displayName, 'leaderboard-row-avatar'));
+    appendText(you, 'span', `YOUR RANK #${active.playerRank}`, 'leaderboard-you-rank');
+    appendText(you, 'strong', `${active.playerEntry.score.toLocaleString()} pts`, 'leaderboard-you-score');
+    board.append(you);
   } else if (connectedWallet) {
-    appendText(board, 'small', 'You have no ranked score in this period yet.');
+    appendText(board, 'small', 'You have no ranked score in this period yet. Play Ranked and submit at game over.');
   }
   dom.officialCabinetGrid.append(board);
 }
