@@ -3106,7 +3106,7 @@ export function ensureProfile(state, wallet) {
   return connectPlayerAccount(state, wallet).profile;
 }
 
-export function startPlaySession({ wallet, gameId, mode = 'free' }) {
+export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken = 'USDC' }) {
   const normalizedWallet = normalizeWallet(wallet);
   const game = getGame(gameId);
 
@@ -3132,6 +3132,7 @@ export function startPlaySession({ wallet, gameId, mode = 'free' }) {
     childDappRole: game.systemRole,
     mode,
     isPaid,
+    paymentToken: isPaid ? paymentToken : null,
     leaderboardEligible: isPaid,
     lives: isPaid ? game.livesPaid : game.livesFree,
     entryFeeMicroUsdc: isPaid ? game.entryFeeMicroUsdc : 0,
