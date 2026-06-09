@@ -2074,7 +2074,7 @@ button.menu-card.menu-option.interactive:active {
   text-align: left;
   text-transform: none;
   letter-spacing: normal;
-  min-height: 132px;
+  min-height: 148px;
   padding: 12px 13px;
   background-image:
     linear-gradient(160deg, rgba(5, 10, 24, 0.62), rgba(25, 247, 255, 0.06)),
@@ -2098,8 +2098,11 @@ button.menu-card.menu-option.interactive:active {
 .upgrade-card-titlewrap { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1 1 auto; }
 .upgrade-card-cat { font-size: 0.56rem; font-weight: 800; letter-spacing: 0.14em; color: #7f93b8; }
 .upgrade-card-title {
-  font-size: 0.92rem; font-weight: 800; color: #f4f7ff; line-height: 1.1;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 0.86rem; font-weight: 800; color: #f4f7ff; line-height: 1.12;
+  /* Wrap to two lines instead of ellipsis-truncating longer ability names
+     (e.g. "Self Custody Regen", "Cold Wallet Armor") in the narrow 145px card. */
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; overflow-wrap: anywhere;
 }
 .upgrade-card-gain {
   flex: 0 0 auto; align-self: flex-start; font-size: 0.74rem; font-weight: 900; color: #0a0e1a;
@@ -2332,6 +2335,41 @@ body.suggest-landscape.ingame::after {
   box-shadow: 0 6px 18px rgba(0,0,0,0.45);
 }
 .mode-card.ranked-card .mode-card-banner { border-color: rgba(255,210,90,0.3); }
+
+/* ---- Mode-card containment fix (titles/descriptions were crowding the
+   frame on the left + bottom because the shared card rule bottom-justifies
+   content with tight effective padding inside the baked frame art). Lay the
+   card out top-down with generous, balanced inner padding so the banner,
+   title, and description all sit comfortably inside the frame. ---- */
+.mode-card {
+  justify-content: flex-start;      /* was flex-end — stop pinning text to the bottom edge */
+  align-items: stretch;
+  gap: 8px;
+  /* Extra L/R/bottom breathing room over the frame art's inset; the top
+     keeps a little less because the banner already provides a visual cap. */
+  padding: 18px 22px 22px;
+  min-height: 0;                    /* let the card size to its content */
+}
+.mode-card .arcade-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  margin: 2px 0 -2px;
+}
+.mode-card strong {
+  font-size: 1.32rem;
+  line-height: 1.15;
+  margin: 2px 0 0;
+}
+.mode-card span {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  margin: 0;
+  /* keep the last line clear of the bottom frame edge */
+  padding-bottom: 2px;
+}
+.mode-card-banner {
+  margin: 0 0 6px;                  /* drop the negative top margin that pulled art into the frame */
+}
 
 /* Default profile avatar (Litecoin Chad PFP) */
 .avatar-chip-img { object-fit: cover; border-radius: 50%; }
