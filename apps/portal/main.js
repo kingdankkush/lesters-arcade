@@ -1341,7 +1341,7 @@ function renderCombatSandboxStatus() {
     activeMode: currentSession?.mode ?? 'practice',
   });
   dom.combatRunStatus.textContent = model.heading;
-  dom.combatStatus.textContent = `${model.details} Controls: WASD/arrows move, Ctrl/S/Down crouch, Space jump, Left Click shoot, E/Right Click melee, F throwable, R reload.`;
+  dom.combatStatus.textContent = `${model.details} Controls: WASD/arrows move, mouse aims (gun auto-fires), Left Click melee, Right Click throw, F grenade, R reload, Esc pause.`;
   dom.combatRunStatus.dataset.state = model.state;
 }
 
@@ -1551,7 +1551,7 @@ function combatHudStatus() {
   if (combat.levelUpPaused) return `LEVEL ${combat.roguelikeRun?.level ?? 1} UP // PICK ONE AUGMENT // REROLLS ${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
   if (combat.roguelikeRun) {
     const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
-    return `ISO ROGUELIKE // ${director.difficultyLabel.toUpperCase()} // ${combat.biomeLayout?.startBiome ? `BIOME ${combat.biomeLayout.startBiome.toUpperCase()}` : 'SURVIVE 20:00'}`;
+    return `LEVEL 1: THE CRYPTO WASTELAND // ${director.difficultyLabel.toUpperCase()} // ${combat.biomeLayout?.startBiome ? `BIOME ${combat.biomeLayout.startBiome.toUpperCase()}` : 'SURVIVE 20:00'}`;
   }
   if (combat.paused) return 'PAUSED // OPTIONS OPEN';
   if (combat.scrollLockReason) return combat.scrollLockReason;
@@ -1614,11 +1614,11 @@ function renderRoguelikeStatBar() {
     : `${Math.max(0, combat.clip ?? 0)}/${combat.clipSize ?? 0}`;
   const stats = [
     { id: 'survive', label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} / 20:00`, tone: 'cyan' },
-    { id: 'tier', label: 'TIER', value: director.difficultyLabel.toUpperCase(), tone: 'cyan' },
+    { id: 'level', label: 'LEVEL', value: `1 · ${director.difficultyLabel.toUpperCase()}`, tone: 'cyan' },
     { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}`, tone: 'red' },
-    { id: 'score', label: 'SCORE', value: combat.score.toLocaleString(), tone: 'gold' },
+    { id: 'score', label: 'SCORE', value: Math.round(combat.score).toLocaleString(), tone: 'gold' },
     { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
-    { id: 'level', label: 'LEVEL', value: `${run.level}`, tone: 'green' },
+    { id: 'rank', label: 'RANK', value: `${run.level}`, tone: 'green' },
     { id: 'wpn', label: 'WPN', value: weapon.title.toUpperCase(), tone: 'green' },
     { id: 'ammo', label: 'AMMO', value: ammoValue, tone: combat.reloading ? 'orange' : 'green' },
     { id: 'thrown', label: 'THROW', value: `💣${combat.grenades} · 🪓${combat.axes ?? 0}`, tone: 'orange' },
@@ -2162,7 +2162,7 @@ function completeStage() {
   if (isFinalBossStage()) {
     combat.active = false;
     combat.gameOver = true;
-    combat.gameOverReason = 'Level 1 cleared — boss defeated';
+    combat.gameOverReason = 'Level 1: The Crypto Wasteland cleared — boss defeated';
     combat.scrollLockReason = 'LEVEL CLEAR';
     spawnText('LEVEL CLEAR', 318, 120, '#45ff8a');
     playSfxCue('game-over', 0.08);
@@ -2747,7 +2747,7 @@ function renderOfficialModeSelect() {
 
 function renderOfficialGameplay() {
   const modeLabel = officialSelectedMode === 'ranked' ? 'Ranked Testnet' : 'Free Mode';
-  dom.officialGameModeTitle.textContent = `Level 1 // ${modeLabel}`;
+  dom.officialGameModeTitle.textContent = `Level 1: The Crypto Wasteland // ${modeLabel}`;
   syncCombatOverlay();
   if (dom.officialCombatMount && !dom.officialCombatMount.contains(dom.combatCanvas)) {
     dom.officialCombatMount.append(dom.combatCanvas);
@@ -3587,6 +3587,7 @@ async function startCombat() {
   combat.levelUpChoices = [];
   combat.levelUpPaused = false;
   combat.roguelikeRun = createRoguelikeRunState({ seed: Date.now(), mode: currentSession?.mode ?? 'free', characterId: combat.characterId });
+  preloadHeroRoster(combat.characterId); // decode hurt/death/melee frames up front (no first-hit art pop)
   combat.roguelikeSpawnTimer = 0;
   combat.props = [];
   combat.hazards = [];
@@ -3943,7 +3944,7 @@ function updateCombatStep(stepMs) {
     rareWeaponId: combat.weaponId === 'oracle-slayer' ? combat.weaponId : null,
     difficultyTier: difficulty.tier,
   });
-  combat.score = scoreModel.total;
+  combat.score = Math.round(scoreModel.total);
   if (combat.frame % 30 === 0) {
     renderCombatSandboxStatus();
     syncCombatOverlay();
@@ -5014,6 +5015,7 @@ function updateRoguelikeCombatStep(dt, difficulty) {
     rareWeaponId: combat.weaponId === 'oracle-slayer' ? combat.weaponId : null,
     difficultyTier: difficulty.tier,
   }).total + xpScore;
+  combat.score = Math.round(combat.score); // whole-number score only (no decimals)
   combat.longestSurvivalThisRun = Math.max(combat.longestSurvivalThisRun, combat.elapsedGameSeconds);
   if (combat.elapsedGameSeconds >= LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60 && !combat.gameOver) {
     spawnText('SURVIVAL WALL', ISO_CENTER_X - 54, ISO_CENTER_Y - 92, '#ff476f');
@@ -5949,10 +5951,21 @@ function drawProps(ctx) {
 
 function selectHeroFrame() {
   // Top priority during a roguelike run: animated PixelLab roster frame
-  // (idle/run/shoot/melee/hurt/death motion). Falls through to canonical art
-  // when the roster has no animation for this character/state.
+  // (idle/run/shoot/melee/hurt/death motion).
   const animFrame = lesterAnimatedFrame();
   if (imageReady(animFrame)) return animFrame;
+  // During a roguelike run we NEVER fall through to the old canonical/production
+  // Lester art (that's what surfaced the wrong design when taking damage before a
+  // state's frames had decoded). Instead hold an already-decoded frame from the
+  // SAME locked roster (idle), so the hero always stays the one chosen design.
+  if (combat.roguelikeRun) {
+    const held = lesterAnimatedFrameForState(['idle', 'walk', 'run']);
+    if (imageReady(held)) return held;
+    // Last resort within the roster: any decoded frame of any of its animations.
+    const anyRosterFrame = firstReadyRosterFrame(heroRosterKey(combat.characterId));
+    if (imageReady(anyRosterFrame)) return anyRosterFrame;
+    return null; // draw nothing this frame rather than the wrong character
+  }
   // Prefer canonical hand-made hero art (Lester/Lilly) via the durable pipeline.
   const heroActorId = combat.characterId === 'lilly' ? 'lilly' : 'lester';
   if (HMH_ACTOR_REGISTRY.has(heroActorId)) {
@@ -6270,12 +6283,48 @@ function heroRosterKey(characterId) {
 
 function lesterAnimatedFrame() {
   if (!combat.roguelikeRun) return null;
+  return lesterAnimatedFrameForState(heroAnimState());
+}
+
+// Resolve a roster frame for an explicit list of desired animation states from
+// the hero's LOCKED roster (used both for the live state and as the safe hold
+// frame so we never fall through to the old Lester art mid-run).
+function lesterAnimatedFrameForState(desiredStates) {
+  if (!combat.roguelikeRun) return null;
   const key = heroRosterKey(combat.characterId);
   const roster = HMH_ANIMATED_ROSTER[key];
   const death = combat.gameOver;
-  // Hero faces the aim direction (mouse / movement). aimMapX/Y is the unit aim.
   const facing = facingFromVector(combat.aimMapX ?? 0, combat.aimMapY ?? 1);
-  return animatedRosterFrame(roster, heroAnimState(), { fps: 14, loop: !death, facing });
+  return animatedRosterFrame(roster, desiredStates, { fps: 14, loop: !death, facing });
+}
+
+// First already-decoded frame from ANY animation of a roster (south/first dir).
+// Used as the absolute last-resort hold so the hero never blanks to old art.
+function firstReadyRosterFrame(key) {
+  const roster = HMH_ANIMATED_ROSTER[key];
+  const anims = roster?.animations ?? {};
+  for (const dirs of Object.values(anims)) {
+    const frames = dirs.south ?? dirs[Object.keys(dirs)[0]] ?? [];
+    for (const src of frames) {
+      const img = rosterFrame(src);
+      if (imageReady(img)) return img;
+    }
+  }
+  return null;
+}
+
+// Preload every frame of the hero's locked roster at run start so hurt/death/
+// melee/throw are decoded BEFORE they're needed (no first-hit pop to old art,
+// no pop-in). Cheap: just primes the rosterFrame cache + browser decode.
+function preloadHeroRoster(characterId) {
+  const key = heroRosterKey(characterId);
+  const roster = HMH_ANIMATED_ROSTER[key];
+  const anims = roster?.animations ?? {};
+  for (const dirs of Object.values(anims)) {
+    for (const frames of Object.values(dirs)) {
+      for (const src of frames) rosterFrame(src);
+    }
+  }
 }
 
 // --- Roguelike biome-themed enemy sprites (hmh-enemies-wave) -------------------
@@ -6769,6 +6818,15 @@ dom.combatCanvas.addEventListener('pointermove', (event) => {
 dom.combatCanvas.addEventListener('mousedown', (event) => {
   if (combat.roguelikeRun) updateAimFromPointer(event);
   if (combat.paused || combat.gameOver) return;
+  if (combat.roguelikeRun) {
+    // Roguelike: the gun AUTO-FIRES toward the mouse, so clicks must NOT also
+    // shoot (that double-fired). Left click = melee, right click = throw.
+    event.preventDefault();
+    if (event.button === 0) melee();
+    else if (event.button === 2) grenade();
+    return;
+  }
+  // Legacy sandbox (non-roguelike) keeps click-to-shoot / right-click melee.
   if (event.button === 0) shoot();
   if (event.button === 2) {
     event.preventDefault();

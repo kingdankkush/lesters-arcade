@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#05070f" />
     <title>Lester's Arcade — LitVM Web3 Arcade Prototype</title>
-    <link rel="stylesheet" href="./styles.css?v=hmh-visual-polish-v13" />
-    <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-visual-polish-v13" />
+    <link rel="stylesheet" href="./styles.css?v=hmh-visual-polish-v14" />
+    <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-visual-polish-v14" />
   </head>
   <body>
     <div class="crt-overlay" aria-hidden="true"></div>
@@ -167,17 +167,18 @@
           <div class="level-intro-card">
             <button id="officialLevelBackButton" class="back-nav-button" type="button">← Back to Mode Select</button>
             <p class="eyebrow">Level 1 Boot Sequence</p>
-            <h2>Level 1 // Underchain District</h2>
-            <p>An isometric survival run. Your hero <strong>auto-moves toward your mouse</strong> (tap/hold on mobile) and <strong>auto-fires</strong> at the nearest enemy on the weapon's fire rate. Survive escalating waves, <strong>earn XP from kills and power-ups</strong>, and pick upgrades on level-up. Reach the 20:00 extraction to win.</p>
+            <h2>Level 1: The Crypto Wasteland</h2>
+            <p>An isometric survival run. <strong>Desktop:</strong> move with WASD / arrow keys; your gun <strong>auto-fires toward your mouse</strong>. <strong>Mobile:</strong> drag to move and you fire in your heading direction. Survive escalating waves, <strong>earn XP from kills and power-ups</strong>, and pick upgrades on level-up. Reach the 20:00 extraction to win.</p>
             <div class="level-control-strip">
-              <span>🖱 Move toward pointer</span>
-              <span>🎯 Auto-fire at nearest</span>
+              <span>⌨ WASD / arrows: move (desktop)</span>
+              <span>🖱 Mouse: aim — gun auto-fires</span>
+              <span>🖱 Left click: melee · Right click: throw</span>
+              <span>📱 Mobile: drag to move + fire heading</span>
               <span>💣 Power-up button = grenade / 🪓 axe</span>
-              <span>⬆ Level-up: pick 1 of 2 (+reroll)</span>
-              <span>⎋ Esc to pause</span>
+              <span>⬆ Level-up: pick 1 of 2 (+reroll) · ⎋ Esc pause</span>
             </div>
-            <p class="tiny-note"><strong>Desktop:</strong> WASD / arrow keys to move — your gun auto-fires toward the mouse. <strong>Mobile:</strong> drag to move; you fire in the direction you're heading. Power-ups are your manual call — choose upgrades wisely.</p>
-            <button id="officialBeginLevelButton" class="primary-button big-action" type="button">Begin Level 1</button>
+            <p class="tiny-note">Power-ups are your manual call — choose upgrades wisely to build your run.</p>
+            <button id="officialBeginLevelButton" class="primary-button big-action" type="button">Begin Level 1: The Crypto Wasteland</button>
           </div>
         </section>
 
@@ -185,7 +186,7 @@
           <div class="gameplay-topbar">
             <div>
               <p class="eyebrow">Hard Money Heroes</p>
-              <h2 id="officialGameModeTitle">Level 1 // Free Mode</h2>
+              <h2 id="officialGameModeTitle">Level 1: The Crypto Wasteland // Free Mode</h2>
             </div>
             <p id="officialGameStateCopy" class="tiny-note">Local sandbox state is separate from official paid-run sync.</p>
           </div>
@@ -486,6 +487,6 @@
       </div>
     </main>
 
-    <script type="module" src="./main.js?v=hmh-visual-polish-v13"></script>
+    <script type="module" src="./main.js?v=hmh-visual-polish-v14"></script>
   </body>
 </html>

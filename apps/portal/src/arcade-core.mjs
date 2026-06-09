@@ -1495,9 +1495,13 @@ export const LESTER_BLASTER_HD_SPRITE_ATLAS = Object.freeze({
 });
 
 export const LESTER_BLASTER_CONTROL_SCHEME = Object.freeze({
-  keyboard: Object.freeze({ moveLeft: 'A / ArrowLeft', moveRight: 'D / ArrowRight', crouch: 'Control / S / ArrowDown', jump: 'Space', shoot: 'Left Click', melee: 'E / Right Click', grenade: 'F', reload: 'R', pause: 'Enter', swapWeapon: 'Q' }),
-  gamepad: Object.freeze({ move: 'Left Stick / D-Pad', jump: 'A', shoot: 'X / RT', melee: 'B', grenade: 'Y / RB', pause: 'Start', swapWeapon: 'LB' }),
-  touch: Object.freeze({ move: 'left thumb virtual stick', jump: 'right thumb jump', shoot: 'right thumb fire', melee: 'right thumb melee', grenade: 'right thumb grenade' }),
+  // Isometric roguelike scheme. Desktop: WASD/arrows move; the gun AUTO-FIRES
+  // toward the mouse cursor (no click-to-shoot — that double-fired). Left click
+  // = melee, right click = throw (grenade/axe). Mobile: drag to move + auto-fire
+  // in the heading direction; on-screen buttons for melee/throw/power-up.
+  keyboard: Object.freeze({ move: 'WASD / Arrow Keys', aim: 'Mouse (gun auto-fires)', melee: 'Left Click', throw: 'Right Click', grenade: 'F', reload: 'R (auto on empty)', pause: 'Esc', powerUp: 'on-screen / hotkey' }),
+  gamepad: Object.freeze({ move: 'Left Stick / D-Pad', aim: 'Right Stick (auto-fire)', melee: 'X', throw: 'B / RB', grenade: 'Y', pause: 'Start' }),
+  touch: Object.freeze({ move: 'drag to move (auto-fire heading dir)', melee: 'melee button', throw: 'throw button', grenade: 'grenade button' }),
   accessibility: Object.freeze(['rebindable controls', 'screen shake toggle', 'flash intensity toggle', 'music/sfx sliders', 'high-contrast projectile option']),
 });
 
@@ -2158,14 +2162,15 @@ export function buildLesterBlasterDesignCodex() {
 }
 
 export function buildLesterBlasterControlDisplayModel() {
+  const kb = LESTER_BLASTER_CONTROL_SCHEME.keyboard;
   return [
-    { label: 'Move', key: `${LESTER_BLASTER_CONTROL_SCHEME.keyboard.moveLeft} + ${LESTER_BLASTER_CONTROL_SCHEME.keyboard.moveRight}`, hint: 'Dodge left or advance right through staged combat rooms.' },
-    { label: 'Crouch', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.crouch, hint: 'Duck behind cover and lower your hitbox under slower enemy fire.' },
-    { label: 'Jump', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.jump, hint: 'Jump to platforms, clear holes, and time tactical vertical lanes.' },
-    { label: 'Shoot', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.shoot, hint: 'Fire The Settler or the current pickup weapon.' },
-    { label: 'Blade', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.melee, hint: 'Close-range Litecoin Blade slash with sparks; gore only if enabled pre-run.' },
-    { label: 'Throwable', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.grenade, hint: 'Throw Crypto Bombs or Hard Fork precision axes.' },
-    { label: 'Reload', key: LESTER_BLASTER_CONTROL_SCHEME.keyboard.reload ?? 'R', hint: 'Reload concept for production weapons with finite magazines.' },
+    { label: 'Move', key: kb.move, hint: 'WASD / arrow keys move your hero across the isometric battlefield (drag on mobile).' },
+    { label: 'Aim & Fire', key: kb.aim, hint: 'Your gun auto-fires toward the mouse cursor on its fire-rate — no clicking needed.' },
+    { label: 'Melee', key: kb.melee, hint: 'Left click for a close-range Litecoin Blade slash.' },
+    { label: 'Throw', key: kb.throw, hint: 'Right click to throw a grenade / Hard Fork axe at the cursor.' },
+    { label: 'Grenade', key: kb.grenade, hint: 'F throws a Crypto Bomb (also a power-up pickup as ammo).' },
+    { label: 'Reload', key: kb.reload, hint: 'R reloads; weapons also auto-reload when the clip empties.' },
+    { label: 'Pause', key: kb.pause, hint: 'Esc opens the pause / options overlay.' },
   ].map((control) => Object.freeze(control));
 }
 

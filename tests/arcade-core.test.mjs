@@ -647,9 +647,9 @@ test('Lester Blaster design codex covers characters, art, controls, weapons, env
   assert.equal(LESTER_BLASTER_ENEMY_CATALOG.length >= 8, true);
   assert.equal(LESTER_BLASTER_ENEMY_CATALOG.every((enemy) => enemy.aiArchetype && enemy.animationStates.length >= 3), true);
   assert.equal(LESTER_BLASTER_ANIMATION_PLAN.playerStates.includes('double-jump'), true);
-  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.jump, 'Space');
-  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.shoot, 'Left Click');
-  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.melee, 'E / Right Click');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.move, 'WASD / Arrow Keys');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.melee, 'Left Click');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.throw, 'Right Click');
   assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.grenade, 'F');
   assert.equal(LESTER_BLASTER_MENU_OPTIONS.main.length >= 6, true);
   assert.equal(LESTER_BLASTER_SOUND_DESIGN.musicTracks.length >= 4, true);
@@ -665,7 +665,7 @@ test('combat run state applies character stats, paid/free health rules, controls
   assert.equal(freeRun.mode, 'free');
   assert.equal(freeRun.lives, Infinity);
   assert.equal(freeRun.health.current, freeRun.health.max);
-  assert.equal(freeRun.controls.keyboard.jump, 'Space');
+  assert.equal(freeRun.controls.keyboard.move, 'WASD / Arrow Keys');
   assert.equal(paidRun.mode, 'paid');
   assert.equal(paidRun.lives, 3);
   assert.equal(paidRun.character.id, 'lit-valkyrie');
@@ -1066,7 +1066,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./main.js?v=hmh-visual-polish-v13'), true);
+  assert.equal(indexSource.includes('./main.js?v=hmh-visual-polish-v14'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -1323,11 +1323,11 @@ test('control display model does not leak undefined labels into the visible cont
   const move = controls.find((control) => control.label === 'Move');
 
   assert.equal(controls.length >= 6, true);
-  assert.equal(move.key, 'A / ArrowLeft + D / ArrowRight');
-  assert.equal(controls.some((control) => control.label === 'Crouch' && control.key.includes('Control')), true);
-  assert.equal(controls.some((control) => control.label === 'Shoot' && control.key === 'Left Click'), true);
-  assert.equal(controls.some((control) => control.label === 'Blade' && control.key.includes('Right Click')), true);
-  assert.equal(controls.some((control) => control.label === 'Throwable' && control.key === 'F'), true);
+  assert.equal(move.key, 'WASD / Arrow Keys');
+  assert.equal(controls.some((control) => control.label === 'Aim & Fire' && control.key.toLowerCase().includes('mouse')), true);
+  assert.equal(controls.some((control) => control.label === 'Melee' && control.key === 'Left Click'), true);
+  assert.equal(controls.some((control) => control.label === 'Throw' && control.key === 'Right Click'), true);
+  assert.equal(controls.some((control) => control.label === 'Grenade' && control.key === 'F'), true);
   assert.equal(controls.every((control) => control.key && !control.key.includes('undefined')), true);
   assert.equal(controls.every((control) => control.label && !control.label.includes('undefined')), true);
 });
