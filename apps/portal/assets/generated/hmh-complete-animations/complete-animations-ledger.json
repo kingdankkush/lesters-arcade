@@ -1982,7 +1982,7 @@
       "w": 64,
       "h": 96,
       "id": "1ceb9b33-e273-4638-9041-554671566e78",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 1ceb9b33-e273-4638-9041-554671566e78\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1ceb9b33-e273-4638-9041-554671566e78\")",
       "animated": true,
       "frame_count": 4,
@@ -1991,7 +1991,9 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "east"
-      }
+      },
+      "animation_id": "102079fc-dcb9-4c21-b91c-edc188ffd633",
+      "raw_animation_response": "object: 1ceb9b33-e273-4638-9041-554671566e78\ngroup: 102079fc-dcb9-4c21-b91c-edc188ffd633\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"1ceb9b33-e273-4638-9041-554671566e78\")"
     },
     "evil-banker/attack-tell-north-east": {
       "set": "enemies",
@@ -1999,7 +2001,7 @@
       "w": 64,
       "h": 96,
       "id": "1789a96e-edf4-4567-95c1-798704f9be83",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 1789a96e-edf4-4567-95c1-798704f9be83\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1789a96e-edf4-4567-95c1-798704f9be83\")",
       "animated": true,
       "frame_count": 4,
@@ -2008,7 +2010,9 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "north-east"
-      }
+      },
+      "animation_id": "90fa2b6c-f0e1-4072-9168-2c749224230b",
+      "raw_animation_response": "object: 1789a96e-edf4-4567-95c1-798704f9be83\ngroup: 90fa2b6c-f0e1-4072-9168-2c749224230b\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"1789a96e-edf4-4567-95c1-798704f9be83\")"
     },
     "evil-banker/attack-tell-north": {
       "set": "enemies",
@@ -2016,7 +2020,7 @@
       "w": 64,
       "h": 96,
       "id": "c51a0748-cd24-42ce-b214-dd89e27bfa9d",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: c51a0748-cd24-42ce-b214-dd89e27bfa9d\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"c51a0748-cd24-42ce-b214-dd89e27bfa9d\")",
       "animated": true,
       "frame_count": 4,
@@ -2025,7 +2029,9 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "north"
-      }
+      },
+      "animation_id": "d7767a9f-cf37-4c8f-a1bf-5e2135637cd0",
+      "raw_animation_response": "object: c51a0748-cd24-42ce-b214-dd89e27bfa9d\ngroup: d7767a9f-cf37-4c8f-a1bf-5e2135637cd0\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"c51a0748-cd24-42ce-b214-dd89e27bfa9d\")"
     },
     "evil-banker/attack-tell-north-west": {
       "set": "enemies",
@@ -2033,7 +2039,7 @@
       "w": 64,
       "h": 96,
       "id": "96c45d99-3c7c-466c-b3a0-d27621b33798",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 96c45d99-3c7c-466c-b3a0-d27621b33798\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"96c45d99-3c7c-466c-b3a0-d27621b33798\")",
       "animated": true,
       "frame_count": 4,
@@ -2042,7 +2048,9 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "north-west"
-      }
+      },
+      "animation_id": "5afe35aa-fffb-4f21-b025-0d7b858c2f77",
+      "raw_animation_response": "object: 96c45d99-3c7c-466c-b3a0-d27621b33798\ngroup: 5afe35aa-fffb-4f21-b025-0d7b858c2f77\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"96c45d99-3c7c-466c-b3a0-d27621b33798\")"
     },
     "evil-banker/attack-tell-west": {
       "set": "enemies",
@@ -2050,7 +2058,7 @@
       "w": 64,
       "h": 96,
       "id": "36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c\")",
       "animated": true,
       "frame_count": 4,
@@ -2059,7 +2067,9 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "west"
-      }
+      },
+      "animation_id": "3f6c283d-3f57-4c2d-aa15-4618a04a8ca2",
+      "raw_animation_response": "object: 36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c\ngroup: 3f6c283d-3f57-4c2d-aa15-4618a04a8ca2\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c\")"
     },
     "evil-banker/attack-tell-south-west": {
       "set": "enemies",
@@ -2067,7 +2077,7 @@
       "w": 64,
       "h": 96,
       "id": "73e65f03-2dcd-467c-a63f-a563832bc152",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 73e65f03-2dcd-467c-a63f-a563832bc152\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"73e65f03-2dcd-467c-a63f-a563832bc152\")",
       "animated": true,
       "frame_count": 4,
@@ -2076,7 +2086,9 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "south-west"
-      }
+      },
+      "animation_id": "d1b8bc8c-6b39-4322-9c5d-42fdca3d484b",
+      "raw_animation_response": "object: 73e65f03-2dcd-467c-a63f-a563832bc152\ngroup: d1b8bc8c-6b39-4322-9c5d-42fdca3d484b\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"73e65f03-2dcd-467c-a63f-a563832bc152\")"
     },
     "evil-banker/attack-tell-south": {
       "set": "enemies",
@@ -2084,7 +2096,7 @@
       "w": 64,
       "h": 96,
       "id": "cbdbcedf-6713-4ec3-9760-a569982acd2e",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: cbdbcedf-6713-4ec3-9760-a569982acd2e\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"cbdbcedf-6713-4ec3-9760-a569982acd2e\")",
       "animated": true,
       "frame_count": 4,
@@ -2093,16 +2105,18 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "south"
-      }
+      },
+      "animation_id": "714e60c8-7fed-459d-b19c-60990a77c3a4",
+      "raw_animation_response": "object: cbdbcedf-6713-4ec3-9760-a569982acd2e\ngroup: 714e60c8-7fed-459d-b19c-60990a77c3a4\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"cbdbcedf-6713-4ec3-9760-a569982acd2e\")"
     },
     "evil-banker/attack-tell-south-east": {
       "set": "enemies",
       "slug": "evil-banker-attack-tell-south-east",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "7884ebbd-ca21-4f7f-8b01-51f62aa3aefe",
+      "status": "processing_animate",
+      "raw_create_response": "id: 7884ebbd-ca21-4f7f-8b01-51f62aa3aefe\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"7884ebbd-ca21-4f7f-8b01-51f62aa3aefe\")",
       "animated": true,
       "frame_count": 4,
       "priority": 1,
@@ -2110,7 +2124,9 @@
         "enemy": "evil-banker",
         "state": "attack-tell",
         "direction": "south-east"
-      }
+      },
+      "animation_id": "eede41c7-a8bd-4613-99fd-7964865df604",
+      "raw_animation_response": "object: 7884ebbd-ca21-4f7f-8b01-51f62aa3aefe\ngroup: eede41c7-a8bd-4613-99fd-7964865df604\nmode: v3\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"7884ebbd-ca21-4f7f-8b01-51f62aa3aefe\")"
     },
     "evil-banker/hit-east": {
       "set": "enemies",
@@ -2118,7 +2134,7 @@
       "w": 64,
       "h": 96,
       "id": "a8628d24-b4bb-43ac-a27f-ab0994686c61",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: a8628d24-b4bb-43ac-a27f-ab0994686c61\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a8628d24-b4bb-43ac-a27f-ab0994686c61\")",
       "animated": true,
       "frame_count": 4,
@@ -2127,16 +2143,18 @@
         "enemy": "evil-banker",
         "state": "hit",
         "direction": "east"
-      }
+      },
+      "animation_id": "cd819970-8c19-492b-8f48-3a66f10ecf0e",
+      "raw_animation_response": "object: a8628d24-b4bb-43ac-a27f-ab0994686c61\ngroup: cd819970-8c19-492b-8f48-3a66f10ecf0e\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"a8628d24-b4bb-43ac-a27f-ab0994686c61\")"
     },
     "evil-banker/hit-north-east": {
       "set": "enemies",
       "slug": "evil-banker-hit-north-east",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "2550314a-eb6e-4198-a5d4-31b90d3516d5",
+      "status": "processing_animate",
+      "raw_create_response": "id: 2550314a-eb6e-4198-a5d4-31b90d3516d5\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-right/northeast, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2550314a-eb6e-4198-a5d4-31b90d3516d5\")",
       "animated": true,
       "frame_count": 4,
       "priority": 1,
@@ -2144,16 +2162,18 @@
         "enemy": "evil-banker",
         "state": "hit",
         "direction": "north-east"
-      }
+      },
+      "animation_id": "b2c9e1a8-8a11-448b-9a69-5cca830cef47",
+      "raw_animation_response": "object: 2550314a-eb6e-4198-a5d4-31b90d3516d5\ngroup: b2c9e1a8-8a11-448b-9a69-5cca830cef47\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-right/northeast, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"2550314a-eb6e-4198-a5d4-31b90d3516d5\")"
     },
     "evil-banker/hit-north": {
       "set": "enemies",
       "slug": "evil-banker-hit-north",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "310d7379-82c1-4854-bcc1-4f0423605286",
+      "status": "processing_animate",
+      "raw_create_response": "id: 310d7379-82c1-4854-bcc1-4f0423605286\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up/north, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"310d7379-82c1-4854-bcc1-4f0423605286\")",
       "animated": true,
       "frame_count": 4,
       "priority": 1,
@@ -2161,16 +2181,18 @@
         "enemy": "evil-banker",
         "state": "hit",
         "direction": "north"
-      }
+      },
+      "animation_id": "91b136ea-49da-4eeb-b9e8-40cec0c3e0c0",
+      "raw_animation_response": "object: 310d7379-82c1-4854-bcc1-4f0423605286\ngroup: 91b136ea-49da-4eeb-b9e8-40cec0c3e0c0\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up/north, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"310d7379-82c1-4854-bcc1-4f0423605286\")"
     },
     "evil-banker/hit-north-west": {
       "set": "enemies",
       "slug": "evil-banker-hit-north-west",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "ae172ebd-8187-4ee3-aa0a-8f48fac982a3",
+      "status": "processing_animate",
+      "raw_create_response": "id: ae172ebd-8187-4ee3-aa0a-8f48fac982a3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-left/northwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ae172ebd-8187-4ee3-aa0a-8f48fac982a3\")",
       "animated": true,
       "frame_count": 4,
       "priority": 1,
@@ -2178,16 +2200,18 @@
         "enemy": "evil-banker",
         "state": "hit",
         "direction": "north-west"
-      }
+      },
+      "animation_id": "dce733a7-174b-4534-bae3-7c966b89bf20",
+      "raw_animation_response": "object: ae172ebd-8187-4ee3-aa0a-8f48fac982a3\ngroup: dce733a7-174b-4534-bae3-7c966b89bf20\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-left/northwest, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"ae172ebd-8187-4ee3-aa0a-8f48fac982a3\")"
     },
     "evil-banker/hit-west": {
       "set": "enemies",
       "slug": "evil-banker-hit-west",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "d2f2595a-dd3b-4ff3-97fd-0b7fe7cd49e2",
+      "status": "processing_animate",
+      "raw_create_response": "id: d2f2595a-dd3b-4ff3-97fd-0b7fe7cd49e2\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing left/west, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"d2f2595a-dd3b-4ff3-97fd-0b7fe7cd49e2\")",
       "animated": true,
       "frame_count": 4,
       "priority": 1,
@@ -2195,16 +2219,18 @@
         "enemy": "evil-banker",
         "state": "hit",
         "direction": "west"
-      }
+      },
+      "animation_id": "7c80fb37-9c99-4728-9086-8c39c6371da7",
+      "raw_animation_response": "object: d2f2595a-dd3b-4ff3-97fd-0b7fe7cd49e2\ngroup: 7c80fb37-9c99-4728-9086-8c39c6371da7\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing left/west, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"d2f2595a-dd3b-4ff3-97fd-0b7fe7cd49e2\")"
     },
     "evil-banker/hit-south-west": {
       "set": "enemies",
       "slug": "evil-banker-hit-south-west",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "3d140ed0-baa3-49db-addd-b2c5b67a0f2c",
+      "status": "processing_animate",
+      "raw_create_response": "id: 3d140ed0-baa3-49db-addd-b2c5b67a0f2c\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-left/southwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"3d140ed0-baa3-49db-addd-b2c5b67a0f2c\")",
       "animated": true,
       "frame_count": 4,
       "priority": 1,
@@ -2212,16 +2238,18 @@
         "enemy": "evil-banker",
         "state": "hit",
         "direction": "south-west"
-      }
+      },
+      "animation_id": "46d2486e-0370-4056-b85a-988fa009d467",
+      "raw_animation_response": "object: 3d140ed0-baa3-49db-addd-b2c5b67a0f2c\ngroup: 46d2486e-0370-4056-b85a-988fa009d467\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-left/southwest, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"3d140ed0-baa3-49db-addd-b2c5b67a0f2c\")"
     },
     "evil-banker/hit-south": {
       "set": "enemies",
       "slug": "evil-banker-hit-south",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "63ff68bc-9d27-4bfa-9291-8ee9e5353947",
+      "status": "processing_animate",
+      "raw_create_response": "id: 63ff68bc-9d27-4bfa-9291-8ee9e5353947\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"63ff68bc-9d27-4bfa-9291-8ee9e5353947\")",
       "animated": true,
       "frame_count": 4,
       "priority": 1,
@@ -2229,11 +2257,1087 @@
         "enemy": "evil-banker",
         "state": "hit",
         "direction": "south"
-      }
+      },
+      "animation_id": "7ff5d117-e0a2-4467-8436-8cfc5229a3bd",
+      "raw_animation_response": "object: 63ff68bc-9d27-4bfa-9291-8ee9e5353947\ngroup: 7ff5d117-e0a2-4467-8436-8cfc5229a3bd\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"63ff68bc-9d27-4bfa-9291-8ee9e5353947\")"
     },
     "evil-banker/hit-south-east": {
       "set": "enemies",
       "slug": "evil-banker-hit-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "5a283ffe-4c24-4ad6-a943-9f66f2692730",
+      "status": "processing_animate",
+      "raw_create_response": "id: 5a283ffe-4c24-4ad6-a943-9f66f2692730\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-right/southeast, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5a283ffe-4c24-4ad6-a943-9f66f2692730\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "south-east"
+      },
+      "animation_id": "17d4b490-1ce6-41b3-925b-f7c05292001b",
+      "raw_animation_response": "object: 5a283ffe-4c24-4ad6-a943-9f66f2692730\ngroup: 17d4b490-1ce6-41b3-925b-f7c05292001b\nmode: v3\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-right/southeast, sharp suit, briefcase weapon, corporate predator vibe\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"5a283ffe-4c24-4ad6-a943-9f66f2692730\")"
+    },
+    "evil-banker/death-east": {
+      "set": "enemies",
+      "slug": "evil-banker-death-east",
+      "w": 64,
+      "h": 96,
+      "id": "5b3d20e3-9c44-4408-a5a6-c3b8ba858e91",
+      "status": "processing_animate",
+      "raw_create_response": "id: 5b3d20e3-9c44-4408-a5a6-c3b8ba858e91\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5b3d20e3-9c44-4408-a5a6-c3b8ba858e91\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "east"
+      },
+      "animation_id": "26a38ac9-3dfc-42ec-9610-fe4f2bd22547",
+      "raw_animation_response": "object: 5b3d20e3-9c44-4408-a5a6-c3b8ba858e91\ngroup: 26a38ac9-3dfc-42ec-9610-fe4f2bd22547\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"5b3d20e3-9c44-4408-a5a6-c3b8ba858e91\")"
+    },
+    "evil-banker/death-north-east": {
+      "set": "enemies",
+      "slug": "evil-banker-death-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "705b20f2-c096-4469-a5d2-8508a4a8b83d",
+      "status": "processing_animate",
+      "raw_create_response": "id: 705b20f2-c096-4469-a5d2-8508a4a8b83d\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"705b20f2-c096-4469-a5d2-8508a4a8b83d\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "north-east"
+      },
+      "animation_id": "b4bd8283-edc2-495f-a9af-91b592dc3c8c",
+      "raw_animation_response": "object: 705b20f2-c096-4469-a5d2-8508a4a8b83d\ngroup: b4bd8283-edc2-495f-a9af-91b592dc3c8c\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"705b20f2-c096-4469-a5d2-8508a4a8b83d\")"
+    },
+    "evil-banker/death-north": {
+      "set": "enemies",
+      "slug": "evil-banker-death-north",
+      "w": 64,
+      "h": 96,
+      "id": "d6c58d1c-d2e1-4b3a-8af7-4bf12cb08101",
+      "status": "processing_animate",
+      "raw_create_response": "id: d6c58d1c-d2e1-4b3a-8af7-4bf12cb08101\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up/north, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"d6c58d1c-d2e1-4b3a-8af7-4bf12cb08101\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "north"
+      },
+      "animation_id": "958e66a2-d819-4191-a214-703f34f07c8c",
+      "raw_animation_response": "object: d6c58d1c-d2e1-4b3a-8af7-4bf12cb08101\ngroup: 958e66a2-d819-4191-a214-703f34f07c8c\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up/north, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"d6c58d1c-d2e1-4b3a-8af7-4bf12cb08101\")"
+    },
+    "evil-banker/death-north-west": {
+      "set": "enemies",
+      "slug": "evil-banker-death-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "5e8d86d5-c779-490a-b4e4-316097d25fa2",
+      "status": "processing_animate",
+      "raw_create_response": "id: 5e8d86d5-c779-490a-b4e4-316097d25fa2\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-left/northwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5e8d86d5-c779-490a-b4e4-316097d25fa2\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "north-west"
+      },
+      "animation_id": "c7602365-d90e-4098-ba61-61c4e6f87b2b",
+      "raw_animation_response": "object: 5e8d86d5-c779-490a-b4e4-316097d25fa2\ngroup: c7602365-d90e-4098-ba61-61c4e6f87b2b\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-left/northwest, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"5e8d86d5-c779-490a-b4e4-316097d25fa2\")"
+    },
+    "evil-banker/death-west": {
+      "set": "enemies",
+      "slug": "evil-banker-death-west",
+      "w": 64,
+      "h": 96,
+      "id": "6838cd15-7521-4384-bf3a-a696cff01f81",
+      "status": "processing_animate",
+      "raw_create_response": "id: 6838cd15-7521-4384-bf3a-a696cff01f81\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing left/west, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"6838cd15-7521-4384-bf3a-a696cff01f81\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "west"
+      },
+      "animation_id": "fc45a824-e863-44b6-841e-9454cb72d51a",
+      "raw_animation_response": "object: 6838cd15-7521-4384-bf3a-a696cff01f81\ngroup: fc45a824-e863-44b6-841e-9454cb72d51a\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing left/west, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"6838cd15-7521-4384-bf3a-a696cff01f81\")"
+    },
+    "evil-banker/death-south-west": {
+      "set": "enemies",
+      "slug": "evil-banker-death-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "3ef4af7c-fa28-4479-acfc-647f9c114fcb",
+      "status": "processing_animate",
+      "raw_create_response": "id: 3ef4af7c-fa28-4479-acfc-647f9c114fcb\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-left/southwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"3ef4af7c-fa28-4479-acfc-647f9c114fcb\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "south-west"
+      },
+      "animation_id": "fdbc2e38-50b9-44d9-864d-b2b77bbc7a31",
+      "raw_animation_response": "object: 3ef4af7c-fa28-4479-acfc-647f9c114fcb\ngroup: fdbc2e38-50b9-44d9-864d-b2b77bbc7a31\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-left/southwest, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"3ef4af7c-fa28-4479-acfc-647f9c114fcb\")"
+    },
+    "evil-banker/death-south": {
+      "set": "enemies",
+      "slug": "evil-banker-death-south",
+      "w": 64,
+      "h": 96,
+      "id": "ebcfb327-636b-49b5-aeb7-692b4e51ec26",
+      "status": "processing_animate",
+      "raw_create_response": "id: ebcfb327-636b-49b5-aeb7-692b4e51ec26\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down/south, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ebcfb327-636b-49b5-aeb7-692b4e51ec26\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "south"
+      },
+      "animation_id": "5377cb1c-cba9-4fa7-b675-0bcbd3e25683",
+      "raw_animation_response": "object: ebcfb327-636b-49b5-aeb7-692b4e51ec26\ngroup: 5377cb1c-cba9-4fa7-b675-0bcbd3e25683\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down/south, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"ebcfb327-636b-49b5-aeb7-692b4e51ec26\")"
+    },
+    "evil-banker/death-south-east": {
+      "set": "enemies",
+      "slug": "evil-banker-death-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "60c30131-4349-48b5-9e10-f330ddf83d81",
+      "status": "processing_animate",
+      "raw_create_response": "id: 60c30131-4349-48b5-9e10-f330ddf83d81\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-right/southeast, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"60c30131-4349-48b5-9e10-f330ddf83d81\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "south-east"
+      },
+      "animation_id": "a78d5aea-fa90-4619-883e-04d9f62f2530",
+      "raw_animation_response": "object: 60c30131-4349-48b5-9e10-f330ddf83d81\ngroup: a78d5aea-fa90-4619-883e-04d9f62f2530\nmode: v3\ndescription: isometric Evil Banker isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-right/southeast, sharp suit, briefcase weapon, corporate predator vibe\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"60c30131-4349-48b5-9e10-f330ddf83d81\")"
+    },
+    "warren-spear-rider/attack-tell-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-east",
+      "w": 64,
+      "h": 96,
+      "id": "2ed0560f-8e7c-4ecd-bdaa-3c0227094fe7",
+      "status": "processing_animate",
+      "raw_create_response": "id: 2ed0560f-8e7c-4ecd-bdaa-3c0227094fe7\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2ed0560f-8e7c-4ecd-bdaa-3c0227094fe7\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "east"
+      },
+      "animation_id": "f2cb5940-3944-4d94-b00a-3c974b45ae8b",
+      "raw_animation_response": "object: 2ed0560f-8e7c-4ecd-bdaa-3c0227094fe7\ngroup: f2cb5940-3944-4d94-b00a-3c974b45ae8b\nmode: v3\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"2ed0560f-8e7c-4ecd-bdaa-3c0227094fe7\")"
+    },
+    "warren-spear-rider/attack-tell-north-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "28d938e1-f3ec-4592-ac67-a215f05b155e",
+      "status": "processing_animate",
+      "raw_create_response": "id: 28d938e1-f3ec-4592-ac67-a215f05b155e\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"28d938e1-f3ec-4592-ac67-a215f05b155e\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "north-east"
+      },
+      "animation_id": "1f9acff7-b4c0-4993-b2d7-ea7730afef6b",
+      "raw_animation_response": "object: 28d938e1-f3ec-4592-ac67-a215f05b155e\ngroup: 1f9acff7-b4c0-4993-b2d7-ea7730afef6b\nmode: v3\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"28d938e1-f3ec-4592-ac67-a215f05b155e\")"
+    },
+    "warren-spear-rider/attack-tell-north": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-north",
+      "w": 64,
+      "h": 96,
+      "id": "ef48c5ef-bf2b-4c7e-b956-73b6289e822e",
+      "status": "failed_animate",
+      "raw_create_response": "id: ef48c5ef-bf2b-4c7e-b956-73b6289e822e\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ef48c5ef-bf2b-4c7e-b956-73b6289e822e\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "north"
+      },
+      "animation_id": null,
+      "raw_animation_response": "error: need 1 slots but only 0 available (20/20 active)\n\nhint: wait for current jobs to finish"
+    },
+    "warren-spear-rider/attack-tell-north-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "4e90ee52-9020-4e9a-b0c7-98e656aa5054",
+      "status": "failed_animate",
+      "raw_create_response": "id: 4e90ee52-9020-4e9a-b0c7-98e656aa5054\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4e90ee52-9020-4e9a-b0c7-98e656aa5054\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "north-west"
+      },
+      "animation_id": null,
+      "raw_animation_response": "error: need 1 slots but only 0 available (20/20 active)\n\nhint: wait for current jobs to finish"
+    },
+    "warren-spear-rider/attack-tell-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-west",
+      "w": 64,
+      "h": 96,
+      "id": "24fa39d7-b134-4c0a-afee-3d3d429bdd90",
+      "status": "processing_animate",
+      "raw_create_response": "id: 24fa39d7-b134-4c0a-afee-3d3d429bdd90\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"24fa39d7-b134-4c0a-afee-3d3d429bdd90\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "west"
+      },
+      "animation_id": "2e12df19-8fcc-41b9-ace2-1fbe19de7d6e",
+      "raw_animation_response": "object: 24fa39d7-b134-4c0a-afee-3d3d429bdd90\ngroup: 2e12df19-8fcc-41b9-ace2-1fbe19de7d6e\nmode: v3\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"24fa39d7-b134-4c0a-afee-3d3d429bdd90\")"
+    },
+    "warren-spear-rider/attack-tell-south-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "81003c14-a13b-40b2-a23c-45997ee0383e",
+      "status": "failed_animate",
+      "raw_create_response": "id: 81003c14-a13b-40b2-a23c-45997ee0383e\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"81003c14-a13b-40b2-a23c-45997ee0383e\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "south-west"
+      },
+      "animation_id": null,
+      "raw_animation_response": "error: need 1 slots but only 0 available (20/20 active)\n\nhint: wait for current jobs to finish"
+    },
+    "warren-spear-rider/attack-tell-south": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-south",
+      "w": 64,
+      "h": 96,
+      "id": "205933eb-fe6b-4686-881c-680e6d0f3d45",
+      "status": "processing_animate",
+      "raw_create_response": "id: 205933eb-fe6b-4686-881c-680e6d0f3d45\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"205933eb-fe6b-4686-881c-680e6d0f3d45\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "south"
+      },
+      "animation_id": "32644cf2-01b7-4cde-a237-e6a1c3483b6f",
+      "raw_animation_response": "object: 205933eb-fe6b-4686-881c-680e6d0f3d45\ngroup: 32644cf2-01b7-4cde-a237-e6a1c3483b6f\nmode: v3\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"205933eb-fe6b-4686-881c-680e6d0f3d45\")"
+    },
+    "warren-spear-rider/attack-tell-south-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-attack-tell-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "7ab0453a-d38e-4b6b-b241-a8211b25766c",
+      "status": "processing_animate",
+      "raw_create_response": "id: 7ab0453a-d38e-4b6b-b241-a8211b25766c\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"7ab0453a-d38e-4b6b-b241-a8211b25766c\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "attack-tell",
+        "direction": "south-east"
+      },
+      "animation_id": "78aa519b-f2b7-4b99-9eef-8b98b7dd7e29",
+      "raw_animation_response": "object: 7ab0453a-d38e-4b6b-b241-a8211b25766c\ngroup: 78aa519b-f2b7-4b99-9eef-8b98b7dd7e29\nmode: v3\ndescription: isometric Warren Spear Rider isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"7ab0453a-d38e-4b6b-b241-a8211b25766c\")"
+    },
+    "warren-spear-rider/hit-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-east",
+      "w": 64,
+      "h": 96,
+      "id": "2ec8f803-dd34-4071-a4dd-8d49399b34d5",
+      "status": "processing_animate",
+      "raw_create_response": "id: 2ec8f803-dd34-4071-a4dd-8d49399b34d5\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2ec8f803-dd34-4071-a4dd-8d49399b34d5\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "east"
+      },
+      "animation_id": "8d4fd22e-26f7-46f2-84b2-e1d06753f44e",
+      "raw_animation_response": "object: 2ec8f803-dd34-4071-a4dd-8d49399b34d5\ngroup: 8d4fd22e-26f7-46f2-84b2-e1d06753f44e\nmode: v3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"2ec8f803-dd34-4071-a4dd-8d49399b34d5\")"
+    },
+    "warren-spear-rider/hit-north-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "dff0bc94-80f4-4e2b-8e65-9d92247020e6",
+      "status": "failed_animate",
+      "raw_create_response": "id: dff0bc94-80f4-4e2b-8e65-9d92247020e6\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-right/northeast, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"dff0bc94-80f4-4e2b-8e65-9d92247020e6\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "north-east"
+      },
+      "animation_id": null,
+      "raw_animation_response": "error: need 1 slots but only 0 available (20/20 active)\n\nhint: wait for current jobs to finish"
+    },
+    "warren-spear-rider/hit-north": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-north",
+      "w": 64,
+      "h": 96,
+      "id": "fcc765f7-3a13-4b21-9843-9f65f8d411a3",
+      "status": "processing_animate",
+      "raw_create_response": "id: fcc765f7-3a13-4b21-9843-9f65f8d411a3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up/north, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"fcc765f7-3a13-4b21-9843-9f65f8d411a3\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "north"
+      },
+      "animation_id": "a086eef9-ea0e-48ff-bb56-1aae87dc9d14",
+      "raw_animation_response": "object: fcc765f7-3a13-4b21-9843-9f65f8d411a3\ngroup: a086eef9-ea0e-48ff-bb56-1aae87dc9d14\nmode: v3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up/north, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"fcc765f7-3a13-4b21-9843-9f65f8d411a3\")"
+    },
+    "warren-spear-rider/hit-north-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "a282539c-4ac6-4020-9e2a-99f9fad102e0",
+      "status": "processing_animate",
+      "raw_create_response": "id: a282539c-4ac6-4020-9e2a-99f9fad102e0\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-left/northwest, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a282539c-4ac6-4020-9e2a-99f9fad102e0\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "north-west"
+      },
+      "animation_id": "dc746da0-f743-4537-915b-08b2cbbe6d79",
+      "raw_animation_response": "object: a282539c-4ac6-4020-9e2a-99f9fad102e0\ngroup: dc746da0-f743-4537-915b-08b2cbbe6d79\nmode: v3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-left/northwest, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"a282539c-4ac6-4020-9e2a-99f9fad102e0\")"
+    },
+    "warren-spear-rider/hit-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-west",
+      "w": 64,
+      "h": 96,
+      "id": "0b89cec8-9584-4814-a1ba-8e780530c8f2",
+      "status": "processing_animate",
+      "raw_create_response": "id: 0b89cec8-9584-4814-a1ba-8e780530c8f2\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing left/west, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"0b89cec8-9584-4814-a1ba-8e780530c8f2\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "west"
+      },
+      "animation_id": "b118dd30-23ae-45d0-b2c4-41ff1b478e2b",
+      "raw_animation_response": "object: 0b89cec8-9584-4814-a1ba-8e780530c8f2\ngroup: b118dd30-23ae-45d0-b2c4-41ff1b478e2b\nmode: v3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing left/west, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"0b89cec8-9584-4814-a1ba-8e780530c8f2\")"
+    },
+    "warren-spear-rider/hit-south-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "ed9c99f8-262d-4cb8-9cad-09a9edcb3206",
+      "status": "processing_animate",
+      "raw_create_response": "id: ed9c99f8-262d-4cb8-9cad-09a9edcb3206\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-left/southwest, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ed9c99f8-262d-4cb8-9cad-09a9edcb3206\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "south-west"
+      },
+      "animation_id": "42dd7067-a0b2-4ed1-9b28-b579a00c5a0d",
+      "raw_animation_response": "object: ed9c99f8-262d-4cb8-9cad-09a9edcb3206\ngroup: 42dd7067-a0b2-4ed1-9b28-b579a00c5a0d\nmode: v3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-left/southwest, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"ed9c99f8-262d-4cb8-9cad-09a9edcb3206\")"
+    },
+    "warren-spear-rider/hit-south": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-south",
+      "w": 64,
+      "h": 96,
+      "id": "5c8c1d2c-ff97-493a-b12c-f53775f8dcd2",
+      "status": "processing_animate",
+      "raw_create_response": "id: 5c8c1d2c-ff97-493a-b12c-f53775f8dcd2\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5c8c1d2c-ff97-493a-b12c-f53775f8dcd2\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "south"
+      },
+      "animation_id": "01b2c8c1-1d16-41fe-9eb4-4877cc7d4e5d",
+      "raw_animation_response": "object: 5c8c1d2c-ff97-493a-b12c-f53775f8dcd2\ngroup: 01b2c8c1-1d16-41fe-9eb4-4877cc7d4e5d\nmode: v3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"5c8c1d2c-ff97-493a-b12c-f53775f8dcd2\")"
+    },
+    "warren-spear-rider/hit-south-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-hit-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "7c86bc26-32f2-48fc-b8b8-382ce26e8287",
+      "status": "processing_animate",
+      "raw_create_response": "id: 7c86bc26-32f2-48fc-b8b8-382ce26e8287\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-right/southeast, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"7c86bc26-32f2-48fc-b8b8-382ce26e8287\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "hit",
+        "direction": "south-east"
+      },
+      "animation_id": "0e21cea6-93c5-4f20-8b2a-e47a25248ee8",
+      "raw_animation_response": "object: 7c86bc26-32f2-48fc-b8b8-382ce26e8287\ngroup: 0e21cea6-93c5-4f20-8b2a-e47a25248ee8\nmode: v3\ndescription: isometric Warren Spear Rider isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-right/southeast, mounted on cyber-steed, long energy spear, armored\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"7c86bc26-32f2-48fc-b8b8-382ce26e8287\")"
+    },
+    "warren-spear-rider/death-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-east",
+      "w": 64,
+      "h": 96,
+      "id": "02602ca9-d366-4855-82c6-0b6065347436",
+      "status": "processing_animate",
+      "raw_create_response": "id: 02602ca9-d366-4855-82c6-0b6065347436\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"02602ca9-d366-4855-82c6-0b6065347436\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "east"
+      },
+      "animation_id": "e0aa0f54-e7dc-47d9-b16b-72dc59d517c6",
+      "raw_animation_response": "object: 02602ca9-d366-4855-82c6-0b6065347436\ngroup: e0aa0f54-e7dc-47d9-b16b-72dc59d517c6\nmode: v3\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, mounted on cyber-steed, long energy spear, armored\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"02602ca9-d366-4855-82c6-0b6065347436\")"
+    },
+    "warren-spear-rider/death-north-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "33498496-dabe-4f15-ae7f-11fd6b187cee",
+      "status": "processing_animate",
+      "raw_create_response": "id: 33498496-dabe-4f15-ae7f-11fd6b187cee\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"33498496-dabe-4f15-ae7f-11fd6b187cee\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "north-east"
+      },
+      "animation_id": "5f27f122-60e1-442b-967f-5bac410414a8",
+      "raw_animation_response": "object: 33498496-dabe-4f15-ae7f-11fd6b187cee\ngroup: 5f27f122-60e1-442b-967f-5bac410414a8\nmode: v3\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, mounted on cyber-steed, long energy spear, armored\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"33498496-dabe-4f15-ae7f-11fd6b187cee\")"
+    },
+    "warren-spear-rider/death-north": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-north",
+      "w": 64,
+      "h": 96,
+      "id": "ecbbbd5d-167b-46f1-bd36-ad6f22603c89",
+      "status": "processing_animate",
+      "raw_create_response": "id: ecbbbd5d-167b-46f1-bd36-ad6f22603c89\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up/north, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ecbbbd5d-167b-46f1-bd36-ad6f22603c89\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "north"
+      },
+      "animation_id": "5c0dd4c4-4f86-4509-8520-6b0686165887",
+      "raw_animation_response": "object: ecbbbd5d-167b-46f1-bd36-ad6f22603c89\ngroup: 5c0dd4c4-4f86-4509-8520-6b0686165887\nmode: v3\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up/north, mounted on cyber-steed, long energy spear, armored\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"ecbbbd5d-167b-46f1-bd36-ad6f22603c89\")"
+    },
+    "warren-spear-rider/death-north-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "1190d600-30a6-4755-a6ce-f9198e834d72",
+      "status": "processing_animate",
+      "raw_create_response": "id: 1190d600-30a6-4755-a6ce-f9198e834d72\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-left/northwest, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1190d600-30a6-4755-a6ce-f9198e834d72\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "north-west"
+      },
+      "animation_id": "1bc2c6c3-92c3-47df-9fd5-8448c5a2f6d1",
+      "raw_animation_response": "object: 1190d600-30a6-4755-a6ce-f9198e834d72\ngroup: 1bc2c6c3-92c3-47df-9fd5-8448c5a2f6d1\nmode: v3\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-left/northwest, mounted on cyber-steed, long energy spear, armored\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"1190d600-30a6-4755-a6ce-f9198e834d72\")"
+    },
+    "warren-spear-rider/death-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-west",
+      "w": 64,
+      "h": 96,
+      "id": "e55070a2-79e8-4a72-a5bd-6b7716ef5c68",
+      "status": "failed_animate",
+      "raw_create_response": "id: e55070a2-79e8-4a72-a5bd-6b7716ef5c68\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing left/west, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"e55070a2-79e8-4a72-a5bd-6b7716ef5c68\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "west"
+      },
+      "animation_id": null,
+      "raw_animation_response": "error: need 1 slots but only 0 available (21/20 active)\n\nhint: wait for current jobs to finish"
+    },
+    "warren-spear-rider/death-south-west": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "0dd3f896-4b03-4c39-b61c-00d0678a5005",
+      "status": "processing_animate",
+      "raw_create_response": "id: 0dd3f896-4b03-4c39-b61c-00d0678a5005\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-left/southwest, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"0dd3f896-4b03-4c39-b61c-00d0678a5005\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "south-west"
+      },
+      "animation_id": "750c2b12-5449-4371-9b18-af8f089c11cc",
+      "raw_animation_response": "object: 0dd3f896-4b03-4c39-b61c-00d0678a5005\ngroup: 750c2b12-5449-4371-9b18-af8f089c11cc\nmode: v3\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-left/southwest, mounted on cyber-steed, long energy spear, armored\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"0dd3f896-4b03-4c39-b61c-00d0678a5005\")"
+    },
+    "warren-spear-rider/death-south": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-south",
+      "w": 64,
+      "h": 96,
+      "id": "779f52ed-df5c-4b55-b430-584000a3bded",
+      "status": "processing_animate",
+      "raw_create_response": "id: 779f52ed-df5c-4b55-b430-584000a3bded\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down/south, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"779f52ed-df5c-4b55-b430-584000a3bded\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "south"
+      },
+      "animation_id": "ed222ceb-822e-4b9e-b027-7df57bac4030",
+      "raw_animation_response": "object: 779f52ed-df5c-4b55-b430-584000a3bded\ngroup: ed222ceb-822e-4b9e-b027-7df57bac4030\nmode: v3\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down/south, mounted on cyber-steed, long energy spear, armored\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"779f52ed-df5c-4b55-b430-584000a3bded\")"
+    },
+    "warren-spear-rider/death-south-east": {
+      "set": "enemies",
+      "slug": "warren-spear-rider-death-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "0f98ec9c-f716-42f5-9589-e6d359a14f43",
+      "status": "processing_animate",
+      "raw_create_response": "id: 0f98ec9c-f716-42f5-9589-e6d359a14f43\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-right/southeast, mounted on cyber-steed, long energy spear, armored\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"0f98ec9c-f716-42f5-9589-e6d359a14f43\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "warren-spear-rider",
+        "state": "death",
+        "direction": "south-east"
+      },
+      "animation_id": "ffb336fe-c28e-416a-b555-1626c083d332",
+      "raw_animation_response": "object: 0f98ec9c-f716-42f5-9589-e6d359a14f43\ngroup: ffb336fe-c28e-416a-b555-1626c083d332\nmode: v3\ndescription: isometric Warren Spear Rider isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-right/southeast, mounted on cyber-steed, long energy spear, armored\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"0f98ec9c-f716-42f5-9589-e6d359a14f43\")"
+    },
+    "crypto-bro/attack-tell-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-east",
+      "w": 64,
+      "h": 96,
+      "id": "ee790d6a-a3a4-4fa5-b008-0d8afd7f3090",
+      "status": "processing_animate",
+      "raw_create_response": "id: ee790d6a-a3a4-4fa5-b008-0d8afd7f3090\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ee790d6a-a3a4-4fa5-b008-0d8afd7f3090\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "east"
+      },
+      "animation_id": "8e97dd60-c98a-459d-a8ed-1bde1971f026",
+      "raw_animation_response": "object: ee790d6a-a3a4-4fa5-b008-0d8afd7f3090\ngroup: 8e97dd60-c98a-459d-a8ed-1bde1971f026\nmode: v3\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"ee790d6a-a3a4-4fa5-b008-0d8afd7f3090\")"
+    },
+    "crypto-bro/attack-tell-north-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "531836a5-d6cc-4e52-a469-efefb852006d",
+      "status": "processing_create",
+      "raw_create_response": "id: 531836a5-d6cc-4e52-a469-efefb852006d\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"531836a5-d6cc-4e52-a469-efefb852006d\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "north-east"
+      }
+    },
+    "crypto-bro/attack-tell-north": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-north",
+      "w": 64,
+      "h": 96,
+      "id": "53114e7b-8c50-47df-bcc3-cf04cc36dd88",
+      "status": "processing_animate",
+      "raw_create_response": "id: 53114e7b-8c50-47df-bcc3-cf04cc36dd88\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"53114e7b-8c50-47df-bcc3-cf04cc36dd88\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "north"
+      },
+      "animation_id": "42be5a2c-1b34-44e9-8c7c-eadd93b505c5",
+      "raw_animation_response": "object: 53114e7b-8c50-47df-bcc3-cf04cc36dd88\ngroup: 42be5a2c-1b34-44e9-8c7c-eadd93b505c5\nmode: v3\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"53114e7b-8c50-47df-bcc3-cf04cc36dd88\")"
+    },
+    "crypto-bro/attack-tell-north-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "1a7aed6c-352a-4586-962c-f9f50e928725",
+      "status": "processing_animate",
+      "raw_create_response": "id: 1a7aed6c-352a-4586-962c-f9f50e928725\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1a7aed6c-352a-4586-962c-f9f50e928725\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "north-west"
+      },
+      "animation_id": "a0742720-5130-4dd3-911c-2b458a0a540d",
+      "raw_animation_response": "object: 1a7aed6c-352a-4586-962c-f9f50e928725\ngroup: a0742720-5130-4dd3-911c-2b458a0a540d\nmode: v3\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"1a7aed6c-352a-4586-962c-f9f50e928725\")"
+    },
+    "crypto-bro/attack-tell-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-west",
+      "w": 64,
+      "h": 96,
+      "id": "7dbd1c48-955d-4734-b097-e6cc93708de8",
+      "status": "processing_animate",
+      "raw_create_response": "id: 7dbd1c48-955d-4734-b097-e6cc93708de8\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"7dbd1c48-955d-4734-b097-e6cc93708de8\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "west"
+      },
+      "animation_id": "12b3dc68-ea97-4b18-ad00-2d135992df86",
+      "raw_animation_response": "object: 7dbd1c48-955d-4734-b097-e6cc93708de8\ngroup: 12b3dc68-ea97-4b18-ad00-2d135992df86\nmode: v3\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"7dbd1c48-955d-4734-b097-e6cc93708de8\")"
+    },
+    "crypto-bro/attack-tell-south-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "da602b67-a2b2-4e5b-9300-eee1102c3a4b",
+      "status": "processing_animate",
+      "raw_create_response": "id: da602b67-a2b2-4e5b-9300-eee1102c3a4b\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"da602b67-a2b2-4e5b-9300-eee1102c3a4b\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "south-west"
+      },
+      "animation_id": "420f73ff-2ec7-42f2-9eaa-4b1ba1ad1a37",
+      "raw_animation_response": "object: da602b67-a2b2-4e5b-9300-eee1102c3a4b\ngroup: 420f73ff-2ec7-42f2-9eaa-4b1ba1ad1a37\nmode: v3\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"da602b67-a2b2-4e5b-9300-eee1102c3a4b\")"
+    },
+    "crypto-bro/attack-tell-south": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-south",
+      "w": 64,
+      "h": 96,
+      "id": "fb3c137d-6979-47da-bc54-6db3ab8883fc",
+      "status": "processing_animate",
+      "raw_create_response": "id: fb3c137d-6979-47da-bc54-6db3ab8883fc\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"fb3c137d-6979-47da-bc54-6db3ab8883fc\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "south"
+      },
+      "animation_id": "386a2871-9026-4930-91b0-97cde99825f9",
+      "raw_animation_response": "object: fb3c137d-6979-47da-bc54-6db3ab8883fc\ngroup: 386a2871-9026-4930-91b0-97cde99825f9\nmode: v3\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"fb3c137d-6979-47da-bc54-6db3ab8883fc\")"
+    },
+    "crypto-bro/attack-tell-south-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-attack-tell-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "fab933bb-4c98-4f30-bc73-e05fc036c75c",
+      "status": "processing_animate",
+      "raw_create_response": "id: fab933bb-4c98-4f30-bc73-e05fc036c75c\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"fab933bb-4c98-4f30-bc73-e05fc036c75c\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "attack-tell",
+        "direction": "south-east"
+      },
+      "animation_id": "b8aef618-513e-43be-a913-22defe9dbdf3",
+      "raw_animation_response": "object: fab933bb-4c98-4f30-bc73-e05fc036c75c\ngroup: b8aef618-513e-43be-a913-22defe9dbdf3\nmode: v3\ndescription: isometric Crypto Bro isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"fab933bb-4c98-4f30-bc73-e05fc036c75c\")"
+    },
+    "crypto-bro/hit-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-east",
+      "w": 64,
+      "h": 96,
+      "id": "6a267041-dea9-47a1-867e-87ba5f0bba93",
+      "status": "processing_animate",
+      "raw_create_response": "id: 6a267041-dea9-47a1-867e-87ba5f0bba93\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"6a267041-dea9-47a1-867e-87ba5f0bba93\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "east"
+      },
+      "animation_id": "a955c3a2-50d8-478f-ba26-add260ec4eaa",
+      "raw_animation_response": "object: 6a267041-dea9-47a1-867e-87ba5f0bba93\ngroup: a955c3a2-50d8-478f-ba26-add260ec4eaa\nmode: v3\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"6a267041-dea9-47a1-867e-87ba5f0bba93\")"
+    },
+    "crypto-bro/hit-north-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "830236fb-ae9a-4637-acfd-52c7d42d3d57",
+      "status": "created",
+      "raw_create_response": "id: 830236fb-ae9a-4637-acfd-52c7d42d3d57\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-right/northeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"830236fb-ae9a-4637-acfd-52c7d42d3d57\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "north-east"
+      }
+    },
+    "crypto-bro/hit-north": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-north",
+      "w": 64,
+      "h": 96,
+      "id": "90e5eddb-148a-4387-90ec-c0fe07333bcd",
+      "status": "created",
+      "raw_create_response": "id: 90e5eddb-148a-4387-90ec-c0fe07333bcd\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up/north, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"90e5eddb-148a-4387-90ec-c0fe07333bcd\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "north"
+      }
+    },
+    "crypto-bro/hit-north-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "2985044c-323a-4928-bb10-e061e0c09a21",
+      "status": "created",
+      "raw_create_response": "id: 2985044c-323a-4928-bb10-e061e0c09a21\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-left/northwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2985044c-323a-4928-bb10-e061e0c09a21\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "north-west"
+      }
+    },
+    "crypto-bro/hit-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-west",
+      "w": 64,
+      "h": 96,
+      "id": "a24d1ecc-9034-4a2f-99d8-9d48a512b94d",
+      "status": "created",
+      "raw_create_response": "id: a24d1ecc-9034-4a2f-99d8-9d48a512b94d\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing left/west, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a24d1ecc-9034-4a2f-99d8-9d48a512b94d\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "west"
+      }
+    },
+    "crypto-bro/hit-south-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "4c6f22a7-0358-427e-b103-46e5788ecc79",
+      "status": "created",
+      "raw_create_response": "id: 4c6f22a7-0358-427e-b103-46e5788ecc79\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-left/southwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4c6f22a7-0358-427e-b103-46e5788ecc79\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "south-west"
+      }
+    },
+    "crypto-bro/hit-south": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-south",
+      "w": 64,
+      "h": 96,
+      "id": "4a2653f9-c1e9-4bd9-aebc-c2db26863d95",
+      "status": "processing_animate",
+      "raw_create_response": "id: 4a2653f9-c1e9-4bd9-aebc-c2db26863d95\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4a2653f9-c1e9-4bd9-aebc-c2db26863d95\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "south"
+      },
+      "animation_id": "aa048b55-7585-4881-b7a8-390ba3c44df8",
+      "raw_animation_response": "object: 4a2653f9-c1e9-4bd9-aebc-c2db26863d95\ngroup: aa048b55-7585-4881-b7a8-390ba3c44df8\nmode: v3\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"4a2653f9-c1e9-4bd9-aebc-c2db26863d95\")"
+    },
+    "crypto-bro/hit-south-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-hit-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "560caeac-b41c-491b-be76-59ccc9028617",
+      "status": "created",
+      "raw_create_response": "id: 560caeac-b41c-491b-be76-59ccc9028617\ndescription: isometric Crypto Bro isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-right/southeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"560caeac-b41c-491b-be76-59ccc9028617\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "hit",
+        "direction": "south-east"
+      }
+    },
+    "crypto-bro/death-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-east",
+      "w": 64,
+      "h": 96,
+      "id": "93b92c29-61cb-42cb-a804-51bb720cc98f",
+      "status": "processing_animate",
+      "raw_create_response": "id: 93b92c29-61cb-42cb-a804-51bb720cc98f\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"93b92c29-61cb-42cb-a804-51bb720cc98f\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "east"
+      },
+      "animation_id": "53fb5317-2598-4821-ad24-a3b36b51347a",
+      "raw_animation_response": "object: 93b92c29-61cb-42cb-a804-51bb720cc98f\ngroup: 53fb5317-2598-4821-ad24-a3b36b51347a\nmode: v3\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"93b92c29-61cb-42cb-a804-51bb720cc98f\")"
+    },
+    "crypto-bro/death-north-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "4511dbc4-ad59-4629-8677-9ed3e2fb065b",
+      "status": "processing_animate",
+      "raw_create_response": "id: 4511dbc4-ad59-4629-8677-9ed3e2fb065b\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4511dbc4-ad59-4629-8677-9ed3e2fb065b\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "north-east"
+      },
+      "animation_id": "cf590c16-756c-48dc-80b4-fe28b458dad5",
+      "raw_animation_response": "object: 4511dbc4-ad59-4629-8677-9ed3e2fb065b\ngroup: cf590c16-756c-48dc-80b4-fe28b458dad5\nmode: v3\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"4511dbc4-ad59-4629-8677-9ed3e2fb065b\")"
+    },
+    "crypto-bro/death-north": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-north",
+      "w": 64,
+      "h": 96,
+      "id": "1f836386-fba9-4312-a63d-06d5e5edb50e",
+      "status": "created",
+      "raw_create_response": "id: 1f836386-fba9-4312-a63d-06d5e5edb50e\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up/north, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1f836386-fba9-4312-a63d-06d5e5edb50e\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "north"
+      }
+    },
+    "crypto-bro/death-north-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "75bf9923-4b10-4a83-8daf-06c88e77d489",
+      "status": "created",
+      "raw_create_response": "id: 75bf9923-4b10-4a83-8daf-06c88e77d489\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-left/northwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"75bf9923-4b10-4a83-8daf-06c88e77d489\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "north-west"
+      }
+    },
+    "crypto-bro/death-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-west",
+      "w": 64,
+      "h": 96,
+      "id": "03d767a9-5bfa-4337-998d-a30d244f6f14",
+      "status": "created",
+      "raw_create_response": "id: 03d767a9-5bfa-4337-998d-a30d244f6f14\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing left/west, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"03d767a9-5bfa-4337-998d-a30d244f6f14\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "west"
+      }
+    },
+    "crypto-bro/death-south-west": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "ddaae042-47e1-4a66-a38a-2be1b1de8a50",
+      "status": "created",
+      "raw_create_response": "id: ddaae042-47e1-4a66-a38a-2be1b1de8a50\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-left/southwest, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ddaae042-47e1-4a66-a38a-2be1b1de8a50\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "south-west"
+      }
+    },
+    "crypto-bro/death-south": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-south",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "south"
+      }
+    },
+    "crypto-bro/death-south-east": {
+      "set": "enemies",
+      "slug": "crypto-bro-death-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "2b1f2349-46cb-4308-b2b9-9087c64f5813",
+      "status": "created",
+      "raw_create_response": "id: 2b1f2349-46cb-4308-b2b9-9087c64f5813\ndescription: isometric Crypto Bro isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-right/southeast, hoodie, phone-taunt pose, jump-back knives, mocking grin\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2b1f2349-46cb-4308-b2b9-9087c64f5813\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "crypto-bro",
+        "state": "death",
+        "direction": "south-east"
+      }
+    },
+    "gas-beast/attack-tell-east": {
+      "set": "enemies",
+      "slug": "gas-beast-attack-tell-east",
+      "w": 64,
+      "h": 96,
+      "id": "bd4253c1-cc20-441d-a55b-151601f71282",
+      "status": "created",
+      "raw_create_response": "id: bd4253c1-cc20-441d-a55b-151601f71282\ndescription: isometric Gas Beast isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, hulking mutated form, gas vents on back, claws, toxic glow\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"bd4253c1-cc20-441d-a55b-151601f71282\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "attack-tell",
+        "direction": "east"
+      }
+    },
+    "gas-beast/attack-tell-north-east": {
+      "set": "enemies",
+      "slug": "gas-beast-attack-tell-north-east",
       "w": 64,
       "h": 96,
       "id": null,
@@ -2243,77 +3347,213 @@
       "frame_count": 4,
       "priority": 1,
       "meta": {
-        "enemy": "evil-banker",
-        "state": "hit",
-        "direction": "south-east"
-      }
-    },
-    "evil-banker/death-east": {
-      "set": "enemies",
-      "slug": "evil-banker-death-east",
-      "w": 64,
-      "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
-      "animated": true,
-      "frame_count": 8,
-      "priority": 1,
-      "meta": {
-        "enemy": "evil-banker",
-        "state": "death",
-        "direction": "east"
-      }
-    },
-    "evil-banker/death-north-east": {
-      "set": "enemies",
-      "slug": "evil-banker-death-north-east",
-      "w": 64,
-      "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
-      "animated": true,
-      "frame_count": 8,
-      "priority": 1,
-      "meta": {
-        "enemy": "evil-banker",
-        "state": "death",
+        "enemy": "gas-beast",
+        "state": "attack-tell",
         "direction": "north-east"
       }
     },
-    "evil-banker/death-north": {
+    "gas-beast/attack-tell-north": {
       "set": "enemies",
-      "slug": "evil-banker-death-north",
+      "slug": "gas-beast-attack-tell-north",
       "w": 64,
       "h": 96,
       "id": null,
       "status": "failed_create",
       "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
       "animated": true,
-      "frame_count": 8,
+      "frame_count": 4,
       "priority": 1,
       "meta": {
-        "enemy": "evil-banker",
-        "state": "death",
+        "enemy": "gas-beast",
+        "state": "attack-tell",
         "direction": "north"
       }
     },
-    "evil-banker/death-north-west": {
+    "gas-beast/attack-tell-north-west": {
       "set": "enemies",
-      "slug": "evil-banker-death-north-west",
+      "slug": "gas-beast-attack-tell-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "18b76f18-859e-44e7-bbab-a045eba3dd1b",
+      "status": "created",
+      "raw_create_response": "id: 18b76f18-859e-44e7-bbab-a045eba3dd1b\ndescription: isometric Gas Beast isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, hulking mutated form, gas vents on back, claws, toxic glow\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"18b76f18-859e-44e7-bbab-a045eba3dd1b\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "attack-tell",
+        "direction": "north-west"
+      }
+    },
+    "gas-beast/attack-tell-west": {
+      "set": "enemies",
+      "slug": "gas-beast-attack-tell-west",
+      "w": 64,
+      "h": 96,
+      "id": "a047db00-4504-45b1-8e33-62cc12856150",
+      "status": "created",
+      "raw_create_response": "id: a047db00-4504-45b1-8e33-62cc12856150\ndescription: isometric Gas Beast isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, hulking mutated form, gas vents on back, claws, toxic glow\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a047db00-4504-45b1-8e33-62cc12856150\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "attack-tell",
+        "direction": "west"
+      }
+    },
+    "gas-beast/attack-tell-south-west": {
+      "set": "enemies",
+      "slug": "gas-beast-attack-tell-south-west",
       "w": 64,
       "h": 96,
       "id": null,
       "status": "failed_create",
       "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
       "animated": true,
-      "frame_count": 8,
+      "frame_count": 4,
       "priority": 1,
       "meta": {
-        "enemy": "evil-banker",
-        "state": "death",
+        "enemy": "gas-beast",
+        "state": "attack-tell",
+        "direction": "south-west"
+      }
+    },
+    "gas-beast/attack-tell-south": {
+      "set": "enemies",
+      "slug": "gas-beast-attack-tell-south",
+      "w": 64,
+      "h": 96,
+      "id": "4e2b0770-4572-4c57-b0c0-ce2b6e438a8a",
+      "status": "created",
+      "raw_create_response": "id: 4e2b0770-4572-4c57-b0c0-ce2b6e438a8a\ndescription: isometric Gas Beast isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, hulking mutated form, gas vents on back, claws, toxic glow\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4e2b0770-4572-4c57-b0c0-ce2b6e438a8a\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "attack-tell",
+        "direction": "south"
+      }
+    },
+    "gas-beast/attack-tell-south-east": {
+      "set": "enemies",
+      "slug": "gas-beast-attack-tell-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "1c02f70a-801c-4d3e-b95b-77f7079a2eef",
+      "status": "created",
+      "raw_create_response": "id: 1c02f70a-801c-4d3e-b95b-77f7079a2eef\ndescription: isometric Gas Beast isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, hulking mutated form, gas vents on back, claws, toxic glow\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1c02f70a-801c-4d3e-b95b-77f7079a2eef\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "attack-tell",
+        "direction": "south-east"
+      }
+    },
+    "gas-beast/hit-east": {
+      "set": "enemies",
+      "slug": "gas-beast-hit-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "hit",
+        "direction": "east"
+      }
+    },
+    "gas-beast/hit-north-east": {
+      "set": "enemies",
+      "slug": "gas-beast-hit-north-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "hit",
+        "direction": "north-east"
+      }
+    },
+    "gas-beast/hit-north": {
+      "set": "enemies",
+      "slug": "gas-beast-hit-north",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "hit",
+        "direction": "north"
+      }
+    },
+    "gas-beast/hit-north-west": {
+      "set": "enemies",
+      "slug": "gas-beast-hit-north-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "hit",
         "direction": "north-west"
+      }
+    },
+    "gas-beast/hit-west": {
+      "set": "enemies",
+      "slug": "gas-beast-hit-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "hit",
+        "direction": "west"
+      }
+    },
+    "gas-beast/hit-south-west": {
+      "set": "enemies",
+      "slug": "gas-beast-hit-south-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "gas-beast",
+        "state": "hit",
+        "direction": "south-west"
       }
     }
   }
