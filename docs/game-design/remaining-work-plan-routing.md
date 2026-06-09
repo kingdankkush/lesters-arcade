@@ -22,6 +22,17 @@ Stats tracked: kills, killsByType, totalKills, timeSurvived, finalScore, enemy/b
 
 ## Work items — priority / quickest-first
 
+### P1 — URL routing layer ✅ DONE (deployed, live-verified 0 JS errors)
+### P2 — Deterministic session IDs `game-session-NNNNNNNNN` ✅ DONE (deployed)
+### P3 — Per-session stat record + searchable index + global rollup ✅ DONE (deployed)
+
+### P4 — Documentation + skills + cost report (DEFERRED until HMH nearly done)
+1. Game-creation playbook doc (how HMH was built; reusable for future games).
+2. New/updated skills to speed future game creation.
+3. Token-cost retro: most costly steps, where we hit issues, improvements.
+
+## Original work items (for reference)
+
 ### P1 — URL routing layer (quickest, highest navigational value)
 1. Map `officialAppStep` ↔ path. `setOfficialView()` calls `pushState` with the right URL.
 2. `popstate` + initial-load: parse path → set view (deep-linkable, back/forward works).
