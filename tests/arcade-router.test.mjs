@@ -1,0 +1,86 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+
+import {
+  routeForView,
+  viewForPath,
+  gameSlugFor,
+  isInGameStep,
+  DEFAULT_GAME_SLUG,
+} from '../apps/portal/src/arcade-router.mjs';
+
+test('routeForView maps each view step to the canonical URL path', () => {
+  assert.equal(routeForView('wallet-splash'), '/');
+  assert.equal(routeForView('cabinet-select'), '/games');
+  assert.equal(routeForView('arcade-walk-in'), '/games');
+  assert.equal(routeForView('mode-select', { gameSlug: 'hard-money-heroes' }), '/games/hard-money-heroes');
+  assert.equal(routeForView('character-select', { gameSlug: 'hard-money-heroes' }), '/games/hard-money-heroes');
+  assert.equal(routeForView('level-one-intro', { gameSlug: 'hard-money-heroes' }), '/games/hard-money-heroes');
+  assert.equal(
+    routeForView('gameplay', { gameSlug: 'hard-money-heroes', sessionId: 'game-session-000000001' }),
+    '/games/hard-money-heroes/game-session-000000001',
+  );
+  // Gameplay with no session id (free mode) falls back to the game page.
+  assert.equal(routeForView('gameplay', { gameSlug: 'hard-money-heroes' }), '/games/hard-money-heroes');
+  assert.equal(routeForView('profile'), '/profile');
+  assert.equal(routeForView('leaderboards'), '/leaderboards');
+  assert.equal(routeForView('settings'), '/settings');
+});
+
+test('viewForPath parses URLs back into view intents (connected)', () => {
+  assert.deepEqual(viewForPath('/', { connected: true }), { step: 'wallet-splash', gameSlug: null, sessionId: null });
+  assert.deepEqual(viewForPath('/games', { connected: true }), { step: 'cabinet-select', gameSlug: null, sessionId: null });
+  assert.deepEqual(viewForPath('/games/hard-money-heroes', { connected: true }), { step: 'mode-select', gameSlug: 'hard-money-heroes', sessionId: null });
+  assert.deepEqual(
+    viewForPath('/games/hard-money-heroes/game-session-000000001', { connected: true }),
+    { step: 'gameplay', gameSlug: 'hard-money-heroes', sessionId: 'game-session-000000001' },
+  );
+  assert.deepEqual(viewForPath('/profile', { connected: true }), { step: 'profile', gameSlug: null, sessionId: null });
+  assert.deepEqual(viewForPath('/leaderboards', { connected: true }), { step: 'leaderboards', gameSlug: null, sessionId: null });
+  assert.deepEqual(viewForPath('/settings', { connected: true }), { step: 'settings', gameSlug: null, sessionId: null });
+});
+
+test('viewForPath gates protected routes to the homepage when not connected', () => {
+  assert.equal(viewForPath('/games', { connected: false }).step, 'wallet-splash');
+  assert.equal(viewForPath('/games/hard-money-heroes', { connected: false }).step, 'wallet-splash');
+  assert.equal(viewForPath('/games/hard-money-heroes/game-session-000000001', { connected: false }).step, 'wallet-splash');
+  assert.equal(viewForPath('/profile', { connected: false }).step, 'wallet-splash');
+  // The homepage itself is always reachable.
+  assert.equal(viewForPath('/', { connected: false }).step, 'wallet-splash');
+});
+
+test('viewForPath ignores query/hash and trailing junk', () => {
+  assert.equal(viewForPath('/games?ref=x#top', { connected: true }).step, 'cabinet-select');
+  assert.equal(viewForPath('/games/hard-money-heroes/', { connected: true }).step, 'mode-select');
+  // A non-session deep path falls back to the game entry.
+  assert.equal(viewForPath('/games/hard-money-heroes/nonsense', { connected: true }).step, 'mode-select');
+});
+
+test('round-trip: routeForView -> viewForPath is stable for key views', () => {
+  const cases = [
+    ['cabinet-select', {}],
+    ['mode-select', { gameSlug: 'hard-money-heroes' }],
+    ['gameplay', { gameSlug: 'hard-money-heroes', sessionId: 'game-session-000000042' }],
+  ];
+  for (const [step, ctx] of cases) {
+    const path = routeForView(step, ctx);
+    const back = viewForPath(path, { connected: true });
+    assert.equal(back.step, step, `round-trip step for ${path}`);
+    if (ctx.sessionId) assert.equal(back.sessionId, ctx.sessionId, `round-trip session for ${path}`);
+  }
+});
+
+test('gameSlugFor resolves internal engine ids to the public slug', () => {
+  assert.equal(gameSlugFor('hard-money-heroes'), 'hard-money-heroes');
+  assert.equal(gameSlugFor('hmh'), 'hard-money-heroes');
+  assert.equal(gameSlugFor('lester-blaster'), 'hard-money-heroes');
+  assert.equal(gameSlugFor('unknown-game'), DEFAULT_GAME_SLUG);
+});
+
+test('isInGameStep flags the in-game sub-views', () => {
+  assert.equal(isInGameStep('mode-select'), true);
+  assert.equal(isInGameStep('character-select'), true);
+  assert.equal(isInGameStep('level-one-intro'), true);
+  assert.equal(isInGameStep('cabinet-select'), false);
+  assert.equal(isInGameStep('gameplay'), false);
+});

@@ -8,6 +8,14 @@
     {
       "source": "/",
       "destination": "/index.html"
+    },
+    {
+      "source": "/games/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(profile|leaderboards|settings)",
+      "destination": "/index.html"
     }
   ]
 }

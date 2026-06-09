@@ -16,6 +16,7 @@ import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemie
 import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
+import { routeForView, viewForPath, gameSlugFor } from './src/arcade-router.mjs';
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -2186,8 +2187,22 @@ function renderFlowSteps() {
   }
 }
 
+// Guard so URL syncing from setOfficialView doesn't fight popstate-driven nav.
+let suppressRouteSync = false;
+
+function syncRouteForView(step) {
+  if (suppressRouteSync || typeof window === 'undefined' || !window.history?.pushState) return;
+  const gameSlug = gameSlugFor(selectedGameId);
+  const sessionId = currentSession?.urlSessionId ?? null;
+  const path = routeForView(step, { gameSlug, sessionId });
+  if (window.location.pathname !== path) {
+    window.history.pushState({ step, gameSlug, sessionId }, '', path);
+  }
+}
+
 function setOfficialView(step) {
   officialAppStep = step;
+  syncRouteForView(step);
   render();
 }
 
@@ -6870,6 +6885,26 @@ function ensureTouchControls(profile) {
   touchControlsBuilt = true;
 }
 
+// --- URL routing bootstrap ---------------------------------------------------
+// Map the current URL to a view on load + on browser back/forward, layered over
+// the existing officialAppStep state machine. Deep-linking into an active ranked
+// session URL without a live session lands on the game page (mode-select) since
+// the session can't be reconstructed client-side yet.
+function applyRouteFromLocation() {
+  if (typeof window === 'undefined') return;
+  const { step, gameSlug } = viewForPath(window.location.pathname, { connected: Boolean(connectedWallet) });
+  if (gameSlug) selectedGameId = 'hmh';
+  suppressRouteSync = true;
+  officialAppStep = step;
+  try {
+    render();
+  } finally {
+    suppressRouteSync = false;
+  }
+}
+
+window.addEventListener('popstate', applyRouteFromLocation);
+
 applyDeviceProfile();
 let deviceResizeTimer = null;
 window.addEventListener('resize', () => {
@@ -6878,5 +6913,6 @@ window.addEventListener('resize', () => {
 });
 window.addEventListener('orientationchange', () => setTimeout(applyDeviceProfile, 200));
 
-render();
+// Initial paint honors the URL (deep-link / refresh) instead of always splash.
+applyRouteFromLocation();
 requestAnimationFrame(drawCombatScene);
