@@ -610,6 +610,18 @@ function renderArcadeMusicPlayer() {
         const audio = loadArcadeMusicTrack(queueTrack);
         if (audio) {
           arcadeMusic.unlocked = true;
+          // If track just changed, wait for canplaythrough before playing
+          if (audio.readyState < 3) {
+            await new Promise((resolve) => {
+              const onReady = () => {
+                audio.removeEventListener('canplaythrough', onReady);
+                resolve();
+              };
+              audio.addEventListener('canplaythrough', onReady, { once: true });
+              // Fallback timeout
+              setTimeout(resolve, 2000);
+            });
+          }
           try {
             await audio.play();
             arcadeMusic.playing = true;
@@ -1915,7 +1927,13 @@ async function exitCombatFullscreen() {
     combat.status = `Fullscreen exit failed: ${error?.message ?? 'browser request failed'}`;
     if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
   }
+  // Force immediate resize to windowed dimensions using the model
   resizeCombatCanvas();
+  // Apply the windowed model dimensions to the combat mount
+  if (dom.officialCombatMount) {
+    dom.officialCombatMount.style.setProperty('--combat-fullscreen-width', `${model.devicePixels.width}px`);
+    dom.officialCombatMount.style.setProperty('--combat-fullscreen-height', `${model.devicePixels.height}px`);
+  }
   syncCombatOverlay();
 }
 
@@ -3078,6 +3096,53 @@ function connectMockWallet() {
 // Sign out: clear the connected wallet/session and return to the wallet splash.
 // Local sandbox only — does not touch on-chain state.
 function signOutWallet() {
+  showSignOutConfirmModal();
+}
+
+function showSignOutConfirmModal() {
+  const modal = el('div', { className: 'modal-overlay signout-confirm-modal' });
+  modal.innerHTML = `
+    <div class="modal-content signout-modal">
+      <h3>Sign Out</h3>
+      <p>Are you sure you want to sign out? This will disconnect your wallet and return you to the Lester's Arcade homepage.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary signout-cancel">Cancel</button>
+        <button class="btn btn-danger signout-confirm">Sign Out</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  modal.querySelector('.signout-cancel').addEventListener('click', () => {
+    playSfxCue('menu-click', 0.05);
+    modal.remove();
+  });
+  
+  modal.querySelector('.signout-confirm').addEventListener('click', () => {
+    playSfxCue('menu-click', 0.05);
+    modal.remove();
+    executeSignOut();
+  });
+  
+  // Close on overlay click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      playSfxCue('menu-click', 0.05);
+      modal.remove();
+    }
+  });
+  
+  // Close on Escape key
+  const onEscape = (e) => {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', onEscape);
+    }
+  };
+  document.addEventListener('keydown', onEscape);
+}
+
+function executeSignOut() {
   playSfxCue('menu-click', 0.05);
   connectedWallet = null;
   connectedChainId = null;
@@ -5922,13 +5987,23 @@ function drawRoguelikeScene(ctx, width, height) {
     ctx.fillStyle = 'rgba(0,0,0,.48)';
     ctx.fillRect(0, 0, width, height);
     const modalFrame = productionImage('ui', 'level-up-modal-frame');
-    if (imageReady(modalFrame)) ctx.drawImage(modalFrame, Math.round(width / 2 - 180), 88, 360, 236);
+    // Responsive modal sizing: max 90% of canvas, centered
+    const maxModalWidth = Math.min(360, width * 0.9);
+    const maxModalHeight = Math.min(236, height * 0.85);
+    const modalX = Math.round((width - maxModalWidth) / 2);
+    const modalY = Math.round((height - maxModalHeight) / 2);
+    if (imageReady(modalFrame)) ctx.drawImage(modalFrame, modalX, modalY, maxModalWidth, maxModalHeight);
+    // Responsive text
+    const titleSize = Math.max(16, Math.min(24, width / 30));
+    const bodySize = Math.max(11, Math.min(13, width / 50));
     ctx.fillStyle = '#ffe84d';
-    ctx.font = '24px monospace';
-    ctx.fillText('LEVEL UP - CHOOSE AUGMENT', 216, 122);
-    ctx.font = '13px monospace';
+    ctx.font = `${titleSize}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('LEVEL UP - CHOOSE AUGMENT', Math.round(width / 2), modalY + Math.round(maxModalHeight * 0.16));
+    ctx.font = `${bodySize}px monospace`;
     ctx.fillStyle = '#f9f7ff';
-    ctx.fillText('Game is paused. Pick one of two random +5% upgrades or use your reroll.', 126, 150);
+    ctx.fillText('Game is paused. Pick one of two random +5% upgrades or use your reroll.', Math.round(width / 2), modalY + Math.round(maxModalHeight * 0.35));
+    ctx.textAlign = 'left';
   }
 }
 

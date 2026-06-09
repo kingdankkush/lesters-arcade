@@ -1053,3 +1053,90 @@
 @media (max-width: 560px) {
   .game-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* --- Sign out confirmation modal ------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 19, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: modalFadeIn 0.15s ease;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.modal-content {
+  background: linear-gradient(145deg, rgba(18, 11, 44, 0.98), rgba(7, 5, 18, 0.98));
+  border: 2px solid rgba(25, 247, 255, 0.6);
+  border-radius: 16px;
+  padding: 24px 28px;
+  max-width: 380px;
+  width: 90%;
+  box-shadow: 0 0 40px rgba(25, 247, 255, 0.2), 0 12px 48px rgba(0, 0, 0, 0.6);
+  animation: modalSlideUp 0.2s ease;
+}
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.signout-modal h3 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+.signout-modal p {
+  margin: 0 0 20px;
+  font-size: 0.8rem;
+  color: #c8d4ff;
+  line-height: 1.5;
+  text-align: center;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.modal-actions .btn {
+  min-width: 110px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.12s ease;
+}
+.btn-secondary {
+  background: rgba(25, 247, 255, 0.12);
+  border-color: rgba(25, 247, 255, 0.4);
+  color: #19f7ff;
+}
+.btn-secondary:hover {
+  background: rgba(25, 247, 255, 0.25);
+  box-shadow: 0 0 14px rgba(25, 247, 255, 0.4);
+}
+.btn-danger {
+  background: rgba(255, 71, 111, 0.18);
+  border-color: rgba(255, 71, 111, 0.5);
+  color: #ff9bb2;
+}
+.btn-danger:hover {
+  background: rgba(255, 71, 111, 0.35);
+  box-shadow: 0 0 16px rgba(255, 71, 111, 0.5);
+  color: #fff;
+}
