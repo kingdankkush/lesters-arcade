@@ -84,6 +84,8 @@ import {
   scheduleBossEncounter,
   simulateLesterBlasterRun,
   startPlaySession,
+  formatUrlSessionId,
+  nextGlobalSessionId,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
@@ -1788,7 +1790,7 @@ async function restartCombatRun() {
   const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
   if (wasPaid) {
     dom.combatStatus.textContent = 'Ranked restart selected: this starts a fresh local ranked attempt and represents a new testnet credit in the official flow. Prior paid-run state is not silently resubmitted.';
-    currentSession = startPlaySession({ wallet: connectedWallet ?? MOCK_WALLET, gameId: selectedGameId, mode: 'paid' });
+    currentSession = beginTrackedSession({ mode: 'paid' });
   } else {
     dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or paid-run state is written.';
     currentSession = startPlaySession({ wallet: connectedWallet ?? MOCK_WALLET, gameId: selectedGameId, mode: 'free' });
@@ -2907,8 +2909,7 @@ function requestRankedEntry() {
 async function beginOfficialLevel() {
   playSfxCue('level-start');
   if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
-  officialAppStep = 'gameplay';
-  render();
+  setOfficialView('gameplay'); // pushes /games/<game>/game-session-NNN for ranked
   await startCombat();
   render();
 }
@@ -3038,14 +3039,41 @@ async function ensureWalletConnected() {
   return connectWallet();
 }
 
+// Start a play session, allocating a global game-session-NNNNNNNNN handle for
+// ranked/paid (tracked) sessions. Free sessions stay handle-less (their URL
+// falls back to the game page). The handle is the blockchain-searchable id and
+// the session URL segment.
+function beginTrackedSession({ mode }) {
+  const isPaid = mode === 'paid' || mode === 'ranked';
+  const normalizedMode = mode === 'ranked' ? 'paid' : mode;
+  let urlSessionId = null;
+  let sequenceNumber = null;
+  if (isPaid) {
+    const allocated = nextGlobalSessionId(state);
+    urlSessionId = allocated.urlSessionId;
+    sequenceNumber = allocated.sequence;
+  }
+  return startPlaySession({
+    wallet: connectedWallet ?? MOCK_WALLET,
+    gameId: selectedGameId,
+    mode: normalizedMode,
+    urlSessionId,
+    sequenceNumber,
+  });
+}
+
 async function startMode(mode) {
   await ensureWalletConnected();
   const game = selectedGame();
   if (game.status !== 'playable') return;
 
-  currentSession = startPlaySession({ wallet: connectedWallet, gameId: selectedGameId, mode });
+  currentSession = beginTrackedSession({ mode });
   lastCompletedSession = null;
   lastRunResult = null;
+  // Ranked sessions get a session URL; free stays on the game page.
+  if (currentSession?.urlSessionId && officialAppStep === 'gameplay') {
+    syncRouteForView('gameplay');
+  }
   render();
 }
 

@@ -3028,6 +3028,12 @@ export function createInitialArcadeState() {
     officialSessions: [],
     settlements: [],
     loginEvents: [],
+    // Monotonic global session counter across ALL games in the arcade. Each
+    // ranked (or tracked) session gets the next number, formatted as the
+    // user-facing/blockchain handle game-session-NNNNNNNNN.
+    globalSessionSequence: 0,
+    // Index of official sessions by their public game-session-NNNNNNNNN handle.
+    sessionsByUrlId: {},
     leaderboards: Object.fromEntries(ARCADE_GAMES.map((game) => [game.id, []])),
     cadenceLeaderboards: Object.fromEntries(ARCADE_GAMES.map((game) => [game.id, Object.fromEntries(LEADERBOARD_CADENCES.map((c) => [c, {}]))])),
   };
@@ -3041,6 +3047,17 @@ export function getGame(gameId) {
   }
 
   return game;
+}
+
+// Look up a recorded official session by its public handle (the
+// game-session-NNNNNNNNN id used in the URL and on-chain). This is the
+// user-facing "pull an old session" read path. Returns the session record or
+// null. Falls back to a linear scan if the index is missing (older state).
+export function getSessionByUrlId(state, urlSessionId) {
+  if (!state || !urlSessionId) return null;
+  const indexed = state.sessionsByUrlId?.[urlSessionId];
+  if (indexed) return indexed;
+  return (state.officialSessions ?? []).find((s) => s.urlSessionId === urlSessionId) ?? null;
 }
 
 export function getCartridgeSelectModel() {
@@ -3156,7 +3173,27 @@ export function ensureProfile(state, wallet) {
   return connectPlayerAccount(state, wallet).profile;
 }
 
-export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken = 'USDC' }) {
+// Format a global session sequence number into the user-facing / blockchain
+// handle, e.g. 1 -> 'game-session-000000001'. Zero-padded to 9 digits; longer
+// numbers are not truncated.
+export function formatUrlSessionId(sequence) {
+  const n = Math.max(0, Math.floor(Number(sequence) || 0));
+  return `game-session-${String(n).padStart(9, '0')}`;
+}
+
+// Reserve the next global session id from arcade state (mutates the counter).
+// Returns { sequence, urlSessionId }. Used for ranked/tracked sessions so each
+// gets a stable, searchable handle recorded both per-game and globally.
+export function nextGlobalSessionId(state) {
+  if (!state) throw new Error('state is required to allocate a session id');
+  state.globalSessionSequence = (state.globalSessionSequence ?? 0) + 1;
+  return {
+    sequence: state.globalSessionSequence,
+    urlSessionId: formatUrlSessionId(state.globalSessionSequence),
+  };
+}
+
+export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken = 'USDC', urlSessionId = null, sequenceNumber = null }) {
   const normalizedWallet = normalizeWallet(wallet);
   const game = getGame(gameId);
 
@@ -3175,6 +3212,10 @@ export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken =
 
   return {
     sessionId: `${gameId}-${mode}-${sequence}`,
+    // User-facing / blockchain-searchable handle (ranked sessions). Free runs
+    // may leave this null; the URL then falls back to the game page.
+    urlSessionId: urlSessionId,
+    sequenceNumber: sequenceNumber,
     wallet: normalizedWallet,
     gameId,
     gameTitle: game.title,
@@ -3420,6 +3461,11 @@ export function recordScore(state, session, score, runStats = {}) {
   state.officialSessions ??= [];
   const officialSession = {
     sessionId: session.sessionId,
+    // Public, blockchain-searchable handle (game-session-NNNNNNNNN) for ranked
+    // runs. Mirrored at the parent-arcade level so a user can pull this exact
+    // session from any game, and globally across the arcade.
+    urlSessionId: session.urlSessionId ?? null,
+    sequenceNumber: session.sequenceNumber ?? null,
     wallet: profile.wallet,
     gameId: game.id,
     gameTitle: game.title,
@@ -3433,6 +3479,11 @@ export function recordScore(state, session, score, runStats = {}) {
   state.officialSessions.push(officialSession);
   state.sessions ??= {};
   state.sessions[session.sessionId] = officialSession;
+  // Index by the public handle so getSessionByUrlId() can pull it directly.
+  if (session.urlSessionId) {
+    state.sessionsByUrlId ??= {};
+    state.sessionsByUrlId[session.urlSessionId] = officialSession;
+  }
 
   return {
     acceptedForGlobalLeaderboard: true,
