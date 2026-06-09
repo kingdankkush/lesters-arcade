@@ -4686,7 +4686,9 @@ function updateRoguelikeMovement(dt) {
     - (combat.keys.has('w') || combat.keys.has('arrowup') ? 1 : 0);
   const usingKeys = mx !== 0 || my !== 0;
 
-  if (!usingKeys && combat.pointerActive) {
+  // On DESKTOP, the mouse is AIM ONLY — movement is WASD/arrows. On TOUCH (no
+  // hover cursor) the hero auto-walks toward the touch point.
+  if (!usingKeys && combat.pointerActive && !isDesktopControls()) {
     const pdx = (combat.pointerWorldX ?? combat.playerMapX) - combat.playerMapX;
     const pdy = (combat.pointerWorldY ?? combat.playerMapY) - combat.playerMapY;
     const pdist = Math.hypot(pdx, pdy);
@@ -4717,9 +4719,10 @@ function updateRoguelikeMovement(dt) {
   } else {
     combat._heroMoving = false;
   }
-  // Facing/aim: pointer aim already maintained in updateAimFromPointer; for
-  // keyboard movers, face the movement direction.
-  if (usingKeys) {
+  // Facing/aim: on DESKTOP the gun always fires toward the mouse (aim is held by
+  // updateAimFromPointer), independent of WASD movement — twin-stick style. On
+  // TOUCH there's no hover cursor, so keyboard movers face their movement vector.
+  if (usingKeys && !isDesktopControls()) {
     combat.aimMapX = mx / length;
     combat.aimMapY = my / length;
   }
@@ -6225,23 +6228,27 @@ function heroAnimState() {
 // Resolve the selected hero's characterId to the richest available animated
 // roster key, falling through to art we actually have. New heroes (Lit Commando
 // / Lit Valkyrie) prefer their own frames, then their legacy art, then Lester.
+// Lock each playable hero to EXACTLY ONE animated roster that has the full
+// animation kit. We do NOT fall through to partial rosters: mixing rosters per
+// animation state (e.g. idle from one design, shoot from another) is what made
+// the hero visibly swap between 3-4 different character designs mid-run.
+//
+// Asset reality: the complete 8-direction kits (idle/walk/run/shoot/melee/throw/
+// hurt/death) live under the 'lester' roster (-> Lit Commando design) and the
+// 'lilly' roster (-> Lit Valkyrie design). The partial 'lit-commando'/'lit-
+// valkyrie' rosters are intentionally NOT used so each hero stays one design.
+const HERO_LOCKED_ROSTER = Object.freeze({
+  'lit-commando': 'lester',
+  lester: 'lester',
+  'lit-valkyrie': 'lilly',
+  lilly: 'lilly',
+});
+
 function heroRosterKey(characterId) {
-  const hasFrames = (k) => {
-    const r = HMH_ANIMATED_ROSTER[k];
-    return !!(r && r.animations && Object.keys(r.animations).length);
-  };
-  const preference = {
-    'lit-commando': ['lit-commando', 'lester'],
-    'lit-valkyrie': ['lit-valkyrie', 'lilly', 'lester'],
-    // Legacy ids: 'lester' now displays as Lit Commando, 'lilly' as Lit Valkyrie.
-    // Prefer the new heroes' art when harvested, else fall back to legacy frames.
-    lester: ['lit-commando', 'lester'],
-    lilly: ['lit-valkyrie', 'lilly', 'lester'],
-  }[characterId] || ['lester'];
-  for (const k of preference) {
-    if (hasFrames(k)) return k;
-  }
-  return 'lester';
+  const locked = HERO_LOCKED_ROSTER[characterId] ?? 'lester';
+  const r = HMH_ANIMATED_ROSTER[locked];
+  if (r && r.animations && Object.keys(r.animations).length) return locked;
+  return 'lester'; // ultimate fallback (lester always has the complete kit)
 }
 
 function lesterAnimatedFrame() {
@@ -6798,6 +6805,15 @@ if (injectedProvider?.on) {
 
 // ----- Responsive device detection + mobile/tablet touch controls -----
 const deviceState = { profile: null, touchKeys: new Set() };
+
+// Desktop control scheme: WASD/arrows move, mouse aims + auto-fires toward the
+// cursor. True when the device is not touch-primary. Falls back to true when no
+// profile is resolved yet (desktop is the safe default for keyboard handlers).
+function isDesktopControls() {
+  const p = deviceState.profile;
+  if (!p) return !(('ontouchstart' in window) || (navigator.maxTouchPoints ?? 0) > 0);
+  return !p.isTouch;
+}
 
 function readDeviceSignals() {
   return {
