@@ -508,6 +508,23 @@ const combatAudio = {
   sfxLoadAttempted: false,
 };
 
+// Player-facing game settings (persisted to localStorage so they survive
+// reloads). Wired into the functional Settings screen.
+const gameSettings = {
+  screenShake: true,
+  gore: true,
+};
+(function loadGameSettings() {
+  try {
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem('hmh-settings') : null;
+    if (raw) Object.assign(gameSettings, JSON.parse(raw));
+    if (typeof combatAudio !== 'undefined') {} // no-op guard
+  } catch { /* ignore corrupt prefs */ }
+})();
+function saveGameSettings() {
+  try { if (typeof localStorage !== 'undefined') localStorage.setItem('hmh-settings', JSON.stringify(gameSettings)); } catch { /* ignore */ }
+}
+
 function currentArcadeMusicTrack() {
   if (!arcadeMusic.queue.length) return null;
   const normalizedIndex = ((arcadeMusic.currentTrackIndex % arcadeMusic.queue.length) + arcadeMusic.queue.length) % arcadeMusic.queue.length;
@@ -4438,13 +4455,14 @@ function spawnSlash(x, y) {
 }
 
 function spawnBlood(x, y, color) {
-  combat.shake = Math.min(7, (combat.shake ?? 0) + 1.6);
+  if (gameSettings.screenShake) combat.shake = Math.min(7, (combat.shake ?? 0) + 1.6);
+  if (!gameSettings.gore) return; // gore toggle: skip blood splatter when off
   spawnFxImage('blood', x, y, 54, 0.38);
   for (let i = 0; i < 9; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
 }
 
 function spawnExplosion(x, y, color) {
-  combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
+  if (gameSettings.screenShake) combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
   spawnFxImage('fireball', x, y, 96, 0.5);
   spawnFxImage('shockwave', x, y, 120, 0.42);
   spawnSpriteParticle('level-up-burst', x, y, { color, size: 112, life: 0.72 });
