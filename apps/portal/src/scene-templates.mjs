@@ -45,6 +45,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   //     the curb at fixed spacing; a bench / hydrant / trash can sit near the
   //     sidewalk; the floor theme is pavement. ---
   street_block: Object.freeze({
+    weight: 0.5,
     id: 'street_block', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement',
     slots: [
       { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
@@ -129,6 +130,148 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
     ],
   }),
+
+  // --- NEW DISTRICT: Downtown Business District ---
+  downtown_district: Object.freeze({
+    id: 'downtown_district', biomes: ['town', 'pavement'], groundTheme: 'pavement', weight: 0.4,
+    slots: [
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 2, count: 2 },
+      { ...A('street/fire-hydrant', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('interior/shop-counter', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('construct/low-stone-wall', 'wall', { radius: 0.35 }), place: 'scatter', count: 1 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 4 },
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+    ],
+  }),
+
+  suburban_residential: Object.freeze({
+    id: 'suburban_residential', biomes: ['town'], groundTheme: 'grass', weight: 0.35,
+    slots: [
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-corner', 'wall', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('nature/oak-tree', 'tree', { radius: 0.6 }), place: 'scatter', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'pathEdge', spacing: 4, count: 1 },
+    ],
+  }),
+
+  industrial_zone: Object.freeze({
+    id: 'industrial_zone', biomes: ['pavement', 'road'], groundTheme: 'pavement', weight: 0.3,
+    slots: [
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-corner', 'wall', { radius: 0.4 }), place: 'scatter', count: 3 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 6 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  city_park: Object.freeze({
+    id: 'city_park', biomes: ['town', 'forest'], groundTheme: 'grass', weight: 0.3,
+    slots: [
+      { ...A('nature/fountain', 'bigprop', { radius: 0.7 }), place: 'anchor', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'pathEdge', spacing: 3, count: 4 },
+      { ...A('nature/oak-tree', 'tree', { radius: 0.6 }), place: 'scatter', count: 3 },
+      { ...A('nature/pine-tree', 'tree', { radius: 0.55 }), place: 'scatter', count: 2 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 4 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 4, count: 4 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  beach_boardwalk: Object.freeze({
+    id: 'beach_boardwalk', biomes: ['sand', 'water'], groundTheme: 'sand', weight: 0.25,
+    slots: [
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 6 },
+      { ...A('nature/pine-tree', 'tree', { radius: 0.6 }), place: 'scatter', count: 2 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 2 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 3 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 2 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  office_interior: Object.freeze({
+    id: 'office_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.25,
+    slots: [
+      { ...A('interior/table-plain', 'table', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 4 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('interior/tv-on-table', 'decor', { solid: false, radius: 0 }), place: 'onHost', hostRole: 'table', count: 1 },
+    ],
+  }),
+
+  diner_interior: Object.freeze({
+    id: 'diner_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.2,
+    slots: [
+      { ...A('interior/table-plain', 'table', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('interior/shop-counter', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  grocery_interior: Object.freeze({
+    id: 'grocery_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.2,
+    slots: [
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('interior/shop-counter', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'onHost', hostRole: 'crate', count: 1 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  gym_interior: Object.freeze({
+    id: 'gym_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.15,
+    slots: [
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 3 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('interior/tv-on-table', 'decor', { solid: false, radius: 0 }), place: 'onHost', hostRole: 'crate', count: 1 },
+    ],
+  }),
+
+  grocery_interior: Object.freeze({
+    id: 'grocery_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.2,
+    slots: [
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('interior/shop-counter', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'onHost', hostRole: 'crate', count: 1 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  gym_interior: Object.freeze({
+    id: 'gym_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.15,
+    slots: [
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 3 },
+      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('interior/tv-on-table', 'decor', { solid: false, radius: 0 }), place: 'onHost', hostRole: 'crate', count: 1 },
+    ],
+  }),
+
 });
 
 // Templates available for a biome (with relative weights; default weight 1).
