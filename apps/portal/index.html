@@ -8,8 +8,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#05070f" />
     <title>Lester's Arcade — LitVM Web3 Arcade Prototype</title>
-    <link rel="stylesheet" href="./styles.css?v=hmh-visual-polish-v17" />
-    <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-visual-polish-v17" />
+    <link rel="stylesheet" href="./styles.css?v=hmh-coherent-v18" />
+    <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-coherent-v18" />
   </head>
   <body>
     <div class="crt-overlay" aria-hidden="true"></div>
@@ -44,16 +44,24 @@
           <button id="developerBackstageToggle" class="ghost-button dev-tool-toggle" type="button" hidden>Tools</button>
         </nav>
 
-        <!-- Partner ad space (vertical rail). Fixed on the right, above the music player. Hidden on mobile. Swap data-ad-* + img src to sell a slot. -->
+        <!-- Partner ad space (vertical rail). Fixed on the right, above the music player. Hidden on mobile + landscape-mobile. Banner art behind real reflowing text. -->
         <a id="adBannerVertical" class="ad-banner ad-banner-vertical" href="mailto:justin.pinter@lunardigitalassets.io?subject=Lester%27s%20Arcade%20Ad%20Space"
            target="_blank" rel="noopener sponsored" data-ad-slot="vertical-rail" aria-label="Advertise on Lester's Arcade — place your ad here, contact justin.pinter@lunardigitalassets.io">
-          <img src="./assets/ads/ad-placeholder-vertical.svg" alt="Place your ad here — contact justin.pinter@lunardigitalassets.io" />
+          <span class="ad-banner-overlay">
+            <strong class="ad-banner-title">Place Your Ad Here</strong>
+            <span class="ad-banner-copy">Reach the Lester's Arcade community</span>
+            <span class="ad-banner-email">justin.pinter@lunardigitalassets.io</span>
+          </span>
         </a>
 
-        <!-- Partner ad space (horizontal). Fixed at the bottom of the page. Swap data-ad-* + img src to sell a slot. -->
+        <!-- Partner ad space (horizontal). Fixed at the bottom of the page. Banner art behind real reflowing text so the contact email never crops on mobile. -->
         <a id="adBannerHorizontal" class="ad-banner ad-banner-horizontal" href="mailto:justin.pinter@lunardigitalassets.io?subject=Lester%27s%20Arcade%20Ad%20Space"
            target="_blank" rel="noopener sponsored" data-ad-slot="horizontal-bottom" aria-label="Advertise on Lester's Arcade — place your ad here, contact justin.pinter@lunardigitalassets.io">
-          <img src="./assets/ads/ad-placeholder-horizontal.svg" alt="Place your ad here — contact justin.pinter@lunardigitalassets.io" />
+          <span class="ad-banner-overlay">
+            <strong class="ad-banner-title">Place Your Ad Here</strong>
+            <span class="ad-banner-copy">Reach the Lester's Arcade community:</span>
+            <span class="ad-banner-email">justin.pinter@lunardigitalassets.io</span>
+          </span>
         </a>
 
         <aside id="arcadeMusicPlayer" class="arcade-music-player" data-expanded="false" data-playing="false" data-muted="false" aria-label="Lester's Arcade music player">
@@ -489,6 +497,6 @@
       </div>
     </main>
 
-    <script type="module" src="./main.js?v=hmh-visual-polish-v17"></script>
+    <script type="module" src="./main.js?v=hmh-coherent-v18"></script>
   </body>
 </html>

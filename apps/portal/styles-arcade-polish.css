@@ -649,11 +649,48 @@
   text-decoration: none;
   border-radius: 12px;
   overflow: hidden;
-  line-height: 0;
+  background-color: #0a1024;
+  background-size: cover;
+  background-position: center top;   /* the calm dark ceiling strip sits up top */
+  background-repeat: no-repeat;
   transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
   box-shadow: 0 0 0 1px rgba(25,247,255,0.20), 0 10px 34px rgba(0,0,0,0.55);
 }
-.ad-banner img { display: block; width: 100%; height: auto; }
+/* Real reflowing text overlay (replaces the old baked-text SVG so the contact
+   email is live text that wraps/shrinks to the device width and never crops). */
+.ad-banner-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 8px 14px;
+  text-align: center;
+  /* Dark scrim so text stays readable over the busy arcade art. */
+  background: linear-gradient(90deg, rgba(6,10,22,0.82), rgba(6,10,22,0.5) 45%, rgba(6,10,22,0.82));
+}
+.ad-banner-title {
+  font: 800 clamp(13px, 3.4vw, 18px)/1.05 "Trebuchet MS", Verdana, sans-serif;
+  letter-spacing: 0.04em;
+  color: #ffe84d;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  text-transform: uppercase;
+}
+.ad-banner-copy {
+  font: 600 clamp(9px, 2.2vw, 12px)/1.2 "Trebuchet MS", Verdana, sans-serif;
+  color: #cdd8f5;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+}
+.ad-banner-email {
+  font: 700 clamp(9px, 2.4vw, 12.5px)/1.2 "Trebuchet MS", Verdana, sans-serif;
+  color: #19f7ff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+  /* Always fit the full address: wrap if needed rather than crop. */
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
 .ad-banner::after {
   content: "AD";
   position: absolute;
@@ -677,11 +714,12 @@
   bottom: clamp(8px, 1.6vw, 18px);
   transform: translateX(-50%);
   width: min(728px, calc(100vw - 24px));
-  max-height: 72px;
+  /* Auto-height so wrapped text is never clipped; min keeps the art readable. */
+  min-height: 64px;
+  background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0)), url('./assets/ads/ad-horizontal-bg.jpg');
   z-index: 17;
   margin: 0;
 }
-.ad-banner-horizontal img { max-height: 72px; width: auto; margin: 0 auto; }
 .ad-banner-horizontal:hover { transform: translateX(-50%) translateY(-2px); }
 .ad-banner-vertical {
   position: fixed;
@@ -689,21 +727,29 @@
   /* Sit above the music player: player is ~116px tall at bottom ~24px. */
   bottom: clamp(150px, 4vw + 140px, 168px);
   width: clamp(150px, 14vw, 200px);
-  max-height: min(58vh, 320px);
+  min-height: 300px;
+  background-image: url('./assets/ads/ad-vertical-bg.jpg');
   z-index: 17;
   margin: 0;
 }
-.ad-banner-vertical img { max-height: min(58vh, 320px); width: auto; margin: 0 auto; }
+.ad-banner-vertical .ad-banner-overlay { justify-content: flex-end; padding-bottom: 16px; }
 /* Ad banners only belong on the wallet-splash landing, not inside gameplay/menus. */
 #officialApp:not([data-step="wallet-splash"]) .ad-banner-horizontal,
 #officialApp:not([data-step="wallet-splash"]) .ad-banner-vertical {
   display: none;
 }
+/* Remove the tall rail ad on narrow screens (portrait mobile). */
 @media (max-width: 720px) {
-  /* Hide the tall rail ad on narrow screens; keep the horizontal one. */
   .ad-banner-vertical { display: none !important; }
-  .ad-banner-horizontal { bottom: 8px; }
+  .ad-banner-horizontal { bottom: 8px; width: calc(100vw - 16px); }
+}
+/* Remove the vertical rail ad on landscape mobile too — short viewport heights
+   (phones held sideways) where the tall ad blocks too much of the screen. */
+@media (orientation: landscape) and (max-height: 560px) {
+  .ad-banner-vertical { display: none !important; }
+}
 
+@media (max-width: 720px) {
   .official-app {
     padding: 10px;
   }
