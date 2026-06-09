@@ -5234,6 +5234,21 @@ function productionPropForIndex(index) {
   return combatArt.production.props[slugs[index % slugs.length]] ?? null;
 }
 
+// Shared ground contact shadow so every world object (obstacles, ambient props,
+// pickups) reads as PLANTED on the ground instead of floating. Global light is
+// modeled as coming from the upper-left, so shadows pool slightly down-right at
+// the object's foot. `footX/footY` is the screen-space ground contact point.
+function drawContactShadow(ctx, footX, footY, width, { alpha = 0.28, squash = 0.4 } = {}) {
+  const w = Math.max(10, width);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = '#02040a';
+  ctx.beginPath();
+  ctx.ellipse(footX + w * 0.06, footY, w, Math.max(5, w * squash), 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawProductionIsoProp(ctx, prop, x, y, index) {
   const frameImage = productionSpriteFrame(prop, combat.frame + index * 9, prop?.fps ?? 8);
   if (!imageReady(frameImage)) return false;
@@ -5247,6 +5262,13 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   const bob = prop.role?.includes('hazard') || prop.role?.includes('pickup_container') ? Math.sin((combat.frame + index * 11) * 0.08) * 1.5 : 0;
   ctx.save();
   ctx.imageSmoothingEnabled = false;
+  // Ground contact shadow (skip flat ground-decals/decor that sit IN the floor).
+  const flatDecor = prop.role?.includes('ground') || prop.role?.includes('decal');
+  if (!flatDecor) {
+    drawContactShadow(ctx, Math.round(x + sway), Math.round(y - 2), drawWidth * 0.34, {
+      alpha: prop.role?.includes('occluder') ? 0.3 : 0.24,
+    });
+  }
   ctx.globalAlpha = prop.role?.includes('decor') ? 0.92 : 1;
   ctx.drawImage(frameImage, Math.round(x - drawWidth / 2 + sway), Math.round(y - drawHeight + bob), drawWidth, drawHeight);
   ctx.restore();
@@ -5462,12 +5484,7 @@ function buildObstacleRenderEntries(ctx) {
         ctx.save();
         ctx.imageSmoothingEnabled = false;
         // Soft contact shadow so solid objects read as planted on the ground.
-        ctx.globalAlpha = 0.26;
-        ctx.fillStyle = '#02040a';
-        ctx.beginPath();
-        ctx.ellipse(projected.x, projected.y + style.ground - 2, shadowW, Math.max(6, shadowW * 0.42), 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        drawContactShadow(ctx, projected.x, projected.y + style.ground - 2, shadowW, { alpha: 0.28 });
         ctx.drawImage(img, baseX, baseY, w, drawH);
         ctx.restore();
       },
