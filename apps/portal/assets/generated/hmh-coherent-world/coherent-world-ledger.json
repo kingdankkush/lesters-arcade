@@ -39,6 +39,46 @@
       "status": "downloaded",
       "raw": "id: 7b1648b1-06c9-4997-8fcd-db0601b9825a\ndescription: isometric blue street mailbox on a post, pixel art\nsize: 40x56px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"7b1648b1-06c9-4997-8fcd-db0601b9825a\")",
       "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\mailbox.png"
+    },
+    "street/trash-can": {
+      "set": "street",
+      "slug": "trash-can",
+      "w": 40,
+      "h": 48,
+      "id": "20396489-c02c-43c3-8cb1-62c85e1c7e9d",
+      "status": "downloaded",
+      "raw": "id: 20396489-c02c-43c3-8cb1-62c85e1c7e9d\ndescription: isometric metal city trash can with lid, pixel art\nsize: 40x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"20396489-c02c-43c3-8cb1-62c85e1c7e9d\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\trash-can.png"
+    },
+    "street/traffic-cone": {
+      "set": "street",
+      "slug": "traffic-cone",
+      "w": 32,
+      "h": 40,
+      "id": "f4376497-2186-46e8-ba2f-b3753d74d3fd",
+      "status": "downloaded",
+      "raw": "id: f4376497-2186-46e8-ba2f-b3753d74d3fd\ndescription: isometric orange traffic cone, pixel art\nsize: 32x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"f4376497-2186-46e8-ba2f-b3753d74d3fd\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\traffic-cone.png"
+    },
+    "street/bus-stop-sign": {
+      "set": "street",
+      "slug": "bus-stop-sign",
+      "w": 40,
+      "h": 72,
+      "id": "8ab9b3e1-e91f-41ba-bd4c-74ea17483e44",
+      "status": "downloaded",
+      "raw": "id: 8ab9b3e1-e91f-41ba-bd4c-74ea17483e44\ndescription: isometric bus stop sign on a thin pole, pixel art\nsize: 40x72px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"8ab9b3e1-e91f-41ba-bd4c-74ea17483e44\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\bus-stop-sign.png"
+    },
+    "interior/arcade-cabinet": {
+      "set": "interior",
+      "slug": "arcade-cabinet",
+      "w": 48,
+      "h": 80,
+      "id": "92ed8805-6575-4f57-bc9e-fc959f81c4c0",
+      "status": "downloaded",
+      "raw": "id: 92ed8805-6575-4f57-bc9e-fc959f81c4c0\ndescription: isometric retro arcade cabinet machine with glowing screen, pixel art\nsize: 48x80px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"92ed8805-6575-4f57-bc9e-fc959f81",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\arcade-cabinet.png"
     }
   }
 }
