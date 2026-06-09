@@ -41,7 +41,13 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     "speedster-16-bit-arcade-music-track-1",
     "speedster-16-bit-arcade-music-track-2",
     "super-lit-16-bit-arcade-music-track-1",
-    "super-lit-16-bit-arcade-music-track-2"
+    "super-lit-16-bit-arcade-music-track-2",
+    "attack-of-the-lit-invaders-16-bit-arcade-music",
+    "attack-of-the-lit-invaders-16-bit-arcade-music-alt",
+    "lit-vibey-hideout-16-bit-arcade-music",
+    "lit-vibey-hideout-16-bit-arcade-music-alt",
+    "midnight-lit-16-bit-arcade-music",
+    "midnight-lit-16-bit-arcade-music-alt"
   ],
   "gameQueues": {
     "hardMoneyHeroes": [
@@ -64,7 +70,13 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
       "speedster-16-bit-arcade-music-track-1",
       "speedster-16-bit-arcade-music-track-2",
       "super-lit-16-bit-arcade-music-track-1",
-      "super-lit-16-bit-arcade-music-track-2"
+      "super-lit-16-bit-arcade-music-track-2",
+      "attack-of-the-lit-invaders-16-bit-arcade-music",
+      "attack-of-the-lit-invaders-16-bit-arcade-music-alt",
+      "lit-vibey-hideout-16-bit-arcade-music",
+      "lit-vibey-hideout-16-bit-arcade-music-alt",
+      "midnight-lit-16-bit-arcade-music",
+      "midnight-lit-16-bit-arcade-music-alt"
     ],
     "hard-money-heroes": [
       "hard-money-heroes-16-bit-arcade-music",
@@ -86,13 +98,19 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
       "speedster-16-bit-arcade-music-track-1",
       "speedster-16-bit-arcade-music-track-2",
       "super-lit-16-bit-arcade-music-track-1",
-      "super-lit-16-bit-arcade-music-track-2"
+      "super-lit-16-bit-arcade-music-track-2",
+      "attack-of-the-lit-invaders-16-bit-arcade-music",
+      "attack-of-the-lit-invaders-16-bit-arcade-music-alt",
+      "lit-vibey-hideout-16-bit-arcade-music",
+      "lit-vibey-hideout-16-bit-arcade-music-alt",
+      "midnight-lit-16-bit-arcade-music",
+      "midnight-lit-16-bit-arcade-music-alt"
     ]
   },
   "tracks": [
     {
       "id": "hard-money-heroes-16-bit-arcade-music",
-      "title": "Hard Money Heroes 16-BIT Arcade Music",
+      "title": "Hard Money Heroes — Main Theme",
       "src": "./assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3",
       "sourceFile": "Hard Money Heroes 16-BIT Arcade Music.mp3",
       "durationSeconds": 134.84,
@@ -107,7 +125,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "hard-money-heroes-16-bit-arcade-music-alt",
-      "title": "Hard Money Heroes 16-BIT Arcade Music Alt",
+      "title": "Hard Money Heroes — Mempool Mayhem",
       "src": "./assets/audio/playlist/hard-money-heroes-16-bit-arcade-music-alt.mp3",
       "sourceFile": "Hard Money Heroes 16-BIT Arcade Music (1).mp3",
       "durationSeconds": 154.8,
@@ -122,7 +140,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "adventure-16-bit-arcade-music",
-      "title": "Adventure 16-BIT Arcade Music",
+      "title": "Block Reward Quest",
       "src": "./assets/audio/playlist/adventure-16-bit-arcade-music.mp3",
       "sourceFile": "Adventure 16-BIT Arcade Music.mp3",
       "durationSeconds": 217.24,
@@ -137,7 +155,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "castlelitvania-16-bit-arcade-music-track-1",
-      "title": "CastleLitvania 16-BIT Arcade Music Track 1",
+      "title": "CastleLitvania — Crypt of the Cold Wallet",
       "src": "./assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "CastleLitvania 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 118.32,
@@ -152,7 +170,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "castlelitvania-16-bit-arcade-music-track-2",
-      "title": "CastleLitvania 16-BIT Arcade Music Track 2",
+      "title": "CastleLitvania — Halving Night",
       "src": "./assets/audio/playlist/castlelitvania-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "CastleLitvania 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 121.92,
@@ -167,7 +185,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-country-16-bit-arcade-music-track-1",
-      "title": "Lit Country 16-BIT Arcade Music Track 1",
+      "title": "Proof-of-Work Prairie",
       "src": "./assets/audio/playlist/lit-country-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "Lit Country 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 239.8,
@@ -182,7 +200,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-country-16-bit-arcade-music-track-2",
-      "title": "Lit Country 16-BIT Arcade Music Track 2",
+      "title": "Open Ledger Range",
       "src": "./assets/audio/playlist/lit-country-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "Lit Country 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 246.28,
@@ -197,7 +215,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-fantasy-16-bit-arcade-music-track-1",
-      "title": "Lit Fantasy 16-BIT Arcade Music Track 1",
+      "title": "Final Ledger I — Genesis Block",
       "src": "./assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "Lit Fantasy 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 104.92,
@@ -212,7 +230,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-fantasy-16-bit-arcade-music-track-2",
-      "title": "Lit Fantasy 16-BIT Arcade Music Track 2",
+      "title": "Final Ledger II — The Lost Keys",
       "src": "./assets/audio/playlist/lit-fantasy-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "Lit Fantasy 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 109.8,
@@ -227,7 +245,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-man-16-bit-arcade-music-track-1",
-      "title": "Lit Man 16-BIT Arcade Music Track 1",
+      "title": "Mega Lit — Hashrate Heights",
       "src": "./assets/audio/playlist/lit-man-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "Lit Man 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 167.4,
@@ -242,7 +260,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-man-16-bit-arcade-music-track-2",
-      "title": "Lit Man 16-BIT Arcade Music Track 2",
+      "title": "Mega Lit — Difficulty Bomb",
       "src": "./assets/audio/playlist/lit-man-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "Lit Man 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 149.56,
@@ -257,7 +275,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-trigger-16-bit-arcade-music",
-      "title": "Lit Trigger 16-BIT Arcade Music",
+      "title": "Lit Trigger — Timechain Warp",
       "src": "./assets/audio/playlist/lit-trigger-16-bit-arcade-music.mp3",
       "sourceFile": "Lit Trigger 16-BIT Arcade Music.mp3",
       "durationSeconds": 97.08,
@@ -272,7 +290,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "litbound-16-bit-arcade-music-track-1",
-      "title": "LitBound 16-BIT Arcade Music Track 1",
+      "title": "LitBound — Satoshi's Hometown",
       "src": "./assets/audio/playlist/litbound-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "LitBound 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 122.16,
@@ -287,7 +305,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "litbound-16-bit-arcade-music-track-2",
-      "title": "LitBound 16-BIT Arcade Music Track 2",
+      "title": "LitBound — Onward to LitVM",
       "src": "./assets/audio/playlist/litbound-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "LitBound 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 152.16,
@@ -302,7 +320,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-zero-16-bit-arcade-music-track-1",
-      "title": "Lit-Zero 16-BIT Arcade Music Track 1",
+      "title": "Lit Zero — Cyber Validator",
       "src": "./assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "Lit-Zero 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 137.64,
@@ -317,7 +335,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "lit-zero-16-bit-arcade-music-track-2",
-      "title": "Lit-Zero 16-BIT Arcade Music Track 2",
+      "title": "Lit Zero — Override Protocol",
       "src": "./assets/audio/playlist/lit-zero-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "Lit-Zero 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 154.64,
@@ -332,7 +350,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "speedster-16-bit-arcade-music-track-1",
-      "title": "Speedster 16-BIT Arcade Music Track 1",
+      "title": "Lightning Loop — Sub-Second Sprint",
       "src": "./assets/audio/playlist/speedster-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "Speedster 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 39.52,
@@ -347,7 +365,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "speedster-16-bit-arcade-music-track-2",
-      "title": "Speedster 16-BIT Arcade Music Track 2",
+      "title": "Green Candle Hashrate Dash",
       "src": "./assets/audio/playlist/speedster-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "Speedster 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 32.32,
@@ -362,7 +380,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "super-lit-16-bit-arcade-music-track-1",
-      "title": "Super Lit 16-BIT Arcade Music Track 1",
+      "title": "Super Lit Bros — Block 1-1",
       "src": "./assets/audio/playlist/super-lit-16-bit-arcade-music-track-1.mp3",
       "sourceFile": "Super Lit 16-BIT Arcade Music Track 1.mp3",
       "durationSeconds": 205.0,
@@ -377,7 +395,7 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
     },
     {
       "id": "super-lit-16-bit-arcade-music-track-2",
-      "title": "Super Lit 16-BIT Arcade Music Track 2",
+      "title": "Super Lit Bros — Flagpole Finale",
       "src": "./assets/audio/playlist/super-lit-16-bit-arcade-music-track-2.mp3",
       "sourceFile": "Super Lit 16-BIT Arcade Music Track 2.mp3",
       "durationSeconds": 244.56,
@@ -389,6 +407,102 @@ export const LESTER_ARCADE_PLAYLIST_MANIFEST = freezeDeep({
         "future-cabinet"
       ],
       "order": 19
+    },
+    {
+      "id": "attack-of-the-lit-invaders-16-bit-arcade-music",
+      "title": "Attack of the Lit Invaders — First Wave",
+      "src": "./assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music.mp3",
+      "sourceFile": "Attack of the Lit Invaders - 16-BIT Arcade Music.mp3",
+      "durationSeconds": 132.12,
+      "durationLabel": "2:12",
+      "bytes": 3437151,
+      "tags": [
+        "arcade",
+        "action",
+        "intense",
+        "combat"
+      ],
+      "order": 20
+    },
+    {
+      "id": "attack-of-the-lit-invaders-16-bit-arcade-music-alt",
+      "title": "Attack of the Lit Invaders — Final Assault",
+      "src": "./assets/audio/playlist/attack-of-the-lit-invaders-16-bit-arcade-music-alt.mp3",
+      "sourceFile": "Attack of the Lit Invaders - 16-BIT Arcade Music (1).mp3",
+      "durationSeconds": 70.56,
+      "durationLabel": "1:11",
+      "bytes": 1721581,
+      "tags": [
+        "arcade",
+        "action",
+        "intense",
+        "combat"
+      ],
+      "order": 21
+    },
+    {
+      "id": "lit-vibey-hideout-16-bit-arcade-music",
+      "title": "Lit Vibey Hideout",
+      "src": "./assets/audio/playlist/lit-vibey-hideout-16-bit-arcade-music.mp3",
+      "sourceFile": "Lit Vibey Hideout - 16-BIT Arcade Music.mp3",
+      "durationSeconds": 82.88,
+      "durationLabel": "1:23",
+      "bytes": 2012499,
+      "tags": [
+        "arcade",
+        "funky",
+        "chill",
+        "menu"
+      ],
+      "order": 22
+    },
+    {
+      "id": "lit-vibey-hideout-16-bit-arcade-music-alt",
+      "title": "Lit Vibey Hideout — After Hours",
+      "src": "./assets/audio/playlist/lit-vibey-hideout-16-bit-arcade-music-alt.mp3",
+      "sourceFile": "Lit Vibey Hideout - 16-BIT Arcade Music (1).mp3",
+      "durationSeconds": 99.56,
+      "durationLabel": "1:40",
+      "bytes": 2490289,
+      "tags": [
+        "arcade",
+        "funky",
+        "chill",
+        "menu"
+      ],
+      "order": 23
+    },
+    {
+      "id": "midnight-lit-16-bit-arcade-music",
+      "title": "Midnight Lit — Neon Skyline",
+      "src": "./assets/audio/playlist/midnight-lit-16-bit-arcade-music.mp3",
+      "sourceFile": "Midnight Lit - 16-BIT Arcade Music.mp3",
+      "durationSeconds": 67.92,
+      "durationLabel": "1:08",
+      "bytes": 1624498,
+      "tags": [
+        "arcade",
+        "chill",
+        "ambient",
+        "menu"
+      ],
+      "order": 24
+    },
+    {
+      "id": "midnight-lit-16-bit-arcade-music-alt",
+      "title": "Midnight Lit — Cold Storage Dreams",
+      "src": "./assets/audio/playlist/midnight-lit-16-bit-arcade-music-alt.mp3",
+      "sourceFile": "Midnight Lit - 16-BIT Arcade Music (1).mp3",
+      "durationSeconds": 119.12,
+      "durationLabel": "1:59",
+      "bytes": 2800281,
+      "tags": [
+        "arcade",
+        "chill",
+        "ambient",
+        "menu"
+      ],
+      "order": 25
     }
   ]
 });

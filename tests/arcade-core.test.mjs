@@ -1066,7 +1066,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./main.js?v=hmh-visual-polish-v12'), true);
+  assert.equal(indexSource.includes('./main.js?v=hmh-visual-polish-v13'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -1091,8 +1091,8 @@ test('Lester Arcade custom MP3 playlist manifest drives a global minimal music p
 
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
   assert.equal(manifest.id, 'lesters-arcade-custom-mp3-playlist-v1');
-  assert.equal(manifest.tracks.length, 20);
-  assert.equal(manifest.defaultQueue.length, 20);
+  assert.equal(manifest.tracks.length, 26);
+  assert.equal(manifest.defaultQueue.length, 26);
   assert.deepEqual(manifest.gameQueues.hardMoneyHeroes.slice(0, 2), ['hard-money-heroes-16-bit-arcade-music', 'hard-money-heroes-16-bit-arcade-music-alt']);
   assert.equal(manifest.tracks.every((track) => track.src.startsWith('./assets/audio/playlist/') && track.src.endsWith('.mp3')), true);
   assert.equal(manifest.tracks.every((track) => track.durationSeconds > 30 && track.durationLabel.includes(':')), true);
@@ -1102,11 +1102,11 @@ test('Lester Arcade custom MP3 playlist manifest drives a global minimal music p
   }
 
   const core = await import('../apps/portal/src/arcade-core.mjs');
-  assert.equal(core.LESTER_ARCADE_MUSIC_LIBRARY.tracks.length, 20);
+  assert.equal(core.LESTER_ARCADE_MUSIC_LIBRARY.tracks.length, 26);
   assert.equal(core.LESTER_ARCADE_MUSIC_LIBRARY.playerUi.position, 'global-overlay');
   assert.deepEqual(core.buildArcadeMusicQueueForContext('hard-money-heroes').slice(0, 2).map((track) => track.id), ['hard-money-heroes-16-bit-arcade-music', 'hard-money-heroes-16-bit-arcade-music-alt']);
   const player = core.buildArcadeMusicPlayerModel({ context: 'hard-money-heroes', currentTrackId: 'hard-money-heroes-16-bit-arcade-music', currentTimeSeconds: 67, playing: true, muted: false, expanded: false, shuffle: true });
-  assert.equal(player.title, 'Hard Money Heroes 16-BIT Arcade Music');
+  assert.equal(player.title, 'Hard Money Heroes — Main Theme');
   assert.equal(player.shuffle, true);
   assert.equal(player.controls.map((control) => control.id).join(','), 'previous,play-pause,mute,next,shuffle,expand');
   assert.equal(player.controls.find((control) => control.id === 'shuffle').active, true);

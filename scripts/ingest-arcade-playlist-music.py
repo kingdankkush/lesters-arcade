@@ -39,6 +39,13 @@ PREFERRED_ORDER = [
     "Speedster 16-BIT Arcade Music Track 2.mp3",
     "Super Lit 16-BIT Arcade Music Track 1.mp3",
     "Super Lit 16-BIT Arcade Music Track 2.mp3",
+    # New drop (intense action + funky/chill vibes).
+    "Attack of the Lit Invaders - 16-BIT Arcade Music.mp3",
+    "Attack of the Lit Invaders - 16-BIT Arcade Music (1).mp3",
+    "Lit Vibey Hideout - 16-BIT Arcade Music.mp3",
+    "Lit Vibey Hideout - 16-BIT Arcade Music (1).mp3",
+    "Midnight Lit - 16-BIT Arcade Music.mp3",
+    "Midnight Lit - 16-BIT Arcade Music (1).mp3",
 ]
 
 
@@ -50,6 +57,47 @@ TITLE_OVERRIDES = {
 SLUG_OVERRIDES = {
     "Hard Money Heroes 16-BIT Arcade Music": HARD_MONEY_HEROES_PRIMARY_ID,
     "Hard Money Heroes 16-BIT Arcade Music Alt": HARD_MONEY_HEROES_ALT_ID,
+    # New songs: pin stable slugs (the "(1)" variant becomes a clean -alt slug).
+    "Attack of the Lit Invaders - 16-BIT Arcade Music": "attack-of-the-lit-invaders-16-bit-arcade-music",
+    "Attack of the Lit Invaders - 16-BIT Arcade Music (1)": "attack-of-the-lit-invaders-16-bit-arcade-music-alt",
+    "Lit Vibey Hideout - 16-BIT Arcade Music": "lit-vibey-hideout-16-bit-arcade-music",
+    "Lit Vibey Hideout - 16-BIT Arcade Music (1)": "lit-vibey-hideout-16-bit-arcade-music-alt",
+    "Midnight Lit - 16-BIT Arcade Music": "midnight-lit-16-bit-arcade-music",
+    "Midnight Lit - 16-BIT Arcade Music (1)": "midnight-lit-16-bit-arcade-music-alt",
+}
+
+
+# Creative DISPLAY titles keyed by the STABLE track id (slug). Decoupled from the
+# slug so we can rebrand everything (retro homage x Litecoin/LitVM lore x the
+# track's musical vibe) without changing ids, game queues, or test fixtures.
+DISPLAY_TITLE_BY_ID = {
+    "hard-money-heroes-16-bit-arcade-music": "Hard Money Heroes — Main Theme",
+    "hard-money-heroes-16-bit-arcade-music-alt": "Hard Money Heroes — Mempool Mayhem",
+    "adventure-16-bit-arcade-music": "Block Reward Quest",
+    "castlelitvania-16-bit-arcade-music-track-1": "CastleLitvania — Crypt of the Cold Wallet",
+    "castlelitvania-16-bit-arcade-music-track-2": "CastleLitvania — Halving Night",
+    "lit-country-16-bit-arcade-music-track-1": "Proof-of-Work Prairie",
+    "lit-country-16-bit-arcade-music-track-2": "Open Ledger Range",
+    "lit-fantasy-16-bit-arcade-music-track-1": "Final Ledger I — Genesis Block",
+    "lit-fantasy-16-bit-arcade-music-track-2": "Final Ledger II — The Lost Keys",
+    "lit-man-16-bit-arcade-music-track-1": "Mega Lit — Hashrate Heights",
+    "lit-man-16-bit-arcade-music-track-2": "Mega Lit — Difficulty Bomb",
+    "lit-trigger-16-bit-arcade-music": "Lit Trigger — Timechain Warp",
+    "litbound-16-bit-arcade-music-track-1": "LitBound — Satoshi's Hometown",
+    "litbound-16-bit-arcade-music-track-2": "LitBound — Onward to LitVM",
+    "lit-zero-16-bit-arcade-music-track-1": "Lit Zero — Cyber Validator",
+    "lit-zero-16-bit-arcade-music-track-2": "Lit Zero — Override Protocol",
+    "speedster-16-bit-arcade-music-track-1": "Lightning Loop — Sub-Second Sprint",
+    "speedster-16-bit-arcade-music-track-2": "Green Candle Hashrate Dash",
+    "super-lit-16-bit-arcade-music-track-1": "Super Lit Bros — Block 1-1",
+    "super-lit-16-bit-arcade-music-track-2": "Super Lit Bros — Flagpole Finale",
+    # New drop.
+    "attack-of-the-lit-invaders-16-bit-arcade-music": "Attack of the Lit Invaders — First Wave",
+    "attack-of-the-lit-invaders-16-bit-arcade-music-alt": "Attack of the Lit Invaders — Final Assault",
+    "lit-vibey-hideout-16-bit-arcade-music": "Lit Vibey Hideout",
+    "lit-vibey-hideout-16-bit-arcade-music-alt": "Lit Vibey Hideout — After Hours",
+    "midnight-lit-16-bit-arcade-music": "Midnight Lit — Neon Skyline",
+    "midnight-lit-16-bit-arcade-music-alt": "Midnight Lit — Cold Storage Dreams",
 }
 
 
@@ -65,6 +113,10 @@ CONTEXT_BY_PREFIX = {
     "Lit-Zero": ["arcade", "lit-zero", "future-cabinet"],
     "Speedster": ["arcade", "speedster", "future-cabinet"],
     "Super Lit": ["arcade", "super-lit", "future-cabinet"],
+    # New songs by musical vibe.
+    "Attack of the Lit Invaders": ["arcade", "action", "intense", "combat"],
+    "Lit Vibey Hideout": ["arcade", "funky", "chill", "menu"],
+    "Midnight Lit": ["arcade", "chill", "ambient", "menu"],
 }
 
 
@@ -161,10 +213,12 @@ def build_manifest(source_dir: Path) -> dict:
         destination = OUTPUT_DIR / f"{track_id}.mp3"
         shutil.copy2(source_path, destination)
         seconds = duration_seconds(destination)
+        # Display title: creative rebrand keyed by stable id, else the raw title.
+        display_title = DISPLAY_TITLE_BY_ID.get(track_id, title)
         tracks.append(
             {
                 "id": track_id,
-                "title": title,
+                "title": display_title,
                 "src": f"./assets/audio/playlist/{destination.name}",
                 "sourceFile": source_path.name,
                 "durationSeconds": seconds,
