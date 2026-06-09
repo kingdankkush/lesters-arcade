@@ -605,13 +605,19 @@ function renderArcadeMusicPlayer() {
         'data-track-id': queueTrack.id,
       });
       item.textContent = `${queueTrack.title} // ${queueTrack.durationLabel}`;
-      item.addEventListener('click', () => {
+      item.addEventListener('click', async () => {
         playSfxCue('menu-click', 0.05);
-        if (queueTrack.id !== track?.id) {
-          loadArcadeMusicTrack(queueTrack);
-          if (audio && !audio.paused) {
-            // If already playing something, the track will auto-play on load
+        const audio = loadArcadeMusicTrack(queueTrack);
+        if (audio) {
+          arcadeMusic.unlocked = true;
+          try {
+            await audio.play();
+            arcadeMusic.playing = true;
+          } catch {
+            // Auto-play blocked, user will need to tap play button
+            arcadeMusic.playing = false;
           }
+          renderArcadeMusicPlayer();
         }
       });
       return item;
