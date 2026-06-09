@@ -1405,6 +1405,7 @@ function submitCombatGameOver() {
     distanceMeters: Math.round((combat.elapsedGameSeconds || 0) * 2.7),
     elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
     kills: combat.kills,
+    killsByType: { ...(combat.killsByType || {}) },
     maxCombo: combat.maxCombo,
     bossId: lastBossId,
     weaponId: combat.weaponId,
