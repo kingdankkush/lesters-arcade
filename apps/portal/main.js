@@ -5301,9 +5301,12 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   // Ground contact shadow (skip flat ground-decals/decor that sit IN the floor).
+  // Plant it at the sprite's true foot line (y) WITHOUT bob/sway so the shadow
+  // stays put on the ground while the sprite bobs above it — that reads as
+  // grounded, not floating. (Bug was a y-2 offset + sway applied to the shadow.)
   const flatDecor = prop.role?.includes('ground') || prop.role?.includes('decal');
   if (!flatDecor) {
-    drawContactShadow(ctx, Math.round(x + sway), Math.round(y - 2), drawWidth * 0.34, {
+    drawContactShadow(ctx, Math.round(x), Math.round(y), drawWidth * 0.34, {
       alpha: prop.role?.includes('occluder') ? 0.3 : 0.24,
     });
   }
@@ -5538,8 +5541,9 @@ function buildObstacleRenderEntries(ctx) {
       draw: () => {
         ctx.save();
         ctx.imageSmoothingEnabled = false;
-        // Soft contact shadow so solid objects read as planted on the ground.
-        drawContactShadow(ctx, projected.x, projected.y + style.ground - 2, shadowW, { alpha: 0.28 });
+        // Soft contact shadow planted at the prop's true foot line so solid
+        // objects read as grounded (was -2, which floated them slightly).
+        drawContactShadow(ctx, projected.x, projected.y + style.ground, shadowW, { alpha: 0.28 });
         ctx.drawImage(img, baseX, baseY, w, drawH);
         ctx.restore();
       },
@@ -6435,14 +6439,16 @@ function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
-    // Ground contact shadow so enemies read as planted, not floating. Flying
-    // foes cast a smaller, fainter shadow offset below them (they're airborne).
+    // Ground contact shadow so enemies read as planted, not floating. The sprite
+    // foot line is at enemy.y + 12 (ey bottom); plant the shadow THERE so it sits
+    // under the feet rather than 10px above them (the old +2 floated enemies).
+    // Flying foes cast a smaller, fainter shadow a bit lower (they're airborne).
     const flying = Boolean(enemy.class?.includes('flying'));
     const footX = enemy.x + w / 2;
     if (flying) {
-      drawContactShadow(ctx, footX, enemy.y + 14, (isMini ? 30 : 18), { alpha: 0.18, squash: 0.32 });
+      drawContactShadow(ctx, footX, enemy.y + 22, (isMini ? 30 : 18), { alpha: 0.16, squash: 0.3 });
     } else {
-      drawContactShadow(ctx, footX, enemy.y + 2, (isMini ? 34 : enemy.class === 'armored' ? 24 : 18), { alpha: 0.34, squash: 0.36 });
+      drawContactShadow(ctx, footX, enemy.y + 12, (isMini ? 34 : enemy.class === 'armored' ? 24 : 18), { alpha: 0.34, squash: 0.36 });
     }
     // Priority: animated roster frame (idle/walk/attack/death motion) > biome-themed
     // wave still (directional variety) > pipeline/legacy art. Minis use boss art.
