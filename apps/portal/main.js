@@ -16,6 +16,7 @@ import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemie
 import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
+import { sceneObjectsNear, SCENE_TEMPLATES } from './src/scene-templates.mjs';
 import { routeForView, viewForPath, gameSlugFor } from './src/arcade-router.mjs';
 import {
   ACHIEVEMENTS,
@@ -5547,6 +5548,12 @@ function preloadWorldPropImages() {
   for (const p of wp) {
     if (p?.src) canonicalLandmarkImage(p.src);
   }
+  // Also decode every coherent-world scene asset up front so scene props (lamps,
+  // cabinets, trees, fountains, TVs) are ready before they scroll into the draw
+  // window — no first-sight pop-in.
+  for (const t of Object.values(SCENE_TEMPLATES)) {
+    for (const s of t.slots) coherentWorldImage(s.assetKey);
+  }
 }
 // --- Persistent collidable world obstacles --------------------------------
 // Obstacles are derived from (seed, world cell) so a patch of world ALWAYS has
@@ -5555,14 +5562,48 @@ function preloadWorldPropImages() {
 // collision and rendering always agree.
 let _obstacleCacheFrame = -1;
 let _obstacleCache = [];
+
+// Coherent-world asset path + decode cache (scene-template placement).
+const coherentWorldImageCache = new Map();
+function coherentWorldImage(assetKey) {
+  const src = `./assets/generated/hmh-coherent-world/${assetKey}.png`;
+  if (!coherentWorldImageCache.has(src)) coherentWorldImageCache.set(src, loadImageAsset(src));
+  return coherentWorldImageCache.get(src);
+}
+// Scene-template role -> PROP_ROLE_STYLE key (draw size + collision footprint).
+const SCENE_ROLE_TO_STYLE = Object.freeze({
+  building: 'building', bigprop: 'bigprop', fountain: 'bigprop',
+  cabinet: 'bigprop', 'soda-machine': 'bigprop',
+  tree: 'tree', rock: 'bigprop', boulder: 'bigprop',
+  bench: 'smallprop', table: 'smallprop', crate: 'smallprop',
+  lamp: 'tree', sign: 'tree', smallprop: 'smallprop', decor: 'smallprop',
+});
+
 function currentObstacles() {
   if (_obstacleCacheFrame === combat.frame && _obstacleCache.length >= 0 && _obstacleCacheFrame !== -1) {
     return _obstacleCache;
   }
   const seed = combat.roguelikeRun?.seed ?? 0;
-  // Window a bit larger than the visible ±10 tiles so collision is correct just
-  // off-screen and props don't pop at the screen edge.
-  _obstacleCache = obstaclesNear(seed, combat.playerMapX, combat.playerMapY, 18, biomeAt, { spawnSafeRadius: 6 });
+  // COHERENT placement (scene-template layer): props grouped into believable
+  // scenes (street blocks with curb lamps, arcade interiors with a TV on a
+  // table, tree groves, rock fields, parks) instead of a random prop per cell.
+  // These carry sceneAssetKey so resolveObstacleProp draws the matching art.
+  // Window matches the old one (±18 tiles) so off-screen collision is correct
+  // and nothing pops at the edge.
+  const scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, 18, biomeAt, { reserveRadius: 6 });
+  const sceneObstacles = scene.map((o) => ({
+    id: o.id,
+    worldX: o.worldX,
+    worldY: o.worldY,
+    radius: o.radius,
+    solid: o.solid,
+    kind: o.role === 'building' ? 'building' : 'doodad',
+    biome: null,
+    sceneAssetKey: o.assetKey,
+    sceneRole: o.role,
+    drawOrderBias: o.drawOrderBias ?? 0,
+  }));
+  _obstacleCache = sceneObstacles;
   _obstacleCacheFrame = combat.frame;
   return _obstacleCache;
 }
@@ -5598,6 +5639,15 @@ function placeableProps(worldProps) {
 // SAME art at the SAME size. "building" obstacles bias toward building/bigprop
 // art; "doodad" obstacles toward trees/small props, matched to the biome.
 function resolveObstacleProp(obstacle, worldProps) {
+  // Coherent scene-template object: draw the exact art the template chose
+  // (street lamp, arcade cabinet, TV-on-table, tree, fountain, etc.) at the
+  // size dictated by its role. This is the coherent-placement path.
+  if (obstacle.sceneAssetKey) {
+    const img = coherentWorldImage(obstacle.sceneAssetKey);
+    const styleKey = SCENE_ROLE_TO_STYLE[obstacle.sceneRole] ?? 'smallprop';
+    const style = PROP_ROLE_STYLE[styleKey] ?? PROP_ROLE_STYLE.smallprop;
+    return { prop: { role: obstacle.sceneRole, src: obstacle.sceneAssetKey }, img, style };
+  }
   const biomePool = placeableProps(propsForBiome(worldProps, obstacle.biome));
   if (!biomePool.length) return null;
   // Bias selection by obstacle kind so settlements read as buildings and
