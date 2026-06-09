@@ -2191,30 +2191,41 @@ html:not([data-ingame="true"]) .touch-controls { display: none; }
   background: radial-gradient(circle, rgba(69,255,138,.85), rgba(25,247,255,.5));
   box-shadow: 0 0 18px rgba(25,247,255,.4);
 }
-.touch-action-cluster {
-  position: absolute;
+/* RIGHT aim stick (twin-stick): mirror of the move stick, bottom-right. */
+.touch-aim-base {
+  left: auto;
   right: max(18px, env(safe-area-inset-right));
   bottom: max(24px, env(safe-area-inset-bottom));
-  width: 168px; height: 168px;
+  background: radial-gradient(circle, rgba(255,90,90,.12), rgba(8,12,22,.55));
+  border-color: rgba(255,120,90,.4);
+}
+.touch-aim-nub {
+  background: radial-gradient(circle, rgba(255,120,90,.9), rgba(255,200,80,.55));
+  box-shadow: 0 0 18px rgba(255,120,90,.45);
+}
+.touch-action-cluster {
+  position: absolute;
+  right: max(160px, calc(env(safe-area-inset-right) + 160px));
+  bottom: max(40px, calc(env(safe-area-inset-bottom) + 16px));
+  width: 80px; height: 152px;
   pointer-events: none;
 }
 .touch-action-button {
   position: absolute;
-  width: 64px; height: 64px;
+  width: 66px; height: 66px;
   border-radius: 50%;
   border: 2px solid rgba(255,232,77,.5);
   background: rgba(12,18,32,.78);
   color: var(--neon-yellow);
-  font-size: .62rem; font-weight: 700; letter-spacing: .06em;
+  font-size: .58rem; font-weight: 700; letter-spacing: .06em;
   pointer-events: auto;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
 }
 .touch-action-button:active { transform: scale(.92); background: rgba(25,247,255,.2); }
-.touch-fire    { right: 0;    bottom: 52px; width: 80px; height: 80px; border-color: rgba(255,90,90,.7); color: #ff6a6a; }
-.touch-jump    { right: 86px; bottom: 0; }
-.touch-melee   { right: 86px; bottom: 86px; }
-.touch-grenade { right: 0;    bottom: 0; }
+/* Two-button stack: Melee on top, Power below (left of the aim stick). */
+.touch-melee   { left: 0; top: 0; border-color: rgba(25,247,255,.6); color: #19f7ff; }
+.touch-powerup { left: 0; top: 84px; border-color: rgba(69,255,138,.6); color: #45ff8a; }
 .touch-pause-button {
   position: absolute;
   top: max(14px, env(safe-area-inset-top));

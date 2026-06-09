@@ -7024,6 +7024,7 @@ function performTouchAction(action) {
   else if (action === 'jump') jump();
   else if (action === 'melee') melee();
   else if (action === 'grenade') grenade();
+  else if (action === 'powerup') dropPowerUp();
 }
 
 let touchControlsBuilt = false;
@@ -7038,13 +7039,13 @@ function ensureTouchControls(profile) {
   layer.id = 'touchControls';
   layer.setAttribute('aria-label', 'On-screen touch controls');
 
-  // Virtual joystick (left thumb): drag within the base to move.
+  // --- LEFT virtual joystick: drag within the base to MOVE. ---
   const stickBase = el('div', { className: 'touch-stick-base' });
   const stickNub = el('div', { className: 'touch-stick-nub' });
   stickBase.append(stickNub);
   layer.append(stickBase);
 
-  let activePointer = null;
+  let movePointer = null;
   const updateStick = (clientX, clientY) => {
     const rect = stickBase.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
@@ -7054,35 +7055,78 @@ function ensureTouchControls(profile) {
     const mag = Math.hypot(dx, dy) || 1;
     if (mag > 1) { dx /= mag; dy /= mag; }
     stickNub.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
-    // Swap previous held movement keys for the new joystick-derived set.
     for (const k of deviceState.touchKeys) combat.keys.delete(k);
     deviceState.touchKeys = joystickToKeys(dx, dy);
     for (const k of deviceState.touchKeys) combat.keys.add(k);
   };
   const releaseStick = () => {
-    activePointer = null;
+    movePointer = null;
     stickNub.style.transform = 'translate(0,0)';
     for (const k of deviceState.touchKeys) combat.keys.delete(k);
     deviceState.touchKeys = new Set();
   };
   stickBase.addEventListener('pointerdown', (e) => {
-    activePointer = e.pointerId;
+    movePointer = e.pointerId;
     stickBase.setPointerCapture(e.pointerId);
     updateStick(e.clientX, e.clientY);
     e.preventDefault();
   });
   stickBase.addEventListener('pointermove', (e) => {
-    if (activePointer === e.pointerId) updateStick(e.clientX, e.clientY);
+    if (movePointer === e.pointerId) updateStick(e.clientX, e.clientY);
   });
   stickBase.addEventListener('pointerup', releaseStick);
   stickBase.addEventListener('pointercancel', releaseStick);
 
-  // Action buttons (right thumb cluster).
+  // --- RIGHT virtual joystick: drag to AIM + auto-fire in that direction. ---
+  // Twin-stick: the gun auto-fires (updateAutoFire) toward combat.aimMapX/Y while
+  // the player steers aim with this stick. No jump (removed) and no manual fire
+  // button — holding the aim stick IS firing. Buttons are just Melee + Power-Up.
+  const aimBase = el('div', { className: 'touch-stick-base touch-aim-base' });
+  const aimNub = el('div', { className: 'touch-stick-nub touch-aim-nub' });
+  aimBase.append(aimNub);
+  layer.append(aimBase);
+
+  let aimPointer = null;
+  const updateAim = (clientX, clientY) => {
+    const rect = aimBase.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    let dx = (clientX - cx) / (rect.width / 2);
+    let dy = (clientY - cy) / (rect.height / 2);
+    const mag = Math.hypot(dx, dy) || 1;
+    if (mag > 1) { dx /= mag; dy /= mag; }
+    aimNub.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
+    if (mag < 0.2) return; // dead zone: tiny nudges don't redirect fire
+    // Convert the screen-space stick vector into an iso world-space aim
+    // direction (matching updateAimFromPointer's screenToIso mapping) so fire
+    // goes where the thumb points relative to the isometric camera.
+    const world = screenToIso(dx * 100, dy * 100);
+    const len = Math.hypot(world.x, world.y) || 1;
+    combat.aimMapX = world.x / len;
+    combat.aimMapY = world.y / len;
+    combat.pointerActive = true; // steer auto-fire toward the stick
+  };
+  const releaseAim = () => {
+    aimPointer = null;
+    aimNub.style.transform = 'translate(0,0)';
+    combat.pointerActive = false; // fall back to nearest-enemy auto-aim
+  };
+  aimBase.addEventListener('pointerdown', (e) => {
+    aimPointer = e.pointerId;
+    aimBase.setPointerCapture(e.pointerId);
+    updateAim(e.clientX, e.clientY);
+    e.preventDefault();
+  });
+  aimBase.addEventListener('pointermove', (e) => {
+    if (aimPointer === e.pointerId) updateAim(e.clientX, e.clientY);
+  });
+  aimBase.addEventListener('pointerup', releaseAim);
+  aimBase.addEventListener('pointercancel', releaseAim);
+
+  // --- Action buttons: ONLY Melee + Power-Up (no jump, no manual fire/nade). ---
   const actions = [
-    { id: 'fire', label: 'FIRE', action: 'shoot' },
-    { id: 'jump', label: 'JUMP', action: 'jump' },
     { id: 'melee', label: 'MELEE', action: 'melee' },
-    { id: 'grenade', label: 'NADE', action: 'grenade' },
+    { id: 'powerup', label: 'POWER', action: 'powerup' },
   ];
   const cluster = el('div', { className: 'touch-action-cluster' });
   for (const a of actions) {
