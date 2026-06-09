@@ -1639,7 +1639,7 @@ function renderRoguelikeStatBar() {
     { id: 'score', label: 'SCORE', value: Math.round(combat.score).toLocaleString(), tone: 'gold' },
     { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
     { id: 'rank', label: 'RANK', value: `${run.level}`, tone: 'green' },
-    { id: 'wpn', label: 'WPN', value: weapon.title.toUpperCase(), tone: 'green' },
+    { id: 'wpn', label: 'WEAPON', value: (weapon.displayName ?? weapon.title).toUpperCase(), tone: 'green' },
     { id: 'ammo', label: 'AMMO', value: ammoValue, tone: combat.reloading ? 'orange' : 'green' },
     { id: 'thrown', label: 'THROW', value: `💣${combat.grenades} · 🪓${combat.axes ?? 0}`, tone: 'orange' },
     { id: 'aug', label: 'AUG', value: `${augments} · ⟳${run.rerollsRemaining}`, tone: 'orange' },
@@ -5673,9 +5673,13 @@ function drawRoguelikeScene(ctx, width, height) {
 // traffic), and a brief muzzle flash while firing. Each is {x,y,r,warm}.
 function collectLightSources() {
   const lights = [];
-  // Player light pool — slightly brighter right after firing.
+  // Player: NO persistent ambient halo (the old always-on cool pool read as a
+  // "glowing effect around the player"). Only a brief, small muzzle flash while
+  // actually firing, so shots still pop without ringing the hero in blue.
   const firing = (combat.fireFlash ?? 0) > 0;
-  lights.push({ x: combat.playerX + 18, y: combat.playerY - 18, r: firing ? 168 : 138, warm: false });
+  if (firing) {
+    lights.push({ x: combat.playerX + 14, y: combat.playerY - 14, r: 70, warm: true, muzzle: true });
+  }
   // Warm light pools come ONLY from real, drawn obstacles that are plausibly
   // light-emitting (a building's windows, a vehicle's lights) in town/road
   // biomes — never a phantom lattice over bare ground. This kills the old
@@ -5710,8 +5714,9 @@ function collectLightSources() {
 function drawSceneLighting(ctx, width, height) {
   const lights = collectLightSources();
   ctx.save();
-  // 1) Night tint over the whole world (deep indigo, moderate strength).
-  ctx.fillStyle = 'rgba(6, 10, 28, 0.42)';
+  // 1) Night tint over the whole world (deep indigo). Kept light now that the
+  //    player has no carved light pool, so the unlit hero stays clearly visible.
+  ctx.fillStyle = 'rgba(6, 10, 28, 0.22)';
   ctx.fillRect(0, 0, width, height);
   // 2) Carve light pools out of the darkness.
   ctx.globalCompositeOperation = 'destination-out';
@@ -6739,7 +6744,7 @@ function drawHud(ctx) {
   ctx.fillStyle = '#ffe84d';
   ctx.fillText(`HP ${Math.max(0, Math.round(combat.health))} // LIVES ${combat.lives} // SCORE ${combat.score.toLocaleString()} // COMBO ${combat.combo}`, 20, 52);
   ctx.fillStyle = '#45ff8a';
-  ctx.fillText(`${weapon.title.toUpperCase()} // AMMO ${combat.ammo === Infinity ? '∞' : combat.ammo} // GRENADES ${combat.grenades}`, 20, 76);
+  ctx.fillText(`${(weapon.displayName ?? weapon.title).toUpperCase()} // AMMO ${combat.ammo === Infinity ? '∞' : combat.ammo} // GRENADES ${combat.grenades}`, 20, 76);
   ctx.fillStyle = '#ff7b2f';
   ctx.fillText(`DMG CHAIN ${combat.maxDamageCombo} // PICKUPS ${combat.powerUpsCollected} // I-FRAMES ${combat.invulnerableFrames}`, 20, 100);
 }

@@ -1203,6 +1203,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     Object.freeze({
       id: 'coin-blaster',
       title: 'The Settler',
+      displayName: 'Pistol',
       type: 'starter',
       rarity: 'starter',
       damage: 3,
@@ -1224,6 +1225,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     Object.freeze({
       id: 'scatter-shotgun',
       title: 'The Block Breaker',
+      displayName: 'Shotgun',
       type: 'weapon-pickup',
       rarity: 'uncommon',
       damage: 9,
@@ -1245,6 +1247,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     Object.freeze({
       id: 'auto-miner',
       title: 'The Hashstorm',
+      displayName: 'Machine Gun',
       type: 'weapon-pickup',
       rarity: 'uncommon',
       damage: 2,
@@ -1265,6 +1268,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     Object.freeze({
       id: 'spread-ltc',
       title: 'Spread LTC',
+      displayName: 'Spread Gun',
       type: 'upgrade',
       rarity: 'rare',
       damage: 2,
@@ -1281,6 +1285,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     Object.freeze({
       id: 'hash-rail',
       title: 'Hash Rail',
+      displayName: 'Rail Gun',
       type: 'upgrade',
       rarity: 'rare',
       damage: 9,
@@ -1297,6 +1302,7 @@ export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({
     Object.freeze({
       id: 'oracle-slayer',
       title: 'Oracle Slayer',
+      displayName: 'Super Cannon',
       type: 'weapon-pickup',
       rarity: 'super-rare',
       damage: 24,
