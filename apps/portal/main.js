@@ -3588,6 +3588,7 @@ async function startCombat() {
   combat.levelUpPaused = false;
   combat.roguelikeRun = createRoguelikeRunState({ seed: Date.now(), mode: currentSession?.mode ?? 'free', characterId: combat.characterId });
   preloadHeroRoster(combat.characterId); // decode hurt/death/melee frames up front (no first-hit art pop)
+  preloadWorldPropImages(); // decode all world-prop art up front (no scroll-in pop-in)
   combat.roguelikeSpawnTimer = 0;
   combat.props = [];
   combat.hazards = [];
@@ -5193,7 +5194,16 @@ function collectAnimatedProps(ctx) {
       const frameIdx = Math.floor((combat.frame + (h % 13)) / 7);
       const img = wave2AnimFrame(slug, frameIdx);
       if (!imageReady(img)) continue;
-      const size = 72;
+      // Scale ambient animated props by type so they match the world's scale:
+      // trees/waterfalls read tall, signs/flowers/litter small.
+      const ANIM_PROP_SIZE = {
+        'leafy-tree-wind': 132, 'palm-tree-wind': 138, 'waterfall-cascade': 150,
+        'cactus-heat-shimmer': 104, 'neon-sign-flicker': 96, 'traffic-light-blink': 88,
+        'wrecked-car-smoke': 120, 'parked-car-blink': 118, 'road-sign-sway': 78,
+        'flower-patch-sway': 46, 'garbage-can-wobble': 50, 'tumbleweed-roll': 54,
+        'water-surface-ripple': 88, 'river-rapids-flow': 96,
+      };
+      const size = ANIM_PROP_SIZE[slug] ?? 72;
       out.push({
         depth: projected.y + 40,
         draw: () => {
@@ -5280,28 +5290,28 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
 // Canonical parallax background layer (Justin's hand-made level art). Picks a
 // stable strip per run and scrolls it horizontally with the camera for depth.
 const parallaxBgState = { images: new Map(), currentIdx: null };
+// The old hand-painted 2D parallax building strips are RETIRED (the user asked
+// to drop the flat painted assets and keep the world purely isometric). In their
+// place we draw a cheap biome-tinted atmospheric horizon gradient so the top of
+// the scene still has depth/mood without any flat painted card art.
+const BIOME_HORIZON = {
+  town:   ['#1a1340', '#0a0a1e'], road: ['#191a2e', '#08060f'],
+  desert: ['#3a2a1c', '#140d08'], sand: ['#3a2a1c', '#140d08'],
+  forest: ['#0e2a1c', '#05120c'], water: ['#0c2740', '#04101c'],
+  rocky:  ['#241f2c', '#0c0a12'],
+};
 function drawParallaxBackground(ctx, width, height) {
-  const bgs = HMH_LEVEL_ENVIRONMENT.parallaxBackgrounds ?? [];
-  if (!bgs.length) return;
   const seed = combat.roguelikeRun?.seed ?? 0;
-  // Backdrop follows the player's current biome region for environmental cohesion.
   const biome = biomeAt(seed, Math.round(combat.playerMapX ?? 0), Math.round(combat.playerMapY ?? 0));
-  const idx = parallaxIndexForBiome(seed, biome, bgs.length);
-  if (!parallaxBgState.images.has(idx)) {
-    parallaxBgState.images.set(idx, loadImageAsset(bgs[idx].src));
-  }
-  const img = parallaxBgState.images.get(idx);
-  if (!imageReady(img)) return;
-  // Scale strip to cover the upper ~60% of the viewport; scroll at 0.35x camera.
-  const bandH = Math.round(height * 0.6);
-  const scale = bandH / img.naturalHeight;
-  const stripW = img.naturalWidth * scale;
-  const scroll = ((combat.playerMapX ?? 0) * 18 * 0.35) % stripW;
+  const horizon = BIOME_HORIZON[biome] ?? BIOME_HORIZON.town;
+  const bandH = Math.round(height * 0.5);
+  const g = ctx.createLinearGradient(0, 0, 0, bandH);
+  g.addColorStop(0, horizon[0]);
+  g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.save();
-  ctx.globalAlpha = 0.55;
-  for (let x = -scroll; x < width; x += stripW) {
-    ctx.drawImage(img, Math.round(x), 0, Math.round(stripW), bandH);
-  }
+  ctx.globalAlpha = 0.85;
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, width, bandH);
   ctx.restore();
 }
 
@@ -5347,12 +5357,10 @@ async function precomputeBiomeWorld(ctx, width, height) {
   const loadStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   const MIN_LOAD_MS = 1500; // always show the biome reveal for at least this long
   const seed = combat.roguelikeRun?.seed ?? 0;
-  const bgs = HMH_LEVEL_ENVIRONMENT.parallaxBackgrounds ?? [];
   const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
   // Collect a coherent set of images for the spawn region + immediate neighbors.
   const startBiome = biomeAt(seed, 0, 0);
   const toWarm = new Set();
-  if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, startBiome, bgs.length)].src);
   const regionBiomes = new Set([startBiome]);
   for (let rx = -2; rx <= 2; rx += 1) {
     for (let ry = -2; ry <= 2; ry += 1) {
@@ -5401,6 +5409,15 @@ function canonicalLandmarkImage(src) {
   }
   return landmarkImageCache.get(src);
 }
+// Preload (decode) every placeable world-prop image at run start so a 300px
+// building is already decoded before it scrolls into the generous draw window —
+// no first-sight pop-in. Cheap: primes the same cache the renderer reads.
+function preloadWorldPropImages() {
+  const wp = HMH_LEVEL_ENVIRONMENT?.worldProps ?? [];
+  for (const p of wp) {
+    if (p?.src) canonicalLandmarkImage(p.src);
+  }
+}
 // --- Persistent collidable world obstacles --------------------------------
 // Obstacles are derived from (seed, world cell) so a patch of world ALWAYS has
 // the same buildings/trees/objects — they no longer pop in/out as the player
@@ -5415,20 +5432,22 @@ function currentObstacles() {
   const seed = combat.roguelikeRun?.seed ?? 0;
   // Window a bit larger than the visible ±10 tiles so collision is correct just
   // off-screen and props don't pop at the screen edge.
-  _obstacleCache = obstaclesNear(seed, combat.playerMapX, combat.playerMapY, 13, biomeAt, { spawnSafeRadius: 6 });
+  _obstacleCache = obstaclesNear(seed, combat.playerMapX, combat.playerMapY, 18, biomeAt, { spawnSafeRadius: 6 });
   _obstacleCacheFrame = combat.frame;
   return _obstacleCache;
 }
 
-// Per-role art sizing + collision footprint for placed obstacles, so a soda can
-// is small and a tower is tall, and the solid radius matches the visual base.
-// targetW = on-screen draw width (px); radius = collision footprint (world tiles).
+// Per-role art sizing + collision footprint for placed obstacles. Establishes
+// real SCALE so the world doesn't read as "everything is the same size": the
+// hero draws ~72px, so a building at ~300px towers ~4x over him, vehicles/trees
+// sit in between, and small litter is genuinely small. targetW = on-screen draw
+// width (px); radius = collision footprint (world tiles); ground = foot offset.
 const PROP_ROLE_STYLE = Object.freeze({
-  building:  { targetW: 132, radius: 1.15, ground: 56 },
-  bigprop:   { targetW: 104, radius: 0.95, ground: 54 },
-  vehicle:   { targetW: 118, radius: 1.0,  ground: 50 },
-  tree:      { targetW: 92,  radius: 0.7,  ground: 58 },
-  smallprop: { targetW: 60,  radius: 0.5,  ground: 50 },
+  building:  { targetW: 300, radius: 1.7,  ground: 120 },
+  bigprop:   { targetW: 188, radius: 1.2,  ground: 86 },
+  vehicle:   { targetW: 132, radius: 1.0,  ground: 48 },
+  tree:      { targetW: 116, radius: 0.62, ground: 78 },
+  smallprop: { targetW: 46,  radius: 0.42, ground: 30 },
 });
 
 // World props that are valid as discrete, placeable obstacles — excludes
@@ -5467,8 +5486,10 @@ function buildObstacleRenderEntries(ctx) {
   if (!worldProps.length) return [];
   const entries = [];
   for (const o of currentObstacles()) {
-    // Only draw obstacles within the visible window.
-    if (Math.abs(o.worldX - combat.playerMapX) > 11 || Math.abs(o.worldY - combat.playerMapY) > 11) continue;
+    // Draw obstacles within a GENEROUS window (wider than the visible ±~9 tiles)
+    // so tall 300px buildings are already fully drawn well before their base
+    // scrolls on-screen — the world looks established as you move, no pop-in.
+    if (Math.abs(o.worldX - combat.playerMapX) > 16 || Math.abs(o.worldY - combat.playerMapY) > 16) continue;
     const resolved = resolveObstacleProp(o, worldProps);
     if (!resolved || !imageReady(resolved.img)) continue;
     const { img, style } = resolved;
@@ -5623,29 +5644,30 @@ function collectLightSources() {
   // Player light pool — slightly brighter right after firing.
   const firing = (combat.fireFlash ?? 0) > 0;
   lights.push({ x: combat.playerX + 18, y: combat.playerY - 18, r: firing ? 168 : 138, warm: false });
-  // Light-emitting animated props near the player (reuse the deterministic
-  // placement so light pools sit under neon signs / traffic lights / lamps).
-  const seed = combat.roguelikeRun?.seed ?? 0;
-  const LATTICE = 8;
-  const baseX = Math.floor(combat.playerMapX / LATTICE) * LATTICE;
-  const baseY = Math.floor(combat.playerMapY / LATTICE) * LATTICE;
-  const LIGHT_SLUGS = new Set(['neon-sign-flicker', 'traffic-light-blink', 'parked-car-blink', 'wrecked-car-smoke']);
-  for (let gx = -2; gx <= 2; gx += 1) {
-    for (let gy = -2; gy <= 2; gy += 1) {
-      const cellX = baseX + gx * LATTICE;
-      const cellY = baseY + gy * LATTICE;
-      const h = Math.abs(((cellX * 374761393) ^ (cellY * 668265263)) >>> 0);
-      if ((h % 100) > 42) continue;
-      const biome = biomeAt(seed, cellX, cellY);
-      const pool = BIOME_ANIM_PROPS[biome] ?? BIOME_ANIM_PROPS.town;
-      const slug = pool[h % pool.length];
-      if (!LIGHT_SLUGS.has(slug)) continue;
-      const worldX = cellX + ((h % 5) - 2);
-      const worldY = cellY + (((h >> 4) % 5) - 2);
-      const projected = isoToScreen(worldX, worldY);
-      // Neon/traffic flicker: pulse the radius a little so the glow feels alive.
-      const flicker = 0.85 + 0.15 * Math.sin((combat.frame + (h % 17)) * 0.3);
-      lights.push({ x: projected.x, y: projected.y + 8, r: 74 * flicker, warm: true });
+  // Warm light pools come ONLY from real, drawn obstacles that are plausibly
+  // light-emitting (a building's windows, a vehicle's lights) in town/road
+  // biomes — never a phantom lattice over bare ground. This kills the old
+  // "glow on empty grass / TV-off-but-glowing in 12 random spots" artifact.
+  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  if (worldProps.length) {
+    const LIT_BIOMES = new Set(['town', 'road', 'pavement']);
+    let emitted = 0;
+    for (const o of currentObstacles()) {
+      if (emitted >= 10) break; // cap cost
+      if (!LIT_BIOMES.has(o.biome)) continue;
+      if (Math.abs(o.worldX - combat.playerMapX) > 12 || Math.abs(o.worldY - combat.playerMapY) > 12) continue;
+      const resolved = resolveObstacleProp(o, worldProps);
+      if (!resolved || !imageReady(resolved.img)) continue;
+      // Only buildings (lit windows) and vehicles (head/tail lights) emit.
+      const role = resolved.prop?.role;
+      if (role !== 'building' && role !== 'vehicle') continue;
+      const projected = isoToScreen(o.worldX, o.worldY);
+      const h = Math.abs(((o.worldX * 374761393) ^ (o.worldY * 668265263)) >>> 0);
+      const flicker = 0.9 + 0.1 * Math.sin((combat.frame + (h % 17)) * 0.18);
+      const r = (role === 'building' ? 96 : 64) * flicker;
+      const yOff = role === 'building' ? -40 : 4; // building glow sits up at windows
+      lights.push({ x: projected.x, y: projected.y + yOff, r, warm: true });
+      emitted += 1;
     }
   }
   return lights;
@@ -6011,10 +6033,13 @@ function drawPlayer(ctx) {
 
   if (imageReady(heroFrame)) {
     const productionHero = Boolean(hero.productionSlug);
-    const drawWidth = productionHero ? 132 : 104;
-    const drawHeight = productionHero ? 132 : 104;
-    const drawX = x - (productionHero ? 48 : 34);
-    const drawY = y - drawHeight + (productionHero ? 16 : 0) + bob;
+    // Scale: in the iso roguelike the hero is deliberately small (~88px) so the
+    // 300px buildings tower over him and the world reads with real scale.
+    const isoHero = Boolean(combat.roguelikeRun);
+    const drawWidth = isoHero ? 88 : (productionHero ? 132 : 104);
+    const drawHeight = isoHero ? 88 : (productionHero ? 132 : 104);
+    const drawX = x - drawWidth / 2 + (isoHero ? 8 : (productionHero ? 0 : 0));
+    const drawY = y - drawHeight + (isoHero ? 10 : (productionHero ? 16 : 0)) + bob;
     // Hero readability pass: a soft cyan "hard-money" ground glow + elliptical
     // drop shadow under Lester so he pops off the dark isometric floor instead
     // of blending into the night tint / ground accents. Cheap radial fills.
