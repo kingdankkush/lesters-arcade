@@ -79,6 +79,46 @@
       "status": "downloaded",
       "raw": "id: 92ed8805-6575-4f57-bc9e-fc959f81c4c0\ndescription: isometric retro arcade cabinet machine with glowing screen, pixel art\nsize: 48x80px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"92ed8805-6575-4f57-bc9e-fc959f81",
       "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\arcade-cabinet.png"
+    },
+    "interior/soda-machine": {
+      "set": "interior",
+      "slug": "soda-machine",
+      "w": 48,
+      "h": 80,
+      "id": "cc5f7188-d3a0-45d9-a2e7-14f20ccf730d",
+      "status": "downloaded",
+      "raw": "id: cc5f7188-d3a0-45d9-a2e7-14f20ccf730d\ndescription: isometric red soda vending machine, glowing front panel, pixel art\nsize: 48x80px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"cc5f7188-d3a0-45d9-a2e7-14f20ccf730",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\soda-machine.png"
+    },
+    "interior/tv-on-table": {
+      "set": "interior",
+      "slug": "tv-on-table",
+      "w": 56,
+      "h": 64,
+      "id": "b7dc1367-3e04-4b96-89a7-49ab1ce0abd9",
+      "status": "downloaded",
+      "raw": "id: b7dc1367-3e04-4b96-89a7-49ab1ce0abd9\ndescription: isometric old CRT television sitting on a low wooden entertainment center table, pixel art\nsize: 56x64px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"b7dc1367-3e",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\tv-on-table.png"
+    },
+    "interior/stacked-boxes": {
+      "set": "interior",
+      "slug": "stacked-boxes",
+      "w": 56,
+      "h": 56,
+      "id": "e872e648-71e3-4be0-99f4-74103d78e380",
+      "status": "downloaded",
+      "raw": "id: e872e648-71e3-4be0-99f4-74103d78e380\ndescription: isometric stack of cardboard moving boxes, pixel art\nsize: 56x56px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"e872e648-71e3-4be0-99f4-74103d78e380\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\stacked-boxes.png"
+    },
+    "interior/wooden-crate": {
+      "set": "interior",
+      "slug": "wooden-crate",
+      "w": 40,
+      "h": 40,
+      "id": "b54f19ab-d0d7-4084-a836-6dab0d44dc31",
+      "status": "downloaded",
+      "raw": "id: b54f19ab-d0d7-4084-a836-6dab0d44dc31\ndescription: isometric wooden shipping crate, pixel art\nsize: 40x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"b54f19ab-d0d7-4084-a836-6dab0d44dc31\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\wooden-crate.png"
     }
   }
 }
