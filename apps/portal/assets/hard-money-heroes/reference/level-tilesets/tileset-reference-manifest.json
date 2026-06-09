@@ -1,0 +1,142 @@
+{
+  "id": "hmh-level-tileset-references-v1",
+  "purpose": "Preserved user tileset source art (downscaled JPEG refs). NOT wired into runtime; awaiting a future iso-tile slicing / obstacle-extraction pass.",
+  "maxDim": 1024,
+  "tilesets": [
+    {
+      "source": "Urban-street.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/urban-street.jpg",
+      "originalSize": [
+        2048,
+        2048
+      ],
+      "referenceSize": [
+        1024,
+        1024
+      ],
+      "status": "ingested",
+      "biome": "road",
+      "notes": "cracked asphalt + faded road lines; rubble/grass props baked in"
+    },
+    {
+      "source": "Rocky-ground.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/rocky-ground.jpg",
+      "originalSize": [
+        2048,
+        2048
+      ],
+      "referenceSize": [
+        1024,
+        1024
+      ],
+      "status": "ingested",
+      "biome": "rocky",
+      "notes": "cracked earth + scattered boulders (candidate collision props)"
+    },
+    {
+      "source": "Rocky-terrain.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/rocky-terrain.jpg",
+      "originalSize": [
+        2048,
+        2048
+      ],
+      "referenceSize": [
+        1024,
+        1024
+      ],
+      "status": "ingested",
+      "biome": "rocky",
+      "notes": "rocky terrain variant"
+    },
+    {
+      "source": "Rocky-terrain2.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/rocky-terrain2.jpg",
+      "originalSize": [
+        2048,
+        2048
+      ],
+      "referenceSize": [
+        1024,
+        1024
+      ],
+      "status": "ingested",
+      "biome": "rocky",
+      "notes": "rocky terrain variant 2"
+    },
+    {
+      "source": "Marsh-land.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/marsh-land.jpg",
+      "originalSize": [
+        2048,
+        2048
+      ],
+      "referenceSize": [
+        1024,
+        1024
+      ],
+      "status": "ingested",
+      "biome": "water",
+      "notes": "marsh/wetland; water edges -> water-collision biome"
+    },
+    {
+      "source": "Marsh-land2.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/marsh-land2.jpg",
+      "originalSize": [
+        2048,
+        2048
+      ],
+      "referenceSize": [
+        1024,
+        1024
+      ],
+      "status": "ingested",
+      "biome": "water",
+      "notes": "marsh/wetland variant 2"
+    },
+    {
+      "source": "Valley-terrain.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/valley-terrain.jpg",
+      "originalSize": [
+        2048,
+        2048
+      ],
+      "referenceSize": [
+        1024,
+        1024
+      ],
+      "status": "ingested",
+      "biome": "forest",
+      "notes": "valley/grassland; foliage props baked in"
+    },
+    {
+      "source": "BlastEm-01.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/blastem-01.jpg",
+      "originalSize": [
+        2752,
+        1536
+      ],
+      "referenceSize": [
+        1024,
+        572
+      ],
+      "status": "ingested",
+      "biome": "town",
+      "notes": "BlastEm reference sheet 01"
+    },
+    {
+      "source": "BlastEm-02.png",
+      "reference": "./assets/hard-money-heroes/reference/level-tilesets/blastem-02.jpg",
+      "originalSize": [
+        2752,
+        1536
+      ],
+      "referenceSize": [
+        1024,
+        572
+      ],
+      "status": "ingested",
+      "biome": "town",
+      "notes": "BlastEm reference sheet 02"
+    }
+  ]
+}
