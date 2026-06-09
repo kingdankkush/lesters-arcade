@@ -1222,7 +1222,7 @@
       "w": 64,
       "h": 96,
       "id": "17da3ca4-d9b0-4e99-8a14-203f840bd2eb",
-      "status": "created",
+      "status": "processing_animate",
       "raw_create_response": "id: 17da3ca4-d9b0-4e99-8a14-203f840bd2eb\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing right/east, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"17da3ca4-d9b0-4e99-8a14-203f840bd2eb\")",
       "animated": true,
       "frame_count": 4,
@@ -1231,7 +1231,9 @@
         "hero": "lit-valkyrie",
         "state": "hurt",
         "direction": "east"
-      }
+      },
+      "animation_id": "abe226e4-0829-4010-8036-c5acee9f70be",
+      "raw_animation_response": "object: 17da3ca4-d9b0-4e99-8a14-203f840bd2eb\ngroup: abe226e4-0829-4010-8036-c5acee9f70be\nmode: v3\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing right/east, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"17da3ca4-d9b0-4e99-8a14-203f840bd2eb\")"
     },
     "lit-valkyrie/hurt-north-east": {
       "set": "heroes",
@@ -1258,7 +1260,7 @@
       "w": 64,
       "h": 96,
       "id": "3f57be91-e337-41a0-a9b4-c8ca186521b7",
-      "status": "created",
+      "status": "processing_animate",
       "raw_create_response": "id: 3f57be91-e337-41a0-a9b4-c8ca186521b7\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing up/north, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"3f57be91-e337-41a0-a9b4-c8ca186521b7\")",
       "animated": true,
       "frame_count": 4,
@@ -1267,7 +1269,9 @@
         "hero": "lit-valkyrie",
         "state": "hurt",
         "direction": "north"
-      }
+      },
+      "animation_id": "2bbf2487-ed28-4601-8958-4fc25f0a2431",
+      "raw_animation_response": "object: 3f57be91-e337-41a0-a9b4-c8ca186521b7\ngroup: 2bbf2487-ed28-4601-8958-4fc25f0a2431\nmode: v3\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing up/north, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"3f57be91-e337-41a0-a9b4-c8ca186521b7\")"
     },
     "lit-valkyrie/hurt-north-west": {
       "set": "heroes",
@@ -1294,7 +1298,7 @@
       "w": 64,
       "h": 96,
       "id": "8a492399-9ac8-4991-9434-569c1c3845d7",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 8a492399-9ac8-4991-9434-569c1c3845d7\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing left/west, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"8a492399-9ac8-4991-9434-569c1c3845d7\")",
       "animated": true,
       "frame_count": 4,
@@ -1303,7 +1307,9 @@
         "hero": "lit-valkyrie",
         "state": "hurt",
         "direction": "west"
-      }
+      },
+      "animation_id": "bf4bf8c7-6129-49c9-8350-10bd6df17e12",
+      "raw_animation_response": "object: 8a492399-9ac8-4991-9434-569c1c3845d7\ngroup: bf4bf8c7-6129-49c9-8350-10bd6df17e12\nmode: v3\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing left/west, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"8a492399-9ac8-4991-9434-569c1c3845d7\")"
     },
     "lit-valkyrie/hurt-south-west": {
       "set": "heroes",
@@ -1330,7 +1336,7 @@
       "w": 64,
       "h": 96,
       "id": "1a8a9d0d-ab95-4b1b-89cd-fa513bb89ef1",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 1a8a9d0d-ab95-4b1b-89cd-fa513bb89ef1\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing down/south, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1a8a9d0d-ab95-4b1b-89cd-fa513bb89ef1\")",
       "animated": true,
       "frame_count": 4,
@@ -1339,7 +1345,9 @@
         "hero": "lit-valkyrie",
         "state": "hurt",
         "direction": "south"
-      }
+      },
+      "animation_id": "ce0de52d-ccfa-4000-b96f-641a3ed53ae4",
+      "raw_animation_response": "object: 1a8a9d0d-ab95-4b1b-89cd-fa513bb89ef1\ngroup: ce0de52d-ccfa-4000-b96f-641a3ed53ae4\nmode: v3\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing down/south, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"1a8a9d0d-ab95-4b1b-89cd-fa513bb89ef1\")"
     },
     "lit-valkyrie/hurt-south-east": {
       "set": "heroes",
@@ -1347,7 +1355,7 @@
       "w": 64,
       "h": 96,
       "id": "04f14c06-9874-439b-b285-f7570119b12e",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 04f14c06-9874-439b-b285-f7570119b12e\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing down-right/southeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"04f14c06-9874-439b-b285-f7570119b12e\")",
       "animated": true,
       "frame_count": 4,
@@ -1356,7 +1364,9 @@
         "hero": "lit-valkyrie",
         "state": "hurt",
         "direction": "south-east"
-      }
+      },
+      "animation_id": "8b90de2a-c160-4d57-a457-97874322c6cc",
+      "raw_animation_response": "object: 04f14c06-9874-439b-b285-f7570119b12e\ngroup: 8b90de2a-c160-4d57-a457-97874322c6cc\nmode: v3\ndescription: isometric Lit Valkyrie isometric hit reaction, knockback stagger, flash frame, quick recovery to idle, pixel art, facing down-right/southeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"04f14c06-9874-439b-b285-f7570119b12e\")"
     },
     "lit-valkyrie/death-east": {
       "set": "heroes",
@@ -1364,7 +1374,7 @@
       "w": 64,
       "h": 96,
       "id": "01970435-c4ee-4227-a28e-eaef07299793",
-      "status": "processing_create",
+      "status": "processing_animate",
       "raw_create_response": "id: 01970435-c4ee-4227-a28e-eaef07299793\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing right/east, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"01970435-c4ee-4227-a28e-eaef07299793\")",
       "animated": true,
       "frame_count": 10,
@@ -1373,16 +1383,18 @@
         "hero": "lit-valkyrie",
         "state": "death",
         "direction": "east"
-      }
+      },
+      "animation_id": "f7c48df9-f50e-4dc6-a4c7-cfb9e7cb95d8",
+      "raw_animation_response": "object: 01970435-c4ee-4227-a28e-eaef07299793\ngroup: f7c48df9-f50e-4dc6-a4c7-cfb9e7cb95d8\nmode: v3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing right/east, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 10\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"01970435-c4ee-4227-a28e-eaef07299793\")"
     },
     "lit-valkyrie/death-north-east": {
       "set": "heroes",
       "slug": "lit-valkyrie-death-north-east",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "8fc6768c-09a0-4c61-9829-47acf5ac96f7",
+      "status": "processing_animate",
+      "raw_create_response": "id: 8fc6768c-09a0-4c61-9829-47acf5ac96f7\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing up-right/northeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"8fc6768c-09a0-4c61-9829-47acf5ac96f7\")",
       "animated": true,
       "frame_count": 10,
       "priority": 1,
@@ -1390,16 +1402,18 @@
         "hero": "lit-valkyrie",
         "state": "death",
         "direction": "north-east"
-      }
+      },
+      "animation_id": "58728099-65b4-470e-905b-e74ede358c15",
+      "raw_animation_response": "object: 8fc6768c-09a0-4c61-9829-47acf5ac96f7\ngroup: 58728099-65b4-470e-905b-e74ede358c15\nmode: v3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing up-right/northeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 10\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"8fc6768c-09a0-4c61-9829-47acf5ac96f7\")"
     },
     "lit-valkyrie/death-north": {
       "set": "heroes",
       "slug": "lit-valkyrie-death-north",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "f3b01fba-e23e-4116-9ee7-a839da0cd5e3",
+      "status": "processing_animate",
+      "raw_create_response": "id: f3b01fba-e23e-4116-9ee7-a839da0cd5e3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing up/north, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"f3b01fba-e23e-4116-9ee7-a839da0cd5e3\")",
       "animated": true,
       "frame_count": 10,
       "priority": 1,
@@ -1407,16 +1421,18 @@
         "hero": "lit-valkyrie",
         "state": "death",
         "direction": "north"
-      }
+      },
+      "animation_id": "9a998090-ae61-4f8c-a845-852069034e76",
+      "raw_animation_response": "object: f3b01fba-e23e-4116-9ee7-a839da0cd5e3\ngroup: 9a998090-ae61-4f8c-a845-852069034e76\nmode: v3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing up/north, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 10\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"f3b01fba-e23e-4116-9ee7-a839da0cd5e3\")"
     },
     "lit-valkyrie/death-north-west": {
       "set": "heroes",
       "slug": "lit-valkyrie-death-north-west",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "a88df66c-e46c-4e59-a1bc-e6b35496db72",
+      "status": "processing_animate",
+      "raw_create_response": "id: a88df66c-e46c-4e59-a1bc-e6b35496db72\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing up-left/northwest, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a88df66c-e46c-4e59-a1bc-e6b35496db72\")",
       "animated": true,
       "frame_count": 10,
       "priority": 1,
@@ -1424,7 +1440,9 @@
         "hero": "lit-valkyrie",
         "state": "death",
         "direction": "north-west"
-      }
+      },
+      "animation_id": "5b238b5a-3b90-4292-86c5-7e2b87481844",
+      "raw_animation_response": "object: a88df66c-e46c-4e59-a1bc-e6b35496db72\ngroup: 5b238b5a-3b90-4292-86c5-7e2b87481844\nmode: v3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing up-left/northwest, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 10\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"a88df66c-e46c-4e59-a1bc-e6b35496db72\")"
     },
     "lit-valkyrie/death-west": {
       "set": "heroes",
@@ -1450,9 +1468,9 @@
       "slug": "lit-valkyrie-death-south-west",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "ca2feeed-0399-42d4-963f-fdec799dc57a",
+      "status": "processing_animate",
+      "raw_create_response": "id: ca2feeed-0399-42d4-963f-fdec799dc57a\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing down-left/southwest, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"ca2feeed-0399-42d4-963f-fdec799dc57a\")",
       "animated": true,
       "frame_count": 10,
       "priority": 1,
@@ -1460,16 +1478,18 @@
         "hero": "lit-valkyrie",
         "state": "death",
         "direction": "south-west"
-      }
+      },
+      "animation_id": "22fde425-1033-486e-b4dc-7e2144ec5b8a",
+      "raw_animation_response": "object: ca2feeed-0399-42d4-963f-fdec799dc57a\ngroup: 22fde425-1033-486e-b4dc-7e2144ec5b8a\nmode: v3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing down-left/southwest, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 10\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"ca2feeed-0399-42d4-963f-fdec799dc57a\")"
     },
     "lit-valkyrie/death-south": {
       "set": "heroes",
       "slug": "lit-valkyrie-death-south",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "23579d1f-8f29-4957-b3b8-5cde9692ebe9",
+      "status": "processing_animate",
+      "raw_create_response": "id: 23579d1f-8f29-4957-b3b8-5cde9692ebe9\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing down/south, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"23579d1f-8f29-4957-b3b8-5cde9692ebe9\")",
       "animated": true,
       "frame_count": 10,
       "priority": 1,
@@ -1477,16 +1497,18 @@
         "hero": "lit-valkyrie",
         "state": "death",
         "direction": "south"
-      }
+      },
+      "animation_id": "30ebe08c-3baf-4b16-a28d-64376b830670",
+      "raw_animation_response": "object: 23579d1f-8f29-4957-b3b8-5cde9692ebe9\ngroup: 30ebe08c-3baf-4b16-a28d-64376b830670\nmode: v3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing down/south, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 10\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"23579d1f-8f29-4957-b3b8-5cde9692ebe9\")"
     },
     "lit-valkyrie/death-south-east": {
       "set": "heroes",
       "slug": "lit-valkyrie-death-south-east",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "00a3ecaf-4730-4175-88cf-d0bfcb43e480",
+      "status": "processing_animate",
+      "raw_create_response": "id: 00a3ecaf-4730-4175-88cf-d0bfcb43e480\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing down-right/southeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"00a3ecaf-4730-4175-88cf-d0bfcb43e480\")",
       "animated": true,
       "frame_count": 10,
       "priority": 1,
@@ -1494,6 +1516,804 @@
         "hero": "lit-valkyrie",
         "state": "death",
         "direction": "south-east"
+      },
+      "animation_id": "d0fcceff-7ea6-4e44-bc58-89331cd1d554",
+      "raw_animation_response": "object: 00a3ecaf-4730-4175-88cf-d0bfcb43e480\ngroup: d0fcceff-7ea6-4e44-bc58-89331cd1d554\nmode: v3\ndescription: isometric Lit Valkyrie isometric dramatic death sequence, slow-mo collapse, Litecoin spark fade, particle burst, pixel art, facing down-right/southeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nframes: 10\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"00a3ecaf-4730-4175-88cf-d0bfcb43e480\")"
+    },
+    "trench-degen/attack-tell-east": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-east",
+      "w": 64,
+      "h": 96,
+      "id": "f5f3ef92-0bf1-4a8e-a1ef-b301c23f1523",
+      "status": "processing_animate",
+      "raw_create_response": "id: f5f3ef92-0bf1-4a8e-a1ef-b301c23f1523\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"f5f3ef92-0bf1-4a8e-a1ef-b301c23f1523\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "east"
+      },
+      "animation_id": "4c184e0b-b269-4982-964b-d4108db11b43",
+      "raw_animation_response": "object: f5f3ef92-0bf1-4a8e-a1ef-b301c23f1523\ngroup: 4c184e0b-b269-4982-964b-d4108db11b43\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"f5f3ef92-0bf1-4a8e-a1ef-b301c23f1523\")"
+    },
+    "trench-degen/attack-tell-north-east": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "e92394a3-0fe9-4b0e-bc39-300f483a70ee",
+      "status": "processing_animate",
+      "raw_create_response": "id: e92394a3-0fe9-4b0e-bc39-300f483a70ee\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"e92394a3-0fe9-4b0e-bc39-300f483a70ee\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "north-east"
+      },
+      "animation_id": "96be43d2-f3f8-4b4d-b69d-e36d7e357fc7",
+      "raw_animation_response": "object: e92394a3-0fe9-4b0e-bc39-300f483a70ee\ngroup: 96be43d2-f3f8-4b4d-b69d-e36d7e357fc7\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"e92394a3-0fe9-4b0e-bc39-300f483a70ee\")"
+    },
+    "trench-degen/attack-tell-north": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-north",
+      "w": 64,
+      "h": 96,
+      "id": "9b93deaa-0d4e-4710-afb4-36293278d5c0",
+      "status": "processing_animate",
+      "raw_create_response": "id: 9b93deaa-0d4e-4710-afb4-36293278d5c0\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"9b93deaa-0d4e-4710-afb4-36293278d5c0\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "north"
+      },
+      "animation_id": "481ac89e-4a98-4cd5-ad16-de3bab5ba2c0",
+      "raw_animation_response": "object: 9b93deaa-0d4e-4710-afb4-36293278d5c0\ngroup: 481ac89e-4a98-4cd5-ad16-de3bab5ba2c0\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"9b93deaa-0d4e-4710-afb4-36293278d5c0\")"
+    },
+    "trench-degen/attack-tell-north-west": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "82265e1c-8914-4ad3-bd8e-6aef2b878971",
+      "status": "processing_animate",
+      "raw_create_response": "id: 82265e1c-8914-4ad3-bd8e-6aef2b878971\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"82265e1c-8914-4ad3-bd8e-6aef2b878971\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "north-west"
+      },
+      "animation_id": "15880bda-eef0-4181-8ff5-c65813b790ba",
+      "raw_animation_response": "object: 82265e1c-8914-4ad3-bd8e-6aef2b878971\ngroup: 15880bda-eef0-4181-8ff5-c65813b790ba\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"82265e1c-8914-4ad3-bd8e-6aef2b878971\")"
+    },
+    "trench-degen/attack-tell-west": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-west",
+      "w": 64,
+      "h": 96,
+      "id": "e1de27f0-8578-4bda-b6bd-a7b8740ce370",
+      "status": "processing_animate",
+      "raw_create_response": "id: e1de27f0-8578-4bda-b6bd-a7b8740ce370\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"e1de27f0-8578-4bda-b6bd-a7b8740ce370\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "west"
+      },
+      "animation_id": "263983c8-a02b-4794-8146-fb43250e33db",
+      "raw_animation_response": "object: e1de27f0-8578-4bda-b6bd-a7b8740ce370\ngroup: 263983c8-a02b-4794-8146-fb43250e33db\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"e1de27f0-8578-4bda-b6bd-a7b8740ce370\")"
+    },
+    "trench-degen/attack-tell-south-west": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "bc3312be-a599-419f-be81-54b7bc114c36",
+      "status": "processing_animate",
+      "raw_create_response": "id: bc3312be-a599-419f-be81-54b7bc114c36\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"bc3312be-a599-419f-be81-54b7bc114c36\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "south-west"
+      },
+      "animation_id": "1575d23b-20a0-433f-8762-fc0cd94d53fd",
+      "raw_animation_response": "object: bc3312be-a599-419f-be81-54b7bc114c36\ngroup: 1575d23b-20a0-433f-8762-fc0cd94d53fd\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"bc3312be-a599-419f-be81-54b7bc114c36\")"
+    },
+    "trench-degen/attack-tell-south": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-south",
+      "w": 64,
+      "h": 96,
+      "id": "5f9136d8-4c53-447f-9d12-869e19d48e13",
+      "status": "processing_animate",
+      "raw_create_response": "id: 5f9136d8-4c53-447f-9d12-869e19d48e13\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5f9136d8-4c53-447f-9d12-869e19d48e13\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "south"
+      },
+      "animation_id": "7aea78d0-1d05-483d-944f-86e5e099c290",
+      "raw_animation_response": "object: 5f9136d8-4c53-447f-9d12-869e19d48e13\ngroup: 7aea78d0-1d05-483d-944f-86e5e099c290\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"5f9136d8-4c53-447f-9d12-869e19d48e13\")"
+    },
+    "trench-degen/attack-tell-south-east": {
+      "set": "enemies",
+      "slug": "trench-degen-attack-tell-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "1c3a4552-653e-48f1-9849-57e6e9e0b7bb",
+      "status": "processing_animate",
+      "raw_create_response": "id: 1c3a4552-653e-48f1-9849-57e6e9e0b7bb\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1c3a4552-653e-48f1-9849-57e6e9e0b7bb\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "attack-tell",
+        "direction": "south-east"
+      },
+      "animation_id": "61724c67-7e2a-417c-a40e-e1f0c9104ba7",
+      "raw_animation_response": "object: 1c3a4552-653e-48f1-9849-57e6e9e0b7bb\ngroup: 61724c67-7e2a-417c-a40e-e1f0c9104ba7\nmode: v3\ndescription: isometric Trench Degen isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-right/southeast, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"1c3a4552-653e-48f1-9849-57e6e9e0b7bb\")"
+    },
+    "trench-degen/hit-east": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-east",
+      "w": 64,
+      "h": 96,
+      "id": "4b74354d-067e-48c9-948f-5fe98d124fac",
+      "status": "processing_animate",
+      "raw_create_response": "id: 4b74354d-067e-48c9-948f-5fe98d124fac\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4b74354d-067e-48c9-948f-5fe98d124fac\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "east"
+      },
+      "animation_id": "9090a373-14b2-4046-81a4-4091300119ef",
+      "raw_animation_response": "object: 4b74354d-067e-48c9-948f-5fe98d124fac\ngroup: 9090a373-14b2-4046-81a4-4091300119ef\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"4b74354d-067e-48c9-948f-5fe98d124fac\")"
+    },
+    "trench-degen/hit-north-east": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "69be00e4-dc04-4073-a8b4-7c03ce8bacaf",
+      "status": "processing_animate",
+      "raw_create_response": "id: 69be00e4-dc04-4073-a8b4-7c03ce8bacaf\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-right/northeast, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"69be00e4-dc04-4073-a8b4-7c03ce8bacaf\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "north-east"
+      },
+      "animation_id": "0edc4e9c-7926-4e08-be9f-960adb73134c",
+      "raw_animation_response": "object: 69be00e4-dc04-4073-a8b4-7c03ce8bacaf\ngroup: 0edc4e9c-7926-4e08-be9f-960adb73134c\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-right/northeast, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"69be00e4-dc04-4073-a8b4-7c03ce8bacaf\")"
+    },
+    "trench-degen/hit-north": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-north",
+      "w": 64,
+      "h": 96,
+      "id": "52faa490-2cb5-496f-af85-0848f526826c",
+      "status": "processing_animate",
+      "raw_create_response": "id: 52faa490-2cb5-496f-af85-0848f526826c\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up/north, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"52faa490-2cb5-496f-af85-0848f526826c\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "north"
+      },
+      "animation_id": "4b0bfcf4-947d-4f5f-9542-302e8d5532d5",
+      "raw_animation_response": "object: 52faa490-2cb5-496f-af85-0848f526826c\ngroup: 4b0bfcf4-947d-4f5f-9542-302e8d5532d5\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up/north, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"52faa490-2cb5-496f-af85-0848f526826c\")"
+    },
+    "trench-degen/hit-north-west": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "41385b8d-cf9e-41c6-ae8a-a34b0cfb1c0d",
+      "status": "processing_animate",
+      "raw_create_response": "id: 41385b8d-cf9e-41c6-ae8a-a34b0cfb1c0d\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-left/northwest, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"41385b8d-cf9e-41c6-ae8a-a34b0cfb1c0d\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "north-west"
+      },
+      "animation_id": "c1d6b8ea-f14d-4f23-888e-c95671642a47",
+      "raw_animation_response": "object: 41385b8d-cf9e-41c6-ae8a-a34b0cfb1c0d\ngroup: c1d6b8ea-f14d-4f23-888e-c95671642a47\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing up-left/northwest, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"41385b8d-cf9e-41c6-ae8a-a34b0cfb1c0d\")"
+    },
+    "trench-degen/hit-west": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-west",
+      "w": 64,
+      "h": 96,
+      "id": "2a3a60cb-cccf-452c-81d4-9a1785c5a303",
+      "status": "processing_animate",
+      "raw_create_response": "id: 2a3a60cb-cccf-452c-81d4-9a1785c5a303\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing left/west, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2a3a60cb-cccf-452c-81d4-9a1785c5a303\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "west"
+      },
+      "animation_id": "5b7b3f31-45be-46d8-8541-2aa766abd810",
+      "raw_animation_response": "object: 2a3a60cb-cccf-452c-81d4-9a1785c5a303\ngroup: 5b7b3f31-45be-46d8-8541-2aa766abd810\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing left/west, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"2a3a60cb-cccf-452c-81d4-9a1785c5a303\")"
+    },
+    "trench-degen/hit-south-west": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "038ffe6d-d788-4d13-9832-a9fcb036f05c",
+      "status": "processing_animate",
+      "raw_create_response": "id: 038ffe6d-d788-4d13-9832-a9fcb036f05c\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-left/southwest, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"038ffe6d-d788-4d13-9832-a9fcb036f05c\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "south-west"
+      },
+      "animation_id": "6dd3c017-966c-4970-b446-cb810081fb6c",
+      "raw_animation_response": "object: 038ffe6d-d788-4d13-9832-a9fcb036f05c\ngroup: 6dd3c017-966c-4970-b446-cb810081fb6c\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-left/southwest, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"038ffe6d-d788-4d13-9832-a9fcb036f05c\")"
+    },
+    "trench-degen/hit-south": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-south",
+      "w": 64,
+      "h": 96,
+      "id": "95234b53-2529-4b91-afd1-7a25bf0b92ca",
+      "status": "processing_animate",
+      "raw_create_response": "id: 95234b53-2529-4b91-afd1-7a25bf0b92ca\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"95234b53-2529-4b91-afd1-7a25bf0b92ca\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "south"
+      },
+      "animation_id": "ddf8d632-a5ab-4fbc-8a6d-6ef93088ae19",
+      "raw_animation_response": "object: 95234b53-2529-4b91-afd1-7a25bf0b92ca\ngroup: ddf8d632-a5ab-4fbc-8a6d-6ef93088ae19\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down/south, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"95234b53-2529-4b91-afd1-7a25bf0b92ca\")"
+    },
+    "trench-degen/hit-south-east": {
+      "set": "enemies",
+      "slug": "trench-degen-hit-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "6ab83727-80c2-4040-baf0-ef71d0a1e50a",
+      "status": "processing_animate",
+      "raw_create_response": "id: 6ab83727-80c2-4040-baf0-ef71d0a1e50a\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-right/southeast, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"6ab83727-80c2-4040-baf0-ef71d0a1e50a\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "hit",
+        "direction": "south-east"
+      },
+      "animation_id": "8f665240-f9dd-4e2a-96a1-f08826c6cfaf",
+      "raw_animation_response": "object: 6ab83727-80c2-4040-baf0-ef71d0a1e50a\ngroup: 8f665240-f9dd-4e2a-96a1-f08826c6cfaf\nmode: v3\ndescription: isometric Trench Degen isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing down-right/southeast, grimy tactical gear, makeshift pistol, hunched posture\nframes: 4\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"6ab83727-80c2-4040-baf0-ef71d0a1e50a\")"
+    },
+    "trench-degen/death-east": {
+      "set": "enemies",
+      "slug": "trench-degen-death-east",
+      "w": 64,
+      "h": 96,
+      "id": "adfb1f54-5581-412d-b1ef-ec0def09a16f",
+      "status": "processing_animate",
+      "raw_create_response": "id: adfb1f54-5581-412d-b1ef-ec0def09a16f\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"adfb1f54-5581-412d-b1ef-ec0def09a16f\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "east"
+      },
+      "animation_id": "bf03b9f5-034e-42ce-bdf5-32ffd1e64421",
+      "raw_animation_response": "object: adfb1f54-5581-412d-b1ef-ec0def09a16f\ngroup: bf03b9f5-034e-42ce-bdf5-32ffd1e64421\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing right/east, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"adfb1f54-5581-412d-b1ef-ec0def09a16f\")"
+    },
+    "trench-degen/death-north-east": {
+      "set": "enemies",
+      "slug": "trench-degen-death-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "4bd56b30-af14-43a8-be07-7505db04f28c",
+      "status": "processing_animate",
+      "raw_create_response": "id: 4bd56b30-af14-43a8-be07-7505db04f28c\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4bd56b30-af14-43a8-be07-7505db04f28c\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "north-east"
+      },
+      "animation_id": "5df9f363-e7e5-47a0-b294-bc3656082cde",
+      "raw_animation_response": "object: 4bd56b30-af14-43a8-be07-7505db04f28c\ngroup: 5df9f363-e7e5-47a0-b294-bc3656082cde\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-right/northeast, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"4bd56b30-af14-43a8-be07-7505db04f28c\")"
+    },
+    "trench-degen/death-north": {
+      "set": "enemies",
+      "slug": "trench-degen-death-north",
+      "w": 64,
+      "h": 96,
+      "id": "e9412c0e-1ae1-404b-b09e-0f945d631d3c",
+      "status": "processing_animate",
+      "raw_create_response": "id: e9412c0e-1ae1-404b-b09e-0f945d631d3c\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up/north, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"e9412c0e-1ae1-404b-b09e-0f945d631d3c\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "north"
+      },
+      "animation_id": "758bc7e3-63d9-4606-a94e-ad210289132a",
+      "raw_animation_response": "object: e9412c0e-1ae1-404b-b09e-0f945d631d3c\ngroup: 758bc7e3-63d9-4606-a94e-ad210289132a\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up/north, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"e9412c0e-1ae1-404b-b09e-0f945d631d3c\")"
+    },
+    "trench-degen/death-north-west": {
+      "set": "enemies",
+      "slug": "trench-degen-death-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "83678db8-15ff-4e88-8f5f-34bc2ec7a373",
+      "status": "processing_animate",
+      "raw_create_response": "id: 83678db8-15ff-4e88-8f5f-34bc2ec7a373\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-left/northwest, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"83678db8-15ff-4e88-8f5f-34bc2ec7a373\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "north-west"
+      },
+      "animation_id": "c44bb6cc-9c6d-4360-b626-cbcd08b3af41",
+      "raw_animation_response": "object: 83678db8-15ff-4e88-8f5f-34bc2ec7a373\ngroup: c44bb6cc-9c6d-4360-b626-cbcd08b3af41\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing up-left/northwest, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"83678db8-15ff-4e88-8f5f-34bc2ec7a373\")"
+    },
+    "trench-degen/death-west": {
+      "set": "enemies",
+      "slug": "trench-degen-death-west",
+      "w": 64,
+      "h": 96,
+      "id": "68ce139d-1205-4ccb-a2ab-83cec68a6517",
+      "status": "processing_animate",
+      "raw_create_response": "id: 68ce139d-1205-4ccb-a2ab-83cec68a6517\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing left/west, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"68ce139d-1205-4ccb-a2ab-83cec68a6517\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "west"
+      },
+      "animation_id": "bc15e0ea-2530-4708-b211-56599f6d7fda",
+      "raw_animation_response": "object: 68ce139d-1205-4ccb-a2ab-83cec68a6517\ngroup: bc15e0ea-2530-4708-b211-56599f6d7fda\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing left/west, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"68ce139d-1205-4ccb-a2ab-83cec68a6517\")"
+    },
+    "trench-degen/death-south-west": {
+      "set": "enemies",
+      "slug": "trench-degen-death-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "69dc4be8-3316-4652-b4c8-5ec1cf38938b",
+      "status": "processing_animate",
+      "raw_create_response": "id: 69dc4be8-3316-4652-b4c8-5ec1cf38938b\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-left/southwest, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"69dc4be8-3316-4652-b4c8-5ec1cf38938b\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "south-west"
+      },
+      "animation_id": "200c4bf6-7222-4844-855f-246fa68c78dc",
+      "raw_animation_response": "object: 69dc4be8-3316-4652-b4c8-5ec1cf38938b\ngroup: 200c4bf6-7222-4844-855f-246fa68c78dc\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-left/southwest, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"69dc4be8-3316-4652-b4c8-5ec1cf38938b\")"
+    },
+    "trench-degen/death-south": {
+      "set": "enemies",
+      "slug": "trench-degen-death-south",
+      "w": 64,
+      "h": 96,
+      "id": "a5d5a6c6-ac20-4749-a501-abb5f1a423b0",
+      "status": "processing_animate",
+      "raw_create_response": "id: a5d5a6c6-ac20-4749-a501-abb5f1a423b0\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down/south, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a5d5a6c6-ac20-4749-a501-abb5f1a423b0\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "south"
+      },
+      "animation_id": "d96fea86-8093-49c2-b6a6-51e8f38953aa",
+      "raw_animation_response": "object: a5d5a6c6-ac20-4749-a501-abb5f1a423b0\ngroup: d96fea86-8093-49c2-b6a6-51e8f38953aa\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down/south, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"a5d5a6c6-ac20-4749-a501-abb5f1a423b0\")"
+    },
+    "trench-degen/death-south-east": {
+      "set": "enemies",
+      "slug": "trench-degen-death-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "72c7ff0c-e923-4dab-aa15-3e2c9bda33ce",
+      "status": "processing_animate",
+      "raw_create_response": "id: 72c7ff0c-e923-4dab-aa15-3e2c9bda33ce\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-right/southeast, grimy tactical gear, makeshift pistol, hunched posture\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"72c7ff0c-e923-4dab-aa15-3e2c9bda33ce\")",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "trench-degen",
+        "state": "death",
+        "direction": "south-east"
+      },
+      "animation_id": "fc3d0819-844b-421c-ae92-b4e77f56f4eb",
+      "raw_animation_response": "object: 72c7ff0c-e923-4dab-aa15-3e2c9bda33ce\ngroup: fc3d0819-844b-421c-ae92-b4e77f56f4eb\nmode: v3\ndescription: isometric Trench Degen isometric death animation, unique per enemy type, particle burst, collapse, pixel art, facing down-right/southeast, grimy tactical gear, makeshift pistol, hunched posture\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"72c7ff0c-e923-4dab-aa15-3e2c9bda33ce\")"
+    },
+    "evil-banker/attack-tell-east": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-east",
+      "w": 64,
+      "h": 96,
+      "id": "1ceb9b33-e273-4638-9041-554671566e78",
+      "status": "processing_create",
+      "raw_create_response": "id: 1ceb9b33-e273-4638-9041-554671566e78\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1ceb9b33-e273-4638-9041-554671566e78\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "east"
+      }
+    },
+    "evil-banker/attack-tell-north-east": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "1789a96e-edf4-4567-95c1-798704f9be83",
+      "status": "processing_create",
+      "raw_create_response": "id: 1789a96e-edf4-4567-95c1-798704f9be83\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-right/northeast, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1789a96e-edf4-4567-95c1-798704f9be83\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "north-east"
+      }
+    },
+    "evil-banker/attack-tell-north": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-north",
+      "w": 64,
+      "h": 96,
+      "id": "c51a0748-cd24-42ce-b214-dd89e27bfa9d",
+      "status": "processing_create",
+      "raw_create_response": "id: c51a0748-cd24-42ce-b214-dd89e27bfa9d\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up/north, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"c51a0748-cd24-42ce-b214-dd89e27bfa9d\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "north"
+      }
+    },
+    "evil-banker/attack-tell-north-west": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "96c45d99-3c7c-466c-b3a0-d27621b33798",
+      "status": "processing_create",
+      "raw_create_response": "id: 96c45d99-3c7c-466c-b3a0-d27621b33798\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing up-left/northwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"96c45d99-3c7c-466c-b3a0-d27621b33798\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "north-west"
+      }
+    },
+    "evil-banker/attack-tell-west": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-west",
+      "w": 64,
+      "h": 96,
+      "id": "36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c",
+      "status": "processing_create",
+      "raw_create_response": "id: 36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing left/west, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"36637e5d-e3fe-4fdc-b1a7-73c2a4c95b0c\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "west"
+      }
+    },
+    "evil-banker/attack-tell-south-west": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "73e65f03-2dcd-467c-a63f-a563832bc152",
+      "status": "processing_create",
+      "raw_create_response": "id: 73e65f03-2dcd-467c-a63f-a563832bc152\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down-left/southwest, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"73e65f03-2dcd-467c-a63f-a563832bc152\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "south-west"
+      }
+    },
+    "evil-banker/attack-tell-south": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-south",
+      "w": 64,
+      "h": 96,
+      "id": "cbdbcedf-6713-4ec3-9760-a569982acd2e",
+      "status": "processing_create",
+      "raw_create_response": "id: cbdbcedf-6713-4ec3-9760-a569982acd2e\ndescription: isometric Evil Banker isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art, facing down/south, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"cbdbcedf-6713-4ec3-9760-a569982acd2e\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "south"
+      }
+    },
+    "evil-banker/attack-tell-south-east": {
+      "set": "enemies",
+      "slug": "evil-banker-attack-tell-south-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "attack-tell",
+        "direction": "south-east"
+      }
+    },
+    "evil-banker/hit-east": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-east",
+      "w": 64,
+      "h": 96,
+      "id": "a8628d24-b4bb-43ac-a27f-ab0994686c61",
+      "status": "processing_create",
+      "raw_create_response": "id: a8628d24-b4bb-43ac-a27f-ab0994686c61\ndescription: isometric Evil Banker isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art, facing right/east, sharp suit, briefcase weapon, corporate predator vibe\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a8628d24-b4bb-43ac-a27f-ab0994686c61\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "east"
+      }
+    },
+    "evil-banker/hit-north-east": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-north-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "north-east"
+      }
+    },
+    "evil-banker/hit-north": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-north",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "north"
+      }
+    },
+    "evil-banker/hit-north-west": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-north-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "north-west"
+      }
+    },
+    "evil-banker/hit-west": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "west"
+      }
+    },
+    "evil-banker/hit-south-west": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-south-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "south-west"
+      }
+    },
+    "evil-banker/hit-south": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-south",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "south"
+      }
+    },
+    "evil-banker/hit-south-east": {
+      "set": "enemies",
+      "slug": "evil-banker-hit-south-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "hit",
+        "direction": "south-east"
+      }
+    },
+    "evil-banker/death-east": {
+      "set": "enemies",
+      "slug": "evil-banker-death-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "east"
+      }
+    },
+    "evil-banker/death-north-east": {
+      "set": "enemies",
+      "slug": "evil-banker-death-north-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "north-east"
+      }
+    },
+    "evil-banker/death-north": {
+      "set": "enemies",
+      "slug": "evil-banker-death-north",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "north"
+      }
+    },
+    "evil-banker/death-north-west": {
+      "set": "enemies",
+      "slug": "evil-banker-death-north-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 8,
+      "priority": 1,
+      "meta": {
+        "enemy": "evil-banker",
+        "state": "death",
+        "direction": "north-west"
       }
     }
   }
