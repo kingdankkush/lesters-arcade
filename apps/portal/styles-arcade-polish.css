@@ -990,3 +990,66 @@
 @media (max-width: 560px) {
   .mode-row-banners { grid-template-columns: 1fr; }
 }
+
+/* --- Game switcher tabs (per-game leaderboards + profile stats) ----------- */
+.leaderboard-game-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.profile-game-tabs { margin-top: 8px; }
+.leaderboard-game-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 0;
+  padding: 8px 16px;
+  border-radius: 10px;
+  opacity: 0.6;
+  border: 1px solid rgba(25,247,255,0.28);
+  background: rgba(8,14,32,0.7);
+  cursor: pointer;
+}
+.leaderboard-game-tab.is-active {
+  opacity: 1;
+  border-color: #ffe84d;
+  box-shadow: 0 0 10px rgba(255,232,77,0.4);
+  background: linear-gradient(135deg, rgba(255,232,77,0.14), rgba(25,247,255,0.1));
+}
+.leaderboard-game-tab.is-locked { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.6); }
+.leaderboard-game-tab-title { font-weight: 800; font-size: 0.82rem; letter-spacing: 0.02em; }
+.leaderboard-game-tab-badge {
+  font-size: 0.54rem; font-weight: 800; letter-spacing: 0.1em;
+  padding: 2px 6px; border-radius: 999px;
+  background: rgba(255,123,47,0.25); color: #ffb454;
+}
+
+/* --- Profile: per-game stats grid + recent run history ------------------- */
+.game-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.game-stat-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  background: rgba(8,14,32,0.6);
+  border: 1px solid rgba(25,247,255,0.16);
+}
+.game-stat-value { font-size: 1.05rem; font-weight: 900; color: #19f7ff; }
+.game-stat-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; color: #8fa0c8; text-transform: uppercase; }
+.game-stats-subhead { display: block; margin-top: 14px; }
+.game-history-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.game-history-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 12px; border-radius: 8px;
+  background: rgba(4,6,16,0.55); border: 1px solid rgba(52,93,204,0.18);
+}
+.game-history-score { font-weight: 800; color: #ffe84d; font-size: 0.82rem; }
+.game-history-detail { font-size: 0.72rem; color: #c8d4ff; }
+@media (max-width: 560px) {
+  .game-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}

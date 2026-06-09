@@ -70,6 +70,7 @@ import {
   formatMicroUsdc,
   getCartridgeSelectModel,
   getGame,
+  ARCADE_GAMES,
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
   grantRoguelikeXp,
@@ -2333,6 +2334,9 @@ let profileAvatarJustSaved = false;
 // Same pattern for the display-name save so the confirmation survives the
 // re-render the save triggers (mirrors the avatar "saved!" toast/flash).
 let profileUsernameJustSaved = false;
+// Which game's stats/history the profile is showing. Game-specific so future
+// cabinets get their own stats view via the same switcher pattern as the board.
+let profileGameId = 'lester-blaster';
 
 function renderOfficialProfile() {
   dom.officialCabinetGrid.replaceChildren();
@@ -2488,6 +2492,74 @@ function renderOfficialProfile() {
   avatarCard.append(avatarRow, fileInput);
   dom.officialCabinetGrid.append(avatarCard);
 
+  // --- Game-specific stats + recent run history (game switcher) ---
+  // Stats are tracked per game; switch which game's stats/history you're viewing.
+  const statsCard = el('article', { className: 'official-info-card game-stats-card' });
+  appendText(statsCard, 'span', 'GAME STATS & HISTORY', 'cabinet-status-label');
+  const statsGameBar = el('div', { className: 'leaderboard-game-tabs profile-game-tabs' });
+  for (const game of ARCADE_GAMES) {
+    const playable = game.status === 'playable';
+    const tab = el('button', {
+      className: `pixel-button leaderboard-game-tab${game.id === profileGameId ? ' is-active' : ''}${playable ? '' : ' is-locked'}`,
+      type: 'button',
+    });
+    appendText(tab, 'span', game.title, 'leaderboard-game-tab-title');
+    if (!playable) appendText(tab, 'span', 'SOON', 'leaderboard-game-tab-badge');
+    tab.disabled = !playable;
+    if (playable) {
+      tab.addEventListener('click', () => {
+        if (profileGameId === game.id) return;
+        profileGameId = game.id;
+        renderOfficialProfile();
+      });
+    }
+    statsGameBar.append(tab);
+  }
+  statsCard.append(statsGameBar);
+
+  const gp = snapshot?.progress?.[profileGameId];
+  if (!gp || (gp.paidRuns + gp.freeRuns) === 0) {
+    appendText(statsCard, 'small', `No runs recorded for ${getGame(profileGameId).title} yet. Play a run to start tracking stats.`);
+  } else {
+    const bestScore = Math.max(gp.bestPaidScore ?? 0, gp.bestFreeScore ?? 0);
+    const mins = Math.floor((gp.longestRunSeconds ?? 0) / 60);
+    const secs = Math.floor((gp.longestRunSeconds ?? 0) % 60).toString().padStart(2, '0');
+    const stats = [
+      ['Best Score', bestScore.toLocaleString()],
+      ['Runs', `${gp.paidRuns + gp.freeRuns} (${gp.paidRuns} ranked)`],
+      ['Longest Run', `${mins}:${secs}`],
+      ['Total Kills', (gp.totalKills ?? 0).toLocaleString()],
+      ['Boss Kills', `${gp.bossKills ?? 0}`],
+      ['Max Combo', `${gp.maxCombo ?? 0}`],
+    ];
+    const statGrid = el('div', { className: 'game-stats-grid' });
+    for (const [label, value] of stats) {
+      const cell = el('div', { className: 'game-stat-cell' });
+      appendText(cell, 'span', value, 'game-stat-value');
+      appendText(cell, 'span', label, 'game-stat-label');
+      statGrid.append(cell);
+    }
+    statsCard.append(statGrid);
+
+    // Recent run history for THIS game (most recent first).
+    const sessions = (snapshot?.officialSessions ?? [])
+      .filter((s) => s.gameId === profileGameId || s.gameId === 'hmh' && profileGameId === 'lester-blaster')
+      .slice(-5).reverse();
+    if (sessions.length) {
+      appendText(statsCard, 'span', 'RECENT RANKED RUNS', 'cabinet-status-label game-stats-subhead');
+      const histList = el('div', { className: 'game-history-list' });
+      for (const s of sessions) {
+        const row = el('div', { className: 'game-history-row' });
+        const rs = s.runStats ?? {};
+        appendText(row, 'span', `${(rs.score ?? 0).toLocaleString()} pts`, 'game-history-score');
+        appendText(row, 'span', `${rs.kills ?? 0} kills · LV ${rs.level ?? 1}`, 'game-history-detail');
+        histList.append(row);
+      }
+      statsCard.append(histList);
+    }
+  }
+  dom.officialCabinetGrid.append(statsCard);
+
   // --- Achievements module (full-width, below profile cards) ---
   const unlockedByTitle = new Map((snapshot?.achievements ?? []).map((a) => [a.title, a]));
   const achievements = Object.values(ACHIEVEMENTS).map((achievement) => {
@@ -2540,14 +2612,43 @@ let officialLeaderboardCadence = 'all-time';
 let leaderboardSortKey = 'score'; // 'score' | 'name' | 'date' | 'kills' | 'survive' | 'level'
 let leaderboardSortDir = 'desc';  // 'asc' | 'desc'
 let leaderboardSearch = '';
+// Which game's leaderboard is being viewed. Defaults to the active play target
+// (HMH). Game-specific so future cabinets get their own boards via the switcher.
+let leaderboardGameId = 'lester-blaster';
 
 function renderOfficialLeaderboards() {
   dom.officialCabinetGrid.replaceChildren();
   const displayNameFor = (wallet) => resolveDisplayName(state.profiles?.[wallet], wallet);
 
+  // --- Game switcher: leaderboards are per-game. HMH is the only playable board
+  // now; future cabinets appear as locked "SOON" tabs and become selectable once
+  // they ship. Keeps the board game-specific so each game owns its own rankings.
+  const gameBar = el('div', { className: 'leaderboard-game-tabs' });
+  for (const game of ARCADE_GAMES) {
+    const playable = game.status === 'playable';
+    const isActive = game.id === leaderboardGameId;
+    const tab = el('button', {
+      className: `pixel-button leaderboard-game-tab${isActive ? ' is-active' : ''}${playable ? '' : ' is-locked'}`,
+      type: 'button',
+    });
+    appendText(tab, 'span', game.title, 'leaderboard-game-tab-title');
+    if (!playable) appendText(tab, 'span', 'SOON', 'leaderboard-game-tab-badge');
+    tab.disabled = !playable;
+    if (playable) {
+      tab.addEventListener('click', () => {
+        if (leaderboardGameId === game.id) return;
+        leaderboardGameId = game.id;
+        leaderboardSearch = '';
+        renderOfficialLeaderboards();
+      });
+    }
+    gameBar.append(tab);
+  }
+  dom.officialCabinetGrid.append(gameBar);
+
   // cadence tab bar
   const tabBar = el('div', { className: 'leaderboard-cadence-tabs' });
-  for (const board of getAllCadenceLeaderboards(state, selectedGameId, { wallet: connectedWallet, displayNameFor })) {
+  for (const board of getAllCadenceLeaderboards(state, leaderboardGameId, { wallet: connectedWallet, displayNameFor })) {
     const tab = el('button', {
       className: `pixel-button leaderboard-cadence-tab${board.cadence === officialLeaderboardCadence ? ' is-active' : ''}`,
       textContent: board.cadence.toUpperCase(),
@@ -2562,7 +2663,7 @@ function renderOfficialLeaderboards() {
   }
   dom.officialCabinetGrid.append(tabBar);
 
-  const active = getLeaderboard(state, selectedGameId, officialLeaderboardCadence, {
+  const active = getLeaderboard(state, leaderboardGameId, officialLeaderboardCadence, {
     wallet: connectedWallet,
     displayNameFor,
     limit: 50,
@@ -2570,7 +2671,7 @@ function renderOfficialLeaderboards() {
 
   const board = el('article', { className: 'official-info-card leaderboard-board-card' });
   const header = el('div', { className: 'leaderboard-header' });
-  appendText(header, 'h3', '🏆 GLOBAL LEADERBOARD', 'leaderboard-title');
+  appendText(header, 'h3', `🏆 ${getGame(leaderboardGameId).title.toUpperCase()}`, 'leaderboard-title');
   appendText(header, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${active.total} ranked runs`, 'cabinet-status-label');
   board.append(header);
 
