@@ -6568,7 +6568,15 @@ function drawBullets(ctx) {
 // the older production pickup art (and finally the vector capsule) when missing.
 const fxPowerupIconCache = new Map();
 const FX_POWERUP_ICON_BY_ID = Object.freeze({
-  'heal-pack': 'health-pack',
+  // Power-up id (LESTER_BLASTER_POWER_UPS) -> fx-powerups-wave icon slug. The
+  // slugs match the ids 1:1 for most; map the few that differ. Complete coverage
+  // so every pickup shows its dedicated animated icon, not the vector fallback.
+  'health-pack': 'health-pack',
+  'grenade-crate': 'grenade-crate',
+  'bonus-life': 'bonus-life',
+  'spread-ltc-chip': 'spread-ltc-chip',
+  'hash-rail-core': 'hash-rail-core',
+  'score-multiplier': 'score-multiplier',
   'shield-cache': 'shield-cache',
   'ammo-cache': 'ammo-cache',
   'ltc-cache': 'ltc-cache',
@@ -6603,7 +6611,29 @@ function drawPowerUps(ctx) {
   for (const power of combat.powerUps) {
     const icon = powerUpIconFor(power);
     if (imageReady(icon)) {
-      ctx.drawImage(icon, power.x - 8, power.y - 30, 40, 40);
+      // Animate the pickup so it reads as a live, collectible power-up: a gentle
+      // vertical bob + a soft pulsing glow halo tinted by effect category.
+      const phase = combat.frame * 0.12 + (power.x + power.y) * 0.05;
+      const bob = Math.sin(phase) * 3;
+      const pulse = 0.5 + 0.5 * Math.sin(phase * 1.3);
+      const halo = power.effect === 'heal' || power.effect === 'life' ? '#45ff8a'
+        : power.effect === 'weapon' ? '#19f7ff'
+        : power.effect === 'shield' ? '#6fb4ff'
+        : power.effect === 'scoreMultiplier' || power.effect === 'scoreBonus' ? '#ffe84d'
+        : '#ff9b3f';
+      const cx = power.x + 12;
+      const cy = power.y - 10 + bob;
+      ctx.save();
+      ctx.globalAlpha = 0.18 + 0.22 * pulse;
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 22 + 4 * pulse);
+      g.addColorStop(0, halo);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(cx, cy, 22 + 4 * pulse, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(icon, power.x - 8, power.y - 30 + bob, 40, 40);
+      ctx.restore();
     } else {
       // Clean fallback: a glowing diamond capsule with a symbol (no raw 2-letter
       // text box, which read as a stray "CR" debug marker in playtests).
