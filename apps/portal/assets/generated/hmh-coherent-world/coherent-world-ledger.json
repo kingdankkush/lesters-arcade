@@ -1,0 +1,44 @@
+{
+  "jobs": {
+    "street/street-lamp": {
+      "set": "street",
+      "slug": "street-lamp",
+      "w": 48,
+      "h": 96,
+      "id": "5afcef81-0052-47cb-a088-7d222edbb57a",
+      "status": "downloaded",
+      "raw": "id: 5afcef81-0052-47cb-a088-7d222edbb57a\ndescription: isometric retro street lamp post, dark metal pole, glowing warm lantern head, pixel art\nsize: 48x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"5afcef81-0052-",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\street-lamp.png"
+    },
+    "street/fire-hydrant": {
+      "set": "street",
+      "slug": "fire-hydrant",
+      "w": 40,
+      "h": 48,
+      "id": "1d11f4f8-65f2-4227-a293-68cd74f9486a",
+      "status": "downloaded",
+      "raw": "id: 1d11f4f8-65f2-4227-a293-68cd74f9486a\ndescription: isometric red fire hydrant, chunky pixel art, transparent\nsize: 40x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1d11f4f8-65f2-4227-a293-68cd74f9486a\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\fire-hydrant.png"
+    },
+    "street/park-bench": {
+      "set": "street",
+      "slug": "park-bench",
+      "w": 64,
+      "h": 48,
+      "id": "4143248d-52e2-45d3-8635-f518a798d408",
+      "status": "downloaded",
+      "raw": "id: 4143248d-52e2-45d3-8635-f518a798d408\ndescription: isometric wooden park bench with metal frame, pixel art\nsize: 64x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"4143248d-52e2-45d3-8635-f518a798d408\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\park-bench.png"
+    },
+    "street/mailbox": {
+      "set": "street",
+      "slug": "mailbox",
+      "w": 40,
+      "h": 56,
+      "id": "7b1648b1-06c9-4997-8fcd-db0601b9825a",
+      "status": "downloaded",
+      "raw": "id: 7b1648b1-06c9-4997-8fcd-db0601b9825a\ndescription: isometric blue street mailbox on a post, pixel art\nsize: 40x56px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"7b1648b1-06c9-4997-8fcd-db0601b9825a\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\street\\mailbox.png"
+    }
+  }
+}
