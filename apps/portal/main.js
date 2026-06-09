@@ -608,10 +608,21 @@ function renderArcadeMusicPlayer() {
       item.addEventListener('click', async () => {
         playSfxCue('menu-click', 0.05);
         const audio = loadArcadeMusicTrack(queueTrack);
+        arcadeMusic.currentTrackIndex = index;
+        renderArcadeMusicPlayer();
         if (audio) {
           arcadeMusic.unlocked = true;
           // If track just changed, wait for canplaythrough before playing
-          if (audio.readyState < 3) {
+          const justSelected = audio.dataset.trackId === queueTrack.id && audio.readyState >= 3;
+          const needsReload = !(audio.dataset.trackId === queueTrack.id && audio.readyState >= 3);
+          if (needsReload) {
+            audio.pause();
+            audio.src = queueTrack.src;
+            audio.dataset.trackId = queueTrack.id;
+            audio.preload = 'auto';
+            audio.load();
+          }
+          if (!justSelected || needsReload) {
             await new Promise((resolve) => {
               const onReady = () => {
                 audio.removeEventListener('canplaythrough', onReady);
@@ -629,7 +640,6 @@ function renderArcadeMusicPlayer() {
             // Auto-play blocked, user will need to tap play button
             arcadeMusic.playing = false;
           }
-          renderArcadeMusicPlayer();
         }
       });
       return item;
