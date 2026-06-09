@@ -5656,9 +5656,11 @@ function currentObstacles() {
   // scenes (street blocks with curb lamps, arcade interiors with a TV on a
   // table, tree groves, rock fields, parks) instead of a random prop per cell.
   // These carry sceneAssetKey so resolveObstacleProp draws the matching art.
-  // Window matches the old one (±18 tiles) so off-screen collision is correct
-  // and nothing pops at the edge.
-  const scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, 18, biomeAt, { reserveRadius: 6 });
+  // Window size adapts to viewport: ±45 tiles in fullscreen (2560x1440 = ~±35 visible)
+  // for zero pop-in; ±18 tiles in windowed mode.
+  const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
+  const sceneWindow = isFullscreen ? 45 : 18;
+  const scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, sceneWindow, biomeAt, { reserveRadius: 6 });
   const sceneObstacles = scene.map((o) => ({
     id: o.id,
     worldX: o.worldX,
@@ -5740,10 +5742,12 @@ function buildObstacleRenderEntries(ctx) {
   if (!worldProps.length) return [];
   const entries = [];
   for (const o of currentObstacles()) {
-    // Draw obstacles within a GENEROUS window (wider than the visible ±~9 tiles)
-    // so tall 300px buildings are already fully drawn well before their base
-    // scrolls on-screen — the world looks established as you move, no pop-in.
-    if (Math.abs(o.worldX - combat.playerMapX) > 16 || Math.abs(o.worldY - combat.playerMapY) > 16) continue;
+    // Draw obstacles within a GENEROUS window. In fullscreen (2560x1440), the
+    // visible area is ~±35 tiles wide, so render obstacles out to ±45 tiles for
+    // zero pop-in. In windowed mode, ±18 tiles is sufficient.
+    const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
+    const renderRadius = isFullscreen ? 45 : 18;
+    if (Math.abs(o.worldX - combat.playerMapX) > renderRadius || Math.abs(o.worldY - combat.playerMapY) > renderRadius) continue;
     const resolved = resolveObstacleProp(o, worldProps);
     if (!resolved || !imageReady(resolved.img)) continue;
     const { img, style } = resolved;
@@ -5786,17 +5790,23 @@ function drawRoguelikeScene(ctx, width, height) {
 
   drawParallaxBackground(ctx, width, height);
 
-  // Ground tiles: cover the WHOLE canvas plus an overscan margin so the tile
-  // field always extends past the viewport/fullscreen edges — the player should
-  // never see where the tiles stop. We derive the world-space bounding box from
-  // the four screen corners (iso projection) and pad it generously.
+  // Ground tiles: cover the WHOLE canvas plus a GENEROUS overscan margin so
+  // the tile field always extends past the viewport/fullscreen edges — the
+  // player should never see where the tiles stop, even at 2560x1440 fullscreen.
+  // In fullscreen/expanded modes, render a full 2560x1440 world window so distant
+  // biome transitions and scene templates are visible far beyond the immediate view.
+  const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
+  const renderWidth = isFullscreen ? Math.max(width, 2560) : width;
+  const renderHeight = isFullscreen ? Math.max(height, 1440) : height;
   const corners = [
     screenToIso(0, 0),
-    screenToIso(width, 0),
-    screenToIso(0, height),
-    screenToIso(width, height),
+    screenToIso(renderWidth, 0),
+    screenToIso(0, renderHeight),
+    screenToIso(renderWidth, renderHeight),
   ];
-  const OVERSCAN = 3; // extra tile rings beyond the visible corners
+  // Generous overscan: ~20 tiles (each tile ~36px wide) = ~720px buffer on each side.
+  // This covers the full 2560x1440 render distance plus biome transition zones.
+  const OVERSCAN = isFullscreen ? 20 : 6;
   const minX = Math.floor(Math.min(...corners.map((c) => c.x))) - OVERSCAN;
   const maxX = Math.ceil(Math.max(...corners.map((c) => c.x))) + OVERSCAN;
   const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - OVERSCAN;
@@ -5804,10 +5814,12 @@ function drawRoguelikeScene(ctx, width, height) {
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
       const projected = isoToScreen(worldX, worldY);
-      // Cheap cull: skip tiles whose diamond is fully off-canvas (after overscan
-      // bbox we still iterate a rectangle, so trim the far corners).
-      if (projected.x < -ISO_TILE_WIDTH || projected.x > width + ISO_TILE_WIDTH) continue;
-      if (projected.y < -ISO_TILE_HEIGHT - 80 || projected.y > height + ISO_TILE_HEIGHT + 80) continue;
+      // Cheap cull: skip tiles fully off the RENDERED canvas (not just viewport).
+      // In fullscreen, renderWidth/renderHeight may exceed actual canvas size.
+      const cullWidth = isFullscreen ? renderWidth : width;
+      const cullHeight = isFullscreen ? renderHeight : height;
+      if (projected.x < -ISO_TILE_WIDTH || projected.x > cullWidth + ISO_TILE_WIDTH) continue;
+      if (projected.y < -ISO_TILE_HEIGHT - 80 || projected.y > cullHeight + ISO_TILE_HEIGHT + 80) continue;
       drawProductionIsoTile(ctx, projected.x, projected.y + 64, worldX, worldY);
     }
   }
