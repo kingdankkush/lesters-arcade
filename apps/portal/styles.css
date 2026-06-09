@@ -2318,3 +2318,99 @@ body.suggest-landscape.ingame::after {
   border-radius: 4px;
 }
 .settlement-history-card { border-left: 3px solid #345DCC; }
+
+/* Mode-select banners (Free Mode / Play Ranked key art) */
+.mode-card { position: relative; overflow: hidden; }
+.mode-card-banner {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  border-radius: 6px;
+  margin: -4px 0 10px;
+  border: 1px solid rgba(120,180,255,0.22);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+.mode-card.ranked-card .mode-card-banner { border-color: rgba(255,210,90,0.3); }
+
+/* Default profile avatar (Litecoin Chad PFP) */
+.avatar-chip-img { object-fit: cover; border-radius: 50%; }
+.avatar-chip-default { background: #0a0a1e; }
+
+/* ---- Leaderboard: contained, scrollable Top-50 table + toggle filters ---- */
+/* Cadence filters as compact toggles across the top (not tall cards). */
+.leaderboard-cadence-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+.leaderboard-cadence-tab {
+  font-size: 0.68rem;
+  padding: 7px 14px;
+  min-height: 0;          /* override the tall shared card min-height */
+  opacity: 0.65;
+  border-radius: 999px;   /* pill toggles */
+  white-space: nowrap;
+}
+.leaderboard-cadence-tab.is-active {
+  opacity: 1;
+  border-color: #6f9bff;
+  box-shadow: 0 0 8px rgba(111,155,255,0.5);
+}
+/* Grid-based table so columns align; body scrolls after ~10 rows. */
+.leaderboard-table { display: flex; flex-direction: column; width: 100%; }
+.leaderboard-table-head,
+.leaderboard-trow {
+  display: grid;
+  grid-template-columns: 40px minmax(110px, 1.5fr) 0.85fr 0.55fr 0.85fr 0.45fr 0.5fr 0.45fr 0.75fr;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+}
+.leaderboard-table-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(8,10,26,0.96);
+  border-bottom: 2px solid rgba(111,155,255,0.5);
+}
+.leaderboard-th {
+  background: none;
+  border: none;
+  color: #9fb4ff;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-align: left;
+  padding: 2px 0;
+  cursor: pointer;
+  min-height: 0;
+}
+.leaderboard-th.is-sorted { color: #fff; }
+/* The scrollable body: cap height at ~10 rows, then scroll for the rest of Top 50. */
+.leaderboard-table {
+  max-height: 420px;          /* ~10 rows + header */
+  overflow-y: auto;
+  border: 1px solid rgba(52,93,204,0.35);
+  border-radius: 8px;
+  background: rgba(4,6,16,0.55);
+}
+.leaderboard-table::-webkit-scrollbar { width: 8px; }
+.leaderboard-table::-webkit-scrollbar-thumb { background: rgba(111,155,255,0.45); border-radius: 4px; }
+.leaderboard-trow {
+  font-size: 0.74rem;
+  border-bottom: 1px solid rgba(52,93,204,0.18);
+}
+.leaderboard-trow.is-current-player { background: rgba(52,93,204,0.28); }
+.lt-rank { color: #ffd24d; font-weight: 700; }
+.lt-name { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.lt-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leaderboard-row-avatar { width: 22px; height: 22px; border-radius: 50%; flex: 0 0 auto; object-fit: cover; }
+.lt-settled { font-size: 0.58rem; color: #54e08a; }
+.lt-score { color: #fff; font-weight: 700; }
+.lt-kills, .lt-survive, .lt-level, .lt-combo, .lt-powerups, .lt-date { color: #c8d4ff; font-size: 0.7rem; }
+.lt-combo { color: #ffb454; }
+.leaderboard-empty { padding: 14px; text-align: center; color: #8895c5; }
+
+

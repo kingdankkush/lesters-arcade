@@ -437,6 +437,9 @@ function productionCabinetSprite() {
 // Heroes key art as a true full-bleed `cover` background — no menu panels or
 // buttons baked into the image (menus are real DOM controls layered on top).
 const HMH_KEY_ART_BG = './assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg';
+// Default profile avatar shown when a player hasn't uploaded their own (was a
+// green initial chip; now the Litecoin Chad PFP).
+const DEFAULT_AVATAR_SRC = './assets/generated/hmh-avatars/litecoin-chad-default.jpg';
 // Screens that use the full-bleed key art background.
 const HMH_KEY_ART_SCREENS = new Set([
   'splash', 'mainMenu', 'cabinetSelect', 'modeSelect', 'profile', 'leaderboards', 'settings', 'options',
@@ -2609,8 +2612,10 @@ function renderOfficialLeaderboards() {
       case 'name': return (e.displayName || '').toLowerCase();
       case 'date': return e.recordedAt || '';
       case 'kills': return e.runStats?.kills ?? 0;
-      case 'survive': return e.runStats?.surviveSeconds ?? 0;
+      case 'survive': return e.runStats?.surviveSeconds ?? e.runStats?.elapsedSeconds ?? 0;
       case 'level': return e.runStats?.level ?? 0;
+      case 'combo': return e.runStats?.maxCombo ?? 0;
+      case 'powerups': return (e.runStats?.collectedPowerUps?.length ?? e.runStats?.powerUpsCollected ?? 0);
       default: return e.score;
     }
   };
@@ -2631,6 +2636,8 @@ function renderOfficialLeaderboards() {
     ['kills', 'KILLS', 'kills'],
     ['survive', 'SURVIVED', 'survive'],
     ['level', 'LVL', 'level'],
+    ['combo', 'COMBO', 'combo'],
+    ['powerups', 'PWR', 'powerups'],
     ['date', 'POSTED', 'date'],
   ];
   for (const [key, label, sortKey] of cols) {
@@ -2673,8 +2680,10 @@ function renderOfficialLeaderboards() {
     row.append(nameCell);
     appendText(row, 'strong', entry.score.toLocaleString(), 'lt-score');
     appendText(row, 'span', String(entry.runStats?.kills ?? '—'), 'lt-kills');
-    appendText(row, 'span', formatSurvive(entry.runStats?.surviveSeconds ?? 0), 'lt-survive');
+    appendText(row, 'span', formatSurvive(entry.runStats?.surviveSeconds ?? entry.runStats?.elapsedSeconds ?? 0), 'lt-survive');
     appendText(row, 'span', `L${entry.runStats?.level ?? 1}`, 'lt-level');
+    appendText(row, 'span', `×${entry.runStats?.maxCombo ?? 0}`, 'lt-combo');
+    appendText(row, 'span', String(entry.runStats?.collectedPowerUps?.length ?? entry.runStats?.powerUpsCollected ?? 0), 'lt-powerups');
     appendText(row, 'span', fmtDate(entry.recordedAt), 'lt-date');
     table.append(row);
   }
@@ -2957,13 +2966,9 @@ function renderAvatarChip(wallet, displayName, sizeClass = '') {
     const img = el('img', { className: `avatar-chip-img ${sizeClass}`, src: url, alt: 'Player avatar' });
     return img;
   }
-  const chip = el('span', { className: `avatar-chip-initial ${sizeClass}` });
-  const initial = (displayName || wallet || '?').replace(/^0x/, '').charAt(0).toUpperCase();
-  chip.textContent = initial || '?';
-  // Deterministic hue from the wallet so the fallback chip is stable per player.
-  const hue = wallet ? (parseInt(wallet.slice(2, 8), 16) % 360) : 200;
-  chip.style.background = `hsl(${hue}, 70%, 42%)`;
-  return chip;
+  // Default avatar: the Litecoin Chad PFP (replaces the old green initial chip).
+  const img = el('img', { className: `avatar-chip-img avatar-chip-default ${sizeClass}`, src: DEFAULT_AVATAR_SRC, alt: 'Default Litecoin Chad avatar' });
+  return img;
 }
 
 async function refreshInjectedChainId(provider = detectEthereumProvider()) {
