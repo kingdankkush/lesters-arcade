@@ -6045,27 +6045,14 @@ function drawPlayer(ctx) {
     const drawHeight = isoHero ? 88 : (productionHero ? 132 : 104);
     const drawX = x - drawWidth / 2 + (isoHero ? 8 : (productionHero ? 0 : 0));
     const drawY = y - drawHeight + (isoHero ? 10 : (productionHero ? 16 : 0)) + bob;
-    // Hero readability pass: a soft cyan "hard-money" ground glow + elliptical
-    // drop shadow under Lester so he pops off the dark isometric floor instead
-    // of blending into the night tint / ground accents. Cheap radial fills.
+    // Contact shadow directly under the hero's feet (no glow). The shadow is an
+    // ellipse centered on the foot point (x, y) so the character reads as
+    // GROUNDED, not floating. Width tracks the draw size; opacity is soft.
     if (combat.roguelikeRun) {
-      const cx = x + 20;
-      const glow = ctx.createRadialGradient(cx, shadowY + 1, 2, cx, shadowY + 1, 46);
-      glow.addColorStop(0, 'rgba(64, 224, 255, 0.42)');
-      glow.addColorStop(0.5, 'rgba(64, 224, 255, 0.16)');
-      glow.addColorStop(1, 'rgba(64, 224, 255, 0)');
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.fillStyle = glow;
-      ctx.fillRect(cx - 46, shadowY - 28, 92, 56);
-      ctx.restore();
-      // soft elliptical shadow
-      ctx.save();
-      ctx.fillStyle = 'rgba(2, 4, 14, 0.45)';
-      ctx.beginPath();
-      ctx.ellipse(cx, shadowY + 4, 22, 7, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+      // Plant the shadow at the sprite's actual foot line (drawY bottom = y+10),
+      // and DON'T add bob so the shadow stays put while the sprite bobs — that
+      // sells "grounded" instead of "floating".
+      drawContactShadow(ctx, x, y + 10, drawWidth * 0.34, { alpha: 0.4, squash: 0.34 });
     } else {
       ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
       ctx.fillRect(x + 3, shadowY, 38, 8);
@@ -6416,6 +6403,15 @@ function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
+    // Ground contact shadow so enemies read as planted, not floating. Flying
+    // foes cast a smaller, fainter shadow offset below them (they're airborne).
+    const flying = Boolean(enemy.class?.includes('flying'));
+    const footX = enemy.x + w / 2;
+    if (flying) {
+      drawContactShadow(ctx, footX, enemy.y + 14, (isMini ? 30 : 18), { alpha: 0.18, squash: 0.32 });
+    } else {
+      drawContactShadow(ctx, footX, enemy.y + 2, (isMini ? 34 : enemy.class === 'armored' ? 24 : 18), { alpha: 0.34, squash: 0.36 });
+    }
     // Priority: animated roster frame (idle/walk/attack/death motion) > biome-themed
     // wave still (directional variety) > pipeline/legacy art. Minis use boss art.
     const animFrame = roguelikeEnemyAnimatedFrame(enemy);
