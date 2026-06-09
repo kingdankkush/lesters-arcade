@@ -58,7 +58,7 @@ SPECS = [
     ("nature", "fountain", 72, 72, "isometric round stone park fountain with water, pixel art"),
     # ---- CONSTRUCTIVE / TILING ----
     ("construct", "fence-segment", 48, 40, "isometric wooden fence segment, single straight panel, pixel art"),
-    ("construct", "fence-post", 24, 40, "isometric single wooden fence post, pixel art"),
+    ("construct", "fence-post", 32, 48, "isometric single wooden fence post, pixel art"),
     ("construct", "fence-gate", 48, 44, "isometric wooden fence gate, pixel art"),
     ("construct", "brick-wall-segment", 48, 48, "isometric grey brick wall segment, straight, pixel art"),
     ("construct", "brick-wall-corner", 48, 48, "isometric grey brick wall corner piece, pixel art"),

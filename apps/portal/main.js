@@ -5577,6 +5577,9 @@ const SCENE_ROLE_TO_STYLE = Object.freeze({
   tree: 'tree', rock: 'bigprop', boulder: 'bigprop',
   bench: 'smallprop', table: 'smallprop', crate: 'smallprop',
   lamp: 'tree', sign: 'tree', smallprop: 'smallprop', decor: 'smallprop',
+  // Constructive pieces: fences/walls are short solid barriers; water strips +
+  // bridges are flat ground-level pieces.
+  fence: 'smallprop', wall: 'smallprop', bridge: 'smallprop', 'water-strip': 'smallprop',
 });
 
 function currentObstacles() {

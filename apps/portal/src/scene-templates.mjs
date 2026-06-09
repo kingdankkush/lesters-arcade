@@ -96,6 +96,39 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
     ],
   }),
+  // --- FENCED YARD: a wooden fence runs along the path (pathEdge) with a gate
+  //     break; a tree or two inside. Constructive pieces = solid wall detection. ---
+  fenced_yard: Object.freeze({
+    id: 'fenced_yard', biomes: ['town', 'road'], groundTheme: 'grass', weight: 0.2,
+    slots: [
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 6 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('nature/oak-tree', 'tree', { radius: 0.6 }), place: 'scatter', count: 1 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+  // --- WALLED COMPOUND: a brick wall perimeter (pathEdge) with corner pieces;
+  //     a building-ish anchor inside. Walls are solid (wall detection). ---
+  walled_compound: Object.freeze({
+    id: 'walled_compound', biomes: ['town', 'rocky'], groundTheme: 'pavement', weight: 0.18,
+    slots: [
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 1, count: 6 },
+      { ...A('construct/brick-wall-corner', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/low-stone-wall', 'wall', { radius: 0.35 }), place: 'scatter', count: 2 },
+    ],
+  }),
+  // --- RIVER CROSSING: a river runs through with a single bridge (the only
+  //     passable crossing); banks scatter. Water pieces are non-solid visual; the
+  //     bridge is the safe path. ---
+  river_crossing: Object.freeze({
+    id: 'river_crossing', biomes: ['forest', 'water'], groundTheme: 'grass', weight: 0.3,
+    slots: [
+      { ...A('construct/river-straight', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
 });
 
 // Templates available for a biome (with relative weights; default weight 1).
