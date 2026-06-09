@@ -175,8 +175,11 @@ function validateArcadePlaylistMusic() {
   }
   const manifest = readJson(playlistManifestPath);
   if (manifest.id !== 'lesters-arcade-custom-mp3-playlist-v1') fail('arcade playlist manifest has wrong id');
-  if (!Array.isArray(manifest.tracks) || manifest.tracks.length !== 20) {
-    fail(`arcade playlist expected 20 tracks, got ${manifest.tracks?.length ?? 0}`);
+  if (!Array.isArray(manifest.tracks) || manifest.tracks.length < 20) {
+    fail(`arcade playlist expected at least 20 tracks, got ${manifest.tracks?.length ?? 0}`);
+  }
+  if (manifest.tracks.length !== manifest.defaultQueue?.length) {
+    fail(`playlist track count (${manifest.tracks.length}) must match defaultQueue length (${manifest.defaultQueue?.length ?? 0})`);
   }
   const hmhQueue = manifest.gameQueues?.hardMoneyHeroes ?? [];
   if (hmhQueue[0] !== 'hard-money-heroes-16-bit-arcade-music' || hmhQueue[1] !== 'hard-money-heroes-16-bit-arcade-music-alt') {
