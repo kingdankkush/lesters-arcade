@@ -5425,8 +5425,22 @@ function drawContactShadow(ctx, footX, footY, width, { alpha = 0.28, squash = 0.
 }
 
 function drawProductionIsoProp(ctx, prop, x, y, index) {
-  const frameImage = productionSpriteFrame(prop, combat.frame + index * 9, prop?.fps ?? 8);
-  if (!imageReady(frameImage)) return false;
+  // For coherent-world scene props (from scene-templates), use coherentWorldImage
+  // which handles the single-frame asset. We add code-driven animations here
+  // for fountain (water bob) and arcade-cabinet (screen flicker).
+  let frameImage = null;
+  let coherentImage = null;
+
+  if (prop.sceneAssetKey) {
+    coherentImage = coherentWorldImage(prop.sceneAssetKey);
+    if (!imageReady(coherentImage)) return false;
+    frameImage = coherentImage;
+  } else {
+    // Production art pass props (fallback for non-scene props)
+    frameImage = productionSpriteFrame(prop, combat.frame + index * 9, prop?.fps ?? 8);
+    if (!imageReady(frameImage)) return false;
+  }
+
   const activeFrame = prop?.frames?.length ? prop.frames[Math.floor((combat.frame + index * 9) / Math.max(1, Math.round(LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps / Math.max(1, prop.fps ?? 8)))) % prop.frames.length] : null;
   const baseWidth = activeFrame?.width ?? prop.width ?? 80;
   const baseHeight = activeFrame?.height ?? prop.height ?? 88;
@@ -5434,13 +5448,24 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   const drawWidth = Math.round(baseWidth * scale);
   const drawHeight = Math.round(baseHeight * scale);
   const sway = prop.role?.includes('occluder') ? Math.sin((combat.frame + index * 17) * 0.045) * 2 : 0;
-  const bob = prop.role?.includes('hazard') || prop.role?.includes('pickup_container') ? Math.sin((combat.frame + index * 11) * 0.08) * 1.5 : 0;
+  let bob = prop.role?.includes('hazard') || prop.role?.includes('pickup_container') ? Math.sin((combat.frame + index * 11) * 0.08) * 1.5 : 0;
+
+  // Custom bob for fountain water
+  if (prop.sceneAssetKey === 'nature/fountain') {
+    bob = Math.sin((combat.frame + x) * 0.1) * 2.5; // Gentle water bob
+  }
+  // Custom flicker/pulse for arcade cabinet screen
+  if (prop.sceneAssetKey === 'interior/arcade-cabinet') {
+    const pulse = 0.5 + 0.5 * Math.sin(combat.frame * 0.25);
+    ctx.filter = `brightness(${1 + (pulse * 0.2)})`; // Screen flicker effect
+  }
+
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   // Ground contact shadow (skip flat ground-decals/decor that sit IN the floor).
   // Plant it at the sprite's true foot line (y) WITHOUT bob/sway so the shadow
   // stays put on the ground while the sprite bobs above it — that reads as
-  // grounded, not floating. (Bug was a y-2 offset + sway applied to the shadow.)
+  // grounded, not floating.
   const flatDecor = prop.role?.includes('ground') || prop.role?.includes('decal');
   if (!flatDecor) {
     drawContactShadow(ctx, Math.round(x), Math.round(y), drawWidth * 0.34, {
@@ -5450,6 +5475,11 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   ctx.globalAlpha = prop.role?.includes('decor') ? 0.92 : 1;
   ctx.drawImage(frameImage, Math.round(x - drawWidth / 2 + sway), Math.round(y - drawHeight + bob), drawWidth, drawHeight);
   ctx.restore();
+
+  // Reset filter after drawing if it was applied
+  if (prop.sceneAssetKey === 'interior/arcade-cabinet') {
+    ctx.filter = 'none';
+  }
   return true;
 }
 

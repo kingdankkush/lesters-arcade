@@ -76,9 +76,11 @@
       "w": 48,
       "h": 80,
       "id": "92ed8805-6575-4f57-bc9e-fc959f81c4c0",
-      "status": "downloaded",
+      "status": "processing_animate",
       "raw": "id: 92ed8805-6575-4f57-bc9e-fc959f81c4c0\ndescription: isometric retro arcade cabinet machine with glowing screen, pixel art\nsize: 48x80px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"92ed8805-6575-4f57-bc9e-fc959f81",
-      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\arcade-cabinet.png"
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\arcade-cabinet.png",
+      "animation_id": "92ed8805-6575-4f57-bc9e-fc959f81c4c0",
+      "raw_animation_response": "object: 92ed8805-6575-4f57-bc9e-fc959f81c4c0\ngroup: bb7a0934-f33f-4751-b228-5cd0e11a79f1\nmode: v3\ndescription: glowing screen flickering with retro game pixels, transparent\nframes: 6\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"92ed8805-6575-4f57-bc9e-fc959f81c4c0\")"
     },
     "interior/soda-machine": {
       "set": "interior",
@@ -206,9 +208,11 @@
       "w": 72,
       "h": 72,
       "id": "9a415d2c-b29d-4aae-8f53-38683be32879",
-      "status": "downloaded",
+      "status": "processing_animate",
       "raw": "id: 9a415d2c-b29d-4aae-8f53-38683be32879\ndescription: isometric round stone park fountain with water, pixel art\nsize: 72x72px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"9a415d2c-b29d-4aae-8f53-38683be32879\")",
-      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\fountain.png"
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\fountain.png",
+      "animation_id": "9a415d2c-b29d-4aae-8f53-38683be32879",
+      "raw_animation_response": "object: 9a415d2c-b29d-4aae-8f53-38683be32879\ngroup: 6a4775e1-14be-421c-93fb-85ca25b5af7f\nmode: v3\ndescription: water gently rippling and sparkling on the fountain, transparent\nframes: 8\ndirections: unknown (1 queued)\neta: ~30-60s/direction\n\nhint: get_object(object_id=\"9a415d2c-b29d-4aae-8f53-38683be32879\")"
     },
     "construct/fence-segment": {
       "set": "construct",
