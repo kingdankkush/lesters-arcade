@@ -276,8 +276,9 @@
       "w": 64,
       "h": 48,
       "id": "d4e08c6f-9b3d-47c8-a4e9-500f27a261cb",
-      "status": "processing",
-      "raw": "id: d4e08c6f-9b3d-47c8-a4e9-500f27a261cb\ndescription: isometric straight river water segment with banks, pixel art\nsize: 64x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"d4e08c6f-9b3d-47c8-a4e9-500f27a261cb\")"
+      "status": "downloaded",
+      "raw": "id: d4e08c6f-9b3d-47c8-a4e9-500f27a261cb\ndescription: isometric straight river water segment with banks, pixel art\nsize: 64x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"d4e08c6f-9b3d-47c8-a4e9-500f27a261cb\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\river-straight.png"
     },
     "construct/river-bend": {
       "set": "construct",
@@ -285,8 +286,9 @@
       "w": 64,
       "h": 64,
       "id": "9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4",
-      "status": "processing",
-      "raw": "id: 9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4\ndescription: isometric bending river water segment with banks, pixel art\nsize: 64x64px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4\")"
+      "status": "downloaded",
+      "raw": "id: 9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4\ndescription: isometric bending river water segment with banks, pixel art\nsize: 64x64px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\river-bend.png"
     },
     "construct/wood-bridge": {
       "set": "construct",
@@ -294,8 +296,9 @@
       "w": 64,
       "h": 40,
       "id": "959388f5-0692-4358-8a03-332da8e17a82",
-      "status": "processing",
-      "raw": "id: 959388f5-0692-4358-8a03-332da8e17a82\ndescription: isometric wooden plank bridge over water, pixel art\nsize: 64x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"959388f5-0692-4358-8a03-332da8e17a82\")"
+      "status": "downloaded",
+      "raw": "id: 959388f5-0692-4358-8a03-332da8e17a82\ndescription: isometric wooden plank bridge over water, pixel art\nsize: 64x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"959388f5-0692-4358-8a03-332da8e17a82\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\wood-bridge.png"
     }
   }
 }
