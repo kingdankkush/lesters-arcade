@@ -4101,6 +4101,7 @@ function updateEnemies(difficulty) {
   const playerBox = playerHitbox();
   const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
   for (const enemy of combat.enemies) {
+    if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
     const enemyBox = enemyHitbox(enemy);
     const distanceToPlayer = enemy.x - (combat.playerX + playerBox.w);
     const isFlying = enemy.class?.includes('flying');
@@ -4280,6 +4281,7 @@ function damageEnemy(enemy, damage, source, opts = {}) {
   const present = opts.crit !== undefined ? opts : rollHitPresentation(damage, source);
   const applied = present.finalDamage ?? damage;
   enemy.hp -= applied;
+  enemy.hitFlash = 6; // frames of white flash so EVERY enemy shows hit feedback
   combat.combo += 1;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   combat.damageCombo += applied;
@@ -4794,6 +4796,7 @@ function updateRoguelikeEnemies(director, dt) {
 
   const slowFactor = (combat.powerUpTimers.slowEnemies ?? 0) > 0 ? 0.4 : 1;
   for (const enemy of combat.enemies) {
+    if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
     const dx = combat.playerMapX - enemy.mapX;
     const dy = combat.playerMapY - enemy.mapY;
     const distance = Math.hypot(dx, dy) || 1;
@@ -5455,11 +5458,17 @@ const PROP_ROLE_STYLE = Object.freeze({
   smallprop: { targetW: 46,  radius: 0.42, ground: 30 },
 });
 
-// World props that are valid as discrete, placeable obstacles — excludes
-// "scenery" (wide parallax-style strips / ground cross-sections) which must NOT
-// be drawn as foreground gameplay props (they'd block the scene as big cards).
+// World props that are valid as discrete, placeable obstacles. Excludes:
+//  - "scenery" (wide parallax-style strips that would block the scene), and
+//  - the OLD non-isometric art: the realistic/3D-render `prop/` set and the
+//    flat orthographic painted `decor/` walls. Only the clean isometric
+//    pixel-art `hmh-demo-wave/*` biome sprites are kept so the world is
+//    consistently isometric (per user: discard old 2D/painted assets).
+function isIsometricPropSrc(src) {
+  return typeof src === 'string' && src.includes('/hmh-demo-wave/');
+}
 function placeableProps(worldProps) {
-  return worldProps.filter((p) => p.role !== 'scenery');
+  return worldProps.filter((p) => p.role !== 'scenery' && isIsometricPropSrc(p.src));
 }
 
 // Resolve the stable prop art + role styling for an obstacle from its biome pool,
@@ -6435,6 +6444,15 @@ function drawSingleEnemy(ctx, enemy) {
         ctx.drawImage(enemyFrame, -drawSize / 2, ey, drawSize, drawSize);
       } else {
         ctx.drawImage(enemyFrame, ex, ey, drawSize, drawSize);
+      }
+      // Universal hit-flash: briefly tint the sprite white on damage so EVERY
+      // enemy (even those without a roster 'hurt' animation) shows clear combat
+      // feedback. Uses the sprite as a mask via source-atop.
+      if ((enemy.hitFlash ?? 0) > 0) {
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.globalAlpha = Math.min(0.8, enemy.hitFlash / 6);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ex, ey, drawSize, drawSize);
       }
       ctx.restore();
     } else {
