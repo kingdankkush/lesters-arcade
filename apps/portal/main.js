@@ -598,9 +598,22 @@ function renderArcadeMusicPlayer() {
     dom.arcadeMusicExpandButton.setAttribute('aria-label', model.expanded ? 'Collapse arcade music player' : 'Expand arcade music player');
   }
   if (dom.arcadeMusicQueueList) {
-    dom.arcadeMusicQueueList.replaceChildren(...model.queue.slice(0, 8).map((queueTrack, index) => {
-      const item = el('li', { className: queueTrack.id === model.trackId ? 'active' : '' });
-      item.textContent = `${index + 1}. ${queueTrack.title} // ${queueTrack.durationLabel}`;
+    // Show full queue with click-to-play, no redundant numbering (tracks have their own order)
+    dom.arcadeMusicQueueList.replaceChildren(...model.queue.map((queueTrack, index) => {
+      const item = el('li', {
+        className: queueTrack.id === model.trackId ? 'active' : '',
+        'data-track-id': queueTrack.id,
+      });
+      item.textContent = `${queueTrack.title} // ${queueTrack.durationLabel}`;
+      item.addEventListener('click', () => {
+        playSfxCue('menu-click', 0.05);
+        if (queueTrack.id !== track?.id) {
+          loadArcadeMusicTrack(queueTrack);
+          if (audio && !audio.paused) {
+            // If already playing something, the track will auto-play on load
+          }
+        }
+      });
       return item;
     }));
   }

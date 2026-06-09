@@ -2017,16 +2017,23 @@ button.menu-card.menu-option.interactive:active {
 }
 
 .arcade-music-queue {
-  max-height: 132px;
+  max-height: 280px;
   margin: 8px 0 0;
   padding-left: 18px;
-  overflow: auto;
+  overflow-y: auto;
   color: var(--muted);
   font-size: 0.68rem;
 }
 
 .arcade-music-queue li {
   margin-bottom: 4px;
+  cursor: pointer;
+  transition: color 0.12s, transform 0.08s;
+}
+
+.arcade-music-queue li:hover {
+  color: var(--neon-cyan);
+  transform: translateX(2px);
 }
 
 .arcade-music-queue li.active {
