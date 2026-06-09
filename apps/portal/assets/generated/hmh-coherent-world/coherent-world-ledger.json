@@ -119,6 +119,46 @@
       "status": "downloaded",
       "raw": "id: b54f19ab-d0d7-4084-a836-6dab0d44dc31\ndescription: isometric wooden shipping crate, pixel art\nsize: 40x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"b54f19ab-d0d7-4084-a836-6dab0d44dc31\")",
       "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\wooden-crate.png"
+    },
+    "interior/shop-counter": {
+      "set": "interior",
+      "slug": "shop-counter",
+      "w": 64,
+      "h": 48,
+      "id": "71842369-bb3b-4b5e-b4a1-c9a9555a0c04",
+      "status": "downloaded",
+      "raw": "id: 71842369-bb3b-4b5e-b4a1-c9a9555a0c04\ndescription: isometric wooden shop counter desk, pixel art\nsize: 64x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"71842369-bb3b-4b5e-b4a1-c9a9555a0c04\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\shop-counter.png"
+    },
+    "interior/table-plain": {
+      "set": "interior",
+      "slug": "table-plain",
+      "w": 48,
+      "h": 40,
+      "id": "b7ce83d1-2af3-4430-a09e-8270db935eb6",
+      "status": "downloaded",
+      "raw": "id: b7ce83d1-2af3-4430-a09e-8270db935eb6\ndescription: isometric small wooden table, pixel art\nsize: 48x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"b7ce83d1-2af3-4430-a09e-8270db935eb6\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\interior\\table-plain.png"
+    },
+    "nature/pine-tree": {
+      "set": "nature",
+      "slug": "pine-tree",
+      "w": 56,
+      "h": 96,
+      "id": "9c9b23f7-5499-49d3-9556-1163bf458d4a",
+      "status": "downloaded",
+      "raw": "id: 9c9b23f7-5499-49d3-9556-1163bf458d4a\ndescription: isometric tall green pine tree, pixel art, transparent\nsize: 56x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"9c9b23f7-5499-49d3-9556-1163bf458d4a\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\pine-tree.png"
+    },
+    "nature/oak-tree": {
+      "set": "nature",
+      "slug": "oak-tree",
+      "w": 64,
+      "h": 88,
+      "id": "694f02d1-5c5f-4233-bc0d-22abd0003f47",
+      "status": "downloaded",
+      "raw": "id: 694f02d1-5c5f-4233-bc0d-22abd0003f47\ndescription: isometric round leafy oak tree, pixel art, transparent\nsize: 64x88px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"694f02d1-5c5f-4233-bc0d-22abd0003f47\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\oak-tree.png"
     }
   }
 }
