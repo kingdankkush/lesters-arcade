@@ -9,3 +9,9 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 Thumbs.db
+
+# Repo-local SOURCE/REFERENCE art — design references for future production
+# passes, NOT loaded at runtime (only listed in metadata catalogs). Excluding
+# them keeps the Vercel deployment well under size limits (~413MB saved).
+apps/portal/assets/hard-money-heroes/reference
+apps/portal/assets/reference
