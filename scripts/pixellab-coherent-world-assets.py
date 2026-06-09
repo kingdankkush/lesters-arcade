@@ -187,9 +187,19 @@ async def cmd_queue(active_cap: int = 4) -> None:
                         "frame_count": frame_count
                     })
                     t_anim = txt(r_anim)
+                    # Animation response contains a group ID (different from object_id)
+                    # Look for group: <uuid> pattern
+                    group_match = re.search(r"group[:\s]+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})", t_anim, re.IGNORECASE)
                     ids_anim = UUID_RE.findall(t_anim)
-                    job["animation_id"] = ids_anim[0] if ids_anim else None
-                    job["status"] = "processing_animate" if ids_anim else "failed_animate"
+                    # Use group ID if found, otherwise first UUID that's not the object_id
+                    anim_id = None
+                    if group_match:
+                        anim_id = group_match.group(1)
+                    elif len(ids_anim) > 1:
+                        # Skip the object_id (first one), use the second
+                        anim_id = ids_anim[1]
+                    job["animation_id"] = anim_id
+                    job["status"] = "processing_animate" if anim_id else "failed_animate"
                     job["raw_animation_response"] = t_anim[:5000]
                     save_ledger(led)
                     print(f"queued animate_object {key} -> {ids_anim[0] if ids_anim else 'FAIL: ' + t_anim[:120]}")

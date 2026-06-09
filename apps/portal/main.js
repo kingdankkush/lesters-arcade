@@ -4783,6 +4783,15 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
   const radius = 10 + (combat.frame % 5);
   const ranged = ((combat.frame + combat.enemies.length) % 100) / 100 < director.rangedEnemyShare;
   const elite = ((combat.frame + combat.kills) % 100) / 100 < director.eliteEnemyShare;
+  // Size scaling: 0.5x to 2.0x player size for variety
+  // Grunts: 0.6-1.3x, heavies: 0.9-1.6x, minis/bosses handled separately
+  const sizeRoll = Math.random();
+  let sizeScale;
+  if (spawn.enemy.boss || spawn.enemy.tier === 'heavy') {
+    sizeScale = 0.9 + Math.random() * 0.7; // 0.9x - 1.6x for heavies
+  } else {
+    sizeScale = 0.55 + Math.random() * 0.75; // 0.55x - 1.3x for grunts/flyers
+  }
   const enemy = {
     ...spawn.enemy,
     mapX: combat.playerMapX + Math.cos(angle) * radius,
@@ -4792,6 +4801,7 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
     speed: (spawn.enemy.speed ?? 1) * (elite ? 1.08 : 0.9),
     ranged,
     elite,
+    sizeScale, // Visual size multiplier (0.5-2.0x range)
     attackTimer: ranged ? 70 + (combat.frame % 40) : 36,
     tellFrames: 0,
     score: spawn.enemy.score + (elite ? 80 : 0),
@@ -6676,10 +6686,11 @@ function drawSingleEnemy(ctx, enemy) {
     // Flying foes cast a smaller, fainter shadow a bit lower (they're airborne).
     const flying = Boolean(enemy.class?.includes('flying'));
     const footX = enemy.x + w / 2;
+    const sizeMul = enemy.sizeScale ?? 1.0;
     if (flying) {
-      drawContactShadow(ctx, footX, enemy.y + 22, (isMini ? 30 : 18), { alpha: 0.16, squash: 0.3 });
+      drawContactShadow(ctx, footX, enemy.y + 22, Math.round((isMini ? 30 : 18) * sizeMul), { alpha: 0.16, squash: 0.3 });
     } else {
-      drawContactShadow(ctx, footX, enemy.y + 12, (isMini ? 34 : enemy.class === 'armored' ? 24 : 18), { alpha: 0.34, squash: 0.36 });
+      drawContactShadow(ctx, footX, enemy.y + 12, Math.round((isMini ? 34 : enemy.class === 'armored' ? 24 : 18) * sizeMul), { alpha: 0.34, squash: 0.36 });
     }
     // Priority: animated roster frame (idle/walk/attack/death motion) > biome-themed
     // wave still (directional variety) > pipeline/legacy art. Minis use boss art.
@@ -6693,7 +6704,9 @@ function drawSingleEnemy(ctx, enemy) {
       const isWave = enemyFrame === waveFrame;
       const enemyKey = manifestEnemyKeyFor(enemy);
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
-      const drawSize = (isAnim || isWave) ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78;
+      // Apply sizeScale (0.5x-2.0x) for enemy variety
+      const sizeMul = enemy.sizeScale ?? 1.0;
+      const drawSize = Math.round(((isAnim || isWave) ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78) * sizeMul);
       ctx.save();
       ctx.imageSmoothingEnabled = false;
       const ex = Math.round(enemy.x + w / 2 - drawSize / 2);
@@ -6722,10 +6735,12 @@ function drawSingleEnemy(ctx, enemy) {
       ctx.fillRect(enemy.x + 6, enemy.y - h + 9, 7, 7);
     }
     ctx.fillStyle = '#45ff8a';
-    ctx.fillRect(enemy.x, enemy.y - h - 8, w * Math.max(0, enemy.hp / enemy.maxHp), 4);
+    const hpBarW = Math.round(w * sizeMul);
+    ctx.fillRect(enemy.x, enemy.y - h - 8, hpBarW * Math.max(0, enemy.hp / enemy.maxHp), 4);
     if (enemy.attackTimer < 18) {
       ctx.fillStyle = '#ffe84d';
-      ctx.fillRect(enemy.x - 3, enemy.y - h - 15, w + 6, 4);
+      const hpBarW = Math.round(w * sizeMul);
+      ctx.fillRect(enemy.x - 3, enemy.y - h - 15, hpBarW + 6, 4);
     }
 }
 
