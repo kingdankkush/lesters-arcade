@@ -199,6 +199,103 @@
       "status": "downloaded",
       "raw": "id: e706be93-5f86-4be5-9566-f5027a9263db\ndescription: isometric grey rocky boulder, pixel art\nsize: 48x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"e706be93-5f86-4be5-9566-f5027a9263db\")",
       "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\boulder.png"
+    },
+    "nature/fountain": {
+      "set": "nature",
+      "slug": "fountain",
+      "w": 72,
+      "h": 72,
+      "id": "9a415d2c-b29d-4aae-8f53-38683be32879",
+      "status": "downloaded",
+      "raw": "id: 9a415d2c-b29d-4aae-8f53-38683be32879\ndescription: isometric round stone park fountain with water, pixel art\nsize: 72x72px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"9a415d2c-b29d-4aae-8f53-38683be32879\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\fountain.png"
+    },
+    "construct/fence-segment": {
+      "set": "construct",
+      "slug": "fence-segment",
+      "w": 48,
+      "h": 40,
+      "id": "511bbf85-9a65-4b6c-93be-f15efc901953",
+      "status": "downloaded",
+      "raw": "id: 511bbf85-9a65-4b6c-93be-f15efc901953\ndescription: isometric wooden fence segment, single straight panel, pixel art\nsize: 48x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"511bbf85-9a65-4b6c-93be-f15efc901953\"",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\fence-segment.png"
+    },
+    "construct/fence-post": {
+      "set": "construct",
+      "slug": "fence-post",
+      "w": 32,
+      "h": 48,
+      "id": "2e15888d-7c70-46bd-8545-02067cc9cdd2",
+      "status": "downloaded",
+      "raw": "id: 2e15888d-7c70-46bd-8545-02067cc9cdd2\ndescription: isometric single wooden fence post, pixel art\nsize: 32x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"2e15888d-7c70-46bd-8545-02067cc9cdd2\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\fence-post.png"
+    },
+    "construct/fence-gate": {
+      "set": "construct",
+      "slug": "fence-gate",
+      "w": 48,
+      "h": 44,
+      "id": "63ffaad5-a79a-432b-84c3-c1008b8514a6",
+      "status": "downloaded",
+      "raw": "id: 63ffaad5-a79a-432b-84c3-c1008b8514a6\ndescription: isometric wooden fence gate, pixel art\nsize: 48x44px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"63ffaad5-a79a-432b-84c3-c1008b8514a6\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\fence-gate.png"
+    },
+    "construct/brick-wall-segment": {
+      "set": "construct",
+      "slug": "brick-wall-segment",
+      "w": 48,
+      "h": 48,
+      "id": "74a24fe5-6915-4986-a187-b7d696be8dd2",
+      "status": "downloaded",
+      "raw": "id: 74a24fe5-6915-4986-a187-b7d696be8dd2\ndescription: isometric grey brick wall segment, straight, pixel art\nsize: 48x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"74a24fe5-6915-4986-a187-b7d696be8dd2\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\brick-wall-segment.png"
+    },
+    "construct/brick-wall-corner": {
+      "set": "construct",
+      "slug": "brick-wall-corner",
+      "w": 48,
+      "h": 48,
+      "id": "b37c410f-ae80-4649-920f-f1345e79b316",
+      "status": "downloaded",
+      "raw": "id: b37c410f-ae80-4649-920f-f1345e79b316\ndescription: isometric grey brick wall corner piece, pixel art\nsize: 48x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"b37c410f-ae80-4649-920f-f1345e79b316\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\brick-wall-corner.png"
+    },
+    "construct/low-stone-wall": {
+      "set": "construct",
+      "slug": "low-stone-wall",
+      "w": 48,
+      "h": 32,
+      "id": "80a7393c-8965-47ae-90a8-bd7e180d2790",
+      "status": "downloaded",
+      "raw": "id: 80a7393c-8965-47ae-90a8-bd7e180d2790\ndescription: isometric low grey stone wall segment, pixel art\nsize: 48x32px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"80a7393c-8965-47ae-90a8-bd7e180d2790\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\construct\\low-stone-wall.png"
+    },
+    "construct/river-straight": {
+      "set": "construct",
+      "slug": "river-straight",
+      "w": 64,
+      "h": 48,
+      "id": "d4e08c6f-9b3d-47c8-a4e9-500f27a261cb",
+      "status": "processing",
+      "raw": "id: d4e08c6f-9b3d-47c8-a4e9-500f27a261cb\ndescription: isometric straight river water segment with banks, pixel art\nsize: 64x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"d4e08c6f-9b3d-47c8-a4e9-500f27a261cb\")"
+    },
+    "construct/river-bend": {
+      "set": "construct",
+      "slug": "river-bend",
+      "w": 64,
+      "h": 64,
+      "id": "9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4",
+      "status": "processing",
+      "raw": "id: 9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4\ndescription: isometric bending river water segment with banks, pixel art\nsize: 64x64px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"9ca83f7e-a7bf-4ece-beb3-dffcb58ee2d4\")"
+    },
+    "construct/wood-bridge": {
+      "set": "construct",
+      "slug": "wood-bridge",
+      "w": 64,
+      "h": 40,
+      "id": "959388f5-0692-4358-8a03-332da8e17a82",
+      "status": "processing",
+      "raw": "id: 959388f5-0692-4358-8a03-332da8e17a82\ndescription: isometric wooden plank bridge over water, pixel art\nsize: 64x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"959388f5-0692-4358-8a03-332da8e17a82\")"
     }
   }
 }
