@@ -159,6 +159,46 @@
       "status": "downloaded",
       "raw": "id: 694f02d1-5c5f-4233-bc0d-22abd0003f47\ndescription: isometric round leafy oak tree, pixel art, transparent\nsize: 64x88px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"694f02d1-5c5f-4233-bc0d-22abd0003f47\")",
       "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\oak-tree.png"
+    },
+    "nature/bush": {
+      "set": "nature",
+      "slug": "bush",
+      "w": 40,
+      "h": 40,
+      "id": "abd46b57-8dec-47a9-9171-7e96aff134f7",
+      "status": "downloaded",
+      "raw": "id: abd46b57-8dec-47a9-9171-7e96aff134f7\ndescription: isometric small green round bush, pixel art\nsize: 40x40px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"abd46b57-8dec-47a9-9171-7e96aff134f7\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\bush.png"
+    },
+    "nature/flower-patch": {
+      "set": "nature",
+      "slug": "flower-patch",
+      "w": 40,
+      "h": 32,
+      "id": "c6ae3398-ac18-4e07-bee6-b26718b303f1",
+      "status": "downloaded",
+      "raw": "id: c6ae3398-ac18-4e07-bee6-b26718b303f1\ndescription: isometric small patch of wildflowers in grass, pixel art\nsize: 40x32px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"c6ae3398-ac18-4e07-bee6-b26718b303f1\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\flower-patch.png"
+    },
+    "nature/fallen-log": {
+      "set": "nature",
+      "slug": "fallen-log",
+      "w": 56,
+      "h": 36,
+      "id": "c44006f0-2d50-43df-a785-2af316a9e826",
+      "status": "downloaded",
+      "raw": "id: c44006f0-2d50-43df-a785-2af316a9e826\ndescription: isometric mossy fallen log, pixel art\nsize: 56x36px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"c44006f0-2d50-43df-a785-2af316a9e826\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\fallen-log.png"
+    },
+    "nature/boulder": {
+      "set": "nature",
+      "slug": "boulder",
+      "w": 48,
+      "h": 48,
+      "id": "e706be93-5f86-4be5-9566-f5027a9263db",
+      "status": "downloaded",
+      "raw": "id: e706be93-5f86-4be5-9566-f5027a9263db\ndescription: isometric grey rocky boulder, pixel art\nsize: 48x48px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"e706be93-5f86-4be5-9566-f5027a9263db\")",
+      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\nature\\boulder.png"
     }
   }
 }
