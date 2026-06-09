@@ -16,7 +16,7 @@ import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemie
 import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
-import { sceneObjectsNear, SCENE_TEMPLATES } from './src/scene-templates.mjs';
+import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { routeForView, viewForPath, gameSlugFor } from './src/arcade-router.mjs';
 import {
   ACHIEVEMENTS,
@@ -5262,6 +5262,32 @@ function biomeGroundTileForWorld(worldX, worldY, biome) {
   return wave2TileImage(slug);
 }
 
+// Scene-template ground themes -> the wave-2 tile slug that best matches the
+// objects placed there (arcade carpet -> dark pavement, park/yard -> grass,
+// street/compound -> asphalt, desert scrub -> sand). This makes the FLOOR match
+// the arrangement of objects in each scene cell (Justin's "floor tileset theme
+// should match the area").
+const THEME_GROUND_TILE = {
+  pavement: 'concrete-road',
+  carpet: 'asphalt-road',     // dark indoor-ish floor for arcade interiors
+  grass: 'flower-grass-ground',
+  sand: 'sand',
+};
+// The scene theme for a world tile (rounds into the scene cell). Cached per
+// cell so we don't recompute the template pick for every floor tile each frame.
+const _themeCellCache = new Map();
+function sceneGroundThemeAt(seed, worldX, worldY) {
+  const cellX = Math.floor(worldX / SCENE_CELL);
+  const cellY = Math.floor(worldY / SCENE_CELL);
+  const key = `${seed}:${cellX}:${cellY}`;
+  if (_themeCellCache.has(key)) return _themeCellCache.get(key);
+  const biome = biomeAt(seed, cellX * SCENE_CELL + 3, cellY * SCENE_CELL + 3);
+  const theme = groundThemeForCell(seed, cellX, cellY, biome);
+  if (_themeCellCache.size > 4000) _themeCellCache.clear(); // bound memory on endless maps
+  _themeCellCache.set(key, theme);
+  return theme;
+}
+
 // --- Wave-2 animated ambient props (wind/water/flicker motion) ---------------
 // Index the multi-frame `-ambient` animations by slug, keeping only the real
 // frame_NNN images (skip the 000-unknown spritesheet base). Each biome gets a
@@ -5350,7 +5376,16 @@ function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   const palette = biomeFloorPalette(worldX, worldY);
   // Prefer the real textured biome ground tile; fall back to the shaded gradient
   // until the image loads (or if a biome has no tile art).
-  const tileImg = biomeGroundTileForWorld(worldX, worldY, palette.biome);
+  // Scene-theme override: if this cell belongs to a coherent scene (arcade
+  // interior, park, fenced yard, walled compound), use the floor tile that
+  // matches that scene's theme so the ground reads as part of the area.
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  let tileImg = null;
+  const theme = sceneGroundThemeAt(seed, worldX, worldY);
+  if (theme && THEME_GROUND_TILE[theme]) {
+    tileImg = wave2TileImage(THEME_GROUND_TILE[theme]);
+  }
+  if (!imageReady(tileImg)) tileImg = biomeGroundTileForWorld(worldX, worldY, palette.biome);
   if (!imageReady(tileImg)) {
     const shimmer = palette.biome === 'water'
       ? (combat.frame * 0.06) + (worldX * 0.7 + worldY * 1.3)
