@@ -1633,9 +1633,9 @@ function renderCombatMenuActionGrid() {
     return { ...action, run: () => {} };
   });
   const signature = actions.map((action) => `${action.id}:${action.label}:${action.enabled}`).join('|');
-  if (targetGrid.dataset.signature === signature) return;
-  targetGrid.dataset.signature = signature;
-  targetGrid.replaceChildren();
+  if (dom.combatMenuActionGrid.dataset.signature === signature) return;
+  dom.combatMenuActionGrid.dataset.signature = signature;
+  dom.combatMenuActionGrid.replaceChildren();
   for (const action of actions) {
     const button = el('button', { className: `combat-menu-action ${action.danger ? 'danger-action' : ''}`, type: 'button' });
     button.disabled = action.enabled === false;
@@ -1645,7 +1645,7 @@ function renderCombatMenuActionGrid() {
       playSfxCue('menu-click');
       action.run();
     });
-    targetGrid.append(button);
+    dom.combatMenuActionGrid.append(button);
   }
 }
 
