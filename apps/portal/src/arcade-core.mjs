@@ -3837,3 +3837,17 @@ export function simulateLesterBlasterRun({ mode, entropy = Date.now(), elapsedSe
 
   return Math.floor((base + coinBonus + enemyBonus + survivalBonus + difficultyBonus + bossBonus + weaponBonus + modeBonus) * scoreMultiplier);
 }
+
+// District-biased enemy spawn tables (best practice for readable, thematic levels)
+export const DISTRICT_ENEMY_BIAS = Object.freeze({
+  DOWNTOWN: { coverShooter: 0.5, meleeRusher: 0.3, flyerHarasser: 0.2 },
+  INDUSTRIAL: { coverShooter: 0.6, armoredPressure: 0.3, turret: 0.1 },
+  CITY_PARK: { flyerHarasser: 0.5, meleeRusher: 0.3, status: 0.2 },
+  FOREST_WILDERNESS: { meleeRusher: 0.4, flyerHarasser: 0.4, control: 0.2 },
+  BEACH_AREA: { meleeRusher: 0.5, flyerHarasser: 0.3, status: 0.2 },
+  COMMERCIAL: { coverShooter: 0.4, meleeRusher: 0.3, economy: 0.3 }
+});
+
+export function getBiasedEnemyRoles(districtId) {
+  return DISTRICT_ENEMY_BIAS[districtId?.toUpperCase()] || { coverShooter: 0.4, meleeRusher: 0.4, flyerHarasser: 0.2 };
+}
