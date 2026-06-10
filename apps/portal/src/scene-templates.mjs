@@ -278,13 +278,73 @@ function templatesForBiome(biome) {
   return out;
 }
 
-// Pick one template for a cell, deterministically + biome-coherent.
-// District zoning: divide the world into NxN-cell "districts". Each district
-// picks ONE archetype (city_core, suburban, industrial, park, wilderness) via
-// stable hash. Cells inside a district heavily bias template choices toward
-// templates tagged with that archetype, creating cohesive areas instead of
-// random scatter. Adjacent districts with the same archetype merge visually
-// into larger neighborhoods.
+// Bias: how heavily the district archetype pulls template selection.
+// 1.0 = only pick archetype-matching templates; 0.0 = fully random.
+const DISTRICT_ARCHETYPE_BIAS = 0.78;
+
+  // === PATH VARIETY: main critical paths + side streets + plazas at landmarks ===
+  // Districts have a "main axis" (horizontal or vertical) that defines the
+  // critical path. Side streets branch off at intervals. Landmark entrances
+  // get plaza templates (open grass/concrete, benches, flower patches).
+  function districtMainAxis(seed, districtX, districtY) {
+    const h = hashU32(seed, districtX * 73856093 ^ districtY * 19349663);
+    return (h % 2) === 0 ? 'horizontal' : 'vertical';
+  }
+
+  function isSideStreet(seed, cellX, cellY, mainAxis) {
+    const dx = Math.floor(cellX / DISTRICT_SIZE_CELLS);
+    const dy = Math.floor(cellY / DISTRICT_SIZE_CELLS);
+    const localX = cellX % DISTRICT_SIZE_CELLS;
+    const localY = cellY % DISTRICT_SIZE_CELLS;
+    // Side streets branch every 2 cells along the perpendicular axis
+    if (mainAxis === 'horizontal') {
+      // horizontal main path: side streets are vertical columns at x=0, x=2, x=4
+      return (localX % 2 === 0) && localY > 0 && localY < 4;
+    } else {
+      // vertical main path: side streets are horizontal rows at y=0, y=2, y=4
+      return (localY % 2 === 0) && localX > 0 && localX < 4;
+    }
+  }
+
+  function isLandmarkPlaza(seed, cellX, cellY, landmarkHit) {
+    if (!landmarkHit) return false;
+    // Cells adjacent to landmark entrance (within 1 cell) get plaza treatment
+    const dx = Math.abs(cellX - landmarkHit.cellX);
+    const dy = Math.abs(cellY - landmarkHit.cellY);
+    return (dx <= 1 && dy <= 1) && !(dx === 0 && dy === 0); // adjacent, not the landmark itself
+  }
+
+  // === DENSITY ZONING: dense core, sparse edges, landmark-centered gradients ===
+  // Core cells (2x2 center of each district) get higher density; edge cells
+  // (outer 1-cell border) get lower density. Landmark cells get highest density.
+  function densityZoneForCell(seed, cellX, cellY) {
+    const localX = cellX % DISTRICT_SIZE_CELLS;
+    const localY = cellY % DISTRICT_SIZE_CELLS;
+    const centerX = Math.floor((DISTRICT_SIZE_CELLS - 1) / 2);
+    const centerY = Math.floor((DISTRICT_SIZE_CELLS - 1) / 2);
+    const dx = Math.abs(localX - centerX);
+    const dy = Math.abs(localY - centerY);
+    // Core: 0 cells from center (the actual center cell)
+    if (dx === 0 && dy === 0) return 'core';
+    // Edge: 2 cells from center (outer border)
+    if (dx >= 2 || dy >= 2) return 'edge';
+    // Transition: 1 cell from center
+    return 'transition';
+  }
+
+  // Density multipliers: core=1.0, transition=0.75, edge=0.5
+  function densityMultiplierForZone(zone, landmarkBoost = 1.0) {
+    const base = { core: 1.0, transition: 0.75, edge: 0.5 }[zone];
+    return base * landmarkBoost;
+  }
+
+  // Pick one template for a cell, deterministically + biome-coherent.
+  // District zoning: divide the world into NxN-cell "districts". Each district
+  // picks ONE archetype (city_core, suburban, industrial, park, wilderness) via
+  // stable hash. Cells inside a district heavily bias template choices toward
+  // templates tagged with that archetype, creating cohesive areas instead of
+  // random scatter. Adjacent districts with the same archetype merge visually
+  // into larger neighborhoods.
 const DISTRICT_SIZE_CELLS = 5;
 const DISTRICT_ARCHETYPES = Object.freeze(['city_core', 'suburban', 'industrial', 'park', 'wilderness']);
 function districtArchetypeAt(seed, cellX, cellY) {
@@ -293,10 +353,6 @@ function districtArchetypeAt(seed, cellX, cellY) {
   const h = hashU32((dx * 73856093) ^ seed, dy * 19349663);
   return DISTRICT_ARCHETYPES[(h >>> 0) % DISTRICT_ARCHETYPES.length];
 }
-
-// Bias: how heavily the district archetype pulls template selection.
-// 1.0 = only pick archetype-matching templates; 0.0 = fully random.
-const DISTRICT_ARCHETYPE_BIAS = 0.78;
 
 // ============================================================================
 // LANDMARK ANCHOR SYSTEM (additive macro-layer on top of district zoning)
