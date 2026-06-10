@@ -3838,6 +3838,7 @@ async function startCombat() {
   // Biome (and therefore road style / bridge-vs-road) is re-sampled at the
   // SHIFTED coordinate so the visuals always match the actual ground there.
   combat.roadTileIndex = buildRoadTileIndex(roadNetwork, seed, worldWidth / 2, worldHeight / 2);
+  _themeCellCache.clear(); // theme cache key is seed-less; reset per run
   combat.roguelikeSpawnTimer = 0;
   combat.props = [];
   combat.hazards = [];
@@ -5422,11 +5423,13 @@ const THEME_GROUND_TILE = {
 };
 // The scene theme for a world tile (rounds into the scene cell). Cached per
 // cell so we don't recompute the template pick for every floor tile each frame.
+// NUMERIC key (no per-tile string allocation — this runs thousands of times a
+// frame). Cache is cleared at run start, so the seed needn't be in the key.
 const _themeCellCache = new Map();
 function sceneGroundThemeAt(seed, worldX, worldY) {
   const cellX = Math.floor(worldX / SCENE_CELL);
   const cellY = Math.floor(worldY / SCENE_CELL);
-  const key = `${seed}:${cellX}:${cellY}`;
+  const key = (cellX + 8192) * 16384 + (cellY + 8192);
   if (_themeCellCache.has(key)) return _themeCellCache.get(key);
   const biome = biomeAt(seed, cellX * SCENE_CELL + 3, cellY * SCENE_CELL + 3);
   const theme = groundThemeForCell(seed, cellX, cellY, biome);
@@ -5563,6 +5566,9 @@ function productionPropForIndex(index) {
 // inherit the underlying texture and never depend on art that might not exist.
 // Water crossings draw the wood-bridge sprite (with a plank-tint fallback).
 const ROAD_INDEX_RADIUS = 280; // only index/draw roads within this tile radius of spawn
+// Numeric grid key — the road index is probed for EVERY candidate tile every
+// frame, so string keys would allocate megabytes/sec of garbage.
+const roadTileKey = (x, y) => (x + 8192) * 16384 + (y + 8192);
 
 function buildRoadTileIndex(roadNetwork, seed, shiftX = 0, shiftY = 0) {
   const index = new Map();
@@ -5573,7 +5579,7 @@ function buildRoadTileIndex(roadNetwork, seed, shiftX = 0, shiftY = 0) {
       const x = Math.round((pt?.x ?? 0) - shiftX);
       const y = Math.round((pt?.y ?? 0) - shiftY);
       if (Math.abs(x) > ROAD_INDEX_RADIUS || Math.abs(y) > ROAD_INDEX_RADIUS) continue;
-      const key = `${x},${y}`;
+      const key = roadTileKey(x, y);
       if (index.has(key)) continue;
       // Re-sample the biome at the SHIFTED coordinate so road style (and
       // bridge-vs-road) always matches the terrain actually rendered there.
@@ -5625,7 +5631,7 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
   ctx.save();
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
-      const tile = index.get(`${worldX},${worldY}`);
+      const tile = index.get(roadTileKey(worldX, worldY));
       if (!tile) continue;
       const projected = isoToScreen(worldX, worldY);
       const cx = projected.x;
