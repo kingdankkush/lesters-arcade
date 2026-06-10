@@ -1,4 +1,5 @@
 import { HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST } from './assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs';
+import { getGame, registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { HMH_ISOMETRIC_PIXELLAB_WAVE_1 } from './assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs';
 import { HMH_PRODUCTION_ART_PASS } from './assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
@@ -3333,6 +3334,9 @@ function detectEthereumProvider() {
 
 function connectMockWallet() {
   connectedWallet = MOCK_WALLET;
+  const profile = await getSharedPlayerProfile(connectedWallet);
+  console.log('[GameRegistry] Loaded shared profile:', profile);
+
   connectedChainId = null;
   walletConnector = 'mock-wallet';
   connectPlayerAccount(state, connectedWallet, { handle: 'Lester Pilot' });
