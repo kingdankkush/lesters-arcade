@@ -14,6 +14,7 @@ import { HMH_ENVIRONMENT_PIXELLAB_WAVE_2 } from './assets/generated/hmh-environm
 import { HMH_FX_POWERUPS_WAVE } from './assets/generated/hmh-fx-powerups-wave.mjs';
 import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs';
 import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { HMH_COMPLETE_ANIMATIONS_READY } from './assets/generated/hmh-complete-animations/hmh-complete-animations.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
@@ -6852,7 +6853,7 @@ function heroAnimState() {
 // 'lilly' roster (-> Lit Valkyrie design). The partial 'lit-commando'/'lit-
 // valkyrie' rosters are intentionally NOT used so each hero stays one design.
 const HERO_LOCKED_ROSTER = Object.freeze({
-  'lit-commando': 'lester',
+  'lit-commando': 'lit-commando',
   lester: 'lester',
   'lit-valkyrie': 'lilly',
   lilly: 'lilly',
