@@ -1,0 +1,142 @@
+{
+  "_meta": {
+    "purpose": "Consolidated Pixellab 2500-image generation queue for Hard Money Heroes",
+    "total_budget_images": 9733,
+    "already_used": 2255,
+    "remaining_budget": 7478,
+    "this_plan_target": 1280,
+    "post_plan_remaining": 6198,
+    "execution_order": "sequential — batch 2 (Valkyrie) first since character select is broken without it",
+    "skill_to_use": "pixellab-scaled-asset-generation (see HMH_ANIMATED_ROSTER conventions)"
+  },
+  "batches": [
+    {
+      "id": "batch-2-valkyrie-full-kit",
+      "priority": 1,
+      "target_images": 360,
+      "reason": "Lit Valkyrie sprite kit is EMPTY — character select is broken without this",
+      "output_root": "apps/portal/assets/generated/hmh-animated-roster/lit-valkyrie",
+      "character": {
+        "name": "Lit Valkyrie",
+        "description": "Female tactical warrior with teal-and-white armor, short teal hair, energy plasma wings. Sleek agile build (not chunky). Aggressive fast-pose aesthetic."
+      },
+      "actions": [
+        {"name": "idle", "frames_per_dir": 5, "description": "subtle breathing and wing-flutter idle stance"},
+        {"name": "walk", "frames_per_dir": 5, "description": "brisk tactical walk with teal wing trail"},
+        {"name": "run", "frames_per_dir": 5, "description": "agile sprint pose with motion blur on wings"},
+        {"name": "shoot", "frames_per_dir": 5, "description": "firing plasma pistol forward with cyan muzzle flash"},
+        {"name": "melee", "frames_per_dir": 5, "description": "swinging energy blade melee attack arc"},
+        {"name": "hurt", "frames_per_dir": 5, "description": "struck by impact recoiling backward"},
+        {"name": "throw", "frames_per_dir": 5, "description": "overhead grenade pitch with throwing motion"}
+      ],
+      "directions": ["east", "north-east", "north", "north-west", "west", "south-west", "south", "south-east"],
+      "sprite_style": "8-dir top-down isometric pixel art, 128x128 sprite size, alpha-transparent background, dark cyberpunk night palette",
+      "path_template": "<output_root>/<action>/<direction>/<NN>.png",
+      "manifest_target": "apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs (add 'lit-valkyrie' key entries)"
+    },
+    {
+      "id": "batch-1-commando-missing-actions",
+      "priority": 2,
+      "target_images": 200,
+      "reason": "Lit Commando walk/idle/run/levelup all done, but death/hurt/shoot/melee/throw missing",
+      "output_root": "apps/portal/assets/generated/hmh-animated-roster/lit-commando",
+      "character": {
+        "name": "Lit Commando",
+        "description": "Silver/cyan tactical commando in heavy combat armor. Chunky muscular build. Stoic pose aesthetic. Same design as existing walk/idle/run/levelup sprites in this folder."
+      },
+      "actions": [
+        {"name": "death", "frames_per_dir": 5, "description": "dying animation: hit, knees buckling, collapsing to ground"},
+        {"name": "hurt", "frames_per_dir": 5, "description": "struck by impact recoiling backward with armor flare"},
+        {"name": "shoot", "frames_per_dir": 5, "description": "firing pistol forward with bright muzzle flash"},
+        {"name": "melee", "frames_per_dir": 5, "description": "swinging combat knife/blade melee slash"},
+        {"name": "throw", "frames_per_dir": 5, "description": "overhead grenade pitch with throwing motion"}
+      ],
+      "directions": ["east", "north-east", "north", "north-west", "west", "south-west", "south", "south-east"],
+      "sprite_style": "8-dir top-down isometric pixel art, 128x128 sprite size, alpha-transparent background, dark cyberpunk night palette. Must match the existing Lit Commando sprite design exactly.",
+      "path_template": "<output_root>/<action>/<direction>/<NN>.png"
+    },
+    {
+      "id": "batch-3-landmark-pois",
+      "priority": 3,
+      "target_images": 72,
+      "reason": "Level design needs unique landmark anchors for the new landmark-anchor system",
+      "output_root": "apps/portal/assets/generated/hmh-landmark-buildings",
+      "buildings": [
+        {"id": "marketplace", "description": "Open-air bazaar market with holo-signs, vending stalls, and orange lantern lights"},
+        {"id": "fountain", "description": "Multi-tiered silver grand fountain with Litecoin Ł motifs and cyan water glow"},
+        {"id": "refinery", "description": "Industrial smokestack refinery building with warm orange glow and steam vents"},
+        {"id": "observatory", "description": "Domed science observatory building with cyan beacon on top and glass panels"},
+        {"id": "arcade", "description": "Neon arcade cabinet storefront with glowing 'LESTER'S ARCADE' marquee — the parent game's own cabinet"},
+        {"id": "beachbar", "description": "Tropical tiki-style beach bar with palm lights and deck over water"},
+        {"id": "library", "description": "Brutalist stone archive library building with glowing window grid"},
+        {"id": "watchtower", "description": "Tall sentinel watchtower with red rotating beacon on top"}
+      ],
+      "directions": ["east", "south", "west", "north"],
+      "sprite_style": "Isometric/top-down pixel art, 256x256 sprite size, alpha-transparent background, cyberpunk night palette (silver/cyan hero, orange/red corruption, purple shadows). Large enough to tower over the hero and read as a landmark.",
+      "path_template": "<output_root>/<building-id>/<direction>/00.png"
+    },
+    {
+      "id": "batch-4-district-animated-props",
+      "priority": 4,
+      "target_images": 160,
+      "reason": "Districts feel empty; need animated props per archetype for environmental storytelling",
+      "output_root": "apps/portal/assets/generated/hmh-district-props",
+      "archetypes": {
+        "city_core": ["holographic-ad", "neon-sign", "traffic-light-animated", "vending-machine", "street-camera", "data-kiosk", "parking-meter", "atm"],
+        "suburban": ["garden-gnome", "swing-set", "mailbox-flag", "lawn-sprinkler", "wind-chime", "bird-feeder", "kid-bicycle", "basketball-hoop"],
+        "industrial": ["smokestack-steam", "conveyor-belt", "crane-hook", "pump-jack", "warning-light-blink", "forklift", "generator-pulse", "oil-barrel-leak"],
+        "park": ["fountain-spray", "swing-bench", "bird-flight", "flower-sway", "duck-pond-ripple", "kite-flying", "picnic-blanket", "statue-pigeons"],
+        "wilderness": ["campfire-flames", "creek-ripple", "butterfly-flutter", "deer-graze", "mushroom-glow", "tree-sway-heavy", "rock-lizard", "owl-perch"]
+      },
+      "animation_frames_per_prop": 4,
+      "sprite_style": "Isometric/top-down pixel art, 96x96 sprite size, alpha-transparent background. 4-frame loop animation.",
+      "path_template": "<output_root>/<archetype>/<prop-name>/<NN>.png"
+    },
+    {
+      "id": "batch-5-biome-tilesets",
+      "priority": 5,
+      "target_images": 160,
+      "reason": "Current biome tiles are static; animation adds life to the world",
+      "output_root": "apps/portal/assets/generated/hmh-biome-tiles-animated",
+      "biomes": {
+        "pavement": ["cracked-sidewalk", "drain-cover", "yellow-line", "crosswalk", "manhole-steam", "gum-spot", "cigarette-butt", "oil-puddle"],
+        "grass": ["tall-grass-sway", "clover-patch", "dandelion-seed", "mole-mound", "ant-hill", "wildflower-bloom", "dew-drops", "ladybug"],
+        "sand": ["sand-drift", "shell-cluster", "dried-crack", "footprint-fade", "driftwood", "seaweed-wash", "crab-burrow", "tide-line"],
+        "water": ["ripple", "bubble", "kelp-sway", "fish-splash", "lily-pad", "dragonfly", "wave-crest", "reflection-shimmer"],
+        "forest": ["moss-patch", "fern-unfurl", "mushroom-spores", "vine-swing", "firefly-blink", "acorn-drop", "bird-nest", "mossy-rock"]
+      },
+      "variants_per_tile": 1,
+      "animation_frames_per_tile": 4,
+      "sprite_style": "Isometric 64x64 tile size, alpha-transparent background, seamless tiling. 4-frame loop animation.",
+      "path_template": "<output_root>/<biome>/<tile-name>/<NN>.png"
+    },
+    {
+      "id": "batch-6-vfx-sprites",
+      "priority": 6,
+      "target_images": 128,
+      "reason": "Impact effects, muzzle flashes, explosions need proper sprites for juice (currently canvas-fallback circles)",
+      "output_root": "apps/portal/assets/generated/hmh-vfx",
+      "effects": [
+        {"name": "explosion-large", "frames": 8, "description": "Bright white-core expanding fireball with orange shell and dark smoke", "directions": 1},
+        {"name": "explosion-small", "frames": 6, "description": "Compact spark burst with cyan/white core", "directions": 1},
+        {"name": "muzzle-pistol", "frames": 4, "description": "Quick yellow/white muzzle flash for pistol fire", "directions": 4},
+        {"name": "muzzle-shotgun", "frames": 4, "description": "Wide orange/white shotgun muzzle blast", "directions": 4},
+        {"name": "muzzle-machinegun", "frames": 4, "description": "Rapid cyan flash for machine gun rapid fire", "directions": 4},
+        {"name": "muzzle-rail", "frames": 6, "description": "Electric blue rail gun charge and discharge", "directions": 4},
+        {"name": "blood-splatter", "frames": 5, "description": "Dark crimson blood spray for gore-enabled mode", "directions": 4},
+        {"name": "blood-drip", "frames": 4, "description": "Blood drips falling off edge for gore mode", "directions": 1},
+        {"name": "impact-sparks", "frames": 4, "description": "Metal sparks on bullet impact, yellow/white", "directions": 1},
+        {"name": "impact-wood", "frames": 4, "description": "Wood chip debris on impact", "directions": 1},
+        {"name": "impact-dirt", "frames": 4, "description": "Dirt puff on ground impact", "directions": 1},
+        {"name": "damage-number-crit", "frames": 6, "description": "Bright yellow explosion-style critical damage number frame", "directions": 1}
+      ],
+      "sprite_style": "Top-down pixel art, 128x128 sprite size, alpha-transparent background. Bright, punchy colors for readability at small scale.",
+      "path_template": "<output_root>/<effect-name>/<direction-or-default>/<NN>.png"
+    }
+  ],
+  "execution_notes": {
+    "how_to_run": "For each batch in priority order, use the pixellab-scaled-asset-generation skill. Each batch has a character/building/effect description, action/direction matrix, and a path template for output. The skill's create_character/create_map_object/create_character_animation tools map to these use cases:\n  - Characters (batch 1, 2) → create_character_animation for each (action, direction) pair\n  - Buildings (batch 3) → create_map_object for each (building, direction) single-frame\n  - Props (batch 4) → create_map_object with animated frames for each prop\n  - Tiles (batch 5) → create_map_object animation per tile per biome\n  - VFX (batch 6) → create_map_object or create_character_animation depending on directionality",
+    "post_generation": "After each batch completes:\n  1. Update the relevant manifest .mjs file to export the new frames in the standard direction-keyed structure\n  2. Run npm test to confirm no breakage\n  3. Wire into sprite-pipeline.mjs / combat-sprite-bridge.mjs / heroRotationSprite() / drawParticles() as appropriate\n  4. Commit batch-by-batch so any failure is recoverable",
+    "budget_check": "Budget has 7478 remaining pre-plan; post-plan will have 6198 remaining — plenty for future iterations"
+  }
+}

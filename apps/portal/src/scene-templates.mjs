@@ -298,6 +298,104 @@ function districtArchetypeAt(seed, cellX, cellY) {
 // 1.0 = only pick archetype-matching templates; 0.0 = fully random.
 const DISTRICT_ARCHETYPE_BIAS = 0.78;
 
+// ============================================================================
+// LANDMARK ANCHOR SYSTEM (additive macro-layer on top of district zoning)
+// ============================================================================
+//
+// Each district gets ONE unique landmark placed at a deterministic cell offset
+// from its centroid. Landmarks are large iconic buildings (marketplace, fountain,
+// refinery, observatory, arcade, beachbar, library, watchtower) that serve as
+// player-facing "places of interest" and give districts a readable identity.
+//
+// Landmarks influence surrounding cells via a `influenceRadius` (in cells).
+// When `buildScene()` is about to pick a template for a cell that's inside
+// a landmark's influence radius AND in the landmark's "complement archetype"
+// lane, the selection is heavily biased toward complementary templates
+// (e.g., market stalls near marketplace, benches near fountain, crates near
+// refinery). This creates themed plazas around each landmark.
+//
+// The landmark system is ADDITIVE: the existing cell-by-cell district-
+// archetype zoning continues to work. Landmarks only kick in when a cell is
+// within their influence radius; everything else proceeds as before.
+// ============================================================================
+
+export const LANDMARK_REGISTRY = Object.freeze([
+  { id: 'marketplace',  affinity: ['city_core', 'suburban'],  influenceRadius: 3, complementArchetype: 'city_core',  description: 'open-air bazaar with holo-signs and vending stalls' },
+  { id: 'fountain',     affinity: ['park', 'city_core'],      influenceRadius: 3, complementArchetype: 'park',       description: 'grand silver fountain plaza' },
+  { id: 'refinery',     affinity: ['industrial'],              influenceRadius: 3, complementArchetype: 'industrial', description: 'industrial smokestack with orange glow' },
+  { id: 'observatory',  affinity: ['wilderness', 'park'],      influenceRadius: 3, complementArchetype: 'wilderness', description: 'domed science building with cyan beacon' },
+  { id: 'arcade',       affinity: ['city_core', 'suburban'],  influenceRadius: 3, complementArchetype: 'city_core',  description: "Lester's Arcade neon storefront" },
+  { id: 'beachbar',     affinity: ['park', 'wilderness'],      influenceRadius: 3, complementArchetype: 'park',       description: 'tropical tiki-style bar over water' },
+  { id: 'library',      affinity: ['city_core', 'suburban'],  influenceRadius: 3, complementArchetype: 'suburban',   description: 'brutalist stone archive library' },
+  { id: 'watchtower',   affinity: ['wilderness', 'industrial'],influenceRadius: 4, complementArchetype: 'wilderness', description: 'tall sentinel tower with red beacon' },
+]);
+
+// Deterministic per-district landmark selection. Each district picks ONE
+// landmark whose `affinity` includes the district's archetype (so an industrial
+// district never gets the fountain). Returns null for districts at origin cell
+// (0,0) to keep the player spawn open.
+function landmarkForDistrict(seed, districtX, districtY) {
+  // Keep player spawn clean of any landmark footprint.
+  if (districtX === 0 && districtY === 0) return null;
+  const archetype = districtArchetypeAt(seed, districtX, districtY);
+  const compatible = LANDMARK_REGISTRY.filter((lm) => lm.affinity.includes(archetype));
+  if (!compatible.length) return null;
+  const h = hashU32((districtX * 73856093) ^ seed, districtY * 19349663 + 11);
+  return compatible[Math.abs(h) % compatible.length];
+}
+
+// Each district's landmark is anchored at a stable OFFSET from the district
+// centroid (so landmarks don't cluster on grid seams). The offset is chosen
+// via hash to spread landmarks around within the district.
+function landmarkAnchorCell(seed, districtX, districtY) {
+  const baseX = districtX * DISTRICT_SIZE_CELLS;
+  const baseY = districtY * DISTRICT_SIZE_CELLS;
+  // Deterministic offset within the district, biased toward the middle so
+  // the landmark + influence radius fits inside the district bounds.
+  const ox = 1 + ((hashU32(seed ^ districtX, districtY * 37) >>> 0) % Math.max(1, DISTRICT_SIZE_CELLS - 2));
+  const oy = 1 + ((hashU32(seed ^ districtY, districtX * 41) >>> 0) % Math.max(1, DISTRICT_SIZE_CELLS - 2));
+  return { cellX: baseX + ox, cellY: baseY + oy };
+}
+
+// Find the landmark (if any) anchored at this exact cell. Returns the landmark
+// registry entry, or null. Used by buildScene() to detect the "landmark center"
+// cell and pick the dedicated landmark_center_* template.
+export function landmarkAtCell(seed, cellX, cellY) {
+  const dx = Math.floor(cellX / DISTRICT_SIZE_CELLS);
+  const dy = Math.floor(cellY / DISTRICT_SIZE_CELLS);
+  const lm = landmarkForDistrict(seed, dx, dy);
+  if (!lm) return null;
+  const anchor = landmarkAnchorCell(seed, dx, dy);
+  if (anchor.cellX === cellX && anchor.cellY === cellY) return lm;
+  return null;
+}
+
+// Find the landmark (if any) whose influence radius includes this cell.
+// Returns { landmark, distance } or null. distance lets callers attenuate
+// the bias (closer = stronger pull).
+export function landmarkInfluenceAt(seed, cellX, cellY) {
+  // Check the 9 surrounding districts (the current one + its neighbors).
+  // A landmark's influence can bleed into adjacent districts for softer
+  // transitions between themed areas.
+  const dx0 = Math.floor(cellX / DISTRICT_SIZE_CELLS);
+  const dy0 = Math.floor(cellY / DISTRICT_SIZE_CELLS);
+  let best = null;
+  for (let ddx = -1; ddx <= 1; ddx += 1) {
+    for (let ddy = -1; ddy <= 1; ddy += 1) {
+      const dx = dx0 + ddx;
+      const dy = dy0 + ddy;
+      const lm = landmarkForDistrict(seed, dx, dy);
+      if (!lm) continue;
+      const anchor = landmarkAnchorCell(seed, dx, dy);
+      const dist = Math.max(Math.abs(anchor.cellX - cellX), Math.abs(anchor.cellY - cellY)); // chebyshev
+      if (dist <= lm.influenceRadius) {
+        if (!best || dist < best.distance) best = { landmark: lm, distance: dist, anchorX: anchor.cellX, anchorY: anchor.cellY };
+      }
+    }
+  }
+  return best;
+}
+
 export function pickTemplate(seed, cellX, cellY, biome) {
   const choices = templatesForBiome(biome);
   if (!choices.length) return null;
