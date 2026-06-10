@@ -4425,9 +4425,9 @@
       "slug": "lit-commando-walk-north",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "104e144b-b2b3-4e20-b742-fcbf52735d75",
+      "status": "processing_create",
+      "raw_create_response": "id: 104e144b-b2b3-4e20-b742-fcbf52735d75\ndescription: isometric Lit Commando isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing up/north, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"104e144b-b2b3-4e20-b742-fcbf52735d75\")",
       "animated": true,
       "frame_count": 6,
       "priority": 1,
@@ -4442,9 +4442,9 @@
       "slug": "lit-commando-walk-north-west",
       "w": 64,
       "h": 96,
-      "id": null,
-      "status": "failed_create",
-      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "id": "1f3181ce-1490-4b31-9828-33109e56e43d",
+      "status": "processing_create",
+      "raw_create_response": "id: 1f3181ce-1490-4b31-9828-33109e56e43d\ndescription: isometric Lit Commando isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing up-left/northwest, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"1f3181ce-1490-4b31-9828-33109e56e43d\")",
       "animated": true,
       "frame_count": 6,
       "priority": 1,
@@ -4452,6 +4452,499 @@
         "hero": "lit-commando",
         "state": "walk",
         "direction": "north-west"
+      }
+    },
+    "lit-commando/walk-west": {
+      "set": "heroes",
+      "slug": "lit-commando-walk-west",
+      "w": 64,
+      "h": 96,
+      "id": "387fe3fb-f865-46cf-96a6-654c41c2f1ac",
+      "status": "processing_create",
+      "raw_create_response": "id: 387fe3fb-f865-46cf-96a6-654c41c2f1ac\ndescription: isometric Lit Commando isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing left/west, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"387fe3fb-f865-46cf-96a6-654c41c2f1ac\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "walk",
+        "direction": "west"
+      }
+    },
+    "lit-commando/walk-south-west": {
+      "set": "heroes",
+      "slug": "lit-commando-walk-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "488ee060-3582-4a28-8171-0929c6202df0",
+      "status": "processing_create",
+      "raw_create_response": "id: 488ee060-3582-4a28-8171-0929c6202df0\ndescription: isometric Lit Commando isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing down-left/southwest, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"488ee060-3582-4a28-8171-0929c6202df0\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "walk",
+        "direction": "south-west"
+      }
+    },
+    "lit-commando/walk-south": {
+      "set": "heroes",
+      "slug": "lit-commando-walk-south",
+      "w": 64,
+      "h": 96,
+      "id": "cfa24b57-3ace-4104-bdf2-a1830af75f7b",
+      "status": "processing_create",
+      "raw_create_response": "id: cfa24b57-3ace-4104-bdf2-a1830af75f7b\ndescription: isometric Lit Commando isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing down/south, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"cfa24b57-3ace-4104-bdf2-a1830af75f7b\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "walk",
+        "direction": "south"
+      }
+    },
+    "lit-commando/walk-south-east": {
+      "set": "heroes",
+      "slug": "lit-commando-walk-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "bdc7794a-c660-40c9-ab01-2079bbfa358e",
+      "status": "processing_create",
+      "raw_create_response": "id: bdc7794a-c660-40c9-ab01-2079bbfa358e\ndescription: isometric Lit Commando isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing down-right/southeast, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"bdc7794a-c660-40c9-ab01-2079bbfa358e\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "walk",
+        "direction": "south-east"
+      }
+    },
+    "lit-commando/run-east": {
+      "set": "heroes",
+      "slug": "lit-commando-run-east",
+      "w": 64,
+      "h": 96,
+      "id": "d8f41c3d-73e1-4e3c-beab-cf0f90aa9e3d",
+      "status": "processing_create",
+      "raw_create_response": "id: d8f41c3d-73e1-4e3c-beab-cf0f90aa9e3d\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing right/east, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"d8f41c3d-73e1-4e3c-beab-cf0f90aa9e3d\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "east"
+      }
+    },
+    "lit-commando/run-north-east": {
+      "set": "heroes",
+      "slug": "lit-commando-run-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "a379ee2e-38b5-43fa-b13b-00bffca798d0",
+      "status": "processing_create",
+      "raw_create_response": "id: a379ee2e-38b5-43fa-b13b-00bffca798d0\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing up-right/northeast, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a379ee2e-38b5-43fa-b13b-00bffca798d0\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "north-east"
+      }
+    },
+    "lit-commando/run-north": {
+      "set": "heroes",
+      "slug": "lit-commando-run-north",
+      "w": 64,
+      "h": 96,
+      "id": "69b051e9-dc3f-41ad-8eb6-30ae05085f0c",
+      "status": "processing_create",
+      "raw_create_response": "id: 69b051e9-dc3f-41ad-8eb6-30ae05085f0c\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing up/north, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"69b051e9-dc3f-41ad-8eb6-30ae05085f0c\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "north"
+      }
+    },
+    "lit-commando/run-north-west": {
+      "set": "heroes",
+      "slug": "lit-commando-run-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "d29ab720-bed1-40f4-8083-b32818b9b4d6",
+      "status": "processing_create",
+      "raw_create_response": "id: d29ab720-bed1-40f4-8083-b32818b9b4d6\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing up-left/northwest, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"d29ab720-bed1-40f4-8083-b32818b9b4d6\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "north-west"
+      }
+    },
+    "lit-commando/run-west": {
+      "set": "heroes",
+      "slug": "lit-commando-run-west",
+      "w": 64,
+      "h": 96,
+      "id": "941982de-8e03-4daf-9d66-35892f63ff55",
+      "status": "processing_create",
+      "raw_create_response": "id: 941982de-8e03-4daf-9d66-35892f63ff55\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing left/west, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"941982de-8e03-4daf-9d66-35892f63ff55\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "west"
+      }
+    },
+    "lit-commando/run-south-west": {
+      "set": "heroes",
+      "slug": "lit-commando-run-south-west",
+      "w": 64,
+      "h": 96,
+      "id": "301dc1ae-b54a-4c5a-98cf-a4850e163d04",
+      "status": "processing_create",
+      "raw_create_response": "id: 301dc1ae-b54a-4c5a-98cf-a4850e163d04\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing down-left/southwest, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"301dc1ae-b54a-4c5a-98cf-a4850e163d04\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "south-west"
+      }
+    },
+    "lit-commando/run-south": {
+      "set": "heroes",
+      "slug": "lit-commando-run-south",
+      "w": 64,
+      "h": 96,
+      "id": "3d2c12b9-fcb9-4f88-9bd3-ee5195c48c35",
+      "status": "processing_create",
+      "raw_create_response": "id: 3d2c12b9-fcb9-4f88-9bd3-ee5195c48c35\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing down/south, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"3d2c12b9-fcb9-4f88-9bd3-ee5195c48c35\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "south"
+      }
+    },
+    "lit-commando/run-south-east": {
+      "set": "heroes",
+      "slug": "lit-commando-run-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "b2648579-3afa-4fd5-8579-3e778fbfc030",
+      "status": "processing_create",
+      "raw_create_response": "id: b2648579-3afa-4fd5-8579-3e778fbfc030\ndescription: isometric Lit Commando isometric running cycle, fast sprint lean, weapon held tight, pixel art, facing down-right/southeast, silver-blue tactical commando armor, cyan visor, Litecoin blade on thigh\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"b2648579-3afa-4fd5-8579-3e778fbfc030\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-commando",
+        "state": "run",
+        "direction": "south-east"
+      }
+    },
+    "lit-valkyrie/idle-east": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-east",
+      "w": 64,
+      "h": 96,
+      "id": "577af20a-3a42-47c0-998b-469d6e90f461",
+      "status": "processing_create",
+      "raw_create_response": "id: 577af20a-3a42-47c0-998b-469d6e90f461\ndescription: isometric Lit Valkyrie isometric idle stance, subtle breathing sway, weapon held ready at low-ready, pixel art, facing right/east, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"577af20a-3a42-47c0-998b-469d6e90f461\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "east"
+      }
+    },
+    "lit-valkyrie/idle-north-east": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-north-east",
+      "w": 64,
+      "h": 96,
+      "id": "03140553-127f-4a74-bfa3-02ab9bffa87f",
+      "status": "processing_create",
+      "raw_create_response": "id: 03140553-127f-4a74-bfa3-02ab9bffa87f\ndescription: isometric Lit Valkyrie isometric idle stance, subtle breathing sway, weapon held ready at low-ready, pixel art, facing up-right/northeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"03140553-127f-4a74-bfa3-02ab9bffa87f\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "north-east"
+      }
+    },
+    "lit-valkyrie/idle-north": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-north",
+      "w": 64,
+      "h": 96,
+      "id": "634f27fa-4bf9-43fd-9562-e772ba114c28",
+      "status": "processing_create",
+      "raw_create_response": "id: 634f27fa-4bf9-43fd-9562-e772ba114c28\ndescription: isometric Lit Valkyrie isometric idle stance, subtle breathing sway, weapon held ready at low-ready, pixel art, facing up/north, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"634f27fa-4bf9-43fd-9562-e772ba114c28\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "north"
+      }
+    },
+    "lit-valkyrie/idle-north-west": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "a255be58-1f32-49c9-a7df-c0970eedb5b7",
+      "status": "processing_create",
+      "raw_create_response": "id: a255be58-1f32-49c9-a7df-c0970eedb5b7\ndescription: isometric Lit Valkyrie isometric idle stance, subtle breathing sway, weapon held ready at low-ready, pixel art, facing up-left/northwest, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"a255be58-1f32-49c9-a7df-c0970eedb5b7\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "north-west"
+      }
+    },
+    "lit-valkyrie/idle-west": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-west",
+      "w": 64,
+      "h": 96,
+      "id": "8afe8e3b-93ba-4c23-bb0a-fe191b60ee27",
+      "status": "processing_create",
+      "raw_create_response": "id: 8afe8e3b-93ba-4c23-bb0a-fe191b60ee27\ndescription: isometric Lit Valkyrie isometric idle stance, subtle breathing sway, weapon held ready at low-ready, pixel art, facing left/west, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"8afe8e3b-93ba-4c23-bb0a-fe191b60ee27\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "west"
+      }
+    },
+    "lit-valkyrie/idle-south-west": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-south-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "south-west"
+      }
+    },
+    "lit-valkyrie/idle-south": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-south",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "south"
+      }
+    },
+    "lit-valkyrie/idle-south-east": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-idle-south-east",
+      "w": 64,
+      "h": 96,
+      "id": "59db858a-99cb-4d4c-8dea-7fc7b6020995",
+      "status": "processing_create",
+      "raw_create_response": "id: 59db858a-99cb-4d4c-8dea-7fc7b6020995\ndescription: isometric Lit Valkyrie isometric idle stance, subtle breathing sway, weapon held ready at low-ready, pixel art, facing down-right/southeast, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"59db858a-99cb-4d4c-8dea-7fc7b6020995\")",
+      "animated": true,
+      "frame_count": 4,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "idle",
+        "direction": "south-east"
+      }
+    },
+    "lit-valkyrie/walk-east": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "east"
+      }
+    },
+    "lit-valkyrie/walk-north-east": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-north-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "north-east"
+      }
+    },
+    "lit-valkyrie/walk-north": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-north",
+      "w": 64,
+      "h": 96,
+      "id": "7a7e300b-8345-4605-99c4-95c8fb15dc21",
+      "status": "processing_create",
+      "raw_create_response": "id: 7a7e300b-8345-4605-99c4-95c8fb15dc21\ndescription: isometric Lit Valkyrie isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing up/north, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"7a7e300b-8345-4605-99c4-95c8fb15dc21\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "north"
+      }
+    },
+    "lit-valkyrie/walk-north-west": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-north-west",
+      "w": 64,
+      "h": 96,
+      "id": "12c064ae-cf45-4203-82d5-b6e55aa87aa3",
+      "status": "processing_create",
+      "raw_create_response": "id: 12c064ae-cf45-4203-82d5-b6e55aa87aa3\ndescription: isometric Lit Valkyrie isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art, facing up-left/northwest, teal-plasma energy warrior, short teal hair, glowing energy fists\nsize: 64x96px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"12c064ae-cf45-4203-82d5-b6e55aa87aa3\")",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "north-west"
+      }
+    },
+    "lit-valkyrie/walk-west": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "west"
+      }
+    },
+    "lit-valkyrie/walk-south-west": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-south-west",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "south-west"
+      }
+    },
+    "lit-valkyrie/walk-south": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-south",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "south"
+      }
+    },
+    "lit-valkyrie/walk-south-east": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-walk-south-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "walk",
+        "direction": "south-east"
+      }
+    },
+    "lit-valkyrie/run-east": {
+      "set": "heroes",
+      "slug": "lit-valkyrie-run-east",
+      "w": 64,
+      "h": 96,
+      "id": null,
+      "status": "failed_create",
+      "raw_create_response": "error: rate limit exceeded\n\nhint: wait ~15-30s for current jobs to complete",
+      "animated": true,
+      "frame_count": 6,
+      "priority": 1,
+      "meta": {
+        "hero": "lit-valkyrie",
+        "state": "run",
+        "direction": "east"
       }
     }
   }

@@ -1006,6 +1006,8 @@ const dom = {
   combatPauseButton: document.querySelector('#combatPauseButton'),
   combatRestartButton: document.querySelector('#combatRestartButton'),
   combatMusicButton: document.querySelector('#combatMusicButton'),
+  combatShakeButton: document.querySelector('#combatShakeButton'),
+  combatGoreButton: document.querySelector('#combatGoreButton'),
   combatCharacterButton: document.querySelector('#combatCharacterButton'),
   combatViewportButton: document.querySelector('#combatViewportButton'),
   combatReturnMenuButton: document.querySelector('#combatReturnMenuButton'),
@@ -1804,6 +1806,8 @@ function syncCombatOverlay() {
   if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Return to Game' : 'Pause';
   if (dom.combatRestartButton) dom.combatRestartButton.textContent = currentSession?.isPaid ? 'Restart (New Credit)' : 'Restart Free';
   if (dom.combatMusicButton) dom.combatMusicButton.textContent = combat.musicEnabled ? 'Music On' : 'Music Off';
+  if (dom.combatShakeButton) dom.combatShakeButton.textContent = gameSettings.screenShake ? 'Shake On' : 'Shake Off';
+  if (dom.combatGoreButton) dom.combatGoreButton.textContent = gameSettings.gore ? 'Gore On' : 'Gore Off';
   if (dom.combatCharacterButton) {
     // Character choice now lives on the dedicated character-select screen.
     dom.combatCharacterButton.hidden = true;
@@ -7333,6 +7337,18 @@ dom.powerUpButton.addEventListener('click', dropPowerUp);
 dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatRestartButton?.addEventListener('click', restartCombatRun);
 dom.combatMusicButton?.addEventListener('click', toggleCombatMusic);
+dom.combatShakeButton?.addEventListener('click', () => {
+  gameSettings.screenShake = !gameSettings.screenShake;
+  saveGameSettings();
+  if (dom.combatShakeButton) dom.combatShakeButton.textContent = gameSettings.screenShake ? 'Shake On' : 'Shake Off';
+  playSfxCue('menu-click');
+});
+dom.combatGoreButton?.addEventListener('click', () => {
+  gameSettings.gore = !gameSettings.gore;
+  saveGameSettings();
+  if (dom.combatGoreButton) dom.combatGoreButton.textContent = gameSettings.gore ? 'Gore On' : 'Gore Off';
+  playSfxCue('menu-click');
+});
 dom.combatCharacterButton?.addEventListener('click', switchHero);
 dom.combatViewportButton?.addEventListener('click', cycleCombatViewport);
 dom.combatReturnMenuButton?.addEventListener('click', returnToOfficialGameMenu);
