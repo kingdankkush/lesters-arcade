@@ -48,5 +48,105 @@
       "job_ids": [],
       "raw": "error: need 7 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
     }
+  },
+  "lit-valkyrie": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (standing idle, breathing, weapon ready, subtle bob)\ndirections: west, south-west (2 jobs)\n"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (walking forward steadily, weapon in hand)\ndirections: south, south-east, east, north-east,"
+    },
+    "run": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (running fast forward, weapon in hand)\ndirections: south, south-east, east, north-east, nor"
+    },
+    "shoot": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "melee": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "throw": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    }
+  },
+  "lit-commando": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "status: already complete\ncharacter: c96d19d1-8958-4fcd-b517-9dfded9e0051\naction: standing idle, breathing, weapon ready, subtle bob\ndirections: south, south-eas"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (walking forward steadily, weapon in hand)\ndirections: south-west (1 jobs)\nframes: 7 (1 ref"
+    },
+    "run": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "status: already complete\ncharacter: c96d19d1-8958-4fcd-b517-9dfded9e0051\naction: running fast forward, weapon in hand\ndirections: south, south-east, east, north"
+    },
+    "shoot": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "melee": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "throw": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    }
   }
 }
