@@ -1183,6 +1183,7 @@ const combat = {
   ammo: Infinity,
   weaponId: 'coin-blaster',
   characterId: 'lester',
+  lastFacing: 'south', // Track last movement direction for smooth animation blending
   shots: 0,
   fireFlash: 0,
   meleeSwings: 0,
@@ -4344,6 +4345,11 @@ function moveStageObjects(scrollDelta) {
 function applyPlayerLedCameraMovement(playerSpeed) {
   const inputDirection = (combat.keys.has('d') || combat.keys.has('arrowright') ? 1 : 0)
     - (combat.keys.has('a') || combat.keys.has('arrowleft') ? 1 : 0);
+  // Update last facing direction when moving (for smooth animation blending).
+  // In side-scroll mode, only east/west are valid.
+  if (inputDirection !== 0) {
+    combat.lastFacing = inputDirection > 0 ? 'east' : 'west';
+  }
   if (!inputDirection) {
     combat.scrollSpeed += (0 - combat.scrollSpeed) * 0.22;
     return;
@@ -5294,6 +5300,12 @@ function updateRoguelikeMovement(dt) {
   if (usingKeys && !isDesktopControls()) {
     combat.aimMapX = mx / length;
     combat.aimMapY = my / length;
+  }
+  // Update last facing direction when moving (for smooth animation blending when
+  // transitioning to actions like shoot/melee while stationary).
+  if (mx !== 0 || my !== 0) {
+    const facing = facingFromVector(mx / length, my / length);
+    combat.lastFacing = facing.dir;
   }
   combat.roguelikeRun.player.x = combat.playerMapX;
   combat.roguelikeRun.player.y = combat.playerMapY;
@@ -6430,7 +6442,60 @@ function drawRoguelikeScene(ctx, width, height) {
   // Animated ambient props (trees/flowers swaying, water rippling, neon flicker,
   // traffic lights, tumbleweeds) depth-sorted with everything else.
   for (const entry of collectAnimatedProps(ctx)) renderList.push(entry);
-  const xpShard = productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback');
+  // Animated Litecoin XP coins: silver coin with Ł logo, rotates and shimmers.
+  // Replaces the old xp-shard gem with a thematic crypto-world pickup.
+  function drawLitecoinXP(ctx, x, y, size, frame) {
+    const coinSize = size || 32;
+    const half = coinSize / 2;
+    // Rotation phase: full 360° over ~80 frames (at 14fps coin fps).
+    const angle = (frame * 0.0785) % (Math.PI * 2); // ~4.5°/frame
+    // Shimmer: brightness oscillates with a phase offset from rotation.
+    const shimmer = 0.75 + 0.25 * Math.sin(frame * 0.15);
+    // Coin squash based on rotation (edge-on = thin, face-on = round).
+    const squash = Math.cos(angle);
+    const coinWidth = Math.max(4, coinSize * Math.abs(squash));
+    
+    ctx.save();
+    ctx.translate(x, y);
+    
+    // Coin shadow (grounded ellipse)
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(0, half * 0.6, half * 0.9, half * 0.25, 0, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Coin body: silver gradient from light (top) to dark (bottom).
+    const grad = ctx.createLinearGradient(0, -half, 0, half);
+    grad.addColorStop(0, `rgba(${Math.round(230 * shimmer)},${Math.round(235 * shimmer)},${Math.round(245 * shimmer)},1)`);
+    grad.addColorStop(0.5, `rgba(${Math.round(180 * shimmer)},${Math.round(188 * shimmer)},${Math.round(200 * shimmer)},1)`);
+    grad.addColorStop(1, `rgba(${Math.round(120 * shimmer)},${Math.round(128 * shimmer)},${Math.round(142 * shimmer)},1)`);
+    
+    ctx.fillStyle = grad;
+    ctx.strokeStyle = `rgba(${Math.round(90 * shimmer)},${Math.round(98 * shimmer)},${Math.round(112 * shimmer)},0.8)`;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, coinWidth / 2, half, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    
+    // Litecoin Ł symbol (only visible when face is toward viewer).
+    if (squash > 0.4) {
+      ctx.fillStyle = `rgba(255,255,255,${0.9 * squash})`;
+      ctx.font = `bold ${Math.round(coinSize * 0.55)}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Ł', 0, 2);
+    }
+    
+    // Rim highlight on the edge.
+    ctx.strokeStyle = `rgba(255,255,255,${0.6 * Math.abs(Math.sin(angle))})`;
+    ctx.lineWidth = 0.8;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, coinWidth / 2 - 1, half - 1, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    ctx.restore();
+  }
   for (const gem of combat.xpGems) {
     const projected = isoToScreen(gem.worldX, gem.worldY);
     const bob = Math.sin((combat.frame + gem.worldX * 13 + gem.worldY * 7) * 0.12) * 3;
@@ -6438,12 +6503,7 @@ function drawRoguelikeScene(ctx, width, height) {
     renderList.push({
       depth: projected.y + 26,
       draw: () => {
-        if (imageReady(xpShard)) {
-          ctx.drawImage(xpShard, Math.round(projected.x - 16), Math.round(drawY), 32, 32);
-        } else {
-          ctx.fillStyle = '#19f7ff';
-          ctx.fillRect(projected.x - 4, projected.y + 26, 8, 8);
-        }
+        drawLitecoinXP(ctx, projected.x, drawY + 16, 32, combat.frame + Math.floor(gem.worldX * 1000));
       },
     });
   }
@@ -6866,7 +6926,10 @@ function selectHeroFrame() {
   if (HMH_ACTOR_REGISTRY.has(heroActorId)) {
     const actor = HMH_ACTOR_REGISTRY.get(heroActorId);
     const state = heroStateFromCombat(combat, GROUND_Y);
-    const frame = actor.frame({ state, direction: 'south', clock: combat.frame });
+    // Use tracked movement direction for smooth animation blending when transitioning
+    // between states (e.g., moving east then shooting should stay facing east).
+    const facing = combat.lastFacing || 'south';
+    const frame = actor.frame({ state, direction: facing, clock: combat.frame });
     if (frame?.image && imageReady(frame.image)) return frame.image;
   }
   const hero = combatArt.hero;
