@@ -1147,7 +1147,7 @@ test('Lester Arcade music player overlay is wired into the public UI without for
   assert.equal(styleSource.includes('[data-shuffle="true"]'), true);
   assert.equal(smokeScript.includes('arcadeMusicPlayer'), true);
   assert.equal(smokeScript.includes('arcadeMusicShuffleButton'), true);
-  assert.equal(smokeScript.includes('Hard Money Heroes 16-BIT Arcade Music'), true);
+  assert.equal(smokeScript.includes('Hard Money Heroes — Main Theme'), true);
 });
 
 test('V2 art and audio plans track Justin reference assets, Lester redo, 150x150 profile direction, and free SFX sources', () => {
