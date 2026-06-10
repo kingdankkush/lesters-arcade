@@ -12,6 +12,9 @@
 // get onboarded.
 
 export async function loadHMHGame() {
+  // Path is relative to src/games/hmh/loader.mjs on disk → /src/games/hmh/loader.mjs on Vercel.
+  // We need to climb 3 levels up to reach the portal root, then descend into assets/generated/:
+  //   /src/games/hmh/ → /src/games/ → /src/ → /  → /assets/generated/...
   const [
     { HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST },
     { HMH_ISOMETRIC_PIXELLAB_WAVE_1 },
@@ -23,15 +26,15 @@ export async function loadHMHGame() {
     { HMH_ANIMATED_ROSTER },
     { HMH_COMPLETE_ANIMATIONS_READY },
   ] = await Promise.all([
-    import('../../assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs'),
-    import('../../assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs'),
-    import('../../assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs'),
-    import('../../assets/generated/hmh-level-environment/hmh-level-environment.mjs'),
-    import('../../assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs'),
-    import('../../assets/generated/hmh-fx-powerups-wave.mjs'),
-    import('../../assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs'),
-    import('../../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs'),
-    import('../../assets/generated/hmh-complete-animations/hmh-complete-animations.mjs'),
+    import('../../../assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs'),
+    import('../../../assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs'),
+    import('../../../assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs'),
+    import('../../../assets/generated/hmh-level-environment/hmh-level-environment.mjs'),
+    import('../../../assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs'),
+    import('../../../assets/generated/hmh-fx-powerups-wave.mjs'),
+    import('../../../assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs'),
+    import('../../../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs'),
+    import('../../../assets/generated/hmh-complete-animations/hmh-complete-animations.mjs'),
   ]);
 
   return Object.freeze({
