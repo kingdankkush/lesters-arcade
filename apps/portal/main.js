@@ -5300,10 +5300,19 @@ const BIOME_FLOOR_PALETTE = {
   water:  { lit: '#1f5f8a', dark: '#123c5c', seam: 'rgba(120,210,255,.20)' },
 };
 
+// Per-biome palette objects are cached (frozen) so the per-tile hot path does
+// zero allocation — the old code object-spread a new palette for EVERY tile of
+// EVERY frame (thousands/frame in fullscreen), which churned the GC.
+const _biomePaletteCache = new Map();
 function biomeFloorPalette(worldX, worldY) {
   const seed = combat.roguelikeRun?.seed ?? 0;
   const biome = biomeAt(seed, Math.round(worldX), Math.round(worldY));
-  return { biome, ...(BIOME_FLOOR_PALETTE[biome] ?? BIOME_FLOOR_PALETTE.town) };
+  let p = _biomePaletteCache.get(biome);
+  if (!p) {
+    p = Object.freeze({ biome, ...(BIOME_FLOOR_PALETTE[biome] ?? BIOME_FLOOR_PALETTE.town) });
+    _biomePaletteCache.set(biome, p);
+  }
+  return p;
 }
 
 // Draw an iso tile diamond with a directional-light gradient (lit top-left,
@@ -5532,12 +5541,12 @@ function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
     return;
   }
   // Draw the diamond tile slightly oversized so neighbors overlap with no seams.
+  // NOTE: no ctx.save()/restore() here — this runs for THOUSANDS of tiles per
+  // frame; the caller (tile pass in drawRoguelikeScene) sets
+  // imageSmoothingEnabled=false once for the whole pass.
   const drawWidth = ISO_TILE_WIDTH + 4;
   const drawHeight = ISO_TILE_HEIGHT * 2 + 6; // 56px source art is taller than the 32px diamond
-  ctx.save();
-  ctx.imageSmoothingEnabled = false;
   ctx.drawImage(tileImg, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
-  ctx.restore();
 }
 
 function productionPropForIndex(index) {
@@ -6070,18 +6079,24 @@ function drawRoguelikeScene(ctx, width, height) {
   const maxX = Math.ceil(Math.max(...corners.map((c) => c.x))) + OVERSCAN;
   const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - OVERSCAN;
   const maxY = Math.ceil(Math.max(...corners.map((c) => c.y))) + OVERSCAN;
+  // One smoothing toggle + cull bounds hoisted OUT of the per-tile loop —
+  // drawProductionIsoTile no longer save/restores per tile (huge win at
+  // thousands of tiles/frame in fullscreen).
+  const cullWidth = isFullscreen ? renderWidth : width;
+  const cullHeight = isFullscreen ? renderHeight : height;
+  const prevSmoothing = ctx.imageSmoothingEnabled;
+  ctx.imageSmoothingEnabled = false;
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
       const projected = isoToScreen(worldX, worldY);
       // Cheap cull: skip tiles fully off the RENDERED canvas (not just viewport).
       // In fullscreen, renderWidth/renderHeight may exceed actual canvas size.
-      const cullWidth = isFullscreen ? renderWidth : width;
-      const cullHeight = isFullscreen ? renderHeight : height;
       if (projected.x < -ISO_TILE_WIDTH || projected.x > cullWidth + ISO_TILE_WIDTH) continue;
       if (projected.y < -ISO_TILE_HEIGHT - 80 || projected.y > cullHeight + ISO_TILE_HEIGHT + 80) continue;
       drawProductionIsoTile(ctx, projected.x, projected.y + 64, worldX, worldY);
     }
   }
+  ctx.imageSmoothingEnabled = prevSmoothing;
 
   // Render roads and transition zones (under obstacles, over ground tiles)
   drawRoadsAndTransitions(ctx, width, height, isFullscreen ? renderWidth : width, isFullscreen ? renderHeight : height);
@@ -6256,15 +6271,22 @@ function drawSceneLighting(ctx, width, height) {
   // radial falloff. This hides the abrupt end of the tiled world, focuses the
   // eye on the player at center, and makes the darker ground accents read as
   // intentional nocturnal mood instead of stray glitch patches.
+  // The gradient only depends on canvas size, so it's cached and rebuilt only
+  // on resize instead of being re-created 60x/second.
   ctx.save();
-  const vg = ctx.createRadialGradient(
-    width / 2, height / 2, Math.min(width, height) * 0.30,
-    width / 2, height / 2, Math.max(width, height) * 0.72,
-  );
-  vg.addColorStop(0, 'rgba(4, 8, 22, 0)');
-  vg.addColorStop(0.7, 'rgba(4, 8, 22, 0.30)');
-  vg.addColorStop(1, 'rgba(3, 6, 18, 0.72)');
-  ctx.fillStyle = vg;
+  if (!drawSceneLighting._vg || drawSceneLighting._vgW !== width || drawSceneLighting._vgH !== height) {
+    const vg = ctx.createRadialGradient(
+      width / 2, height / 2, Math.min(width, height) * 0.30,
+      width / 2, height / 2, Math.max(width, height) * 0.72,
+    );
+    vg.addColorStop(0, 'rgba(4, 8, 22, 0)');
+    vg.addColorStop(0.7, 'rgba(4, 8, 22, 0.30)');
+    vg.addColorStop(1, 'rgba(3, 6, 18, 0.72)');
+    drawSceneLighting._vg = vg;
+    drawSceneLighting._vgW = width;
+    drawSceneLighting._vgH = height;
+  }
+  ctx.fillStyle = drawSceneLighting._vg;
   ctx.fillRect(0, 0, width, height);
   ctx.restore();
 }
