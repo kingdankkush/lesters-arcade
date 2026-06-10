@@ -4046,6 +4046,11 @@ async function startCombat() {
   combat.floatingTexts = [];
   combat.powerUps = [];
   combat.powerUpTimers = { magnet: 0, slowEnemies: 0, berserk: 0 };
+  // Power-up telegraph and animated spawns
+  if (combat.powerUpSpawnTimer && combat.powerUpSpawnTimer < 15) {
+    spawnSpriteParticle('powerup-telegraph', combat.nextPowerUpX || combat.playerX + 80, combat.nextPowerUpY || combat.playerY + 80, { color: '#fde047', size: 35, life: 15 });
+  }
+
   combat.xpGems = [];
   combat.levelUpChoices = [];
   combat.levelUpPaused = false;
