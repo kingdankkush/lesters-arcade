@@ -72,31 +72,31 @@
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (firing a gun forward with muzzle recoil)\ndirections: south, south-east, east, north-east, "
     },
     "melee": {
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (slashing forward with a combat knife)\ndirections: south, south-east, east, north-east, nor"
     },
     "throw": {
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (throwing a grenade overhand)\ndirections: south, south-east, east, north-east, north, north"
     },
     "hurt": {
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (flinching and recoiling from taking damage)\ndirections: south, south-east, east, north-eas"
     },
     "death": {
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
     }
   },
   "lit-commando": {
@@ -140,7 +140,7 @@
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
     },
     "death": {
       "status": "queued",

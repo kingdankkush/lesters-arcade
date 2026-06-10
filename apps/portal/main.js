@@ -7689,15 +7689,16 @@ function heroAnimState() {
 // animation state (e.g. idle from one design, shoot from another) is what made
 // the hero visibly swap between 3-4 different character designs mid-run.
 //
-// Asset reality: the complete 8-direction kits (idle/walk/run/shoot/melee/throw/
-// hurt/death) live under the 'lester' roster (-> Lit Commando design) and the
-// 'lilly' roster (-> Lit Valkyrie design). The partial 'lit-commando'/'lit-
-// valkyrie' rosters are intentionally NOT used so each hero stays one design.
+// Asset reality (2026-06-10): 'lit-valkyrie' now has its own full 8-direction
+// kit (idle/walk/run/shoot/melee/throw/hurt; death still generating — the
+// renderer falls back within the SAME design until it lands). Lit Commando
+// stays on the 'lester' roster (complete kit incl. hurt/death); the new
+// 'lit-commando' roster will take over once its hurt/death finish generating.
 const HERO_LOCKED_ROSTER = Object.freeze({
   'lit-commando': 'lit-commando',
   lester: 'lester',
-  'lit-valkyrie': 'lilly',
-  lilly: 'lilly',
+  'lit-valkyrie': 'lit-valkyrie',
+  lilly: 'lit-valkyrie',
 });
 
 function heroRosterKey(characterId) {

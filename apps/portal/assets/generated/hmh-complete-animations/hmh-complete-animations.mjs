@@ -714,20 +714,6 @@ export const HMH_COMPLETE_ANIMATIONS_READY = Object.freeze({
  }
 });
 export const HMH_COMPLETE_ANIMATIONS_PARTIAL = Object.freeze({
- "lit-valkyrie": {
-  "missing": [
-   "walk"
-  ],
-  "states": {
-   "crouch": 5,
-   "death": 5,
-   "hurt": 8,
-   "idle": 4,
-   "melee": 4,
-   "run": 1,
-   "shoot": 1
-  }
- },
  "crypto-bro": {
   "missing": [
    "idle",

@@ -37,7 +37,7 @@
       },
       "hurt": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (flinching and recoiling from taking damage)\ndirections: south, south-east, east, north-east, north, north-west, west, south-west ("
       },
       "stun": {
         "status": "queued",
@@ -49,7 +49,7 @@
       },
       "death": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (collapsing and falling down defeated)\ndirections: south, south-east, east, north-east, north, north-west, west, south-west (8 jobs"
       }
     }
   },
@@ -61,15 +61,15 @@
     "anims": {
       "idle": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (standing idle, breathing, weapon ready, subtle bob)\ndirections: south, south-east, east, north-east, north, north-west, west, sout"
       },
       "walk": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (walking forward steadily, weapon in hand)\ndirections: south, south-east, east, north-east, north, north-west, west, south-west (8 "
       },
       "run": {
         "status": "queued",
-        "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+        "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (running fast forward, weapon in hand)\ndirections: south, south-east, east, north-east, north, north-west, west, south-west (8 jobs"
       },
       "fire-pistol": {
         "status": "queued",
