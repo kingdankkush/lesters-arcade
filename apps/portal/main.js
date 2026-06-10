@@ -1718,6 +1718,18 @@ function combatHudStatus() {
 
 function renderCombatHudOverlay() {
   if (!dom.combatHudOverlay) return;
+  // Roguelike runs use the single consolidated roguelike stat bar — rendering
+  // BOTH bars stacked the same numbers twice and ate vertical space above the
+  // game window. The widget grid only serves the legacy sandbox now.
+  if (combat.roguelikeRun) {
+    if (dom.combatHudOverlay.dataset.signature !== 'roguelike-hidden') {
+      dom.combatHudOverlay.dataset.signature = 'roguelike-hidden';
+      dom.combatHudOverlay.replaceChildren();
+    }
+    dom.combatHudOverlay.hidden = true;
+    return;
+  }
+  dom.combatHudOverlay.hidden = false;
   const weapon = weaponById(combat.weaponId);
   const hud = buildCombatHudOverlayModel({
     health: combat.health,
@@ -1792,7 +1804,7 @@ function renderRoguelikeStatBar() {
   bar.append(heroChip);
   const chips = el('div', { className: 'stat-chips' });
   for (const s of stats) {
-    const chip = el('div', { className: 'stat-chip', dataset: { tone: s.tone } });
+    const chip = el('div', { className: 'stat-chip', dataset: { tone: s.tone, stat: s.id } });
     appendText(chip, 'span', s.label);
     appendText(chip, 'strong', s.value);
     chips.append(chip);
@@ -8518,12 +8530,29 @@ dom.combatCanvas.addEventListener('mousedown', (event) => {
 document.addEventListener('fullscreenchange', () => {
   if (document.fullscreenElement === dom.officialCombatMount) {
     combat.viewportMode = 'fullscreen';
+    // The stat bar lives OUTSIDE the mount, so it vanishes when only the mount
+    // is fullscreened. Reparent it into the mount as a floating overlay so the
+    // player keeps HP/score/ammo/nades visible in fullscreen.
+    if (dom.roguelikeStatBar && !dom.officialCombatMount.contains(dom.roguelikeStatBar)) {
+      dom.roguelikeStatBar.dataset.homeAnchor = 'true';
+      dom.officialCombatMount.prepend(dom.roguelikeStatBar);
+    }
     // Resize canvas to match new fullscreen dimensions
     requestAnimationFrame(() => {
       resizeCombatCanvas();
     });
   } else if (combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen') {
     combat.viewportMode = 'windowed';
+    // Return the stat bar to its normal slot above the gameplay controls.
+    if (dom.roguelikeStatBar?.dataset.homeAnchor && dom.officialGameplay) {
+      delete dom.roguelikeStatBar.dataset.homeAnchor;
+      const controls = document.getElementById('officialGameplayControls');
+      if (controls?.parentElement === dom.officialGameplay) {
+        dom.officialGameplay.insertBefore(dom.roguelikeStatBar, controls);
+      } else {
+        dom.officialGameplay.append(dom.roguelikeStatBar);
+      }
+    }
     resizeCombatCanvas();
   }
   syncCombatOverlay();

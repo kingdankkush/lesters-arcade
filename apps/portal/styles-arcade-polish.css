@@ -97,6 +97,29 @@
   .roguelike-stat-bar { gap: 5px 7px; padding: 6px 8px; }
   .roguelike-stat-bar .stat-chip { padding: 2px 6px; }
   .roguelike-stat-bar .stat-chip strong { font-size: 0.78rem; }
+  /* Phone: keep only the vitals readable at a glance — hide secondary chips so
+     the bar stays ONE row and the game window keeps maximum height. */
+  .roguelike-stat-bar .stat-hero { display: none; }
+  .roguelike-stat-bar .stat-chip[data-stat="level"],
+  .roguelike-stat-bar .stat-chip[data-stat="wpn"],
+  .roguelike-stat-bar .stat-chip[data-stat="aug"] { display: none; }
+  .roguelike-stat-bar .stat-xp { flex-basis: 100%; min-width: 0; }
+}
+
+/* Fullscreen: the stat bar is reparented INTO the combat mount — float it over
+   the top edge of the canvas as a translucent HUD strip. */
+.official-combat-mount:fullscreen .roguelike-stat-bar,
+.official-combat-mount[data-viewport="fullscreen"] .roguelike-stat-bar {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1180px, calc(100vw - 32px));
+  z-index: 6;
+  margin: 0;
+  background: linear-gradient(135deg, rgba(6, 12, 28, 0.66), rgba(22, 10, 46, 0.56));
+  backdrop-filter: blur(3px);
+  pointer-events: none;
 }
 
 
