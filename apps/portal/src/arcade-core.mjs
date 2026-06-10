@@ -295,7 +295,7 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
   instructions: Object.freeze([
     Object.freeze({ title: 'Survive as long as possible', body: 'Level 1 and 2 introduce mechanics; Level 3 becomes an infinite escalation run.' }),
     Object.freeze({ title: 'Keep the combo alive', body: 'Damage chains and kills without taking damage grow your score faster.' }),
-    Object.freeze({ title: 'Use the blade up close', body: 'The Litecoin Blade is Lester\'s signature high-risk melee move: one-shot basic grunts, save ammo, and pop Ł sparks.' }),
+    Object.freeze({ title: 'Save the grenade for swarms', body: 'The grenade is your one manual weapon: a wide blast that clears packed waves. Right click (or the NADE button on mobile) when enemies bunch up.' }),
     Object.freeze({ title: 'Save rare weapons for bosses', body: 'The Hashstorm suppresses waves; rare charged weapons are intended for armor, boss phases, and clutch survival moments.' }),
     Object.freeze({ title: 'Watch for arena locks', body: 'Mini-boss and boss rooms pause forward progression until the threat is defeated; use cover and vertical space before pushing right again.' }),
   ]),
@@ -307,8 +307,7 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
     Object.freeze({ anchor: 'startCombatButton', title: 'Start 60fps combat', copy: 'Starts the Canvas test loop. Target: 60fps, smooth controls, pixel-snapped sprites.' }),
     Object.freeze({ anchor: 'jumpButton', title: 'Jump / double jump', copy: 'Keyboard: Space. Use double jump to reach vertical platforms and dodge boss sweeps.' }),
     Object.freeze({ anchor: 'shootButton', title: 'Shoot', copy: 'Mouse: Left Click. Fire your current gun; pickups can swap blaster, shotgun, auto, rail, or rare super weapon.' }),
-    Object.freeze({ anchor: 'meleeButton', title: 'Litecoin Blade', copy: 'Keyboard: E or Mouse: Right Click. Signature close-range slash with silver arc, Ł sparks, and optional gore if enabled before the run.' }),
-    Object.freeze({ anchor: 'grenadeButton', title: 'Throwable', copy: 'Keyboard: F. Use Crypto Bombs or Hard Fork throwing axes once the full loadout is built.' }),
+    Object.freeze({ anchor: 'grenadeButton', title: 'Grenade', copy: 'Desktop: Right Click or F. Mobile: NADE button. Wide-area Crypto Bomb blast — scarce, replenished by map pickups.' }),
     Object.freeze({ anchor: 'powerUpButton', title: 'Drop power-up', copy: 'Prototype helper for testing health, shield, ammo, +1up, score multiplier, and weapon pickups.' }),
     Object.freeze({ anchor: 'combatCanvas', title: 'Gameplay viewport', copy: 'Left-to-right parallax side scroller with mini-boss scroll locks and infinite level-three escalation.' }),
     Object.freeze({ anchor: 'leaderboardPanel', title: 'Official board', copy: 'Only paid prototype runs are eligible for official leaderboard state.' }),
@@ -320,15 +319,13 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
       Object.freeze({ action: 'Crouch', key: 'Control / S / ArrowDown', tip: 'Duck behind cover and lower your hitbox under slower enemy fire.' }),
       Object.freeze({ action: 'Jump', key: 'Space', tip: 'Press twice for double jump and vertical lanes.' }),
       Object.freeze({ action: 'Shoot', key: 'Left Click', tip: 'Core ranged attack; maintain fire for combos.' }),
-      Object.freeze({ action: 'Blade', key: 'E / Right Click', tip: 'Fast close-range Litecoin Blade melee for ammo conservation.' }),
-      Object.freeze({ action: 'Throwable', key: 'F', tip: 'Crypto Bomb area burst or Hard Fork throwing axe for swarms and boss phases.' }),
+      Object.freeze({ action: 'Grenade', key: 'Right Click / F', tip: 'Crypto Bomb area burst for swarms and boss phases.' }),
       Object.freeze({ action: 'Reload', key: 'R', tip: 'Reload limited-ammo pickups.' }),
     ]),
     gamepad: Object.freeze([
       Object.freeze({ action: 'Move', key: 'D-pad / Left Stick', tip: 'Arcade baseline movement.' }),
       Object.freeze({ action: 'Jump', key: 'A', tip: 'Jump and double jump.' }),
       Object.freeze({ action: 'Shoot', key: 'X / RT', tip: 'Primary fire.' }),
-      Object.freeze({ action: 'Knife', key: 'B', tip: 'Melee slash.' }),
       Object.freeze({ action: 'Grenade', key: 'Y / LB', tip: 'Throw grenade.' }),
     ]),
   }),
@@ -518,7 +515,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
     title: 'Level 1 // Underchain District',
     durationSeconds: 8,
     hasBeginButton: true,
-    controlsSummary: 'WASD/arrows move · Ctrl crouch · Space jump · Left click shoot · E/right click melee · F throwable',
+    controlsSummary: 'WASD/arrows move · Mouse aims (gun auto-fires) · Left click fire · Right click/F grenade',
     goalCopy: 'Survive as long as possible, clear staged enemy sections, chain kills and damage without getting hit, then submit official scores only at game over.',
   }),
   profileRules: Object.freeze({
@@ -543,8 +540,7 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
     crouch: 'Control / S / ArrowDown',
     jump: 'Space',
     shoot: 'Left Click',
-    melee: 'E / Right Click',
-    throwable: 'F',
+    throwable: 'Right Click / F',
   }),
   levelOne: Object.freeze({
     stageCountRange: Object.freeze([12, 14]),
@@ -1516,13 +1512,14 @@ export const LESTER_BLASTER_HD_SPRITE_ATLAS = Object.freeze({
 });
 
 export const LESTER_BLASTER_CONTROL_SCHEME = Object.freeze({
-  // Isometric roguelike scheme. Desktop: WASD/arrows move; the gun AUTO-FIRES
-  // toward the mouse cursor (no click-to-shoot — that double-fired). Left click
-  // = melee, right click = throw (grenade/axe). Mobile: drag to move + auto-fire
-  // in the heading direction; on-screen buttons for melee/throw/power-up.
-  keyboard: Object.freeze({ move: 'WASD / Arrow Keys', aim: 'Mouse (gun auto-fires)', melee: 'Left Click', throw: 'Right Click', grenade: 'F', reload: 'R (auto on empty)', pause: 'Esc', powerUp: 'on-screen / hotkey' }),
-  gamepad: Object.freeze({ move: 'Left Stick / D-Pad', aim: 'Right Stick (auto-fire)', melee: 'X', throw: 'B / RB', grenade: 'Y', pause: 'Start' }),
-  touch: Object.freeze({ move: 'drag to move (auto-fire heading dir)', melee: 'melee button', throw: 'throw button', grenade: 'grenade button' }),
+  // Isometric roguelike scheme — SIMPLIFIED. Desktop: WASD/arrows move; the gun
+  // AUTO-FIRES toward the mouse cursor. Left click = manual fire, right click
+  // or F = grenade (the only manual action). Melee/axes removed so the player
+  // focuses on movement + positioning. Mobile: drag to move + auto-fire in the
+  // heading direction; on-screen buttons for grenade/power-up.
+  keyboard: Object.freeze({ move: 'WASD / Arrow Keys', aim: 'Mouse (gun auto-fires)', fire: 'Left Click (manual fire)', grenade: 'Right Click / F', reload: 'R (auto on empty)', pause: 'Esc', powerUp: 'on-screen / hotkey' }),
+  gamepad: Object.freeze({ move: 'Left Stick / D-Pad', aim: 'Right Stick (auto-fire)', grenade: 'B / RB', pause: 'Start' }),
+  touch: Object.freeze({ move: 'drag to move (auto-fire heading dir)', grenade: 'NADE button', powerUp: 'POWER button' }),
   accessibility: Object.freeze(['rebindable controls', 'screen shake toggle', 'flash intensity toggle', 'music/sfx sliders', 'high-contrast projectile option']),
 });
 
@@ -2208,9 +2205,8 @@ export function buildLesterBlasterControlDisplayModel() {
   return [
     { label: 'Move', key: kb.move, hint: 'WASD / arrow keys move your hero across the isometric battlefield (drag on mobile).' },
     { label: 'Aim & Fire', key: kb.aim, hint: 'Your gun auto-fires toward the mouse cursor on its fire-rate — no clicking needed.' },
-    { label: 'Melee', key: kb.melee, hint: 'Left click for a close-range Litecoin Blade slash.' },
-    { label: 'Throw', key: kb.throw, hint: 'Right click to throw a grenade / Hard Fork axe at the cursor.' },
-    { label: 'Grenade', key: kb.grenade, hint: 'F throws a Crypto Bomb (also a power-up pickup as ammo).' },
+    { label: 'Manual Fire', key: kb.fire, hint: 'Left click fires a deliberate shot at the cursor.' },
+    { label: 'Grenade', key: kb.grenade, hint: 'Right click or F throws a Crypto Bomb — wide blast, scarce ammo (NADE button on mobile).' },
     { label: 'Reload', key: kb.reload, hint: 'R reloads; weapons also auto-reload when the clip empties.' },
     { label: 'Pause', key: kb.pause, hint: 'Esc opens the pause / options overlay.' },
   ].map((control) => Object.freeze(control));

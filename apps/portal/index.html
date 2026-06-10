@@ -18,11 +18,11 @@
       .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
     </style>
     <!-- Deferred stylesheets -->
-    <link rel="preload" href="./styles.css?v=hmh-compression-v16" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-compression-v16" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles.css?v=hmh-compression-v17" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-compression-v17" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
-      <link rel="stylesheet" href="./styles.css?v=hmh-compression-v16" />
-      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-compression-v16" />
+      <link rel="stylesheet" href="./styles.css?v=hmh-compression-v17" />
+      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-compression-v17" />
     </noscript>
   </head>
   <body>
@@ -196,9 +196,9 @@
             <div class="level-control-strip">
               <span>⌨ WASD / arrows: move (desktop)</span>
               <span>🖱 Mouse: aim — gun auto-fires</span>
-              <span>🖱 Left click: melee · Right click: throw</span>
+              <span>🖱 Left click: shoot · Right click: grenade</span>
               <span>📱 Mobile: drag to move + fire heading</span>
-              <span>💣 Power-up button = grenade / 🪓 axe</span>
+              <span>💣 Grenade: right click / F · 📱 NADE button</span>
               <span>⬆ Level-up: pick 1 of 2 (+reroll) · ⎋ Esc pause</span>
             </div>
             <p class="tiny-note">Power-ups are your manual call — choose upgrades wisely to build your run.</p>
@@ -463,7 +463,7 @@
             <button id="startCombatButton" class="primary-button">Start Combat Test</button>
             <button id="jumpButton" class="secondary-button">Jump / Double Jump</button>
             <button id="shootButton" class="secondary-button">Shoot</button>
-            <button id="meleeButton" class="secondary-button">Blade</button>
+
             <button id="grenadeButton" class="secondary-button">Throwable</button>
             <button id="powerUpButton" class="secondary-button">Drop Power-Up</button>
           </div>
@@ -513,6 +513,6 @@
       </div>
     </main>
 
-    <script type="module" src="./main.js?v=hmh-compression-v16"></script>
+    <script type="module" src="./main.js?v=hmh-compression-v17"></script>
   </body>
 </html>

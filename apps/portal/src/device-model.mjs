@@ -71,7 +71,6 @@ export const TOUCH_CONTROL_MAP = Object.freeze({
   'move-right': { type: 'hold', keys: ['d'] },
   fire: { type: 'action', action: 'shoot' },
   jump: { type: 'action', action: 'jump' },
-  melee: { type: 'action', action: 'melee' },
   grenade: { type: 'action', action: 'grenade' },
   pause: { type: 'action', action: 'pause' },
 });

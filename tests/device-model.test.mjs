@@ -71,9 +71,10 @@ test('joystickToKeys respects dead-zone and maps directions', () => {
 });
 
 test('TOUCH_CONTROL_MAP covers movement and core actions', () => {
-  for (const id of ['move-up', 'move-down', 'move-left', 'move-right', 'fire', 'jump', 'melee', 'grenade', 'pause']) {
+  for (const id of ['move-up', 'move-down', 'move-left', 'move-right', 'fire', 'jump', 'grenade', 'pause']) {
     assert.ok(TOUCH_CONTROL_MAP[id], `missing touch control ${id}`);
   }
+  assert.equal(TOUCH_CONTROL_MAP.melee, undefined); // melee removed from simplified controls
   assert.equal(TOUCH_CONTROL_MAP['move-left'].type, 'hold');
   assert.equal(TOUCH_CONTROL_MAP.fire.type, 'action');
 });

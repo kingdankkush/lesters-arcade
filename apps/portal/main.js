@@ -1087,7 +1087,7 @@ const dom = {
   startCombatButton: document.querySelector('#startCombatButton'),
   jumpButton: document.querySelector('#jumpButton'),
   shootButton: document.querySelector('#shootButton'),
-  meleeButton: document.querySelector('#meleeButton'),
+
   grenadeButton: document.querySelector('#grenadeButton'),
   powerUpButton: document.querySelector('#powerUpButton'),
   fpsPill: document.querySelector('#fpsPill'),
@@ -1476,7 +1476,7 @@ function renderCombatSandboxStatus() {
     activeMode: currentSession?.mode ?? 'practice',
   });
   dom.combatRunStatus.textContent = model.heading;
-  dom.combatStatus.textContent = `${model.details} Controls: WASD/arrows move, mouse aims (gun auto-fires), Left Click melee, Right Click throw, F grenade, R reload, Esc pause.`;
+  dom.combatStatus.textContent = `${model.details} Controls: WASD/arrows move, mouse aims (gun auto-fires), Left Click fire, Right Click or F grenade, R reload, Esc pause.`;
   dom.combatRunStatus.dataset.state = model.state;
 }
 
@@ -1776,7 +1776,7 @@ function renderRoguelikeStatBar() {
     { id: 'rank', label: 'RANK', value: `${run.level}`, tone: 'green' },
     { id: 'wpn', label: 'WEAPON', value: (weapon.displayName ?? weapon.title).toUpperCase(), tone: 'green' },
     { id: 'ammo', label: 'AMMO', value: ammoValue, tone: combat.reloading ? 'orange' : 'green' },
-    { id: 'thrown', label: 'THROW', value: `💣${combat.grenades} · 🪓${combat.axes ?? 0}`, tone: 'orange' },
+    { id: 'thrown', label: 'NADES', value: `💣${combat.grenades}`, tone: 'orange' },
     { id: 'aug', label: 'AUG', value: `${augments} · ⟳${run.rerollsRemaining}`, tone: 'orange' },
   ];
   const activeFx = [];
@@ -4323,9 +4323,10 @@ async function startCombat() {
   combat.platforms = [];
   combat.powerUpsCollected = 0;
   combat.collectedPowerUpTypes = new Set();
-  // Throwables start scarce and are found as map pickups: 2 grenades + 6 axes.
-  combat.grenades = currentSession?.isPaid ? 2 : 2;
-  combat.axes = 6;
+  // Grenades start scarce and are replenished by map ammo pickups. (Axes were
+  // removed from the loadout — grenade is the single manual throwable now.)
+  combat.grenades = 3;
+  combat.axes = 0;
   combat.weaponId = 'coin-blaster';
   // Clip/reload model: each weapon has a clip; auto-fire empties it, then a timed
   // auto-reload refills it. The starter pistol begins fully loaded.
@@ -4451,58 +4452,47 @@ function melee() {
 }
 
 function grenade() {
-  // Manual throwable (the player's only manual action in the roguelike). Throws a
-  // grenade first (bigger blast), then a throwing axe when grenades run out.
-  // Both are scarce and replenished by map ammo pickups.
+  // Manual throwable (the player's only manual action in the roguelike).
+  // SIMPLIFIED: grenades only — throwing axes were removed from the loadout
+  // (they read as broken/unnoticeable in playtests). Grenades are scarce and
+  // replenished by map ammo pickups.
   const hasGrenade = (combat.grenades ?? 0) > 0;
-  const hasAxe = (combat.axes ?? 0) > 0;
-  if (!hasGrenade && !hasAxe) {
-    spawnText('NO THROWABLES', combat.playerX + 20, combat.playerY - 80, '#ff476f');
+  if (!hasGrenade) {
+    spawnText('NO GRENADES', combat.playerX + 20, combat.playerY - 80, '#ff476f');
     return;
   }
-  const throwingAxe = !hasGrenade && hasAxe;
-  if (throwingAxe) combat.axes -= 1; else combat.grenades -= 1;
-  playSfxCue('grenade', throwingAxe ? 0.05 : 0.075);
+  combat.grenades -= 1;
+  playSfxCue('grenade', 0.075);
 
   if (combat.roguelikeRun) {
     // Map-space blast centered slightly ahead of the hero along the aim vector.
     const cx = combat.playerMapX + combat.aimMapX * 1.4;
     const cy = combat.playerMapY + combat.aimMapY * 1.4;
-    const radius = throwingAxe ? 1.1 : 2.0; // map tiles
-    const dmg = (throwingAxe ? 22 : 34) * (combat.roguelikeRun?.stats.grenadeDamage ?? 1);
+    const radius = 2.0; // map tiles
+    const dmg = 34 * (combat.roguelikeRun?.stats.grenadeDamage ?? 1);
     for (const enemy of combat.enemies) {
       if (enemy.hp <= 0) continue;
       const d = Math.hypot(enemy.mapX - cx, enemy.mapY - cy);
-      if (d <= radius) damageEnemy(enemy, dmg * (throwingAxe ? 1 : (1 - d / (radius + 0.5))) + (throwingAxe ? 0 : dmg * 0.4), throwingAxe ? 'axe' : 'grenade');
+      if (d <= radius) damageEnemy(enemy, dmg * (1 - d / (radius + 0.5)) + dmg * 0.4, 'grenade');
     }
     if (combat.boss && combat.boss.hp > 0) {
       const d = Math.hypot((combat.boss.mapX ?? cx) - cx, (combat.boss.mapY ?? cy) - cy);
-      if (d <= radius + 1) damageBoss(throwingAxe ? 26 : 40, throwingAxe ? 'axe' : 'grenade');
+      if (d <= radius + 1) damageBoss(40, 'grenade');
     }
     const burst = isoToScreen(cx, cy);
-    // Use the dedicated grenade explosion for warm yellow+red mix on grenades;
-    // throwing axes use the single-color plasma burst for a distinct cold look.
-    if (throwingAxe) {
-      spawnExplosion(burst.x, burst.y, '#c9d6ff');
-    } else {
-      spawnGrenadeExplosion(burst.x, burst.y);
-    }
-    spawnText(throwingAxe ? '🪓' : '💥', burst.x, burst.y - 30, throwingAxe ? '#c9d6ff' : '#ff7b2f');
+    spawnGrenadeExplosion(burst.x, burst.y);
+    spawnText('💥', burst.x, burst.y - 30, '#ff7b2f');
     return;
   }
 
   // Legacy side-scroller fallback.
   const blastBox = { x: combat.playerX + 52, y: GROUND_Y - 154, w: 304, h: 166 };
   for (const enemy of combat.enemies) {
-    if (rectsOverlap(blastBox, enemyHitbox(enemy))) damageEnemy(enemy, throwingAxe ? 14 : 18, throwingAxe ? 'axe' : 'grenade');
+    if (rectsOverlap(blastBox, enemyHitbox(enemy))) damageEnemy(enemy, 18, 'grenade');
   }
   const bossBox = bossHitbox();
-  if (bossBox && rectsOverlap(blastBox, bossBox)) damageBoss(throwingAxe ? 18 : 24, throwingAxe ? 'axe' : 'grenade');
-  if (throwingAxe) {
-    spawnExplosion(combat.playerX + 210, GROUND_Y - 35, '#c9d6ff');
-  } else {
-    spawnGrenadeExplosion(combat.playerX + 210, GROUND_Y - 35);
-  }
+  if (bossBox && rectsOverlap(blastBox, bossBox)) damageBoss(24, 'grenade');
+  spawnGrenadeExplosion(combat.playerX + 210, GROUND_Y - 35);
 }
 
 function dropPowerUp() {
@@ -5228,7 +5218,8 @@ function collectCombatPowerUp(power) {
   combat.collectedPowerUpTypes.add(power.id ?? power.effect ?? power.title);
   if (power.effect === 'heal') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + power.amount);
   if (power.effect === 'grenades') combat.grenades += power.amount;
-  if (power.effect === 'axes') combat.axes = (combat.axes ?? 0) + power.amount;
+  // 'axes' pickups now grant grenades too (axes removed from the loadout).
+  if (power.effect === 'axes') combat.grenades += Math.max(1, Math.round((power.amount ?? 1) / 2));
   if (power.effect === 'life') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + 25);
   if (power.effect === 'weapon') {
     combat.weaponId = power.weaponId;
@@ -8397,7 +8388,7 @@ dom.simulateRunButton.addEventListener('click', completePrototypeRun);
 dom.startCombatButton.addEventListener('click', startCombat);
 dom.jumpButton.addEventListener('click', jump);
 dom.shootButton.addEventListener('click', shoot);
-dom.meleeButton.addEventListener('click', melee);
+
 dom.grenadeButton.addEventListener('click', grenade);
 dom.powerUpButton.addEventListener('click', dropPowerUp);
 dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
@@ -8482,7 +8473,6 @@ document.addEventListener('keydown', (event) => {
     if (combat.roguelikeRun) shoot();
     else jump();
   }
-  if (key === 'e') melee();
   if (key === 'f') grenade();
   if (key === 'r') reload();
   if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) {
@@ -8508,18 +8498,20 @@ dom.combatCanvas.addEventListener('mousedown', (event) => {
   if (combat.roguelikeRun) updateAimFromPointer(event);
   if (combat.paused || combat.gameOver) return;
   if (combat.roguelikeRun) {
-    // Roguelike: the gun AUTO-FIRES toward the mouse, so clicks must NOT also
-    // shoot (that double-fired). Left click = melee, right click = throw.
+    // SIMPLIFIED CONTROLS: the gun AUTO-FIRES toward the mouse. Left click is a
+    // manual fire (same gun — useful for deliberate shots), right click throws
+    // the grenade. Melee/axes were removed to keep the player focused on
+    // movement + positioning.
     event.preventDefault();
-    if (event.button === 0) melee();
+    if (event.button === 0) shoot();
     else if (event.button === 2) grenade();
     return;
   }
-  // Legacy sandbox (non-roguelike) keeps click-to-shoot / right-click melee.
+  // Legacy sandbox (non-roguelike) keeps click-to-shoot / right-click grenade.
   if (event.button === 0) shoot();
   if (event.button === 2) {
     event.preventDefault();
-    melee();
+    grenade();
   }
 });
 
@@ -8608,7 +8600,6 @@ function performTouchAction(action) {
   if (combat.paused || combat.gameOver) return;
   if (action === 'shoot') { if (combat.roguelikeRun) shoot(); else jump(); }
   else if (action === 'jump') jump();
-  else if (action === 'melee') melee();
   else if (action === 'grenade') grenade();
   else if (action === 'powerup') dropPowerUp();
 }
@@ -8709,9 +8700,9 @@ function ensureTouchControls(profile) {
   aimBase.addEventListener('pointerup', releaseAim);
   aimBase.addEventListener('pointercancel', releaseAim);
 
-  // --- Action buttons: ONLY Melee + Power-Up (no jump, no manual fire/nade). ---
+  // --- Action buttons: ONLY Grenade + Power-Up (no jump, melee, or manual fire). ---
   const actions = [
-    { id: 'melee', label: 'MELEE', action: 'melee' },
+    { id: 'grenade', label: '💣 NADE', action: 'grenade' },
     { id: 'powerup', label: 'POWER', action: 'powerup' },
   ];
   const cluster = el('div', { className: 'touch-action-cluster' });

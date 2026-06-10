@@ -648,9 +648,9 @@ test('Lester Blaster design codex covers characters, art, controls, weapons, env
   assert.equal(LESTER_BLASTER_ENEMY_CATALOG.every((enemy) => enemy.aiArchetype && enemy.animationStates.length >= 3), true);
   assert.equal(LESTER_BLASTER_ANIMATION_PLAN.playerStates.includes('double-jump'), true);
   assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.move, 'WASD / Arrow Keys');
-  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.melee, 'Left Click');
-  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.throw, 'Right Click');
-  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.grenade, 'F');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.fire, 'Left Click (manual fire)');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.grenade, 'Right Click / F');
+  assert.equal(LESTER_BLASTER_CONTROL_SCHEME.keyboard.melee, undefined); // melee removed from simplified controls
   assert.equal(LESTER_BLASTER_MENU_OPTIONS.main.length >= 6, true);
   assert.equal(LESTER_BLASTER_SOUND_DESIGN.musicTracks.length >= 4, true);
   assert.equal(LESTER_BLASTER_UNLOCKABLES.length >= 8, true);
@@ -1000,8 +1000,8 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
 test('V2 tactical combat spec slows pacing into staged cover, platform, mini-boss, and boss sections', () => {
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.move, 'WASD / Arrow Keys');
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.shoot, 'Left Click');
-  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.melee, 'E / Right Click');
-  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.throwable, 'F');
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.melee, undefined); // melee removed from simplified controls
+  assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.controls.throwable, 'Right Click / F');
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.sectionPlan[0].enemyCount[0], 2);
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.sectionPlan.some((section) => section.miniBoss), true);
   assert.equal(LESTER_BLASTER_TACTICAL_COMBAT_V2.sectionPlan.some((section) => section.boss && section.section >= 8), true);
@@ -1066,7 +1066,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./main.js?v=hmh-compression-v16'), true);
+  assert.equal(indexSource.includes('./main.js?v=hmh-compression-v17'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -1325,9 +1325,11 @@ test('control display model does not leak undefined labels into the visible cont
   assert.equal(controls.length >= 6, true);
   assert.equal(move.key, 'WASD / Arrow Keys');
   assert.equal(controls.some((control) => control.label === 'Aim & Fire' && control.key.toLowerCase().includes('mouse')), true);
-  assert.equal(controls.some((control) => control.label === 'Melee' && control.key === 'Left Click'), true);
-  assert.equal(controls.some((control) => control.label === 'Throw' && control.key === 'Right Click'), true);
-  assert.equal(controls.some((control) => control.label === 'Grenade' && control.key === 'F'), true);
+  assert.equal(controls.some((control) => control.label === 'Manual Fire' && control.key.includes('Left Click')), true);
+  assert.equal(controls.some((control) => control.label === 'Grenade' && control.key === 'Right Click / F'), true);
+  // Melee/Throw were removed in the simplified control scheme.
+  assert.equal(controls.some((control) => control.label === 'Melee'), false);
+  assert.equal(controls.some((control) => control.label === 'Throw'), false);
   assert.equal(controls.every((control) => control.key && !control.key.includes('undefined')), true);
   assert.equal(controls.every((control) => control.label && !control.label.includes('undefined')), true);
 });
