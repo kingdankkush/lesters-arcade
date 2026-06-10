@@ -66,6 +66,10 @@ BOSS = [
 # key -> (character_id, kit). character_id None => needs creation first.
 ROSTER: dict[str, tuple[str | None, list[tuple[str, str]]]] = {
     "lester": ("97185455-d6f8-4108-a0fc-ab90f451ddef", HERO),
+    # New playable heroes — full kits so character select + gameplay use the
+    # SAME design with complete 8-direction coverage.
+    "lit-valkyrie": ("74b5efc0-e7d8-4400-85f5-9db85ef05db9", HERO),
+    "lit-commando": ("c96d19d1-8958-4fcd-b517-9dfded9e0051", HERO),
     "fud-goblin": ("d0470066-7d2b-4195-bcb6-9e7c6f4638d8", ENEMY),
     "gas-fee-wisp": ("afb5c6c3-9d0a-48a0-a059-edc00b97aa50", ENEMY),
     "whale-dumper-boss": ("6b17f44f-4c87-48a4-8df3-d8f15a40d2c0", BOSS),
@@ -77,9 +81,9 @@ ROSTER: dict[str, tuple[str | None, list[tuple[str, str]]]] = {
 }
 
 # Priority order for budget-aware runs (hero, core enemies, bosses).
-PRIORITY = ["lester", "fud-goblin", "gas-fee-wisp", "crypto-bro-rusher",
-            "trench-degen", "whale-dumper-boss", "chain-reaper-boss",
-            "evil-banker-ranged", "gas-beast-tank"]
+PRIORITY = ["lit-valkyrie", "lit-commando", "lester", "fud-goblin", "gas-fee-wisp",
+            "crypto-bro-rusher", "trench-degen", "whale-dumper-boss",
+            "chain-reaper-boss", "evil-banker-ranged", "gas-beast-tank"]
 
 
 def load_server() -> dict[str, Any]:

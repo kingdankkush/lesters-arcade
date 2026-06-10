@@ -1909,7 +1909,10 @@ function syncCombatOverlay() {
   }
   if (clearInactiveCombatOverlay()) return;
   if (dom.combatMenuPanel) {
-    dom.combatMenuPanel.hidden = !(combat.paused || combat.gameOver || combat.levelUpPaused);
+    // While the READY pre-start overlay is up (combat.pendingBegin) the run is
+    // technically paused, but showing the pause menu UNDER the ready overlay
+    // reads as a broken double-menu. Keep it hidden until the player begins.
+    dom.combatMenuPanel.hidden = combat.pendingBegin || !(combat.paused || combat.gameOver || combat.levelUpPaused);
   const levelUpEl = document.getElementById('levelUpOverlay');
   if (levelUpEl) levelUpEl.hidden = !combat.levelUpPaused;
     dom.combatMenuPanel.dataset.state = combat.gameOver ? 'game-over' : combat.levelUpPaused ? 'level-up' : 'paused';
@@ -3399,6 +3402,7 @@ function waitForPlayerReady() {
       setTimeout(() => { try { overlay.remove(); } catch {} if (prevPos === 'static') mount.style.position = prevPos; }, 400);
       combat.pendingBegin = false;
       combat.paused = false;
+      syncCombatOverlay();
       playSfxCue('menu-click', 0.05);
       resolve();
     };
@@ -7155,7 +7159,17 @@ function drawCombatScene(timestamp = 0) {
   }
 
   if (combat.roguelikeRun) {
-    drawRoguelikeScene(ctx, width, height);
+    // Resilience: a single thrown error inside the scene draw must NEVER kill
+    // the whole game — the rAF re-registration below is the loop's heartbeat.
+    // (A ReferenceError in drawSingleEnemy once froze production permanently.)
+    try {
+      drawRoguelikeScene(ctx, width, height);
+    } catch (err) {
+      if (!drawCombatScene._lastDrawError || drawCombatScene._lastDrawError !== String(err)) {
+        drawCombatScene._lastDrawError = String(err);
+        console.error('[HMH] draw error (loop kept alive):', err);
+      }
+    }
   } else {
     drawBackground(ctx, width, height);
     drawProps(ctx);
@@ -7795,6 +7809,12 @@ function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
+    // sizeScale multiplier MUST live at function scope: it is used by the
+    // HP-bar drawing at the bottom of this function on every code path.
+    // (A previous shadow-removal pass commented out the old declaration and
+    // crashed the entire render loop with a ReferenceError the moment the
+    // first enemy spawned — keep this here.)
+    const sizeMul = enemy.sizeScale ?? 1.0;
     // Ground contact shadow so enemies read as planted, not floating. The sprite
     // foot line is at enemy.y + 12 (ey bottom); plant the shadow THERE so it sits
     // under the feet rather than 10px above them (the old +2 floated enemies).
@@ -7820,8 +7840,7 @@ function drawSingleEnemy(ctx, enemy) {
       const isWave = enemyFrame === waveFrame;
       const enemyKey = manifestEnemyKeyFor(enemy);
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
-      // Apply sizeScale (0.5x-2.0x) for enemy variety
-      const sizeMul = enemy.sizeScale ?? 1.0;
+      // sizeMul (0.5x-2.0x enemy variety) declared at function scope above.
       const drawSize = Math.round(((isAnim || isWave) ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78) * sizeMul);
       ctx.save();
       ctx.imageSmoothingEnabled = false;
