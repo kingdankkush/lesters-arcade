@@ -3076,7 +3076,17 @@ function renderOfficialGameplay() {
   if (dom.officialCombatMount && !dom.officialCombatMount.contains(dom.combatCanvas)) {
     dom.officialCombatMount.append(dom.combatCanvas);
   }
-  // CRITICAL: size the canvas to its laid-out box now that it's visible. Without
+  // CRITICAL: size the c
+  // Enhanced district theme color overlay with ground tint
+  if (combat.roguelikeRun?.currentDistrict && dom.officialCombatMount) {
+    const color = getDistrictThemeColor ? getDistrictThemeColor(combat.roguelikeRun.currentDistrict) : '#4a6fa5';
+    dom.officialCombatMount.style.boxShadow = `0 0 0 9999px ${color}22`;
+    // Canvas tint if available
+    if (combat.canvas) {
+      combat.canvas.style.filter = `hue-rotate(10deg) saturate(1.2)`;
+    }
+  }
+anvas to its laid-out box now that it's visible. Without
   // this the canvas keeps a stale/zero size and the scene renders blank until a
   // fullscreen toggle forces a resize. Run after layout settles (two rAFs).
   requestAnimationFrame(() => {
