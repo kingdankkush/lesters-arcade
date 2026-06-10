@@ -1,0 +1,41 @@
+{
+  "plan": "Hard Money Heroes 2500 Image Generation",
+  "budget": 2500,
+  "status": "queued",
+  "categories": {
+    "characters": {
+      "target": 800,
+      "completed": 0,
+      "jobs": [
+        {"job_key": "lester-8dir-idle", "type": "animate_character", "args": {"character_id": "lester", "action": "idle", "directions": 8, "frames": 8}},
+        {"job_key": "lester-8dir-walk", "type": "animate_character", "args": {"character_id": "lester", "action": "walk", "directions": 8, "frames": 12}},
+        {"job_key": "lilly-8dir-shoot", "type": "animate_character", "args": {"character_id": "lilly", "action": "shoot", "directions": 8, "frames": 6}}
+      ]
+    },
+    "animated_props": {
+      "target": 700,
+      "completed": 0,
+      "jobs": [
+        {"job_key": "oak-tree-animated", "type": "create_map_object", "args": {"description": "isometric oak tree with 4 frame wind animation, 128px", "width": 128, "height": 128, "view": "high top-down"}},
+        {"job_key": "flower-patch-animated", "type": "create_map_object", "args": {"description": "tiny isometric flower patch with 3 frame sway, 64px", "width": 64, "height": 64, "view": "high top-down"}}
+      ]
+    },
+    "buildings_landmarks": {
+      "target": 600,
+      "completed": 0,
+      "jobs": []
+    },
+    "small_props": {
+      "target": 400,
+      "completed": 0,
+      "jobs": []
+    },
+    "weapons_vfx": {
+      "target": 300,
+      "completed": 0,
+      "jobs": []
+    }
+  },
+  "ledger_version": "1.0",
+  "last_updated": "2026-06-09"
+}

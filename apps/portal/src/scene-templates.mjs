@@ -250,28 +250,6 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
-  grocery_interior: Object.freeze({
-    id: 'grocery_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.2,
-    slots: [
-      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 4 },
-      { ...A('interior/shop-counter', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
-      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'anchor', count: 1 },
-      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'onHost', hostRole: 'crate', count: 1 },
-      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'scatter', count: 1 },
-      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 2 },
-    ],
-  }),
-
-  gym_interior: Object.freeze({
-    id: 'gym_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.15,
-    slots: [
-      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
-      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 3 },
-      { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
-      { ...A('interior/tv-on-table', 'decor', { solid: false, radius: 0 }), place: 'onHost', hostRole: 'crate', count: 1 },
-    ],
-  }),
-
 });
 
 // Templates available for a biome (with relative weights; default weight 1).
@@ -409,39 +387,5 @@ export function sceneObjectsNear(seed, centerX, centerY, halfExtent, biomeAt, op
 export function groundThemeForCell(seed, cellX, cellY, biome) {
   const t = pickTemplate(seed, cellX, cellY, biome);
   return t?.groundTheme ?? null;
-
-  // === LANDMARK TEMPLATES (unique props + gameplay hooks) ===
-  observatory_landmark: Object.freeze({
-    id: 'observatory_landmark', biomes: ['town'], groundTheme: 'pavement', weight: 0.1,
-    slots: [
-      { ...A('landmark/observatory-dome', 'bigprop', { radius: 1.2 }), place: 'anchor', count: 1, gameplayHook: 'reveal_minimap' },
-      { ...A('landmark/telescope', 'decor', { radius: 0.4 }), place: 'scatter', count: 1 },
-    ],
-    districtThemeColor: '#4a6fa5'
-  }),
-  factory_landmark: Object.freeze({
-    id: 'factory_landmark', biomes: ['pavement'], groundTheme: 'pavement', weight: 0.1,
-    slots: [
-      { ...A('landmark/factory-smokestack', 'bigprop', { radius: 1.0 }), place: 'anchor', count: 1, gameplayHook: 'toxic_cloud' },
-      { ...A('landmark/conveyor-belt', 'decor', { radius: 0.6 }), place: 'scatter', count: 2 },
-    ],
-    districtThemeColor: '#8a6a4a'
-  }),
-
-  data_hub_landmark: Object.freeze({
-    id: 'data_hub_landmark', biomes: ['town', 'pavement'], groundTheme: 'pavement', weight: 0.08,
-    slots: [
-      { ...A('landmark/data-hub-tower', 'bigprop', { radius: 1.1 }), place: 'anchor', count: 1, gameplayHook: 'disable_cameras' },
-      { ...A('landmark/security-camera', 'decor', { radius: 0.35 }), place: 'scatter', count: 3 },
-    ],
-    districtThemeColor: '#a56a8a'
-  }),
-  ruins_landmark: Object.freeze({
-    id: 'ruins_landmark', biomes: ['forest', 'rocky'], groundTheme: 'grass', weight: 0.08,
-    slots: [
-      { ...A('landmark/ancient-ruins', 'bigprop', { radius: 1.0 }), place: 'anchor', count: 1, gameplayHook: 'hidden_loot' },
-      { ...A('landmark/broken-statue', 'decor', { radius: 0.5 }), place: 'scatter', count: 2 },
-    ],
-    districtThemeColor: '#3a5a3a'
-  }),
 }
+

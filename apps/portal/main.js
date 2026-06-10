@@ -1,5 +1,5 @@
 import { HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST } from './assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs';
-import { getGame, registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
+import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { HMH_ISOMETRIC_PIXELLAB_WAVE_1 } from './assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs';
 import { HMH_PRODUCTION_ART_PASS } from './assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
@@ -1493,6 +1493,12 @@ function submitCombatGameOver() {
   lastRunScore = combat.score;
   lastRunElapsedSeconds = combat.elapsedGameSeconds;
   combat.gameOverSubmitted = true;
+  // GameRegistry: child game -> parent sync packet (local now, LitVM SessionLedger later)
+  submitGameRun('hard-money-heroes', {
+    score: Math.max(0, Math.round(combat.score)),
+    kills: combat.kills,
+    survivalTime: Math.round(combat.elapsedGameSeconds || 0),
+  }, connectedWallet);
   dom.combatStatus.textContent = 'Submit Official Score complete: ranked result synced to parent progress, achievements, leaderboard, and transaction history. No hidden paid-run sync happened before this button.';
   renderOfficialRunStatus();
   renderGameOverSummary();
@@ -3036,10 +3042,7 @@ function renderOfficialSettings() {
 function renderOfficialArcadeFloor() {
   applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, officialAppStep === 'settings' ? 'options' : 'mainMenu');
   dom.officialCabinetGrid.classList.toggle('profile-command-grid', officialAppStep === 'profile');
-  dom.officialCabinetGrid.classList.toggle('leaderb
-  // Dynamic game registration example for third-party (e.g. Chikun)
-  // registerGame({ id: 'chikun-flappy', name: 'Chikun', devWallet: '0x...', feeSplit: { dev: 60, platform: 20, liquidity: 10, treasury: 10 }, adapter: 'chikun-adapter.mjs', status: 'live' });
-oard-command-grid', officialAppStep === 'leaderboards');
+  dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', officialAppStep === 'leaderboards');
   const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
   const titleByStep = {
     'arcade-walk-in': 'Entering the Arcade...',
@@ -3080,17 +3083,7 @@ function renderOfficialGameplay() {
   if (dom.officialCombatMount && !dom.officialCombatMount.contains(dom.combatCanvas)) {
     dom.officialCombatMount.append(dom.combatCanvas);
   }
-  // CRITICAL: size the c
-  // Enhanced district theme color overlay with ground tint
-  if (combat.roguelikeRun?.currentDistrict && dom.officialCombatMount) {
-    const color = getDistrictThemeColor ? getDistrictThemeColor(combat.roguelikeRun.currentDistrict) : '#4a6fa5';
-    dom.officialCombatMount.style.boxShadow = `0 0 0 9999px ${color}22`;
-    // Canvas tint if available
-    if (combat.canvas) {
-      combat.canvas.style.filter = `hue-rotate(10deg) saturate(1.2)`;
-    }
-  }
-anvas to its laid-out box now that it's visible. Without
+  // CRITICAL: size the canvas to its laid-out box now that it's visible. Without
   // this the canvas keeps a stale/zero size and the scene renders blank until a
   // fullscreen toggle forces a resize. Run after layout settles (two rAFs).
   requestAnimationFrame(() => {
@@ -3250,12 +3243,11 @@ async function beginOfficialLevel() {
   if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
   setOfficialView('gameplay');
 
-  // Show cinematic loading screen w
-  // GameRegistry integration for shared profile and run submission
+  // GameRegistry integration for shared profile (parent-account identity)
   const profile = await getSharedPlayerProfile(connectedWallet);
   console.log('[GameRegistry] Profile loaded for run:', profile.displayName);
-  // On run end: await submitGameRun('hard-money-heroes', { score: combat.score, kills: combat.kills, survivalTime: combat.elapsedGameSeconds }, connectedWallet);
-ith keyart + progress + level title
+
+  // Show cinematic loading screen with keyart + progress + level title
   await showHMHLoadingScreen(async () => {
     await startCombat();
     render();
@@ -3342,8 +3334,10 @@ function detectEthereumProvider() {
 
 function connectMockWallet() {
   connectedWallet = MOCK_WALLET;
-  const profile = await getSharedPlayerProfile(connectedWallet);
-  console.log('[GameRegistry] Loaded shared profile:', profile);
+  // GameRegistry shared profile (parent-account identity) — fire and forget
+  getSharedPlayerProfile(connectedWallet).then((profile) => {
+    console.log('[GameRegistry] Loaded shared profile:', profile);
+  });
 
   connectedChainId = null;
   walletConnector = 'mock-wallet';

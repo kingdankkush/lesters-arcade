@@ -160,8 +160,8 @@ try {
 
   for (const marker of [
     'lesters-arcade-custom-mp3-playlist-v1',
-    'Hard Money Heroes 16-BIT Arcade Music',
-    'Hard Money Heroes 16-BIT Arcade Music Alt',
+    'Hard Money Heroes — Main Theme',
+    'Hard Money Heroes — Mempool Mayhem',
     './assets/audio/playlist/hard-money-heroes-16-bit-arcade-music.mp3',
   ]) {
     assertIncludes('playlist manifest', playlistManifest, marker);
