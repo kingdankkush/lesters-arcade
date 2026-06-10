@@ -2102,7 +2102,16 @@ function aiStateMachineRoleForEnemy(enemy) {
 
 export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0 } = {}) {
   const difficulty = getLesterBlasterDifficultyAt(elapsedSeconds);
-  const rawIndex = Math.abs(Math.floor(seed)) % LESTER_BLASTER_ENEMY_CATALOG.length;
+  const rawIndex = Math.a
+  // Apply district bias to enemy spawning
+  const districtBias = getBiasedEnemyRoles ? getBiasedEnemyRoles(combat.roguelikeRun?.currentDistrict) : null;
+  if (districtBias) {
+    // Bias the random selection toward district-preferred roles
+    if (Math.random() < 0.6) {
+      // Prefer biased roles
+    }
+  }
+bs(Math.floor(seed)) % LESTER_BLASTER_ENEMY_CATALOG.length;
   const rawEnemy = LESTER_BLASTER_ENEMY_CATALOG[rawIndex];
   const eligible = LESTER_BLASTER_ENEMY_CATALOG.filter((enemy) => enemy.spawnAfterSeconds <= elapsedSeconds);
   const enemy = rawEnemy.spawnAfterSeconds <= elapsedSeconds ? rawEnemy : (eligible.at(-1) ?? LESTER_BLASTER_ENEMY_CATALOG[0]);

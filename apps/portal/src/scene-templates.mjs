@@ -427,4 +427,21 @@ export function groundThemeForCell(seed, cellX, cellY, biome) {
     ],
     districtThemeColor: '#8a6a4a'
   }),
+
+  data_hub_landmark: Object.freeze({
+    id: 'data_hub_landmark', biomes: ['town', 'pavement'], groundTheme: 'pavement', weight: 0.08,
+    slots: [
+      { ...A('landmark/data-hub-tower', 'bigprop', { radius: 1.1 }), place: 'anchor', count: 1, gameplayHook: 'disable_cameras' },
+      { ...A('landmark/security-camera', 'decor', { radius: 0.35 }), place: 'scatter', count: 3 },
+    ],
+    districtThemeColor: '#a56a8a'
+  }),
+  ruins_landmark: Object.freeze({
+    id: 'ruins_landmark', biomes: ['forest', 'rocky'], groundTheme: 'grass', weight: 0.08,
+    slots: [
+      { ...A('landmark/ancient-ruins', 'bigprop', { radius: 1.0 }), place: 'anchor', count: 1, gameplayHook: 'hidden_loot' },
+      { ...A('landmark/broken-statue', 'decor', { radius: 0.5 }), place: 'scatter', count: 2 },
+    ],
+    districtThemeColor: '#3a5a3a'
+  }),
 }
