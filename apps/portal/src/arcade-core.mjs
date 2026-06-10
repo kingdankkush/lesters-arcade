@@ -1807,6 +1807,27 @@ export const ARCADE_GAMES = Object.freeze([
       marquee: 'MEGA LESTER',
     }),
   },
+  {
+    id: 'chikun',
+    title: 'Chikun: The Flying Coin',
+    cabinet: 'FLAPPY CABINET 04',
+    genre: 'One-button flappy-bird arcade with Litecoin coin mechanic',
+    status: 'coming-soon',
+    developer: 'LitVM Port Team',
+    entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
+    livesPaid: 3,
+    livesFree: Infinity,
+    tagline: 'Tap to flap. Dodge the forks. Stack the silver.',
+    systemRole: 'child-dapp-cartridge',
+    parentSystem: 'Lester\'s Arcade',
+    presentation: Object.freeze({
+      medium: 'snes-cartridge',
+      colorway: 'gold-neon-cyan',
+      cabinetAsset: './assets/cabinet-chikun.svg',
+      cartridgeAsset: './assets/cartridge-chikun.svg',
+      marquee: 'CHIKUN',
+    }),
+  },
 ]);
 
 function clone(value) {

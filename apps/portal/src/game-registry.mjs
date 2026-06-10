@@ -18,6 +18,14 @@ const REGISTERED_GAMES = {
     adapter: null, // native cabinet — no adapter needed
     status: 'live',
   }),
+  'chikun': Object.freeze({
+    id: 'chikun',
+    name: 'Chikun: The Flying Coin',
+    devWallet: null, // set when LitVM contracts go live (LitVM team)
+    feeSplit: { dev: 60, platform: 20, liquidity: 10, treasury: 10 },
+    adapter: 'games/chikun/loader.mjs',
+    status: 'coming-soon', // flips to 'live' when assets are onboarded
+  }),
 };
 
 // Register a third-party cabinet (e.g. Chikun). Validates the minimal shape a

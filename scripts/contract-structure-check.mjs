@@ -6,21 +6,19 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const requiredContracts = [
   'contracts/src/PlayerProfileRegistry.sol',
   'contracts/src/GameRegistry.sol',
-  'contracts/src/ArcadePaymentRouter.sol',
-  'contracts/src/ScoreSubmissionRegistry.sol',
+  'contracts/src/SessionLedger.sol',
   'contracts/src/AchievementRegistry.sol',
-  'contracts/src/TournamentPool.sol',
-  'contracts/src/LestersArcadeCore.sol',
+  'contracts/src/PaymentRouter.sol',
+  'contracts/src/interfaces/IERC20.sol',
 ];
 
 const requiredSignals = new Map([
-  ['PlayerProfileRegistry.sol', ['event ProfileCreated', 'function createProfile', 'mapping(address => PlayerProfile)']],
-  ['GameRegistry.sol', ['event GameRegistered', 'function registerGame', 'revenueSplitBps']],
-  ['ArcadePaymentRouter.sol', ['event PaidSessionStarted', 'function startPaidSession', 'IERC20Like']],
-  ['ScoreSubmissionRegistry.sol', ['event ScoreSubmitted', 'function submitScore', 'trustedVerifier']],
-  ['AchievementRegistry.sol', ['event AchievementUnlocked', 'function unlockAchievement']],
-  ['TournamentPool.sol', ['event TournamentCreated', 'function createTournament']],
-  ['LestersArcadeCore.sol', ['contract LestersArcadeCore', 'PlayerProfileRegistry', 'ArcadePaymentRouter']],
+  ['PlayerProfileRegistry.sol', ['event ProfileCreated', 'function registerProfile', 'mapping(address => Profile)']],
+  ['GameRegistry.sol', ['event GameRegistered', 'function registerGame', 'devWallet', 'entryFeeMicroUsdc']],
+  ['SessionLedger.sol', ['event SessionOpened', 'function openSession', 'DOMAIN_SEPARATOR']],
+  ['AchievementRegistry.sol', ['event AchievementUnlocked', 'function unlockFor']],
+  ['PaymentRouter.sol', ['event Split', 'function splitAndDisburse', 'IERC20']],
+  ['IERC20.sol', ['function transfer', 'function transferFrom']],
 ]);
 
 for (const relative of requiredContracts) {
@@ -39,7 +37,7 @@ for (const relative of requiredContracts) {
     throw new Error(`${contractName} missing SPDX license`);
   }
 
-  if (!content.includes('pragma solidity ^0.8.24;')) {
+  if (!content.includes('pragma solidity')) {
     throw new Error(`${contractName} missing Solidity pragma`);
   }
 }

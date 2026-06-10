@@ -2,41 +2,71 @@
 pragma solidity ^0.8.24;
 
 /// @title PlayerProfileRegistry
-/// @notice Wallet-based identity shell for Lester's Arcade players.
+/// @author Lester's Arcade Core
+/// @notice Wallet-indexed parent account for every cabinet in Lester's Arcade.
+///         One wallet -> one profile. Profiles are the locked identity for
+///         scores, achievements, avatars, and LitVM settlement receipts.
+/// @dev Deployed on LitVM once the chain is live. Gas-paid by the parent
+///      arcade operator (SETTLEMENT_RESERVE).
 contract PlayerProfileRegistry {
-    struct PlayerProfile {
-        string handle;
-        string metadataURI;
-        uint256 createdAt;
+    struct Profile {
+        bytes32 handle;       // keccak256 of display name (on-chain, gas-light)
+        string displayName;   // off-chain-readable display name
+        string avatarUri;     // IPFS / Arweave URI for avatar asset
+        uint256 createdAt;    // block.timestamp of first registration
+        uint256 lastUpdated;  // block.timestamp of last mutation
         bool exists;
     }
 
-    mapping(address => PlayerProfile) public profiles;
+    mapping(address => Profile) public profiles;
+    mapping(bytes32 => address) public handleOwners; // handle collision resolution
 
-    event ProfileCreated(address indexed player, string handle, string metadataURI);
-    event ProfileUpdated(address indexed player, string handle, string metadataURI);
+    event ProfileCreated(address indexed wallet, bytes32 indexed handle, string displayName);
+    event ProfileUpdated(address indexed wallet, string displayName, string avatarUri);
+    event HandleReserved(address indexed wallet, bytes32 indexed handle);
 
-    function createProfile(string calldata handle, string calldata metadataURI) external {
-        require(!profiles[msg.sender].exists, "PROFILE_EXISTS");
-        require(bytes(handle).length > 0, "EMPTY_HANDLE");
+    /// @notice Register a new profile for msg.sender. Fails if wallet already registered.
+    function registerProfile(string calldata displayName, string calldata avatarUri) external {
+        require(!profiles[msg.sender].exists, "Already registered");
+        bytes32 handle = keccak256(abi.encodePacked(displayName));
+        require(handleOwners[handle] == address(0), "Handle taken");
 
-        profiles[msg.sender] = PlayerProfile({
+        profiles[msg.sender] = Profile({
             handle: handle,
-            metadataURI: metadataURI,
+            displayName: displayName,
+            avatarUri: avatarUri,
             createdAt: block.timestamp,
+            lastUpdated: block.timestamp,
             exists: true
         });
+        handleOwners[handle] = msg.sender;
 
-        emit ProfileCreated(msg.sender, handle, metadataURI);
+        emit ProfileCreated(msg.sender, handle, displayName);
+        emit HandleReserved(msg.sender, handle);
     }
 
-    function updateProfile(string calldata handle, string calldata metadataURI) external {
-        require(profiles[msg.sender].exists, "PROFILE_MISSING");
-        require(bytes(handle).length > 0, "EMPTY_HANDLE");
-
+    /// @notice Update display name and avatar. Fails if handle collides with
+    ///         another wallet's active registration.
+    function updateProfile(string calldata displayName, string calldata avatarUri) external {
+        require(profiles[msg.sender].exists, "Not registered");
+        bytes32 handle = keccak256(abi.encodePacked(displayName));
+        if (handleOwners[handle] != address(0) && handleOwners[handle] != msg.sender) {
+            revert("Handle taken");
+        }
+        bytes32 oldHandle = profiles[msg.sender].handle;
+        if (oldHandle != handle) {
+            delete handleOwners[oldHandle];
+            handleOwners[handle] = msg.sender;
+        }
         profiles[msg.sender].handle = handle;
-        profiles[msg.sender].metadataURI = metadataURI;
+        profiles[msg.sender].displayName = displayName;
+        profiles[msg.sender].avatarUri = avatarUri;
+        profiles[msg.sender].lastUpdated = block.timestamp;
+        emit ProfileUpdated(msg.sender, displayName, avatarUri);
+    }
 
-        emit ProfileUpdated(msg.sender, handle, metadataURI);
+    /// @notice Gas-free read path.
+    function getProfile(address wallet) external view returns (Profile memory) {
+        return profiles[wallet];
     }
 }

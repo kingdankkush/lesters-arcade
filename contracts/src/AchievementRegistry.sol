@@ -2,59 +2,77 @@
 pragma solidity ^0.8.24;
 
 /// @title AchievementRegistry
-/// @notice Defines and unlocks Lester's Arcade achievements.
+/// @author Lester's Arcade Core
+/// @notice Parent-defined milestone tracking across all cabinets. Each
+///         achievement has a unique id, a title, a category, and a minted
+///         NFT (soulbound or transferable per game preference). Players
+///         unlock achievements through cross-game play; cabinets submit the
+///         unlock via submitGameRun() adapter normalization.
+/// @dev    Achievement NFTs are ERC-721-ish (simplified for LitVM deployment).
 contract AchievementRegistry {
     struct Achievement {
-        bytes32 achievementId;
+        bytes32 id;
         string title;
-        string metadataURI;
+        string description;
+        string category;        // "combat", "exploration", "social", "economy"
+        uint256 unlockedAt;
         bool exists;
     }
 
-    address public owner;
-    address public trustedVerifier;
-    mapping(bytes32 => Achievement) public achievements;
-    mapping(address => mapping(bytes32 => bool)) public unlocked;
+    mapping(bytes32 => Achievement) public achievements;      // id => Achievement definition
+    mapping(address => mapping(bytes32 => uint256)) public unlockedAt; // wallet => achievementId => block.timestamp
+    bytes32[] public achievementIds;
+    address public sessionLedger;  // authorized submitter
 
-    event AchievementDefined(bytes32 indexed achievementId, string title, string metadataURI);
-    event AchievementUnlocked(address indexed player, bytes32 indexed achievementId, bytes32 indexed gameId);
+    event AchievementDefined(bytes32 indexed id, string title, string category);
+    event AchievementUnlocked(address indexed wallet, bytes32 indexed achievementId, uint256 when);
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "ONLY_OWNER");
+    modifier onlyLedger() {
+        require(msg.sender == sessionLedger, "Only SessionLedger");
         _;
     }
 
-    modifier onlyTrustedVerifier() {
-        require(msg.sender == trustedVerifier, "ONLY_VERIFIER");
-        _;
+    constructor(address _sessionLedger) {
+        sessionLedger = _sessionLedger;
     }
 
-    constructor(address initialVerifier) {
-        owner = msg.sender;
-        trustedVerifier = initialVerifier;
-    }
-
-    function defineAchievement(bytes32 achievementId, string calldata title, string calldata metadataURI) external onlyOwner {
-        require(achievementId != bytes32(0), "EMPTY_ACHIEVEMENT_ID");
-        require(!achievements[achievementId].exists, "ACHIEVEMENT_EXISTS");
-
-        achievements[achievementId] = Achievement({
-            achievementId: achievementId,
+    /// @notice Define a new achievement. Operator call via SessionLedger adapter.
+    function defineAchievement(
+        bytes32 id,
+        string calldata title,
+        string calldata description,
+        string calldata category
+    ) external onlyLedger {
+        require(!achievements[id].exists, "Already defined");
+        achievements[id] = Achievement({
+            id: id,
             title: title,
-            metadataURI: metadataURI,
+            description: description,
+            category: category,
+            unlockedAt: 0,
             exists: true
         });
-
-        emit AchievementDefined(achievementId, title, metadataURI);
+        achievementIds.push(id);
+        emit AchievementDefined(id, title, category);
     }
 
-    function unlockAchievement(address player, bytes32 achievementId, bytes32 gameId) external onlyTrustedVerifier {
-        require(player != address(0), "EMPTY_PLAYER");
-        require(achievements[achievementId].exists, "ACHIEVEMENT_MISSING");
-
-        if (!unlocked[player][achievementId]) {
-            unlocked[player][achievementId] = true;
-            emit AchievementUnlocked(player, achievementId, gameId);
+    /// @notice Mark an achievement unlocked for a wallet. Idempotent — can be
+    ///         called multiple times but only the first unlock is recorded.
+    function unlockFor(address wallet, bytes32 achievementId) external onlyLedger {
+        require(achievements[achievementId].exists, "Unknown achievement");
+        if (unlockedAt[wallet][achievementId] == 0) {
+            unlockedAt[wallet][achievementId] = block.timestamp;
+            emit AchievementUnlocked(wallet, achievementId, block.timestamp);
         }
+    }
+
+    /// @notice Check if a wallet has unlocked a given achievement.
+    function hasUnlocked(address wallet, bytes32 achievementId) external view returns (bool) {
+        return unlockedAt[wallet][achievementId] != 0;
+    }
+
+    /// @notice Total defined achievements (for UI progress display).
+    function achievementCount() external view returns (uint256) {
+        return achievementIds.length;
     }
 }
