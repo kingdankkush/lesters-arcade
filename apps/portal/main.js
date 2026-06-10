@@ -3250,7 +3250,12 @@ async function beginOfficialLevel() {
   if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
   setOfficialView('gameplay');
 
-  // Show cinematic loading screen with keyart + progress + level title
+  // Show cinematic loading screen w
+  // GameRegistry integration for shared profile and run submission
+  const profile = await getSharedPlayerProfile(connectedWallet);
+  console.log('[GameRegistry] Profile loaded for run:', profile.displayName);
+  // On run end: await submitGameRun('hard-money-heroes', { score: combat.score, kills: combat.kills, survivalTime: combat.elapsedGameSeconds }, connectedWallet);
+ith keyart + progress + level title
   await showHMHLoadingScreen(async () => {
     await startCombat();
     render();
