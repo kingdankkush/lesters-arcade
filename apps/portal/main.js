@@ -255,6 +255,15 @@ function loadPixelLabCalibrationFrames(animation) {
 
 function buildPixelLabLesterCalibrationArt() {
   const manifest = hmh('HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST');
+  // Handle case where manifest isn't loaded yet (lazy load hasn't happened)
+  if (!manifest?.animations) {
+    return {
+      animations: {},
+      stills: {},
+      fallback: null,
+      manifest: null,
+    };
+  }
   const idleFrames = loadPixelLabCalibrationFrames(manifest.animations.idle);
   const runFrames = loadPixelLabCalibrationFrames(manifest.animations.run);
   const shootFrames = loadPixelLabCalibrationFrames(manifest.animations.shoot);
