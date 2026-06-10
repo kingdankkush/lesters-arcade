@@ -3036,7 +3036,10 @@ function renderOfficialSettings() {
 function renderOfficialArcadeFloor() {
   applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, officialAppStep === 'settings' ? 'options' : 'mainMenu');
   dom.officialCabinetGrid.classList.toggle('profile-command-grid', officialAppStep === 'profile');
-  dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', officialAppStep === 'leaderboards');
+  dom.officialCabinetGrid.classList.toggle('leaderb
+  // Dynamic game registration example for third-party (e.g. Chikun)
+  // registerGame({ id: 'chikun-flappy', name: 'Chikun', devWallet: '0x...', feeSplit: { dev: 60, platform: 20, liquidity: 10, treasury: 10 }, adapter: 'chikun-adapter.mjs', status: 'live' });
+oard-command-grid', officialAppStep === 'leaderboards');
   const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
   const titleByStep = {
     'arcade-walk-in': 'Entering the Arcade...',
