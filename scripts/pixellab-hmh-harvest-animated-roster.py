@@ -72,16 +72,18 @@ def result_text(result: Any) -> str:
 
 
 def parse_character(text: str) -> dict[str, Any]:
-    """Parse get_character text into {animations: [{name, anim_id, frames:{dir:[urls]}}], rotations:{dir:url}}.
+    """Parse get_character text into consolidated animations grouped by base name + direction.
 
     The text lists animation blocks; each animation has an animation UUID embedded
     in its frame URLs (.../animations/<anim_id>/<direction>/<n>.png) and a label
-    line like 'idle (south, 5f)'. We group URLs by (anim_id, direction).
+    line like 'idle-8dir (south, 5f)'. We group URLs by base animation name and direction.
     """
     urls = [u for u in URL_RE.findall(text) if ".png" in u.lower()]
     anims: dict[str, dict[str, list[str]]] = {}
     rotations: dict[str, str] = {}
     anim_order: list[str] = []
+    # Map anim_id -> (base_name, direction) from labels
+    aid_to_meta: dict[str, tuple[str, str]] = {}
     for u in urls:
         m = re.search(r"/animations/([0-9a-f-]{36})/([a-z-]+)/(\d+)\.png", u)
         if m:
@@ -94,14 +96,24 @@ def parse_character(text: str) -> dict[str, Any]:
         mr = re.search(r"/rotations?/([a-z-]+)\.png", u)
         if mr:
             rotations[mr.group(1)] = u
-    # sort frames
+    # sort frames per anim_id
     for aid, dirs in anims.items():
         for direction in dirs:
             dirs[direction] = [u for _, u in sorted(dirs[direction])]
-    # label map: lines look like '  idle (south, 5f) 2026-..'; capture in order.
-    labels = re.findall(r"^\s+([a-z][a-z0-9-]+)\s*\((?:south|north|east|west)",
-                        text, re.MULTILINE)
-    return {"anim_order": anim_order, "anims": anims, "rotations": rotations, "labels": labels}
+    # Parse labels to get base animation names
+    # Labels look like: '  idle-8dir (south, 5f)' or 'walk-8dir (east, 5f)'
+    label_pattern = re.compile(r"^\s+([a-z][a-z0-9-]+)\s*\((?:south|north|east|west|south-east|north-east|north-west|south-west)")
+    labels = label_pattern.findall(text)
+    # Build mapping: anim_id -> base_name (strip -8dir suffix, keep base like 'idle', 'walk', 'run', 'shoot', 'melee', 'hurt', 'death', 'throw')
+    for idx, aid in enumerate(anim_order):
+        raw = labels[idx] if idx < len(labels) else f"anim{idx}"
+        base = raw.replace("-8dir", "")  # e.g., 'idle-8dir' -> 'idle'
+        # Find the direction for this anim_id
+        dirs = list(anims[aid].keys())
+        direction = dirs[0] if dirs else "south"
+        aid_to_meta[aid] = (base, direction)
+
+    return {"anim_order": anim_order, "anims": anims, "rotations": rotations, "labels": labels, "aid_to_meta": aid_to_meta}
 
 
 def download(url: str, dest: Path) -> bool:
@@ -133,29 +145,30 @@ async def harvest() -> None:
                     print(f"{key}: ERR {exc}", flush=True)
                     continue
                 anim_ids = parsed["anim_order"]
-                labels = parsed["labels"]
+                aid_to_meta = parsed["aid_to_meta"]
                 entry = {"role": role, "character_id": cid, "animations": {}}
-                # Name animations: use label list positionally; dedupe repeated names with suffix.
-                used: dict[str, int] = {}
-                for idx, aid in enumerate(anim_ids):
-                    raw_name = labels[idx] if idx < len(labels) else f"anim{idx}"
-                    n = used.get(raw_name, 0)
-                    name = raw_name if n == 0 else f"{raw_name}-{n+1}"
-                    used[raw_name] = n + 1
-                    dirs = parsed["anims"][aid]
-                    saved_dirs: dict[str, list[str]] = {}
-                    for direction, frame_urls in dirs.items():
-                        rels = []
-                        for fi, u in enumerate(frame_urls):
-                            dest = OUT_ROOT / key / name / direction / f"{fi:02d}.png"
-                            if download(u, dest):
-                                rels.append(f"./assets/generated/hmh-animated-roster/{key}/{name}/{direction}/{fi:02d}.png")
-                                total += 1
-                        if rels:
-                            saved_dirs[direction] = rels
-                    if saved_dirs:
-                        entry["animations"][name] = saved_dirs
-                    print(f"  {key}/{name}: {sum(len(v) for v in saved_dirs.values())} frames across {len(saved_dirs)} dirs", flush=True)
+                # Consolidate by base animation name + direction
+                consolidated: dict[str, dict[str, list[str]]] = {}
+                for aid in anim_ids:
+                    base_name, direction = aid_to_meta.get(aid, (f"anim{anim_ids.index(aid)}", "south"))
+                    frame_urls = parsed["anims"][aid].get(direction, [])
+                    if not frame_urls:
+                        continue
+                    # Download frames
+                    rels = []
+                    for fi, u in enumerate(frame_urls):
+                        dest = OUT_ROOT / key / base_name / direction / f"{fi:02d}.png"
+                        if download(u, dest):
+                            rels.append(f"./assets/generated/hmh-animated-roster/{key}/{base_name}/{direction}/{fi:02d}.png")
+                            total += 1
+                    if rels:
+                        consolidated.setdefault(base_name, {})[direction] = rels
+                # Sort directions in canonical order
+                for base_name, dirs in consolidated.items():
+                    sorted_dirs = {d: dirs[d] for d in DIRECTIONS if d in dirs}
+                    if sorted_dirs:
+                        entry["animations"][base_name] = sorted_dirs
+                        print(f"  {key}/{base_name}: {sum(len(v) for v in sorted_dirs.values())} frames across {len(sorted_dirs)} dirs", flush=True)
                 ledger[key] = entry
                 print(f"{key}: {len(entry['animations'])} animations harvested", flush=True)
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
