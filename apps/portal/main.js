@@ -2436,7 +2436,7 @@ function renderOfficialProfile() {
   const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
   const profile = snapshot?.profile;
 
-  const profileHero = el('article', { className: 'official-info-card profile-hero-card hmh-visual-polish-v9' });
+  const profileHero = el('article', { className: 'official-info-card profile-hero-card hmh-visual-polish-v11' });
   appendText(profileHero, 'span', 'Wallet Profile // Parent Account', 'cabinet-status-label');
   const heroTop = el('div', { className: 'profile-hero-topline' });
   heroTop.append(renderAvatarChip(connectedWallet, profile?.displayName, 'profile-hero-avatar'));
@@ -2861,7 +2861,7 @@ function renderOfficialLeaderboards() {
     limit: 50,
   });
 
-  const board = el('article', { className: 'official-info-card leaderboard-board-card leaderboard-board-v9 hmh-visual-polish-v9' });
+  const board = el('article', { className: 'official-info-card leaderboard-board-card leaderboard-board-v9 hmh-visual-polish-v11' });
   const header = el('div', { className: 'leaderboard-header leaderboard-header-v9' });
   const headerCopy = el('div', { className: 'leaderboard-header-copy' });
   appendText(headerCopy, 'h3', `🏆 ${getGame(leaderboardGameId).title.toUpperCase()}`, 'leaderboard-title');
