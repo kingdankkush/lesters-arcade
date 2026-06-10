@@ -37,6 +37,12 @@ AssetStatus = Literal[
 
 HERO_STATES = [
     # (state_name, description, frame_count, priority)
+    # Locomotion states (idle/walk/run) are REQUIRED for the kit to replace the
+    # old roster in-game — without them the runtime would mix the new design's
+    # combat states with the old design's locomotion (the hero-flicker bug).
+    ("idle", "isometric idle stance, subtle breathing sway, weapon held ready at low-ready, pixel art", 4, 1),
+    ("walk", "isometric walking cycle, steady tactical pace, weapon at low-ready, pixel art", 6, 1),
+    ("run", "isometric running cycle, fast sprint lean, weapon held tight, pixel art", 6, 1),
     ("crouch", "isometric tactical crouch pose, weighting shift, ready to move or shoot, pixel art", 4, 1),
     ("fall", "isometric falling through air, arms/legs spread, dynamic pose, pixel art", 6, 2),
     ("shoot", "isometric shooting stance, weapon raised, muzzle flash frame, recoil follow-through, pixel art", 8, 1),
@@ -69,6 +75,10 @@ DIRECTIONS = [
 # ========================================================================
 
 ENEMY_STATES = [
+    # Locomotion is REQUIRED before an enemy kit can replace old roster art
+    # in-game (same one-design rule as heroes).
+    ("idle", "isometric idle stance, menacing sway, ready to attack, pixel art", 4, 1),
+    ("walk", "isometric walking cycle, aggressive advance toward target, pixel art", 6, 1),
     ("attack-tell", "isometric attack telegraph pose, clear visual warning, weapon/charge glow, pixel art", 4, 1),
     ("melee-counter", "isometric parry/counter animation, defensive blade clash, spark impact, pixel art", 6, 2),
     ("hit", "isometric hit reaction, knockback stagger, damage flash, 2-frame recovery, pixel art", 4, 1),
