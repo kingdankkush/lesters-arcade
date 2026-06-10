@@ -19,6 +19,10 @@ import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterColli
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { routeForView, viewForPath, gameSlugFor } from './src/arcade-router.mjs';
 import {
+  generateDistrictGrid,
+  generateRoadNetwork,
+} from './src/district-generator.mjs';
+import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
   HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST,
@@ -3807,6 +3811,29 @@ async function startCombat() {
   combat.roguelikeRun = createRoguelikeRunState({ seed: Date.now(), mode: currentSession?.mode ?? 'free', characterId: combat.characterId });
   preloadHeroRoster(combat.characterId); // decode hurt/death/melee frames up front (no first-hit art pop)
   preloadWorldPropImages(); // decode all world-prop art up front (no scroll-in pop-in)
+  
+  // Generate macro-scale world structure: districts + a road/path network
+  // connecting district centers, so the world reads as a planned place
+  // (streets between blocks, trails between groves) instead of raw biome noise.
+  const seed = combat.roguelikeRun.seed;
+  const worldWidth = 2000;  // Large world for exploration
+  const worldHeight = 2000;
+  const districtGrid = generateDistrictGrid(seed, worldWidth, worldHeight);
+  const roadNetwork = generateRoadNetwork(districtGrid.grid, districtGrid.macroCellsX, districtGrid.macroCellsY, seed);
+
+  // Store in combat for runtime access (rendering, spawning, etc.)
+  combat.districtGrid = districtGrid.grid;
+  combat.macroCellsX = districtGrid.macroCellsX;
+  combat.macroCellsY = districtGrid.macroCellsY;
+  combat.roadNetwork = roadNetwork;
+  combat.worldWidth = worldWidth;
+  combat.worldHeight = worldHeight;
+  // Index road tiles for O(1) per-tile lookups during rendering. The generator
+  // anchors its grid at (0,0)..(2000,2000) but the hero spawns at world (0,0),
+  // so shift everything by half the world to center the network on the player.
+  // Biome (and therefore road style / bridge-vs-road) is re-sampled at the
+  // SHIFTED coordinate so the visuals always match the actual ground there.
+  combat.roadTileIndex = buildRoadTileIndex(roadNetwork, seed, worldWidth / 2, worldHeight / 2);
   combat.roguelikeSpawnTimer = 0;
   combat.props = [];
   combat.hazards = [];
@@ -3851,12 +3878,15 @@ async function startCombat() {
   beginStage(1);
 
   // Level load screen: decide the biome world up front and warm its art so the
-  // map renders coherent and pop-in free. Only for the roguelike survival mode.
+  // map renders coherent and pop-in free. Now includes district/road images.
   if (combat.roguelikeRun && dom.combatCanvas) {
     const ctx = dom.combatCanvas.getContext('2d');
     if (ctx) {
       try {
-        const layout = await precomputeBiomeWorld(ctx, dom.combatCanvas.width, dom.combatCanvas.height);
+        const layout = await precomputeBiomeWorld(ctx, dom.combatCanvas.width, dom.combatCanvas.height, {
+          districtGrid: combat.districtGrid,
+          roadNetwork: combat.roadNetwork,
+        });
         combat.biomeLayout = layout;
       } catch (err) {
         console.warn('[biome] precompute skipped:', err);
@@ -5513,6 +5543,109 @@ function productionPropForIndex(index) {
   return combatArt.production.props[slugs[index % slugs.length]] ?? null;
 }
 
+// --- Road network rendering --------------------------------------------------
+// The district generator produces a macro road network (streets between urban
+// districts, trails between groves, boardwalk crossings over water). Roads are
+// rendered as tinted diamond overlays ON TOP of the ground tiles, so they
+// inherit the underlying texture and never depend on art that might not exist.
+// Water crossings draw the wood-bridge sprite (with a plank-tint fallback).
+const ROAD_INDEX_RADIUS = 280; // only index/draw roads within this tile radius of spawn
+
+function buildRoadTileIndex(roadNetwork, seed, shiftX = 0, shiftY = 0) {
+  const index = new Map();
+  if (!Array.isArray(roadNetwork)) return index;
+  for (const road of roadNetwork) {
+    const path = Array.isArray(road?.path) ? road.path : [];
+    for (const pt of path) {
+      const x = Math.round((pt?.x ?? 0) - shiftX);
+      const y = Math.round((pt?.y ?? 0) - shiftY);
+      if (Math.abs(x) > ROAD_INDEX_RADIUS || Math.abs(y) > ROAD_INDEX_RADIUS) continue;
+      const key = `${x},${y}`;
+      if (index.has(key)) continue;
+      // Re-sample the biome at the SHIFTED coordinate so road style (and
+      // bridge-vs-road) always matches the terrain actually rendered there.
+      const biome = biomeAt(seed, x, y);
+      index.set(key, { x, y, biome, type: biome === 'water' ? 'bridge' : 'road' });
+    }
+  }
+  return index;
+}
+
+const ROAD_SURFACE_STYLE = {
+  town: { fill: 'rgba(50, 54, 62, 0.60)', edge: 'rgba(220, 226, 238, 0.16)' },
+  pavement: { fill: 'rgba(58, 62, 70, 0.58)', edge: 'rgba(220, 226, 238, 0.14)' },
+  road: { fill: 'rgba(46, 50, 58, 0.62)', edge: 'rgba(236, 222, 130, 0.18)' },
+  desert: { fill: 'rgba(196, 168, 112, 0.45)', edge: 'rgba(120, 96, 58, 0.20)' },
+  sand: { fill: 'rgba(196, 168, 112, 0.45)', edge: 'rgba(120, 96, 58, 0.20)' },
+  forest: { fill: 'rgba(112, 84, 52, 0.48)', edge: 'rgba(64, 46, 28, 0.22)' },
+  grass: { fill: 'rgba(132, 102, 62, 0.42)', edge: 'rgba(70, 52, 30, 0.18)' },
+  rocky: { fill: 'rgba(96, 94, 90, 0.46)', edge: 'rgba(50, 48, 46, 0.20)' },
+  default: { fill: 'rgba(108, 92, 64, 0.45)', edge: 'rgba(58, 48, 32, 0.18)' },
+};
+
+function traceIsoDiamond(ctx, cx, cy, inset = 0) {
+  const hw = ISO_TILE_WIDTH / 2 - inset;
+  const hh = ISO_TILE_HEIGHT / 2 - inset * 0.5;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - hh);
+  ctx.lineTo(cx + hw, cy);
+  ctx.lineTo(cx, cy + hh);
+  ctx.lineTo(cx - hw, cy);
+  ctx.closePath();
+}
+
+function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
+  const index = combat.roadTileIndex;
+  if (!index || index.size === 0) return;
+  const corners = [
+    screenToIso(0, 0),
+    screenToIso(cullWidth, 0),
+    screenToIso(0, cullHeight),
+    screenToIso(cullWidth, cullHeight),
+  ];
+  const PAD = 4;
+  const minX = Math.floor(Math.min(...corners.map((c) => c.x))) - PAD;
+  const maxX = Math.ceil(Math.max(...corners.map((c) => c.x))) + PAD;
+  const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - PAD;
+  const maxY = Math.ceil(Math.max(...corners.map((c) => c.y))) + PAD;
+  const bridgeImg = canonicalLandmarkImage('./assets/generated/hmh-coherent-world/construct/wood-bridge.png');
+  ctx.save();
+  for (let worldX = minX; worldX <= maxX; worldX += 1) {
+    for (let worldY = minY; worldY <= maxY; worldY += 1) {
+      const tile = index.get(`${worldX},${worldY}`);
+      if (!tile) continue;
+      const projected = isoToScreen(worldX, worldY);
+      const cx = projected.x;
+      const cy = projected.y + 64; // same ground-plane offset as drawProductionIsoTile
+      if (cx < -ISO_TILE_WIDTH || cx > cullWidth + ISO_TILE_WIDTH) continue;
+      if (cy < -ISO_TILE_HEIGHT - 80 || cy > cullHeight + ISO_TILE_HEIGHT + 80) continue;
+      if (tile.type === 'bridge') {
+        if (imageReady(bridgeImg)) {
+          const w = ISO_TILE_WIDTH + 6;
+          const h = ISO_TILE_HEIGHT * 2 + 8;
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(bridgeImg, Math.round(cx - w / 2), Math.round(cy - h / 2), w, h);
+        } else {
+          traceIsoDiamond(ctx, cx, cy);
+          ctx.fillStyle = 'rgba(122, 86, 48, 0.85)'; // wood plank fallback
+          ctx.fill();
+        }
+        continue;
+      }
+      const style = ROAD_SURFACE_STYLE[tile.biome] ?? ROAD_SURFACE_STYLE.default;
+      traceIsoDiamond(ctx, cx, cy);
+      ctx.fillStyle = style.fill;
+      ctx.fill();
+      // Subtle worn center so long straights read as a travelled path.
+      traceIsoDiamond(ctx, cx, cy, 9);
+      ctx.fillStyle = style.edge;
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+
 // Shared ground contact shadow so every world object (obstacles, ambient props,
 // pickups) reads as PLANTED on the ground instead of floating. Global light is
 // modeled as coming from the upper-left, so shadows pool slightly down-right at
@@ -5653,11 +5786,12 @@ function drawLevelLoadScreen(ctx, width, height, pct, biomeLabel) {
 
 // Warm the images the starting region will need, summarize the biome layout,
 // and render a brief load screen. Returns a layout summary for status text.
-async function precomputeBiomeWorld(ctx, width, height) {
+async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   const loadStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   const MIN_LOAD_MS = 1500; // always show the biome reveal for at least this long
   const seed = combat.roguelikeRun?.seed ?? 0;
   const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  const { districtGrid, roadNetwork } = worldStructure;
   // Collect a coherent set of images for the spawn region + immediate neighbors.
   const startBiome = biomeAt(seed, 0, 0);
   const toWarm = new Set();
@@ -5668,6 +5802,17 @@ async function precomputeBiomeWorld(ctx, width, height) {
       regionBiomes.add(b);
       for (const p of propsForBiome(worldProps, b).slice(0, 6)) toWarm.add(p.src);
       if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, b, bgs.length)].src);
+    }
+  }
+  // Warm the one image asset the road network actually uses (water crossings).
+  // Road surfaces themselves are tinted procedurally over the ground tiles, so
+  // they need no extra art and can never 404.
+  if (roadNetwork && combat.roadTileIndex) {
+    for (const tile of combat.roadTileIndex.values()) {
+      if (tile.type === 'bridge') {
+        toWarm.add('./assets/generated/hmh-coherent-world/construct/wood-bridge.png');
+        break;
+      }
     }
   }
   const srcs = [...toWarm];
@@ -5695,7 +5840,13 @@ async function precomputeBiomeWorld(ctx, width, height) {
   const elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - loadStart;
   const remaining = Math.max(280, MIN_LOAD_MS - elapsed);
   await new Promise((resolve) => setTimeout(resolve, remaining));
-  return { startBiome, regionBiomes: [...regionBiomes], warmed: total };
+  return { 
+    startBiome, 
+    regionBiomes: [...regionBiomes], 
+    warmed: total,
+    districts: districtGrid?.length ?? 0,
+    roads: roadNetwork?.length ?? 0,
+  };
 }
 
 // Canonical building/prop set dressing placed at deterministic world-grid
@@ -5927,6 +6078,9 @@ function drawRoguelikeScene(ctx, width, height) {
       drawProductionIsoTile(ctx, projected.x, projected.y + 64, worldX, worldY);
     }
   }
+
+  // Render roads and transition zones (under obstacles, over ground tiles)
+  drawRoadsAndTransitions(ctx, width, height, isFullscreen ? renderWidth : width, isFullscreen ? renderHeight : height);
 
   // NOTE: the old "18 random production props on a /6 grid with colored-box
   // fallbacks" scatter loop was removed here — it placed props (and ugly
