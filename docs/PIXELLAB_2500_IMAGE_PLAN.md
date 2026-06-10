@@ -1,71 +1,214 @@
-# Hard Money Heroes - PixelLab 2,500 Image Generation Plan
+# Pixellab 2,500-Image Generation Plan
 
-## Budget & Scope
-- Total budget: 2,500 generations
-- Goal: Complete visual identity for isometric roguelike with district distinction, smooth 8-dir animations, animated props, and varying scale assets.
+This document specifies the complete Pixellab image generation plan for Hard Money Heroes.
+The `pixellab-hmh-2500-queue.json` contains every prompt; `pixellab-hmh-2500-collect.mjs`
+runs collection when Pixellab API is wired in.
 
-## Generation Strategy
-1. **Harvest first** — Run `list_characters` and existing manifests before generating anything new.
-2. **Batch by category** — Characters → Animated Props → Tilesets → Large Buildings → Tiny Details.
-3. **Use ledger** for resumable queue/collect (see `pixellab-scaled-asset-generation` skill).
-4. **Prioritize 8-dir + animation** only where it delivers the most impact.
+## Budget Allocation (2,500 images total)
 
-## Detailed Asset List (≈2,500 generations)
+| Category                  | Count | %     | Priority | Use                                        |
+|---------------------------|-------|-------|----------|--------------------------------------------|
+| 8-dir character animations| 648   | 25.9% | P0       | Hero/enemies/bosses with full 8-way motion |
+| Animated tilesets         | 384   | 15.4% | P0       | Floor tiles per biome (sand/grass/water/…) |
+| Animated props (trees/…)  | 512   | 20.5% | P1       | Environmental animation (sway, ripple)     |
+| Buildings / landmarks     | 256   | 10.2% | P1       | Isometric buildings per district           |
+| Small props (flowers,…)   | 320   | 12.8% | P2       | Detail props for level design              |
+| Weapons / VFX             | 192   |  7.7% | P1       | Weapon sprites + muzzle/impact/particle FX |
+| XP coin rotation          |  96   |  3.8% | P2       | Litecoin coin 360° shimmer animation       |
+| Boss sprites              |  92   |  3.7% | P0       | 10 bosses × phase variants                 |
+| **Total**                 | 2500  | 100%  |          |                                            |
 
-### 1. Character Animations (≈800 generations)
-- **Lit Commando (Lester)**: 8 directions × 9 actions (idle, walk, run, shoot-pistol, shoot-shotgun, melee-knife, hurt, death, dash) = 72 animations
-- **Lit Valkyrie (Lilly)**: Same 72 animations
-- **3-4 New Enemies** (Industrial Drone, Park Harasser, Factory Foreman, Wilderness Beast): 4 enemies × 6 actions × 8 dirs = 192 animations
-- **2 Mini-Bosses**: 2 × 8 actions × 8 dirs = 128 animations
-- **Total**: ~464 animations (some can be template-based or harvested)
+## Category Details
 
-**PixelLab Calls**:
-- `create_character` (body_type: humanoid, n_directions: 8, view: low top-down)
-- `animate_character` (mode: v3, directions: all 8, frame_count: 6-12, action_description per state)
+### 1. 8-Direction Character Animations (648 images)
 
-### 2. Animated Props & Tilesets (≈700 generations)
-- **Trees** (Oak, Pine, Palm, Dead): 4 types × 4 frames × 4 variants = 64
-- **Flowers & Plants** (various): 20 types × 3 frames = 60
-- **Water & Effects** (ripples, toxic pools, smoke vents): 8 × 4 frames = 32
-- **Ground Tiles** (pavement variants, grass variants, sand, road): 12 base × 2 variants = 24
-- **Road & Curb Details**: 10 × 2 = 20
+**Lit Commando (hero)** — Lester's flagship hero. 6 states × 8 dirs × ~8 frames = 384 frames.
+- `idle` (8 frames × 8 dirs = 64)
+- `walk` (8 frames × 8 dirs = 64)
+- `run` (8 frames × 8 dirs = 64)
+- `shoot` (6 frames × 8 dirs = 48)
+- `melee` (6 frames × 8 dirs = 48)
+- `hurt` (4 frames × 8 dirs = 32)
+- `death` (8 frames × 4 dirs = 32; death doesn't need full 8-way)
+- `jump` (4 frames × 4 dirs = 16)
+- `throw` (4 frames × 8 dirs = 32)
 
-### 3. Large Scale Buildings & Landmarks (≈600 generations)
-- **Downtown**: Skyscraper, City Hall, Police Station (3 large + details)
-- **Industrial**: Factory, Warehouse, Smokestack, Conveyor (4)
-- **Commercial**: Mall, Theater, Diner, Office Tower (4)
-- **Residential**: House, Apartment Block, School, Mansion (4)
-- **Special Landmarks**: Observatory, Lighthouse, Ruins, Data Hub (4)
-- Each with 2-3 variants + base + damaged state
+**Lit Valkyrie** — Lilly, the unlockable second hero. Same states, different palette (teal/white
+instead of silver/blue). 648 - 16 (death doesn't need full coverage) = ~288 frames.
 
-### 4. Small Props & Scatter (≈400 generations)
-- Benches, lamps, trash cans, fire hydrants, crates, boxes, fences, gates, signs, telescopes, conveyor segments, etc.
-- 50+ unique props × 2-3 variants each
+**Enemies (10 canonical + 5 bonus)** — Each enemy has `idle`, `walk`, `attack`, `hit`, `death`.
+Most enemies only need 4 directions (they face the player). ~240 frames.
 
-### 5. Weapon & VFX (≈300 generations)
-- Knife, Pistol, Shotgun, Machine Gun sprites + muzzle flashes, bullet trails, impact effects, shell casings
-- Power-up icons (8 types × 4 frames + glow variants)
-- Hit reactions, bloodless gore, sparks, explosions
+### 2. Animated Tilesets (384 images)
 
-### 6. UI & Misc (≈200 generations)
-- Achievement badges, level-up cards, district icons, minimap elements
+**6 biomes × 8 variants × 8 frames (for animated variants):**
+- Sand (desert biome) — 8 tile variants with dune-shimmer animation
+- Grass (forest/town biomes) — 8 variants with wind-sway frames
+- Water — 8 variants with ripple animation (most visible motion)
+- Pavement (road/downtown) — 8 variants cracked/worn
+- Snow — 8 variants with occasional sparkle
+- Lava — 8 variants with flow animation
 
-## Execution Workflow
-1. Create `scripts/pixellab-hmh-2500-plan.json` ledger
-2. Queue in multiple background passes (respect slot limits)
-3. Collect + download with Pillow transparency verification
-4. Build runtime manifests (`hmh-animated-roster`, `hmh-environment`, `hmh-fx`)
-5. Wire into `combat-sprite-bridge` and `scene-templates`
+Tile size: 64×64 pixels. Iso-style with 4 visible faces per tile (top, NE, SE, SW).
 
-## District Identity Rules
-- Each district gets its own limited color palette + theme color overlay.
-- Props must match district (no TV in forest, no trees on pavement unless intentional).
+### 3. Animated Props (512 images)
+
+**Trees (8 types)**: oak, palm, pine, dead tree, neon city tree, rock formation, cactus, bush.
+Each has 4-frame sway animation and 4 size variants. 8 × 4 × 4 = 128 frames.
+
+**Environmental**: traffic lights (3 frames), neon signs (4 frames × 6 types), puddles
+(ripple, 4 frames), trash piles (3 frames), flickering street lamp (4 frames × 4 styles).
+~192 frames total.
+
+**District identity props**: each of the 5 districts (downtown, industrial, park, suburban,
+wilderness) has 4 signature props with subtle animation. 5 × 4 × 8 = 160 frames.
+
+**VFX ambient**: smoke/fog puffs (4-frame loop × 8 types), fire (4 frames × 4 types),
+water splash (4 frames × 2 types). 52 frames.
+
+### 4. Buildings & Landmarks (256 images)
+
+**Downtown skyscrapers (4 sizes × 6 styles = 24)**: neon-lit office towers in the Litecoin
+City After Dark style. Each building has a "lit" and "dark" variant (windows on/off).
+
+**Industrial (4 sizes × 6 styles = 24)**: warehouses, foundries, container stacks.
+
+**Suburban (3 sizes × 5 styles = 15)**: apartment buildings, houses.
+
+**Park/Wilderness (2 sizes × 4 styles = 8)**: kiosks, pavilions, ruins, natural formations.
+
+**Landmarks** (one-shot each, 18 total): Lester statue, The Whalescraper (whale-shaped
+tower), The Blockchain Bridge (suspension bridge with moving data streams), Litecoin City Hall,
+The Hash Rate Reactor (power plant), The FUD Tower, and 12 other named landmarks from
+the world design doc.
+
+**Rotating variants** where applicable (4 frames): ~165 frames across all categories.
+
+### 5. Small Props (320 images)
+
+**Flowers (32 types × 3 animation frames = 96)**: varied per biome.
+**Grass tufts (16 types × 2 frames = 32)**: wind-swaying ground cover.
+**Debris / litter (24 types × 1 = 24)**: scattered paper, bottles, cans.
+**Street furniture (16 types × 1 = 16)**: mailboxes, benches, fire hydrants.
+**Power-ups (8 types × 4 frames = 32)**: magnet, slow-time, berserk, shield, speed, etc.
+**Pickups (10 types × 2 frames = 20)**: ammo packs, health packs, grenades, coins.
+**Weapon crates (4 types × 4 frames = 16)**: the crates that drop weapons.
+**Environmental decals (8 types × 10 variants = 80)**: ground stains, oil, graffiti.
+**Misc detail (4)**: manhole covers, drain grates, etc.
+
+### 6. Weapons & VFX (192 images)
+
+**Weapons (5 weapons × 4 directions × 2 frames = 40)**: pistol, shotgun, machine gun,
+throwing knife, throwing axe. Each with in-hand sprite + world-drop sprite.
+
+**Muzzle flashes (5 weapons × 3 frames × 4 directions = 60)**: burst effect.
+
+**Impact VFX (6 types × 4 frames = 24)**: bullet, explosion, electric, fire, ice, blade.
+
+**Bullet sprites (6 weapons × 6 directions × 1 = 36)**: tiny projectiles.
+
+**Shells / casings (4 types × 4 frames × 4 directions = 64)**: eject animation per weapon.
+
+**Particles (32 total)**: spark, smoke, blood-splash, debris chunks.
+
+### 7. XP Litecoin Coin Rotation (96 images)
+
+**360° rotation × 4 size variants × glow variants:**
+- 32 frames for 11.25° per step × 4 sizes (small/medium/large/xlarge)
+- Each frame has silver gradient + Ł symbol + shimmer highlight
+- 64 frames for the 360° spin + 32 frames for the glow pulse
+
+Note: the in-game canvas-rendered coin (drawLitecoinXP) is already in place as fallback.
+The Pixellab-generated frames will become the "hero" version used when zoomed in /
+highlighted (e.g., level-up screen shows coin spinning in detail).
+
+### 8. Boss Sprites (92 images)
+
+**10 canonical bosses × multi-phase art:**
+| Boss                        | Frames    | Notes                                    |
+|-----------------------------|-----------|------------------------------------------|
+| The Rug Pull Baron          | 12        | Phase 1/2/3 + directional variants       |
+| Mt. Goxzilla                | 12        | Kaiju-style, 3 phases                    |
+| The Whale                   | 10        | Market-dump pressure waves               |
+| Sir FUD, The Bear King      | 10        | Knight with red-candlestick warhammer    |
+| The 51% Hydra               | 10        | Multiple heads                           |
+| Tetherra, The Stable Queen  | 8         | Depeg panic fire                         |
+| The Maximalist              | 8         | Mirror of player art                     |
+| Gas Titan                   | 8         | Fee-spike floor hazards                  |
+| Mr. NGMI                    | 8         | Influencer boss w/ Sybil shield          |
+| The Quantum Hacker          | 6         | Final boss                               |
+| **Total**                   | **92**    |                                          |
+
+## File Naming Convention
+
+All generated images use the canonical path:
+```
+apps/portal/assets/generated/pixellab/<category>/<subcategory>/<filename>.png
+```
+
+Example:
+```
+apps/portal/assets/generated/pixellab/characters/lit-commando/idle/east/00.png
+apps/portal/assets/generated/pixellab/tiles/sand/00-animated/00.png
+```
+
+## Manifest Assembly
+
+After collection, the harvest script (`scripts/pixellab-compile-manifests.mjs`) walks the
+generated tree and produces the following manifests:
+
+- `pixellab-hmh-characters.mjs` — exports all 8-dir character animations with direction-keyed frame maps.
+- `pixellab-hmh-tiles.mjs` — exports tile slugs per biome with per-variant frame lists.
+- `pixellab-hmh-props.mjs` — exports small/medium/large props per district with animation variants.
+- `pixellab-hmh-buildings.mjs` — exports buildings per district type with size variants.
+- `pixellab-hmh-vfx.mjs` — exports all effect sequences.
+- `pixellab-hmh-xp-coin.mjs` — exports the 96-frame coin rotation.
+
+Each manifest imports the existing sprite-pipeline.mjs SpriteActor / directionFromVector
+helpers so the integration is a drop-in replacement for the hand-made Lester/Lilly manifests.
 
 ## Quality Gates
-- Every asset must pass:
-  - Clean transparency (alpha == 0 in corners)
-  - Consistent lighting direction
-  - Readable silhouette at game scale
-  - No text/watermarks
 
-This plan will give Hard Money Heroes a cohesive, professional isometric look with excellent readability and replayability.
+Every harvested image is validated:
+- PNG-24 with alpha channel (transparent background)
+- No watermarks, no text artifacts, no off-canvas pixels
+- Frame consistency across animation sequences (all frames same dimensions)
+- Direction consistency (8-dir sets must be exactly 8 frames per state)
+
+Rejected frames fall back to the existing hand-made art until regenerated.
+
+## Execution Order (recommended)
+
+1. **Characters first** (P0) — hero animations are the most visible improvement
+2. **Tiles second** (P0) — biome ground texture variety transforms level design
+3. **Bosses third** (P0) — each boss becomes visually distinct per phase
+4. **Weapons/VFX fourth** (P1) — weapon feedback improvement
+5. **Animated props fifth** (P1) — environmental motion sells the world
+6. **Buildings sixth** (P1) — district visual identity
+7. **Small props seventh** (P2) — fill-in detail
+8. **XP coin rotation last** (P2) — detail refinement (canvas fallback already in place)
+
+## API Integration
+
+When Pixellab API is connected, run:
+```bash
+node scripts/pixellab-hmh-2500-collect.mjs --queue=pixellab-hmh-2500-queue.json
+```
+
+The collect script:
+- Queues up to 50 images per batch (respecting rate limits)
+- Polls for completion
+- Downloads finished images to the canonical path structure
+- Runs quality validation
+- Updates the manifest assembly files
+
+Estimated runtime: 2-4 hours for the full 2,500-image generation at typical rate limits.
+
+## Integration with Existing Codebase
+
+The generated assets integrate through the existing sprite-pipeline.mjs + combat-sprite-bridge.mjs
+paths already wired into main.js. When a Pixellab manifest exists for a character, the bridge
+prefers it over the hand-made art; otherwise falls back to the existing Lester/Lilly manifests.
+
+This means the 2,500-image roll-out can happen incrementally — each completed batch of frames
+immediately appears in-game without further code changes.

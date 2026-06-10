@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "total_target": 2500,
+    "note": "Representative samples below. The full queue is auto-expanded from category specs in docs/PIXELLAB_2500_IMAGE_PLAN.md by scripts/pixellab-expand-queue.mjs"
+  },
+  "entries": [
+    {"category": "characters/lit-commando/idle", "subcategory": ["east"], "filename": "00", "prompt": "idle animation frame 1 of 8 for a silver-and-blue armored humanoid hero, standing still, holding pistol ready, 80x96 pixel sprite"},
+    {"category": "characters/lit-commando/idle", "subcategory": ["east"], "filename": "01", "prompt": "idle animation frame 2 of 8 for a silver-and-blue armored humanoid hero, subtle breathing motion, 80x96 pixel sprite"},
+    {"category": "characters/lit-commando/walk", "subcategory": ["east"], "filename": "00", "prompt": "walk animation frame 1 of 8 for the Lit Commando hero, left foot forward stride, 80x96 pixel sprite"},
+    {"category": "characters/lit-commando/run", "subcategory": ["east"], "filename": "00", "prompt": "run animation frame 1 of 8 for the Lit Commando hero, full sprint with trailing arm blur, 80x96 pixel sprite"},
+    {"category": "characters/lit-commando/shoot", "subcategory": ["east"], "filename": "00", "prompt": "shoot animation frame 1 of 6 for the Lit Commando hero, pistol drawn with muzzle flash, 80x96 pixel sprite"},
+    {"category": "characters/lit-commando/melee", "subcategory": ["east"], "filename": "00", "prompt": "melee animation frame 1 of 6 for the Lit Commando hero, throwing knife wind-up, 80x96 pixel sprite"},
+    {"category": "characters/lit-commando/hurt", "subcategory": ["east"], "filename": "00", "prompt": "hurt animation frame 1 of 4 for the Lit Commando hero, impact recoil pose, 80x96 pixel sprite"},
+    {"category": "characters/lit-commando/death", "subcategory": ["south"], "filename": "00", "prompt": "death animation frame 1 of 8 for the Lit Commando hero, falling to knees, 80x96 pixel sprite"},
+    {"category": "characters/lit-valkyrie/idle", "subcategory": ["east"], "filename": "00", "prompt": "idle animation frame 1 of 8 for a teal-and-white armored female hero with energy wings, 80x96 pixel sprite"},
+    {"category": "characters/lit-valkyrie/walk", "subcategory": ["east"], "filename": "00", "prompt": "walk animation frame 1 of 8 for the Lit Valkyrie hero, graceful step with wing flutter, 80x96 pixel sprite"},
+
+    {"category": "tiles/sand", "subcategory": ["00-animated"], "filename": "00", "prompt": "isometric sand tile 64x64 with subtle dune shimmer variant 1, top-lit warm yellow with darker shadow face"},
+    {"category": "tiles/grass", "subcategory": ["00-animated"], "filename": "00", "prompt": "isometric grass tile 64x64 with wind-sway variant 1, lush green top face with earth-shadow sides"},
+    {"category": "tiles/water", "subcategory": ["00-animated"], "filename": "00", "prompt": "isometric water tile 64x64 ripple animation frame 1 of 8, bright cyan surface with subtle wave"},
+    {"category": "tiles/pavement", "subcategory": ["00-animated"], "filename": "00", "prompt": "isometric cracked pavement tile 64x64 variant 1, worn gray concrete with yellow street-line accent"},
+    {"category": "tiles/snow", "subcategory": ["00-animated"], "filename": "00", "prompt": "isometric snow tile 64x64 sparkle variant 1, bright white surface with icy blue shadow"},
+    {"category": "tiles/lava", "subcategory": ["00-animated"], "filename": "00", "prompt": "isometric lava tile 64x64 flow animation frame 1 of 8, bright orange surface with black crust"},
+
+    {"category": "props/trees", "subcategory": ["oak"], "filename": "00", "prompt": "medium oak tree isometric sprite 128x192 with gentle sway, full foliage, daytime palette"},
+    {"category": "props/trees", "subcategory": ["palm"], "filename": "00", "prompt": "tall palm tree isometric sprite 128x256 with frond sway, tropical neon-city palette"},
+    {"category": "props/trees", "subcategory": ["pine"], "filename": "00", "prompt": "snow-dusted pine tree isometric sprite 128x224 with subtle branch motion"},
+    {"category": "props/trees", "subcategory": ["dead"], "filename": "00", "prompt": "dead twisted tree isometric sprite 128x192 with swaying branch, desert biome palette"},
+    {"category": "props/trees", "subcategory": ["neon-city"], "filename": "00", "prompt": "neon city tree isometric sprite 128x192 with glowing pink foliage, cyberpunk palette"},
+
+    {"category": "props/environment", "subcategory": ["traffic-light"], "filename": "frame-00", "prompt": "isometric traffic light with red signal, 64x128 sprite"},
+    {"category": "props/environment", "subcategory": ["traffic-light"], "filename": "frame-01", "prompt": "isometric traffic light with amber signal, 64x128 sprite"},
+    {"category": "props/environment", "subcategory": ["traffic-light"], "filename": "frame-02", "prompt": "isometric traffic light with green signal, 64x128 sprite"},
+    {"category": "props/environment", "subcategory": ["neon-sign"], "filename": "frame-00", "prompt": "isometric neon sign reading 'LTC' glowing cyan with slight flicker, 96x96 sprite"},
+    {"category": "props/environment", "subcategory": ["puddle"], "filename": "frame-00", "prompt": "isometric puddle with ripple frame 1 of 4, reflective water on pavement"},
+    {"category": "props/environment", "subcategory": ["street-lamp"], "filename": "frame-00", "prompt": "isometric flickering street lamp with cyan glow pulse, 64x192 sprite"},
+
+    {"category": "buildings/downtown", "subcategory": ["office-tower", "small"], "filename": "lit", "prompt": "small isometric downtown office tower with lit windows at night, neon cyan accents, 192x320 sprite"},
+    {"category": "buildings/downtown", "subcategory": ["office-tower", "small"], "filename": "dark", "prompt": "small isometric downtown office tower with dark unlit windows at night, 192x320 sprite"},
+    {"category": "buildings/downtown", "subcategory": ["office-tower", "large"], "filename": "lit", "prompt": "large isometric downtown skyscraper with lit windows at night, rooftop helicopter pad, 256x480 sprite"},
+    {"category": "buildings/industrial", "subcategory": ["warehouse", "medium"], "filename": "lit", "prompt": "medium isometric industrial warehouse with smoking chimney and flickering security lights, 192x256 sprite"},
+    {"category": "buildings/suburban", "subcategory": ["apartment", "small"], "filename": "lit", "prompt": "small isometric suburban apartment building with some lit windows, 160x224 sprite"},
+    {"category": "buildings/park", "subcategory": ["pavilion", "medium"], "filename": "day", "prompt": "medium isometric park pavilion with wooden roof and bench seating, daytime palette, 160x192 sprite"},
+
+    {"category": "buildings/landmarks", "subcategory": ["the-whalescraper"], "filename": "day", "prompt": "the Whalescraper, a massive whale-shaped skyscraper landmark building, isometric 256x480 sprite, neon cyan underbelly glow"},
+    {"category": "buildings/landmarks", "subcategory": ["blockchain-bridge"], "filename": "day", "prompt": "the Blockchain Bridge, a suspension bridge with moving data streams in cyan, isometric 256x192 sprite"},
+    {"category": "buildings/landmarks", "subcategory": ["litecoin-city-hall"], "filename": "night", "prompt": "Litecoin City Hall isometric landmark building with illuminated silver dome, 256x384 sprite, night palette"},
+
+    {"category": "props/small/flowers", "subcategory": ["poppy"], "filename": "frame-00", "prompt": "red poppy flower 2d sprite 32x32 with subtle petal-motion variant"},
+    {"category": "props/small/grass-tuft", "subcategory": ["tall"], "filename": "frame-00", "prompt": "tall grass tuft 32x32 with wind-sway frame 1 of 2"},
+    {"category": "props/small/debris", "subcategory": ["paper"], "filename": "00", "prompt": "scattered paper debris isometric sprite 32x32"},
+    {"category": "props/small/street-furniture", "subcategory": ["mailbox"], "filename": "00", "prompt": "isometric silver mailbox with blue 'LTC' sticker, 64x64 sprite"},
+    {"category": "props/small/powerups", "subcategory": ["magnet"], "filename": "frame-00", "prompt": "red horseshoe magnet power-up with sparkle frame 1 of 4, 48x48 sprite"},
+    {"category": "props/small/pickups", "subcategory": ["ammo-pack"], "filename": "frame-00", "prompt": "cyan-glowing ammo pack crate 48x48 isometric sprite with slight bob"},
+    {"category": "props/small/weapon-crate", "subcategory": ["shotgun"], "filename": "frame-00", "prompt": "wooden weapon crate containing a shotgun, lid slightly open with orange glow, 64x64 isometric sprite"},
+    {"category": "props/small/decals", "subcategory": ["oil-stain"], "filename": "variant-00", "prompt": "oil stain decal on pavement isometric sprite 64x64, dark reflective puddle"},
+
+    {"category": "weapons/in-hand/pistol", "subcategory": ["east"], "filename": "00", "prompt": "silver pistol in-hand sprite 64x32, side view firing pose, cyan muzzle accent"},
+    {"category": "weapons/in-hand/shotgun", "subcategory": ["east"], "filename": "00", "prompt": "pump-action shotgun in-hand sprite 96x40, side view, orange shell eject"},
+    {"category": "weapons/in-hand/machine-gun", "subcategory": ["east"], "filename": "00", "prompt": "full-auto machine gun in-hand sprite 96x40, side view with blue tracer stream"},
+    {"category": "weapons/in-hand/knife", "subcategory": ["east"], "filename": "00", "prompt": "throwing knife in-hand sprite 48x24, side view wind-up pose"},
+    {"category": "weapons/in-hand/axe", "subcategory": ["east"], "filename": "00", "prompt": "throwing axe in-hand sprite 64x32, side view wind-up pose"},
+    {"category": "weapons/muzzle-flash/pistol", "subcategory": ["east"], "filename": "frame-00", "prompt": "pistol muzzle flash burst frame 1 of 3 cyan-and-white, 48x48 sprite"},
+    {"category": "weapons/muzzle-flash/shotgun", "subcategory": ["east"], "filename": "frame-00", "prompt": "shotgun muzzle flash burst frame 1 of 3 orange-and-white, 64x64 sprite"},
+    {"category": "weapons/impact/bullet", "subcategory": [], "filename": "frame-00", "prompt": "bullet impact spark frame 1 of 4, silver sparks on dark background, 32x32 sprite"},
+    {"category": "weapons/bullets/pistol", "subcategory": ["east"], "filename": "00", "prompt": "pistol bullet projectile 16x8 silver with cyan trail, horizontal flying to the right"},
+    {"category": "weapons/shells/pistol", "subcategory": ["south"], "filename": "frame-00", "prompt": "pistol brass shell casing eject frame 1 of 4, 16x8 sprite, falling trajectory"},
+    {"category": "weapons/particles/spark", "subcategory": [], "filename": "frame-00", "prompt": "spark particle frame 1 of 4, yellow-white pixel burst, 8x8 sprite"},
+    {"category": "weapons/particles/smoke", "subcategory": [], "filename": "frame-00", "prompt": "smoke puff particle frame 1 of 4, gray semi-transparent cloud, 16x16 sprite"},
+
+    {"category": "xp-coin", "subcategory": ["360"], "filename": "frame-00", "prompt": "silver Litecoin coin with Ł symbol, frame 1 of 32 for 360° rotation, shiny metallic gradient, 64x64 sprite"},
+    {"category": "xp-coin", "subcategory": ["360"], "filename": "frame-08", "prompt": "silver Litecoin coin with Ł symbol, frame 9 of 32 for 360° rotation, edge-on view narrow ellipse, 64x64 sprite"},
+    {"category": "xp-coin", "subcategory": ["glow"], "filename": "frame-00", "prompt": "silver Litecoin coin with subtle cyan glow aura, pulse frame 1 of 8, 64x64 sprite"},
+
+    {"category": "bosses/the-rug-pull-baron", "subcategory": ["phase-1"], "filename": "south", "prompt": "Rug Pull Baron boss phase 1, a humanoid villain in a suit with flowing red carpet that tilts the arena, facing south, 128x160 sprite"},
+    {"category": "bosses/the-rug-pull-baron", "subcategory": ["phase-2"], "filename": "south", "prompt": "Rug Pull Baron boss phase 2, same suit but carpet on fire, enraged expression, 128x160 sprite"},
+    {"category": "bosses/the-rug-pull-baron", "subcategory": ["phase-3"], "filename": "south", "prompt": "Rug Pull Baron boss phase 3 final, suit burning, revealed foundry press arm, maximum rage, 128x160 sprite"},
+    {"category": "bosses/mt-goxzilla", "subcategory": ["phase-1"], "filename": "south", "prompt": "Mt. Goxzilla kaiju boss phase 1, a building-sized reptilian creature with exchange logos on scales, 192x256 sprite"},
+    {"category": "bosses/the-whale", "subcategory": ["phase-1"], "filename": "south", "prompt": "The Whale boss, a market-moving whale creature that splashes pressure waves, 192x256 sprite"},
+    {"category": "bosses/quantum-hacker", "subcategory": ["phase-1"], "filename": "south", "prompt": "The Quantum Hacker final boss, a hooded figure with glitching holographic vault, 128x192 sprite"}
+  ]
+}

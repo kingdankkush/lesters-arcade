@@ -2191,6 +2191,36 @@ button.menu-card.menu-option.interactive:active {
 .level-up-upgrade-card[data-tone="green"] .upgrade-card-badge { border-color: rgba(69,255,138,0.55); }
 .level-up-upgrade-card[data-tone="gold"] .upgrade-card-badge { border-color: rgba(255,232,77,0.55); }
 .level-up-upgrade-card[data-tone="orange"] .upgrade-card-badge { border-color: rgba(255,123,47,0.55); }
+/* Weapon-tree branch cards: magenta-crimson accent + distinctive gradient border so
+   the player instantly reads "this is my current weapon's per-branch upgrade." */
+.level-up-upgrade-card[data-tone="weapon"] {
+  border-color: rgba(255, 95, 162, 0.45);
+  background:
+    linear-gradient(160deg, rgba(255, 95, 162, 0.14), rgba(120, 30, 110, 0.08)),
+    rgba(20, 10, 36, 0.82);
+  box-shadow: 0 0 18px rgba(255, 95, 162, 0.22), inset 0 0 10px rgba(255, 95, 162, 0.08);
+}
+.level-up-upgrade-card[data-tone="weapon"]:hover {
+  border-color: rgba(255, 95, 162, 0.8);
+  box-shadow: 0 0 26px rgba(255, 95, 162, 0.45), inset 0 0 14px rgba(255, 95, 162, 0.14);
+}
+.level-up-upgrade-card[data-tone="weapon"] .upgrade-card-badge {
+  border-color: rgba(255, 95, 162, 0.7);
+  color: #ffc2da;
+  text-shadow: 0 0 6px rgba(255, 95, 162, 0.65);
+}
+.level-up-upgrade-card[data-tone="weapon"] .upgrade-card-cat { color: #ff95c0; letter-spacing: 0.18em; }
+.level-up-upgrade-card[data-tone="weapon"] .upgrade-card-gain {
+  color: #ffc2da;
+  background: rgba(255, 95, 162, 0.22);
+  border-color: rgba(255, 95, 162, 0.5);
+}
+.level-up-upgrade-card[data-tone="weapon"] .upgrade-rank-pip.is-filled { background: #ff5fa2; border-color: #ff5fa2; }
+.level-up-upgrade-card[data-tone="weapon"] .upgrade-rank-pip.is-next {
+  background: #ffc2da;
+  border-color: #ffc2da;
+  box-shadow: 0 0 8px rgba(255, 95, 162, 0.8);
+}
 
 .combat-menu-action[data-action="level-up-reroll"] {
   background-image:

@@ -1605,6 +1605,8 @@ function renderLevelUpActionGrid() {
     control: { icon: '🌀', tone: 'cyan', label: 'Control' },
     throwable: { icon: '💣', tone: 'orange', label: 'Throwable' },
     status: { icon: '🔥', tone: 'orange', label: 'Status' },
+    // Weapon-tree branch (per-weapon upgrade tree, pulled from WEAPON_UPGRADE_TREES).
+    weapon: { icon: '🔫', tone: 'weapon', label: 'Weapon Branch' },
   };
   for (const choice of choices) {
     const cat = CAT_STYLE[choice.category] ?? { icon: '▲', tone: 'cyan', label: 'Augment' };
@@ -5332,7 +5334,7 @@ function shootRoguelike() {
 function openLevelUpMenu() {
   if (!combat.roguelikeRun?.pausedForLevelUp) return;
   const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills });
-  combat.levelUpChoices = [...offer.options];
+  combat.levelUpChoices = [...offer.options, ...weaponTreeBranchChoices()];
   combat.levelUpPaused = true;
   combat.paused = true;
   combat.status = 'LEVEL UP: choose one of two random augments. The roguelike run is paused until you pick.';
@@ -5344,13 +5346,87 @@ function rerollLevelUpChoices() {
   if (!combat.levelUpPaused || !combat.roguelikeRun || combat.roguelikeRun.rerollsRemaining <= 0) return;
   combat.roguelikeRun = { ...combat.roguelikeRun, rerollsRemaining: combat.roguelikeRun.rerollsRemaining - 1 };
   const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills + 999, reroll: true });
-  combat.levelUpChoices = [...offer.options];
+  combat.levelUpChoices = [...offer.options, ...weaponTreeBranchChoices()];
   syncCombatOverlay();
+}
+
+// Build up-to-two weapon-tree branch upgrade cards for the current weapon.
+// The player's current weapon determines which tree is shown. Each branch
+// (rateOfFire / damage / reloadSpeed) surfaces as a distinct card — if the
+// branch is already maxed it's filtered out.
+function weaponTreeBranchChoices() {
+  const weaponId = combat.weaponId;
+  const tree = WEAPON_UPGRADE_TREES[weaponId];
+  if (!tree) return [];
+  const branches = combat.weaponUpgrades?.[weaponId] ?? {};
+  const out = [];
+  for (const [branchKey, tiers] of Object.entries(tree)) {
+    const currentTier = branches[branchKey] ?? 0;
+    if (currentTier >= tiers.length) continue; // branch maxed
+    const nextTier = tiers[currentTier];
+    out.push(Object.freeze({
+      id: `weapon-tree-${branchKey}`,
+      title: `${nextTier.effect}`,
+      description: `Weapon branch "${branchLabel(branchKey)}" tier ${nextTier.tier}/3 for ${titleOfWeapon(weaponId)}. ${nextTier.special ? `Unlocks: ${specialLabel(nextTier.special)}.` : 'Compounds with prior tiers of this branch.'}`,
+      category: 'weapon',
+      maxLevel: 3,
+      currentLevel: currentTier,
+      nextLevel: currentTier + 1,
+      perLevelPercent: branchPercentHint(branchKey, nextTier),
+    }));
+  }
+  return out;
+}
+
+function branchLabel(branchKey) {
+  return ({ rateOfFire: 'Fire Rate', damage: 'Damage', reloadSpeed: 'Reload Speed' })[branchKey] ?? branchKey;
+}
+
+function specialLabel(special) {
+  return (special ?? '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function branchPercentHint(branchKey, tierNode) {
+  // Render the primary multiplier/bonus as a percent hint so the card's
+  // "+N%" header chip shows something meaningful per branch type.
+  if (branchKey === 'rateOfFire' && tierNode.multiplier) return Math.round((tierNode.multiplier - 1) * 100);
+  if (branchKey === 'reloadSpeed' && tierNode.multiplier) return Math.round((tierNode.multiplier - 1) * 100);
+  if (branchKey === 'damage' && tierNode.flatBonus) return Math.round(tierNode.flatBonus);
+  return 5;
+}
+
+function titleOfWeapon(weaponId) {
+  const w = weaponById(weaponId);
+  return w.title ?? w.displayName ?? weaponId;
 }
 
 function selectLevelUpUpgrade(skillId) {
   if (!combat.levelUpPaused || !combat.roguelikeRun) return;
   const skill = combat.levelUpChoices.find((choice) => choice.id === skillId);
+
+  // Weapon-tree branches: store the tier choice on `combat.weaponUpgrades` keyed
+  // by current weapon id + branch, instead of in the roguelike skill library.
+  const weaponTreeMatch = skillId.match(/^weapon-tree-(rateOfFire|damage|reloadSpeed)$/);
+  if (weaponTreeMatch) {
+    const branchKey = weaponTreeMatch[1];
+    const weaponId = combat.weaponId;
+    combat.weaponUpgrades = { ...(combat.weaponUpgrades ?? {}) };
+    const perWeapon = { ...(combat.weaponUpgrades[weaponId] ?? {}) };
+    perWeapon[branchKey] = (perWeapon[branchKey] ?? 0) + 1;
+    combat.weaponUpgrades[weaponId] = Object.freeze(perWeapon);
+    combat.weaponUpgrades = Object.freeze(combat.weaponUpgrades);
+    combat.levelUpChoices = [];
+    combat.levelUpPaused = false;
+    combat.paused = false;
+    combat.status = `Weapon branch upgraded: ${titleOfWeapon(weaponId)} ${branchLabel(branchKey)} tier ${perWeapon[branchKey]}/3.`;
+    spawnText(
+      `${titleOfWeapon(weaponId)} ${branchLabel(branchKey)} T${perWeapon[branchKey]}`,
+      ISO_CENTER_X - 58, ISO_CENTER_Y - 64, '#ffe84d',
+    );
+    syncCombatOverlay();
+    return;
+  }
+
   combat.roguelikeRun = applyRoguelikeSkillUpgrade(combat.roguelikeRun, skillId);
   combat.levelUpChoices = [];
   combat.levelUpPaused = false;
