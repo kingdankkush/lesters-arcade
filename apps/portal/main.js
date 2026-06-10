@@ -1249,17 +1249,32 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
 }
 
 // --- Character-select roster -------------------------------------------------
-// Lester is the active hero; Lilly is a locked teaser (canon: unlockable-later).
-// Each entry builds a 360-degree rotating sprite from the production character's
-// 8 directional rotation frames.
+// Lester is the playable hero; Lilly is a playable hero teaser.
+// Build a 360° rotating sprite from the same hero art used during gameplay
+// (HMH_ANIMATED_ROSTER), so the character select screen matches in-game appearance.
+// Order directions clockwise (E → NE → N → NW → W → SW → S → SE) for a natural spin.
+const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
 function heroRotationSprite(characterId) {
-  const c = HMH_PRODUCTION_ART_PASS.characters?.[characterId];
-  const dirs = c?.directions ?? [];
-  if (!dirs.length) return null;
-  // Order the 8 directions into a smooth spin (E, NE, N, NW, W, SW, S, SE if the
-  // metadata exposes it; otherwise use natural index order).
-  const frames = dirs.map((d) => ({ src: d.src }));
-  return { id: characterId, frames, frameDurationMs: 420 };
+  // Prefer the 'lit-commando' / 'lit-valkyrie' keys when available; they carry the
+  // gameplay hero sprites. Fall back to 'lester' / 'lilly' keys.
+  const rosterKey = characterId === 'lester' ? 'lit-commando' : characterId === 'lilly' ? 'lit-valkyrie' : characterId;
+  const entry = HMH_ANIMATED_ROSTER[rosterKey] ?? HMH_ANIMATED_ROSTER[characterId];
+  const animations = entry?.animations ?? {};
+  // Prefer walk (best for hero showcase), then idle, then any populated animation.
+  const ordered = ['walk', 'idle', 'run', 'shoot'].filter((a) => animations[a] && Object.keys(animations[a]).length);
+  const chosenName = ordered[0] ?? Object.keys(animations)[0];
+  const chosen = animations[chosenName];
+  if (!chosen) return null;
+  // Collect one frame per direction (first frame of each direction's animation),
+  // respecting the clockwise spin order.
+  const frames = [];
+  for (const dir of SPIN_DIRECTION_ORDER) {
+    const dirFrames = chosen[dir];
+    if (Array.isArray(dirFrames) && dirFrames.length) frames.push({ src: dirFrames[0], direction: dir });
+  }
+  if (!frames.length) return null;
+  const frameDurationMs = Math.max(180, Math.round(1000 / (entry?.targetFps ?? 10)));
+  return { id: characterId, animation: chosenName, frames, frameDurationMs };
 }
 const HERO_ROSTER = [
   {
@@ -1796,8 +1811,8 @@ function clearInactiveCombatOverlay() {
     dom.combatHudOverlay.replaceChildren();
   }
   if (dom.combatMenuActionGrid) {
-    delete targetGrid.dataset.signature;
-    targetGrid.replaceChildren();
+    delete dom.combatMenuActionGrid.dataset.signature;
+    dom.combatMenuActionGrid.replaceChildren();
   }
   if (dom.combatGameOverSummary) {
     dom.combatGameOverSummary.hidden = true;
