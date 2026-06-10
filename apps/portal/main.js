@@ -6444,15 +6444,10 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
 // pickups) reads as PLANTED on the ground instead of floating. Global light is
 // modeled as coming from the upper-left, so shadows pool slightly down-right at
 // the object's foot. `footX/footY` is the screen-space ground contact point.
+// SHADOWS DISABLED: relying on sprite artwork for shading instead
 function drawContactShadow(ctx, footX, footY, width, { alpha = 0.28, squash = 0.4 } = {}) {
-  const w = Math.max(10, width);
-  ctx.save();
-  ctx.globalAlpha = alpha;
-  ctx.fillStyle = '#02040a';
-  ctx.beginPath();
-  ctx.ellipse(footX + w * 0.06, footY, w, Math.max(5, w * squash), 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
+  // No-op - shadows disabled
+  return;
 }
 
 function drawProductionIsoProp(ctx, prop, x, y, index) {
@@ -6494,15 +6489,16 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   // Ground contact shadow (skip flat ground-decals/decor that sit IN the floor).
-  // Plant it at the sprite's true foot line (y) WITHOUT bob/sway so the shadow
-  // stays put on the ground while the sprite bobs above it — that reads as
-  // grounded, not floating.
-  const flatDecor = prop.role?.includes('ground') || prop.role?.includes('decal');
-  if (!flatDecor) {
-    drawContactShadow(ctx, Math.round(x), Math.round(y), drawWidth * 0.34, {
-      alpha: prop.role?.includes('occluder') ? 0.3 : 0.24,
-    });
-  }
+    // Plant it at the sprite's true foot line (y) WITHOUT bob/sway so the shadow
+    // stays put on the ground while the sprite bobs above it — that reads as
+    // grounded, not floating.
+    // SHADOWS DISABLED: relying on sprite artwork for shading instead
+    // const flatDecor = prop.role?.includes('ground') || prop.role?.includes('decal');
+    // if (!flatDecor) {
+    //   drawContactShadow(ctx, Math.round(x), Math.round(y), drawWidth * 0.34, {
+    //     alpha: prop.role?.includes('occluder') ? 0.3 : 0.24,
+    //   });
+    // }
   ctx.globalAlpha = prop.role?.includes('decor') ? 0.92 : 1;
   ctx.drawImage(frameImage, Math.round(x - drawWidth / 2 + sway), Math.round(y - drawHeight + bob), drawWidth, drawHeight);
   ctx.restore();
@@ -6809,17 +6805,18 @@ function buildObstacleRenderEntries(ctx) {
     const baseY = Math.round(projected.y + style.ground - drawH);
     const shadowW = Math.max(14, w * 0.32);
     entries.push({
-      depth: projected.y,
-      draw: () => {
-        ctx.save();
-        ctx.imageSmoothingEnabled = false;
-        // Soft contact shadow planted at the prop's true foot line so solid
-        // objects read as grounded (was -2, which floated them slightly).
-        drawContactShadow(ctx, projected.x, projected.y + style.ground, shadowW, { alpha: 0.28 });
-        ctx.drawImage(img, baseX, baseY, w, drawH);
-        ctx.restore();
-      },
-    });
+          depth: projected.y,
+          draw: () => {
+            ctx.save();
+            ctx.imageSmoothingEnabled = false;
+            // Soft contact shadow planted at the prop's true foot line so solid
+            // objects read as grounded (was -2, which floated them slightly).
+            // SHADOWS DISABLED: relying on sprite artwork for shading instead
+            // drawContactShadow(ctx, projected.x, projected.y + style.ground, shadowW, { alpha: 0.28 });
+            ctx.drawImage(img, baseX, baseY, w, drawH);
+            ctx.restore();
+          },
+        });
     // Keep the obstacle's collision footprint in sync with the art that is
     // actually drawn (role-based radius), so movement/bullets match the visuals.
     o.radius = style.radius;
@@ -6918,15 +6915,15 @@ function drawRoguelikeScene(ctx, width, height) {
     const coinWidth = Math.max(4, coinSize * Math.abs(squash));
     
     ctx.save();
-    ctx.translate(x, y);
+        ctx.translate(x, y);
     
-    // Coin shadow (grounded ellipse)
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.beginPath();
-    ctx.ellipse(0, half * 0.6, half * 0.9, half * 0.25, 0, 0, Math.PI * 2);
-    ctx.fill();
+        // Coin shadow (grounded ellipse) - DISABLED: relying on sprite artwork for shading
+        // ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        // ctx.beginPath();
+        // ctx.ellipse(0, half * 0.6, half * 0.9, half * 0.25, 0, 0, Math.PI * 2);
+        // ctx.fill();
     
-    // Coin body: silver gradient from light (top) to dark (bottom).
+        // Coin body: silver gradient from light (top) to dark (bottom).
     const grad = ctx.createLinearGradient(0, -half, 0, half);
     grad.addColorStop(0, `rgba(${Math.round(230 * shimmer)},${Math.round(235 * shimmer)},${Math.round(245 * shimmer)},1)`);
     grad.addColorStop(0.5, `rgba(${Math.round(180 * shimmer)},${Math.round(188 * shimmer)},${Math.round(200 * shimmer)},1)`);
@@ -7438,18 +7435,19 @@ function drawPlayer(ctx) {
     const drawHeight = isoHero ? 88 : (productionHero ? 132 : 104);
     const drawX = x - drawWidth / 2 + (isoHero ? 8 : (productionHero ? 0 : 0));
     const drawY = y - drawHeight + (isoHero ? 10 : (productionHero ? 16 : 0)) + bob;
-    // Contact shadow directly under the hero's feet (no glow). The shadow is an
-    // ellipse centered on the foot point (x, y) so the character reads as
-    // GROUNDED, not floating. Width tracks the draw size; opacity is soft.
-    if (combat.roguelikeRun) {
-      // Plant the shadow at the sprite's actual foot line (drawY bottom = y+10),
-      // and DON'T add bob so the shadow stays put while the sprite bobs — that
-      // sells "grounded" instead of "floating".
-      drawContactShadow(ctx, x, y + 10, drawWidth * 0.34, { alpha: 0.4, squash: 0.34 });
-    } else {
-      ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
-      ctx.fillRect(x + 3, shadowY, 38, 8);
-    }
+        // Contact shadow directly under the hero's feet (no glow). The shadow is an
+        // ellipse centered on the foot point (x, y) so the character reads as
+        // GROUNDED, not floating. Width tracks the draw size; opacity is soft.
+        // SHADOWS DISABLED: relying on sprite artwork for shading instead
+        // if (combat.roguelikeRun) {
+        //   // Plant the shadow at the sprite's actual foot line (drawY bottom = y+10),
+        //   // and DON'T add bob so the shadow stays put while the sprite bobs — that
+        //   // sells "grounded" instead of "floating".
+        //   drawContactShadow(ctx, x, y + 10, drawWidth * 0.34, { alpha: 0.4, squash: 0.34 });
+        // } else {
+        //   ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
+        //   ctx.fillRect(x + 3, shadowY, 38, 8);
+        // }
     // Mirror when the animated 8-direction frame says so (west-facing aim), else
     // fall back to keyboard side-scroll facing.
     const flip = heroFrame._flip != null ? heroFrame._flip : playerFacingLeft();
@@ -7474,12 +7472,13 @@ function drawPlayer(ctx) {
   ctx.fillStyle = '#19f7ff';
   ctx.fillRect(x + 7, y - 42 + bob, 20, 6);
   ctx.fillStyle = combat.weaponId === 'hash-rail' ? '#19f7ff' : combat.weaponId === 'oracle-slayer' ? '#b86cff' : '#45ff8a';
-  ctx.fillRect(x + 31, y - 43 + bob, 38, 8);
-  ctx.fillStyle = '#f9f7ff';
-  ctx.fillRect(x + 3, shadowY, 38, 8);
-  ctx.fillStyle = '#ff476f';
-  ctx.fillRect(x + 37, y - 34 + bob, 16, 4);
-  ctx.restore();
+    ctx.fillRect(x + 31, y - 43 + bob, 38, 8);
+    ctx.fillStyle = '#f9f7ff';
+    // Shadow removed - relying on sprite artwork for shading
+    // ctx.fillRect(x + 3, shadowY, 38, 8);
+    ctx.fillStyle = '#ff476f';
+    ctx.fillRect(x + 37, y - 34 + bob, 16, 4);
+    ctx.restore();
 }
 
 function manifestEnemyKeyFor(enemy) {
@@ -7800,14 +7799,15 @@ function drawSingleEnemy(ctx, enemy) {
     // foot line is at enemy.y + 12 (ey bottom); plant the shadow THERE so it sits
     // under the feet rather than 10px above them (the old +2 floated enemies).
     // Flying foes cast a smaller, fainter shadow a bit lower (they're airborne).
-    const flying = Boolean(enemy.class?.includes('flying'));
-    const footX = enemy.x + w / 2;
-    const sizeMul = enemy.sizeScale ?? 1.0;
-    if (flying) {
-      drawContactShadow(ctx, footX, enemy.y + 22, Math.round((isMini ? 30 : 18) * sizeMul), { alpha: 0.16, squash: 0.3 });
-    } else {
-      drawContactShadow(ctx, footX, enemy.y + 12, Math.round((isMini ? 34 : enemy.class === 'armored' ? 24 : 18) * sizeMul), { alpha: 0.34, squash: 0.36 });
-    }
+    // SHADOWS DISABLED: relying on sprite artwork for shading instead
+    // const flying = Boolean(enemy.class?.includes('flying'));
+    // const footX = enemy.x + w / 2;
+    // const sizeMul = enemy.sizeScale ?? 1.0;
+    // if (flying) {
+    //   drawContactShadow(ctx, footX, enemy.y + 22, Math.round((isMini ? 30 : 18) * sizeMul), { alpha: 0.16, squash: 0.3 });
+    // } else {
+    //   drawContactShadow(ctx, footX, enemy.y + 12, Math.round((isMini ? 34 : enemy.class === 'armored' ? 24 : 18) * sizeMul), { alpha: 0.34, squash: 0.36 });
+    // }
     // Priority: animated roster frame (idle/walk/attack/death motion) > biome-themed
     // wave still (directional variety) > pipeline/legacy art. Minis use boss art.
     const animFrame = roguelikeEnemyAnimatedFrame(enemy);
