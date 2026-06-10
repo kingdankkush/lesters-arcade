@@ -29,14 +29,14 @@ function mulberry32(seed) {
   };
 }
 
-// Build `count` deterministic AI leaderboard entries with scores spread across
-// the requested range and timestamps spread across the last `daysSpan` days so
-// the daily/weekly/monthly cadence boards all populate.
+// Build `count` deterministic AI leaderboard entries with realistic score spread
+// matching the user's playtest baseline (~15,420 for 58 kills / 2:59 / Level 1 / Combo 45).
+// Default range covers a believable Top-50 (5,000 to 25,000).
 export function buildSeedLeaderboardEntries({
   count = 50,
   seed = 0x1e57e2,
-  minScore = 100,
-  maxScore = 10000,
+  minScore = 5000,
+  maxScore = 25000,
   daysSpan = 60,
   now = Date.now(),
 } = {}) {
@@ -54,10 +54,11 @@ export function buildSeedLeaderboardEntries({
     } while (usedNames.has(name) && guard < 50);
     usedNames.add(name);
 
-    // Score: bias toward the lower/middle so the top spots feel earned, but the
-    // full 100..10000 range is covered (and easily beatable, per the brief).
-    const t = rnd() ** 1.5; // skew toward 0 => more low/mid scores
-    const score = Math.round(minScore + t * (maxScore - minScore));
+    // Score: smooth linear spread from maxScore (rank #1) down to minScore (rank #N),
+    // with small per-entry jitter so the list doesn't feel formulaic.
+    const baseScore = maxScore - (i / Math.max(1, count - 1)) * (maxScore - minScore);
+    const jitter = (rnd() - 0.5) * 600;
+    const score = Math.max(minScore, Math.round(baseScore + jitter));
 
     // Synthetic, clearly-fake wallet address (not a real key, never settles).
     const walletHex = Array.from({ length: 40 }, () => '0123456789abcdef'[Math.floor(rnd() * 16)]).join('');
@@ -66,11 +67,14 @@ export function buildSeedLeaderboardEntries({
     const ageDays = rnd() * daysSpan;
     const recordedAt = new Date(now - ageDays * 86400000).toISOString();
 
-    // Ranked-run "highlights" — the stats a real ranked submission would carry.
-    const surviveSec = Math.round(40 + t * 560 + rnd() * 60); // ~0:40..10:00
-    const kills = Math.round(score / (18 + rnd() * 22));
-    const level = Math.max(1, Math.round(1 + t * 18 + rnd() * 4));
-    const tier = Math.max(1, Math.round(1 + t * 7));
+    // Run stats calibrated to the user's playtest baseline:
+    //   15,420 ≈ 58 kills × 265 + 179 sec × ~15 + 45 combo × ~100 (ballpark).
+    // So kills ≈ score/260, surviveSec ≈ score/85, combo ≈ score/300, level ≈ 1+score/4000.
+    const kills = Math.max(6, Math.round(score / (240 + rnd() * 40)));
+    const surviveSec = Math.max(30, Math.round(score / (80 + rnd() * 20)));
+    const combo = Math.max(3, Math.round(score / (280 + rnd() * 80)));
+    const level = Math.max(1, Math.round(1 + score / 4000 + rnd() * 0.5));
+    const tier = Math.max(1, Math.round(1 + level / 2 + rnd() * 0.8));
 
     entries.push({
       wallet,
@@ -85,6 +89,7 @@ export function buildSeedLeaderboardEntries({
         surviveSeconds: surviveSec,
         level,
         tier,
+        combo,
         weapon: WEAPONS[Math.floor(rnd() * WEAPONS.length)],
       },
     });

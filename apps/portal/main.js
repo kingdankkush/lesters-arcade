@@ -1,7 +1,5 @@
-import { HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST } from './assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs';
+import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
-import { HMH_ISOMETRIC_PIXELLAB_WAVE_1 } from './assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs';
-import { HMH_PRODUCTION_ART_PASS } from './assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES } from './src/canonical-actors.mjs';
@@ -10,12 +8,6 @@ import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-dama
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
-import { HMH_LEVEL_ENVIRONMENT } from './assets/generated/hmh-level-environment/hmh-level-environment.mjs';
-import { HMH_ENVIRONMENT_PIXELLAB_WAVE_2 } from './assets/generated/hmh-environment-pixellab-wave-2/hmh-environment-pixellab-wave-2.mjs';
-import { HMH_FX_POWERUPS_WAVE } from './assets/generated/hmh-fx-powerups-wave.mjs';
-import { HMH_ENEMIES_WAVE } from './assets/generated/hmh-enemies-wave/hmh-enemies-wave.mjs';
-import { HMH_ANIMATED_ROSTER } from './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
-import { HMH_COMPLETE_ANIMATIONS_READY } from './assets/generated/hmh-complete-animations/hmh-complete-animations.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
@@ -262,7 +254,7 @@ function loadPixelLabCalibrationFrames(animation) {
 }
 
 function buildPixelLabLesterCalibrationArt() {
-  const manifest = HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST;
+  const manifest = hmh('HMH_PIXELLAB_LESTER_CALIBRATION_MANIFEST');
   const idleFrames = loadPixelLabCalibrationFrames(manifest.animations.idle);
   const runFrames = loadPixelLabCalibrationFrames(manifest.animations.run);
   const shootFrames = loadPixelLabCalibrationFrames(manifest.animations.shoot);
@@ -323,7 +315,7 @@ function loadProductionAnimation(animation) {
 }
 
 function buildProductionCharacterArt(characterKey, fallbackArt) {
-  const character = HMH_PRODUCTION_ART_PASS.characters?.[characterKey];
+  const character = hmh('HMH_PRODUCTION_ART_PASS')?.characters?.[characterKey];
   if (!character) return fallbackArt;
   const animations = {
     idle: loadProductionAnimation(character.animations?.idle),
@@ -392,24 +384,24 @@ function buildProductionSpriteIndex(items = []) {
 
 function buildProductionArtPass() {
   return {
-    sourceAssetCount: HMH_ISOMETRIC_PIXELLAB_WAVE_1.assets?.length ?? 0,
-    manifestGeneratedAt: HMH_PRODUCTION_ART_PASS.generatedAt,
-    targetFps: HMH_PRODUCTION_ART_PASS.targetFps,
-    tiles: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.tiles),
-    props: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.props),
-    rotatingProps: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.rotatingProps),
-    pickups: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.pickups),
-    weapons: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.weapons),
-    vfx: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.vfx),
-    ui: buildProductionSpriteIndex(HMH_PRODUCTION_ART_PASS.ui),
-    levels: HMH_PRODUCTION_ART_PASS.levels ?? [],
-    cabinet: HMH_PRODUCTION_ART_PASS.cabinet,
-    animationPass: HMH_PRODUCTION_ART_PASS.animationPass,
+    sourceAssetCount: hmh('HMH_ISOMETRIC_PIXELLAB_WAVE_1')?.assets?.length ?? 0,
+    manifestGeneratedAt: hmh('HMH_PRODUCTION_ART_PASS')?.generatedAt,
+    targetFps: hmh('HMH_PRODUCTION_ART_PASS')?.targetFps,
+    tiles: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.tiles),
+    props: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.props),
+    rotatingProps: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.rotatingProps),
+    pickups: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.pickups),
+    weapons: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.weapons),
+    vfx: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.vfx),
+    ui: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.ui),
+    levels: hmh('HMH_PRODUCTION_ART_PASS')?.levels ?? [],
+    cabinet: hmh('HMH_PRODUCTION_ART_PASS')?.cabinet,
+    animationPass: hmh('HMH_PRODUCTION_ART_PASS')?.animationPass,
   };
 }
 
 function productionAssetSrc(collection, slug) {
-  const list = HMH_PRODUCTION_ART_PASS[collection] ?? [];
+  const list = hmh('HMH_PRODUCTION_ART_PASS')?.[collection] ?? [];
   return list.find((item) => item.slug === slug)?.src ?? '';
 }
 
@@ -439,13 +431,37 @@ function productionAnimationFps(art, name, fallback = 12) {
 }
 
 function productionCabinetSprite() {
-  return HMH_PRODUCTION_ART_PASS.cabinet?.frames?.length ? HMH_PRODUCTION_ART_PASS.cabinet : null;
+  return hmh('HMH_PRODUCTION_ART_PASS')?.cabinet?.frames?.length ? hmh('HMH_PRODUCTION_ART_PASS')?.cabinet : null;
 }
 
 // Every post-connect screen (and the splash) uses the SAME clean Hard Money
 // Heroes key art as a true full-bleed `cover` background — no menu panels or
 // buttons baked into the image (menus are real DOM controls layered on top).
 const HMH_KEY_ART_BG = './assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg';
+const HMH_LOADING_KEYARTS = Object.freeze([
+  './assets/generated/hmh-key-art/hmh-loading-keyart-1.jpg',
+  './assets/generated/hmh-key-art/hmh-loading-keyart-2.jpg',
+  './assets/generated/hmh-key-art/hmh-loading-keyart-3.jpg',
+  './assets/generated/hmh-key-art/hmh-loading-keyart-4.jpg',
+]);
+
+// Lazy-loaded HMH game payload. Populated by ensureHMHLoaded() when the user
+// picks the Hard Money Heroes cabinet. All gameplay references to the heavy
+// HMH manifests (below) read through these bindings so the same code works
+// whether the manifest has been loaded or is still pending.
+let HMH_PAYLOAD = null;
+let HMH_LOAD_PROMISE = null;
+async function ensureHMHLoaded() {
+  if (HMH_PAYLOAD) return HMH_PAYLOAD;
+  if (HMH_LOAD_PROMISE) return HMH_LOAD_PROMISE;
+  HMH_LOAD_PROMISE = loadHMHGame().then((payload) => {
+    HMH_PAYLOAD = payload;
+    return payload;
+  });
+  return HMH_LOAD_PROMISE;
+}
+function hmh(name) { return HMH_PAYLOAD ? HMH_PAYLOAD[name] : undefined; }
+
 // Default profile avatar shown when a player hasn't uploaded their own (was a
 // green initial chip; now the Litecoin Chad PFP).
 const DEFAULT_AVATAR_SRC = './assets/generated/hmh-avatars/litecoin-chad-default.jpg';
@@ -1251,14 +1267,14 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
 // --- Character-select roster -------------------------------------------------
 // Lester is the playable hero; Lilly is a playable hero teaser.
 // Build a 360° rotating sprite from the same hero art used during gameplay
-// (HMH_ANIMATED_ROSTER), so the character select screen matches in-game appearance.
+// (hmh('HMH_ANIMATED_ROSTER')), so the character select screen matches in-game appearance.
 // Order directions clockwise (E → NE → N → NW → W → SW → S → SE) for a natural spin.
 const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
 function heroRotationSprite(characterId) {
   // Prefer the 'lit-commando' / 'lit-valkyrie' keys when available; they carry the
   // gameplay hero sprites. Fall back to 'lester' / 'lilly' keys.
   const rosterKey = characterId === 'lester' ? 'lit-commando' : characterId === 'lilly' ? 'lit-valkyrie' : characterId;
-  const entry = HMH_ANIMATED_ROSTER[rosterKey] ?? HMH_ANIMATED_ROSTER[characterId];
+  const entry = hmh('HMH_ANIMATED_ROSTER')?.[rosterKey] ?? hmh('HMH_ANIMATED_ROSTER')?.[characterId];
   const animations = entry?.animations ?? {};
   // Prefer walk (best for hero showcase), then idle, then any populated animation.
   const ordered = ['walk', 'idle', 'run', 'shoot'].filter((a) => animations[a] && Object.keys(animations[a]).length);
@@ -2388,8 +2404,23 @@ function renderOfficialCabinets() {
     const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'} ${cabinetSprite ? 'featured-cabinet-card' : ''}` });
     card.type = 'button';
     card.disabled = !cabinet.playable;
-    card.addEventListener('click', () => {
+    card.addEventListener('click', async () => {
       if (!cabinet.playable) return;
+      // Lazy-load the game's art and data manifests the first time the player
+      // selects this cabinet. The heavy HMH bundles live in games/<id>/loader.mjs,
+      // fetched over HTTP only on demand, so the portal shell stays small.
+      if (cabinet.id === 'hard-money-heroes') {
+        card.classList.add('is-loading');
+        card.setAttribute('aria-busy', 'true');
+        try {
+          await ensureHMHLoaded();
+        } catch (err) {
+          console.error('[HMH] Failed to load game payload:', err);
+        } finally {
+          card.classList.remove('is-loading');
+          card.removeAttribute('aria-busy');
+        }
+      }
       selectedGameId = cabinet.gameId;
       currentSession = null;
       lastCompletedSession = null;
@@ -2565,7 +2596,9 @@ function renderOfficialProfile() {
   const previewImg = el('img', { className: 'avatar-preview-image', alt: 'Selected avatar preview' });
   const previewFallback = renderAvatarChip(connectedWallet, profile?.displayName, 'profile-avatar');
   const previewHint = el('p', { className: 'avatar-preview-hint tiny-note' });
-  previewHint.textContent = 'Choose an image to preview it here before saving.';
+  // Hint text only appears after a file is chosen — the default preview should
+  // show the avatar cleanly without any overlay text or blue-tinted bar.
+  previewHint.hidden = true;
   preview.append(previewFallback, previewImg, previewHint);
   previewImg.hidden = true;
   const fileInput = el('input', { className: 'avatar-file-input', type: 'file' });
@@ -2613,6 +2646,7 @@ function renderOfficialProfile() {
       previewFallback.hidden = true;
       previewImg.hidden = false;
       previewImg.src = pendingAvatarDataUrl;
+      previewHint.hidden = false;
       previewHint.textContent = `Preview ready: ${file.name}`;
       avatarFeedback.textContent = 'Preview loaded. Click Save Avatar to upload it.';
       avatarFeedback.dataset.state = 'ok';
@@ -3005,8 +3039,9 @@ function renderOfficialLeaderboards() {
   }
   for (const entry of rows) {
     const wallet = entry.wallet ?? entry.address ?? null;
-    const row = el('div', { className: `leaderboard-trow${entry.isCurrentPlayer ? ' is-current-player' : ''}`, role: 'row' });
-    appendText(row, 'span', `#${entry.trueRank}`, 'lt-rank');
+    const medalClass = entry.trueRank === 1 ? ' rank-gold' : entry.trueRank === 2 ? ' rank-silver' : entry.trueRank === 3 ? ' rank-bronze' : '';
+    const row = el('div', { className: `leaderboard-trow${entry.isCurrentPlayer ? ' is-current-player' : ''}${medalClass ? ' top-3' + medalClass : ''}`, role: 'row' });
+    appendText(row, 'span', `#${entry.trueRank}`, `leaderboard-rank${medalClass}`);
     const nameCell = el('span', { className: 'lt-name' });
     nameCell.append(renderAvatarChip(wallet, entry.displayName, 'leaderboard-row-avatar'));
     appendText(nameCell, 'span', entry.displayName, 'lt-name-text');
@@ -3271,10 +3306,11 @@ async function beginOfficialLevel() {
 
 
 async function showHMHLoadingScreen(onComplete) {
+  const bgUrl = HMH_LOADING_KEYARTS[Math.floor(Math.random() * HMH_LOADING_KEYARTS.length)];
   // Create loading overlay
   const overlay = document.createElement('div');
   overlay.id = 'hmhLoadingOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0a0c14 url(./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg) center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+  overlay.style.cssText = `position:fixed;inset:0;z-index:99999;background:#0a0c14 url(${bgUrl}) center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;`;
   
   // Progress bar container
   const barContainer = document.createElement('div');
@@ -4895,7 +4931,7 @@ const FX_INDEX = Object.freeze({
   crit: 12, shield: 13, lightning: 14, debris: 15, heal: 16, levelup: 17,
 });
 function fxImageFor(key) {
-  const list = HMH_LEVEL_ENVIRONMENT.demoWaveFx ?? [];
+  const list = hmh('HMH_LEVEL_ENVIRONMENT')?.demoWaveFx ?? [];
   if (!list.length) return null;
   const idx = Math.min(list.length - 1, FX_INDEX[key] ?? 0);
   const src = list[idx]?.src;
@@ -5630,7 +5666,7 @@ function currentProductionLevel() {
 // so the floor is never blank/blue.
 const WAVE2_TILE_SRC = (() => {
   const map = {};
-  for (const a of HMH_ENVIRONMENT_PIXELLAB_WAVE_2.assets ?? []) {
+  for (const a of hmh('HMH_ENVIRONMENT_PIXELLAB_WAVE_2')?.assets ?? []) {
     if (a.assetType === 'isometric_tile' && a.images?.[0]?.src) map[a.slug] = a.images[0].src;
   }
   return map;
@@ -5701,7 +5737,7 @@ function sceneGroundThemeAt(seed, worldX, worldY) {
 // world is stable, and frames cycle on combat.frame for live motion.
 const WAVE2_ANIM = (() => {
   const bySlug = {};
-  for (const a of HMH_ENVIRONMENT_PIXELLAB_WAVE_2.assets ?? []) {
+  for (const a of hmh('HMH_ENVIRONMENT_PIXELLAB_WAVE_2')?.assets ?? []) {
     if (!a.slug.endsWith('-ambient')) continue;
     const frames = (a.images ?? []).filter((im) => /frame_\d+/.test(im.src));
     if (frames.length) bySlug[a.slug.replace('-ambient', '')] = frames.map((im) => im.src);
@@ -6065,7 +6101,7 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   const loadStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   const MIN_LOAD_MS = 1500; // always show the biome reveal for at least this long
   const seed = combat.roguelikeRun?.seed ?? 0;
-  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  const worldProps = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
   const { districtGrid, roadNetwork } = worldStructure;
   // Collect a coherent set of images for the spawn region + immediate neighbors.
   const startBiome = biomeAt(seed, 0, 0);
@@ -6139,7 +6175,7 @@ function canonicalLandmarkImage(src) {
 // building is already decoded before it scrolls into the generous draw window —
 // no first-sight pop-in. Cheap: primes the same cache the renderer reads.
 function preloadWorldPropImages() {
-  const wp = HMH_LEVEL_ENVIRONMENT?.worldProps ?? [];
+  const wp = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
   for (const p of wp) {
     if (p?.src) canonicalLandmarkImage(p.src);
   }
@@ -6268,7 +6304,7 @@ function resolveObstacleProp(obstacle, worldProps) {
 // collision radius back onto the obstacle so movement/bullets use a footprint
 // that matches the art that is actually drawn.
 function buildObstacleRenderEntries(ctx) {
-  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  const worldProps = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
   if (!worldProps.length) return [];
   const entries = [];
   for (const o of currentObstacles()) {
@@ -6468,7 +6504,7 @@ function collectLightSources() {
   // light-emitting (a building's windows, a vehicle's lights) in town/road
   // biomes — never a phantom lattice over bare ground. This kills the old
   // "glow on empty grass / TV-off-but-glowing in 12 random spots" artifact.
-  const worldProps = HMH_LEVEL_ENVIRONMENT.worldProps ?? [];
+  const worldProps = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
   if (worldProps.length) {
     const LIT_BIOMES = new Set(['town', 'road', 'pavement']);
     let emitted = 0;
@@ -7073,7 +7109,7 @@ function roguelikeEnemyAnimatedFrame(enemy) {
   if (!combat.roguelikeRun) return null;
   const role = enemy.miniBoss ? 'boss' : 'enemy';
   const key = rosterKeyForEntity(enemy, role);
-  const roster = HMH_ANIMATED_ROSTER[key];
+  const roster = hmh('HMH_ANIMATED_ROSTER')?.[key];
   const phase = Math.round((enemy.mapX ?? 0) * 7 + (enemy.mapY ?? 0) * 13);
   // Enemy faces the player (screen-space iso vector).
   const facing = facingFromVector(
@@ -7116,7 +7152,7 @@ const HERO_LOCKED_ROSTER = Object.freeze({
 
 function heroRosterKey(characterId) {
   const locked = HERO_LOCKED_ROSTER[characterId] ?? 'lester';
-  const r = HMH_ANIMATED_ROSTER[locked];
+  const r = hmh('HMH_ANIMATED_ROSTER')?.[locked];
   if (r && r.animations && Object.keys(r.animations).length) return locked;
   return 'lester'; // ultimate fallback (lester always has the complete kit)
 }
@@ -7132,7 +7168,7 @@ function lesterAnimatedFrame() {
 function lesterAnimatedFrameForState(desiredStates) {
   if (!combat.roguelikeRun) return null;
   const key = heroRosterKey(combat.characterId);
-  const roster = HMH_ANIMATED_ROSTER[key];
+  const roster = hmh('HMH_ANIMATED_ROSTER')?.[key];
   const death = combat.gameOver;
   const facing = facingFromVector(combat.aimMapX ?? 0, combat.aimMapY ?? 1);
   return animatedRosterFrame(roster, desiredStates, { fps: 14, loop: !death, facing });
@@ -7141,7 +7177,7 @@ function lesterAnimatedFrameForState(desiredStates) {
 // First already-decoded frame from ANY animation of a roster (south/first dir).
 // Used as the absolute last-resort hold so the hero never blanks to old art.
 function firstReadyRosterFrame(key) {
-  const roster = HMH_ANIMATED_ROSTER[key];
+  const roster = hmh('HMH_ANIMATED_ROSTER')?.[key];
   const anims = roster?.animations ?? {};
   for (const dirs of Object.values(anims)) {
     const frames = dirs.south ?? dirs[Object.keys(dirs)[0]] ?? [];
@@ -7158,7 +7194,7 @@ function firstReadyRosterFrame(key) {
 // no pop-in). Cheap: just primes the rosterFrame cache + browser decode.
 function preloadHeroRoster(characterId) {
   const key = heroRosterKey(characterId);
-  const roster = HMH_ANIMATED_ROSTER[key];
+  const roster = hmh('HMH_ANIMATED_ROSTER')?.[key];
   const anims = roster?.animations ?? {};
   for (const dirs of Object.values(anims)) {
     for (const frames of Object.values(dirs)) {
@@ -7184,10 +7220,10 @@ const ENEMY_WAVE_BIOME_ALIAS = {
 };
 const ENEMY_WAVE_BY_BIOME = (() => {
   const byBiome = {};
-  for (const e of Object.values(HMH_ENEMIES_WAVE.enemies ?? {})) byBiome[e.biome] = e;
+  for (const e of Object.values(hmh('HMH_ENEMIES_WAVE')?.enemies ?? {})) byBiome[e.biome] = e;
   return byBiome;
 })();
-const ENEMY_WAVE_LIST = Object.values(HMH_ENEMIES_WAVE.enemies ?? {});
+const ENEMY_WAVE_LIST_GET = () => Object.values(hmh('HMH_ENEMIES_WAVE')?.enemies ?? {});
 
 function enemyWaveStill(src) {
   if (!src) return null;
@@ -7204,7 +7240,7 @@ function enemyFacingTowardPlayer(enemy) {
 }
 
 function roguelikeEnemyWaveArt(enemy) {
-  if (!combat.roguelikeRun || !ENEMY_WAVE_LIST.length) return null;
+  if (!combat.roguelikeRun || !ENEMY_WAVE_LIST_GET().length) return null;
   // Resolve which wave enemy to show: stable per-enemy by its biome tile, with a
   // deterministic fallback so every foe still gets a themed sprite.
   if (!enemy._waveEnemyId) {
@@ -7212,10 +7248,10 @@ function roguelikeEnemyWaveArt(enemy) {
     const biome = biomeAt(seed, Math.round(enemy.mapX), Math.round(enemy.mapY));
     const aliased = ENEMY_WAVE_BIOME_ALIAS[biome] ?? null;
     const chosen = (aliased && ENEMY_WAVE_BY_BIOME[aliased])
-      || ENEMY_WAVE_LIST[(Math.abs(Math.round(enemy.mapX * 7 + enemy.mapY * 13))) % ENEMY_WAVE_LIST.length];
+      || ENEMY_WAVE_LIST_GET()[(Math.abs(Math.round(enemy.mapX * 7 + enemy.mapY * 13))) % ENEMY_WAVE_LIST_GET().length];
     enemy._waveEnemyId = chosen?.id ?? null;
   }
-  const wave = enemy._waveEnemyId ? HMH_ENEMIES_WAVE.enemies[enemy._waveEnemyId] : null;
+  const wave = enemy._waveEnemyId ? hmh('HMH_ENEMIES_WAVE')?.enemies[enemy._waveEnemyId] : null;
   if (!wave) return null;
   const facing = enemyFacingTowardPlayer(enemy);
   const src = wave.stills[facing] ?? wave.stills[wave.defaultDirection] ?? wave.stills.south;
@@ -7385,7 +7421,7 @@ const FX_POWERUP_ICON_BY_ID = Object.freeze({
 });
 function fxPowerupIcon(slug) {
   if (!slug) return null;
-  const src = HMH_FX_POWERUPS_WAVE?.powerups?.[slug];
+  const src = hmh('HMH_FX_POWERUPS_WAVE')?.powerups?.[slug];
   if (!src) return null;
   if (!fxPowerupIconCache.has(src)) fxPowerupIconCache.set(src, loadImageAsset(src));
   return fxPowerupIconCache.get(src);
