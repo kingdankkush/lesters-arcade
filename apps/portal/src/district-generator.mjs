@@ -347,3 +347,19 @@ export function getPowerupRulesForDistrict(districtType) {
   };
   return rules[districtType] || { utility: 0.4, offense: 0.3, defense: 0.3 };
 }
+
+// District theme colors for visual distinction overlay (simple tint layer in renderer)
+export const DISTRICT_THEME_COLORS = Object.freeze({
+  DOWNTOWN: '#4a6fa5',      // cool blue
+  SUBURBAN: '#5a8a5a',      // green
+  INDUSTRIAL: '#8a6a4a',    // warm brown/orange
+  COMMERCIAL: '#a56a8a',    // purple/magenta
+  RESIDENTIAL: '#6a8a7a',   // teal-green
+  CITY_PARK: '#4a8a6a',     // forest green
+  FOREST_WILDERNESS: '#3a5a3a', // dark forest
+  BEACH_AREA: '#d4b48a'     // sand/gold
+});
+
+export function getDistrictThemeColor(districtId) {
+  return DISTRICT_THEME_COLORS[districtId.toUpperCase()] || '#ffffff';
+}
