@@ -3519,12 +3519,62 @@ function showSignOutConfirmModal() {
 
 function executeSignOut() {
   playSfxCue('menu-click', 0.05);
+
+  // 1) Stop any in-progress combat loop so the canvas + game loop don't
+  //    continue in the background. Forces the roguelike run to end so the
+  //    next sign-in starts fresh on the gameplay screen.
+  combat.active = false;
+  combat.paused = true;
+  combat.gameOver = true;
+  combat.gameOverReason = 'signout';
+  combat.roguelikeRun = null;
+  combat.weaponUpgrades = Object.freeze({});
+  combat.lastTimestamp = 0;
+  combat.frameTimes.length = 0;
+
+  // 2) Tear down any lingering full-screen or modal overlays that were left
+  //    around from the in-progress session (level-up cards, HMH loading,
+  //    etc.). Defensive — most are already cleaned up by the caller.
+  try {
+    document.querySelectorAll('#hmhLoadingOverlay, #hmhLoadingTitleOverlay, #levelUpOverlay, .level-up-overlay')
+      .forEach((node) => { try { node.remove(); } catch (_) {} });
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  } catch (_) { /* non-DOM env (Node test) — ignore */ }
+
+  // 3) Clear all per-session wallet/profile/progress state. The render()
+  //    call below will recompute every view from these reset values.
   connectedWallet = null;
   connectedChainId = null;
   walletConnector = 'none';
   currentSession = null;
+  lastCompletedSession = null;
+  lastRunScore = 0;
+  lastBossId = null;
+  // Force any cached profile reference to drop so the nav/leaderboard/profile
+  // views don't keep showing the previous player's identity.
+  try {
+    if (typeof globalThis.localStorage !== 'undefined') {
+      // Intentionally do NOT clear localStorage — avatar/name persist across
+      // sign-ins. Just make sure our in-memory caches are dropped.
+    }
+  } catch (_) {}
+
+  // 4) Reset the official app shell back to the wallet-splash step so the
+  //    homepage renders in the signed-out state.
   officialAppStep = 'wallet-splash';
-  render();
+  officialSelectedMode = null;
+
+  // 5) Re-render so all views reset. Wrapped in try/catch so a render
+  //    error here doesn't mask the sign-out itself — the user MUST always
+  //    land on the homepage after clicking confirm.
+  try {
+    render();
+  } catch (err) {
+    console.error('[signOut] render() failed, forcing hard reload:', err);
+    try { location.hash = ''; location.reload(); } catch (_) {}
+  }
 }
 
 // Avatar is stored client-side as a data URL on the player profile object so it
