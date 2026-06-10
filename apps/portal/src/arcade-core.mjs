@@ -15,6 +15,14 @@ import {
   validateUsername,
   isUsernameAvailable,
 } from './username-registry.mjs';
+import {
+  WEAPON_UPGRADE_TREES,
+  computeWeaponUpgrades,
+  reloadProgress,
+  effectiveReloadSeconds,
+  hasSpecial,
+  validateWeaponUpgrades,
+} from './weapon-upgrades.mjs';
 
 export {
   LEADERBOARD_CADENCES,
@@ -23,6 +31,13 @@ export {
   validateUsername,
   isUsernameAvailable,
   resolveDisplayName,
+  // Weapon upgrade tree API — surfaces the pure upgrade system to callers.
+  WEAPON_UPGRADE_TREES,
+  computeWeaponUpgrades,
+  reloadProgress,
+  effectiveReloadSeconds,
+  hasSpecial,
+  validateWeaponUpgrades,
 };
 export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
 export const HARD_MONEY_HEROES_EXPANDED_PIXEL_PACK_MANIFEST = HMH_EXPANDED_PIXEL_PACK_MANIFEST;

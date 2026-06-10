@@ -5,6 +5,7 @@ import { buildDeviceProfile, joystickToKeys } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES } from './src/canonical-actors.mjs';
 import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
+import { sweptAABB, circlesOverlap, stepProjectile, knockback } from './src/combat-physics.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
@@ -48,6 +49,8 @@ import {
   buildLeaderboardModel,
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
+  computeWeaponUpgrades,
+  WEAPON_UPGRADE_TREES,
   buildCombatOptionsMenuModel,
   buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
@@ -1166,6 +1169,8 @@ const combat = {
   powerUps: [],
   // Active timed power-up effects (seconds remaining). 0 = inactive.
   powerUpTimers: { magnet: 0, slowEnemies: 0, berserk: 0 },
+  // Per-weapon upgrade tree choices: { weaponId: { rateOfFire: tier, damage: tier, reloadSpeed: tier } }.
+  weaponUpgrades: {},
   xpGems: [],
   killsByType: {},
   bossKills: 0,
@@ -2082,8 +2087,23 @@ function exitToArcade() {
 }
 
 function weaponById(weaponId) {
-  return LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.find((weapon) => weapon.id === weaponId)
+  const base = LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons.find((weapon) => weapon.id === weaponId)
     ?? LESTER_BLASTER_WEAPON_SYSTEM.primaryWeapons[0];
+  // Apply weapon-specific upgrade tree if the player has chosen branches.
+  // `combat.weaponUpgrades` is a map of { weaponId: { rateOfFire: tier, damage: tier, reloadSpeed: tier } }.
+  const choices = combat.weaponUpgrades?.[weaponId] ?? {};
+  const u = computeWeaponUpgrades(weaponId, choices);
+  return {
+    ...base,
+    fireRatePerSecond: (base.fireRatePerSecond ?? 3) * u.fireRateMultiplier,
+    damage: (base.damage ?? 1) + u.damageFlatBonus,
+    reloadSeconds: (base.reloadSeconds ?? 1.2) / u.reloadMultiplier,
+    clip: u.specials.includes('extended-mag') ? 12
+      : u.specials.includes('quad-shell') ? 4
+      : u.specials.includes('drum-mag') ? 180
+      : base.clip,
+    _upgrades: u,
+  };
 }
 
 function currentLevel() {
@@ -4602,8 +4622,29 @@ function updateBullets() {
     .filter((bullet) => bullet.x < 840 && bullet.ttl > 0);
 
   combat.enemyShots = combat.enemyShots
-    .map((shot) => ({ ...shot, x: shot.x - shot.vx, y: shot.y + shot.vy, ttl: shot.ttl - 1 }))
-    .filter((shot) => shot.x > -40 && shot.ttl > 0);
+    .map((shot) => {
+      // Gravity-affected projectiles (lobbed grenades/mortars).
+      if (shot.gravity) {
+        const p = stepProjectile({ x: shot.x, y: shot.y, vx: shot.vx, vy: shot.vy, gravity: shot.gravity, groundY: GROUND_Y + 6 });
+        return { ...shot, x: p.x, y: p.y, vx: p.vx, vy: p.vy, ttl: shot.ttl - 1 };
+      }
+      // Homing projectiles curve toward the player.
+      if (shot.homing) {
+        const dx = combat.playerX - shot.x;
+        const dy = (combat.playerY - 20) - shot.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const steer = 0.08;
+        const nvx = shot.vx + (dx / len) * steer;
+        const nvy = shot.vy + (dy / len) * steer;
+        return { ...shot, x: shot.x + nvx, y: shot.y + nvy, vx: nvx, vy: nvy, ttl: shot.ttl - 1 };
+      }
+      return { ...shot, x: shot.x - shot.vx, y: shot.y + shot.vy, ttl: shot.ttl - 1 };
+    })
+    .filter((shot) => {
+      // Stop lobbed projectiles that landed on the ground (stopped = bounced below threshold).
+      if (shot.gravity && shot.y >= GROUND_Y + 4) return false;
+      return shot.x > -40 && shot.ttl > 0;
+    });
 
   const bossBox = bossHitbox();
   for (const bullet of combat.bullets) {
@@ -4615,15 +4656,28 @@ function updateBullets() {
       continue;
     }
     for (const enemy of combat.enemies) {
-      if (rectsOverlap(bulletBox, enemyHitbox(enemy))) {
+      // Swept AABB: detect collision even when bullet moves fast between frames.
+      // Old position = bullet.x - bullet.vx, bullet.y - bullet.vy (where it was last frame).
+      const eBox = enemyHitbox(enemy);
+      const t = sweptAABB(bullet.x - bullet.vx, bullet.y - bullet.vy, bullet.x, bullet.y, eBox.x, eBox.y, eBox.w, eBox.h);
+      if (t !== null) {
         damageEnemy(enemy, bullet.damage, bullet.weaponId);
+        // Apply knockback for satisfying hit feedback (non-AP/non-crit weapons).
+        if (bullet.damageType !== 'armor-piercing') {
+          const kb = knockback({ sourceDamage: bullet.damage, sourceType: bullet.damageType ?? 'bullet', armored: enemy.armored, dirX: bullet.vx > 0 ? 1 : bullet.vx < 0 ? -1 : 0 });
+          enemy._knockback = { vx: kb.vx, vy: kb.vy, frames: kb.durationFrames };
+        }
         bullet.ttl = 0;
         break;
       }
     }
-    if (bullet.ttl > 0 && bossBox && rectsOverlap(bulletBox, bossBox)) {
-      damageBoss(bullet.damage, bullet.weaponId);
-      bullet.ttl = 0;
+    if (bullet.ttl > 0 && bossBox) {
+      // Swept AABB for boss too — bosses have large hitboxes + fast bullets.
+      const t = sweptAABB(bullet.x - bullet.vx, bullet.y - bullet.vy, bullet.x, bullet.y, bossBox.x, bossBox.y, bossBox.w, bossBox.h);
+      if (t !== null) {
+        damageBoss(bullet.damage, bullet.weaponId);
+        bullet.ttl = 0;
+      }
     }
   }
 
@@ -4657,6 +4711,14 @@ function updateEnemies(difficulty) {
   const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
   for (const enemy of combat.enemies) {
     if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
+    // Apply knockback from hits (satisfying hit feedback).
+    if (enemy._knockback && enemy._knockback.frames > 0) {
+      enemy.x += enemy._knockback.vx;
+      enemy.y = Math.max(GROUND_Y - 2, enemy.y + enemy._knockback.vy);
+      enemy._knockback.frames -= 1;
+      enemy._knockback.vx *= 0.8; // friction
+      enemy._knockback.vy *= 0.8;
+    }
     const enemyBox = enemyHitbox(enemy);
     const distanceToPlayer = enemy.x - (combat.playerX + playerBox.w);
     const isFlying = enemy.class?.includes('flying');
@@ -4735,18 +4797,103 @@ function updateBoss(difficulty) {
     const superMove = combat.boss.phase >= 2 && combat.frame % 3 === 0
       ? combat.boss.superMoves[(combat.frame + combat.boss.phase) % combat.boss.superMoves.length]
       : null;
-    const shots = superMove ? 5 + combat.boss.phase : pattern.includes('sweep') || pattern.includes('bullet') ? 4 : 2 + combat.boss.phase;
-    for (let i = 0; i < shots; i += 1) {
+    // Boss attacks: pattern-specific behavior driven by pattern name.
+    // Super moves use a big multi-lane burst and take precedence over the pattern.
+    if (superMove) {
+      spawnText(`SUPER: ${superMove}`, combat.boss.x - 44, GROUND_Y - 132, '#ffe84d');
+      const shots = 5 + combat.boss.phase;
+      for (let i = 0; i < shots; i += 1) {
+        combat.enemyShots.push({
+          x: combat.boss.x + 8,
+          y: GROUND_Y - 82 + (i - shots / 2) * 10,
+          vx: 2.35 + combat.boss.phase * 0.18,
+          vy: (i - shots / 2) * 0.14,
+          damage: NORMAL_HIT_DAMAGE,
+          ttl: 220,
+        });
+      }
+    } else if (pattern === 'lane-charge') {
+      // Boss rushes forward toward the player briefly, dealing contact damage.
+      combat.boss._chargeFrames = combat.boss._chargeFrames ?? 0;
+      combat.spawnChargeDir = combat.playerX < combat.boss.x ? -1 : 1;
+      for (let i = 0; i < 3; i += 1) {
+        combat.enemyShots.push({
+          x: combat.boss.x + 8,
+          y: GROUND_Y - 82,
+          vx: 3.4 + combat.boss.phase * 0.25,
+          vy: (i - 1) * 0.1,
+          damage: NORMAL_HIT_DAMAGE,
+          ttl: 160,
+        });
+      }
+    } else if (pattern === 'summon-minions') {
+      // Boss pauses and summons 2-3 weak minions (using standard spawnEnemy).
+      const count = 2 + (combat.boss.phase === 3 ? 1 : 0);
+      for (let i = 0; i < count; i += 1) {
+        spawnEnemy({ stageIndex: combat.boss.stageIndex, role: 'cover-shooter' });
+      }
+      spawnText('SUMMONED', combat.boss.x - 26, GROUND_Y - 148, '#ff7b2f');
+    } else if (pattern === 'floor-shockwave') {
+      // Low-flying wide ground projectile — must jump over it.
       combat.enemyShots.push({
         x: combat.boss.x + 8,
-        y: GROUND_Y - 82 + (i - shots / 2) * (superMove ? 10 : 13),
-        vx: 2.35 + combat.boss.phase * 0.18,
-        vy: (i - shots / 2) * (superMove ? 0.14 : 0.08),
-        damage: NORMAL_HIT_DAMAGE,
-        ttl: superMove ? 220 : 190,
+        y: GROUND_Y - 14, // just above the ground
+        vx: 2.8 + combat.boss.phase * 0.2,
+        vy: 0,
+        damage: NORMAL_HIT_DAMAGE + 2,
+        ttl: 240,
+        kind: 'shockwave',
+        w: 48, // wider hitbox for ground wave
       });
+      spawnText('SHOCKWAVE', combat.boss.x - 30, GROUND_Y - 46, '#ff476f');
+    } else if (pattern === 'lobbed-projectiles') {
+      // Arced projectiles using stepProjectile gravity model.
+      const count = 2 + combat.boss.phase;
+      for (let i = 0; i < count; i += 1) {
+        combat.enemyShots.push({
+          x: combat.boss.x + 8,
+          y: GROUND_Y - 100,
+          vx: 1.8 + combat.boss.phase * 0.15,
+          vy: -2.2 - i * 0.15,
+          damage: NORMAL_HIT_DAMAGE,
+          ttl: 260,
+          gravity: 0.12, // arced trajectory
+        });
+      }
+    } else if (pattern === 'homing-orb') {
+      // Slower projectile that curves toward the player each frame.
+      const dx = combat.playerX - combat.boss.x;
+      const dy = (combat.playerY - 30) - (GROUND_Y - 82);
+      const len = Math.hypot(dx, dy) || 1;
+      combat.enemyShots.push({
+        x: combat.boss.x + 8,
+        y: GROUND_Y - 82,
+        vx: (dx / len) * 2.2,
+        vy: (dy / len) * 2.2,
+        damage: NORMAL_HIT_DAMAGE + 3,
+        ttl: 280,
+        homing: true,
+      });
+    } else if (pattern === 'safe-lane-sweep') {
+      // High and low bullets with a middle gap (the player crouch/jump slot).
+      const speed = 2.6 + combat.boss.phase * 0.18;
+      combat.enemyShots.push({ x: combat.boss.x + 8, y: GROUND_Y - 110, vx: speed, vy: 0, damage: NORMAL_HIT_DAMAGE, ttl: 200 });
+      combat.enemyShots.push({ x: combat.boss.x + 8, y: GROUND_Y - 68, vx: speed, vy: 0, damage: NORMAL_HIT_DAMAGE, ttl: 200 });
+      combat.enemyShots.push({ x: combat.boss.x + 8, y: GROUND_Y - 24, vx: speed, vy: 0, damage: NORMAL_HIT_DAMAGE, ttl: 200 });
+    } else {
+      // ranged-burst fallback: standard fan of projectiles.
+      const shots = 2 + combat.boss.phase;
+      for (let i = 0; i < shots; i += 1) {
+        combat.enemyShots.push({
+          x: combat.boss.x + 8,
+          y: GROUND_Y - 82 + (i - shots / 2) * 13,
+          vx: 2.35 + combat.boss.phase * 0.18,
+          vy: (i - shots / 2) * 0.08,
+          damage: NORMAL_HIT_DAMAGE,
+          ttl: 190,
+        });
+      }
     }
-    if (superMove) spawnText(`SUPER: ${superMove}`, combat.boss.x - 44, GROUND_Y - 132, '#ffe84d');
     if (combat.boss.phase === 3) spawnExplosion(combat.boss.x + 42, GROUND_Y - 55, '#ff236d');
     combat.boss.attackTimer = Math.max(78, 150 - combat.boss.phase * 14);
   }
