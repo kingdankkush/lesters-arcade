@@ -405,17 +405,40 @@ export function pickTemplate(seed, cellX, cellY, biome) {
   // Determine if this cell should respect the district archetype (biased coin).
   const rollWithArchetype = rand01(seed, cellX * 31 + 7, cellY * 17 + 91) < DISTRICT_ARCHETYPE_BIAS;
 
-  const total = choices.reduce((s, t) => s + (t.weight ?? 1), 0);
-  let r = rand01(seed, cellX * 31 + 7, cellY * 17 + 3) * total;
+  // Layer landmark influence on top of district zoning. If this cell sits inside
+  // a landmark's influence radius, boost weights of templates tagged with the
+  // landmark's `complementArchetype` (e.g., benches near fountain, crates near
+  // refinery). The boost tapers from 4x at the anchor cell down to 1.3x at the
+  // edge of the influence radius, giving each landmark a "pull" gradient.
+  const landmarkHit = typeof landmarkInfluenceAt === 'function'
+    ? landmarkInfluenceAt(seed, cellX, cellY)
+    : null;
+  const landmarkComplementArchetype = landmarkHit?.landmark?.complementArchetype ?? null;
+  const landmarkBoost = landmarkHit
+    ? 1.3 + (2.7 * (1 - (landmarkHit.distance / Math.max(1, landmarkHit.landmark.influenceRadius))))
+    : 1;
+
+  // Compute effective weight for each candidate template.
+  let total = 0;
+  const scored = [];
   for (const t of choices) {
     const tags = t.archetypeTags ?? [];
     const matchesArchetype = tags.includes(archetype);
-    // Heavily penalize non-matching templates when rolling with archetype.
-    const effectiveWeight = (rollWithArchetype && !matchesArchetype && tags.length > 0)
-      ? (t.weight ?? 1) * 0.12
-      : (t.weight ?? 1);
-    r -= effectiveWeight;
-    if (r <= 0) return t;
+    const matchesLandmark = landmarkComplementArchetype && tags.includes(landmarkComplementArchetype);
+    let w = t.weight ?? 1;
+    // District-archetype bias: non-matching templates with explicit tags lose most weight.
+    if (rollWithArchetype && !matchesArchetype && tags.length > 0) w *= 0.12;
+    // Landmark complement bias: templates matching the landmark's archetype get
+    // a boost that tapers with distance.
+    if (matchesLandmark) w *= landmarkBoost;
+    scored.push({ template: t, weight: w });
+    total += w;
+  }
+  if (total <= 0) return choices[0];
+  let r = rand01(seed, cellX * 31 + 7, cellY * 17 + 3) * total;
+  for (const s of scored) {
+    r -= s.weight;
+    if (r <= 0) return s.template;
   }
   return choices[0];
 }

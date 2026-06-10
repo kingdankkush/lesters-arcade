@@ -1603,7 +1603,9 @@ function renderLevelUpActionGrid() {
     levelUpContainer = document.createElement('div');
     levelUpContainer.id = 'levelUpOverlay';
     levelUpContainer.className = 'level-up-overlay';
-    levelUpContainer.style.cssText = 'position:absolute;top:12%;left:50%;transform:translateX(-50%);z-index:9999;max-width:86%;max-height:76vh;overflow:auto;background:rgba(12,14,24,0.97);border:3px solid #ffe84d;border-radius:10px;padding:18px 22px;box-shadow:0 0 40px rgba(255,232,77,0.3);';
+    // Single-column stacked layout so each card fills the container width;
+    // matches the design language the user approved on the weapon-branch card.
+    levelUpContainer.style.cssText = 'position:absolute;top:10%;left:50%;transform:translateX(-50%);z-index:9999;width:min(86%, 520px);max-height:82vh;overflow:auto;display:flex;flex-direction:column;gap:14px;background:rgba(12,14,24,0.88);border:3px solid rgba(255,95,162,0.55);border-radius:14px;padding:20px 22px;box-shadow:0 0 48px rgba(255,95,162,0.25), inset 0 0 18px rgba(255,95,162,0.08);backdrop-filter:blur(2px);';
     dom.officialCombatMount.appendChild(levelUpContainer);
   }
   const targetGrid = levelUpContainer || dom.combatMenuActionGrid;
@@ -3346,10 +3348,69 @@ async function beginOfficialLevel() {
   const profile = await getSharedPlayerProfile(connectedWallet);
   console.log('[GameRegistry] Profile loaded for run:', profile.displayName);
 
-  // Show cinematic loading screen with keyart + progress + level title
+  // Show cinematic loading screen with keyart + progress + level title.
+  // The game world is generated INSIDE the loading callback but kept FROZEN
+  // (combat.paused + combat.pendingBegin) until the player confirms ready,
+  // so they see the canvas behind the ready overlay before the game starts.
   await showHMHLoadingScreen(async () => {
     await startCombat();
+    // Freeze the game: world generated and on-screen, but no ticking yet.
+    combat.pendingBegin = true;
+    combat.paused = true;
     render();
+  });
+  // Wait for the player to press SPACE or click the ready overlay.
+  await waitForPlayerReady();
+}
+
+// Block until the user presses SPACE / Enter / clicks the ready overlay. The
+// overlay is rendered after the HMH loading screen finishes, so the player
+// sees the real combat canvas behind a semi-transparent "press to begin"
+// message instead of the game already running under a faded keyart.
+function waitForPlayerReady() {
+  return new Promise((resolve) => {
+    // If the user hasn't actually reached gameplay yet (e.g. test env, no
+    // combat mount), resolve immediately — nothing to show.
+    if (!dom.officialCombatMount) { combat.pendingBegin = false; combat.paused = false; resolve(); return; }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'hmhReadyOverlay';
+    overlay.style.cssText = 'position:absolute;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;flex-direction:column;background:rgba(6,8,18,0.55);cursor:pointer;backdrop-filter:blur(1.5px);transition:opacity 360ms ease;';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-family:monospace;font-size:42px;font-weight:900;color:#ffe84d;letter-spacing:6px;text-shadow:0 0 28px rgba(255,232,77,0.65), 3px 3px 0 #000;text-align:center;';
+    title.textContent = 'READY';
+
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-family:monospace;font-size:14px;font-weight:700;color:#cfefff;letter-spacing:3px;margin-top:18px;text-shadow:0 0 8px rgba(25,247,255,0.5);';
+    hint.textContent = 'PRESS SPACE OR CLICK TO BEGIN';
+
+    overlay.append(title, hint);
+    // Position relative to the combat mount so it sits over the canvas.
+    const mount = dom.officialCombatMount;
+    const prevPos = getComputedStyle(mount).position;
+    if (prevPos === 'static') mount.style.position = 'relative';
+    mount.appendChild(overlay);
+
+    const cleanup = () => {
+      overlay.removeEventListener('click', onActivate);
+      document.removeEventListener('keydown', onKey);
+      overlay.style.opacity = '0';
+      setTimeout(() => { try { overlay.remove(); } catch {} if (prevPos === 'static') mount.style.position = prevPos; }, 400);
+      combat.pendingBegin = false;
+      combat.paused = false;
+      playSfxCue('menu-click', 0.05);
+      resolve();
+    };
+    const onActivate = () => cleanup();
+    const onKey = (e) => {
+      if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
+        e.preventDefault();
+        cleanup();
+      }
+    };
+    overlay.addEventListener('click', onActivate);
+    document.addEventListener('keydown', onKey);
   });
 }
 
@@ -4415,7 +4476,13 @@ function grenade() {
       if (d <= radius + 1) damageBoss(throwingAxe ? 26 : 40, throwingAxe ? 'axe' : 'grenade');
     }
     const burst = isoToScreen(cx, cy);
-    spawnExplosion(burst.x, burst.y, throwingAxe ? '#c9d6ff' : '#ff7b2f');
+    // Use the dedicated grenade explosion for warm yellow+red mix on grenades;
+    // throwing axes use the single-color plasma burst for a distinct cold look.
+    if (throwingAxe) {
+      spawnExplosion(burst.x, burst.y, '#c9d6ff');
+    } else {
+      spawnGrenadeExplosion(burst.x, burst.y);
+    }
     spawnText(throwingAxe ? '🪓' : '💥', burst.x, burst.y - 30, throwingAxe ? '#c9d6ff' : '#ff7b2f');
     return;
   }
@@ -4427,7 +4494,11 @@ function grenade() {
   }
   const bossBox = bossHitbox();
   if (bossBox && rectsOverlap(blastBox, bossBox)) damageBoss(throwingAxe ? 18 : 24, throwingAxe ? 'axe' : 'grenade');
-  spawnExplosion(combat.playerX + 210, GROUND_Y - 35, throwingAxe ? '#c9d6ff' : '#ff7b2f');
+  if (throwingAxe) {
+    spawnExplosion(combat.playerX + 210, GROUND_Y - 35, '#c9d6ff');
+  } else {
+    spawnGrenadeExplosion(combat.playerX + 210, GROUND_Y - 35);
+  }
 }
 
 function dropPowerUp() {
@@ -4564,7 +4635,7 @@ function updateStageDirector() {
 }
 
 function updateCombatStep(stepMs) {
-  if (!combat.active || combat.paused || combat.gameOver) {
+  if (!combat.active || combat.paused || combat.pendingBegin || combat.gameOver) {
     updateParticles(stepMs / 1000);
     updateFloatingTexts();
     return;
@@ -5080,7 +5151,14 @@ function damageEnemy(enemy, damage, source, opts = {}) {
   combat.damageCombo += applied;
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
   playSfxCue('enemy-hit', 0.035);
-  spawnBlood(enemy.x + 12, enemy.y - 30, source === 'knife' ? '#ff1f4f' : '#ff7b2f');
+  // RED spurt of blood on bullet impacts. Crimson for standard shots, deeper
+  // red for knife slashes (visceral), purple for hash-rail plasma.
+  const bloodColor =
+    source === 'knife' ? '#8b0020' :
+    source === 'hash-rail' ? '#7c4dff' :
+    source === 'axe' ? '#c62828' :
+    '#dc143c'; // crimson — the requested red spurt for bullet-on-enemy
+  spawnBlood(enemy.x + 12, enemy.y - 30, bloodColor);
   spawnDamageNumber(present.label ?? `${Math.round(applied)}`, enemy.x + 12, enemy.y - 40, present.color ?? '#ffe84d', Boolean(present.crit));
 }
 
@@ -5216,14 +5294,18 @@ function spawnSpriteParticle(type, x, y, options = {}) {
 }
 
 function spawnMuzzleFlash(x, y, weaponId) {
+  // ONE clean muzzle flash — no secondary shell-casing particles. The flash
+  // is the "firing effect" and stands alone; extra sparks on top looked like
+  // the reload was generating particles of its own.
   spawnSpriteParticle('muzzle-flash', x, y, {
-    vx: 1.2,
-    vy: -0.2,
-    color: weaponId === 'hash-rail' ? '#19f7ff' : '#ffe84d',
-    size: weaponId === 'scatter-shotgun' ? 68 : 54,
-    life: 0.26,
+    vx: 1.4,
+    vy: -0.1,
+    color: weaponId === 'hash-rail' ? '#19f7ff' : weaponId === 'scatter-shotgun' ? '#ffb347' : '#fff2b3',
+    size: weaponId === 'scatter-shotgun' ? 70 : weaponId === 'hash-rail' ? 58 : 50,
+    life: 0.22,
+    scaleFrom: 0.8,
+    scaleTo: 1.15,
   });
-  for (let i = 0; i < 3; i += 1) combat.particles.push({ type: 'impact-sparks', x: x - 8, y: y + 5, vx: -1 - i * 0.2, vy: 1 + i * 0.15, color: '#c78c48', size: 18, life: 0.55, maxLife: 0.55 });
 }
 
 function spawnSlash(x, y) {
@@ -5240,9 +5322,48 @@ function spawnBlood(x, y, color) {
 function spawnExplosion(x, y, color) {
   if (gameSettings.screenShake) combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
   spawnFxImage('fireball', x, y, 96, 0.5);
-  spawnFxImage('shockwave', x, y, 120, 0.42);
   spawnSpriteParticle('level-up-burst', x, y, { color, size: 112, life: 0.72 });
   for (let i = 0; i < 12; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 22 + Math.random() * 20, life: 0.8 + Math.random() * 0.35, maxLife: 1.15 });
+}
+
+// Grenade / explosive ordnance detonation: warm YELLOW-AND-RED mix so it reads
+// distinctly from the single-color boss/prop explosions. Alternates yellow,
+// red-orange, bright red, and a few white-hot core sparks for punch.
+function spawnGrenadeExplosion(x, y) {
+  if (gameSettings.screenShake) combat.shake = Math.min(14, (combat.shake ?? 0) + 8);
+  const palette = ['#ffe84d', '#ffb347', '#ff5f1f', '#dc143c', '#fff3a0'];
+  // Bright white-hot core flash — short lived but huge.
+  spawnSpriteParticle('explosion-core', x, y, { color: '#fff5cc', size: 200, life: 0.28, scaleFrom: 0.5, scaleTo: 1.4 });
+  // Secondary fireball sprite for punch.
+  spawnFxImage('fireball', x, y, 140, 0.55);
+  // Main warm-color spray
+  for (let i = 0; i < 14; i += 1) {
+    const color = palette[i % palette.length];
+    combat.particles.push({
+      type: 'impact-sparks',
+      x, y,
+      vx: (Math.random() - 0.5) * 9,
+      vy: (Math.random() - 0.55) * 7 - 0.8, // bias upward for plume
+      color,
+      size: 24 + Math.random() * 26,
+      life: 0.7 + Math.random() * 0.5,
+      maxLife: 1.2,
+    });
+  }
+  // Smoke puff that lingers after the blast.
+  for (let i = 0; i < 4; i += 1) {
+    combat.particles.push({
+      type: 'impact-sparks',
+      x: x + (Math.random() - 0.5) * 14,
+      y: y - 4 + (Math.random() - 0.5) * 10,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: -0.45 - Math.random() * 0.3,
+      color: '#4a4a55',
+      size: 36 + Math.random() * 16,
+      life: 1.4 + Math.random() * 0.4,
+      maxLife: 1.8,
+    });
+  }
 }
 
 function spawnText(text, x, y, color) {
@@ -5423,10 +5544,14 @@ function shootRoguelike() {
 function openLevelUpMenu() {
   if (!combat.roguelikeRun?.pausedForLevelUp) return;
   const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills });
-  combat.levelUpChoices = [...offer.options, ...weaponTreeBranchChoices()];
+  // 2 choices total: if the weapon tree has available branches this level, we
+  // pair one weapon-branch card with one roguelike-skill card; otherwise both
+  // slots come from the roguelike library. The player always sees exactly 2
+  // options, matching the card-container layout in the UI.
+  combat.levelUpChoices = buildLevelUpPair(offer.options);
   combat.levelUpPaused = true;
   combat.paused = true;
-  combat.status = 'LEVEL UP: choose one of two random augments. The roguelike run is paused until you pick.';
+  combat.status = 'LEVEL UP: choose one upgrade. The roguelike run is paused until you pick.';
   spawnText('LEVEL UP', ISO_CENTER_X - 28, ISO_CENTER_Y - 72, '#ffe84d');
   syncCombatOverlay();
 }
@@ -5435,8 +5560,28 @@ function rerollLevelUpChoices() {
   if (!combat.levelUpPaused || !combat.roguelikeRun || combat.roguelikeRun.rerollsRemaining <= 0) return;
   combat.roguelikeRun = { ...combat.roguelikeRun, rerollsRemaining: combat.roguelikeRun.rerollsRemaining - 1 };
   const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills + 999, reroll: true });
-  combat.levelUpChoices = [...offer.options, ...weaponTreeBranchChoices()];
+  combat.levelUpChoices = buildLevelUpPair(offer.options);
   syncCombatOverlay();
+}
+
+// Combine the roguelike-skill options and (optional) weapon-branch option into
+// exactly 2 cards. If weapon-tree branches are available, we show ONE weapon
+// card + ONE roguelike card. Otherwise two roguelike cards.
+function buildLevelUpPair(roguelikeOptions) {
+  const options = [...(roguelikeOptions ?? [])];
+  const weaponBranch = (weaponTreeBranchChoices() ?? [])[0] ?? null;
+  const out = [];
+
+  if (weaponBranch) {
+    // Pair one weapon branch with one roguelike card (first in the options list).
+    if (options.length) out.push(options.shift());
+    out.push(weaponBranch);
+  } else {
+    // No weapon branches available — use two roguelike cards.
+    if (options.length) out.push(options.shift());
+    if (options.length) out.push(options.shift());
+  }
+  return out;
 }
 
 // Build exactly ONE weapon-tree branch upgrade card for the current weapon per
