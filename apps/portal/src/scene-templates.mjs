@@ -409,4 +409,22 @@ export function sceneObjectsNear(seed, centerX, centerY, halfExtent, biomeAt, op
 export function groundThemeForCell(seed, cellX, cellY, biome) {
   const t = pickTemplate(seed, cellX, cellY, biome);
   return t?.groundTheme ?? null;
+
+  // === LANDMARK TEMPLATES (unique props + gameplay hooks) ===
+  observatory_landmark: Object.freeze({
+    id: 'observatory_landmark', biomes: ['town'], groundTheme: 'pavement', weight: 0.1,
+    slots: [
+      { ...A('landmark/observatory-dome', 'bigprop', { radius: 1.2 }), place: 'anchor', count: 1, gameplayHook: 'reveal_minimap' },
+      { ...A('landmark/telescope', 'decor', { radius: 0.4 }), place: 'scatter', count: 1 },
+    ],
+    districtThemeColor: '#4a6fa5'
+  }),
+  factory_landmark: Object.freeze({
+    id: 'factory_landmark', biomes: ['pavement'], groundTheme: 'pavement', weight: 0.1,
+    slots: [
+      { ...A('landmark/factory-smokestack', 'bigprop', { radius: 1.0 }), place: 'anchor', count: 1, gameplayHook: 'toxic_cloud' },
+      { ...A('landmark/conveyor-belt', 'decor', { radius: 0.6 }), place: 'scatter', count: 2 },
+    ],
+    districtThemeColor: '#8a6a4a'
+  }),
 }
