@@ -3,31 +3,728 @@
 // READY = has all required states ({"heroes":["idle","walk","shoot","hurt","death"],"enemies":["idle","walk","attack-tell","hit","death"]}); only READY
 // characters may be wired into the runtime roster — partial kits would mix
 // designs per-state (the hero-flicker bug).
-export const HMH_COMPLETE_ANIMATIONS_READY = Object.freeze({});
-export const HMH_COMPLETE_ANIMATIONS_PARTIAL = Object.freeze({
+export const HMH_COMPLETE_ANIMATIONS_READY = Object.freeze({
  "lit-commando": {
-  "missing": [
-   "idle",
-   "walk"
-  ],
-  "states": {
-   "crouch": 7,
-   "death": 8,
-   "hurt": 4,
-   "melee": 4,
-   "shoot": 8
+  "role": "hero",
+  "set": "heroes",
+  "animations": {
+   "crouch": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-east/frame-4.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-east/frame-4.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-north-west/frame-4.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south/frame-4.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-east/frame-4.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-south-west/frame-4.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-crouch-west/frame-4.png"
+    ]
+   },
+   "death": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-east/frame-10.png"
+    ],
+    "north": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north/frame-10.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-east/frame-10.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-north-west/frame-10.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south/frame-10.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-east/frame-10.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-south-west/frame-10.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-8.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-9.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-death-west/frame-10.png"
+    ]
+   },
+   "hurt": {
+    "north": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-north/frame-4.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-east/frame-4.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-south-west/frame-4.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-hurt-west/frame-4.png"
+    ]
+   },
+   "idle": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-east/frame-4.png"
+    ],
+    "north": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north/frame-4.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-east/frame-4.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-north-west/frame-4.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south/frame-4.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-east/frame-4.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-south-west/frame-4.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-idle-west/frame-4.png"
+    ]
+   },
+   "melee": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-east/frame-8.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-north-east/frame-8.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south/frame-8.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-melee-south-east/frame-8.png"
+    ]
+   },
+   "run": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-east/frame-6.png"
+    ],
+    "north": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north/frame-6.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-east/frame-6.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-run-north-west/frame-6.png"
+    ]
+   },
+   "shoot": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-east/frame-8.png"
+    ],
+    "north": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north/frame-8.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-east/frame-8.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-north-west/frame-8.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south/frame-8.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-east/frame-8.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-south-west/frame-8.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-shoot-west/frame-8.png"
+    ]
+   },
+   "walk": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-east/frame-6.png"
+    ],
+    "north": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north/frame-6.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-north-east/frame-6.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south/frame-6.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-east/frame-6.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-south-west/frame-6.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/heroes/lit-commando-walk-west/frame-6.png"
+    ]
+   }
   }
  },
+ "warren-spear-rider": {
+  "role": "enemy",
+  "set": "enemies",
+  "animations": {
+   "attack-tell": {
+    "south": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south/frame-4.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-attack-tell-south-east/frame-4.png"
+    ]
+   },
+   "death": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-east/frame-8.png"
+    ],
+    "north": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-6.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-7.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north/frame-8.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-6.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-7.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-east/frame-8.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-north-west/frame-8.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-6.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-7.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-death-south-west/frame-8.png"
+    ]
+   },
+   "hit": {
+    "north": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north/frame-4.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-north-west/frame-4.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-hit-south/frame-4.png"
+    ]
+   },
+   "idle": {
+    "north": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north/frame-4.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-east/frame-4.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-north-west/frame-4.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south/frame-4.png"
+    ],
+    "south-east": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-east/frame-4.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-south-west/frame-4.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-idle-west/frame-4.png"
+    ]
+   },
+   "walk": {
+    "east": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-east/frame-6.png"
+    ],
+    "north": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north/frame-6.png"
+    ],
+    "north-east": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-east/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-east/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-east/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-east/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-east/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-east/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-east/frame-6.png"
+    ],
+    "north-west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-north-west/frame-6.png"
+    ],
+    "south": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south/frame-6.png"
+    ],
+    "south-west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-south-west/frame-6.png"
+    ],
+    "west": [
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-west/frame-0.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-west/frame-1.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-west/frame-2.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-west/frame-3.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-west/frame-4.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-west/frame-5.png",
+     "./assets/generated/hmh-complete-animations/enemies/warren-spear-rider-walk-west/frame-6.png"
+    ]
+   }
+  }
+ }
+});
+export const HMH_COMPLETE_ANIMATIONS_PARTIAL = Object.freeze({
  "lit-valkyrie": {
   "missing": [
-   "idle",
    "walk"
   ],
   "states": {
    "crouch": 5,
    "death": 5,
    "hurt": 8,
+   "idle": 4,
    "melee": 4,
+   "run": 1,
    "shoot": 1
   }
  },
@@ -44,24 +741,24 @@ export const HMH_COMPLETE_ANIMATIONS_PARTIAL = Object.freeze({
  },
  "evil-banker": {
   "missing": [
-   "idle",
-   "walk",
    "death"
   ],
   "states": {
    "attack-tell": 8,
-   "hit": 7
+   "hit": 7,
+   "idle": 1,
+   "walk": 4
   }
  },
- "warren-spear-rider": {
+ "trench-degen": {
   "missing": [
-   "idle",
-   "walk"
+   "walk",
+   "attack-tell",
+   "hit",
+   "death"
   ],
   "states": {
-   "attack-tell": 2,
-   "death": 5,
-   "hit": 3
+   "idle": 5
   }
  }
 });
