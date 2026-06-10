@@ -3339,28 +3339,29 @@ async function beginOfficialLevel() {
 
 async function showHMHLoadingScreen(onComplete) {
   const bgUrl = HMH_LOADING_KEYARTS[Math.floor(Math.random() * HMH_LOADING_KEYARTS.length)];
-  // Create loading overlay
+  // Create loading overlay (fully opaque so nothing behind it is visible until
+  // we're ready to reveal the freshly-initialized roguelike scene).
   const overlay = document.createElement('div');
   overlay.id = 'hmhLoadingOverlay';
   overlay.style.cssText = `position:fixed;inset:0;z-index:99999;background:#0a0c14 url(${bgUrl}) center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;`;
-  
+
   // Progress bar container
   const barContainer = document.createElement('div');
   barContainer.style.cssText = 'width:60%;max-width:520px;height:12px;background:rgba(255,255,255,0.15);border:2px solid #ffe84d;border-radius:999px;overflow:hidden;margin-bottom:24px;';
-  
+
   const bar = document.createElement('div');
   bar.style.cssText = 'height:100%;width:0%;background:linear-gradient(90deg,#ffe84d,#fff);transition:width 80ms linear;';
   barContainer.appendChild(bar);
-  
+
   // Status text
   const status = document.createElement('div');
   status.style.cssText = 'color:#ffe84d;font-family:monospace;font-size:15px;letter-spacing:2px;margin-bottom:12px;';
   status.textContent = 'INITIALIZING HARD MONEY HEROES...';
-  
+
   overlay.append(barContainer, status);
   document.body.appendChild(overlay);
-  
-  // Simulate asset loading + world generation (2.5s)
+
+  // Progress bar animation
   let progress = 0;
   const interval = setInterval(() => {
     progress += Math.random() * 4 + 1.5;
@@ -3369,45 +3370,66 @@ async function showHMHLoadingScreen(onComplete) {
     if (progress > 35) status.textContent = 'RENDERING DISTRICTS & ROAD NETWORK...';
     if (progress > 65) status.textContent = 'LOADING SPRITE SHEETS & ENEMIES...';
     if (progress > 85) status.textContent = 'PREPARING LEVEL 1...';
-    if (progress >= 100) {
-      clearInterval(interval);
-      // Fade out keyart, show level title
-      setTimeout(() => {
-        overlay.style.transition = 'opacity 420ms ease';
-        overlay.style.opacity = '0';
-        
-        // Create level title overlay
-        const titleOverlay = document.createElement('div');
-        titleOverlay.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(10,12,20,0.65);';
-        
-        const title = document.createElement('div');
-        title.style.cssText = 'font-size:72px;font-weight:900;color:#fff;text-shadow:0 0 40px rgba(255,232,77,0.9), 4px 4px 0 #000;letter-spacing:4px;opacity:0;transform:translateY(30px);transition:all 520ms cubic-bezier(0.23,1,0.32,1);';
-        title.textContent = 'LEVEL 1 — CRYPTO WASTELANDS';
-        
-        titleOverlay.appendChild(title);
-        document.body.appendChild(titleOverlay);
-        
-        // Animate title in
-        requestAnimationFrame(() => {
-          title.style.opacity = '1';
-          title.style.transform = 'translateY(0)';
-        });
-        
-        // Hold for ~3s then fade out and start game
-        setTimeout(() => {
-          title.style.transition = 'all 480ms ease';
-          title.style.opacity = '0';
-          title.style.transform = 'translateY(-40px)';
-          
-          setTimeout(() => {
-            titleOverlay.remove();
-            overlay.remove();
-            if (typeof onComplete === 'function') onComplete();
-          }, 520);
-        }, 2850);
-      }, 180);
-    }
   }, 85);
+
+  // Run the actual game setup while the keyart + progress bar are showing.
+  // This way roguelike world generation happens behind the loading screen,
+  // and when the user peeks through the next overlay transition, the
+  // roguelike scene is already painted — no flash of the old 2D background.
+  try {
+    await onComplete();
+  } catch (err) {
+    console.error('[HMH] loading screen onComplete failed:', err);
+  }
+
+  // When progress finishes OR onComplete resolves (whichever is later),
+  // wait for one render frame so the roguelike scene's first paint lands.
+  if (progress < 100) {
+    await new Promise((resolve) => {
+      const tick = () => {
+        if (progress >= 100) resolve();
+        else setTimeout(tick, 60);
+      };
+      tick();
+    });
+  }
+  clearInterval(interval);
+  bar.style.width = '100%';
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
+  // Fade out keyart, show level title overlay with an opaque background so
+  // the roguelike scene doesn't peek through.
+  await new Promise((resolve) => setTimeout(resolve, 180));
+  overlay.style.transition = 'opacity 420ms ease';
+  overlay.style.opacity = '0';
+
+  const titleOverlay = document.createElement('div');
+  titleOverlay.id = 'hmhLoadingTitleOverlay';
+  titleOverlay.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:#0a0c14;';
+
+  const title = document.createElement('div');
+  title.style.cssText = 'font-size:72px;font-weight:900;color:#fff;text-shadow:0 0 40px rgba(255,232,77,0.9), 4px 4px 0 #000;letter-spacing:4px;opacity:0;transform:translateY(30px);transition:all 520ms cubic-bezier(0.23,1,0.32,1);';
+  title.textContent = 'LEVEL 1 — CRYPTO WASTELANDS';
+  titleOverlay.appendChild(title);
+  document.body.appendChild(titleOverlay);
+
+  requestAnimationFrame(() => {
+    title.style.opacity = '1';
+    title.style.transform = 'translateY(0)';
+  });
+
+  // Hold title for ~2.4s, then cross-fade to the live roguelike scene.
+  await new Promise((resolve) => setTimeout(resolve, 2400));
+  title.style.transition = 'all 480ms ease';
+  title.style.opacity = '0';
+  title.style.transform = 'translateY(-40px)';
+  // Cross-fade the opaque title overlay to reveal the roguelike scene behind it.
+  titleOverlay.style.transition = 'opacity 520ms ease';
+  titleOverlay.style.opacity = '0';
+
+  await new Promise((resolve) => setTimeout(resolve, 560));
+  try { titleOverlay.remove(); } catch {}
+  try { overlay.remove(); } catch {}
 }
 
 
@@ -5350,32 +5372,37 @@ function rerollLevelUpChoices() {
   syncCombatOverlay();
 }
 
-// Build up-to-two weapon-tree branch upgrade cards for the current weapon.
-// The player's current weapon determines which tree is shown. Each branch
-// (rateOfFire / damage / reloadSpeed) surfaces as a distinct card — if the
-// branch is already maxed it's filtered out.
+// Build exactly ONE weapon-tree branch upgrade card for the current weapon per
+// level-up. The player chooses between 2 roguelike augments + 1 weapon-branch
+// card (total 3). If the active weapon has no upgrade tree (e.g. a pickup
+// weapon) or all branches are maxed, we return [] and the menu falls back to
+// 2 roguelike-only cards for this level-up.
 function weaponTreeBranchChoices() {
   const weaponId = combat.weaponId;
   const tree = WEAPON_UPGRADE_TREES[weaponId];
   if (!tree) return [];
   const branches = combat.weaponUpgrades?.[weaponId] ?? {};
-  const out = [];
+  const candidates = [];
   for (const [branchKey, tiers] of Object.entries(tree)) {
     const currentTier = branches[branchKey] ?? 0;
     if (currentTier >= tiers.length) continue; // branch maxed
     const nextTier = tiers[currentTier];
-    out.push(Object.freeze({
-      id: `weapon-tree-${branchKey}`,
-      title: `${nextTier.effect}`,
-      description: `Weapon branch "${branchLabel(branchKey)}" tier ${nextTier.tier}/3 for ${titleOfWeapon(weaponId)}. ${nextTier.special ? `Unlocks: ${specialLabel(nextTier.special)}.` : 'Compounds with prior tiers of this branch.'}`,
-      category: 'weapon',
-      maxLevel: 3,
-      currentLevel: currentTier,
-      nextLevel: currentTier + 1,
-      perLevelPercent: branchPercentHint(branchKey, nextTier),
-    }));
+    candidates.push({ branchKey, nextTier, currentTier });
   }
-  return out;
+  if (!candidates.length) return [];
+  // Deterministic but seeded pick: so the choice is stable per reroll frame but varies.
+  const seed = combat.frame ^ (combat.kills * 31) ^ (branches._lastReroll ?? 0);
+  const pick = candidates[Math.abs(seed) % candidates.length];
+  return [Object.freeze({
+    id: `weapon-tree-${pick.branchKey}`,
+    title: `${pick.nextTier.effect}`,
+    description: `Weapon branch "${branchLabel(pick.branchKey)}" tier ${pick.nextTier.tier}/3 for ${titleOfWeapon(weaponId)}. ${pick.nextTier.special ? `Unlocks: ${specialLabel(pick.nextTier.special)}.` : 'Compounds with prior tiers of this branch.'}`,
+    category: 'weapon',
+    maxLevel: 3,
+    currentLevel: pick.currentTier,
+    nextLevel: pick.currentTier + 1,
+    perLevelPercent: branchPercentHint(pick.branchKey, pick.nextTier),
+  })];
 }
 
 function branchLabel(branchKey) {
@@ -7673,24 +7700,94 @@ function drawBoss(ctx) {
 }
 
 function drawBullets(ctx) {
+  // Canvas-rendered projectiles: glowing elongated bullet core + velocity-based
+  // streak trail + per-weapon color accent. Never draws rectangles as fallback.
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+
+  // --- Player bullets ---
   for (const bullet of combat.bullets) {
-    const trail = productionVfxFrame('projectile-trail', combat.frame + Math.floor(bullet.x));
-    const w = bullet.weaponId === 'hash-rail' ? 34 : Math.round(20 * (combat.roguelikeRun?.stats.bulletSize ?? 1));
-    const h = bullet.weaponId === 'hash-rail' ? 7 : 5;
-    const drawX = bullet.x - (combat.roguelikeRun ? w / 2 : 0);
-    const drawY = bullet.y - (combat.roguelikeRun ? h / 2 : 0);
-    if (imageReady(trail)) {
-      ctx.save();
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(trail, Math.round(drawX - 18), Math.round(drawY - 18), bullet.weaponId === 'hash-rail' ? 92 : 70, 36);
-      ctx.restore();
-    } else {
-      ctx.fillStyle = bullet.weaponId === 'hash-rail' ? '#19f7ff' : bullet.weaponId === 'oracle-slayer' ? '#b86cff' : '#ffe84d';
-      ctx.fillRect(drawX, drawY, w, h);
-    }
+    const vx = bullet.vx ?? 0;
+    const vy = bullet.vy ?? 0;
+    const ang = Math.atan2(vy, vx);
+    const color = bullet.weaponId === 'hash-rail' ? '#19f7ff'
+      : bullet.weaponId === 'oracle-slayer' ? '#b86cff'
+      : bullet.weaponId === 'scatter-shotgun' ? '#ff9a3d'
+      : '#ffe84d';
+    const coreLen = bullet.weaponId === 'hash-rail' ? 26 : 12;
+    const coreW = bullet.weaponId === 'hash-rail' ? 5 : 3.2;
+    const sizeScale = combat.roguelikeRun?.stats.bulletSize ?? 1;
+
+    ctx.save();
+    ctx.translate(bullet.x, bullet.y);
+    ctx.rotate(ang);
+
+    // Long streak trail (fades out behind the bullet)
+    const trailLen = coreLen * 3.4 * sizeScale;
+    const trailGrad = ctx.createLinearGradient(-trailLen, 0, 0, 0);
+    trailGrad.addColorStop(0, hexToRgba(color, 0));
+    trailGrad.addColorStop(1, hexToRgba(color, 0.55));
+    ctx.fillStyle = trailGrad;
+    ctx.beginPath();
+    ctx.ellipse(-trailLen / 2, 0, trailLen / 2, coreW * 1.7 * sizeScale, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bright core bullet
+    const coreGrad = ctx.createLinearGradient(-coreLen / 2, 0, coreLen / 2, 0);
+    coreGrad.addColorStop(0, hexToRgba(color, 0.4));
+    coreGrad.addColorStop(0.5, '#ffffff');
+    coreGrad.addColorStop(1, hexToRgba(color, 0.95));
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, (coreLen / 2) * sizeScale, coreW * sizeScale, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Muzzle light (small glow at the head of the bullet)
+    const glowGrad = ctx.createRadialGradient(coreLen / 2 * sizeScale, 0, 0, coreLen / 2 * sizeScale, 0, 9 * sizeScale);
+    glowGrad.addColorStop(0, hexToRgba('#ffffff', 0.9));
+    glowGrad.addColorStop(0.5, hexToRgba(color, 0.4));
+    glowGrad.addColorStop(1, hexToRgba(color, 0));
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(coreLen / 2 * sizeScale, 0, 9 * sizeScale, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
   }
-  ctx.fillStyle = '#ff476f';
-  for (const shot of combat.enemyShots) ctx.fillRect(shot.x - (combat.roguelikeRun ? 7 : 0), shot.y - (combat.roguelikeRun ? 3 : 0), 14, 5);
+
+  // --- Enemy shots (hostile projectiles): red-orange glow with short dark tail ---
+  for (const shot of combat.enemyShots) {
+    const vx = -(shot.vx ?? 0); // enemy shots travel left; negate for correct angle
+    const vy = shot.vy ?? 0;
+    const ang = Math.atan2(vy, vx);
+    const color = shot.kind === 'shockwave' ? '#ff4fa0' : '#ff476f';
+    ctx.save();
+    ctx.translate(shot.x, shot.y);
+    ctx.rotate(ang);
+
+    // Short hostile trail
+    const trailLen = 12;
+    const trailGrad = ctx.createLinearGradient(-trailLen, 0, 0, 0);
+    trailGrad.addColorStop(0, hexToRgba(color, 0));
+    trailGrad.addColorStop(1, hexToRgba(color, 0.45));
+    ctx.fillStyle = trailGrad;
+    ctx.beginPath();
+    ctx.ellipse(-trailLen / 2, 0, trailLen / 2, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hostile core
+    const coreGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 7);
+    coreGrad.addColorStop(0, '#ffffff');
+    coreGrad.addColorStop(0.4, hexToRgba(color, 0.95));
+    coreGrad.addColorStop(1, hexToRgba(color, 0));
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, 7, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+  ctx.restore();
 }
 
 // Maps power-up ids to the PixelLab fx-powerups-wave pickup icons. Falls back to
@@ -7836,11 +7933,134 @@ function drawParticleSprite(ctx, particle) {
 }
 
 function drawParticles(ctx) {
+  // Render particles with canvas primitives (circles, radial gradients, additive
+  // blending, velocity streaks) instead of solid rectangles. Each particle
+  // visually telegraphs what it represents: sparks streak with motion blur,
+  // smoke puffs are soft additive circles, blood is gravity-dripping droplets,
+  // fire is warm flickering orange blobs.
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
   for (const particle of combat.particles) {
     if (drawParticleSprite(ctx, particle)) continue;
-    ctx.fillStyle = particle.color;
-    ctx.fillRect(particle.x, particle.y, particle.size, particle.size);
+    const lifeRatio = Math.max(0, Math.min(1, particle.life / Math.max(0.01, particle.maxLife ?? 1)));
+    const size = Math.max(1, particle.size);
+    const color = particle.color ?? '#ffe84d';
+    const isBlood = /#8[0-4]|#5[0-4]|[Bb]lood|crimson/i.test(color || '') || color === '#6a1b1b' || color === '#7a1a1a';
+    const isSmoke = /#6[5-9]|#7[5-9]|8[0-9][a-f]|smoke|dust/i.test(color || '');
+    const isFire = /#f[f8][0-9a-f]|[Ff]ire|flame|#ff[0-9]/i.test(color || '');
+    const isSpark = particle.type === 'impact-sparks' || (!isBlood && !isSmoke && !isFire);
+
+    if (isSpark) {
+      // Spark: radial gradient core with velocity-based streak trail
+      const vx = particle.vx ?? 0;
+      const vy = particle.vy ?? 0;
+      const speed = Math.hypot(vx, vy);
+      const trailLen = Math.min(3.5, speed) * 4;
+      const fade = lifeRatio;
+      // Streak trail (behind the spark, along its velocity)
+      if (trailLen > 0.5) {
+        const nx = vx / (speed || 1);
+        const ny = vy / (speed || 1);
+        const grad = ctx.createLinearGradient(
+          particle.x - nx * trailLen, particle.y - ny * trailLen,
+          particle.x, particle.y,
+        );
+        grad.addColorStop(0, 'rgba(255,255,255,0)');
+        grad.addColorStop(1, hexToRgba(color, 0.55 * fade));
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = Math.max(1.2, size * 0.35);
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(particle.x - nx * trailLen, particle.y - ny * trailLen);
+        ctx.lineTo(particle.x, particle.y);
+        ctx.stroke();
+      }
+      // Core glow
+      const coreR = Math.max(1.4, size * 0.42);
+      const grad = ctx.createRadialGradient(
+        particle.x, particle.y, 0,
+        particle.x, particle.y, coreR * 2.2,
+      );
+      grad.addColorStop(0, hexToRgba('#ffffff', 0.95 * fade));
+      grad.addColorStop(0.35, hexToRgba(color, 0.85 * fade));
+      grad.addColorStop(1, hexToRgba(color, 0));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, coreR * 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (isSmoke) {
+      // Smoke: big soft circle, source-over alpha, rises
+      const r = Math.max(6, size * 1.2);
+      ctx.globalCompositeOperation = 'screen';
+      const grad = ctx.createRadialGradient(
+        particle.x, particle.y, 0,
+        particle.x, particle.y, r,
+      );
+      grad.addColorStop(0, hexToRgba(color, 0.22 * lifeRatio));
+      grad.addColorStop(1, hexToRgba(color, 0));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+    } else if (isFire) {
+      // Fire: warm flickering orange/red blob with bright core
+      const r = Math.max(3, size * 0.7);
+      const flicker = 0.85 + Math.sin(particle.x * 0.3 + particle.y * 0.2 + (particle.life ?? 0) * 40) * 0.15;
+      const grad = ctx.createRadialGradient(
+        particle.x, particle.y, 0,
+        particle.x, particle.y, r * 1.6,
+      );
+      grad.addColorStop(0, hexToRgba('#fff1b4', 0.95 * lifeRatio * flicker));
+      grad.addColorStop(0.35, hexToRgba(color, 0.85 * lifeRatio * flicker));
+      grad.addColorStop(1, hexToRgba(color, 0));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, r * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (isBlood) {
+      // Blood: additive crimson droplet, gravity-elongated
+      const r = Math.max(1.6, size * 0.42);
+      const vy = particle.vy ?? 0;
+      const elong = 1 + Math.min(2.2, Math.abs(vy) * 0.25);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = hexToRgba(color, Math.min(1, 0.55 + 0.45 * lifeRatio));
+      ctx.beginPath();
+      ctx.ellipse(particle.x, particle.y, r, r * elong, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+    } else {
+      // Generic fallback: soft additive glow circle
+      const r = Math.max(1.8, size * 0.55);
+      const grad = ctx.createRadialGradient(
+        particle.x, particle.y, 0,
+        particle.x, particle.y, r * 1.8,
+      );
+      grad.addColorStop(0, hexToRgba(color, 0.8 * lifeRatio));
+      grad.addColorStop(1, hexToRgba(color, 0));
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(particle.x, particle.y, r * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
+  ctx.restore();
+}
+
+// Helpers for hex color → rgba string. Falls back to raw string if already rgba.
+function hexToRgba(color, alpha) {
+  if (!color) return `rgba(255,255,255,${alpha})`;
+  if (color.startsWith('rgba')) return color;
+  if (color.startsWith('rgb')) {
+    const m = color.match(/\d+/g);
+    return m ? `rgba(${m[0]},${m[1]},${m[2]},${alpha})` : `rgba(255,255,255,${alpha})`;
+  }
+  const hex = color.replace('#', '');
+  const norm = hex.length === 3 ? hex.split('').map((c) => c + c).join('') : hex;
+  const r = parseInt(norm.slice(0, 2), 16) || 255;
+  const g = parseInt(norm.slice(2, 4), 16) || 255;
+  const b = parseInt(norm.slice(4, 6), 16) || 255;
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 
 function drawFloatingTexts(ctx) {

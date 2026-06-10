@@ -1659,7 +1659,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   display: block;
   width: 100%;
   max-width: 100%;
-  aspect-ratio: 760 / 340;
+  aspect-ratio: 16 / 9;
   border: 10px solid #080816;
   border-radius: 22px;
   background: #030816;
