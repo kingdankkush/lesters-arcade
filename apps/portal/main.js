@@ -1286,22 +1286,39 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
 // Order directions clockwise (E → NE → N → NW → W → SW → S → SE) for a natural spin.
 const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
 function heroRotationSprite(characterId) {
-  // Prefer the 'lit-commando' / 'lit-valkyrie' keys when available; they carry the
-  // gameplay hero sprites. Fall back to 'lester' / 'lilly' keys.
-  const rosterKey = characterId === 'lester' ? 'lit-commando' : characterId === 'lilly' ? 'lit-valkyrie' : characterId;
+  // USE THE SAME ROSTER KEY AS GAMEPLAY so the character-select spinning sprite
+  // matches exactly what the player controls in-game. Gameplay locks the hero
+  // art to `HERO_LOCKED_ROSTER[characterId]` via `heroRosterKey()` — using any
+  // other key (e.g. 'lit-commando' for lester, 'lit-valkyrie' for lilly) causes
+  // the select card to display a DIFFERENT character design than what spawns.
+  // Also handles the empty-animations case for lit-valkyrie by falling through
+  // to the `lilly` legacy key that ships all 8 actions.
+  const rosterKey = HERO_LOCKED_ROSTER[characterId] ?? characterId;
   const entry = hmh('HMH_ANIMATED_ROSTER')?.[rosterKey] ?? hmh('HMH_ANIMATED_ROSTER')?.[characterId];
   const animations = entry?.animations ?? {};
-  // Prefer walk (best for hero showcase), then idle, then any populated animation.
+  // Prefer walk (best for hero showcase), then idle, then run, then shoot.
   const ordered = ['walk', 'idle', 'run', 'shoot'].filter((a) => animations[a] && Object.keys(animations[a]).length);
   const chosenName = ordered[0] ?? Object.keys(animations)[0];
   const chosen = animations[chosenName];
   if (!chosen) return null;
   // Collect one frame per direction (first frame of each direction's animation),
-  // respecting the clockwise spin order.
+  // respecting the clockwise spin order. Missing directions are tolerated —
+  // the rotator will show as many distinct frames as are available and loop.
   const frames = [];
+  const availableDirs = Object.keys(chosen);
   for (const dir of SPIN_DIRECTION_ORDER) {
     const dirFrames = chosen[dir];
     if (Array.isArray(dirFrames) && dirFrames.length) frames.push({ src: dirFrames[0], direction: dir });
+  }
+  // If the roster only harvested a single direction (e.g. lilly's manifest is
+  // south-only until a full Pixellab run fills it out), still show that frame so
+  // the character card is not blank. The rotator degrades gracefully to 1 frame.
+  if (!frames.length && availableDirs.length) {
+    const fallbackDir = availableDirs[0];
+    const dirFrames = chosen[fallbackDir];
+    if (Array.isArray(dirFrames) && dirFrames.length) {
+      frames.push({ src: dirFrames[0], direction: fallbackDir });
+    }
   }
   if (!frames.length) return null;
   const frameDurationMs = Math.max(180, Math.round(1000 / (entry?.targetFps ?? 10)));

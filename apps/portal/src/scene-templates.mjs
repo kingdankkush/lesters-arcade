@@ -46,6 +46,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   //     sidewalk; the floor theme is pavement. ---
   street_block: Object.freeze({
     weight: 0.5,
+    archetypeTags: ['city_core', 'suburban'],
     id: 'street_block', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement',
     slots: [
       { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
@@ -58,6 +59,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   // --- INTERIOR (arcade room): cabinets in a row, soda machine, a TV that MUST
   //     sit on a table (onHost), stacked boxes. Carpet floor theme. ---
   arcade_interior: Object.freeze({
+    archetypeTags: ['city_core'],
     id: 'arcade_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.35,
     slots: [
       { ...A('interior/arcade-cabinet', 'cabinet', { radius: 0.45 }), place: 'pathEdge', spacing: 2, count: 3 },
@@ -70,6 +72,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
   // --- FOREST: tree groves + bushes + logs, no man-made props. ---
   tree_grove: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
     id: 'tree_grove', biomes: ['forest'], groundTheme: 'grass',
     slots: [
       { ...A('nature/oak-tree', 'tree', { radius: 0.6 }), place: 'anchor', count: 1 },
@@ -80,6 +83,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
   // --- DESERT / ROCKY: boulders + scrub, no lamps/TVs. ---
   rock_field: Object.freeze({
+    archetypeTags: ['wilderness'],
     id: 'rock_field', biomes: ['desert', 'rocky'], groundTheme: 'sand',
     slots: [
       { ...A('nature/boulder', 'rock', { radius: 0.6 }), place: 'anchor', count: 1 },
@@ -89,6 +93,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
   // --- PARK: grass theme, benches along the path, trees, a fountain anchor. ---
   green_park: Object.freeze({
+    archetypeTags: ['park'],
     id: 'green_park', biomes: ['town'], groundTheme: 'grass', weight: 0.25,
     slots: [
       { ...A('nature/fountain', 'bigprop', { radius: 0.7 }), place: 'anchor', count: 1 },
@@ -100,6 +105,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   // --- FENCED YARD: a wooden fence runs along the path (pathEdge) with a gate
   //     break; a tree or two inside. Constructive pieces = solid wall detection. ---
   fenced_yard: Object.freeze({
+    archetypeTags: ['suburban'],
     id: 'fenced_yard', biomes: ['town', 'road'], groundTheme: 'grass', weight: 0.2,
     slots: [
       { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 6 },
@@ -111,6 +117,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   // --- WALLED COMPOUND: a brick wall perimeter (pathEdge) with corner pieces;
   //     a building-ish anchor inside. Walls are solid (wall detection). ---
   walled_compound: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
     id: 'walled_compound', biomes: ['town', 'rocky'], groundTheme: 'pavement', weight: 0.18,
     slots: [
       { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 1, count: 6 },
@@ -122,6 +129,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   //     passable crossing); banks scatter. Water pieces are non-solid visual; the
   //     bridge is the safe path. ---
   river_crossing: Object.freeze({
+    archetypeTags: ['park', 'wilderness'],
     id: 'river_crossing', biomes: ['forest', 'water'], groundTheme: 'grass', weight: 0.3,
     slots: [
       { ...A('construct/river-straight', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 5 },
@@ -133,6 +141,7 @@ export const SCENE_TEMPLATES = Object.freeze({
 
   // --- NEW DISTRICT: Downtown Business District ---
   downtown_district: Object.freeze({
+    archetypeTags: ['city_core'],
     id: 'downtown_district', biomes: ['town', 'pavement'], groundTheme: 'pavement', weight: 0.4,
     slots: [
       { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
@@ -151,6 +160,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   suburban_residential: Object.freeze({
+    archetypeTags: ['suburban'],
     id: 'suburban_residential', biomes: ['town'], groundTheme: 'grass', weight: 0.35,
     slots: [
       { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
@@ -165,6 +175,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   industrial_zone: Object.freeze({
+    archetypeTags: ['industrial'],
     id: 'industrial_zone', biomes: ['pavement', 'road'], groundTheme: 'pavement', weight: 0.3,
     slots: [
       { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
@@ -179,6 +190,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   city_park: Object.freeze({
+    archetypeTags: ['park'],
     id: 'city_park', biomes: ['town', 'forest'], groundTheme: 'grass', weight: 0.3,
     slots: [
       { ...A('nature/fountain', 'bigprop', { radius: 0.7 }), place: 'anchor', count: 1 },
@@ -193,6 +205,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   beach_boardwalk: Object.freeze({
+    archetypeTags: ['park', 'wilderness'],
     id: 'beach_boardwalk', biomes: ['sand', 'water'], groundTheme: 'sand', weight: 0.25,
     slots: [
       { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 6 },
@@ -206,6 +219,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   office_interior: Object.freeze({
+    archetypeTags: ['city_core'],
     id: 'office_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.25,
     slots: [
       { ...A('interior/table-plain', 'table', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
@@ -218,6 +232,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   diner_interior: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
     id: 'diner_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.2,
     slots: [
       { ...A('interior/table-plain', 'table', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
@@ -229,6 +244,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   grocery_interior: Object.freeze({
+    archetypeTags: ['suburban', 'city_core'],
     id: 'grocery_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.2,
     slots: [
       { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 4 },
@@ -241,6 +257,7 @@ export const SCENE_TEMPLATES = Object.freeze({
   }),
 
   gym_interior: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
     id: 'gym_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.15,
     slots: [
       { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
@@ -262,14 +279,44 @@ function templatesForBiome(biome) {
 }
 
 // Pick one template for a cell, deterministically + biome-coherent.
+// District zoning: divide the world into NxN-cell "districts". Each district
+// picks ONE archetype (city_core, suburban, industrial, park, wilderness) via
+// stable hash. Cells inside a district heavily bias template choices toward
+// templates tagged with that archetype, creating cohesive areas instead of
+// random scatter. Adjacent districts with the same archetype merge visually
+// into larger neighborhoods.
+const DISTRICT_SIZE_CELLS = 5;
+const DISTRICT_ARCHETYPES = Object.freeze(['city_core', 'suburban', 'industrial', 'park', 'wilderness']);
+function districtArchetypeAt(seed, cellX, cellY) {
+  const dx = Math.floor(cellX / DISTRICT_SIZE_CELLS);
+  const dy = Math.floor(cellY / DISTRICT_SIZE_CELLS);
+  const h = hashU32((dx * 73856093) ^ seed, dy * 19349663);
+  return DISTRICT_ARCHETYPES[(h >>> 0) % DISTRICT_ARCHETYPES.length];
+}
+
+// Bias: how heavily the district archetype pulls template selection.
+// 1.0 = only pick archetype-matching templates; 0.0 = fully random.
+const DISTRICT_ARCHETYPE_BIAS = 0.78;
+
 export function pickTemplate(seed, cellX, cellY, biome) {
   const choices = templatesForBiome(biome);
   if (!choices.length) return null;
   if (choices.length === 1) return choices[0];
+
+  const archetype = districtArchetypeAt(seed, cellX, cellY);
+  // Determine if this cell should respect the district archetype (biased coin).
+  const rollWithArchetype = rand01(seed, cellX * 31 + 7, cellY * 17 + 91) < DISTRICT_ARCHETYPE_BIAS;
+
   const total = choices.reduce((s, t) => s + (t.weight ?? 1), 0);
   let r = rand01(seed, cellX * 31 + 7, cellY * 17 + 3) * total;
   for (const t of choices) {
-    r -= (t.weight ?? 1);
+    const tags = t.archetypeTags ?? [];
+    const matchesArchetype = tags.includes(archetype);
+    // Heavily penalize non-matching templates when rolling with archetype.
+    const effectiveWeight = (rollWithArchetype && !matchesArchetype && tags.length > 0)
+      ? (t.weight ?? 1) * 0.12
+      : (t.weight ?? 1);
+    r -= effectiveWeight;
     if (r <= 0) return t;
   }
   return choices[0];
