@@ -1105,6 +1105,16 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   box-shadow: 0 0 28px rgba(255,232,77,.11);
 }
 
+/* Phones: the windowed canvas should fill the device width and take the
+   tallest slice it can — the control bar above it is collapsed on mobile. */
+@media (max-width: 720px) {
+  .official-combat-mount[data-viewport="windowed"] canvas,
+  .official-combat-mount[data-viewport="embedded-window"] canvas {
+    width: 100%;
+    max-height: min(62vh, 520px);
+  }
+}
+
 .official-combat-mount[data-viewport="fullscreen"] canvas {
   width: var(--combat-fullscreen-width, min(100%, 1180px));
   height: var(--combat-fullscreen-height, auto);
@@ -1182,6 +1192,18 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   .splash-cabinet-rotator { width: min(82vw, 300px); }
   .cabinet-card-rotator { width: min(100%, 160px); }
   .gameplay-topbar { align-items: flex-start; flex-direction: column; }
+}
+
+/* --- Mobile gameplay: maximize the game window ----------------------------
+   On phones the 8-button control bar + verbose sandbox copy buried the canvas
+   in the bottom quarter of the screen. Every one of those buttons also lives
+   in the pause menu, and the touch layer has its own pause button — so during
+   gameplay we collapse them and let the game window own the viewport. */
+@media (max-width: 720px) {
+  .gameplay-view .gameplay-control-bar { display: none; }
+  .gameplay-view .gameplay-topbar #officialGameStateCopy { display: none; }
+  .gameplay-view .gameplay-topbar h2 { font-size: 0.95rem; margin: 0; }
+  .gameplay-view .gameplay-topbar { margin-bottom: 4px; }
 }
 
 .primary-button {
