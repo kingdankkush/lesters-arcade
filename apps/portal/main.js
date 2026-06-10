@@ -64,6 +64,7 @@ import {
   buildArcadeMusicPlayerModel,
   buildArcadeMusicQueueForContext,
   buildPlayerArcadeSnapshot,
+  buildHardMoneyHeroesStatsModule,
   buildUiQualityGuideModel,
   buildWalletConnectionModel,
   calculateLesterBlasterScore,
@@ -1526,11 +1527,21 @@ async function settleRankedRun(settlementInput) {
 
 function renderLevelUpActionGrid() {
   if (!dom.combatMenuActionGrid || !combat.levelUpPaused) return false;
+  // FULLSCREEN FIX: render level-up cards inside officialCombatMount so they stay visible in fullscreen
+  let levelUpContainer = document.getElementById('levelUpOverlay');
+  if (!levelUpContainer && dom.officialCombatMount) {
+    levelUpContainer = document.createElement('div');
+    levelUpContainer.id = 'levelUpOverlay';
+    levelUpContainer.className = 'level-up-overlay';
+    levelUpContainer.style.cssText = 'position:absolute;top:12%;left:50%;transform:translateX(-50%);z-index:9999;max-width:86%;max-height:76vh;overflow:auto;background:rgba(12,14,24,0.97);border:3px solid #ffe84d;border-radius:10px;padding:18px 22px;box-shadow:0 0 40px rgba(255,232,77,0.3);';
+    dom.officialCombatMount.appendChild(levelUpContainer);
+  }
+  const targetGrid = levelUpContainer || dom.combatMenuActionGrid;
   const choices = combat.levelUpChoices ?? [];
   const signature = `level-up:${choices.map((choice) => `${choice.id}:${choice.nextLevel}`).join('|')}:rerolls-${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
-  if (dom.combatMenuActionGrid.dataset.signature === signature) return true;
-  dom.combatMenuActionGrid.dataset.signature = signature;
-  dom.combatMenuActionGrid.replaceChildren();
+  if (targetGrid.dataset.signature === signature) return true;
+  targetGrid.dataset.signature = signature;
+  targetGrid.replaceChildren();
   // Category → icon + tone for the upgrade card badge so each augment reads at a glance.
   const CAT_STYLE = {
     offense: { icon: '⚔', tone: 'red', label: 'Offense' },
@@ -1568,13 +1579,13 @@ function renderLevelUpActionGrid() {
     appendText(button, 'p', choice.description, 'upgrade-card-desc');
     button.setAttribute('title', `${choice.title} · ${cat.label} · ${choice.description}`);
     button.addEventListener('click', () => selectLevelUpUpgrade(choice.id));
-    dom.combatMenuActionGrid.append(button);
+    targetGrid.append(button);
   }
   const reroll = el('button', { className: 'combat-menu-action upgrade-reroll-button', type: 'button', dataset: { action: 'level-up-reroll' } });
   reroll.disabled = (combat.roguelikeRun?.rerollsRemaining ?? 0) <= 0;
   reroll.append(renderArcadeIcon('↻', 'Reroll upgrade choices'), document.createTextNode(`Reroll (${combat.roguelikeRun?.rerollsRemaining ?? 0})`));
   reroll.addEventListener('click', rerollLevelUpChoices);
-  dom.combatMenuActionGrid.append(reroll);
+  targetGrid.append(reroll);
   return true;
 }
 
@@ -1600,9 +1611,9 @@ function renderCombatMenuActionGrid() {
     return { ...action, run: () => {} };
   });
   const signature = actions.map((action) => `${action.id}:${action.label}:${action.enabled}`).join('|');
-  if (dom.combatMenuActionGrid.dataset.signature === signature) return;
-  dom.combatMenuActionGrid.dataset.signature = signature;
-  dom.combatMenuActionGrid.replaceChildren();
+  if (targetGrid.dataset.signature === signature) return;
+  targetGrid.dataset.signature = signature;
+  targetGrid.replaceChildren();
   for (const action of actions) {
     const button = el('button', { className: `combat-menu-action ${action.danger ? 'danger-action' : ''}`, type: 'button' });
     button.disabled = action.enabled === false;
@@ -1612,7 +1623,7 @@ function renderCombatMenuActionGrid() {
       playSfxCue('menu-click');
       action.run();
     });
-    dom.combatMenuActionGrid.append(button);
+    targetGrid.append(button);
   }
 }
 
@@ -1778,8 +1789,8 @@ function clearInactiveCombatOverlay() {
     dom.combatHudOverlay.replaceChildren();
   }
   if (dom.combatMenuActionGrid) {
-    delete dom.combatMenuActionGrid.dataset.signature;
-    dom.combatMenuActionGrid.replaceChildren();
+    delete targetGrid.dataset.signature;
+    targetGrid.replaceChildren();
   }
   if (dom.combatGameOverSummary) {
     dom.combatGameOverSummary.hidden = true;
@@ -1825,6 +1836,8 @@ function syncCombatOverlay() {
   if (clearInactiveCombatOverlay()) return;
   if (dom.combatMenuPanel) {
     dom.combatMenuPanel.hidden = !(combat.paused || combat.gameOver || combat.levelUpPaused);
+  const levelUpEl = document.getElementById('levelUpOverlay');
+  if (levelUpEl) levelUpEl.hidden = !combat.levelUpPaused;
     dom.combatMenuPanel.dataset.state = combat.gameOver ? 'game-over' : combat.levelUpPaused ? 'level-up' : 'paused';
   }
   const menu = buildCombatOptionsMenuModel({
@@ -2008,7 +2021,7 @@ function exitToArcade() {
   officialSelectedMode = 'free';
   if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
   if (dom.combatHudOverlay) dom.combatHudOverlay.replaceChildren();
-  if (dom.combatMenuActionGrid) dom.combatMenuActionGrid.replaceChildren();
+  if (dom.combatMenuActionGrid) targetGrid.replaceChildren();
   if (dom.combatGameOverSummary) {
     dom.combatGameOverSummary.hidden = true;
     dom.combatGameOverSummary.replaceChildren();
@@ -2397,18 +2410,74 @@ let profileGameId = 'lester-blaster';
 
 function renderOfficialProfile() {
   dom.officialCabinetGrid.replaceChildren();
+  dom.officialCabinetGrid.classList.add('profile-command-grid');
   const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
   const profile = snapshot?.profile;
 
-  const card = el('article', { className: 'official-info-card' });
-  appendText(card, 'span', 'Wallet Profile', 'cabinet-status-label');
-  appendText(card, 'strong', profile?.displayName ?? 'Connect wallet to activate profile');
-  appendText(card, 'small', connectedWallet
-    ? `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // wallet is your locked identity for scores, achievements & settlement`
-    : 'Wallet is the locked identity for progress, high scores, achievements, and avatars.');
-  dom.officialCabinetGrid.append(card);
+  const profileHero = el('article', { className: 'official-info-card profile-hero-card hmh-visual-polish-v9' });
+  appendText(profileHero, 'span', 'Wallet Profile // Parent Account', 'cabinet-status-label');
+  const heroTop = el('div', { className: 'profile-hero-topline' });
+  heroTop.append(renderAvatarChip(connectedWallet, profile?.displayName, 'profile-hero-avatar'));
+  const heroIdentity = el('div', { className: 'profile-hero-identity' });
+  appendText(heroIdentity, 'strong', profile?.displayName ?? 'Connect wallet to activate profile', 'profile-hero-name');
+  appendText(heroIdentity, 'small', connectedWallet
+    ? `${connectedWallet.slice(0, 10)}…${connectedWallet.slice(-8)} // ${walletConnector} // wallet is your locked identity for scores, achievements & settlement`
+    : 'Wallet is the locked identity for progress, high scores, achievements, avatars, and LitVM settlement receipts.');
+  heroTop.append(heroIdentity);
+  profileHero.append(heroTop);
+
+  if (connectedWallet && snapshot) {
+    const bestScore = Math.max(...Object.values(snapshot.progress ?? {}).map((entry) => Math.max(entry.bestPaidScore ?? 0, entry.bestFreeScore ?? 0)), 0);
+    const heroStats = el('div', { className: 'profile-hero-stats' });
+    for (const [label, value] of [
+      ['Rank', profile.rank],
+      ['XP', profile.xp.toLocaleString()],
+      ['Best Score', bestScore.toLocaleString()],
+      ['Ranked Runs', profile.totalPaidRuns.toLocaleString()],
+      ['Achievements', `${snapshot.achievementSummary.unlocked}/${snapshot.achievementSummary.total}`],
+      ['Settlements', String(snapshot.settlements.length)],
+    ]) {
+      const stat = el('div', { className: 'profile-hero-stat' });
+      appendText(stat, 'span', label);
+      appendText(stat, 'strong', value);
+      heroStats.append(stat);
+    }
+    profileHero.append(heroStats);
+
+    const quickActions = el('div', { className: 'profile-quick-actions' });
+    const playRanked = el('button', { className: 'pixel-button profile-action-primary', type: 'button', textContent: 'Play Ranked' });
+    playRanked.addEventListener('click', () => { playSfxCue('menu-click'); setOfficialView('mode-select'); });
+    const viewBoard = el('button', { className: 'pixel-button', type: 'button', textContent: 'View Leaderboard' });
+    viewBoard.addEventListener('click', () => { playSfxCue('menu-click'); setOfficialView('leaderboards'); });
+    quickActions.append(playRanked, viewBoard);
+    profileHero.append(quickActions);
+  }
+  dom.officialCabinetGrid.append(profileHero);
 
   if (!connectedWallet) return;
+
+  const walletModel = buildWalletConnectionModel({
+    providerAvailable: Boolean(detectEthereumProvider()?.request),
+    wallet: connectedWallet,
+    chainId: connectedChainId,
+  });
+  const walletCard = el('article', { className: `official-info-card profile-wallet-rail-card ${walletModel.status} ${walletModel.chainGuard.status}` });
+  appendText(walletCard, 'span', 'Wallet + Chain Guard', 'cabinet-status-label');
+  appendText(walletCard, 'strong', walletModel.chainGuard.status === 'right-chain' ? 'LiteForge Ready' : 'Action Needed');
+  appendText(walletCard, 'small', walletModel.chainGuard.copy);
+  const walletFacts = el('div', { className: 'profile-wallet-facts' });
+  for (const [label, value] of [
+    ['Network', `${walletModel.network.name} · ${walletModel.network.chainIdHex}`],
+    ['Gas', walletModel.network.nativeCurrency.symbol],
+    ['Connector', walletConnector],
+    ['Writes', walletModel.permissions.writeScopes.join(' · ')],
+  ]) {
+    const fact = el('span', { className: 'profile-wallet-fact' });
+    fact.append(el('em', { textContent: label }), document.createTextNode(value));
+    walletFacts.append(fact);
+  }
+  walletCard.append(walletFacts);
+  dom.officialCabinetGrid.append(walletCard);
 
   // --- Username / display-name editor ---
   const editor = el('article', { className: 'official-info-card username-editor-card' });
@@ -2575,21 +2644,27 @@ function renderOfficialProfile() {
   statsCard.append(statsGameBar);
 
   const gp = snapshot?.progress?.[profileGameId];
+  const hmhStats = profileGameId === 'lester-blaster'
+    ? buildHardMoneyHeroesStatsModule(state, connectedWallet, profileGameId)
+    : null;
   if (!gp || (gp.paidRuns + gp.freeRuns) === 0) {
-    appendText(statsCard, 'small', `No runs recorded for ${getGame(profileGameId).title} yet. Play a run to start tracking stats.`);
+    const empty = el('div', { className: 'profile-empty-state' });
+    appendText(empty, 'strong', `No runs recorded for ${getGame(profileGameId).title} yet.`);
+    appendText(empty, 'small', 'Start Free Mode to practice, then publish a Ranked game-over score to fill this card with score, kills, survival, achievements, and LitVM receipts.');
+    statsCard.append(empty);
   } else {
-    const bestScore = Math.max(gp.bestPaidScore ?? 0, gp.bestFreeScore ?? 0);
-    const mins = Math.floor((gp.longestRunSeconds ?? 0) / 60);
-    const secs = Math.floor((gp.longestRunSeconds ?? 0) % 60).toString().padStart(2, '0');
+    const bestScore = hmhStats?.bestScore ?? Math.max(gp.bestPaidScore ?? 0, gp.bestFreeScore ?? 0);
     const stats = [
       ['Best Score', bestScore.toLocaleString()],
       ['Runs', `${gp.paidRuns + gp.freeRuns} (${gp.paidRuns} ranked)`],
-      ['Longest Run', `${mins}:${secs}`],
-      ['Total Kills', (gp.totalKills ?? 0).toLocaleString()],
-      ['Boss Kills', `${gp.bossKills ?? 0}`],
+      ['Longest Run', hmhStats?.longestSurvivalLabel ?? formatSeconds(gp.longestRunSeconds ?? 0)],
+      ['Leaderboard', hmhStats?.rank ? `#${hmhStats.rank} / ${hmhStats.totalRanked}` : 'Unranked'],
+      ['Total Kills', (hmhStats?.totalKills ?? gp.totalKills ?? 0).toLocaleString()],
+      ['Power-Ups', (hmhStats?.powerUpsGrabbed ?? gp.cumulativePowerUps ?? 0).toLocaleString()],
+      ['Boss Kills', `${hmhStats?.bossKills ?? gp.bossKills ?? 0}`],
       ['Max Combo', `${gp.maxCombo ?? 0}`],
     ];
-    const statGrid = el('div', { className: 'game-stats-grid' });
+    const statGrid = el('div', { className: 'game-stats-grid profile-stats-grid-v9' });
     for (const [label, value] of stats) {
       const cell = el('div', { className: 'game-stat-cell' });
       appendText(cell, 'span', value, 'game-stat-value');
@@ -2597,6 +2672,30 @@ function renderOfficialProfile() {
       statGrid.append(cell);
     }
     statsCard.append(statGrid);
+
+    if (hmhStats?.topAchievement) {
+      const topAchievement = el('div', { className: `profile-top-achievement tier-${hmhStats.topAchievement.tier}` });
+      appendText(topAchievement, 'span', 'Rarest unlocked badge', 'cabinet-status-label');
+      appendText(topAchievement, 'strong', `${hmhStats.topAchievement.icon ?? '🏅'} ${hmhStats.topAchievement.title}`);
+      appendText(topAchievement, 'small', `${hmhStats.topAchievement.description} · approx ${hmhStats.topAchievement.rarityPct}% unlock rate`);
+      statsCard.append(topAchievement);
+    }
+
+    const breakdown = el('div', { className: 'profile-breakdown-grid' });
+    const enemyCard = el('div', { className: 'profile-breakdown-card' });
+    appendText(enemyCard, 'span', 'Enemy breakdown', 'cabinet-status-label');
+    const enemyCopy = hmhStats?.enemyBreakdown?.length
+      ? hmhStats.enemyBreakdown.slice(0, 3).map((enemy) => `${enemy.title}: ${enemy.kills}`).join(' · ')
+      : 'No typed enemy kills recorded yet.';
+    appendText(enemyCard, 'small', enemyCopy);
+    const bossCard = el('div', { className: 'profile-breakdown-card' });
+    appendText(bossCard, 'span', 'Boss ledger', 'cabinet-status-label');
+    const bossCopy = hmhStats?.bossBreakdown?.length
+      ? hmhStats.bossBreakdown.slice(0, 3).map((boss) => `${boss.title}: ${boss.kills}`).join(' · ')
+      : `${gp.bossKills ?? 0} boss kill(s) recorded.`;
+    appendText(bossCard, 'small', bossCopy);
+    breakdown.append(enemyCard, bossCard);
+    statsCard.append(breakdown);
 
     // Recent run history for THIS game (most recent first).
     const sessions = (snapshot?.officialSessions ?? [])
@@ -2608,8 +2707,9 @@ function renderOfficialProfile() {
       for (const s of sessions) {
         const row = el('div', { className: 'game-history-row' });
         const rs = s.runStats ?? {};
-        appendText(row, 'span', `${(rs.score ?? 0).toLocaleString()} pts`, 'game-history-score');
-        appendText(row, 'span', `${rs.kills ?? 0} kills · LV ${rs.level ?? 1}`, 'game-history-detail');
+        appendText(row, 'span', `${(s.score ?? rs.score ?? 0).toLocaleString()} pts`, 'game-history-score');
+        appendText(row, 'span', `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
+        if (s.settlement?.primaryTxHash) appendText(row, 'span', '⛓ settled', 'game-history-chain');
         histList.append(row);
       }
       statsCard.append(histList);
@@ -2648,19 +2748,32 @@ function renderOfficialProfile() {
 
   // --- Settlement history (score settles to LitVM via zkLTC) ---
   const settlements = snapshot?.settlements ?? [];
-  const settleCard = el('article', { className: 'official-info-card settlement-history-card' });
+  const settleCard = el('article', { className: 'official-info-card settlement-history-card settlement-ledger-v9' });
   appendText(settleCard, 'span', 'LITVM SETTLEMENT', 'cabinet-status-label');
+  appendText(settleCard, 'strong', settlements.length ? `${settlements.length} settled run(s)` : 'No settled runs yet');
+  appendText(settleCard, 'small', settlements.length
+    ? 'Each receipt stamps the matching leaderboard row and parent session with a tx hash. Simulation remains clearly labeled until contracts deploy.'
+    : 'Ranked game-over submission settles score, achievements, and username to LitVM; the zkLTC fee covers gas.');
+  const settleList = el('div', { className: 'settlement-ledger-list' });
   if (settlements.length === 0) {
-    appendText(settleCard, 'small', 'No settled runs yet. Paid Mode runs settle your score, achievements, and username to LitVM; the zkLTC fee covers the gas.');
+    const emptyReceipt = el('div', { className: 'settlement-receipt empty' });
+    appendText(emptyReceipt, 'span', 'Awaiting first Ranked receipt', 'settlement-receipt-title');
+    appendText(emptyReceipt, 'small', 'Play Ranked → finish run → Submit Official Score to generate a simulated LitVM receipt.');
+    settleList.append(emptyReceipt);
   } else {
-    appendText(settleCard, 'strong', `${settlements.length} settled run(s)`);
-    for (const s of settlements.slice(-3).reverse()) {
-      const row = el('p', { className: 'tiny-note' });
+    for (const s of settlements.slice(-4).reverse()) {
+      const receipt = el('div', { className: `settlement-receipt mode-${s.mode}` });
       const tx = s.primaryTxHash ? `${s.primaryTxHash.slice(0, 10)}…${s.primaryTxHash.slice(-6)}` : 'pending';
-      row.textContent = `${s.score.toLocaleString()} pts · ${s.mode} · tx ${tx}`;
-      settleCard.append(row);
+      appendText(receipt, 'span', `${s.score.toLocaleString()} pts · ${s.mode}`, 'settlement-receipt-title');
+      appendText(receipt, 'small', `Session ${s.sessionId.slice(0, 18)}… · tx ${tx}`);
+      const receiptMeta = el('div', { className: 'settlement-receipt-meta' });
+      appendText(receiptMeta, 'span', s.settledAt ? new Date(s.settledAt).toLocaleString() : 'pending');
+      if (s.primaryTxHash) appendText(receiptMeta, 'span', 'leaderboard stamped');
+      receipt.append(receiptMeta);
+      settleList.append(receipt);
     }
   }
+  settleCard.append(settleList);
   dom.officialCabinetGrid.append(settleCard);
 }
 
@@ -2726,10 +2839,25 @@ function renderOfficialLeaderboards() {
     limit: 50,
   });
 
-  const board = el('article', { className: 'official-info-card leaderboard-board-card' });
-  const header = el('div', { className: 'leaderboard-header' });
-  appendText(header, 'h3', `🏆 ${getGame(leaderboardGameId).title.toUpperCase()}`, 'leaderboard-title');
-  appendText(header, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${active.total} ranked runs`, 'cabinet-status-label');
+  const board = el('article', { className: 'official-info-card leaderboard-board-card leaderboard-board-v9 hmh-visual-polish-v9' });
+  const header = el('div', { className: 'leaderboard-header leaderboard-header-v9' });
+  const headerCopy = el('div', { className: 'leaderboard-header-copy' });
+  appendText(headerCopy, 'h3', `🏆 ${getGame(leaderboardGameId).title.toUpperCase()}`, 'leaderboard-title');
+  appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${active.total} ranked runs`, 'cabinet-status-label');
+  const headerStats = el('div', { className: 'leaderboard-header-stats' });
+  const topScore = active.topEntries[0]?.score ?? 0;
+  const settledCount = active.topEntries.filter((entry) => entry.settlementTxHash).length;
+  for (const [label, value] of [
+    ['Top Score', topScore.toLocaleString()],
+    ['Settled', `${settledCount}/${active.topEntries.length}`],
+    ['You', connectedWallet && active.playerRank ? `#${active.playerRank}` : 'Unranked'],
+  ]) {
+    const stat = el('div', { className: 'leaderboard-header-stat' });
+    appendText(stat, 'span', label);
+    appendText(stat, 'strong', value);
+    headerStats.append(stat);
+  }
+  header.append(headerCopy, headerStats);
   board.append(header);
 
   if (active.topEntries.length === 0) {
@@ -2773,6 +2901,15 @@ function renderOfficialLeaderboards() {
     if (next) { next.focus(); next.setSelectionRange(next.value.length, next.value.length); }
   });
   controls.append(searchInput);
+  const resetButton = el('button', { className: 'pixel-button leaderboard-reset-button', type: 'button', textContent: 'Reset' });
+  resetButton.disabled = !leaderboardSearch && leaderboardSortKey === 'score' && leaderboardSortDir === 'desc';
+  resetButton.addEventListener('click', () => {
+    leaderboardSearch = '';
+    leaderboardSortKey = 'score';
+    leaderboardSortDir = 'desc';
+    renderOfficialLeaderboards();
+  });
+  controls.append(resetButton);
   board.append(controls);
 
   // --- Sortable, searchable Top-50 table ---------------------------------
@@ -2870,6 +3007,7 @@ function renderOfficialLeaderboards() {
     you.append(renderAvatarChip(connectedWallet, active.playerEntry.displayName, 'leaderboard-row-avatar'));
     appendText(you, 'span', `YOUR RANK #${active.playerRank}`, 'leaderboard-you-rank');
     appendText(you, 'strong', `${active.playerEntry.score.toLocaleString()} pts`, 'leaderboard-you-score');
+    appendText(you, 'small', `${active.playerEntry.runStats?.kills ?? 0} kills · ${formatSurvive(active.playerEntry.runStats?.surviveSeconds ?? active.playerEntry.runStats?.elapsedSeconds ?? 0)} survived`, 'leaderboard-you-detail');
     board.append(you);
   } else if (connectedWallet) {
     appendText(board, 'small', 'You have no ranked score in this period yet. Play Ranked and submit at game over.');
@@ -2896,6 +3034,8 @@ function renderOfficialSettings() {
 
 function renderOfficialArcadeFloor() {
   applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, officialAppStep === 'settings' ? 'options' : 'mainMenu');
+  dom.officialCabinetGrid.classList.toggle('profile-command-grid', officialAppStep === 'profile');
+  dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', officialAppStep === 'leaderboards');
   const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
   const titleByStep = {
     'arcade-walk-in': 'Entering the Arcade...',
@@ -3094,10 +3234,88 @@ function requestRankedEntry() {
 async function beginOfficialLevel() {
   playSfxCue('level-start');
   if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
-  setOfficialView('gameplay'); // pushes /games/<game>/game-session-NNN for ranked
-  await startCombat();
-  render();
+  setOfficialView('gameplay');
+
+  // Show cinematic loading screen with keyart + progress + level title
+  await showHMHLoadingScreen(async () => {
+    await startCombat();
+    render();
+  });
 }
+
+
+async function showHMHLoadingScreen(onComplete) {
+  // Create loading overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'hmhLoadingOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#0a0c14 url(./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg) center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;';
+  
+  // Progress bar container
+  const barContainer = document.createElement('div');
+  barContainer.style.cssText = 'width:60%;max-width:520px;height:12px;background:rgba(255,255,255,0.15);border:2px solid #ffe84d;border-radius:999px;overflow:hidden;margin-bottom:24px;';
+  
+  const bar = document.createElement('div');
+  bar.style.cssText = 'height:100%;width:0%;background:linear-gradient(90deg,#ffe84d,#fff);transition:width 80ms linear;';
+  barContainer.appendChild(bar);
+  
+  // Status text
+  const status = document.createElement('div');
+  status.style.cssText = 'color:#ffe84d;font-family:monospace;font-size:15px;letter-spacing:2px;margin-bottom:12px;';
+  status.textContent = 'INITIALIZING HARD MONEY HEROES...';
+  
+  overlay.append(barContainer, status);
+  document.body.appendChild(overlay);
+  
+  // Simulate asset loading + world generation (2.5s)
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 4 + 1.5;
+    if (progress > 100) progress = 100;
+    bar.style.width = progress + '%';
+    if (progress > 35) status.textContent = 'RENDERING DISTRICTS & ROAD NETWORK...';
+    if (progress > 65) status.textContent = 'LOADING SPRITE SHEETS & ENEMIES...';
+    if (progress > 85) status.textContent = 'PREPARING LEVEL 1...';
+    if (progress >= 100) {
+      clearInterval(interval);
+      // Fade out keyart, show level title
+      setTimeout(() => {
+        overlay.style.transition = 'opacity 420ms ease';
+        overlay.style.opacity = '0';
+        
+        // Create level title overlay
+        const titleOverlay = document.createElement('div');
+        titleOverlay.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(10,12,20,0.65);';
+        
+        const title = document.createElement('div');
+        title.style.cssText = 'font-size:72px;font-weight:900;color:#fff;text-shadow:0 0 40px rgba(255,232,77,0.9), 4px 4px 0 #000;letter-spacing:4px;opacity:0;transform:translateY(30px);transition:all 520ms cubic-bezier(0.23,1,0.32,1);';
+        title.textContent = 'LEVEL 1 — CRYPTO WASTELANDS';
+        
+        titleOverlay.appendChild(title);
+        document.body.appendChild(titleOverlay);
+        
+        // Animate title in
+        requestAnimationFrame(() => {
+          title.style.opacity = '1';
+          title.style.transform = 'translateY(0)';
+        });
+        
+        // Hold for ~3s then fade out and start game
+        setTimeout(() => {
+          title.style.transition = 'all 480ms ease';
+          title.style.opacity = '0';
+          title.style.transform = 'translateY(-40px)';
+          
+          setTimeout(() => {
+            titleOverlay.remove();
+            overlay.remove();
+            if (typeof onComplete === 'function') onComplete();
+          }, 520);
+        }, 2850);
+      }, 180);
+    }
+  }, 85);
+}
+
 
 function detectEthereumProvider() {
   return globalThis.ethereum ?? null;
@@ -3259,6 +3477,7 @@ async function connectWallet() {
       console.warn('Injected wallet connection declined or failed; using local mock fallback.', error);
     }
   }
+  if (connectedWallet && walletConnector === 'injected-evm') return connectedWallet;
   return connectMockWallet();
 }
 

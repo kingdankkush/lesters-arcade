@@ -22,19 +22,15 @@ export const SIDEWALK_WIDTH = 1; // world tiles
 
 // District types that can be clustered into neighborhoods
 export const DISTRICT_TYPES = Object.freeze({
-  // Urban districts
-  DOWNTOWN: { id: 'downtown', templates: ['downtown_district', 'street_block'], weight: 3, biomeAffinities: ['town', 'pavement'], roadDensity: 0.8 },
-  SUBURBAN: { id: 'suburban', templates: ['suburban_residential', 'green_park', 'fenced_yard'], weight: 4, biomeAffinities: ['town', 'grass'], roadDensity: 0.5 },
-  INDUSTRIAL: { id: 'industrial', templates: ['industrial_zone', 'walled_compound', 'street_block'], weight: 2, biomeAffinities: ['pavement', 'road'], roadDensity: 0.7 },
-  
-  // Natural districts
-  CITY_PARK: { id: 'city_park', templates: ['city_park', 'green_park', 'river_crossing'], weight: 2, biomeAffinities: ['town', 'forest', 'grass'], roadDensity: 0.2 },
-  FOREST_WILDERNESS: { id: 'forest_wild', templates: ['tree_grove', 'rock_field', 'river_crossing'], weight: 2, biomeAffinities: ['forest', 'rocky'], roadDensity: 0.15 },
-  BEACH_AREA: { id: 'beach', templates: ['beach_boardwalk', 'river_crossing'], weight: 1, biomeAffinities: ['sand', 'water'], roadDensity: 0.2 },
-  
-  // Specialized districts
-  COMMERCIAL: { id: 'commercial', templates: ['downtown_district', 'office_interior', 'diner_interior', 'grocery_interior', 'gym_interior'], weight: 2, biomeAffinities: ['town', 'pavement'], roadDensity: 0.6 },
-  RESIDENTIAL: { id: 'residential', templates: ['suburban_residential', 'fenced_yard', 'green_park'], weight: 4, biomeAffinities: ['town', 'grass'], roadDensity: 0.4 },
+    // Add more structure to DISTRICT_TYPES.
+    DOWNTOWN: { id: 'downtown', templates: ['downtown_district', 'street_block', 'named_building_skyscraper', 'named_building_city_hall'], weight: 3, biomeAffinities: ['town', 'pavement'], roadDensity: 0.8, pointsOfInterest: ['skyscraper', 'city_hall', 'police_station', 'central_park']},
+    SUBURBAN: { id: 'suburban', templates: ['suburban_residential', 'green_park', 'fenced_yard', 'named_building_mansion', 'named_building_school'], weight: 4, biomeAffinities: ['town', 'grass'], roadDensity: 0.5, pointsOfInterest: ['mansion', 'school', 'local_shop', 'playground']},
+    INDUSTRIAL: { id: 'industrial', templates: ['industrial_zone', 'walled_compound', 'street_block', 'named_building_factory', 'named_building_warehouse'], weight: 2, biomeAffinities: ['pavement', 'road'], roadDensity: 0.7, pointsOfInterest: ['factory', 'warehouse', 'scrapyard', 'power_plant']},
+    COMMERCIAL: { id: 'commercial', templates: ['downtown_district', 'office_interior', 'diner_interior', 'grocery_interior', 'gym_interior', 'named_building_mall', 'named_building_theater'], weight: 2, biomeAffinities: ['town', 'pavement'], roadDensity: 0.6, pointsOfInterest: ['mall', 'theater', 'large_store', 'restaurant_row']},
+    RESIDENTIAL: { id: 'residential', templates: ['suburban_residential', 'fenced_yard', 'green_park', 'named_building_house', 'named_building_apartment_block'], weight: 4, biomeAffinities: ['town', 'grass'], roadDensity: 0.4, pointsOfInterest: ['house', 'apartment_block', 'small_park', 'community_center']},
+    CITY_PARK: { id: 'city_park', templates: ['city_park', 'green_park', 'river_crossing', 'named_building_observatory'], weight: 2, biomeAffinities: ['town', 'forest', 'grass'], roadDensity: 0.2, pointsOfInterest: ['observatory', 'botanical_garden', 'zoo', 'bandstand']},
+    FOREST_WILDERNESS: { id: 'forest_wild', templates: ['tree_grove', 'rock_field', 'river_crossing', 'named_obstacle_hermit_hut'], weight: 2, biomeAffinities: ['forest', 'rocky'], roadDensity: 0.15, pointsOfInterest: ['hermit_hut', 'ruins', 'waterfall', 'ancient_tree']},
+    BEACH_AREA: { id: 'beach', templates: ['beach_boardwalk', 'river_crossing', 'named_obstacle_lighthouse', 'named_obstacle_shipwreck'], weight: 1, biomeAffinities: ['sand', 'water'], roadDensity: 0.2, pointsOfInterest: ['lighthouse', 'shipwreck', 'pier', 'beach_bar']},
 });
 
 // Road types for network generation
@@ -336,3 +332,18 @@ function placeDoors(grid, rooms, layout, entranceSide) {
 
 // Export utilities for use in main.js
 export { hashU32 };
+
+// Research-backed power-up placement: tie upgrades to district identity
+export function getPowerupRulesForDistrict(districtType) {
+  const rules = {
+    DOWNTOWN: { economy: 0.6, offense: 0.3, utility: 0.1 },
+    COMMERCIAL: { economy: 0.7, utility: 0.2, defense: 0.1 },
+    INDUSTRIAL: { offense: 0.5, throwable: 0.3, mobility: 0.2 },
+    SUBURBAN: { defense: 0.4, mobility: 0.4, utility: 0.2 },
+    RESIDENTIAL: { defense: 0.5, utility: 0.3, economy: 0.2 },
+    CITY_PARK: { mobility: 0.6, defense: 0.3, status: 0.1 },
+    FOREST_WILDERNESS: { mobility: 0.5, throwable: 0.3, control: 0.2 },
+    BEACH_AREA: { mobility: 0.4, utility: 0.4, economy: 0.2 }
+  };
+  return rules[districtType] || { utility: 0.4, offense: 0.3, defense: 0.3 };
+}
