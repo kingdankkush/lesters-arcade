@@ -2043,7 +2043,7 @@ function exitToArcade() {
   officialSelectedMode = 'free';
   if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
   if (dom.combatHudOverlay) dom.combatHudOverlay.replaceChildren();
-  if (dom.combatMenuActionGrid) targetGrid.replaceChildren();
+  if (dom.combatMenuActionGrid) dom.combatMenuActionGrid.replaceChildren();
   if (dom.combatGameOverSummary) {
     dom.combatGameOverSummary.hidden = true;
     dom.combatGameOverSummary.replaceChildren();
