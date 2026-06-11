@@ -96,7 +96,7 @@
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "character: 74b5efc0-e7d8-4400-85f5-9db85ef05db9\nanimation: v3 custom (collapsing and falling down defeated)\ndirections: south, south-east, east, north-east, nor"
     }
   },
   "lit-commando": {
@@ -140,13 +140,13 @@
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "character: c96d19d1-8958-4fcd-b517-9dfded9e0051\nanimation: v3 custom (flinching and recoiling from taking damage)\ndirections: south, south-east, east, north-eas"
     },
     "death": {
       "status": "queued",
       "directions": 8,
       "job_ids": [],
-      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+      "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
     }
   }
 }
