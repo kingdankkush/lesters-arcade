@@ -85,6 +85,9 @@ import {
   getRoguelikeSpawnDirectorAt,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
+  calculateExtractionScore,
+  getHmhLevelTarget,
+  HMH_LEVEL_TARGETS,
 
   recordScore,
   resolveAchievementUnlocksForRun,
@@ -1792,6 +1795,87 @@ test('roguelike power-ups expose the effect contract the runtime depends on', ()
     assert.equal(typeof p.title, 'string');
     assert.equal(typeof p.effect, 'string');
   }
+});
+
+test('HMH level targets match the 4-level quarter-arcade vision', () => {
+  assert.equal(Object.keys(HMH_LEVEL_TARGETS).length, 4);
+  assert.equal(HMH_LEVEL_TARGETS[1].targetSeconds, 300); // L1 = 5 min easy complete
+  assert.equal(HMH_LEVEL_TARGETS[2].targetSeconds, 360); // L2 = 6 min
+  assert.equal(HMH_LEVEL_TARGETS[3].targetSeconds, 480); // L3 = 8 min
+  assert.equal(HMH_LEVEL_TARGETS[4].targetSeconds, 600); // L4 = 10 min, near impossible
+  for (const target of Object.values(HMH_LEVEL_TARGETS)) {
+    assert.ok(target.masterySeconds < target.targetSeconds, 'mastery threshold must be under target');
+    assert.equal(typeof target.title, 'string');
+  }
+  // Clamping: out-of-range levels resolve to the nearest valid target.
+  assert.equal(getHmhLevelTarget(0).level, 1);
+  assert.equal(getHmhLevelTarget(99).level, 4);
+  assert.equal(getHmhLevelTarget().level, 1);
+});
+
+test('extraction score rewards clearing under target and grades runs', () => {
+  // S-grade: cleared Level 1 well under mastery (4:00 vs 4:30 mastery / 5:00 target).
+  const mastery = calculateExtractionScore({ baseScore: 10000, elapsedSeconds: 240, level: 1, cleared: true, noDamageSeconds: 60, maxCombo: 12 });
+  assert.equal(mastery.grade, 'S');
+  assert.equal(mastery.cleared, true);
+  assert.equal(mastery.timeDeltaSeconds, 60);
+  assert.equal(mastery.breakdown.timeBonus, 60 * 25);
+  assert.equal(mastery.breakdown.survival, 0);
+
+  // A-grade: cleared between mastery and target.
+  const cleared = calculateExtractionScore({ baseScore: 10000, elapsedSeconds: 290, level: 1, cleared: true });
+  assert.equal(cleared.grade, 'A');
+
+  // B-grade: cleared but over target — zero time bonus.
+  const slow = calculateExtractionScore({ baseScore: 10000, elapsedSeconds: 360, level: 1, cleared: true });
+  assert.equal(slow.grade, 'B');
+  assert.equal(slow.breakdown.timeBonus, 0);
+
+  // Died late = C, died early = D; failed runs earn capped survival credit.
+  const diedLate = calculateExtractionScore({ baseScore: 5000, elapsedSeconds: 250, level: 1, cleared: false, deaths: 1 });
+  assert.equal(diedLate.grade, 'C');
+  assert.equal(diedLate.breakdown.survival, 250 * 4);
+  assert.equal(diedLate.breakdown.deathPenalty, -500);
+  const diedEarly = calculateExtractionScore({ baseScore: 200, elapsedSeconds: 30, level: 1, cleared: false, deaths: 1 });
+  assert.equal(diedEarly.grade, 'D');
+
+  // A clear always beats the same run that died at the wall (survival credit caps at target).
+  const clearedRun = calculateExtractionScore({ baseScore: 5000, elapsedSeconds: 295, level: 1, cleared: true });
+  const failedRun = calculateExtractionScore({ baseScore: 5000, elapsedSeconds: 295, level: 1, cleared: false, deaths: 1 });
+  assert.ok(clearedRun.total > failedRun.total);
+
+  // Assist-on applies the 0.8 multiplier so Assist-Off boards stay meaningful.
+  const assistOff = calculateExtractionScore({ baseScore: 10000, elapsedSeconds: 240, level: 1, cleared: true });
+  const assistOn = calculateExtractionScore({ baseScore: 10000, elapsedSeconds: 240, level: 1, cleared: true, assistOn: true });
+  assert.equal(assistOn.total, Math.floor(assistOff.total * 0.8));
+
+  // Total never goes negative even with heavy death penalties.
+  const wipe = calculateExtractionScore({ baseScore: 0, elapsedSeconds: 5, level: 4, cleared: false, deaths: 10 });
+  assert.equal(wipe.total >= 0, true);
+});
+
+test('game-over summary surfaces death recap + extraction metrics when provided', () => {
+  const extraction = calculateExtractionScore({ baseScore: 8000, elapsedSeconds: 270, level: 1, cleared: true });
+  const summary = buildGameOverSummaryModel({
+    session: null,
+    score: 8000,
+    elapsedSeconds: 270,
+    kills: 30,
+    bossesDefeated: 1,
+    extraction,
+    killedBy: 'FUD Goblin (gunfire)',
+    bestUpgrade: 'Damage Alpha (Rank 3)',
+  });
+  const ids = summary.metrics.map((m) => m.id);
+  assert.equal(ids.includes('extraction'), true);
+  assert.equal(ids.includes('vs-target'), true);
+  assert.equal(ids.includes('killed-by'), true);
+  assert.equal(ids.includes('best-upgrade'), true);
+  const vsTarget = summary.metrics.find((m) => m.id === 'vs-target');
+  assert.equal(vsTarget.value, '0:30 under');
+  // Legacy callers without the new fields keep the original 4-metric shape.
+  const legacy = buildGameOverSummaryModel({ score: 100, elapsedSeconds: 10, kills: 1 });
+  assert.equal(legacy.metrics.length, 4);
 });
 
 
