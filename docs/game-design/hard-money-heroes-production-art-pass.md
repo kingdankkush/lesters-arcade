@@ -1,6 +1,6 @@
 # Hard Money Heroes — Production Art Pass
 
-Generated: 2026-06-07T21:01:53.362420+00:00
+Generated: 2026-06-11T20:06:29.980310+00:00
 
 ## Scope
 
@@ -12,7 +12,7 @@ This generated pack promotes the PixelLab isometric source art into runtime-read
 - Level tile sprites: 12
 - Prop sprites: 13
 - Rotating prop sets: 1
-- Pickup sprites: 5
+- Pickup sprites: 4
 - Weapon sprites: 3
 - VFX animations: 5
 - UI sprites: 8

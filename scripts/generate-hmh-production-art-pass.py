@@ -64,7 +64,6 @@ PICKUP_ASSETS = {
     "health-pack": (56, 56),
     "ammo-pack": (56, 56),
     "crypto-bomb": (56, 56),
-    "xp-shard-fallback": (48, 48),
 }
 
 WEAPON_ASSETS = {

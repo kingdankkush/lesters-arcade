@@ -1,6 +1,6 @@
 export const HMH_PRODUCTION_ART_PASS = Object.freeze({
   "source": "PixelLab wave 1 plus deterministic Python/Pillow UI and animation derivatives",
-  "generatedAt": "2026-06-07T21:01:53.362420+00:00",
+  "generatedAt": "2026-06-11T20:06:29.980310+00:00",
   "targetFps": 60,
   "sourceManifest": "./assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs",
   "contactSheet": "./assets/generated/hmh-isometric-pixellab/contact-sheets/hmh-isometric-pixellab-wave-1-contact-sheet.png",
@@ -3828,13 +3828,6 @@ export const HMH_PRODUCTION_ART_PASS = Object.freeze({
     }
   ],
   "pickups": [
-    {
-      "slug": "xp-shard-fallback",
-      "src": "./assets/generated/hmh-production-art-pass/pickups/xp-shard-fallback.png",
-      "width": 48,
-      "height": 48,
-      "role": "pickup"
-    },
     {
       "slug": "xp-shard",
       "name": "Xp Shard",

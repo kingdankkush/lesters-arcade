@@ -1067,6 +1067,13 @@ Do not use AI as the final authority for production assets without:
 13. Add one slums/foundry tileset slice with clear parallax layering.
 14. Add audio manager with click-to-enable, music/SFX sliders, and first SFX set.
 15. Add browser smoke tests for entry → play → pause/exit → return.
+16. Finish the Wave 3 tileset/tooling pass for walls, parking lots, beaches, large complexes, forests, and other biome-specific sets.
+17. Purge legacy 2D placeholder art from runtime manifests and make the shipped roster use only the production isometric passes.
+18. Normalize every hero/enemy animation family so idle, walk, run, shoot, reload, hurt, and death all share the same character design and silhouette language.
+19. Remove the old always-on player halo / glow pool and keep lighting limited to deliberate weapon flashes, world fixtures, and readable occlusion.
+20. Re-enable contact shadows only where final sprite art can support them without muddying the read.
+21. Add a sign-out smoke test that verifies wallet disconnect returns the app to the homepage and clears the protected route.
+22. Add a C3 art review checklist for every new batch so silhouettes, palette, direction sheets, and legacy fallbacks are checked before ingestion.
 
 ## Next layer
 

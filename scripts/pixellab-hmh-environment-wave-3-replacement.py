@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """Queue, collect, and package PixelLab environment assets for Hard Money Heroes.
 
-Wave 2 focuses on level tilesets, terrain, roads, water, nature props, vehicles,
-garbage/sign props, and lightweight idle/ambient animation loops.
+Wave 3 focuses on level tilesets, walls, parking lots, beaches, large complexes,
+forests, roads, water, nature props, vehicles, garbage/sign props, and
+lightweight idle/ambient animation loops.
 
 Auth is read from the local Claude PixelLab MCP config and is never written to
 manifests, docs, or logs.
@@ -93,6 +94,53 @@ TERRAIN_TILESETS: list[dict[str, Any]] = [
         ),
         "tile_size": 64,
     },
+    {
+        "slug": "wall-fence-kit",
+        "name": "Wall And Fence Kit",
+        "role": "tileset_walls",
+        "description": (
+            "small seamless wall and fence tiles: 1). brick wall run 2). brick wall corner "
+            "3). concrete wall cap 4). chain-link fence run 5). fence gate section 6). "
+            "low retaining wall 7). broken wall end 8). curbside wall base; "
+            f"{TILE_STYLE}"
+        ),
+        "tile_size": 64,
+    },
+    {
+        "slug": "parking-lot-surface-kit",
+        "name": "Parking Lot Surface Kit",
+        "role": "tileset_parking",
+        "description": (
+            "small seamless parking lot surface tiles: 1). asphalt fill 2). painted stall stripes "
+            "3). curb stop tile 4). entry apron tile 5). oil stain variation 6). speed bump tile "
+            "7). cracked lot patch 8). faded directional arrow; "
+            f"{TILE_STYLE}"
+        ),
+        "tile_size": 64,
+    },
+    {
+        "slug": "complex-courtyard-kit",
+        "name": "Large Complex Courtyard Kit",
+        "role": "tileset_complex",
+        "description": (
+            "small seamless large-complex ground tiles: 1). apartment courtyard concrete 2). office plaza paving "
+            "3). service road asphalt 4). loading dock concrete 5). parking deck ramp tile 6). rooftop gravel "
+            "7). hedge border 8). entrance threshold; "
+            f"{TILE_STYLE}"
+        ),
+        "tile_size": 64,
+    },
+    {
+        "slug": "forest-floor-kit",
+        "name": "Forest Floor Kit",
+        "role": "tileset_forest",
+        "description": (
+            "small seamless forest floor tiles: 1). leaf litter 2). pine needle mat 3). dirt path 4). moss patch "
+            "5). root edge 6). grass clearing 7). damp soil 8). underbrush variation; "
+            f"{TILE_STYLE}"
+        ),
+        "tile_size": 64,
+    },
 ]
 
 # A few small standalone isometric ground/edge tiles (pebbles, sand, road end,
@@ -105,7 +153,8 @@ ISOMETRIC_TILES: list[tuple[str, str, str]] = [
     ("grass-flower-edge", "grass flower edge", "short grass tile with a few tiny scattered flowers, walkable ground"),
 ]
 
-# LARGE collidable objects — buildings, vehicles, big rocks/boulders, big trees.
+# LARGE collidable objects — buildings, walls, parking-lot pieces, beach props,
+# forest landmarks, vehicles, big rocks/boulders, big trees.
 # Generated at large native dimensions; the renderer draws role "large_*" at
 # 2-3x player size and gives them SOLID collision so the player must walk around.
 STATIC_MAP_OBJECTS: list[dict[str, Any]] = [
@@ -114,6 +163,13 @@ STATIC_MAP_OBJECTS: list[dict[str, Any]] = [
     {"slug": "iso-corner-store", "name": "Corner Store", "role": "large_building", "biome": "town", "width": 200, "height": 200, "description": "isometric small two-story corner store building with awning and blank empty signboard, roller shutter, grimy brick, clean readable silhouette, grounded base"},
     {"slug": "iso-warehouse", "name": "Warehouse", "role": "large_building", "biome": "town", "width": 224, "height": 200, "description": "isometric industrial warehouse with corrugated metal roof, loading dock and roll door, rusted vents, clean readable silhouette, grounded base"},
     {"slug": "iso-parking-garage", "name": "Parking Garage", "role": "large_building", "biome": "town", "width": 224, "height": 224, "description": "isometric multi-level concrete parking garage with open ramps and pillars, gritty urban, clean readable silhouette, grounded base"},
+    # --- Walls and large complex pieces -----------------------------------
+    {"slug": "iso-apartment-complex", "name": "Apartment Complex", "role": "large_complex", "biome": "town", "width": 256, "height": 224, "description": "isometric multi-wing apartment complex with connecting courtyard, stairwells, rooftop units, and a readable silhouette, planted firmly on the ground"},
+    {"slug": "iso-office-complex", "name": "Office Complex", "role": "large_complex", "biome": "town", "width": 248, "height": 216, "description": "isometric office complex with connected low-rise towers, service entrance, paved plaza, and a readable silhouette, grounded base"},
+    {"slug": "iso-brick-wall-run", "name": "Brick Wall Run", "role": "large_wall", "biome": "town", "width": 176, "height": 104, "description": "isometric brick wall segment with capped top and strong perspective, no text, clean readable silhouette, grounded base"},
+    {"slug": "iso-brick-wall-corner", "name": "Brick Wall Corner", "role": "large_wall", "biome": "town", "width": 168, "height": 112, "description": "isometric brick wall corner segment with capped top, no text, clean readable silhouette, grounded base"},
+    {"slug": "iso-chainlink-fence-run", "name": "Chain-Link Fence Run", "role": "large_wall", "biome": "town", "width": 176, "height": 88, "description": "isometric chain-link fence segment with posts and metal mesh, no text, clean readable silhouette, grounded base"},
+    {"slug": "iso-fence-gate", "name": "Fence Gate", "role": "large_wall", "biome": "town", "width": 184, "height": 104, "description": "isometric swinging fence gate with latch post and slight open angle, no text, clean readable silhouette, grounded base"},
     # --- Vehicles ----------------------------------------------------------
     {"slug": "iso-sedan-car", "name": "Sedan Car", "role": "large_vehicle", "biome": "town", "width": 168, "height": 120, "description": "isometric parked four-door sedan car, glossy reflective paint, no license plate text, clean readable silhouette, wheels planted on ground"},
     {"slug": "iso-pickup-truck", "name": "Pickup Truck", "role": "large_vehicle", "biome": "town", "width": 184, "height": 132, "description": "isometric pickup truck with cargo bed, slightly dented, no text, clean readable silhouette, wheels on the ground"},
@@ -128,6 +184,11 @@ STATIC_MAP_OBJECTS: list[dict[str, Any]] = [
     {"slug": "iso-pine-tree", "name": "Pine Tree", "role": "large_tree", "biome": "town", "width": 144, "height": 224, "description": "tall isometric pine evergreen tree, layered branches, clean readable silhouette, base planted on the ground"},
     {"slug": "iso-palm-tree", "name": "Palm Tree", "role": "large_tree", "biome": "desert", "width": 160, "height": 224, "description": "isometric desert palm tree with curved trunk and fronds, clean readable silhouette, base grounded"},
     {"slug": "iso-dead-tree", "name": "Dead Tree", "role": "large_tree", "biome": "desert", "width": 152, "height": 208, "description": "isometric bare twisted dead tree, gnarled branches, eerie, clean readable silhouette, roots grounded"},
+    # --- Forest and beach landmarks ---------------------------------------
+    {"slug": "iso-pine-grove", "name": "Pine Grove", "role": "large_forest", "biome": "forest", "width": 224, "height": 232, "description": "isometric dense pine grove cluster with overlapping trunks and readable canopy mass, roots grounded"},
+    {"slug": "iso-log-pile", "name": "Log Pile", "role": "large_forest", "biome": "forest", "width": 176, "height": 120, "description": "isometric stacked logs and fallen trunk pile with bark texture, clean readable silhouette, grounded base"},
+    {"slug": "iso-beach-cabana", "name": "Beach Cabana", "role": "large_beach", "biome": "beach", "width": 184, "height": 160, "description": "isometric beach cabana with cloth roof, wooden posts, towels, and boardwalk base, clean readable silhouette, grounded base"},
+    {"slug": "iso-beach-pier", "name": "Beach Pier", "role": "large_beach", "biome": "beach", "width": 200, "height": 144, "description": "isometric wooden beach pier segment with railings and support posts, clean readable silhouette, grounded base"},
     # --- Big saguaro cactus (desert landmark, collidable) -----------------
     {"slug": "iso-saguaro-cactus", "name": "Saguaro Cactus", "role": "large_tree", "biome": "desert", "width": 128, "height": 208, "description": "tall isometric saguaro cactus with two arms, desert green, clean readable silhouette, base planted on the ground"},
 ]
@@ -142,6 +203,12 @@ SMALL_MAP_OBJECTS: list[dict[str, Any]] = [
     {"slug": "iso-desert-shrub", "name": "Desert Shrub", "role": "small_flora", "biome": "desert", "width": 72, "height": 64, "description": "small isometric dry desert shrub and tumbleweed sprig, low to the ground, tiny"},
     {"slug": "iso-small-barrel-cactus", "name": "Barrel Cactus", "role": "small_flora", "biome": "desert", "width": 56, "height": 64, "description": "small isometric round barrel cactus with a tiny flower on top, ground-level, tiny"},
     {"slug": "iso-mushroom-cluster", "name": "Mushroom Cluster", "role": "small_flora", "biome": "town", "width": 56, "height": 56, "description": "small isometric cluster of forest mushrooms, ground-level, tiny"},
+    {"slug": "iso-beach-umbrella", "name": "Beach Umbrella", "role": "small_beach", "biome": "beach", "width": 72, "height": 72, "description": "small isometric beach umbrella and towel accent, bright but readable, ground-level clutter"},
+    {"slug": "iso-driftwood", "name": "Driftwood", "role": "small_beach", "biome": "beach", "width": 72, "height": 56, "description": "small isometric driftwood and broken branch clutter, weathered wood, walkable"},
+    {"slug": "iso-seashell-cluster", "name": "Seashell Cluster", "role": "small_beach", "biome": "beach", "width": 48, "height": 40, "description": "small isometric seashell cluster and sand dollar clutter, ground-level, tiny"},
+    {"slug": "iso-pine-cone", "name": "Pine Cone", "role": "small_forest", "biome": "forest", "width": 40, "height": 40, "description": "small isometric pine cone and needle litter, ground-level, tiny"},
+    {"slug": "iso-leaf-pile", "name": "Leaf Pile", "role": "small_forest", "biome": "forest", "width": 56, "height": 44, "description": "small isometric leaf pile and mulch clump, ground-level, tiny"},
+    {"slug": "iso-parking-bollard", "name": "Parking Bollard", "role": "small_parking", "biome": "town", "width": 44, "height": 64, "description": "small isometric concrete parking bollard with chipped paint, ground-level, tiny"},
     {"slug": "iso-soda-can", "name": "Soda Can", "role": "small_clutter", "biome": "town", "width": 40, "height": 48, "description": "tiny isometric crushed soda can litter, no readable text, ground-level"},
     {"slug": "iso-cardboard-box", "name": "Cardboard Box", "role": "small_clutter", "biome": "town", "width": 64, "height": 60, "description": "small isometric cardboard box on the ground, blank no text, low clutter"},
     {"slug": "iso-traffic-cone", "name": "Traffic Cone", "role": "small_clutter", "biome": "town", "width": 48, "height": 64, "description": "small isometric orange traffic cone, no text, ground-level clutter"},
@@ -165,6 +232,9 @@ POWERUP_MAP_OBJECTS: list[dict[str, Any]] = [
 ANIMATED_OBJECTS: list[dict[str, Any]] = [
     {"slug": "iso-oak-tree-wind", "name": "Oak Tree Wind", "role": "animated_tree", "size": 200, "frame_count": 4, "description": "large isometric leafy oak tree, full canopy, grounded", "animation": "subtle looping wind sway in the leaves, trunk stable"},
     {"slug": "iso-flower-patch-sway", "name": "Flower Patch Sway", "role": "animated_flowers", "size": 96, "frame_count": 4, "description": "small isometric cluster of colorful wildflowers and grass, ground-level", "animation": "gentle looping flower and grass sway in wind"},
+    {"slug": "iso-palm-tree-wind", "name": "Palm Tree Wind", "role": "animated_tree", "size": 192, "frame_count": 4, "description": "large isometric beach palm tree with curved trunk and fronds, grounded", "animation": "subtle looping palm frond sway in coastal wind"},
+    {"slug": "iso-pine-tree-wind", "name": "Pine Tree Wind", "role": "animated_tree", "size": 192, "frame_count": 4, "description": "large isometric pine tree with layered branches, grounded", "animation": "subtle looping pine branch sway in the breeze"},
+    {"slug": "iso-water-ripple-loop", "name": "Water Ripple Loop", "role": "animated_water", "size": 128, "frame_count": 4, "description": "small isometric shallow water patch with reflected highlights, grounded", "animation": "gentle repeating shoreline ripple and foam motion"},
 ]
 
 ANIMATED_BY_SLUG = {spec["slug"]: spec for spec in ANIMATED_OBJECTS}
@@ -737,13 +807,13 @@ def write_doc() -> None:
         counts[job.get("status", "unknown")] = counts.get(job.get("status", "unknown"), 0) + 1
         pngs += len(job.get("local_images", []) or [])
     lines = [
-        "# Hard Money Heroes — PixelLab Environment Wave 2",
+        "# Hard Money Heroes — PixelLab Environment Wave 3",
         "",
         f"Generated/updated: {now_iso()}",
         "",
         "## Scope",
         "",
-        "This PixelLab wave creates level tilesets and environment props requested for Hard Money Heroes: ground, rocks, concrete/asphalt roads, sand, gravel, wood, water, rivers, waterfalls, trees, flowers, cactus, cars, garbage cans, signs, and additional road/desert/city props.",
+        "This PixelLab wave creates level tilesets and environment props requested for Hard Money Heroes: walls, parking lots, beaches, large complexes, forests, ground, rocks, concrete/asphalt roads, sand, gravel, wood, water, rivers, waterfalls, trees, flowers, cactus, cars, garbage cans, signs, and additional road/desert/city props.",
         "",
         "Static ground/tileset/rock assets are intentionally still PNG assets. Water, river, waterfall, trees, flowers, cactus, cars, garbage/trash, signs, traffic light, and tumbleweed receive short ambient animation loops where PixelLab returned frames.",
         "",

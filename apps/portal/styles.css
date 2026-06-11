@@ -896,6 +896,11 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   box-shadow: 0 0 46px rgba(255, 71, 111, 0.18), inset 0 0 30px rgba(255, 71, 111, 0.12);
 }
 
+.level-up-overlay {
+  box-sizing: border-box;
+  z-index: 9999;
+}
+
 /* ---- Mobile: the level-up / pause / game-over panel was position:absolute at
    top:142px with no height cap, so on short (landscape) or narrow (portrait)
    phone viewports the upgrade cards rendered BELOW the fold and were
@@ -914,7 +919,20 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
     padding: 14px;
     z-index: 70;          /* above the touch-control overlay (z 60) */
   }
+  .combat-menu-panel[data-state="level-up"] {
+    top: 10px;
+    bottom: auto;
+    transform: translateX(-50%);
+    width: min(440px, calc(100vw - 20px));
+    max-height: min(26dvh, 220px);
+    padding: 12px 14px;
+    z-index: 72;
+  }
   .combat-menu-panel h3 { font-size: clamp(1.2rem, 5vw, 1.7rem); margin: 2px 0 6px; }
+  .level-up-overlay {
+    width: min(94vw, 480px);
+    max-height: min(58dvh, calc(100dvh - 150px));
+  }
   /* Stack the upgrade choices vertically — full width per card gives room for
      the title, description, icon, and rank pips. */
   .combat-menu-action-grid {

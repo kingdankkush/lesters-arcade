@@ -1711,6 +1711,33 @@ async function settleRankedRun(settlementInput) {
   }
 }
 
+function applyLevelUpOverlayLayout(levelUpContainer) {
+  const profile = deviceState.profile ?? buildDeviceProfile(readDeviceSignals());
+  const mobile = profile.deviceClass === 'mobile';
+  Object.assign(levelUpContainer.style, {
+    position: mobile ? 'fixed' : 'absolute',
+    top: mobile ? 'auto' : '10%',
+    left: '50%',
+    bottom: mobile ? 'calc(10px + env(safe-area-inset-bottom))' : 'auto',
+    transform: 'translateX(-50%)',
+    zIndex: '9999',
+    width: mobile ? 'min(94vw, 480px)' : 'min(86%, 520px)',
+    maxHeight: mobile ? 'min(56dvh, calc(100dvh - 132px))' : '82vh',
+    overflow: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: mobile ? '10px' : '14px',
+    background: 'rgba(12,14,24,0.88)',
+    border: '3px solid rgba(255,95,162,0.55)',
+    borderRadius: '14px',
+    padding: mobile ? '14px 14px 16px' : '20px 22px',
+    boxShadow: '0 0 48px rgba(255,95,162,0.25), inset 0 0 18px rgba(255,95,162,0.08)',
+    backdropFilter: 'blur(2px)',
+    WebkitOverflowScrolling: 'touch',
+  });
+  levelUpContainer.classList.add('level-up-overlay');
+}
+
 function renderLevelUpActionGrid() {
   if (!dom.combatMenuActionGrid || !combat.levelUpPaused) return false;
   // FULLSCREEN FIX: render level-up cards inside officialCombatMount so they stay visible in fullscreen
@@ -1721,9 +1748,10 @@ function renderLevelUpActionGrid() {
     levelUpContainer.className = 'level-up-overlay';
     // Single-column stacked layout so each card fills the container width;
     // matches the design language the user approved on the weapon-branch card.
-    levelUpContainer.style.cssText = 'position:absolute;top:10%;left:50%;transform:translateX(-50%);z-index:9999;width:min(86%, 520px);max-height:82vh;overflow:auto;display:flex;flex-direction:column;gap:14px;background:rgba(12,14,24,0.88);border:3px solid rgba(255,95,162,0.55);border-radius:14px;padding:20px 22px;box-shadow:0 0 48px rgba(255,95,162,0.25), inset 0 0 18px rgba(255,95,162,0.08);backdrop-filter:blur(2px);';
+    applyLevelUpOverlayLayout(levelUpContainer);
     dom.officialCombatMount.appendChild(levelUpContainer);
   }
+  if (levelUpContainer) applyLevelUpOverlayLayout(levelUpContainer);
   const targetGrid = levelUpContainer || dom.combatMenuActionGrid;
   const choices = combat.levelUpChoices ?? [];
   const signature = `level-up:${choices.map((choice) => `${choice.id}:${choice.nextLevel}`).join('|')}:rerolls-${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
@@ -3767,17 +3795,18 @@ function executeSignOut() {
   } catch (_) {}
 
   // 4) Reset the official app shell back to the wallet-splash step so the
-  //    homepage renders in the signed-out state.
+  //    homepage renders in the signed-out state and the URL returns to '/'.
   officialAppStep = 'wallet-splash';
   officialSelectedMode = null;
 
-  // 5) Re-render so all views reset. Wrapped in try/catch so a render
-  //    error here doesn't mask the sign-out itself — the user MUST always
-  //    land on the homepage after clicking confirm.
+  // 5) Re-render through the normal route-sync path so the browser history
+  //    is also reset to the homepage. Wrapped in try/catch so a render error
+  //    here doesn't mask the sign-out itself — the user MUST always land on
+  //    the homepage after clicking confirm.
   try {
-    render();
+    setOfficialView('wallet-splash');
   } catch (err) {
-    console.error('[signOut] render() failed, forcing hard reload:', err);
+    console.error('[signOut] setOfficialView() failed, forcing hard reload:', err);
     try { location.hash = ''; location.reload(); } catch (_) {}
   }
 }
@@ -6609,13 +6638,8 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
 }
 
 
-// Shared ground contact shadow so every world object (obstacles, ambient props,
-// pickups) reads as PLANTED on the ground instead of floating. Global light is
-// modeled as coming from the upper-left, so shadows pool slightly down-right at
-// the object's foot. `footX/footY` is the screen-space ground contact point.
-// SHADOWS DISABLED: relying on sprite artwork for shading instead
+// Contact shadows are disabled; sprite artwork carries all grounding/shading.
 function drawContactShadow(ctx, footX, footY, width, { alpha = 0.28, squash = 0.4 } = {}) {
-  // No-op - shadows disabled
   return;
 }
 
@@ -6657,18 +6681,9 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
 
   ctx.save();
   ctx.imageSmoothingEnabled = false;
-  // Ground contact shadow (skip flat ground-decals/decor that sit IN the floor).
-    // Plant it at the sprite's true foot line (y) WITHOUT bob/sway so the shadow
-    // stays put on the ground while the sprite bobs above it — that reads as
-    // grounded, not floating.
-    // SHADOWS DISABLED: relying on sprite artwork for shading instead
-    // const flatDecor = prop.role?.includes('ground') || prop.role?.includes('decal');
-    // if (!flatDecor) {
-    //   drawContactShadow(ctx, Math.round(x), Math.round(y), drawWidth * 0.34, {
-    //     alpha: prop.role?.includes('occluder') ? 0.3 : 0.24,
-    //   });
-    // }
-  ctx.globalAlpha = prop.role?.includes('decor') ? 0.92 : 1;
+  // Ground contact shadow is disabled here too; sprite artwork and lighting now
+  // carry the grounding cue, so there is no hidden shadow pass to keep in sync.
+
   ctx.drawImage(frameImage, Math.round(x - drawWidth / 2 + sway), Math.round(y - drawHeight + bob), drawWidth, drawHeight);
   ctx.restore();
 
@@ -6978,16 +6993,14 @@ function buildObstacleRenderEntries(ctx) {
           draw: () => {
             ctx.save();
             ctx.imageSmoothingEnabled = false;
-            // Soft contact shadow planted at the prop's true foot line so solid
-            // objects read as grounded (was -2, which floated them slightly).
-            // SHADOWS DISABLED: relying on sprite artwork for shading instead
-            // drawContactShadow(ctx, projected.x, projected.y + style.ground, shadowW, { alpha: 0.28 });
+            // Contact shadows are disabled; the sprite art itself provides the grounding cue.
             ctx.drawImage(img, baseX, baseY, w, drawH);
             ctx.restore();
           },
         });
+
     // Keep the obstacle's collision footprint in sync with the art that is
-    // actually drawn (role-based radius), so movement/bullets match the visuals.
+
     o.radius = style.radius;
   }
   return entries;
@@ -7190,9 +7203,7 @@ function drawRoguelikeScene(ctx, width, height) {
 // traffic), and a brief muzzle flash while firing. Each is {x,y,r,warm}.
 function collectLightSources() {
   const lights = [];
-  // Player: NO persistent ambient halo (the old always-on cool pool read as a
-  // "glowing effect around the player"). Only a brief, small muzzle flash while
-  // actually firing, so shots still pop without ringing the hero in blue.
+  // Player light is limited to a brief muzzle flash while firing.
   const firing = (combat.fireFlash ?? 0) > 0;
   if (firing) {
     lights.push({ x: combat.playerX + 14, y: combat.playerY - 14, r: 70, warm: true, muzzle: true });
@@ -7614,20 +7625,8 @@ function drawPlayer(ctx) {
     const drawHeight = isoHero ? 88 : (productionHero ? 132 : 104);
     const drawX = x - drawWidth / 2 + (isoHero ? 8 : (productionHero ? 0 : 0));
     const drawY = y - drawHeight + (isoHero ? 10 : (productionHero ? 16 : 0)) + bob;
-        // Contact shadow directly under the hero's feet (no glow). The shadow is an
-        // ellipse centered on the foot point (x, y) so the character reads as
-        // GROUNDED, not floating. Width tracks the draw size; opacity is soft.
-        // SHADOWS DISABLED: relying on sprite artwork for shading instead
-        // if (combat.roguelikeRun) {
-        //   // Plant the shadow at the sprite's actual foot line (drawY bottom = y+10),
-        //   // and DON'T add bob so the shadow stays put while the sprite bobs — that
-        //   // sells "grounded" instead of "floating".
-        //   drawContactShadow(ctx, x, y + 10, drawWidth * 0.34, { alpha: 0.4, squash: 0.34 });
-        // } else {
-        //   ctx.fillStyle = 'rgba(249, 247, 255, 0.72)';
-        //   ctx.fillRect(x + 3, shadowY, 38, 8);
-        // }
-    // Mirror when the animated 8-direction frame says so (west-facing aim), else
+        // Contact shadows are disabled here too; keep the hero grounded via art only.
+
     // fall back to keyboard side-scroll facing.
     const flip = heroFrame._flip != null ? heroFrame._flip : playerFacingLeft();
     if (flip) {
@@ -7981,20 +7980,8 @@ function drawSingleEnemy(ctx, enemy) {
     // crashed the entire render loop with a ReferenceError the moment the
     // first enemy spawned — keep this here.)
     const sizeMul = enemy.sizeScale ?? 1.0;
-    // Ground contact shadow so enemies read as planted, not floating. The sprite
-    // foot line is at enemy.y + 12 (ey bottom); plant the shadow THERE so it sits
-    // under the feet rather than 10px above them (the old +2 floated enemies).
-    // Flying foes cast a smaller, fainter shadow a bit lower (they're airborne).
-    // SHADOWS DISABLED: relying on sprite artwork for shading instead
-    // const flying = Boolean(enemy.class?.includes('flying'));
-    // const footX = enemy.x + w / 2;
-    // const sizeMul = enemy.sizeScale ?? 1.0;
-    // if (flying) {
-    //   drawContactShadow(ctx, footX, enemy.y + 22, Math.round((isMini ? 30 : 18) * sizeMul), { alpha: 0.16, squash: 0.3 });
-    // } else {
-    //   drawContactShadow(ctx, footX, enemy.y + 12, Math.round((isMini ? 34 : enemy.class === 'armored' ? 24 : 18) * sizeMul), { alpha: 0.34, squash: 0.36 });
-    // }
-    // Priority: animated roster frame (idle/walk/attack/death motion) > biome-themed
+    // Contact shadows are disabled here too; keep enemies grounded via art only.
+
     // wave still (directional variety) > pipeline/legacy art. Minis use boss art.
     const animFrame = roguelikeEnemyAnimatedFrame(enemy);
     const waveFrame = isMini ? null : roguelikeEnemyWaveArt(enemy);
@@ -8226,7 +8213,7 @@ function powerUpIconFor(power) {
   if (power.effect === 'ammo') return productionImage('pickups', 'ammo-pack') ?? combatArt.icons.ammo;
   if (power.effect === 'life') return productionImage('pickups', 'crypto-bomb') ?? combatArt.icons.oneUp;
   if (power.effect === 'weapon') return productionImage('weapons', combat.weaponId) ?? productionImage('weapons', 'coin-blaster') ?? combatArt.icons.weapon;
-  if (power.effect === 'scoreMultiplier' || power.effect === 'scoreBonus') return productionImage('pickups', 'xp-shard') ?? productionImage('pickups', 'xp-shard-fallback') ?? combatArt.icons.score;
+  if (power.effect === 'scoreMultiplier' || power.effect === 'scoreBonus') return productionImage('pickups', 'xp-shard') ?? combatArt.icons.score;
   return fxIcon ?? null;
 }
 
@@ -8234,7 +8221,7 @@ function drawPowerUps(ctx) {
   for (const power of combat.powerUps) {
     const icon = powerUpIconFor(power);
     if (imageReady(icon)) {
-      // Animate the pickup so it reads as a live, collectible power-up: a gentle
+
       // vertical bob + a soft pulsing glow halo tinted by effect category.
       const phase = combat.frame * 0.12 + (power.x + power.y) * 0.05;
       const bob = Math.sin(phase) * 3;
@@ -8866,18 +8853,27 @@ function ensureTouchControls(profile) {
     if (mag > 1) { dx /= mag; dy /= mag; }
     aimNub.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
     if (mag < 0.2) return; // dead zone: tiny nudges don't redirect fire
-    // Convert the screen-space stick vector into an iso world-space aim
-    // direction (matching updateAimFromPointer's screenToIso mapping) so fire
-    // goes where the thumb points relative to the isometric camera.
-    const world = screenToIso(dx * 100, dy * 100);
-    const len = Math.hypot(world.x, world.y) || 1;
-    combat.aimMapX = world.x / len;
-    combat.aimMapY = world.y / len;
+    // Convert the stick vector into a world-space aim direction using the live
+    // isometric camera center. This keeps the mapping stable on mobile and avoids
+    // the old near-constant diagonal drift from treating the stick like absolute
+    // screen coordinates.
+    const centerX = combat.viewCenterX ?? ISO_CENTER_X;
+    const centerY = combat.viewCenterY ?? ISO_CENTER_Y;
+    const world = screenToIso(centerX + dx * (ISO_TILE_WIDTH / 2), centerY + dy * (ISO_TILE_HEIGHT / 2));
+    const worldDx = world.x - combat.playerMapX;
+    const worldDy = world.y - combat.playerMapY;
+    const len = Math.hypot(worldDx, worldDy) || 1;
+    combat.aimMapX = worldDx / len;
+    combat.aimMapY = worldDy / len;
+    combat.pointerWorldX = null;
+    combat.pointerWorldY = null;
     combat.pointerActive = true; // steer auto-fire toward the stick
   };
   const releaseAim = () => {
     aimPointer = null;
     aimNub.style.transform = 'translate(0,0)';
+    combat.pointerWorldX = null;
+    combat.pointerWorldY = null;
     combat.pointerActive = false; // fall back to nearest-enemy auto-aim
   };
   aimBase.addEventListener('pointerdown', (e) => {
