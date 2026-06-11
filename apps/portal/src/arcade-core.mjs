@@ -2619,18 +2619,32 @@ export function buildHardMoneyHeroesAnimationProductionBriefs(coverage = buildHa
   });
 }
 
-export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false } = {}) {
+export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false, extraction = null, killedBy = null, bestUpgrade = null } = {}) {
   const official = Boolean(session?.isPaid || session?.mode === 'paid' || session?.leaderboardEligible);
   const safeScore = Number.isFinite(score) ? Math.max(0, Math.round(score)) : 0;
   const safeElapsed = Number.isFinite(elapsedSeconds) ? Math.max(0, Math.round(elapsedSeconds)) : 0;
   const safeKills = Number.isFinite(kills) ? Math.max(0, Math.round(kills)) : 0;
   const safeBosses = Number.isFinite(bossesDefeated) ? Math.max(0, Math.round(bossesDefeated)) : 0;
-  const metrics = Object.freeze([
+  const metricList = [
     Object.freeze({ id: 'score', label: 'Score', value: safeScore.toLocaleString() }),
     Object.freeze({ id: 'time', label: 'Time', value: `${Math.floor(safeElapsed / 60)}:${String(safeElapsed % 60).padStart(2, '0')}` }),
     Object.freeze({ id: 'kills', label: 'Enemies', value: safeKills.toLocaleString() }),
     Object.freeze({ id: 'bosses', label: 'Bosses', value: safeBosses.toLocaleString() }),
-  ]);
+  ];
+  // Death-recap metrics (Isaac/Hades-style "I died but learned" loop): grade,
+  // time vs target, what killed you, and the run's defining augment.
+  if (extraction && Number.isFinite(extraction.total)) {
+    metricList.push(Object.freeze({ id: 'extraction', label: 'Extraction', value: `${Math.max(0, Math.round(extraction.total)).toLocaleString()} · ${extraction.grade ?? '—'}` }));
+    if (Number.isFinite(extraction.timeDeltaSeconds)) {
+      const delta = Math.round(extraction.timeDeltaSeconds);
+      const mag = Math.abs(delta);
+      const stamp = `${Math.floor(mag / 60)}:${String(mag % 60).padStart(2, '0')}`;
+      metricList.push(Object.freeze({ id: 'vs-target', label: 'Vs Target', value: delta >= 0 ? `${stamp} under` : `${stamp} over` }));
+    }
+  }
+  if (killedBy) metricList.push(Object.freeze({ id: 'killed-by', label: 'Killed By', value: String(killedBy) }));
+  if (bestUpgrade) metricList.push(Object.freeze({ id: 'best-upgrade', label: 'Best Augment', value: String(bestUpgrade) }));
+  const metrics = Object.freeze(metricList);
   const baseActions = [
     Object.freeze({ id: official ? 'play-again-ranked' : 'play-again-free', label: official ? 'Play Again Ranked' : 'Play Again Free', cost: official ? 'requires new testnet credit' : 'free', target: 'level-intro', enabled: true }),
     Object.freeze({ id: 'return-to-game-menu', label: 'Game Menu', cost: 'none', target: 'mode-select', enabled: true }),
@@ -3188,7 +3202,10 @@ export function connectPlayerAccount(state, wallet, options = {}) {
   if (!state.profiles[normalizedWallet]) {
     state.profiles[normalizedWallet] = createPlayerProfile(normalizedWallet, options);
     unlockAchievement(state.profiles[normalizedWallet], ACHIEVEMENTS.CABINET_PIONEER.id);
-  } else if (options.handle) {
+  } else if (options.handle && !state.profiles[normalizedWallet].usernameSet) {
+    // Only apply the connector's default handle when the player has never set
+    // a custom display name — otherwise a reconnect would silently overwrite
+    // the persisted username with 'LitVM Pilot'/'Lester Pilot'.
     state.profiles[normalizedWallet].handle = options.handle;
   }
 
@@ -3882,4 +3899,78 @@ export const DISTRICT_ENEMY_BIAS = Object.freeze({
 
 export function getBiasedEnemyRoles(districtId) {
   return DISTRICT_ENEMY_BIAS[districtId?.toUpperCase()] || { coverShooter: 0.4, meleeRusher: 0.4, flyerHarasser: 0.2 };
+}
+
+// --- Extraction scoring (quarter-arcade target-time system) -----------------
+//
+// The quarter-arcade vision: every level has a target time. Clearing under
+// target is the mastery axis; the extraction score folds base score, time
+// bonus, no-damage play, and combos into one comparable number with a letter
+// grade. Assist-on runs are scored on a reduced multiplier so Assist-Off
+// boards stay meaningful (per build-risk review v2.1).
+export const HMH_LEVEL_TARGETS = Object.freeze({
+  1: Object.freeze({ level: 1, title: 'The Slums', targetSeconds: 300, masterySeconds: 270, brief: 'Easy completion — most players clear in ~5 minutes.' }),
+  2: Object.freeze({ level: 2, title: 'The Tower', targetSeconds: 360, masterySeconds: 324, brief: 'Vertical ascent, 6-minute target, real pressure begins.' }),
+  3: Object.freeze({ level: 3, title: 'The Getaway', targetSeconds: 480, masterySeconds: 432, brief: 'Auto-scroll escape, 8-minute target, most players lose here.' }),
+  4: Object.freeze({ level: 4, title: 'The Mempool Abyss', targetSeconds: 600, masterySeconds: 540, brief: 'Near-impossible 10-minute finale. Mastery = consistent sub-9:00.' }),
+});
+
+export function getHmhLevelTarget(level = 1) {
+  const key = Math.min(4, Math.max(1, Math.round(Number(level) || 1)));
+  return HMH_LEVEL_TARGETS[key];
+}
+
+export function calculateExtractionScore({
+  baseScore = 0,
+  elapsedSeconds = 0,
+  level = 1,
+  targetSeconds = null,
+  masterySeconds = null,
+  cleared = false,
+  noDamageSeconds = 0,
+  maxCombo = 0,
+  deaths = 0,
+  assistOn = false,
+} = {}) {
+  const target = getHmhLevelTarget(level);
+  const safeTarget = Math.max(1, Math.round(Number(targetSeconds ?? target.targetSeconds) || target.targetSeconds));
+  const safeMastery = Math.max(1, Math.round(Number(masterySeconds ?? target.masterySeconds) || Math.round(safeTarget * 0.9)));
+  const safeElapsed = Math.max(0, Number(elapsedSeconds) || 0);
+  const safeBase = Math.max(0, Math.round(Number(baseScore) || 0));
+  const safeDeaths = Math.max(0, Math.round(Number(deaths) || 0));
+
+  const breakdown = {
+    base: safeBase,
+    // Clearing pays a flat bonus scaled to the level's target. At 5x target
+    // seconds this always exceeds the failed-run survival cap (4x target), so
+    // a clear ALWAYS outscores dying at the wall with the same base score.
+    clearBonus: cleared ? safeTarget * 5 : 0,
+    // Clearing under target is the mastery axis: every second under target pays.
+    timeBonus: cleared ? Math.max(0, Math.round(safeTarget - safeElapsed)) * 25 : 0,
+    // Failed runs still earn survival credit toward the target (capped there, so
+    // dying at 90% of target beats dying instantly but never beats clearing).
+    survival: cleared ? 0 : Math.round(Math.min(safeElapsed, safeTarget)) * 4,
+    noDamage: Math.max(0, Math.round(Number(noDamageSeconds) || 0)) * 12,
+    combo: Math.max(0, Math.round(Number(maxCombo) || 0)) * 40,
+    deathPenalty: -safeDeaths * 500,
+  };
+
+  let total = Math.max(0, Object.values(breakdown).reduce((sum, value) => sum + value, 0));
+  if (assistOn) total = Math.floor(total * 0.8);
+
+  const grade = cleared
+    ? (safeElapsed <= safeMastery ? 'S' : safeElapsed <= safeTarget ? 'A' : 'B')
+    : (safeElapsed >= safeTarget * 0.6 ? 'C' : 'D');
+
+  return Object.freeze({
+    total,
+    grade,
+    cleared: Boolean(cleared),
+    assistOn: Boolean(assistOn),
+    targetSeconds: safeTarget,
+    masterySeconds: safeMastery,
+    // Positive = finished under target; negative = over target / died early.
+    timeDeltaSeconds: Math.round(safeTarget - safeElapsed),
+    breakdown: Object.freeze(breakdown),
+  });
 }

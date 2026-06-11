@@ -78,6 +78,9 @@ import {
   getRoguelikeSpawnDirectorAt,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
+  calculateExtractionScore,
+  getHmhLevelTarget,
+  LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY,
   recordScore,
   applySettlement,
   setArcadeUsername,
@@ -94,6 +97,7 @@ import {
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
+import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
 
 const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
 const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
@@ -473,6 +477,42 @@ async function ensureHMHLoaded() {
   return HMH_LOAD_PROMISE;
 }
 function hmh(name) { return HMH_PAYLOAD ? HMH_PAYLOAD[name] : undefined; }
+
+// Lightweight full-screen overlay shown while the heavy HMH manifests download
+// (first cabinet selection). The analysis flagged that the 9 dynamic imports
+// gave zero feedback on slow connections — this is the "INSERT CARTRIDGE"
+// moment, so it gets arcade-flavored copy and an animated bar.
+function showCartridgeLoadingOverlay(cabinetTitle = 'Hard Money Heroes') {
+  const overlay = document.createElement('div');
+  overlay.id = 'cartridgeLoadingOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(3,6,23,0.92);display:flex;align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(3px);';
+  const title = document.createElement('div');
+  title.style.cssText = 'color:#ffe84d;font-family:monospace;font-size:17px;letter-spacing:3px;margin-bottom:18px;text-shadow:0 0 18px rgba(255,232,77,0.6);';
+  title.textContent = `INSERTING ${cabinetTitle.toUpperCase()} CARTRIDGE…`;
+  const barShell = document.createElement('div');
+  barShell.style.cssText = 'width:50%;max-width:420px;height:10px;background:rgba(255,255,255,0.12);border:2px solid #19f7ff;border-radius:999px;overflow:hidden;';
+  const bar = document.createElement('div');
+  // Indeterminate sweep — import() exposes no byte progress, so honesty over
+  // a fake percentage: a looping cyan sweep that reads as "working".
+  bar.style.cssText = 'height:100%;width:34%;background:linear-gradient(90deg,transparent,#19f7ff,#fff);animation:cartridgeSweep 1.1s linear infinite;';
+  if (!document.getElementById('cartridgeSweepKeyframes')) {
+    const style = document.createElement('style');
+    style.id = 'cartridgeSweepKeyframes';
+    style.textContent = '@keyframes cartridgeSweep { from { transform: translateX(-110%); } to { transform: translateX(330%); } }';
+    document.head.appendChild(style);
+  }
+  barShell.appendChild(bar);
+  const hint = document.createElement('div');
+  hint.style.cssText = 'color:#9aa6c4;font-family:monospace;font-size:11px;letter-spacing:2px;margin-top:14px;';
+  hint.textContent = 'DOWNLOADING SPRITES · ENEMIES · LEVELS (FIRST LOAD ONLY)';
+  overlay.append(title, barShell, hint);
+  document.body.appendChild(overlay);
+  return () => {
+    overlay.style.transition = 'opacity 240ms ease';
+    overlay.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 260);
+  };
+}
 
 // Default profile avatar shown when a player hasn't uploaded their own (was a
 // green initial chip; now the Litecoin Chad PFP).
@@ -1101,6 +1141,14 @@ const dom = {
 };
 
 const state = createInitialArcadeState();
+// P0 persistence (analysis roadmap): restore profiles, usernames, leaderboards,
+// and ranked run history from localStorage before seeding, so a returning
+// player keeps their identity and scores across reloads. Seeds only apply on a
+// genuinely fresh state (the restored snapshot carries the seeded flag).
+const ARCADE_STORAGE = (() => {
+  try { return globalThis.localStorage ?? null; } catch { return null; }
+})();
+loadArcadeState(state, ARCADE_STORAGE);
 // Seed the global leaderboard with a believable Top-50 of AI players so the
 // leaderboard UI (podium, rows, sort/filter/search, ranked highlights) can be
 // evaluated with real-looking data. These are local-only synthetic seeds — they
@@ -1109,6 +1157,24 @@ if (!state.__seededLeaderboard) {
   applySeedLeaderboard(state, 'lester-blaster', recordCadenceScore, { count: 50 });
   state.__seededLeaderboard = true;
 }
+// Debounced save so bursts of mutations (run submit -> achievements -> rename)
+// produce one write. Also flushed on pagehide/visibilitychange for mobile.
+let persistTimer = 0;
+function persistArcadeStateSoon() {
+  if (!ARCADE_STORAGE) return;
+  clearTimeout(persistTimer);
+  persistTimer = setTimeout(() => {
+    const result = saveArcadeState(state, ARCADE_STORAGE);
+    if (!result.ok) console.warn('[persist] arcade state save failed:', result.reason);
+    else if (result.dropped.length) console.warn('[persist] saved without:', result.dropped.join(', '));
+  }, 250);
+}
+try {
+  window.addEventListener('pagehide', () => { clearTimeout(persistTimer); saveArcadeState(state, ARCADE_STORAGE); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { clearTimeout(persistTimer); saveArcadeState(state, ARCADE_STORAGE); }
+  });
+} catch { /* non-DOM env */ }
 const cartridges = getCartridgeSelectModel();
 let selectedGameId = 'lester-blaster';
 let connectedWallet = null;
@@ -1137,6 +1203,9 @@ const combat = {
   paused: false,
   gameOver: false,
   gameOverReason: '',
+  // Death-recap fields: lastHitBy tracks every hit, killedBy freezes at death.
+  lastHitBy: null,
+  killedBy: null,
   startedAt: 0,
   frame: 0,
   elapsedGameSeconds: 0,
@@ -1496,6 +1565,18 @@ function gameplaySyncCopy() {
 
 function currentGameOverSummaryModel() {
   const session = currentSession ?? lastCompletedSession;
+  // Extraction scoring (quarter-arcade target-time system): run vs Level 1's
+  // 5-minute target, with no-damage and combo bonuses folded in. "cleared"
+  // means the boss fell before the run ended.
+  const extraction = calculateExtractionScore({
+    baseScore: combat.score || lastRunScore,
+    elapsedSeconds: combat.elapsedGameSeconds || lastRunElapsedSeconds,
+    level: 1,
+    cleared: Boolean(combat.bossDefeated),
+    noDamageSeconds: combat.noDamageSeconds,
+    maxCombo: combat.maxCombo,
+    deaths: combat.gameOver && !combat.bossDefeated ? 1 : 0,
+  });
   return buildGameOverSummaryModel({
     session,
     score: combat.score || lastRunScore,
@@ -1503,7 +1584,27 @@ function currentGameOverSummaryModel() {
     kills: combat.kills,
     bossesDefeated: (combat.bossDefeated || Boolean(lastBossId)) ? 1 : 0,
     acceptedForGlobalLeaderboard: Boolean(combat.gameOverSubmitted || lastRunResult?.acceptedForGlobalLeaderboard),
+    extraction,
+    killedBy: combat.bossDefeated ? null : combat.killedBy,
+    bestUpgrade: bestRoguelikeUpgradeTitle(),
   });
+}
+
+// The run's defining augment: highest-ranked roguelike skill, for the death
+// recap. Ties break toward library order (earlier = more foundational).
+function bestRoguelikeUpgradeTitle() {
+  const skills = combat.roguelikeRun?.skills;
+  if (!skills) return null;
+  let best = null;
+  let bestLevel = 0;
+  for (const skill of LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY) {
+    const level = skills[skill.id] ?? 0;
+    if (level > bestLevel) {
+      best = skill;
+      bestLevel = level;
+    }
+  }
+  return best ? `${best.title} (Rank ${bestLevel})` : null;
 }
 
 function renderGameOverSummary() {
@@ -1556,6 +1657,20 @@ function submitCombatGameOver() {
   lastRunScore = combat.score;
   lastRunElapsedSeconds = combat.elapsedGameSeconds;
   combat.gameOverSubmitted = true;
+  // Ranked run history (persisted): feeds the profile run log + future
+  // cross-game ArcadeProfile aggregation.
+  appendRunRecord(state, {
+    gameId: 'lester-blaster',
+    wallet: connectedWallet,
+    mode: currentSession?.mode ?? 'paid',
+    score: Math.max(0, Math.round(combat.score)),
+    elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
+    kills: combat.kills,
+    characterId: combat.characterId,
+    killedBy: combat.killedBy ?? null,
+    bossDefeated: Boolean(combat.bossDefeated),
+  });
+  persistArcadeStateSoon();
   // GameRegistry: child game -> parent sync packet (local now, LitVM SessionLedger later)
   submitGameRun('hard-money-heroes', {
     score: Math.max(0, Math.round(combat.score)),
@@ -1580,6 +1695,7 @@ async function settleRankedRun(settlementInput) {
     const plan = buildSettlementPlan(settlementInput);
     const settlement = await settleRun(plan, { live: SETTLEMENT_LIVE });
     applySettlement(state, settlement);
+    persistArcadeStateSoon();
     const shortTx = settlement.primaryTxHash ? `${settlement.primaryTxHash.slice(0, 10)}…${settlement.primaryTxHash.slice(-6)}` : 'pending';
     const modeLabel = settlement.mode === 'live' ? 'LitVM settlement' : 'LitVM settlement (simulated; enable after contract deploy)';
     if (dom.combatStatus) {
@@ -1779,8 +1895,13 @@ function renderRoguelikeStatBar() {
   const ammoValue = combat.reloading
     ? 'RELOAD…'
     : `${Math.max(0, combat.clip ?? 0)}/${combat.clipSize ?? 0}`;
+  // Urgency color shift (quarter-arcade pressure): timer runs cyan, goes
+  // orange at 80% of the survival wall, red at 95%.
+  const surviveWallSeconds = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60;
+  const surviveRatio = combat.elapsedGameSeconds / surviveWallSeconds;
+  const surviveTone = surviveRatio >= 0.95 ? 'red' : surviveRatio >= 0.8 ? 'orange' : 'cyan';
   const stats = [
-    { id: 'survive', label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} / 20:00`, tone: 'cyan' },
+    { id: 'survive', label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} / 20:00`, tone: surviveTone },
     { id: 'level', label: 'LEVEL', value: `1 · ${director.difficultyLabel.toUpperCase()}`, tone: 'cyan' },
     { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}`, tone: 'red' },
     { id: 'score', label: 'SCORE', value: Math.round(combat.score).toLocaleString(), tone: 'gold' },
@@ -2478,11 +2599,16 @@ function renderOfficialCabinets() {
       if (cabinet.id === 'hard-money-heroes') {
         card.classList.add('is-loading');
         card.setAttribute('aria-busy', 'true');
+        // Only surface the overlay when a real download is happening — repeat
+        // visits resolve instantly from the cached payload.
+        const needsOverlay = !HMH_PAYLOAD;
+        const dismissOverlay = needsOverlay ? showCartridgeLoadingOverlay(cabinet.title) : null;
         try {
           await ensureHMHLoaded();
         } catch (err) {
           console.error('[HMH] Failed to load game payload:', err);
         } finally {
+          dismissOverlay?.();
           card.classList.remove('is-loading');
           card.removeAttribute('aria-busy');
         }
@@ -2637,6 +2763,7 @@ function renderOfficialProfile() {
     const res = setArcadeUsername(state, connectedWallet, input.value);
     if (res.ok) {
       profileUsernameJustSaved = true; // surfaced as a persistent note on re-render
+      persistArcadeStateSoon();
       playSfxCue('menu-click', 0.06);
       // Refresh the nav (display name) + profile panel in place. Do NOT call the
       // global render() here — it resets officialAppStep and bounces the user off
@@ -3541,6 +3668,7 @@ function connectMockWallet() {
   connectedChainId = null;
   walletConnector = 'mock-wallet';
   connectPlayerAccount(state, connectedWallet, { handle: 'Lester Pilot' });
+  persistArcadeStateSoon();
   render();
   return connectedWallet;
 }
@@ -3613,7 +3741,7 @@ function executeSignOut() {
   //    around from the in-progress session (level-up cards, HMH loading,
   //    etc.). Defensive — most are already cleaned up by the caller.
   try {
-    document.querySelectorAll('#hmhLoadingOverlay, #hmhLoadingTitleOverlay, #levelUpOverlay, .level-up-overlay')
+    document.querySelectorAll('#hmhLoadingOverlay, #hmhLoadingTitleOverlay, #cartridgeLoadingOverlay, #levelUpOverlay, .level-up-overlay')
       .forEach((node) => { try { node.remove(); } catch (_) {} });
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
@@ -3663,6 +3791,7 @@ function playerAvatarDataUrl(wallet = connectedWallet) {
 function setPlayerAvatar(wallet, dataUrl) {
   if (!wallet || !state.profiles?.[wallet]) return;
   state.profiles[wallet].avatarDataUrl = dataUrl;
+  persistArcadeStateSoon();
 }
 // Build a small avatar element: the uploaded image, or a colored initial chip.
 function renderAvatarChip(wallet, displayName, sizeClass = '') {
@@ -3735,6 +3864,7 @@ async function connectWallet() {
           await requestLiteForgeNetwork(provider);
         }
         connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
+        persistArcadeStateSoon();
         render();
         return connectedWallet;
       }
@@ -4260,6 +4390,11 @@ async function startCombat() {
   combat.gameOver = false;
   combat.gameOverSubmitted = false;
   combat.gameOverReason = '';
+  combat.lastHitBy = null;
+  combat.killedBy = null;
+  combat.survivalWallAnnounced = false;
+  combat.extractionSnapshotScore = null;
+  combat.extractionSnapshotAt = null;
   combat.startedAt = performance.now();
   combat.frame = 0;
   combat.elapsedGameSeconds = 0;
@@ -5181,7 +5316,19 @@ function damageBoss(damage, source, opts = {}) {
   spawnDamageNumber(present.label ?? `${Math.round(applied)}`, combat.boss.x + 40, GROUND_Y - 84, present.color ?? '#ffe84d', Boolean(present.crit));
 }
 
-function damagePlayer(damage, source = 'hit') {
+// Friendly labels for damage sources without a named attacker (death recap).
+const DAMAGE_SOURCE_LABELS = Object.freeze({
+  'enemy-shot': 'Enemy gunfire',
+  'enemy-melee': 'Melee strike',
+  'mini-boss-melee': 'Mini-boss melee',
+  'boss-contact': 'Boss contact',
+  gap: 'Hazard fall',
+  wall: 'Collision',
+  barrel: 'Exploding barrel',
+  hit: 'Combat damage',
+});
+
+function damagePlayer(damage, source = 'hit', attackerTitle = null) {
   if (combat.invulnerableFrames > 0 || damage <= 0 || combat.gameOver) return false;
   const armorScale = combat.roguelikeRun ? Math.max(1, combat.roguelikeRun.stats.armor ?? 1) : 1;
   const applied = Math.max(1, Math.round((Number(damage) || NORMAL_HIT_DAMAGE) / armorScale));
@@ -5189,6 +5336,9 @@ function damagePlayer(damage, source = 'hit') {
   combat.combo = 0;
   combat.damageCombo = 0;
   combat.noDamageSeconds = 0;
+  // Death-recap: remember what landed the last hit so the game-over screen can
+  // show "Killed By" (Isaac/Hades-style learning loop).
+  combat.lastHitBy = attackerTitle || DAMAGE_SOURCE_LABELS[source] || 'Combat damage';
   combat.invulnerableFrames = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.invulnerabilityAfterHitFrames;
   playSfxCue('player-hit', 0.06);
   spawnText(`-${applied}% HP`, combat.playerX, combat.playerY - 80, '#ff476f');
@@ -5200,6 +5350,7 @@ function damagePlayer(damage, source = 'hit') {
     combat.active = false;
     combat.paused = false;
     combat.gameOver = true;
+    combat.killedBy = combat.lastHitBy;
     combat.gameOverReason = currentSession?.isPaid
       ? 'Lester was defeated. Ranked run ended; submit only from game-over, and Play Again requires a new testnet credit.'
       : 'Lester was defeated. Free practice can restart from the beginning at no cost.';
@@ -5821,7 +5972,7 @@ function updateRoguelikeBullets(dt) {
     shot.x = projected.x;
     shot.y = projected.y;
     if (Math.hypot(shot.worldX - combat.playerMapX, shot.worldY - combat.playerMapY) < 0.62) {
-      damagePlayer(shot.damage, 'enemy-shot');
+      damagePlayer(shot.damage, 'enemy-shot', shot.firedBy ? `${shot.firedBy} (gunfire)` : null);
       shot.ttl = 0;
     }
   }
@@ -5854,7 +6005,7 @@ function updateRoguelikeEnemies(director, dt) {
     enemy.attackTimer -= 1;
     enemy.tellFrames = enemy.attackTimer < 18 ? 18 - enemy.attackTimer : 0;
     if (!enemy.ranged && distance < 0.82 && enemy.attackTimer <= 0) {
-      damagePlayer(enemy.elite ? NORMAL_HIT_DAMAGE * 1.5 : NORMAL_HIT_DAMAGE, 'enemy-melee');
+      damagePlayer(enemy.elite ? NORMAL_HIT_DAMAGE * 1.5 : NORMAL_HIT_DAMAGE, 'enemy-melee', enemy.elite ? `Elite ${enemy.title ?? 'enemy'}` : enemy.title);
       enemy.attackTimer = 46;
     }
     if (enemy.ranged && enemy.attackTimer <= 0) {
@@ -5866,6 +6017,7 @@ function updateRoguelikeEnemies(director, dt) {
         vy: (dy / distance) * shotSpeed,
         damage: NORMAL_HIT_DAMAGE,
         ttl: 180,
+        firedBy: enemy.title ?? null, // death-recap attribution
       });
       enemy.attackTimer = Math.max(34, Math.round(92 - director.pressure * 38));
     }
@@ -6067,8 +6219,18 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   }).total + xpScore;
   combat.score = Math.round(combat.score); // whole-number score only (no decimals)
   combat.longestSurvivalThisRun = Math.max(combat.longestSurvivalThisRun, combat.elapsedGameSeconds);
+  // 20:00 survival wall. Announce once (the old code spawned this floating
+  // text EVERY STEP — 60/sec — flooding the text array), and snapshot the
+  // extraction board score per build-risk review v2.1: "Main Extraction board
+  // snapshots at 20:00; Overtime uses a separate Endless board."
   if (combat.elapsedGameSeconds >= LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60 && !combat.gameOver) {
-    spawnText('SURVIVAL WALL', ISO_CENTER_X - 54, ISO_CENTER_Y - 92, '#ff476f');
+    if (!combat.survivalWallAnnounced) {
+      combat.survivalWallAnnounced = true;
+      combat.extractionSnapshotScore = combat.score;
+      combat.extractionSnapshotAt = combat.elapsedGameSeconds;
+      spawnText('SURVIVAL WALL — EXTRACTION SNAPSHOT', ISO_CENTER_X - 110, ISO_CENTER_Y - 92, '#ff476f');
+      spawnText('OVERTIME: ENDLESS BOARD', ISO_CENTER_X - 84, ISO_CENTER_Y - 68, '#ffe84d');
+    }
   }
 }
 
