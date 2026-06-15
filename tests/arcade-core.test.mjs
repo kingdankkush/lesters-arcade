@@ -1060,6 +1060,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
   assert.equal(mainSource.includes('ensureCombatMusic'), true);
   assert.equal(mainSource.includes('playSfxCue'), true);
+  assert.equal(mainSource.includes('LESTERS_ARCADE_V2_APP_SHELL'), true);
   assert.equal(mainSource.includes("officialAppStep = 'wallet-splash'"), true);
   assert.equal(mainSource.includes('enterOfficialArcadeFromSplash'), true);
   assert.equal(mainSource.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
