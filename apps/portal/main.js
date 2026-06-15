@@ -1,9 +1,10 @@
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
-import { buildDeviceProfile, joystickToKeys } from './src/device-model.mjs';
+import { buildDeviceProfile, joystickToKeys, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES } from './src/canonical-actors.mjs';
 import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback } from './src/combat-physics.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
@@ -16,7 +17,9 @@ import { routeForView, viewForPath, gameSlugFor } from './src/arcade-router.mjs'
 import {
   generateDistrictGrid,
   generateRoadNetwork,
+  generateTransitionZones,
 } from './src/district-generator.mjs';
+
 import {
   ACHIEVEMENTS,
   HARD_MONEY_HEROES_ASSET_MANIFEST,
@@ -24,7 +27,6 @@ import {
   HARD_MONEY_HEROES_CANON,
   LESTER_ARCADE_BUILD_STACK,
   LESTER_ARCADE_WALLET_RAILS,
-  LESTERS_ARCADE_V2_APP_SHELL,
   LESTER_BLASTER_ANIMATION_PLAN,
   LITVM_LITEFORGE_NETWORK,
   LESTER_BLASTER_BOSS_SYSTEM,
@@ -5946,7 +5948,9 @@ function updateRoguelikeMovement(dt) {
   // Facing/aim: on DESKTOP the gun always fires toward the mouse (aim is held by
   // updateAimFromPointer), independent of WASD movement — twin-stick style. On
   // TOUCH there's no hover cursor, so keyboard movers face their movement vector.
-  if (usingKeys && !isDesktopControls()) {
+  const isTouchDevice = !isDesktopControls();
+  const touchMovementActive = isTouchDevice && deviceState.touchKeys.size > 0;
+  if (shouldMirrorMovementIntoAim({ usingMovementKeys: usingKeys, isTouchDevice, touchMovementActive })) {
     combat.aimMapX = mx / length;
     combat.aimMapY = my / length;
   }
@@ -6637,11 +6641,6 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
   ctx.restore();
 }
 
-
-// Contact shadows are disabled; sprite artwork carries all grounding/shading.
-function drawContactShadow(ctx, footX, footY, width, { alpha = 0.28, squash = 0.4 } = {}) {
-  return;
-}
 
 function drawProductionIsoProp(ctx, prop, x, y, index) {
   // For coherent-world scene props (from scene-templates), use coherentWorldImage

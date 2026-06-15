@@ -61,6 +61,17 @@ export function buildDeviceProfile(signals = {}) {
   });
 }
 
+// When a touch device is using the left virtual joystick, that movement should
+// steer movement only. Keyboard movement on touch devices can still mirror aim,
+// but touch movement must not clobber the right-stick aim vector.
+export function shouldMirrorMovementIntoAim({
+  usingMovementKeys = false,
+  isTouchDevice = false,
+  touchMovementActive = false,
+} = {}) {
+  return usingMovementKeys && isTouchDevice && !touchMovementActive;
+}
+
 // Map an on-screen control id to the keyboard key(s) it injects into the game's
 // input set, so touch controls reuse the exact same gameplay code paths as the
 // keyboard. Movement keys are held; action keys are momentary (handled by caller).

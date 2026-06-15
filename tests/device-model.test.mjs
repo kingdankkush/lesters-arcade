@@ -7,6 +7,7 @@ import {
   buildDeviceProfile,
   joystickToKeys,
   TOUCH_CONTROL_MAP,
+  shouldMirrorMovementIntoAim,
 } from '../apps/portal/src/device-model.mjs';
 
 test('classifyDevice: phone-sized touch viewport => mobile', () => {
@@ -68,6 +69,13 @@ test('joystickToKeys respects dead-zone and maps directions', () => {
   assert.deepEqual([...joystickToKeys(0, -1)], ['w']);
   const diag = joystickToKeys(0.8, 0.8);
   assert.ok(diag.has('d') && diag.has('s'));
+});
+
+test('shouldMirrorMovementIntoAim only mirrors keyboard movement on touch devices', () => {
+  assert.equal(shouldMirrorMovementIntoAim({ usingMovementKeys: true, isTouchDevice: false, touchMovementActive: false }), false);
+  assert.equal(shouldMirrorMovementIntoAim({ usingMovementKeys: true, isTouchDevice: true, touchMovementActive: false }), true);
+  assert.equal(shouldMirrorMovementIntoAim({ usingMovementKeys: true, isTouchDevice: true, touchMovementActive: true }), false);
+  assert.equal(shouldMirrorMovementIntoAim({ usingMovementKeys: false, isTouchDevice: true, touchMovementActive: false }), false);
 });
 
 test('TOUCH_CONTROL_MAP covers movement and core actions', () => {

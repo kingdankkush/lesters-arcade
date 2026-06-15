@@ -130,11 +130,10 @@ test('each grid cell has valid structure', () => {
 test('generateRoadNetwork produces roads between connected cells', () => {
   const grid = generateDistrictGrid(12345, 500, 500);
   const roads = generateRoadNetwork(grid.grid, grid.macroCellsX, grid.macroCellsY, 12345);
-  
+
   assert.ok(roads.length > 0, 'roads generated');
-  
+
   for (const road of roads) {
-    console.log('DEBUG road:', JSON.stringify({from: road.from, to: road.to, type: road.type, pathType: typeof road.path, pathIsArray: Array.isArray(road.path), pathLength: road.path?.length, pathKeys: road.path ? Object.keys(road.path) : 'none'}));
     assert.ok(road.from && typeof road.from.x === 'number' && typeof road.from.y === 'number');
     assert.ok(road.to && typeof road.to.x === 'number' && typeof road.to.y === 'number');
     assert.ok(road.type && typeof road.type === 'object');

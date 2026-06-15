@@ -218,6 +218,67 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
+  crypto_desert_outpost: Object.freeze({
+    archetypeTags: ['wilderness', 'industrial'],
+    id: 'crypto_desert_outpost', biomes: ['desert', 'rocky', 'road'], groundTheme: 'sand', weight: 0.3,
+    slots: [
+      { ...A('crypto/landmark-gas-station', 'building', { radius: 0.75 }), place: 'anchor', count: 1 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 2 },
+      { ...A('crypto/desert-cactus', 'tree', { radius: 0.55 }), place: 'scatter', count: 2 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+    ],
+  }),
+
+  crypto_ghost_town_block: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'crypto_ghost_town_block', biomes: ['town', 'road'], groundTheme: 'pavement', weight: 0.32,
+    slots: [
+      { ...A('crypto/ghost-saloon-front', 'building', { radius: 0.75 }), place: 'anchor', count: 1 },
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.72 }), place: 'anchor', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+    ],
+  }),
+
+  crypto_industrial_edge: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
+    id: 'crypto_industrial_edge', biomes: ['pavement', 'road', 'town'], groundTheme: 'pavement', weight: 0.26,
+    slots: [
+      { ...A('crypto/industrial-warehouse-facade', 'building', { radius: 0.8 }), place: 'anchor', count: 1 },
+      { ...A('crypto/innercity-billboard-frame', 'sign', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+    ],
+  }),
+
+  crypto_residential_edge: Object.freeze({
+    archetypeTags: ['suburban', 'park'],
+    id: 'crypto_residential_edge', biomes: ['town', 'grass'], groundTheme: 'grass', weight: 0.28,
+    slots: [
+      { ...A('crypto/residential-hedge-run', 'fence', { radius: 0.38 }), place: 'anchor', count: 1 },
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.7 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 4, count: 1 },
+    ],
+  }),
+
+  crypto_canyon_pass: Object.freeze({
+    archetypeTags: ['wilderness'],
+    id: 'crypto_canyon_pass', biomes: ['desert', 'rocky'], groundTheme: 'sand', weight: 0.24,
+    slots: [
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.8 }), place: 'anchor', count: 1 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 2 },
+      { ...A('crypto/desert-cactus', 'tree', { radius: 0.55 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_forest_greenbelt: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'crypto_forest_greenbelt', biomes: ['forest', 'town'], groundTheme: 'grass', weight: 0.24,
+    slots: [
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.72 }), place: 'anchor', count: 1 },
+      { ...A('crypto/residential-hedge-run', 'fence', { radius: 0.38 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 4, count: 1 },
+    ],
+  }),
+
   office_interior: Object.freeze({
     archetypeTags: ['city_core'],
     id: 'office_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.25,
@@ -239,7 +300,7 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('interior/shop-counter', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
       { ...A('interior/soda-machine', 'cabinet', { radius: 0.45 }), place: 'anchor', count: 1 },
       { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
-      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'scatter', count: 2 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
     ],
   }),
 

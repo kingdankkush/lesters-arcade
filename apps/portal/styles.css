@@ -2391,9 +2391,52 @@ body.suggest-landscape.ingame::after {
   }
   html[data-device="mobile"] #cabinetStage > * { flex: 0 0 70%; }
 }
+@media (max-width: 720px) and (orientation: landscape) {
+  .gameplay-view { gap: 8px; }
+  .gameplay-topbar { padding: 10px 12px; }
+  .gameplay-topbar h2 { font-size: 0.88rem; }
+  .official-combat-mount { padding: 6px; }
+  .official-combat-mount[data-viewport="windowed"] canvas,
+  .official-combat-mount[data-viewport="embedded-window"] canvas,
+  .official-combat-mount canvas {
+    width: 100%;
+    max-height: calc(100vh - 96px);
+  }
+  html[data-device="mobile"][data-orientation="landscape"] .combat-hud-overlay {
+    transform: scale(0.94);
+  }
+  html[data-device="mobile"][data-orientation="landscape"] .touch-stick-base {
+    width: 114px;
+    height: 114px;
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  html[data-device="mobile"][data-orientation="landscape"] .touch-stick-nub {
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+  }
+  html[data-device="mobile"][data-orientation="landscape"] .touch-aim-base {
+    right: max(12px, env(safe-area-inset-right));
+  }
+  html[data-device="mobile"][data-orientation="landscape"] .touch-action-cluster {
+    right: max(132px, calc(env(safe-area-inset-right) + 132px));
+    bottom: max(14px, calc(env(safe-area-inset-bottom) + 10px));
+    width: 72px;
+    height: 140px;
+  }
+  html[data-device="mobile"][data-orientation="landscape"] .touch-action-button {
+    width: 60px;
+    height: 60px;
+    font-size: 0.54rem;
+  }
+  html[data-device="mobile"][data-orientation="landscape"] .touch-powerup { top: 76px; }
+  html[data-device="mobile"][data-orientation="landscape"] .touch-pause-button {
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+  }
+}
 
-
-/* --- Username editor + cadence leaderboards + LitVM settlement (v2) --- */
 .username-editor-form {
   display: flex;
   gap: 8px;

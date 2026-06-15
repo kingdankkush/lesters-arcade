@@ -293,3 +293,15 @@ Create the first concrete district kit list for **Crypto Wasteland**:
 - industrial utility route
 - coast or oasis transition
 - the blockers, landmarks, and path pieces needed for each
+
+## 14. Crypto Wasteland production path
+
+The concrete rollout for Level 1 now lives in `docs/game-design/hard-money-heroes-crypto-wasteland-district-production-sheet.md`.
+
+That sheet ties the current runtime stage belts to authored districts, then splits the work into:
+
+- reuse-first existing art from the runtime manifest and scene-template system
+- pathing and mechanics budgets for loops, side routes, and chokepoints
+- Pixellab prompt queues for only the missing transitions, blockers, and landmark shells
+
+The rule is simple: if the current art already solves the district problem, reuse it. If the map still reads as random scatter or the route is unclear, that gap becomes a Pixellab request.
