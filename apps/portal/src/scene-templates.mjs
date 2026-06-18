@@ -446,6 +446,69 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
+
+  crypto_desert_salvage_basin: Object.freeze({
+    archetypeTags: ['wilderness', 'industrial'],
+    id: 'crypto_desert_salvage_basin', biomes: ['desert', 'rocky', 'road'], groundTheme: 'sand', weight: 0.26,
+    slots: [
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.8 }), place: 'pathEdge', spacing: 1, count: 3 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 1 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_ghost_saloon_square: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'crypto_ghost_saloon_square', biomes: ['town', 'road'], groundTheme: 'pavement', weight: 0.28,
+    slots: [
+      { ...A('crypto/ghost-saloon-front', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.72 }), place: 'scatter', count: 1 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_country_bus_turnout: Object.freeze({
+    archetypeTags: ['suburban', 'wilderness'],
+    id: 'crypto_country_bus_turnout', biomes: ['road', 'town', 'grass'], groundTheme: 'grass', weight: 0.24,
+    slots: [
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'scatter', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_residential_culdesac: Object.freeze({
+    archetypeTags: ['suburban', 'park'],
+    id: 'crypto_residential_culdesac', biomes: ['town', 'grass'], groundTheme: 'grass', weight: 0.26,
+    slots: [
+      { ...A('crypto/residential-hedge-run', 'fence', { radius: 0.38 }), place: 'anchor', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'pathEdge', spacing: 4, count: 2 },
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.72 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+    ],
+  }),
+
+  crypto_innercity_barricade_crossing: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
+    id: 'crypto_innercity_barricade_crossing', biomes: ['pavement', 'road', 'town'], groundTheme: 'pavement', weight: 0.26,
+    slots: [
+      { ...A('construct/brick-wall-corner', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('crypto/innercity-billboard-frame', 'sign', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 3 },
+    ],
+  }),
+
   // --- ACT I / SLUMS + FOUNDRY authored anchors -----------------------------
   // These templates keep the currently available coherent-world assets but
   // arrange them around the accepted Level 1 canon: Underchain alleys,

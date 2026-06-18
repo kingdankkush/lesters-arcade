@@ -174,6 +174,29 @@ test('pickTemplate forces new authored set-piece templates at upgraded anchor ce
   assert.equal(chosen?.id, 'slums_billboard_corner');
 });
 
+test('Level 1 desert-to-city authored belt templates expose distinct geometry', () => {
+  const desert = SCENE_TEMPLATES.crypto_desert_salvage_basin;
+  const ghost = SCENE_TEMPLATES.crypto_ghost_saloon_square;
+  const country = SCENE_TEMPLATES.crypto_country_bus_turnout;
+  const residential = SCENE_TEMPLATES.crypto_residential_culdesac;
+  const innerCity = SCENE_TEMPLATES.crypto_innercity_barricade_crossing;
+
+  assert.ok(desert?.slots.some((slot) => slot.assetKey === 'construct/fence-gate' && slot.place === 'anchor'));
+  assert.ok(desert?.slots.some((slot) => slot.assetKey === 'crypto/canyon-cliff-edge' && slot.place === 'pathEdge'));
+
+  assert.ok(ghost?.slots.some((slot) => slot.assetKey === 'crypto/ghost-saloon-front' && slot.place === 'anchor'));
+  assert.ok(ghost?.slots.some((slot) => slot.role === 'bench' && slot.place === 'pathEdge'));
+
+  assert.ok(country?.slots.some((slot) => slot.assetKey === 'street/bus-stop-sign' && slot.place === 'anchor'));
+  assert.ok(country?.slots.some((slot) => slot.assetKey === 'construct/fence-segment' && slot.place === 'pathEdge'));
+
+  assert.ok(residential?.slots.some((slot) => slot.assetKey === 'crypto/residential-hedge-run' && slot.place === 'anchor'));
+  assert.ok(residential?.slots.some((slot) => slot.assetKey === 'crypto/forest-tree-line' && slot.place === 'pathEdge'));
+
+  assert.ok(innerCity?.slots.some((slot) => slot.assetKey === 'construct/brick-wall-corner' && slot.place === 'anchor'));
+  assert.ok(innerCity?.slots.some((slot) => slot.assetKey === 'interior/stacked-boxes' && slot.place === 'pathEdge'));
+});
+
 test('pickTemplate can use authored transition-band template pools at belt seams', () => {
   const chosen = pickTemplate(SEED, 12, 9, 'town', {
     templatePoolIds: ['slums_backlot_fence', 'foundry_loading_gate', 'slums_foundry_checkpoint'],

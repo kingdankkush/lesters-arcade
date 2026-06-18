@@ -154,20 +154,33 @@ test('generateDistrictGrid adds multiple authored set-piece anchors to Level 1 b
   const { grid, macroCellsY } = generateDistrictGrid(12345, 700, 175);
   const row = Math.floor(macroCellsY / 2);
   const desertCell = grid.find((cell) => cell.districtFamily === 'desert_approach' && cell.dy === row);
+  const ghostCell = grid.find((cell) => cell.districtFamily === 'ghost_town' && cell.dy === row);
   const countryCell = grid.find((cell) => cell.districtFamily === 'country_road' && cell.dy === row);
+  const residentialCell = grid.find((cell) => cell.districtFamily === 'residential_edge' && cell.dy === row);
   const innerCityCell = grid.find((cell) => cell.districtFamily === 'inner_city' && cell.dy === row);
 
-  assert.ok(Array.isArray(desertCell?.setPieceAnchors) && desertCell.setPieceAnchors.length >= 3, 'desert approach has multiple authored set pieces');
+  assert.ok(Array.isArray(desertCell?.setPieceAnchors) && desertCell.setPieceAnchors.length >= 4, 'desert approach has multiple authored set pieces');
   assert.ok(desertCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_desert_outpost'), 'desert approach upgrades its landmark to a desert outpost');
   assert.ok(desertCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_canyon_gate'), 'desert approach adds a canyon gate anchor');
+  assert.ok(desertCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_desert_salvage_basin'), 'desert approach adds a salvage basin anchor');
 
-  assert.ok(Array.isArray(countryCell?.setPieceAnchors) && countryCell.setPieceAnchors.length >= 3, 'country road has multiple authored set pieces');
+  assert.ok(Array.isArray(ghostCell?.setPieceAnchors) && ghostCell.setPieceAnchors.length >= 4, 'ghost town has multiple authored set pieces');
+  assert.ok(ghostCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_ghost_mainstreet_front'), 'ghost town keeps its mainstreet landmark');
+  assert.ok(ghostCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_ghost_saloon_square'), 'ghost town adds a saloon square anchor');
+
+  assert.ok(Array.isArray(countryCell?.setPieceAnchors) && countryCell.setPieceAnchors.length >= 4, 'country road has multiple authored set pieces');
   assert.ok(countryCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_country_rest_stop'), 'country road upgrades its landmark to a rest stop');
   assert.ok(countryCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_country_pull_off'), 'country road adds a roadside pull-off anchor');
+  assert.ok(countryCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_country_bus_turnout'), 'country road adds a bus turnout anchor');
 
-  assert.ok(Array.isArray(innerCityCell?.setPieceAnchors) && innerCityCell.setPieceAnchors.length >= 3, 'inner city has multiple authored set pieces');
+  assert.ok(Array.isArray(residentialCell?.setPieceAnchors) && residentialCell.setPieceAnchors.length >= 4, 'residential edge has multiple authored set pieces');
+  assert.ok(residentialCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_residential_square'), 'residential edge keeps its square anchor');
+  assert.ok(residentialCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_residential_culdesac'), 'residential edge adds a culdesac anchor');
+
+  assert.ok(Array.isArray(innerCityCell?.setPieceAnchors) && innerCityCell.setPieceAnchors.length >= 4, 'inner city has multiple authored set pieces');
   assert.ok(innerCityCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_innercity_industrial_gate'), 'inner city upgrades its boss-push landmark');
   assert.ok(innerCityCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_innercity_checkpoint_block'), 'inner city adds a checkpoint block set piece');
+  assert.ok(innerCityCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_innercity_barricade_crossing'), 'inner city adds a barricade crossing set piece');
 });
 
 test('districtTemplateContextForCell exposes landmark anchor and influence metadata for authored belts', () => {
