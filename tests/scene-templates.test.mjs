@@ -127,3 +127,61 @@ test('groundThemeForCell returns the chosen template ground theme', () => {
   const theme = groundThemeForCell(SEED, 3, 4, 'forest');
   assert.equal(theme, 'grass'); // tree_grove is the only forest template
 });
+
+test('pickTemplate respects authored district-family template pools when provided', () => {
+  const chosen = pickTemplate(SEED, 8, 9, 'town', { templatePoolIds: ['crypto_desert_outpost'] });
+  assert.equal(chosen?.id, 'crypto_desert_outpost');
+});
+
+test('groundThemeForCell respects authored district-family template pools when provided', () => {
+  const theme = groundThemeForCell(SEED, 8, 9, 'town', { templatePoolIds: ['crypto_desert_outpost'] });
+  assert.equal(theme, 'sand');
+});
+
+test('pickTemplate forces the authored landmark template at anchor cells when provided', () => {
+  const chosen = pickTemplate(SEED, 8, 9, 'town', {
+    templatePoolIds: ['street_block', 'crypto_ghost_town_block'],
+    forceTemplateId: 'crypto_ghost_town_block',
+    landmarkInfluence: { distance: 0, influenceRadius: 2, complementArchetype: 'city_core' },
+  });
+  assert.equal(chosen?.id, 'crypto_ghost_town_block');
+});
+
+test('new authored set-piece templates expose distinct geometry for Level 1 anchors', () => {
+  const billboardCorner = SCENE_TEMPLATES.slums_billboard_corner;
+  const foundryGate = SCENE_TEMPLATES.foundry_loading_gate;
+  const checkpointKit = SCENE_TEMPLATES.slums_foundry_checkpoint;
+
+  assert.ok(billboardCorner, 'slums billboard corner template exists');
+  assert.ok(billboardCorner.slots.some((slot) => slot.assetKey === 'crypto/innercity-billboard-frame' && slot.place === 'anchor'), 'billboard corner centers a busted billboard landmark');
+  assert.ok(billboardCorner.slots.some((slot) => slot.assetKey === 'construct/brick-wall-segment' && slot.place === 'pathEdge'), 'billboard corner frames the lane with walls');
+
+  assert.ok(foundryGate, 'foundry loading gate template exists');
+  assert.ok(foundryGate.slots.some((slot) => slot.assetKey === 'crypto/industrial-warehouse-facade' && slot.place === 'anchor'), 'foundry gate uses a warehouse facade anchor');
+  assert.ok(foundryGate.slots.some((slot) => slot.assetKey === 'construct/fence-gate'), 'foundry gate adds a gate choke point');
+
+  assert.ok(checkpointKit, 'seam checkpoint template exists');
+  assert.ok(checkpointKit.slots.some((slot) => slot.role === 'sign'), 'checkpoint kit adds district entry signage');
+  assert.ok(checkpointKit.slots.some((slot) => slot.assetKey === 'construct/fence-gate' || slot.assetKey === 'construct/brick-wall-segment'), 'checkpoint kit adds a checkpoint barrier');
+});
+
+test('pickTemplate forces new authored set-piece templates at upgraded anchor cells', () => {
+  const chosen = pickTemplate(SEED, 8, 9, 'town', {
+    templatePoolIds: ['slums_boarded_market', 'slums_billboard_corner'],
+    forceTemplateId: 'slums_billboard_corner',
+    landmarkInfluence: { distance: 0, influenceRadius: 1, complementArchetype: 'city_core' },
+  });
+  assert.equal(chosen?.id, 'slums_billboard_corner');
+});
+
+test('pickTemplate can use authored transition-band template pools at belt seams', () => {
+  const chosen = pickTemplate(SEED, 12, 9, 'town', {
+    templatePoolIds: ['slums_backlot_fence', 'foundry_loading_gate', 'slums_foundry_checkpoint'],
+    transitionBand: {
+      direction: 'east',
+      toDistrictFamily: 'freight-yard',
+      fromDistrictFamily: 'backlot-cut',
+    },
+  });
+  assert.ok(['slums_backlot_fence', 'foundry_loading_gate', 'slums_foundry_checkpoint'].includes(chosen?.id));
+});

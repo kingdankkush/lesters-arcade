@@ -44,11 +44,413 @@ export const ROAD_TYPES = Object.freeze({
   FOREST_TRAIL: { id: 'forest_trail', width: 1, sidewalkWidth: 0, template: 'tree_grove', spacing: 4, tileKey: 'grass-path' },
 });
 
+export const LEVEL_ONE_BELTS = Object.freeze([
+  Object.freeze({
+    id: 'underchain-intro',
+    familyId: 'underchain-slums',
+    districtId: 'underchain-slums',
+    archetype: 'city_core',
+    landmarkTemplateId: 'slums_billboard_corner',
+    landmarkComplementArchetype: 'city_core',
+    landmarkInfluenceRadius: 1,
+    templatePoolIds: Object.freeze(['slums_billboard_corner', 'slums_boarded_market', 'street_block', 'downtown_district']),
+    roadDensity: 0.54,
+    routeShape: 'alley-spine-with-billboard-nodes',
+    landmarkRole: 'broken-billboard-or-burner-corner',
+    loopCount: 1,
+    coverProfile: 'cover-heavy-corners',
+    roadTypeKey: 'MAIN_STREET',
+    pathOrientation: 'horizontal',
+    ratioMax: 0.22,
+  }),
+  Object.freeze({
+    id: 'scam-market',
+    familyId: 'scam-market',
+    districtId: 'scam-market',
+    archetype: 'city_core',
+    landmarkTemplateId: 'slums_boarded_market',
+    landmarkComplementArchetype: 'city_core',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['slums_boarded_market', 'slums_billboard_corner', 'street_block', 'downtown_district']),
+    roadDensity: 0.6,
+    routeShape: 'market-loop-with-side-alleys',
+    landmarkRole: 'scam-row-or-boarded-storefront',
+    loopCount: 1,
+    coverProfile: 'cover-heavy-corners',
+    roadTypeKey: 'MAIN_STREET',
+    pathOrientation: 'horizontal',
+    ratioMax: 0.42,
+  }),
+  Object.freeze({
+    id: 'backlot-cut',
+    familyId: 'backlot-cut',
+    districtId: 'backlot-cut',
+    archetype: 'industrial',
+    landmarkTemplateId: 'slums_backlot_fence',
+    landmarkComplementArchetype: 'industrial',
+    landmarkInfluenceRadius: 1,
+    templatePoolIds: Object.freeze(['slums_backlot_fence', 'street_block', 'fenced_yard', 'industrial_zone']),
+    roadDensity: 0.48,
+    routeShape: 'service-corridor-with-cut-throughs',
+    landmarkRole: 'fence-choke-or-drainage-cut',
+    loopCount: 1,
+    coverProfile: 'medium-cover-fences-and-crates',
+    roadTypeKey: 'SIDE_STREET',
+    pathOrientation: 'horizontal',
+    ratioMax: 0.62,
+  }),
+  Object.freeze({
+    id: 'freight-yard',
+    familyId: 'freight-yard',
+    districtId: 'freight-yard',
+    archetype: 'industrial',
+    landmarkTemplateId: 'foundry_loading_gate',
+    landmarkComplementArchetype: 'industrial',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['foundry_loading_gate', 'industrial_zone', 'walled_compound', 'street_block']),
+    roadDensity: 0.64,
+    routeShape: 'loading-loop-with-spurs',
+    landmarkRole: 'loading-bay-or-yard-gate',
+    loopCount: 2,
+    coverProfile: 'crate-cover-and-fence-chokes',
+    roadTypeKey: 'MAIN_STREET',
+    pathOrientation: 'horizontal',
+    ratioMax: 0.82,
+  }),
+  Object.freeze({
+    id: 'foundry-perimeter',
+    familyId: 'foundry-perimeter',
+    districtId: 'foundry-perimeter',
+    archetype: 'industrial',
+    landmarkTemplateId: 'foundry_press_checkpoint',
+    landmarkComplementArchetype: 'industrial',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['foundry_press_checkpoint', 'foundry_loading_gate', 'industrial_zone', 'walled_compound', 'street_block']),
+    roadDensity: 0.72,
+    routeShape: 'ring-road-and-press-spines',
+    landmarkRole: 'foundry-gate-or-press-ring',
+    loopCount: 2,
+    coverProfile: 'dense-industrial-chokepoints',
+    roadTypeKey: 'MAIN_STREET',
+    pathOrientation: 'vertical',
+    ratioMax: 1,
+  }),
+]);
+
+function roadTypeFromKey(key) {
+  return ROAD_TYPES[key] ?? ROAD_TYPES.SIDE_STREET;
+}
+
+function levelOneBeltForMacroCell(dx, macroCellsX) {
+  const ratio = macroCellsX <= 1 ? 1 : dx / (macroCellsX - 1);
+  return LEVEL_ONE_BELTS.find((belt) => ratio <= belt.ratioMax) ?? LEVEL_ONE_BELTS[LEVEL_ONE_BELTS.length - 1];
+}
+
+function beltPathOrientation(belt, dx, dy) {
+  if (belt.familyId === 'backlot-cut') return (dy % 2 === 0) ? 'horizontal' : 'vertical';
+  if (belt.familyId === 'foundry-perimeter') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
+  return belt.pathOrientation;
+}
+
+function beltLandmarkAnchorCell(belt, dx, dy) {
+  if (belt.familyId === 'underchain-slums') return { localX: 2, localY: dy % 2 === 0 ? 1 : 3 };
+  if (belt.familyId === 'scam-market') return { localX: 2, localY: 2 };
+  if (belt.familyId === 'backlot-cut') return { localX: 3, localY: 2 };
+  if (belt.familyId === 'freight-yard') return { localX: (dx + dy) % 2 === 0 ? 1 : 3, localY: 2 };
+  if (belt.familyId === 'foundry-perimeter') return { localX: 2, localY: (dx % 2 === 0) ? 1 : 3 };
+  return { localX: 2, localY: 2 };
+}
+
+function beltSetPieceAnchors(belt, dx, dy) {
+  const primaryAnchor = beltLandmarkAnchorCell(belt, dx, dy);
+  if (belt.familyId === 'underchain-slums') {
+    return [
+      {
+        id: 'slums-billboard-corner',
+        role: belt.landmarkRole,
+        templateId: 'slums_billboard_corner',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['slums_billboard_corner', 'slums_boarded_market', 'street_block']),
+      },
+      {
+        id: 'slums-boarded-stall',
+        role: 'boarded-stall-or-scam-table',
+        templateId: 'slums_boarded_market',
+        localX: dy % 2 === 0 ? 4 : 0,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['slums_boarded_market', 'street_block', 'downtown_district']),
+      },
+    ];
+  }
+  if (belt.familyId === 'scam-market') {
+    return [
+      {
+        id: 'scam-market-main-front',
+        role: belt.landmarkRole,
+        templateId: 'slums_boarded_market',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['slums_boarded_market', 'street_block', 'downtown_district']),
+      },
+      {
+        id: 'market-backlot-cut',
+        role: 'backlot-cut-through',
+        templateId: 'slums_backlot_fence',
+        localX: dx % 2 === 0 ? 1 : 3,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['slums_backlot_fence', 'street_block', 'fenced_yard']),
+      },
+    ];
+  }
+  if (belt.familyId === 'backlot-cut') {
+    return [
+      {
+        id: 'backlot-primary-gate',
+        role: belt.landmarkRole,
+        templateId: 'slums_backlot_fence',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['slums_backlot_fence', 'street_block', 'fenced_yard']),
+      },
+      {
+        id: 'backlot-billboard-corner',
+        role: 'billboard-dead-end-or-alley-pocket',
+        templateId: 'slums_billboard_corner',
+        localX: 1,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['slums_billboard_corner', 'street_block', 'downtown_district']),
+      },
+    ];
+  }
+  if (belt.familyId === 'freight-yard') {
+    return [
+      {
+        id: 'freight-yard-loading-gate',
+        role: belt.landmarkRole,
+        templateId: 'foundry_loading_gate',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['foundry_loading_gate', 'industrial_zone', 'walled_compound', 'street_block']),
+      },
+      {
+        id: 'slums-foundry-threshold',
+        role: 'checkpoint-or-yard-threshold',
+        templateId: 'slums_foundry_checkpoint',
+        localX: 2,
+        localY: dy % 2 === 0 ? 4 : 0,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['slums_foundry_checkpoint', 'foundry_loading_gate', 'slums_backlot_fence']),
+      },
+    ];
+  }
+  if (belt.familyId === 'foundry-perimeter') {
+    return [
+      {
+        id: 'foundry-press-ring',
+        role: belt.landmarkRole,
+        templateId: 'foundry_press_checkpoint',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['foundry_press_checkpoint', 'foundry_loading_gate', 'industrial_zone', 'street_block']),
+      },
+      {
+        id: 'foundry-side-loading-gate',
+        role: 'side-yard-or-boss-approach-gate',
+        templateId: 'foundry_loading_gate',
+        localX: (dx + dy) % 2 === 0 ? 1 : 3,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['foundry_loading_gate', 'walled_compound', 'industrial_zone', 'street_block']),
+      },
+    ];
+  }
+  return [{
+    id: `${belt.familyId}-primary-anchor`,
+    role: belt.landmarkRole,
+    templateId: belt.landmarkTemplateId,
+    localX: primaryAnchor.localX,
+    localY: primaryAnchor.localY,
+    influenceRadius: belt.landmarkInfluenceRadius,
+    complementArchetype: belt.landmarkComplementArchetype,
+    templatePoolIds: [...belt.templatePoolIds],
+  }];
+}
+
+function landmarkSceneCellForDistrictCell(districtCell, localX, localY) {
+  return {
+    cellX: districtCell.dx * DISTRICT_CELL + localX,
+    cellY: districtCell.dy * DISTRICT_CELL + localY,
+  };
+}
+
+function activeSetPieceForLocalCell(districtCell, localSceneCellX, localSceneCellY) {
+  const anchors = Array.isArray(districtCell?.setPieceAnchors) ? districtCell.setPieceAnchors : [];
+  let best = null;
+  anchors.forEach((anchor, index) => {
+    const distance = Math.max(Math.abs(localSceneCellX - anchor.localX), Math.abs(localSceneCellY - anchor.localY));
+    if (distance > anchor.influenceRadius) return;
+    const candidate = { ...anchor, distance, priority: index };
+    if (
+      !best
+      || candidate.distance < best.distance
+      || (candidate.distance === best.distance && candidate.influenceRadius < best.influenceRadius)
+      || (candidate.distance === best.distance && candidate.influenceRadius === best.influenceRadius && candidate.priority < best.priority)
+    ) {
+      best = candidate;
+    }
+  });
+  return best;
+}
+
+function mergeTemplatePools(...templatePools) {
+  return Array.from(new Set(templatePools.flat().filter(Boolean)));
+}
+
+function buildTransitionEdge(fromCell, toCell, direction) {
+  if (!fromCell || !toCell || fromCell.districtFamily === toCell.districtFamily) return null;
+  const pairKey = [fromCell.districtFamily, toCell.districtFamily].sort().join('|');
+  const seamTemplateIds = {
+    'backlot-cut|freight-yard': ['slums_foundry_checkpoint'],
+    'foundry-perimeter|freight-yard': ['foundry_loading_gate'],
+    'backlot-cut|scam-market': ['slums_backlot_fence'],
+  }[pairKey] ?? [];
+  return {
+    direction,
+    fromDistrictFamily: fromCell.districtFamily,
+    toDistrictFamily: toCell.districtFamily,
+    bandId: `${fromCell.districtFamily}-to-${toCell.districtFamily}`,
+    widthCells: 1,
+    seamTemplateIds,
+    templatePoolIds: mergeTemplatePools(fromCell.templatePoolIds, toCell.templatePoolIds, seamTemplateIds),
+  };
+}
+
+function transitionBandAtLocalCell(districtCell, localSceneCellX, localSceneCellY) {
+  const edges = districtCell.transitionEdges ?? {};
+  if (edges.west && localSceneCellX <= edges.west.widthCells - 1) return edges.west;
+  if (edges.east && localSceneCellX >= DISTRICT_CELL - edges.east.widthCells) return edges.east;
+  if (edges.north && localSceneCellY <= edges.north.widthCells - 1) return edges.north;
+  if (edges.south && localSceneCellY >= DISTRICT_CELL - edges.south.widthCells) return edges.south;
+  return null;
+}
+
+function buildAuthoredDistrictProfile(belt, biome) {
+  return {
+    id: belt.districtId,
+    templates: belt.templatePoolIds,
+    weight: 1,
+    biomeAffinities: [biome],
+    roadDensity: belt.roadDensity,
+    pointsOfInterest: [belt.landmarkRole],
+    roadTypeKey: belt.roadTypeKey,
+  };
+}
+
+function chooseDistrictTypeForBiome(seed, dx, dy, biome) {
+  const availableTypes = Object.values(DISTRICT_TYPES).filter((t) => t.biomeAffinities.includes(biome));
+  if (availableTypes.length === 0) {
+    const fallbackTypes = Object.values(DISTRICT_TYPES).filter((t) => t.biomeAffinities.includes('town') || t.biomeAffinities.includes('road'));
+    availableTypes.push(...fallbackTypes);
+  }
+
+  const weights = availableTypes.map((t) => t.weight);
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = (hashU32(seed, dx * 1000 + dy) / 4294967296) * total;
+
+  let chosen = availableTypes[0];
+  for (let i = 0; i < availableTypes.length; i++) {
+    r -= availableTypes[i].weight;
+    if (r <= 0) { chosen = availableTypes[i]; break; }
+  }
+  return chosen;
+}
+
+export function districtCellAtSceneCell(cellX, cellY, districtGrid, macroCellsX, options = {}) {
+  const worldOffsetX = options.worldOffsetX ?? 0;
+  const worldOffsetY = options.worldOffsetY ?? 0;
+  const macroCellsY = options.macroCellsY ?? null;
+  const worldX = cellX * SCENE_CELL + Math.floor(SCENE_CELL / 2) + worldOffsetX;
+  const worldY = cellY * SCENE_CELL + Math.floor(SCENE_CELL / 2) + worldOffsetY;
+  const dx = Math.floor(worldX / (DISTRICT_CELL * SCENE_CELL));
+  const dy = Math.floor(worldY / (DISTRICT_CELL * SCENE_CELL));
+  if (dx < 0 || dy < 0 || dx >= macroCellsX || (macroCellsY != null && dy >= macroCellsY)) return null;
+  return districtGrid[dy * macroCellsX + dx] ?? null;
+}
+
+export function districtTemplateContextForCell(cellX, cellY, districtGrid, macroCellsX, options = {}) {
+  const districtCell = districtCellAtSceneCell(cellX, cellY, districtGrid, macroCellsX, options);
+  if (!districtCell) return null;
+  const worldOffsetX = options.worldOffsetX ?? 0;
+  const worldOffsetY = options.worldOffsetY ?? 0;
+  const worldX = cellX * SCENE_CELL + Math.floor(SCENE_CELL / 2) + worldOffsetX;
+  const worldY = cellY * SCENE_CELL + Math.floor(SCENE_CELL / 2) + worldOffsetY;
+  const sceneWorldCellX = Math.floor(worldX / SCENE_CELL);
+  const sceneWorldCellY = Math.floor(worldY / SCENE_CELL);
+  const localSceneCellX = sceneWorldCellX - districtCell.dx * DISTRICT_CELL;
+  const localSceneCellY = sceneWorldCellY - districtCell.dy * DISTRICT_CELL;
+  const activeSetPiece = activeSetPieceForLocalCell(districtCell, localSceneCellX, localSceneCellY);
+  const activeAnchorSceneCell = activeSetPiece
+    ? landmarkSceneCellForDistrictCell(districtCell, activeSetPiece.localX, activeSetPiece.localY)
+    : null;
+  const transitionBand = transitionBandAtLocalCell(districtCell, localSceneCellX, localSceneCellY);
+  const setPieceTemplatePoolIds = activeSetPiece?.templatePoolIds ?? districtCell.templatePoolIds;
+  return {
+    districtFamily: districtCell.districtFamily,
+    templatePoolIds: transitionBand ? mergeTemplatePools(setPieceTemplatePoolIds, transitionBand.templatePoolIds) : setPieceTemplatePoolIds,
+    archetype: districtCell.archetype,
+    pathOrientation: districtCell.pathOrientation,
+    landmarkRole: districtCell.landmarkRole,
+    landmarkTemplateId: districtCell.landmarkTemplateId,
+    forceTemplateId: activeSetPiece?.distance === 0 ? activeSetPiece.templateId : null,
+    transitionBand,
+    activeSetPiece: activeSetPiece ? {
+      id: activeSetPiece.id,
+      role: activeSetPiece.role,
+      templateId: activeSetPiece.templateId,
+      localX: activeSetPiece.localX,
+      localY: activeSetPiece.localY,
+      distance: activeSetPiece.distance,
+      influenceRadius: activeSetPiece.influenceRadius,
+      complementArchetype: activeSetPiece.complementArchetype,
+      templatePoolIds: activeSetPiece.templatePoolIds,
+    } : null,
+    landmarkInfluence: activeSetPiece ? {
+      distance: activeSetPiece.distance,
+      influenceRadius: activeSetPiece.influenceRadius,
+      complementArchetype: activeSetPiece.complementArchetype,
+      anchorCellX: activeAnchorSceneCell.cellX,
+      anchorCellY: activeAnchorSceneCell.cellY,
+      setPieceId: activeSetPiece.id,
+      templatePoolIds: activeSetPiece.templatePoolIds,
+    } : null,
+  };
+}
+
 // District macro-grid: divides world into DISTRICT_CELL x DISTRICT_CELL macro-cells
 // Each macro-cell gets a district type, and roads connect their centers
-export function generateDistrictGrid(seed, worldWidth, worldHeight) {
+export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}) {
   const macroCellsX = Math.ceil(worldWidth / (DISTRICT_CELL * SCENE_CELL));
   const macroCellsY = Math.ceil(worldHeight / (DISTRICT_CELL * SCENE_CELL));
+  const layout = options.layout ?? 'level1-authored';
   const grid = [];
   
   for (let dy = 0; dy < macroCellsY; dy++) {
@@ -56,24 +458,10 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight) {
       const centerX = dx * DISTRICT_CELL * SCENE_CELL + Math.floor(DISTRICT_CELL * SCENE_CELL / 2);
       const centerY = dy * DISTRICT_CELL * SCENE_CELL + Math.floor(DISTRICT_CELL * SCENE_CELL / 2);
       const biome = biomeAtImpl(seed, centerX, centerY);
-      
-      // Pick district type based on biome
-      const availableTypes = Object.values(DISTRICT_TYPES).filter(t => t.biomeAffinities.includes(biome));
-      if (availableTypes.length === 0) {
-        // Fallback: use town/road affiliated districts
-        const fallbackTypes = Object.values(DISTRICT_TYPES).filter(t => t.biomeAffinities.includes('town') || t.biomeAffinities.includes('road'));
-        availableTypes.push(...fallbackTypes);
-      }
-      
-      const weights = availableTypes.map(t => t.weight);
-      const total = weights.reduce((a, b) => a + b, 0);
-      let r = (hashU32(seed, dx * 1000 + dy) / 4294967296) * total;
-      
-      let chosen = availableTypes[0];
-      for (let i = 0; i < availableTypes.length; i++) {
-        r -= availableTypes[i].weight;
-        if (r <= 0) { chosen = availableTypes[i]; break; }
-      }
+      const belt = layout === 'level1-authored' ? levelOneBeltForMacroCell(dx, macroCellsX) : null;
+      const chosen = belt ? buildAuthoredDistrictProfile(belt, biome) : chooseDistrictTypeForBiome(seed, dx, dy, biome);
+      const setPieceAnchors = belt ? beltSetPieceAnchors(belt, dx, dy) : [];
+      const primarySetPiece = setPieceAnchors[0] ?? null;
       
       grid.push({
         dx, dy,
@@ -82,6 +470,21 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight) {
         district: chosen,
         templates: chosen.templates,
         districtType: chosen.id,
+        districtFamily: belt?.familyId ?? chosen.id,
+        stageBelt: belt?.id ?? chosen.id,
+        routeShape: belt?.routeShape ?? 'generic-grid',
+        landmarkRole: primarySetPiece?.role ?? belt?.landmarkRole ?? 'district-poi',
+        landmarkTemplateId: primarySetPiece?.templateId ?? belt?.landmarkTemplateId ?? chosen.templates?.[0] ?? null,
+        landmarkComplementArchetype: primarySetPiece?.complementArchetype ?? belt?.landmarkComplementArchetype ?? (belt?.archetype ?? chosen.id),
+        landmarkInfluenceRadius: primarySetPiece?.influenceRadius ?? belt?.landmarkInfluenceRadius ?? 1,
+        landmarkAnchorCell: primarySetPiece ? { localX: primarySetPiece.localX, localY: primarySetPiece.localY } : (belt ? beltLandmarkAnchorCell(belt, dx, dy) : { localX: 2, localY: 2 }),
+        setPieceAnchors,
+        loopCount: belt?.loopCount ?? 1,
+        coverProfile: belt?.coverProfile ?? 'mixed',
+        templatePoolIds: belt?.templatePoolIds ?? chosen.templates,
+        archetype: belt?.archetype ?? chosen.id,
+        pathOrientation: belt ? beltPathOrientation(belt, dx, dy) : (((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical'),
+        transitionEdges: {},
         roads: [],
         connections: [],
       });
@@ -94,6 +497,24 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight) {
       const idx = dy * macroCellsX + dx;
       if (dx < macroCellsX - 1) grid[idx].connections.push({ target: idx + 1, dir: 'east' });
       if (dy < macroCellsY - 1) grid[idx].connections.push({ target: idx + macroCellsX, dir: 'south' });
+    }
+  }
+
+  for (let dy = 0; dy < macroCellsY; dy++) {
+    for (let dx = 0; dx < macroCellsX; dx++) {
+      const cell = grid[dy * macroCellsX + dx];
+      const east = dx < macroCellsX - 1 ? grid[dy * macroCellsX + dx + 1] : null;
+      const south = dy < macroCellsY - 1 ? grid[(dy + 1) * macroCellsX + dx] : null;
+      const eastBand = buildTransitionEdge(cell, east, 'east');
+      const southBand = buildTransitionEdge(cell, south, 'south');
+      if (eastBand) {
+        cell.transitionEdges.east = eastBand;
+        east.transitionEdges.west = buildTransitionEdge(east, cell, 'west');
+      }
+      if (southBand) {
+        cell.transitionEdges.south = southBand;
+        south.transitionEdges.north = buildTransitionEdge(south, cell, 'north');
+      }
     }
   }
   
@@ -119,15 +540,18 @@ export function generateRoadNetwork(districtGrid, macroCellsX, macroCellsY, seed
         path, // array of { x, y, type: 'road'|'bridge'|'tunnel' }
         districtA: cell.district.id,
         districtB: target.district.id,
+        districtFamilyA: cell.districtFamily,
+        districtFamilyB: target.districtFamily,
+        routeKind: conn.dir === 'east' ? 'belt-spine' : 'cross-belt-link',
       });
     }
   }
   
-  // Add side streets within districts
+  // Add authored local loops and side streets within districts.
   for (const cell of districtGrid) {
     if (cell.district.roadDensity > 0.3) {
-      const sideRoads = generateSideStreets(cell, seed);
-      roads.push(...sideRoads);
+      const familyRoads = generateFamilyRoutes(cell, seed);
+      roads.push(...familyRoads);
     }
   }
   
@@ -164,8 +588,15 @@ function traceRoadPath(x1, y1, x2, y2, roadType, seed) {
 // Choose road type based on district importance and biome
 function chooseRoadType(districtA, districtB, biomeA, biomeB) {
   if (biomeA === 'water' || biomeB === 'water') return ROAD_TYPES.BOARDWALK;
-  if (biomeA === 'sand' || biomeB === 'sand') return ROAD_TYPES.DIRT_PATH;
   if (biomeA === 'forest' || biomeB === 'forest') return ROAD_TYPES.FOREST_TRAIL;
+
+  const authoredRoadTypeA = roadTypeFromKey(districtA?.roadTypeKey);
+  const authoredRoadTypeB = roadTypeFromKey(districtB?.roadTypeKey);
+  if (authoredRoadTypeA?.id === ROAD_TYPES.MAIN_STREET.id || authoredRoadTypeB?.id === ROAD_TYPES.MAIN_STREET.id) return ROAD_TYPES.MAIN_STREET;
+  if (authoredRoadTypeA?.id === ROAD_TYPES.DIRT_PATH.id || authoredRoadTypeB?.id === ROAD_TYPES.DIRT_PATH.id || biomeA === 'sand' || biomeB === 'sand') return ROAD_TYPES.DIRT_PATH;
+  if (authoredRoadTypeA?.id === ROAD_TYPES.ALLEY.id || authoredRoadTypeB?.id === ROAD_TYPES.ALLEY.id) return ROAD_TYPES.ALLEY;
+  if (authoredRoadTypeA?.id === ROAD_TYPES.SIDE_STREET.id || authoredRoadTypeB?.id === ROAD_TYPES.SIDE_STREET.id) return ROAD_TYPES.SIDE_STREET;
+
   // districtA and districtB are the chosen district objects, compare by id
   const isDowntown = (districtA.id === 'downtown' || districtB.id === 'downtown');
   const isIndustrial = (districtA.id === 'industrial' || districtB.id === 'industrial');
@@ -173,35 +604,95 @@ function chooseRoadType(districtA, districtB, biomeA, biomeB) {
   return ROAD_TYPES.SIDE_STREET;
 }
 
-// Generate side streets within a district macro-cell
-function generateSideStreets(cell, seed) {
-  const roads = [];
+function localRoad(cell, from, to, type, seed, routeKind = 'local-route') {
+  const start = { x: cell.centerX + from.x, y: cell.centerY + from.y };
+  const end = { x: cell.centerX + to.x, y: cell.centerY + to.y };
+  return {
+    from: start,
+    to: end,
+    type,
+    path: traceRoadPath(start.x, start.y, end.x, end.y, type, seed),
+    districtA: cell.district.id,
+    districtB: cell.district.id,
+    districtFamilyA: cell.districtFamily,
+    districtFamilyB: cell.districtFamily,
+    routeKind,
+  };
+}
+
+function rectangularLoop(cell, seed, type, insetX = SCENE_CELL, insetY = SCENE_CELL, routeKind = 'loop') {
   const half = Math.floor(DISTRICT_CELL * SCENE_CELL / 2);
-  // Parallel grid of side streets
+  const left = -half + insetX;
+  const right = half - insetX;
+  const top = -half + insetY;
+  const bottom = half - insetY;
+  if (right <= left || bottom <= top) return [];
+  return [
+    localRoad(cell, { x: left, y: top }, { x: right, y: top }, type, seed, routeKind),
+    localRoad(cell, { x: right, y: top }, { x: right, y: bottom }, type, seed, routeKind),
+    localRoad(cell, { x: right, y: bottom }, { x: left, y: bottom }, type, seed, routeKind),
+    localRoad(cell, { x: left, y: bottom }, { x: left, y: top }, type, seed, routeKind),
+  ];
+}
+
+// Generate authored loops and side streets within a district macro-cell
+function generateFamilyRoutes(cell, seed) {
+  const half = Math.floor(DISTRICT_CELL * SCENE_CELL / 2);
+  const mainType = roadTypeFromKey(cell.district.roadTypeKey);
+  const horizontal = cell.pathOrientation !== 'vertical';
+
+  if (cell.districtFamily === 'underchain-slums') {
+    return [
+      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, mainType, seed, 'intro-spine'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 2, SCENE_CELL + 4, 'underchain-loop'),
+      localRoad(cell, { x: 0, y: -Math.floor(half * 0.55) }, { x: 0, y: Math.floor(half * 0.2) }, ROAD_TYPES.ALLEY, seed, 'billboard-spoke'),
+    ];
+  }
+
+  if (cell.districtFamily === 'scam-market') {
+    return [
+      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL + 1, 'market-loop'),
+      localRoad(cell, { x: -Math.floor(half * 0.2), y: -half }, { x: -Math.floor(half * 0.2), y: half }, ROAD_TYPES.ALLEY, seed, 'rear-alley'),
+      localRoad(cell, { x: Math.floor(half * 0.25), y: -half }, { x: Math.floor(half * 0.25), y: half }, ROAD_TYPES.ALLEY, seed, 'rear-alley'),
+    ];
+  }
+
+  if (cell.districtFamily === 'backlot-cut') {
+    const corridor = horizontal
+      ? localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.SIDE_STREET, seed, 'main-corridor')
+      : localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.SIDE_STREET, seed, 'main-corridor');
+    const pullOffLoop = rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 3, SCENE_CELL + 5, 'backlot-loop');
+    const spur = horizontal
+      ? localRoad(cell, { x: Math.floor(half * 0.35), y: 0 }, { x: Math.floor(half * 0.35), y: -half }, ROAD_TYPES.ALLEY, seed, 'drainage-spur')
+      : localRoad(cell, { x: 0, y: Math.floor(half * 0.35) }, { x: -half, y: Math.floor(half * 0.35) }, ROAD_TYPES.ALLEY, seed, 'drainage-spur');
+    return [corridor, ...pullOffLoop, spur];
+  }
+
+  if (cell.districtFamily === 'freight-yard') {
+    return [
+      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL, 'yard-loop'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 4, SCENE_CELL + 4, 'crate-loop'),
+      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.MAIN_STREET, seed, 'loading-spine'),
+      localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.SIDE_STREET, seed, 'loading-connector'),
+    ];
+  }
+
+  if (cell.districtFamily === 'foundry-perimeter') {
+    return [
+      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL, 'press-ring'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 4, SCENE_CELL + 4, 'service-ring'),
+      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.MAIN_STREET, seed, 'foundry-spine'),
+      localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.MAIN_STREET, seed, 'foundry-spine'),
+    ];
+  }
+
+  const roads = [];
   for (let i = -2; i <= 2; i += 2) {
     if (hashU32(seed, cell.dx * 10 + i, cell.dy) / 4294967296 < cell.district.roadDensity * 0.5) {
-      const from = { x: cell.centerX - half, y: cell.centerY + i * SCENE_CELL };
-      const to = { x: cell.centerX + half, y: cell.centerY + i * SCENE_CELL };
-      roads.push({
-        from,
-        to,
-        type: ROAD_TYPES.SIDE_STREET,
-        path: traceRoadPath(from.x, from.y, to.x, to.y, ROAD_TYPES.SIDE_STREET, seed),
-        districtA: cell.district.id,
-        districtB: cell.district.id,
-      });
+      roads.push(localRoad(cell, { x: -half, y: i * SCENE_CELL }, { x: half, y: i * SCENE_CELL }, ROAD_TYPES.SIDE_STREET, seed, 'side-street'));
     }
     if (hashU32(seed, cell.dy * 10 + i, cell.dx) / 4294967296 < cell.district.roadDensity * 0.5) {
-      const from = { x: cell.centerX + i * SCENE_CELL, y: cell.centerY - half };
-      const to = { x: cell.centerX + i * SCENE_CELL, y: cell.centerY + half };
-      roads.push({
-        from,
-        to,
-        type: ROAD_TYPES.SIDE_STREET,
-        path: traceRoadPath(from.x, from.y, to.x, to.y, ROAD_TYPES.SIDE_STREET, seed),
-        districtA: cell.district.id,
-        districtB: cell.district.id,
-      });
+      roads.push(localRoad(cell, { x: i * SCENE_CELL, y: -half }, { x: i * SCENE_CELL, y: half }, ROAD_TYPES.SIDE_STREET, seed, 'side-street'));
     }
   }
   return roads;

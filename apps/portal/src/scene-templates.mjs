@@ -279,6 +279,252 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
+  crypto_desert_outpost_yard: Object.freeze({
+    archetypeTags: ['wilderness', 'industrial'],
+    id: 'crypto_desert_outpost_yard', biomes: ['desert', 'rocky', 'road'], groundTheme: 'sand', weight: 0.34,
+    slots: [
+      { ...A('crypto/landmark-gas-station', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 3 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 2 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_canyon_gate: Object.freeze({
+    archetypeTags: ['wilderness'],
+    id: 'crypto_canyon_gate', biomes: ['desert', 'rocky'], groundTheme: 'sand', weight: 0.28,
+    slots: [
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.8 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 2 },
+      { ...A('crypto/desert-cactus', 'tree', { radius: 0.55 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_ghost_mainstreet_front: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'crypto_ghost_mainstreet_front', biomes: ['town', 'road'], groundTheme: 'pavement', weight: 0.34,
+    slots: [
+      { ...A('crypto/ghost-saloon-front', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.72 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_ghost_false_front: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'crypto_ghost_false_front', biomes: ['town', 'road'], groundTheme: 'pavement', weight: 0.26,
+    slots: [
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.72 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'scatter', count: 1 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_country_rest_stop: Object.freeze({
+    archetypeTags: ['suburban', 'wilderness'],
+    id: 'crypto_country_rest_stop', biomes: ['road', 'town', 'desert'], groundTheme: 'sand', weight: 0.3,
+    slots: [
+      { ...A('crypto/landmark-gas-station', 'building', { radius: 0.76 }), place: 'anchor', count: 1 },
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_country_pull_off: Object.freeze({
+    archetypeTags: ['suburban', 'wilderness'],
+    id: 'crypto_country_pull_off', biomes: ['road', 'desert', 'town'], groundTheme: 'sand', weight: 0.24,
+    slots: [
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 1 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_residential_square: Object.freeze({
+    archetypeTags: ['suburban', 'park'],
+    id: 'crypto_residential_square', biomes: ['town', 'grass'], groundTheme: 'grass', weight: 0.3,
+    slots: [
+      { ...A('crypto/residential-hedge-run', 'fence', { radius: 0.38 }), place: 'anchor', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'pathEdge', spacing: 4, count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.7 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_residential_greenbelt_pocket: Object.freeze({
+    archetypeTags: ['park', 'wilderness'],
+    id: 'crypto_residential_greenbelt_pocket', biomes: ['town', 'forest', 'grass'], groundTheme: 'grass', weight: 0.28,
+    slots: [
+      { ...A('crypto/residential-hedge-run', 'fence', { radius: 0.38 }), place: 'anchor', count: 1 },
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.72 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_innercity_industrial_gate: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
+    id: 'crypto_innercity_industrial_gate', biomes: ['pavement', 'road', 'town'], groundTheme: 'pavement', weight: 0.3,
+    slots: [
+      { ...A('crypto/industrial-warehouse-facade', 'building', { radius: 0.8 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('crypto/innercity-billboard-frame', 'sign', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_innercity_checkpoint_block: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
+    id: 'crypto_innercity_checkpoint_block', biomes: ['pavement', 'road', 'town'], groundTheme: 'pavement', weight: 0.24,
+    slots: [
+      { ...A('construct/brick-wall-corner', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'scatter', count: 1 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_desert_ghost_checkpoint: Object.freeze({
+    archetypeTags: ['wilderness', 'city_core'],
+    id: 'crypto_desert_ghost_checkpoint', biomes: ['desert', 'rocky', 'town', 'road'], groundTheme: 'sand', weight: 0.22,
+    slots: [
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.8 }), place: 'pathEdge', spacing: 2, count: 2 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_ghost_country_checkpoint: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'crypto_ghost_country_checkpoint', biomes: ['town', 'road'], groundTheme: 'pavement', weight: 0.24,
+    slots: [
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_country_residential_checkpoint: Object.freeze({
+    archetypeTags: ['suburban', 'park'],
+    id: 'crypto_country_residential_checkpoint', biomes: ['road', 'town', 'grass'], groundTheme: 'grass', weight: 0.22,
+    slots: [
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_residential_innercity_checkpoint: Object.freeze({
+    archetypeTags: ['suburban', 'industrial'],
+    id: 'crypto_residential_innercity_checkpoint', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.24,
+    slots: [
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-corner', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+      { ...A('crypto/innercity-billboard-frame', 'sign', { radius: 0.45 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  // --- ACT I / SLUMS + FOUNDRY authored anchors -----------------------------
+  // These templates keep the currently available coherent-world assets but
+  // arrange them around the accepted Level 1 canon: Underchain alleys,
+  // scam-market storefronts, fenced backlots, and the Foundry perimeter.
+
+  slums_billboard_corner: Object.freeze({
+    archetypeTags: ['city_core'],
+    id: 'slums_billboard_corner', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.34,
+    slots: [
+      { ...A('crypto/innercity-billboard-frame', 'sign', { radius: 0.48 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 2 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  slums_boarded_market: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'slums_boarded_market', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.32,
+    slots: [
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.74 }), place: 'anchor', count: 1 },
+      { ...A('crypto/ghost-saloon-front', 'building', { radius: 0.76 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'scatter', count: 1 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  slums_backlot_fence: Object.freeze({
+    archetypeTags: ['suburban', 'industrial'],
+    id: 'slums_backlot_fence', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.28,
+    slots: [
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  foundry_loading_gate: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
+    id: 'foundry_loading_gate', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.3,
+    slots: [
+      { ...A('crypto/industrial-warehouse-facade', 'building', { radius: 0.8 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 2 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  foundry_press_checkpoint: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
+    id: 'foundry_press_checkpoint', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.28,
+    slots: [
+      { ...A('construct/brick-wall-corner', 'wall', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('crypto/innercity-billboard-frame', 'sign', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  slums_foundry_checkpoint: Object.freeze({
+    archetypeTags: ['city_core', 'industrial'],
+    id: 'slums_foundry_checkpoint', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.24,
+    slots: [
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 2, count: 2 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
   office_interior: Object.freeze({
     archetypeTags: ['city_core'],
     id: 'office_interior', biomes: ['town'], groundTheme: 'carpet', weight: 0.25,
@@ -337,6 +583,15 @@ function templatesForBiome(biome) {
     if (t.biomes.includes(biome)) out.push(t);
   }
   return out;
+}
+
+function templatesForContext(biome, context = {}) {
+  const templatePoolIds = Array.isArray(context.templatePoolIds) ? context.templatePoolIds : [];
+  if (!templatePoolIds.length) return templatesForBiome(biome);
+  const pool = templatePoolIds.map((id) => SCENE_TEMPLATES[id]).filter(Boolean);
+  if (!pool.length) return templatesForBiome(biome);
+  const biomeMatchedPool = pool.filter((template) => template.biomes.includes(biome));
+  return biomeMatchedPool.length ? biomeMatchedPool : pool;
 }
 
 // Bias: how heavily the district archetype pulls template selection.
@@ -513,12 +768,18 @@ export function landmarkInfluenceAt(seed, cellX, cellY) {
   return best;
 }
 
-export function pickTemplate(seed, cellX, cellY, biome) {
-  const choices = templatesForBiome(biome);
+export function pickTemplate(seed, cellX, cellY, biome, context = {}) {
+  const choices = templatesForContext(biome, context);
   if (!choices.length) return null;
+
+  if (context.forceTemplateId) {
+    const forced = choices.find((template) => template.id === context.forceTemplateId);
+    if (forced) return forced;
+  }
+
   if (choices.length === 1) return choices[0];
 
-  const archetype = districtArchetypeAt(seed, cellX, cellY);
+  const archetype = context.archetype ?? districtArchetypeAt(seed, cellX, cellY);
   // Determine if this cell should respect the district archetype (biased coin).
   const rollWithArchetype = rand01(seed, cellX * 31 + 7, cellY * 17 + 91) < DISTRICT_ARCHETYPE_BIAS;
 
@@ -527,13 +788,15 @@ export function pickTemplate(seed, cellX, cellY, biome) {
   // landmark's `complementArchetype` (e.g., benches near fountain, crates near
   // refinery). The boost tapers from 4x at the anchor cell down to 1.3x at the
   // edge of the influence radius, giving each landmark a "pull" gradient.
-  const landmarkHit = typeof landmarkInfluenceAt === 'function'
+  const landmarkHit = context.landmarkInfluence ?? (typeof landmarkInfluenceAt === 'function'
     ? landmarkInfluenceAt(seed, cellX, cellY)
-    : null;
-  const landmarkComplementArchetype = landmarkHit?.landmark?.complementArchetype ?? null;
+    : null);
+  const landmarkComplementArchetype = landmarkHit?.complementArchetype ?? landmarkHit?.landmark?.complementArchetype ?? null;
+  const landmarkRadius = landmarkHit?.influenceRadius ?? landmarkHit?.landmark?.influenceRadius ?? 1;
   const landmarkBoost = landmarkHit
-    ? 1.3 + (2.7 * (1 - (landmarkHit.distance / Math.max(1, landmarkHit.landmark.influenceRadius))))
+    ? 1.3 + (2.7 * (1 - (landmarkHit.distance / Math.max(1, landmarkRadius))))
     : 1;
+  const transitionTemplateIds = Array.isArray(context.transitionBand?.seamTemplateIds) ? context.transitionBand.seamTemplateIds : [];
 
   // Compute effective weight for each candidate template.
   let total = 0;
@@ -548,10 +811,12 @@ export function pickTemplate(seed, cellX, cellY, biome) {
     // Landmark complement bias: templates matching the landmark's archetype get
     // a boost that tapers with distance.
     if (matchesLandmark) w *= landmarkBoost;
+    if (transitionTemplateIds.includes(t.id)) w *= 3.2;
     scored.push({ template: t, weight: w });
     total += w;
   }
   if (total <= 0) return choices[0];
+
   let r = rand01(seed, cellX * 31 + 7, cellY * 17 + 3) * total;
   for (const s of scored) {
     r -= s.weight;
@@ -562,11 +827,12 @@ export function pickTemplate(seed, cellX, cellY, biome) {
 
 // Build the coherent placement for one cell. Returns [] for "open ground" cells
 // so the map breathes. `reserveRadius` keeps the player spawn (origin) clear.
-export function buildScene(seed, cellX, cellY, biome, { reserveRadius = 6, density = 0.62 } = {}) {
+export function buildScene(seed, cellX, cellY, biome, { reserveRadius = 6, density = 0.62, templateContext = null } = {}) {
   if (biome === 'water') return []; // water stays open + impassable (handled elsewhere)
+  const forceLandmarkTemplate = Boolean(templateContext?.forceTemplateId);
   const cellHash = hashU32((cellX * 73856093) ^ seed, cellY * 19349663);
-  if ((cellHash % 100) >= Math.round(density * 100)) return [];
-  const template = pickTemplate(seed, cellX, cellY, biome);
+  if (!forceLandmarkTemplate && (cellHash % 100) >= Math.round(density * 100)) return [];
+  const template = pickTemplate(seed, cellX, cellY, biome, templateContext ?? {});
   if (!template) return [];
 
   const baseX = cellX * SCENE_CELL + Math.floor(SCENE_CELL / 2);
@@ -578,7 +844,12 @@ export function buildScene(seed, cellX, cellY, biome, { reserveRadius = 6, densi
 
   // Deterministic path: a straight line through the cell (horizontal or vertical)
   // that pathEdge slots line. Direction is per-cell stable.
-  const horizontal = rand01(seed, cellX, cellY * 5 + 1) < 0.5;
+  const forcedOrientation = templateContext?.pathOrientation;
+  const horizontal = forcedOrientation === 'horizontal'
+    ? true
+    : forcedOrientation === 'vertical'
+      ? false
+      : rand01(seed, cellX, cellY * 5 + 1) < 0.5;
 
   let slotIndex = 0;
   const hostsByRole = {};
@@ -662,15 +933,18 @@ export function sceneObjectsNear(seed, centerX, centerY, halfExtent, biomeAt, op
       const anchorX = cx * SCENE_CELL + Math.floor(SCENE_CELL / 2);
       const anchorY = cy * SCENE_CELL + Math.floor(SCENE_CELL / 2);
       const biome = biomeAt(seed, anchorX, anchorY);
-      for (const o of buildScene(seed, cx, cy, biome, opts)) out.push(o);
+      const templateContext = typeof opts.templateContextForCell === 'function'
+        ? opts.templateContextForCell(cx, cy, biome)
+        : opts.templateContext;
+      for (const o of buildScene(seed, cx, cy, biome, { ...opts, templateContext })) out.push(o);
     }
   }
   return out;
 }
 
 // The ground theme a cell wants (so floor tiles match the object arrangement).
-export function groundThemeForCell(seed, cellX, cellY, biome) {
-  const t = pickTemplate(seed, cellX, cellY, biome);
+export function groundThemeForCell(seed, cellX, cellY, biome, context = {}) {
+  const t = pickTemplate(seed, cellX, cellY, biome, context);
   return t?.groundTheme ?? null;
 }
 

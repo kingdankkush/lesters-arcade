@@ -237,5 +237,184 @@
     "Prioritize crouch, hurt, death, fall, and victory loops for Lester/Lilly because current provided art covers core motion but relies on stills for weapon poses.",
     "Add enemy attack-tell, hit, death, and melee-counter frames so AI fairness reads visually instead of only through timers.",
     "Keep the manifest audit in CI so missing states become visible immediately after new art drops."
-  ]
+  ],
+  "runtimeEnemyCoverage": {
+    "trenchDegen": {
+      "canonicalActorId": "trench-degen",
+      "runtimeAnimatedStates": [
+        "attack",
+        "attack-tell",
+        "death",
+        "health-25",
+        "health-50",
+        "health-75",
+        "hit",
+        "idle",
+        "jump",
+        "melee-counter",
+        "run",
+        "walk"
+      ],
+      "runtimeCoveredStates": [
+        "idle",
+        "walk-or-fly",
+        "attack-tell",
+        "attack",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeDerivedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeMissingStates": [
+        "optional-gore-overlay"
+      ]
+    },
+    "evilBanker": {
+      "canonicalActorId": "evil-banker",
+      "runtimeAnimatedStates": [
+        "attack",
+        "attack-tell",
+        "death",
+        "health-50",
+        "health-75",
+        "hit",
+        "idle",
+        "jump",
+        "melee-counter",
+        "run",
+        "walk"
+      ],
+      "runtimeCoveredStates": [
+        "idle",
+        "walk-or-fly",
+        "attack-tell",
+        "attack",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeDerivedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeMissingStates": [
+        "optional-gore-overlay"
+      ]
+    },
+    "warrenSpearRider": {
+      "canonicalActorId": "warren-boss",
+      "runtimeAnimatedStates": [
+        "attack",
+        "attack-tell",
+        "death",
+        "health-50",
+        "health-75",
+        "hit",
+        "idle",
+        "melee-counter",
+        "run",
+        "walk"
+      ],
+      "runtimeCoveredStates": [
+        "idle",
+        "walk-or-fly",
+        "attack-tell",
+        "attack",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeDerivedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeMissingStates": [
+        "optional-gore-overlay"
+      ]
+    },
+    "cryptoBro": {
+      "canonicalActorId": "crypto-bro",
+      "runtimeAnimatedStates": [
+        "attack",
+        "attack-tell",
+        "death",
+        "hit",
+        "idle",
+        "jump",
+        "melee-counter",
+        "run",
+        "walk"
+      ],
+      "runtimeCoveredStates": [
+        "idle",
+        "walk-or-fly",
+        "attack-tell",
+        "attack",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeDerivedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeMissingStates": [
+        "optional-gore-overlay"
+      ]
+    },
+    "gasBeast": {
+      "canonicalActorId": "gas-beast",
+      "runtimeAnimatedStates": [
+        "attack",
+        "attack-tell",
+        "death",
+        "hit",
+        "idle",
+        "jump",
+        "melee-counter",
+        "run",
+        "walk"
+      ],
+      "runtimeCoveredStates": [
+        "idle",
+        "walk-or-fly",
+        "attack-tell",
+        "attack",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeDerivedStates": [
+        "attack-tell",
+        "melee-counter",
+        "hit",
+        "death"
+      ],
+      "runtimeMissingStates": [
+        "optional-gore-overlay"
+      ]
+    }
+  },
+  "summary": {
+    "missingHeroAnimatedStateCount": 16,
+    "missingEnemyAnimatedStateCount": 25,
+    "runtimeDerivedEnemyStateCount": 20,
+    "runtimeMissingEnemyStateCount": 5,
+    "runtimeReadableEnemyCount": 5,
+    "runtimeEnemyCount": 5,
+    "uniqueRuntimeMissingStates": [
+      "optional-gore-overlay"
+    ]
+  }
 }

@@ -18,6 +18,7 @@ import {
   generateDistrictGrid,
   generateRoadNetwork,
   generateTransitionZones,
+  districtTemplateContextForCell,
 } from './src/district-generator.mjs';
 
 import {
@@ -6404,13 +6405,21 @@ const THEME_GROUND_TILE = {
 // NUMERIC key (no per-tile string allocation — this runs thousands of times a
 // frame). Cache is cleared at run start, so the seed needn't be in the key.
 const _themeCellCache = new Map();
+function sceneTemplateContextAt(cellX, cellY) {
+  if (!Array.isArray(combat.districtGrid) || !combat.districtGrid.length || !combat.macroCellsX) return null;
+  return districtTemplateContextForCell(cellX, cellY, combat.districtGrid, combat.macroCellsX, {
+    macroCellsY: combat.macroCellsY,
+    worldOffsetX: Math.floor(combat.worldWidth / 2),
+    worldOffsetY: Math.floor(combat.worldHeight / 2),
+  });
+}
 function sceneGroundThemeAt(seed, worldX, worldY) {
   const cellX = Math.floor(worldX / SCENE_CELL);
   const cellY = Math.floor(worldY / SCENE_CELL);
   const key = (cellX + 8192) * 16384 + (cellY + 8192);
   if (_themeCellCache.has(key)) return _themeCellCache.get(key);
   const biome = biomeAt(seed, cellX * SCENE_CELL + 3, cellY * SCENE_CELL + 3);
-  const theme = groundThemeForCell(seed, cellX, cellY, biome);
+  const theme = groundThemeForCell(seed, cellX, cellY, biome, sceneTemplateContextAt(cellX, cellY) ?? undefined);
   if (_themeCellCache.size > 4000) _themeCellCache.clear(); // bound memory on endless maps
   _themeCellCache.set(key, theme);
   return theme;
@@ -6889,7 +6898,10 @@ function currentObstacles() {
   // for zero pop-in; ±18 tiles in windowed mode.
   const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
   const sceneWindow = isFullscreen ? 45 : 18;
-  const scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, sceneWindow, biomeAt, { reserveRadius: 6 });
+  const scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, sceneWindow, biomeAt, {
+    reserveRadius: 6,
+    templateContextForCell: (cellX, cellY) => sceneTemplateContextAt(cellX, cellY),
+  });
   const sceneObstacles = scene.map((o) => ({
     id: o.id,
     worldX: o.worldX,
@@ -6903,6 +6915,7 @@ function currentObstacles() {
     drawOrderBias: o.drawOrderBias ?? 0,
   }));
   _obstacleCache = sceneObstacles;
+
   _obstacleCacheFrame = combat.frame;
   return _obstacleCache;
 }
@@ -7811,9 +7824,11 @@ function animatedRosterFrame(roster, desiredNames, { fps = 12, loop = true, phas
 
 function enemyAnimState(enemy) {
   if (enemy.hp <= 0) return ['death'];
-  if (enemy.tellFrames > 0 || enemy.attackTimer < 18) return ['attack', 'attack-tell', 'walk', 'idle'];
+  if ((enemy.hitFlash ?? 0) > 0) return ['hit', 'attack', 'walk', 'idle'];
+  if ((enemy.tellFrames ?? 0) > 0) return ['attack-tell', 'attack', 'walk', 'idle'];
+  if ((enemy.attackTimer ?? 999) < 10) return ['attack', 'melee-counter', 'walk', 'idle'];
   const moving = enemy.state === 'chase-player' || enemy.state === 'rushing';
-  return moving ? ['walk', 'idle'] : ['idle', 'walk'];
+  return moving ? ['run', 'walk', 'idle'] : ['idle', 'walk'];
 }
 
 function roguelikeEnemyAnimatedFrame(enemy) {
