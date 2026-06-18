@@ -46,91 +46,91 @@ export const ROAD_TYPES = Object.freeze({
 
 export const LEVEL_ONE_BELTS = Object.freeze([
   Object.freeze({
-    id: 'underchain-intro',
-    familyId: 'underchain-slums',
-    districtId: 'underchain-slums',
-    archetype: 'city_core',
-    landmarkTemplateId: 'slums_billboard_corner',
-    landmarkComplementArchetype: 'city_core',
-    landmarkInfluenceRadius: 1,
-    templatePoolIds: Object.freeze(['slums_billboard_corner', 'slums_boarded_market', 'street_block', 'downtown_district']),
-    roadDensity: 0.54,
-    routeShape: 'alley-spine-with-billboard-nodes',
-    landmarkRole: 'broken-billboard-or-burner-corner',
-    loopCount: 1,
-    coverProfile: 'cover-heavy-corners',
-    roadTypeKey: 'MAIN_STREET',
+    id: 'desert_approach',
+    familyId: 'desert_approach',
+    districtId: 'desert_approach',
+    archetype: 'wilderness',
+    landmarkTemplateId: 'crypto_desert_outpost',
+    landmarkComplementArchetype: 'wilderness',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['crypto_desert_outpost', 'crypto_desert_outpost_yard', 'crypto_canyon_pass', 'crypto_canyon_gate', 'crypto_desert_ghost_checkpoint']),
+    roadDensity: 0.32,
+    routeShape: 'central-road-spine-with-salvage-loops',
+    landmarkRole: 'outpost-or-canyon-overlook',
+    loopCount: 2,
+    coverProfile: 'sparse-long-sightlines',
+    roadTypeKey: 'DIRT_PATH',
     pathOrientation: 'horizontal',
-    ratioMax: 0.22,
+    ratioMax: 0.154,
   }),
   Object.freeze({
-    id: 'scam-market',
-    familyId: 'scam-market',
-    districtId: 'scam-market',
+    id: 'ghost_town',
+    familyId: 'ghost_town',
+    districtId: 'ghost_town',
     archetype: 'city_core',
-    landmarkTemplateId: 'slums_boarded_market',
+    landmarkTemplateId: 'crypto_ghost_mainstreet_front',
     landmarkComplementArchetype: 'city_core',
     landmarkInfluenceRadius: 2,
-    templatePoolIds: Object.freeze(['slums_boarded_market', 'slums_billboard_corner', 'street_block', 'downtown_district']),
-    roadDensity: 0.6,
-    routeShape: 'market-loop-with-side-alleys',
-    landmarkRole: 'scam-row-or-boarded-storefront',
-    loopCount: 1,
+    templatePoolIds: Object.freeze(['crypto_ghost_mainstreet_front', 'crypto_ghost_false_front', 'crypto_ghost_town_block', 'crypto_desert_ghost_checkpoint', 'crypto_ghost_country_checkpoint', 'street_block', 'downtown_district']),
+    roadDensity: 0.58,
+    routeShape: 'main-street-loop-with-alley-cuts',
+    landmarkRole: 'saloon-front-or-boarded-mainstreet',
+    loopCount: 2,
     coverProfile: 'cover-heavy-corners',
     roadTypeKey: 'MAIN_STREET',
     pathOrientation: 'horizontal',
-    ratioMax: 0.42,
+    ratioMax: 0.385,
   }),
   Object.freeze({
-    id: 'backlot-cut',
-    familyId: 'backlot-cut',
-    districtId: 'backlot-cut',
-    archetype: 'industrial',
-    landmarkTemplateId: 'slums_backlot_fence',
-    landmarkComplementArchetype: 'industrial',
+    id: 'country_road',
+    familyId: 'country_road',
+    districtId: 'country_road',
+    archetype: 'suburban',
+    landmarkTemplateId: 'crypto_country_rest_stop',
+    landmarkComplementArchetype: 'suburban',
     landmarkInfluenceRadius: 1,
-    templatePoolIds: Object.freeze(['slums_backlot_fence', 'street_block', 'fenced_yard', 'industrial_zone']),
-    roadDensity: 0.48,
-    routeShape: 'service-corridor-with-cut-throughs',
-    landmarkRole: 'fence-choke-or-drainage-cut',
-    loopCount: 1,
-    coverProfile: 'medium-cover-fences-and-crates',
+    templatePoolIds: Object.freeze(['crypto_country_rest_stop', 'crypto_country_pull_off', 'crypto_ghost_country_checkpoint', 'crypto_country_residential_checkpoint', 'street_block', 'fenced_yard']),
+    roadDensity: 0.42,
+    routeShape: 'main-road-with-pull-offs-and-roadside-loops',
+    landmarkRole: 'rest-stop-or-roadside-pull-off',
+    loopCount: 2,
+    coverProfile: 'medium-cover-utility-clutter',
+    roadTypeKey: 'DIRT_PATH',
+    pathOrientation: 'horizontal',
+    ratioMax: 0.615,
+  }),
+  Object.freeze({
+    id: 'residential_edge',
+    familyId: 'residential_edge',
+    districtId: 'residential_edge',
+    archetype: 'suburban',
+    landmarkTemplateId: 'crypto_residential_square',
+    landmarkComplementArchetype: 'park',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['crypto_residential_square', 'crypto_residential_greenbelt_pocket', 'crypto_country_residential_checkpoint', 'crypto_residential_innercity_checkpoint', 'suburban_residential', 'green_park', 'fenced_yard']),
+    roadDensity: 0.46,
+    routeShape: 'neighborhood-loops-with-driveway-connectors',
+    landmarkRole: 'neighborhood-square-or-greenbelt',
+    loopCount: 2,
+    coverProfile: 'hedges-fences-and-sidewalk-cover',
     roadTypeKey: 'SIDE_STREET',
-    pathOrientation: 'horizontal',
-    ratioMax: 0.62,
+    pathOrientation: 'vertical',
+    ratioMax: 0.769,
   }),
   Object.freeze({
-    id: 'freight-yard',
-    familyId: 'freight-yard',
-    districtId: 'freight-yard',
+    id: 'inner_city',
+    familyId: 'inner_city',
+    districtId: 'inner_city',
     archetype: 'industrial',
-    landmarkTemplateId: 'foundry_loading_gate',
+    landmarkTemplateId: 'crypto_innercity_industrial_gate',
     landmarkComplementArchetype: 'industrial',
     landmarkInfluenceRadius: 2,
-    templatePoolIds: Object.freeze(['foundry_loading_gate', 'industrial_zone', 'walled_compound', 'street_block']),
-    roadDensity: 0.64,
-    routeShape: 'loading-loop-with-spurs',
-    landmarkRole: 'loading-bay-or-yard-gate',
+    templatePoolIds: Object.freeze(['crypto_innercity_industrial_gate', 'crypto_innercity_checkpoint_block', 'crypto_residential_innercity_checkpoint', 'industrial_zone', 'walled_compound', 'street_block', 'downtown_district']),
+    roadDensity: 0.68,
+    routeShape: 'block-grid-with-alley-loops-and-checkpoints',
+    landmarkRole: 'warehouse-gate-or-checkpoint-block',
     loopCount: 2,
-    coverProfile: 'crate-cover-and-fence-chokes',
-    roadTypeKey: 'MAIN_STREET',
-    pathOrientation: 'horizontal',
-    ratioMax: 0.82,
-  }),
-  Object.freeze({
-    id: 'foundry-perimeter',
-    familyId: 'foundry-perimeter',
-    districtId: 'foundry-perimeter',
-    archetype: 'industrial',
-    landmarkTemplateId: 'foundry_press_checkpoint',
-    landmarkComplementArchetype: 'industrial',
-    landmarkInfluenceRadius: 2,
-    templatePoolIds: Object.freeze(['foundry_press_checkpoint', 'foundry_loading_gate', 'industrial_zone', 'walled_compound', 'street_block']),
-    roadDensity: 0.72,
-    routeShape: 'ring-road-and-press-spines',
-    landmarkRole: 'foundry-gate-or-press-ring',
-    loopCount: 2,
-    coverProfile: 'dense-industrial-chokepoints',
+    coverProfile: 'dense-urban-chokepoints',
     roadTypeKey: 'MAIN_STREET',
     pathOrientation: 'vertical',
     ratioMax: 1,
@@ -147,139 +147,196 @@ function levelOneBeltForMacroCell(dx, macroCellsX) {
 }
 
 function beltPathOrientation(belt, dx, dy) {
-  if (belt.familyId === 'backlot-cut') return (dy % 2 === 0) ? 'horizontal' : 'vertical';
-  if (belt.familyId === 'foundry-perimeter') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
+  if (belt.familyId === 'country_road') return (dy % 2 === 0) ? 'horizontal' : 'vertical';
+  if (belt.familyId === 'residential_edge') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
+  if (belt.familyId === 'inner_city') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
   return belt.pathOrientation;
 }
 
 function beltLandmarkAnchorCell(belt, dx, dy) {
-  if (belt.familyId === 'underchain-slums') return { localX: 2, localY: dy % 2 === 0 ? 1 : 3 };
-  if (belt.familyId === 'scam-market') return { localX: 2, localY: 2 };
-  if (belt.familyId === 'backlot-cut') return { localX: 3, localY: 2 };
-  if (belt.familyId === 'freight-yard') return { localX: (dx + dy) % 2 === 0 ? 1 : 3, localY: 2 };
-  if (belt.familyId === 'foundry-perimeter') return { localX: 2, localY: (dx % 2 === 0) ? 1 : 3 };
+  if (belt.familyId === 'desert_approach') return { localX: 2, localY: dy % 2 === 0 ? 1 : 3 };
+  if (belt.familyId === 'ghost_town') return { localX: 2, localY: 2 };
+  if (belt.familyId === 'country_road') return { localX: 2, localY: dy % 2 === 0 ? 1 : 3 };
+  if (belt.familyId === 'residential_edge') return { localX: (dx + dy) % 2 === 0 ? 1 : 3, localY: 2 };
+  if (belt.familyId === 'inner_city') return { localX: 2, localY: (dx % 2 === 0) ? 1 : 3 };
   return { localX: 2, localY: 2 };
 }
 
 function beltSetPieceAnchors(belt, dx, dy) {
   const primaryAnchor = beltLandmarkAnchorCell(belt, dx, dy);
-  if (belt.familyId === 'underchain-slums') {
+  if (belt.familyId === 'desert_approach') {
     return [
       {
-        id: 'slums-billboard-corner',
+        id: 'desert-outpost-core',
         role: belt.landmarkRole,
-        templateId: 'slums_billboard_corner',
-        localX: primaryAnchor.localX,
-        localY: primaryAnchor.localY,
-        influenceRadius: 1,
-        complementArchetype: 'city_core',
-        templatePoolIds: mergeTemplatePools(['slums_billboard_corner', 'slums_boarded_market', 'street_block']),
-      },
-      {
-        id: 'slums-boarded-stall',
-        role: 'boarded-stall-or-scam-table',
-        templateId: 'slums_boarded_market',
-        localX: dy % 2 === 0 ? 4 : 0,
-        localY: 2,
-        influenceRadius: 1,
-        complementArchetype: 'city_core',
-        templatePoolIds: mergeTemplatePools(['slums_boarded_market', 'street_block', 'downtown_district']),
-      },
-    ];
-  }
-  if (belt.familyId === 'scam-market') {
-    return [
-      {
-        id: 'scam-market-main-front',
-        role: belt.landmarkRole,
-        templateId: 'slums_boarded_market',
+        templateId: 'crypto_desert_outpost',
         localX: primaryAnchor.localX,
         localY: primaryAnchor.localY,
         influenceRadius: 2,
-        complementArchetype: 'city_core',
-        templatePoolIds: mergeTemplatePools(['slums_boarded_market', 'street_block', 'downtown_district']),
+        complementArchetype: 'wilderness',
+        templatePoolIds: mergeTemplatePools(['crypto_desert_outpost', 'crypto_desert_outpost_yard', 'crypto_canyon_pass', 'crypto_canyon_gate']),
       },
       {
-        id: 'market-backlot-cut',
-        role: 'backlot-cut-through',
-        templateId: 'slums_backlot_fence',
-        localX: dx % 2 === 0 ? 1 : 3,
+        id: 'desert-canyon-gate',
+        role: 'canyon-gate-or-salvage-cut',
+        templateId: 'crypto_canyon_gate',
+        localX: dx % 2 === 0 ? 4 : 0,
         localY: 2,
         influenceRadius: 1,
-        complementArchetype: 'industrial',
-        templatePoolIds: mergeTemplatePools(['slums_backlot_fence', 'street_block', 'fenced_yard']),
-      },
-    ];
-  }
-  if (belt.familyId === 'backlot-cut') {
-    return [
-      {
-        id: 'backlot-primary-gate',
-        role: belt.landmarkRole,
-        templateId: 'slums_backlot_fence',
-        localX: primaryAnchor.localX,
-        localY: primaryAnchor.localY,
-        influenceRadius: 1,
-        complementArchetype: 'industrial',
-        templatePoolIds: mergeTemplatePools(['slums_backlot_fence', 'street_block', 'fenced_yard']),
+        complementArchetype: 'wilderness',
+        templatePoolIds: mergeTemplatePools(['crypto_canyon_gate', 'crypto_canyon_pass', 'crypto_desert_outpost_yard', 'crypto_desert_ghost_checkpoint']),
       },
       {
-        id: 'backlot-billboard-corner',
-        role: 'billboard-dead-end-or-alley-pocket',
-        templateId: 'slums_billboard_corner',
-        localX: 1,
-        localY: 2,
-        influenceRadius: 1,
-        complementArchetype: 'city_core',
-        templatePoolIds: mergeTemplatePools(['slums_billboard_corner', 'street_block', 'downtown_district']),
-      },
-    ];
-  }
-  if (belt.familyId === 'freight-yard') {
-    return [
-      {
-        id: 'freight-yard-loading-gate',
-        role: belt.landmarkRole,
-        templateId: 'foundry_loading_gate',
-        localX: primaryAnchor.localX,
-        localY: primaryAnchor.localY,
-        influenceRadius: 2,
-        complementArchetype: 'industrial',
-        templatePoolIds: mergeTemplatePools(['foundry_loading_gate', 'industrial_zone', 'walled_compound', 'street_block']),
-      },
-      {
-        id: 'slums-foundry-threshold',
-        role: 'checkpoint-or-yard-threshold',
-        templateId: 'slums_foundry_checkpoint',
+        id: 'desert-outpost-yard',
+        role: 'salvage-pocket-or-fuel-yard',
+        templateId: 'crypto_desert_outpost_yard',
         localX: 2,
         localY: dy % 2 === 0 ? 4 : 0,
         influenceRadius: 1,
         complementArchetype: 'industrial',
-        templatePoolIds: mergeTemplatePools(['slums_foundry_checkpoint', 'foundry_loading_gate', 'slums_backlot_fence']),
+        templatePoolIds: mergeTemplatePools(['crypto_desert_outpost_yard', 'crypto_desert_outpost', 'crypto_canyon_pass']),
       },
     ];
   }
-  if (belt.familyId === 'foundry-perimeter') {
+  if (belt.familyId === 'ghost_town') {
     return [
       {
-        id: 'foundry-press-ring',
+        id: 'ghost-mainstreet-front',
         role: belt.landmarkRole,
-        templateId: 'foundry_press_checkpoint',
+        templateId: 'crypto_ghost_mainstreet_front',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['crypto_ghost_mainstreet_front', 'crypto_ghost_false_front', 'crypto_ghost_town_block', 'street_block', 'downtown_district']),
+      },
+      {
+        id: 'ghost-false-front',
+        role: 'false-front-or-side-street-pocket',
+        templateId: 'crypto_ghost_false_front',
+        localX: dx % 2 === 0 ? 1 : 3,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'suburban',
+        templatePoolIds: mergeTemplatePools(['crypto_ghost_false_front', 'crypto_ghost_town_block', 'street_block']),
+      },
+      {
+        id: 'ghost-seam-checkpoint',
+        role: 'ghost-town-gate-or-stage-threshold',
+        templateId: dx % 2 === 0 ? 'crypto_desert_ghost_checkpoint' : 'crypto_ghost_country_checkpoint',
+        localX: 2,
+        localY: dy % 2 === 0 ? 4 : 0,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: dx % 2 === 0
+          ? mergeTemplatePools(['crypto_desert_ghost_checkpoint', 'crypto_ghost_mainstreet_front', 'crypto_desert_outpost'])
+          : mergeTemplatePools(['crypto_ghost_country_checkpoint', 'crypto_ghost_mainstreet_front', 'crypto_country_rest_stop']),
+      },
+    ];
+  }
+  if (belt.familyId === 'country_road') {
+    return [
+      {
+        id: 'country-rest-stop',
+        role: belt.landmarkRole,
+        templateId: 'crypto_country_rest_stop',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'suburban',
+        templatePoolIds: mergeTemplatePools(['crypto_country_rest_stop', 'crypto_country_pull_off', 'street_block', 'fenced_yard']),
+      },
+      {
+        id: 'country-pull-off',
+        role: 'roadside-pull-off-or-culvert-choke',
+        templateId: 'crypto_country_pull_off',
+        localX: dx % 2 === 0 ? 4 : 0,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'wilderness',
+        templatePoolIds: mergeTemplatePools(['crypto_country_pull_off', 'crypto_country_rest_stop', 'crypto_ghost_country_checkpoint', 'crypto_country_residential_checkpoint']),
+      },
+      {
+        id: 'country-seam-threshold',
+        role: 'stage-threshold-or-service-turnoff',
+        templateId: dy % 2 === 0 ? 'crypto_ghost_country_checkpoint' : 'crypto_country_residential_checkpoint',
+        localX: 2,
+        localY: dy % 2 === 0 ? 0 : 4,
+        influenceRadius: 1,
+        complementArchetype: 'suburban',
+        templatePoolIds: dy % 2 === 0
+          ? mergeTemplatePools(['crypto_ghost_country_checkpoint', 'crypto_country_rest_stop', 'crypto_ghost_mainstreet_front'])
+          : mergeTemplatePools(['crypto_country_residential_checkpoint', 'crypto_country_pull_off', 'crypto_residential_square']),
+      },
+    ];
+  }
+  if (belt.familyId === 'residential_edge') {
+    return [
+      {
+        id: 'residential-square-core',
+        role: belt.landmarkRole,
+        templateId: 'crypto_residential_square',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'park',
+        templatePoolIds: mergeTemplatePools(['crypto_residential_square', 'crypto_residential_greenbelt_pocket', 'suburban_residential', 'green_park']),
+      },
+      {
+        id: 'residential-greenbelt-pocket',
+        role: 'greenbelt-pocket-or-driveway-connector',
+        templateId: 'crypto_residential_greenbelt_pocket',
+        localX: dx % 2 === 0 ? 3 : 1,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'park',
+        templatePoolIds: mergeTemplatePools(['crypto_residential_greenbelt_pocket', 'crypto_residential_square', 'green_park', 'fenced_yard']),
+      },
+      {
+        id: 'residential-seam-checkpoint',
+        role: 'neighborhood-threshold-or-city-edge-checkpoint',
+        templateId: dx % 2 === 0 ? 'crypto_country_residential_checkpoint' : 'crypto_residential_innercity_checkpoint',
+        localX: 2,
+        localY: dy % 2 === 0 ? 4 : 0,
+        influenceRadius: 1,
+        complementArchetype: 'suburban',
+        templatePoolIds: dx % 2 === 0
+          ? mergeTemplatePools(['crypto_country_residential_checkpoint', 'crypto_residential_square', 'crypto_country_rest_stop'])
+          : mergeTemplatePools(['crypto_residential_innercity_checkpoint', 'crypto_residential_square', 'crypto_innercity_industrial_gate']),
+      },
+    ];
+  }
+  if (belt.familyId === 'inner_city') {
+    return [
+      {
+        id: 'innercity-industrial-gate',
+        role: belt.landmarkRole,
+        templateId: 'crypto_innercity_industrial_gate',
         localX: primaryAnchor.localX,
         localY: primaryAnchor.localY,
         influenceRadius: 2,
         complementArchetype: 'industrial',
-        templatePoolIds: mergeTemplatePools(['foundry_press_checkpoint', 'foundry_loading_gate', 'industrial_zone', 'street_block']),
+        templatePoolIds: mergeTemplatePools(['crypto_innercity_industrial_gate', 'crypto_innercity_checkpoint_block', 'industrial_zone', 'walled_compound', 'street_block']),
       },
       {
-        id: 'foundry-side-loading-gate',
-        role: 'side-yard-or-boss-approach-gate',
-        templateId: 'foundry_loading_gate',
+        id: 'innercity-checkpoint-block',
+        role: 'checkpoint-block-or-alley-service-yard',
+        templateId: 'crypto_innercity_checkpoint_block',
         localX: (dx + dy) % 2 === 0 ? 1 : 3,
         localY: 2,
         influenceRadius: 1,
         complementArchetype: 'industrial',
-        templatePoolIds: mergeTemplatePools(['foundry_loading_gate', 'walled_compound', 'industrial_zone', 'street_block']),
+        templatePoolIds: mergeTemplatePools(['crypto_innercity_checkpoint_block', 'crypto_innercity_industrial_gate', 'street_block', 'downtown_district']),
+      },
+      {
+        id: 'innercity-residential-threshold',
+        role: 'city-edge-threshold-or-boss-push-gate',
+        templateId: 'crypto_residential_innercity_checkpoint',
+        localX: 2,
+        localY: dx % 2 === 0 ? 0 : 4,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['crypto_residential_innercity_checkpoint', 'crypto_innercity_industrial_gate', 'crypto_residential_square']),
       },
     ];
   }
@@ -329,9 +386,10 @@ function buildTransitionEdge(fromCell, toCell, direction) {
   if (!fromCell || !toCell || fromCell.districtFamily === toCell.districtFamily) return null;
   const pairKey = [fromCell.districtFamily, toCell.districtFamily].sort().join('|');
   const seamTemplateIds = {
-    'backlot-cut|freight-yard': ['slums_foundry_checkpoint'],
-    'foundry-perimeter|freight-yard': ['foundry_loading_gate'],
-    'backlot-cut|scam-market': ['slums_backlot_fence'],
+    'desert_approach|ghost_town': ['crypto_desert_ghost_checkpoint'],
+    'country_road|ghost_town': ['crypto_ghost_country_checkpoint'],
+    'country_road|residential_edge': ['crypto_country_residential_checkpoint'],
+    'inner_city|residential_edge': ['crypto_residential_innercity_checkpoint'],
   }[pairKey] ?? [];
   return {
     direction,
@@ -641,48 +699,48 @@ function generateFamilyRoutes(cell, seed) {
   const mainType = roadTypeFromKey(cell.district.roadTypeKey);
   const horizontal = cell.pathOrientation !== 'vertical';
 
-  if (cell.districtFamily === 'underchain-slums') {
+  if (cell.districtFamily === 'desert_approach') {
     return [
-      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, mainType, seed, 'intro-spine'),
-      ...rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 2, SCENE_CELL + 4, 'underchain-loop'),
-      localRoad(cell, { x: 0, y: -Math.floor(half * 0.55) }, { x: 0, y: Math.floor(half * 0.2) }, ROAD_TYPES.ALLEY, seed, 'billboard-spoke'),
+      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, mainType, seed, 'desert-spine'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.DIRT_PATH, SCENE_CELL + 3, SCENE_CELL + 5, 'salvage-loop'),
+      localRoad(cell, { x: -Math.floor(half * 0.15), y: -half }, { x: -Math.floor(half * 0.15), y: Math.floor(half * 0.1) }, ROAD_TYPES.DIRT_PATH, seed, 'canyon-spoke'),
     ];
   }
 
-  if (cell.districtFamily === 'scam-market') {
+  if (cell.districtFamily === 'ghost_town') {
     return [
-      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL + 1, 'market-loop'),
-      localRoad(cell, { x: -Math.floor(half * 0.2), y: -half }, { x: -Math.floor(half * 0.2), y: half }, ROAD_TYPES.ALLEY, seed, 'rear-alley'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL + 1, 'main-street-loop'),
+      localRoad(cell, { x: -Math.floor(half * 0.25), y: -half }, { x: -Math.floor(half * 0.25), y: half }, ROAD_TYPES.ALLEY, seed, 'rear-alley'),
       localRoad(cell, { x: Math.floor(half * 0.25), y: -half }, { x: Math.floor(half * 0.25), y: half }, ROAD_TYPES.ALLEY, seed, 'rear-alley'),
     ];
   }
 
-  if (cell.districtFamily === 'backlot-cut') {
+  if (cell.districtFamily === 'country_road') {
     const corridor = horizontal
-      ? localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.SIDE_STREET, seed, 'main-corridor')
-      : localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.SIDE_STREET, seed, 'main-corridor');
-    const pullOffLoop = rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 3, SCENE_CELL + 5, 'backlot-loop');
+      ? localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, mainType, seed, 'country-road-spine')
+      : localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, mainType, seed, 'country-road-spine');
+    const pullOffLoop = rectangularLoop(cell, seed, ROAD_TYPES.DIRT_PATH, SCENE_CELL + 3, SCENE_CELL + 5, 'pull-off-loop');
     const spur = horizontal
-      ? localRoad(cell, { x: Math.floor(half * 0.35), y: 0 }, { x: Math.floor(half * 0.35), y: -half }, ROAD_TYPES.ALLEY, seed, 'drainage-spur')
-      : localRoad(cell, { x: 0, y: Math.floor(half * 0.35) }, { x: -half, y: Math.floor(half * 0.35) }, ROAD_TYPES.ALLEY, seed, 'drainage-spur');
+      ? localRoad(cell, { x: Math.floor(half * 0.35), y: 0 }, { x: Math.floor(half * 0.35), y: -half }, ROAD_TYPES.SIDE_STREET, seed, 'rest-stop-spur')
+      : localRoad(cell, { x: 0, y: Math.floor(half * 0.35) }, { x: -half, y: Math.floor(half * 0.35) }, ROAD_TYPES.SIDE_STREET, seed, 'rest-stop-spur');
     return [corridor, ...pullOffLoop, spur];
   }
 
-  if (cell.districtFamily === 'freight-yard') {
+  if (cell.districtFamily === 'residential_edge') {
     return [
-      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL, 'yard-loop'),
-      ...rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 4, SCENE_CELL + 4, 'crate-loop'),
-      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.MAIN_STREET, seed, 'loading-spine'),
-      localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.SIDE_STREET, seed, 'loading-connector'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.SIDE_STREET, SCENE_CELL, SCENE_CELL + 1, 'neighborhood-loop'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.DIRT_PATH, SCENE_CELL + 4, SCENE_CELL + 4, 'pocket-park-loop'),
+      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.SIDE_STREET, seed, 'sidewalk-spine'),
+      localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.DIRT_PATH, seed, 'driveway-connector'),
     ];
   }
 
-  if (cell.districtFamily === 'foundry-perimeter') {
+  if (cell.districtFamily === 'inner_city') {
     return [
-      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL, 'press-ring'),
+      ...rectangularLoop(cell, seed, ROAD_TYPES.MAIN_STREET, SCENE_CELL, SCENE_CELL, 'block-ring'),
       ...rectangularLoop(cell, seed, ROAD_TYPES.ALLEY, SCENE_CELL + 4, SCENE_CELL + 4, 'service-ring'),
-      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.MAIN_STREET, seed, 'foundry-spine'),
-      localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.MAIN_STREET, seed, 'foundry-spine'),
+      localRoad(cell, { x: -half, y: 0 }, { x: half, y: 0 }, ROAD_TYPES.MAIN_STREET, seed, 'avenue-spine'),
+      localRoad(cell, { x: 0, y: -half }, { x: 0, y: half }, ROAD_TYPES.MAIN_STREET, seed, 'avenue-spine'),
     ];
   }
 

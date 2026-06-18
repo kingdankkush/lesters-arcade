@@ -133,11 +133,11 @@ test('generateDistrictGrid authors Level 1 belts with family metadata and ordere
   const row = Math.floor(macroCellsY / 2);
   const cellAt = (dx) => grid.find((cell) => cell.dx === dx && cell.dy === row);
 
-  assert.equal(cellAt(0)?.districtFamily, 'underchain-slums');
-  assert.equal(cellAt(Math.floor(macroCellsX * 0.25))?.districtFamily, 'scam-market');
-  assert.equal(cellAt(Math.floor(macroCellsX * 0.5))?.districtFamily, 'backlot-cut');
-  assert.equal(cellAt(Math.floor(macroCellsX * 0.7))?.districtFamily, 'freight-yard');
-  assert.equal(cellAt(macroCellsX - 1)?.districtFamily, 'foundry-perimeter');
+  assert.equal(cellAt(0)?.districtFamily, 'desert_approach');
+  assert.equal(cellAt(Math.floor(macroCellsX * 0.2))?.districtFamily, 'ghost_town');
+  assert.equal(cellAt(Math.floor(macroCellsX * 0.5))?.districtFamily, 'country_road');
+  assert.equal(cellAt(Math.floor(macroCellsX * 0.7))?.districtFamily, 'residential_edge');
+  assert.equal(cellAt(macroCellsX - 1)?.districtFamily, 'inner_city');
 
   for (const cell of grid) {
     assert.ok(typeof cell.stageBelt === 'string' && cell.stageBelt.length > 0, 'stage belt metadata exists');
@@ -153,85 +153,86 @@ test('generateDistrictGrid authors Level 1 belts with family metadata and ordere
 test('generateDistrictGrid adds multiple authored set-piece anchors to Level 1 belt cells', () => {
   const { grid, macroCellsY } = generateDistrictGrid(12345, 700, 175);
   const row = Math.floor(macroCellsY / 2);
-  const slumsCell = grid.find((cell) => cell.districtFamily === 'underchain-slums' && cell.dy === row);
-  const freightCell = grid.find((cell) => cell.districtFamily === 'freight-yard' && cell.dy === row);
-  const foundryCell = grid.find((cell) => cell.districtFamily === 'foundry-perimeter' && cell.dy === row);
+  const desertCell = grid.find((cell) => cell.districtFamily === 'desert_approach' && cell.dy === row);
+  const countryCell = grid.find((cell) => cell.districtFamily === 'country_road' && cell.dy === row);
+  const innerCityCell = grid.find((cell) => cell.districtFamily === 'inner_city' && cell.dy === row);
 
-  assert.ok(Array.isArray(slumsCell?.setPieceAnchors) && slumsCell.setPieceAnchors.length >= 2, 'underchain slums has multiple authored set pieces');
-  assert.ok(slumsCell.setPieceAnchors.some((anchor) => anchor.templateId === 'slums_billboard_corner'), 'underchain slums upgrades its billboard landmark');
-  assert.ok(slumsCell.setPieceAnchors.some((anchor) => anchor.templateId === 'slums_boarded_market'), 'underchain slums adds a boarded market anchor');
+  assert.ok(Array.isArray(desertCell?.setPieceAnchors) && desertCell.setPieceAnchors.length >= 3, 'desert approach has multiple authored set pieces');
+  assert.ok(desertCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_desert_outpost'), 'desert approach upgrades its landmark to a desert outpost');
+  assert.ok(desertCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_canyon_gate'), 'desert approach adds a canyon gate anchor');
 
-  assert.ok(Array.isArray(freightCell?.setPieceAnchors) && freightCell.setPieceAnchors.length >= 2, 'freight yard has multiple authored set pieces');
-  assert.ok(freightCell.setPieceAnchors.some((anchor) => anchor.templateId === 'foundry_loading_gate'), 'freight yard upgrades its loading gate anchor');
-  assert.ok(freightCell.setPieceAnchors.some((anchor) => anchor.templateId === 'slums_foundry_checkpoint'), 'freight yard adds a seam checkpoint anchor');
+  assert.ok(Array.isArray(countryCell?.setPieceAnchors) && countryCell.setPieceAnchors.length >= 3, 'country road has multiple authored set pieces');
+  assert.ok(countryCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_country_rest_stop'), 'country road upgrades its landmark to a rest stop');
+  assert.ok(countryCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_country_pull_off'), 'country road adds a roadside pull-off anchor');
 
-  assert.ok(Array.isArray(foundryCell?.setPieceAnchors) && foundryCell.setPieceAnchors.length >= 2, 'foundry perimeter has multiple authored set pieces');
-  assert.ok(foundryCell.setPieceAnchors.some((anchor) => anchor.templateId === 'foundry_press_checkpoint'), 'foundry perimeter upgrades its boss-approach landmark');
-  assert.ok(foundryCell.setPieceAnchors.some((anchor) => anchor.templateId === 'foundry_loading_gate'), 'foundry perimeter adds a secondary loading gate set piece');
+  assert.ok(Array.isArray(innerCityCell?.setPieceAnchors) && innerCityCell.setPieceAnchors.length >= 3, 'inner city has multiple authored set pieces');
+  assert.ok(innerCityCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_innercity_industrial_gate'), 'inner city upgrades its boss-push landmark');
+  assert.ok(innerCityCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_innercity_checkpoint_block'), 'inner city adds a checkpoint block set piece');
 });
 
 test('districtTemplateContextForCell exposes landmark anchor and influence metadata for authored belts', () => {
   const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175);
   const row = Math.floor(macroCellsY / 2);
-  const scamMarketCell = grid.find((cell) => cell.districtFamily === 'scam-market' && cell.dy === row);
-  assert.ok(scamMarketCell, 'found scam-market cell');
+  const ghostTownCell = grid.find((cell) => cell.districtFamily === 'ghost_town' && cell.dy === row);
+  assert.ok(ghostTownCell, 'found ghost-town cell');
 
-  const anchorCellX = scamMarketCell.dx * DISTRICT_CELL + scamMarketCell.landmarkAnchorCell.localX;
-  const anchorCellY = scamMarketCell.dy * DISTRICT_CELL + scamMarketCell.landmarkAnchorCell.localY;
+  const anchorCellX = ghostTownCell.dx * DISTRICT_CELL + ghostTownCell.landmarkAnchorCell.localX;
+  const anchorCellY = ghostTownCell.dy * DISTRICT_CELL + ghostTownCell.landmarkAnchorCell.localY;
   const anchorContext = districtTemplateContextForCell(anchorCellX, anchorCellY, grid, macroCellsX);
-  assert.equal(anchorContext?.forceTemplateId, scamMarketCell.landmarkTemplateId);
+  assert.equal(anchorContext?.forceTemplateId, ghostTownCell.landmarkTemplateId);
   assert.equal(anchorContext?.landmarkInfluence?.distance, 0);
   assert.equal(anchorContext?.landmarkInfluence?.anchorCellX, anchorCellX);
   assert.equal(anchorContext?.landmarkInfluence?.anchorCellY, anchorCellY);
 
   const nearbyContext = districtTemplateContextForCell(anchorCellX - 1, anchorCellY, grid, macroCellsX);
-  assert.equal(nearbyContext?.landmarkTemplateId, scamMarketCell.landmarkTemplateId);
+  assert.equal(nearbyContext?.landmarkTemplateId, ghostTownCell.landmarkTemplateId);
   assert.ok(nearbyContext?.landmarkInfluence?.distance >= 1, 'nearby cell keeps landmark influence');
 });
 
 test('districtTemplateContextForCell activates secondary set-piece anchors with their own local template pools', () => {
   const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175);
   const row = Math.floor(macroCellsY / 2);
-  const freightCell = grid.find((cell) => cell.districtFamily === 'freight-yard' && cell.dy === row);
-  const seamAnchor = freightCell?.setPieceAnchors?.find((anchor) => anchor.templateId === 'slums_foundry_checkpoint');
-  assert.ok(seamAnchor, 'freight yard exposes a seam checkpoint set piece');
+  const countryCell = grid.find((cell) => cell.districtFamily === 'country_road' && cell.dy === row);
+  const seamAnchor = countryCell?.setPieceAnchors?.find((anchor) => anchor.id === 'country-seam-threshold');
+  assert.ok(seamAnchor, 'country road exposes a seam threshold set piece');
 
-  const anchorCellX = freightCell.dx * DISTRICT_CELL + seamAnchor.localX;
-  const anchorCellY = freightCell.dy * DISTRICT_CELL + seamAnchor.localY;
+  const anchorCellX = countryCell.dx * DISTRICT_CELL + seamAnchor.localX;
+  const anchorCellY = countryCell.dy * DISTRICT_CELL + seamAnchor.localY;
   const anchorContext = districtTemplateContextForCell(anchorCellX, anchorCellY, grid, macroCellsX);
-  assert.equal(anchorContext?.forceTemplateId, 'slums_foundry_checkpoint');
-  assert.equal(anchorContext?.activeSetPiece?.templateId, 'slums_foundry_checkpoint');
+  assert.equal(anchorContext?.forceTemplateId, seamAnchor.templateId);
+  assert.equal(anchorContext?.activeSetPiece?.templateId, seamAnchor.templateId);
   assert.equal(anchorContext?.activeSetPiece?.role, seamAnchor.role);
-  assert.ok(anchorContext?.templatePoolIds.includes('slums_foundry_checkpoint'));
-  assert.ok(anchorContext?.templatePoolIds.includes('foundry_loading_gate'));
+  assert.ok(anchorContext?.templatePoolIds.includes(seamAnchor.templateId));
+  assert.ok(anchorContext?.templatePoolIds.includes('crypto_country_rest_stop'));
 
-  const nearbyContext = districtTemplateContextForCell(anchorCellX, anchorCellY - 1, grid, macroCellsX);
-  assert.equal(nearbyContext?.activeSetPiece?.templateId, 'slums_foundry_checkpoint');
+  const nearbyOffsetX = seamAnchor.localX <= 1 ? 1 : -1;
+  const nearbyContext = districtTemplateContextForCell(anchorCellX + nearbyOffsetX, anchorCellY, grid, macroCellsX);
+  assert.equal(nearbyContext?.activeSetPiece?.templateId, seamAnchor.templateId);
   assert.ok(nearbyContext?.landmarkInfluence?.distance >= 1, 'secondary set-piece influence extends beyond its anchor');
-  assert.ok(nearbyContext?.templatePoolIds.includes('slums_foundry_checkpoint'));
+  assert.ok(nearbyContext?.templatePoolIds.includes(seamAnchor.templateId));
 });
 
 test('districtTemplateContextForCell exposes authored transition-band metadata at belt boundaries', () => {
   const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175);
   const row = Math.floor(macroCellsY / 2);
-  const backlotCell = grid.find((cell) => cell.districtFamily === 'backlot-cut' && cell.dy === row && grid.find((candidate) => candidate.dx === cell.dx + 1 && candidate.dy === row)?.districtFamily === 'freight-yard');
-  const freightCell = grid.find((cell) => cell.dx === backlotCell.dx + 1 && cell.dy === row);
-  assert.equal(freightCell?.districtFamily, 'freight-yard');
+  const countryCell = grid.find((cell) => cell.districtFamily === 'country_road' && cell.dy === row && grid.find((candidate) => candidate.dx === cell.dx + 1 && candidate.dy === row)?.districtFamily === 'residential_edge');
+  const residentialCell = grid.find((cell) => cell.dx === countryCell.dx + 1 && cell.dy === row);
+  assert.equal(residentialCell?.districtFamily, 'residential_edge');
 
-  assert.equal(backlotCell?.transitionEdges?.east?.toDistrictFamily, 'freight-yard');
-  assert.ok(Array.isArray(backlotCell?.transitionEdges?.east?.templatePoolIds));
-  assert.ok(backlotCell.transitionEdges.east.templatePoolIds.includes('slums_backlot_fence'));
-  assert.ok(backlotCell.transitionEdges.east.templatePoolIds.includes('foundry_loading_gate'));
-  assert.ok(backlotCell.transitionEdges.east.templatePoolIds.includes('slums_foundry_checkpoint'), 'slums/foundry seam adds its checkpoint kit');
+  assert.equal(countryCell?.transitionEdges?.east?.toDistrictFamily, 'residential_edge');
+  assert.ok(Array.isArray(countryCell?.transitionEdges?.east?.templatePoolIds));
+  assert.ok(countryCell.transitionEdges.east.templatePoolIds.includes('crypto_country_rest_stop'));
+  assert.ok(countryCell.transitionEdges.east.templatePoolIds.includes('crypto_residential_square'));
+  assert.ok(countryCell.transitionEdges.east.templatePoolIds.includes('crypto_country_residential_checkpoint'), 'country/residential seam adds its checkpoint kit');
 
-  const boundaryCellX = backlotCell.dx * DISTRICT_CELL + (DISTRICT_CELL - 1);
-  const boundaryCellY = backlotCell.dy * DISTRICT_CELL + 2;
+  const boundaryCellX = countryCell.dx * DISTRICT_CELL + (DISTRICT_CELL - 1);
+  const boundaryCellY = countryCell.dy * DISTRICT_CELL + 2;
   const boundaryContext = districtTemplateContextForCell(boundaryCellX, boundaryCellY, grid, macroCellsX);
-  assert.equal(boundaryContext?.transitionBand?.toDistrictFamily, 'freight-yard');
+  assert.equal(boundaryContext?.transitionBand?.toDistrictFamily, 'residential_edge');
   assert.equal(boundaryContext?.transitionBand?.direction, 'east');
-  assert.ok(boundaryContext?.templatePoolIds.includes('slums_backlot_fence'));
-  assert.ok(boundaryContext?.templatePoolIds.includes('foundry_loading_gate'));
-  assert.ok(boundaryContext?.templatePoolIds.includes('slums_foundry_checkpoint'));
+  assert.ok(boundaryContext?.templatePoolIds.includes('crypto_country_rest_stop'));
+  assert.ok(boundaryContext?.templatePoolIds.includes('crypto_residential_square'));
+  assert.ok(boundaryContext?.templatePoolIds.includes('crypto_country_residential_checkpoint'));
 });
 
 test('generateRoadNetwork produces roads between connected cells', () => {

@@ -170,18 +170,29 @@ function healthTierState(actor, entity) {
   return null;
 }
 
+function enemyAnimationIntent(entity = {}) {
+  const state = entity.state ?? '';
+  const telegraphing = (entity.tellFrames ?? 0) > 0 || state === 'melee-tell' || state === 'telegraph';
+  const attacking = !telegraphing && ((entity.attackTimer ?? 999) < 10 || state === 'ranged-fire');
+  const moving = ['rushing', 'seeking-cover', 'chase-player'].includes(state)
+    || Math.abs(entity.vx ?? 0) > 0.05
+    || Math.abs(entity.vy ?? 0) > 0.05;
+  return { telegraphing, attacking, moving };
+}
+
 // Resolve a generated/canonical-art frame image for an entity, or null for legacy art.
 function pipelineActorFrame(entity, { boss = false } = {}) {
   const actorId = registryActorIdFor(entity);
   if (!actorId || !HMH_ACTOR_REGISTRY.has(actorId)) return null;
   const actor = HMH_ACTOR_REGISTRY.get(actorId);
   const dying = entity.dying || (entity.hp !== undefined && entity.hp <= 0);
+  const intent = enemyAnimationIntent(entity);
   let state = enemyStateFromEntity({
     dying,
     hitFrames: entity.hitFrames ?? ((entity.flashTimer ?? 0) > 0 ? 1 : 0),
-    attacking: (entity.attackTimer ?? 99) < 18,
-    telegraphing: (entity.attackTimer ?? 99) >= 18 && (entity.attackTimer ?? 99) < 34,
-    moving: true,
+    attacking: intent.attacking,
+    telegraphing: intent.telegraphing,
+    moving: intent.moving,
   });
   // When idle and damaged, prefer the hand-drawn health-tier still if present.
   if (!dying && (state === 'idle' || state === 'walk')) {
@@ -7688,8 +7699,9 @@ function manifestEnemyArtFor(enemy) {
   const key = manifestEnemyKeyFor(enemy);
   const art = key ? combatArt.enemies[key] : null;
   if (!art) return null;
-  const moving = enemy.state === 'rushing' || enemy.state === 'seeking-cover';
-  const attacking = enemy.tellFrames > 0 || enemy.state === 'melee-tell';
+  const intent = enemyAnimationIntent(enemy);
+  const moving = intent.moving;
+  const attacking = intent.telegraphing || intent.attacking;
   const frames = attacking
     ? art.animations.attack
     : moving
@@ -7825,9 +7837,10 @@ function animatedRosterFrame(roster, desiredNames, { fps = 12, loop = true, phas
 function enemyAnimState(enemy) {
   if (enemy.hp <= 0) return ['death'];
   if ((enemy.hitFlash ?? 0) > 0) return ['hit', 'attack', 'walk', 'idle'];
-  if ((enemy.tellFrames ?? 0) > 0) return ['attack-tell', 'attack', 'walk', 'idle'];
-  if ((enemy.attackTimer ?? 999) < 10) return ['attack', 'melee-counter', 'walk', 'idle'];
-  const moving = enemy.state === 'chase-player' || enemy.state === 'rushing';
+  const intent = enemyAnimationIntent(enemy);
+  if (intent.telegraphing) return ['attack-tell', 'attack', 'walk', 'idle'];
+  if (intent.attacking) return ['attack', 'melee-counter', 'walk', 'idle'];
+  const moving = intent.moving;
   return moving ? ['run', 'walk', 'idle'] : ['idle', 'walk'];
 }
 
@@ -7997,12 +8010,14 @@ function drawSingleEnemy(ctx, enemy) {
     const sizeMul = enemy.sizeScale ?? 1.0;
     // Contact shadows are disabled here too; keep enemies grounded via art only.
 
-    // wave still (directional variety) > pipeline/legacy art. Minis use boss art.
+    // Canonical actor art first, then animated roster, then biome stills.
     const animFrame = roguelikeEnemyAnimatedFrame(enemy);
     const waveFrame = isMini ? null : roguelikeEnemyWaveArt(enemy);
-    const enemyFrame = (imageReady(animFrame) ? animFrame : null)
+    const pipelineFrame = pipelineActorFrame(enemy);
+    const enemyFrame = (imageReady(pipelineFrame) ? pipelineFrame : null)
+      ?? (imageReady(animFrame) ? animFrame : null)
       ?? (imageReady(waveFrame) ? waveFrame : null)
-      ?? pipelineActorFrame(enemy) ?? enemyArtFor(enemy);
+      ?? enemyArtFor(enemy);
     if (imageReady(enemyFrame)) {
       const isAnim = enemyFrame === animFrame;
       const isWave = enemyFrame === waveFrame;
