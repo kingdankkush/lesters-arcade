@@ -58,6 +58,14 @@ export function enemyStateFromEntity(enemy) {
   return 'idle';
 }
 
+export function enemyOverlayStateFromEntity(enemy, { goreEnabled = false } = {}) {
+  if (!goreEnabled) return null;
+  if (enemy.dying || enemy.dead) return 'optional-gore-overlay';
+  if ((enemy.goreFrames ?? 0) > 0) return 'optional-gore-overlay';
+  if ((enemy.hitFrames ?? 0) > 0) return 'optional-gore-overlay';
+  return null;
+}
+
 // Resolve a frame for any registered actor. Returns null when the actor isn't
 // in the registry (caller falls back to legacy art).
 export function resolveActorFrame(registry, actorId, { state, direction, clock, lastDirection } = {}) {

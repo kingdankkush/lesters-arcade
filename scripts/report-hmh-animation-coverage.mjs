@@ -29,7 +29,7 @@ const enemyStateAliases = Object.freeze({
   'walk-or-fly': Object.freeze(['walk', 'fly', 'run']),
   'attack-tell': Object.freeze(['attack-tell', 'tell', 'telegraph']),
   'melee-counter': Object.freeze(['melee-counter', 'counter']),
-  'optional-gore-overlay': Object.freeze(['gore', 'gore-overlay']),
+  'optional-gore-overlay': Object.freeze(['optional-gore-overlay', 'gore', 'gore-overlay']),
 });
 
 function statesForActor(actorId) {

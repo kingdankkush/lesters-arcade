@@ -252,6 +252,7 @@
         "idle",
         "jump",
         "melee-counter",
+        "optional-gore-overlay",
         "run",
         "walk"
       ],
@@ -262,17 +263,17 @@
         "attack",
         "melee-counter",
         "hit",
-        "death"
+        "death",
+        "optional-gore-overlay"
       ],
       "runtimeDerivedStates": [
         "attack-tell",
         "melee-counter",
         "hit",
-        "death"
-      ],
-      "runtimeMissingStates": [
+        "death",
         "optional-gore-overlay"
-      ]
+      ],
+      "runtimeMissingStates": []
     },
     "evilBanker": {
       "canonicalActorId": "evil-banker",
@@ -286,6 +287,7 @@
         "idle",
         "jump",
         "melee-counter",
+        "optional-gore-overlay",
         "run",
         "walk"
       ],
@@ -296,17 +298,17 @@
         "attack",
         "melee-counter",
         "hit",
-        "death"
+        "death",
+        "optional-gore-overlay"
       ],
       "runtimeDerivedStates": [
         "attack-tell",
         "melee-counter",
         "hit",
-        "death"
-      ],
-      "runtimeMissingStates": [
+        "death",
         "optional-gore-overlay"
-      ]
+      ],
+      "runtimeMissingStates": []
     },
     "warrenSpearRider": {
       "canonicalActorId": "warren-boss",
@@ -319,6 +321,7 @@
         "hit",
         "idle",
         "melee-counter",
+        "optional-gore-overlay",
         "run",
         "walk"
       ],
@@ -329,17 +332,17 @@
         "attack",
         "melee-counter",
         "hit",
-        "death"
+        "death",
+        "optional-gore-overlay"
       ],
       "runtimeDerivedStates": [
         "attack-tell",
         "melee-counter",
         "hit",
-        "death"
-      ],
-      "runtimeMissingStates": [
+        "death",
         "optional-gore-overlay"
-      ]
+      ],
+      "runtimeMissingStates": []
     },
     "cryptoBro": {
       "canonicalActorId": "crypto-bro",
@@ -351,6 +354,7 @@
         "idle",
         "jump",
         "melee-counter",
+        "optional-gore-overlay",
         "run",
         "walk"
       ],
@@ -361,17 +365,17 @@
         "attack",
         "melee-counter",
         "hit",
-        "death"
+        "death",
+        "optional-gore-overlay"
       ],
       "runtimeDerivedStates": [
         "attack-tell",
         "melee-counter",
         "hit",
-        "death"
-      ],
-      "runtimeMissingStates": [
+        "death",
         "optional-gore-overlay"
-      ]
+      ],
+      "runtimeMissingStates": []
     },
     "gasBeast": {
       "canonicalActorId": "gas-beast",
@@ -383,6 +387,7 @@
         "idle",
         "jump",
         "melee-counter",
+        "optional-gore-overlay",
         "run",
         "walk"
       ],
@@ -393,28 +398,26 @@
         "attack",
         "melee-counter",
         "hit",
-        "death"
+        "death",
+        "optional-gore-overlay"
       ],
       "runtimeDerivedStates": [
         "attack-tell",
         "melee-counter",
         "hit",
-        "death"
-      ],
-      "runtimeMissingStates": [
+        "death",
         "optional-gore-overlay"
-      ]
+      ],
+      "runtimeMissingStates": []
     }
   },
   "summary": {
     "missingHeroAnimatedStateCount": 16,
     "missingEnemyAnimatedStateCount": 25,
-    "runtimeDerivedEnemyStateCount": 20,
-    "runtimeMissingEnemyStateCount": 5,
+    "runtimeDerivedEnemyStateCount": 25,
+    "runtimeMissingEnemyStateCount": 0,
     "runtimeReadableEnemyCount": 5,
     "runtimeEnemyCount": 5,
-    "uniqueRuntimeMissingStates": [
-      "optional-gore-overlay"
-    ]
+    "uniqueRuntimeMissingStates": []
   }
 }

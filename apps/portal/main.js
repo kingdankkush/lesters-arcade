@@ -3,7 +3,7 @@ import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES } from './src/canonical-actors.mjs';
-import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback } from './src/combat-physics.mjs';
@@ -160,12 +160,19 @@ function registryActorIdFor(entity) {
   return null;
 }
 
+function actorDefinesState(actor, state) {
+  if (!actor || !state) return false;
+  if (actor.manifest?.states?.[state]) return true;
+  const aliased = actor.manifest?.stateAliases?.[state];
+  return Boolean(aliased && actor.manifest?.states?.[aliased]);
+}
+
 // Pick a health-tier state name if the actor has tiered art for the entity's hp%.
 function healthTierState(actor, entity) {
   if (entity.hp === undefined || entity.maxHp === undefined || !entity.maxHp) return null;
   const pct = (entity.hp / entity.maxHp) * 100;
   for (const [tier, threshold] of [['health-25', 25], ['health-50', 50], ['health-75', 75]]) {
-    if (pct <= threshold && actor.hasState(tier)) return tier;
+    if (pct <= threshold && actorDefinesState(actor, tier)) return tier;
   }
   return null;
 }
@@ -201,6 +208,34 @@ function pipelineActorFrame(entity, { boss = false } = {}) {
   }
   const frame = actor.frame({ state, direction: 'south', clock: combat.frame + Math.floor(entity.x ?? 0) });
   return frame?.image ?? null;
+}
+
+function pipelineActorOverlayFrame(entity) {
+  const actorId = registryActorIdFor(entity);
+  if (!actorId || !HMH_ACTOR_REGISTRY.has(actorId)) return null;
+  const actor = HMH_ACTOR_REGISTRY.get(actorId);
+  const state = enemyOverlayStateFromEntity({
+    dying: entity.dying || (entity.hp !== undefined && entity.hp <= 0),
+    dead: entity.dead,
+    hitFrames: entity.hitFrames ?? ((entity.flashTimer ?? 0) > 0 ? 1 : 0),
+    goreFrames: entity.goreFrames ?? 0,
+  }, { goreEnabled: gameSettings.gore });
+  if (!state || !actorDefinesState(actor, state)) return null;
+  const frame = actor.frame({ state, direction: 'south', clock: combat.frame + Math.floor(entity.x ?? 0) });
+  return frame?.image ?? null;
+}
+
+function drawSpriteImage(ctx, image, x, y, size, flip = false) {
+  if (!imageReady(image)) return;
+  if (flip) {
+    ctx.save();
+    ctx.translate(x + size / 2, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(image, -size / 2, y, size, size);
+    ctx.restore();
+    return;
+  }
+  ctx.drawImage(image, x, y, size, size);
 }
 
 function loadAnimationFrames(pattern, count) {
@@ -5058,6 +5093,7 @@ function updateEnemies(difficulty) {
   const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
   for (const enemy of combat.enemies) {
     if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
+    if ((enemy.goreFrames ?? 0) > 0) enemy.goreFrames -= 1;
     // Apply knockback from hits (satisfying hit feedback).
     if (enemy._knockback && enemy._knockback.frames > 0) {
       enemy.x += enemy._knockback.vx;
@@ -5128,6 +5164,8 @@ function updateEnemies(difficulty) {
 
 function updateBoss(difficulty) {
   if (!combat.boss) return;
+  if ((combat.boss.hitFlash ?? 0) > 0) combat.boss.hitFlash -= 1;
+  if ((combat.boss.goreFrames ?? 0) > 0) combat.boss.goreFrames -= 1;
   combat.boss.x = 620 + Math.sin(combat.frame * 0.018) * (18 + combat.boss.phase * 6);
   const nextPhase = combat.boss.hp < combat.boss.maxHp * 0.33 ? 3 : combat.boss.hp < combat.boss.maxHp * 0.66 ? 2 : 1;
   if (nextPhase !== combat.boss.phase) {
@@ -5331,6 +5369,7 @@ function damageEnemy(enemy, damage, source, opts = {}) {
   const applied = present.finalDamage ?? damage;
   enemy.hp -= applied;
   enemy.hitFlash = 6; // frames of white flash so EVERY enemy shows hit feedback
+  enemy.goreFrames = Math.max(enemy.goreFrames ?? 0, source === 'grenade' ? 14 : 10);
   combat.combo += 1;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   combat.damageCombo += applied;
@@ -5351,6 +5390,8 @@ function damageBoss(damage, source, opts = {}) {
   const present = opts.crit !== undefined ? opts : rollHitPresentation(damage, source);
   const applied = present.finalDamage ?? damage;
   combat.boss.hp -= applied;
+  combat.boss.hitFlash = Math.max(combat.boss.hitFlash ?? 0, 8);
+  combat.boss.goreFrames = Math.max(combat.boss.goreFrames ?? 0, source === 'grenade' ? 16 : 12);
   combat.combo += 1;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   combat.damageCombo += applied;
@@ -6035,6 +6076,7 @@ function updateRoguelikeEnemies(director, dt) {
   const slowFactor = (combat.powerUpTimers.slowEnemies ?? 0) > 0 ? 0.4 : 1;
   for (const enemy of combat.enemies) {
     if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
+    if ((enemy.goreFrames ?? 0) > 0) enemy.goreFrames -= 1;
     const dx = combat.playerMapX - enemy.mapX;
     const dy = combat.playerMapY - enemy.mapY;
     const distance = Math.hypot(dx, dy) || 1;
@@ -8014,6 +8056,7 @@ function drawSingleEnemy(ctx, enemy) {
     const animFrame = roguelikeEnemyAnimatedFrame(enemy);
     const waveFrame = isMini ? null : roguelikeEnemyWaveArt(enemy);
     const pipelineFrame = pipelineActorFrame(enemy);
+    const overlayFrame = pipelineActorOverlayFrame(enemy);
     const enemyFrame = (imageReady(pipelineFrame) ? pipelineFrame : null)
       ?? (imageReady(animFrame) ? animFrame : null)
       ?? (imageReady(waveFrame) ? waveFrame : null)
@@ -8029,12 +8072,18 @@ function drawSingleEnemy(ctx, enemy) {
       ctx.imageSmoothingEnabled = false;
       const ex = Math.round(enemy.x + w / 2 - drawSize / 2);
       const ey = Math.round(enemy.y - drawSize + 12);
-      if (enemyFrame._flip) {
-        ctx.translate(ex + drawSize / 2, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(enemyFrame, -drawSize / 2, ey, drawSize, drawSize);
-      } else {
-        ctx.drawImage(enemyFrame, ex, ey, drawSize, drawSize);
+      drawSpriteImage(ctx, enemyFrame, ex, ey, drawSize, Boolean(enemyFrame._flip));
+      const overlayAlpha = enemy.hp <= 0
+        ? 0.62
+        : Math.min(0.5, Math.max((enemy.goreFrames ?? 0) / 18, (enemy.hitFlash ?? 0) / 14));
+      if (imageReady(overlayFrame) && overlayAlpha > 0) {
+        drawSpriteImage(ctx, overlayFrame, ex, ey, drawSize, Boolean(overlayFrame._flip ?? enemyFrame._flip));
+        ctx.globalCompositeOperation = 'source-atop';
+        ctx.globalAlpha = overlayAlpha;
+        ctx.fillStyle = enemy.hp <= 0 ? '#7a0015' : '#cf274f';
+        ctx.fillRect(ex, ey, drawSize, drawSize);
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
       }
       // Universal hit-flash: briefly tint the sprite white on damage so EVERY
       // enemy (even those without a roster 'hurt' animation) shows clear combat
@@ -8044,6 +8093,8 @@ function drawSingleEnemy(ctx, enemy) {
         ctx.globalAlpha = Math.min(0.8, enemy.hitFlash / 6);
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(ex, ey, drawSize, drawSize);
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.globalAlpha = 1;
       }
       ctx.restore();
     } else {
@@ -8089,16 +8140,29 @@ function drawBoss(ctx) {
   const x = combat.boss.x;
   const bossFrame = bossArtFor(combat.boss);
   if (imageReady(bossFrame)) {
+    const bossOverlayFrame = pipelineActorOverlayFrame(combat.boss);
     const phaseScale = 1 + (combat.boss.phase - 1) * 0.08;
     const drawWidth = Math.round(150 * phaseScale);
     const drawHeight = Math.round(150 * phaseScale);
+    const drawX = x - 28;
+    const drawY = GROUND_Y - drawHeight - 2;
     ctx.save();
     ctx.imageSmoothingEnabled = false;
     if (combat.boss.attackTimer < 34) {
       const telegraph = productionVfxFrame('boss-telegraph-ring');
       if (imageReady(telegraph)) ctx.drawImage(telegraph, x - 26, GROUND_Y - 92, 178, 112);
     }
-    ctx.drawImage(bossFrame, x - 28, GROUND_Y - drawHeight - 2, drawWidth, drawHeight);
+    drawSpriteImage(ctx, bossFrame, drawX, drawY, drawWidth);
+    const overlayAlpha = Math.min(0.55, Math.max((combat.boss.goreFrames ?? 0) / 20, (combat.boss.hitFlash ?? 0) / 14));
+    if (imageReady(bossOverlayFrame) && overlayAlpha > 0) {
+      drawSpriteImage(ctx, bossOverlayFrame, drawX, drawY, drawWidth);
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.globalAlpha = overlayAlpha;
+      ctx.fillStyle = combat.boss.phase >= 3 ? '#7a0015' : '#cf274f';
+      ctx.fillRect(drawX, drawY, drawWidth, drawHeight);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+    }
     ctx.restore();
   } else {
     ctx.fillStyle = combat.boss.phase === 3 ? '#ff236d' : combat.boss.phase === 2 ? '#ff7b2f' : '#7b2fff';

@@ -148,6 +148,24 @@ function deriveDeathState(states) {
   };
 }
 
+function deriveOptionalGoreOverlayState(states) {
+  if (states['optional-gore-overlay']) return cloneStateDef(states['optional-gore-overlay']);
+  const source = firstAvailableState(states, ['death', 'hit', 'health-25', 'attack', 'idle']);
+  if (!source) return null;
+  const total = maxFrameCount(source.stateDef);
+  const frames = source.id === 'death'
+    ? cloneFramesMap(source.stateDef.frames)
+    : source.id === 'attack'
+      ? sliceFrames(source.stateDef, { start: Math.max(0, total - 2), end: total || 1, minFrames: 1 })
+      : sliceFrames(source.stateDef, { start: 0, end: Math.min(total || 1, 2), minFrames: 1 });
+  if (!frames) return null;
+  return {
+    fps: Math.max(8, Math.min(source.stateDef.fps ?? 10, 12)),
+    loop: false,
+    frames,
+  };
+}
+
 function withDerivedCombatReadability(manifest) {
   const states = Object.fromEntries(
     Object.entries(manifest?.states ?? {}).map(([id, stateDef]) => [id, cloneStateDef(stateDef)]),
@@ -173,6 +191,7 @@ function withDerivedCombatReadability(manifest) {
   states['melee-counter'] ??= deriveMeleeCounterState(states);
   states.hit ??= deriveHitState(states);
   states.death ??= deriveDeathState(states);
+  states['optional-gore-overlay'] ??= deriveOptionalGoreOverlayState(states);
 
   return Object.freeze({
     ...manifest,
@@ -182,6 +201,8 @@ function withDerivedCombatReadability(manifest) {
       tell: 'attack-tell',
       hurt: 'hit',
       counter: 'melee-counter',
+      gore: 'optional-gore-overlay',
+      'gore-overlay': 'optional-gore-overlay',
     },
     states,
   });

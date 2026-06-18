@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES } from '../apps/portal/src/canonical-actors.mjs';
 import { validateSpriteManifest } from '../apps/portal/src/sprite-pipeline.mjs';
-import { buildActorRegistry, resolveActorFrame } from '../apps/portal/src/combat-sprite-bridge.mjs';
+import { buildActorRegistry, enemyOverlayStateFromEntity, resolveActorFrame } from '../apps/portal/src/combat-sprite-bridge.mjs';
 
 const fakeLoader = (src) => (src ? { __src: src } : null);
 
@@ -19,6 +19,7 @@ test('canonical enemy manifests expose combat-readability states for runtime ani
     assert.ok(manifest.states['attack-tell'], `${actorId} has an attack-tell state`);
     assert.ok(manifest.states.hit, `${actorId} has a hit state`);
     assert.ok(manifest.states.death, `${actorId} has a death state`);
+    assert.ok(manifest.states['optional-gore-overlay'], `${actorId} has an optional gore overlay state`);
   }
 });
 
@@ -36,4 +37,15 @@ test('combat sprite bridge can resolve derived readability frames for canonical 
 
   const warrenDeath = resolveActorFrame(registry, 'warren-boss', { state: 'death', direction: 'south', clock: 0 });
   assert.match(warrenDeath.src, /warren-boss\/(health-50|health-75|idle)\//);
+
+  const gasGore = resolveActorFrame(registry, 'gas-beast', { state: 'optional-gore-overlay', direction: 'south', clock: 0 });
+  assert.match(gasGore.src, /gas-beast\/(hit|attack|idle)\//);
+});
+
+test('enemy overlay bridge only emits optional gore overlay when gore readability is active', () => {
+  assert.equal(enemyOverlayStateFromEntity({ hitFrames: 2 }, { goreEnabled: true }), 'optional-gore-overlay');
+  assert.equal(enemyOverlayStateFromEntity({ goreFrames: 6 }, { goreEnabled: true }), 'optional-gore-overlay');
+  assert.equal(enemyOverlayStateFromEntity({ dying: true }, { goreEnabled: true }), 'optional-gore-overlay');
+  assert.equal(enemyOverlayStateFromEntity({ hitFrames: 2 }, { goreEnabled: false }), null);
+  assert.equal(enemyOverlayStateFromEntity({}, { goreEnabled: true }), null);
 });
