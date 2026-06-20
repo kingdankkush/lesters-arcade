@@ -1,6 +1,6 @@
 {
   "flowId": "wallet-profile-free-ranked-exit",
-  "checkedUrl": "http://127.0.0.1:54461/apps/portal/",
+  "checkedUrl": "http://127.0.0.1:52040/apps/portal/",
   "mode": "static-interaction-contract",
   "note": "This gate verifies all selectors/handlers required for the live browser flow: wallet/profile/free/ranked/exit. Browser tool smoke still exercises actual clicks during handoff.",
   "requiredSteps": [

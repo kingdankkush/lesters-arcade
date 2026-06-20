@@ -90,6 +90,7 @@ try {
 
   const requiredHtmlMarkers = [
     'officialConnectButton',
+    'officialGuestEnterButton',
     'officialFreeModeButton',
     'officialRankedModeButton',
     'combatPauseButton',
@@ -102,6 +103,8 @@ try {
   ];
   const requiredMainMarkers = [
     'enterOfficialArcadeFromSplash',
+    'enterArcadeAsGuest',
+    'isGuestAllowedStep',
     'beginOfficialLevel',
     'applyPlayerLedCameraMovement',
     'renderCombatHudOverlay',

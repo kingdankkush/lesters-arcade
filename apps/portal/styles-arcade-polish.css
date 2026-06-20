@@ -236,6 +236,33 @@
 .wallet-splash-view .splash-copy .big-action {
   margin: 4px auto 0;
 }
+/* Guest-first CTA row: primary "Play Free" + secondary "Connect Wallet". */
+.wallet-splash-view .splash-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 4px auto 0;
+}
+.wallet-splash-view .splash-cta-row .big-action {
+  margin: 0;
+}
+/* Ranked card flags that it needs a wallet for guests (still clickable). */
+.mode-card.ranked-card[data-needs-wallet="true"]::after {
+  content: "Wallet required";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(10, 14, 26, 0.82);
+  color: #d6e4ff;
+  border: 1px solid rgba(120, 160, 240, 0.55);
+}
 /* Keep the centered hero compact so the CTA stays above the fold. */
 .wallet-splash-view .splash-marquee {
   max-width: 560px;

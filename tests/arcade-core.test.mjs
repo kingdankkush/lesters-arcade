@@ -1205,6 +1205,16 @@ test('Lester Arcade custom MP3 playlist manifest drives a global minimal music p
   assert.equal(core.chooseArcadeMusicNextIndex({ currentIndex: 1, queueLength: 4, shuffle: true, random: () => 0.5 }), 2);
   assert.notEqual(core.chooseArcadeMusicNextIndex({ currentIndex: 1, queueLength: 4, shuffle: true, random: () => 0.99 }), 1);
   assert.equal(core.chooseArcadeMusicNextIndex({ currentIndex: -1, queueLength: 4, shuffle: false }), 0);
+  // chooseArcadeMusicStartIndex: random opening track across the full queue (incl. index 0)
+  assert.equal(core.chooseArcadeMusicStartIndex({ queueLength: 26, random: () => 0 }), 0);
+  assert.equal(core.chooseArcadeMusicStartIndex({ queueLength: 26, random: () => 0.5 }), 13);
+  assert.equal(core.chooseArcadeMusicStartIndex({ queueLength: 26, random: () => 0.999999 }), 25);
+  assert.equal(core.chooseArcadeMusicStartIndex({ queueLength: 0 }), 0);
+  assert.equal(core.chooseArcadeMusicStartIndex({ queueLength: 1, random: () => 0.99 }), 0);
+  for (let i = 0; i < 200; i += 1) {
+    const idx = core.chooseArcadeMusicStartIndex({ queueLength: 26 });
+    assert.equal(idx >= 0 && idx < 26, true);
+  }
 });
 
 test('Lester Arcade music player overlay is wired into the public UI without forcing individual game music', () => {
@@ -1227,6 +1237,8 @@ test('Lester Arcade music player overlay is wired into the public UI without for
   assert.equal(mainSource.includes('arcadeMusicAudio'), true);
   assert.equal(mainSource.includes('toggleArcadeMusicShuffle'), true);
   assert.equal(mainSource.includes('chooseArcadeMusicNextIndex'), true);
+  // Level/game start picks a random opening track rather than forcing track 0.
+  assert.equal(mainSource.includes('chooseArcadeMusicStartIndex'), true);
   assert.equal(mainSource.includes('normalizedIndex'), true);
   assert.equal(styleSource.includes('.arcade-music-player'), true);
   assert.equal(styleSource.includes('.arcade-music-progress-fill'), true);

@@ -28,6 +28,26 @@ export const DEFAULT_GAME_SLUG = 'hard-money-heroes';
 // View steps that live "inside" a selected game (mode/character/intro screens).
 const IN_GAME_STEPS = Object.freeze(['mode-select', 'character-select', 'level-one-intro']);
 
+// Guest-first: steps a player can reach WITHOUT a connected wallet. Guests can
+// browse the arcade floor, enter a cabinet, and play Free mode. Wallet-bound
+// routes (profile, leaderboards, settings) and ranked sessions still require a
+// connected wallet — those are gated. A ranked session URL carries a
+// game-session id; free play has none, so a sessionless gameplay step is
+// guest-allowed while a session-carrying one is gated.
+const GUEST_ALLOWED_STEPS = Object.freeze([
+  'wallet-splash',
+  'arcade-walk-in',
+  'cabinet-select',
+  'mode-select',
+  'character-select',
+  'level-one-intro',
+  'gameplay',
+]);
+
+export function isGuestAllowedStep(step) {
+  return GUEST_ALLOWED_STEPS.includes(step);
+}
+
 export function gameSlugFor(gameId) {
   return ARCADE_GAME_SLUGS[gameId] ?? DEFAULT_GAME_SLUG;
 }
@@ -74,28 +94,40 @@ export function viewForPath(pathname, { connected = false } = {}) {
   if (parts[0] === 'settings') return gate('settings', connected);
 
   if (parts[0] === 'games') {
-    // /games -> cabinet select
-    if (parts.length === 1) return gate('cabinet-select', connected);
+    // /games -> cabinet select (guest-allowed: browse before connecting)
+    if (parts.length === 1) return guestGate('cabinet-select', connected);
     const gameSlug = parts[1];
-    // /games/<slug> -> game app entry (mode select)
-    if (parts.length === 2) return gate('mode-select', connected, gameSlug);
-    // /games/<slug>/game-session-<id> -> active session (gameplay)
+    // /games/<slug> -> game app entry (mode select). Guest-allowed so guests
+    // can reach Free mode; ranked is gated at mode-select in the UI.
+    if (parts.length === 2) return guestGate('mode-select', connected, gameSlug);
+    // /games/<slug>/game-session-<id> -> active ranked session (gameplay).
+    // Ranked sessions are wallet-bound, so this stays wallet-gated.
     if (parts.length >= 3 && /^game-session-\d+$/.test(parts[2])) {
       return gate('gameplay', connected, gameSlug, parts[2]);
     }
-    // Unknown deeper path -> game app entry.
-    return gate('mode-select', connected, gameSlug);
+    // Unknown deeper path -> game app entry (guest-allowed).
+    return guestGate('mode-select', connected, gameSlug);
   }
 
   // Unknown -> homepage.
   return { step: 'wallet-splash', gameSlug: null, sessionId: null };
 }
 
+// Wallet-required gate: bounce to the homepage when not connected.
 function gate(step, connected, gameSlug = null, sessionId = null) {
   if (!connected) {
     return { step: 'wallet-splash', gameSlug: null, sessionId: null };
   }
   return { step, gameSlug, sessionId };
+}
+
+// Guest-first gate: guest-allowed steps resolve for everyone; anything else
+// falls back to the wallet-required gate.
+function guestGate(step, connected, gameSlug = null, sessionId = null) {
+  if (connected || isGuestAllowedStep(step)) {
+    return { step, gameSlug, sessionId };
+  }
+  return gate(step, connected, gameSlug, sessionId);
 }
 
 export function isInGameStep(step) {

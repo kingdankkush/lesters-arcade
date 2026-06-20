@@ -6,6 +6,7 @@ import {
   viewForPath,
   gameSlugFor,
   isInGameStep,
+  isGuestAllowedStep,
   DEFAULT_GAME_SLUG,
 } from '../apps/portal/src/arcade-router.mjs';
 
@@ -40,13 +41,31 @@ test('viewForPath parses URLs back into view intents (connected)', () => {
   assert.deepEqual(viewForPath('/settings', { connected: true }), { step: 'settings', gameSlug: null, sessionId: null });
 });
 
-test('viewForPath gates protected routes to the homepage when not connected', () => {
-  assert.equal(viewForPath('/games', { connected: false }).step, 'wallet-splash');
-  assert.equal(viewForPath('/games/hard-money-heroes', { connected: false }).step, 'wallet-splash');
+test('viewForPath is guest-first: arcade + free game entry reachable without a wallet', () => {
+  // Guests can browse the arcade floor and enter a cabinet to reach Free mode.
+  assert.equal(viewForPath('/games', { connected: false }).step, 'cabinet-select');
+  assert.equal(viewForPath('/games/hard-money-heroes', { connected: false }).step, 'mode-select');
+  assert.equal(viewForPath('/games/hard-money-heroes', { connected: false }).gameSlug, 'hard-money-heroes');
+});
+
+test('viewForPath gates wallet-bound routes to the homepage when not connected', () => {
+  // Ranked sessions are wallet-bound and stay gated.
   assert.equal(viewForPath('/games/hard-money-heroes/game-session-000000001', { connected: false }).step, 'wallet-splash');
+  // Profile / leaderboards / settings are wallet-bound.
   assert.equal(viewForPath('/profile', { connected: false }).step, 'wallet-splash');
+  assert.equal(viewForPath('/leaderboards', { connected: false }).step, 'wallet-splash');
+  assert.equal(viewForPath('/settings', { connected: false }).step, 'wallet-splash');
   // The homepage itself is always reachable.
   assert.equal(viewForPath('/', { connected: false }).step, 'wallet-splash');
+});
+
+test('isGuestAllowedStep marks browse/play-free steps and excludes wallet-bound ones', () => {
+  for (const step of ['wallet-splash', 'cabinet-select', 'mode-select', 'character-select', 'level-one-intro', 'gameplay']) {
+    assert.equal(isGuestAllowedStep(step), true, `${step} should be guest-allowed`);
+  }
+  for (const step of ['profile', 'leaderboards', 'settings']) {
+    assert.equal(isGuestAllowedStep(step), false, `${step} should require a wallet`);
+  }
 });
 
 test('viewForPath ignores query/hash and trailing junk', () => {

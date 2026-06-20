@@ -867,6 +867,18 @@ export function chooseArcadeMusicNextIndex({
   return candidate >= normalizedCurrent ? candidate + 1 : candidate;
 }
 
+// Pick a starting track index for a freshly entered game/level. Used so a level
+// begins on a random song from its queue instead of always the first track.
+export function chooseArcadeMusicStartIndex({
+  queueLength = 0,
+  random = Math.random,
+} = {}) {
+  const safeLength = Math.max(0, Number.isFinite(queueLength) ? Math.floor(queueLength) : 0);
+  if (safeLength <= 0) return 0;
+  const randomValue = Math.max(0, Math.min(0.999999, Number(random?.()) || 0));
+  return Math.floor(randomValue * safeLength);
+}
+
 export function buildArcadeMusicPlayerModel({
   context = 'arcade',
   currentTrackId = null,

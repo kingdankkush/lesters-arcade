@@ -13,7 +13,7 @@ import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/wha
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
-import { routeForView, viewForPath, gameSlugFor } from './src/arcade-router.mjs';
+import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
   generateRoadNetwork,
@@ -87,6 +87,7 @@ import {
   buildWalletConnectionModel,
   calculateLesterBlasterScore,
   chooseArcadeMusicNextIndex,
+  chooseArcadeMusicStartIndex,
   chooseEnemySpawn,
   chooseRoguelikeUpgradeOptions,
   connectPlayerAccount,
@@ -853,6 +854,13 @@ function setArcadeMusicContext(context = 'arcade', { reset = false } = {}) {
 
 async function startArcadeMusicForGame(gameId = 'hard-money-heroes') {
   setArcadeMusicContext(gameId, { reset: true });
+  // Begin each run on a random song from the game's queue instead of always
+  // opening on the first track (the Hard Money Heroes main theme).
+  if (arcadeMusic.queue.length > 1) {
+    arcadeMusic.currentTrackIndex = chooseArcadeMusicStartIndex({ queueLength: arcadeMusic.queue.length });
+    loadArcadeMusicTrack();
+    renderArcadeMusicPlayer();
+  }
   combat.musicEnabled = !arcadeMusic.muted;
   return ensureArcadeMusicPlayer('gameplay', combat.musicEnabled);
 }
@@ -1132,6 +1140,7 @@ const dom = {
   officialWalletSplash: document.querySelector('#officialWalletSplash'),
   splashFeaturedCabinet: document.querySelector('#splashFeaturedCabinet'),
   officialConnectButton: document.querySelector('#officialConnectButton'),
+  officialGuestEnterButton: document.querySelector('#officialGuestEnterButton'),
   officialWalletCopy: document.querySelector('#officialWalletCopy'),
   officialArcadeFloor: document.querySelector('#officialArcadeFloor'),
   officialProfileTitle: document.querySelector('#officialProfileTitle'),
@@ -2764,7 +2773,7 @@ function renderOfficialNav() {
     button.append(renderArcadeIcon(iconById[item.id] ?? '◆', item.label), document.createTextNode(item.label));
     button.addEventListener('click', () => {
       playSfxCue('menu-click');
-      if (item.id === 'cabinets') setOfficialView(connectedWallet ? 'cabinet-select' : 'wallet-splash');
+      if (item.id === 'cabinets') setOfficialView('cabinet-select');
       if (item.id === 'profile') setOfficialView('profile');
       if (item.id === 'leaderboards') setOfficialView('leaderboards');
       if (item.id === 'settings') setOfficialView('settings');
@@ -3518,7 +3527,9 @@ function renderOfficialArcadeFloor() {
   };
   const copyByStep = {
     'arcade-walk-in': `${walletShort} is active. Neon doors opening; cabinet row loading...`,
-    'cabinet-select': 'Select a cabinet. Hard Money Heroes is the only playable option right now; future cabinets remain locked.',
+    'cabinet-select': connectedWallet
+      ? 'Select a cabinet. Hard Money Heroes is the only playable option right now; future cabinets remain locked.'
+      : 'Select a cabinet and play Free as a guest. Hard Money Heroes is the only playable option right now. Connect a wallet anytime to save progress and unlock Ranked.',
     profile: LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy,
     leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
     settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
@@ -3534,9 +3545,20 @@ function renderOfficialArcadeFloor() {
 function renderOfficialModeSelect() {
   applyHardMoneyHeroScreenBackground(dom.officialModeSelect, 'modeSelect');
   const ranked = LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked;
+  // Guest-aware ranked card: surface that ranked needs a wallet, but keep it
+  // clickable so the tap triggers the connect flow (guest-first).
+  if (dom.officialRankedModeButton) {
+    dom.officialRankedModeButton.dataset.needsWallet = connectedWallet ? 'false' : 'true';
+  }
   dom.officialRankedTooltip.replaceChildren();
-  appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: needs testnet ${ranked.token}`);
-  appendText(dom.officialRankedTooltip, 'span', ranked.copy);
+  dom.officialRankedTooltip.dataset.state = connectedWallet ? '' : 'guest';
+  if (!connectedWallet) {
+    appendText(dom.officialRankedTooltip, 'strong', 'Free Mode is open to guests');
+    appendText(dom.officialRankedTooltip, 'span', 'Play Free right now with no wallet. Ranked publishes your run on-chain, so tapping it will prompt you to connect a wallet first.');
+  } else {
+    appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: needs testnet ${ranked.token}`);
+    appendText(dom.officialRankedTooltip, 'span', ranked.copy);
+  }
   const link = el('a', { className: 'wallet-link', textContent: 'Get zkLTC faucet', href: ranked.faucetUrl, target: '_blank', rel: 'noreferrer' });
   dom.officialRankedTooltip.append(link);
 }
@@ -3567,7 +3589,10 @@ function renderOfficialApp() {
   dom.developerBackstageToggle.textContent = developerBackstageOpen ? 'Hide Backstage' : 'Dev Backstage';
   renderOfficialNav();
   renderOfficialWalletSplash();
-  if (!connectedWallet && officialAppStep !== 'wallet-splash') officialAppStep = 'wallet-splash';
+  // Guest-first: guests may browse the arcade floor, enter a cabinet, and play
+  // Free mode. Only wallet-bound steps (profile/leaderboards/settings, ranked
+  // sessions) bounce back to the splash when no wallet is connected.
+  if (!connectedWallet && !isGuestAllowedStep(officialAppStep)) officialAppStep = 'wallet-splash';
   if (['arcade-walk-in', 'cabinet-select', 'profile', 'leaderboards', 'settings'].includes(officialAppStep)) {
     showOfficialPanel(dom.officialArcadeFloor);
     renderOfficialArcadeFloor();
@@ -3606,10 +3631,32 @@ async function enterOfficialArcadeFromSplash() {
   await connectOfficialWallet();
 }
 
+// Guest-first entry: browse the arcade floor and play Free without connecting a
+// wallet. Connecting later upgrades the same session to a saved profile and
+// unlocks ranked. Distinct from enterOfficialArcadeFromSplash, which connects.
+function enterArcadeAsGuest() {
+  playSfxCue('menu-click', 0.05);
+  setOfficialView('cabinet-select');
+}
+
 async function startOfficialMode(mode) {
   playSfxCue('menu-click');
-  // Ranked is paid/official: require the entry-fee signature + chain guard first.
+  // Ranked is paid/official and wallet-bound. A guest must connect first.
   if (mode === 'ranked') {
+    if (!connectedWallet) {
+      await connectWallet();
+      // If the player declined/failed to connect, stay on mode select.
+      if (!connectedWallet) {
+        if (dom.officialRankedTooltip) {
+          dom.officialRankedTooltip.dataset.state = 'needs-wallet';
+          dom.officialRankedTooltip.replaceChildren();
+          appendText(dom.officialRankedTooltip, 'strong', 'Connect a wallet to play Ranked');
+          appendText(dom.officialRankedTooltip, 'span', 'Ranked runs publish your score on-chain, so they need a connected wallet. Free Mode is always available without one.');
+        }
+        return;
+      }
+      playSfxCue('wallet-connect', 0.055);
+    }
     const approved = await requestRankedEntry();
     if (!approved) return; // user cancelled or chain guard blocked
   }
@@ -4145,7 +4192,12 @@ function beginTrackedSession({ mode }) {
 }
 
 async function startMode(mode) {
-  await ensureWalletConnected();
+  // Guest-first: Free mode plays without a wallet (sessions fall back to the
+  // mock/guest wallet). Paid/ranked is wallet-bound and already prompts connect
+  // upstream in startOfficialMode, but guard here too for any other caller.
+  if (mode === 'paid' || mode === 'ranked') {
+    await ensureWalletConnected();
+  }
   const game = selectedGame();
   if (game.status !== 'playable') return;
 
@@ -9107,6 +9159,7 @@ function render() {
 }
 
 dom.officialConnectButton.addEventListener('click', enterOfficialArcadeFromSplash);
+dom.officialGuestEnterButton?.addEventListener('click', enterArcadeAsGuest);
 dom.developerBackstageToggle.addEventListener('click', () => {
   developerBackstageOpen = !developerBackstageOpen;
   renderOfficialApp();
