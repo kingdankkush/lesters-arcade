@@ -208,3 +208,11 @@ test('pickTemplate can use authored transition-band template pools at belt seams
   });
   assert.ok(['slums_backlot_fence', 'foundry_loading_gate', 'slums_foundry_checkpoint'].includes(chosen?.id));
 });
+
+test('pickTemplate strongly favors authored local template preferences when provided', () => {
+  const chosen = pickTemplate(SEED, 8, 9, 'town', {
+    templatePoolIds: ['street_block', 'crypto_ghost_mainstreet_front', 'crypto_ghost_saloon_square'],
+    preferredTemplateIds: ['crypto_ghost_mainstreet_front'],
+  });
+  assert.equal(chosen?.id, 'crypto_ghost_mainstreet_front');
+});

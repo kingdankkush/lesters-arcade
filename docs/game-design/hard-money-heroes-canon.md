@@ -16,7 +16,7 @@ Last applied update: Claude Opus 4.8 Build-Risk Review v2.1, normalized into `do
 - First playable cabinet title: **Hard Money Heroes**.
 - Stable internal compatibility ID: `lester-blaster`.
 - Active genre/display genre: **isometric-run-and-gun-roguelike**.
-- World: **Litecoin City After Dark**.
+- World: **Crypto Wasteland -> Litecoin City**.
 - Main playable character: **Lester**.
 - Lilly: future unlockable HMH alternate hero/skin with same stats, hitbox, and moveset as Lester.
 - Lilly's Lightning / Mempool Mayhem: roadmap-flavor future cabinets only until approved.
@@ -43,7 +43,7 @@ Explicitly out of P0: ranked/wallet submit, Acts II-III, bosses 3-10, full 40 sk
 
 ## Pitch
 
-Hard Money Heroes is a 20-minute isometric roguelite survival shooter set in Litecoin City After Dark. Lester fights escalating crypto-satire enemies, collects XP gems, pauses on level-up to choose from two upgrade options with one reroll, and builds toward a 20-minute Mainnet Express extraction win. Overtime is optional and uses a separate Endless board. Free play is local/practice only; ranked play is wallet-bound, explicit-submit, verifier-backed, official-leaderboard eligible, same-RNG, and never pay-to-win.
+Hard Money Heroes is a 20-minute isometric roguelite survival shooter that now opens in the Crypto Wasteland before pushing Lester toward Litecoin City on the horizon. Lester fights escalating crypto-satire enemies, collects XP gems, pauses on level-up to choose from two upgrade options with one reroll, and builds toward a 20-minute Mainnet Express extraction win. Overtime is optional and uses a separate Endless board. Free play is local/practice only; ranked play is wallet-bound, explicit-submit, verifier-backed, official-leaderboard eligible, same-RNG, and never pay-to-win.
 
 ## Core rules
 
@@ -64,8 +64,8 @@ Hard Money Heroes is a 20-minute isometric roguelite survival shooter set in Lit
 
 | Act | Window | Biome/theme | Boss beat |
 | --- | --- | --- | --- |
-| I — The Slums | 0:00-6:30 | Underchain District + Industrial Foundry | ~3:30 Warren mini-boss; ~6:30 Rug Pull Baron |
-| II — The Tower | 6:30-13:30 | Financial District + Penthouse Rain | ~10:00 mini-boss; ~13:30 Mr. NGMI |
+| I — Crypto Wasteland | 0:00-6:30 | Desert approach, ghost town, dry forest, roadside hub, oasis / mesa spurs | ~3:30 optional POI mini-boss; ~6:30 Rug Pull Baron |
+| II — Litecoin City | 6:30-13:30 | Financial District + Penthouse Rain | ~10:00 mini-boss; ~13:30 Mr. NGMI |
 | III — The Getaway | 13:30-20:00 | Mainnet Express | ~17:00 mini-boss; ~20:00 Quantum Hacker |
 | Extraction | 20:00 | Board the train | Score snapshots to Extraction board |
 | Overtime | 20:00+ | Continued score path | Separate Endless board |

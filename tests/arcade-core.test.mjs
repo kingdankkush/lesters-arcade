@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { inflateSync } from 'node:zlib';
 
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../apps/portal/assets/generated/hmh-hd-sprite-atlas.mjs';
+import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../apps/portal/src/hmh-character-config.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -215,6 +216,23 @@ test('connectPlayerAccount creates the parent account system used across every c
   assert.equal(snapshot.progress['lester-blaster'].bestFreeScore, 0);
   assert.deepEqual(snapshot.transactions, []);
   assert.equal(snapshot.achievements.some((achievement) => achievement.id === ACHIEVEMENTS.CABINET_PIONEER.id && achievement.unlocked), true);
+});
+
+test('player profiles initialize configurable character unlocks and selected-character preference', () => {
+  const wallet = '0x' + 'a'.repeat(40);
+  const profile = createPlayerProfile(wallet);
+  assert.equal(profile.unlocks.characters[HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId], true);
+  assert.equal(profile.unlocks.characters[HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId], false);
+  assert.equal(profile.preferences.selectedCharacterId, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId);
+});
+
+test('clearing the Level 1 finale unlocks the configured post-clear character in the profile snapshot', () => {
+  const state = createInitialArcadeState();
+  const wallet = '0x' + 'b'.repeat(40);
+  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  recordScore(state, session, 4200, { elapsedSeconds: 620, bossId: 'rug-pull-tank', stageIndexReached: 13 });
+  const snapshot = buildPlayerArcadeSnapshot(state, wallet);
+  assert.equal(snapshot.profile.unlocks.characters[HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId], true);
 });
 
 test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteForge target, and parent-account sync permissions', () => {
@@ -712,6 +730,71 @@ test('enemy spawn selection scales AI behavior, health, attack patterns, death e
   assert.equal(Boolean(late.enemy.deathEffect), true);
 });
 
+
+test('enemy catalog adds authored Crypto Wasteland regional enemies with explicit animation coverage', () => {
+  const byId = Object.fromEntries(LESTER_BLASTER_ENEMY_CATALOG.map((enemy) => [enemy.id, enemy]));
+  const claimJumper = byId['claim-jumper'];
+  const coyote = byId['coyote-pack-runner'];
+  const scorpion = byId['scorpion-ambusher'];
+
+  assert.ok(claimJumper);
+  assert.ok(coyote);
+  assert.ok(scorpion);
+  for (const enemy of [claimJumper, coyote, scorpion]) {
+    assert.equal(Array.isArray(enemy.districtFamilies), true);
+    assert.equal(enemy.districtFamilies.length >= 1, true);
+    assert.equal(enemy.animationStates.includes('attack-tell'), true);
+    assert.equal(enemy.animationStates.includes('hit'), true);
+    assert.equal(enemy.animationStates.includes('death'), true);
+  }
+});
+
+test('chooseEnemySpawn biases Level 1 authored districts and POIs toward their local enemy pools', () => {
+  const poiSpawn = chooseEnemySpawn({
+    elapsedSeconds: 220,
+    seed: 0,
+    districtFamily: 'ghost_town',
+    activePoiId: 'rugpull-gulch',
+  });
+  assert.equal(poiSpawn.spawnContext.source, 'poi');
+  assert.equal(poiSpawn.enemy.poiIds.includes('rugpull-gulch'), true);
+  assert.equal(poiSpawn.enemy.districtFamilies.includes('ghost_town'), true);
+
+  const districtSpawn = chooseEnemySpawn({
+    elapsedSeconds: 180,
+    seed: 1,
+    districtFamily: 'desert_approach',
+  });
+  assert.equal(districtSpawn.spawnContext.source, 'district-family');
+  assert.equal(districtSpawn.enemy.districtFamilies.includes('desert_approach'), true);
+  assert.equal(districtSpawn.enemy.animationStates.includes('attack-tell'), true);
+});
+
+
+test('chooseEnemySpawn can force authored POI mini-boss and add-pack enemies without losing local context', () => {
+  const sheriff = chooseEnemySpawn({
+    elapsedSeconds: 220,
+    seed: 4,
+    districtFamily: 'ghost_town',
+    activePoiId: 'rugpull-gulch',
+    forceEnemyId: 'claim-jumper-sheriff',
+  });
+  assert.equal(sheriff.spawnContext.source, 'forced-id');
+  assert.equal(sheriff.enemy.id, 'claim-jumper-sheriff');
+  assert.equal(sheriff.enemy.districtFamilies.includes('ghost_town'), true);
+  assert.equal(sheriff.enemy.animationStates.includes('attack-tell'), true);
+
+  const zealot = chooseEnemySpawn({
+    elapsedSeconds: 220,
+    seed: 2,
+    districtFamily: 'ghost_town',
+    activePoiId: 'rugpull-gulch',
+    forceEnemyId: 'scam-cult-zealot',
+  });
+  assert.equal(zealot.enemy.id, 'scam-cult-zealot');
+  assert.equal(zealot.enemy.poiIds.includes('rugpull-gulch'), true);
+});
+
 test('login and menu model separates guest, connected, free, paid, settings, and leaderboard states', () => {
   const guest = buildLoginMenuModel({ connected: false, selectedGameId: 'lester-blaster' });
   const connected = buildLoginMenuModel({ connected: true, selectedGameId: 'lester-blaster', wallet: '0x5555555555555555555555555555555555555555' });
@@ -887,7 +970,7 @@ test('production Lester runtime art uses cropped per-frame cells instead of draw
 
 test('level plan uses the confirmed ground-outward, vertical-upward, and high-speed-getaway campaign rhythm', () => {
   assert.equal(LESTER_BLASTER_LEVEL_PLAN.length, 3);
-  assert.equal(LESTER_BLASTER_LEVEL_PLAN[0].title, 'Level 1: The Slums');
+  assert.equal(LESTER_BLASTER_LEVEL_PLAN[0].title, 'Level 1: Crypto Wasteland');
   assert.equal(LESTER_BLASTER_LEVEL_PLAN[1].title, 'Level 2: The Tower');
   assert.equal(LESTER_BLASTER_LEVEL_PLAN[2].title, 'Level 3: The Getaway');
   assert.equal(LESTER_BLASTER_LEVEL_PLAN[0].traversalRhythm, 'ground-outward');
@@ -1560,6 +1643,20 @@ test('asset coverage report identifies which playable and enemy animation states
   assert.equal(report.enemies.trenchDegen.missingAnimatedStates.includes('attack-tell'), true);
   assert.equal(report.enemies.evilBanker.missingAnimatedStates.includes('death'), true);
   assert.equal(report.recommendations.some((item) => item.includes('Aseprite')), true);
+});
+
+test('runtime source wires authored POI visual-plan scene objects into obstacle placement for Level 1 arenas', () => {
+  const runtimeSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.equal(runtimeSource.includes('buildEncounterSceneObjects'), true);
+  assert.equal(runtimeSource.includes('buildEncounterTemplateContext'), true);
+  assert.equal(runtimeSource.includes('buildEncounterTerrainPressure'), true);
+  assert.equal(runtimeSource.includes('buildEncounterEnemyBehaviorProfile'), true);
+  assert.equal(runtimeSource.includes('bespokeEnemyVisualKitFor'), true);
+  assert.equal(runtimeSource.includes('buildEnvironmentState'), true);
+  assert.equal(runtimeSource.includes('buildCombatReadabilityProfile'), true);
+  assert.equal(runtimeSource.includes('buildAmbientZoneModel'), true);
+  assert.equal(runtimeSource.includes('activePoiEncounterCenterX'), true);
+  assert.equal(runtimeSource.includes('activePoiEncounterVisualPlan'), true);
 });
 
 test('runtime exposes tactical HUD overlay, options popup, player-led camera, and animation coverage audit in the public app', () => {

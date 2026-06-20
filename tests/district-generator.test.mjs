@@ -183,6 +183,31 @@ test('generateDistrictGrid adds multiple authored set-piece anchors to Level 1 b
   assert.ok(innerCityCell.setPieceAnchors.some((anchor) => anchor.templateId === 'crypto_innercity_barricade_crossing'), 'inner city adds a barricade crossing set piece');
 });
 
+test('generateDistrictGrid authors Level 2 belts with urban-to-luxury progression when layout requests level2-authored', () => {
+  const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175, { layout: 'level2-authored' });
+  const row = Math.floor(macroCellsY / 2);
+  const cellAt = (dx) => grid.find((cell) => cell.dx === dx && cell.dy === row);
+
+  assert.equal(cellAt(0)?.districtFamily, 'outer_boulevard');
+  assert.equal(cellAt(Math.floor(macroCellsX * 0.34))?.districtFamily, 'financial_core');
+  assert.equal(cellAt(Math.floor(macroCellsX * 0.67))?.districtFamily, 'luxury_neighborhood');
+  assert.equal(cellAt(macroCellsX - 1)?.districtFamily, 'penthouse_rim');
+
+  const outerCell = grid.find((cell) => cell.districtFamily === 'outer_boulevard' && cell.dy === row);
+  const financeCell = grid.find((cell) => cell.districtFamily === 'financial_core' && cell.dy === row);
+  const luxuryCell = grid.find((cell) => cell.districtFamily === 'luxury_neighborhood' && cell.dy === row);
+  const penthouseCell = grid.find((cell) => cell.districtFamily === 'penthouse_rim' && cell.dy === row);
+
+  assert.ok(outerCell?.templatePoolIds.includes('street_block'));
+  assert.ok(outerCell?.setPieceAnchors?.some((anchor) => anchor.templateId === 'industrial_zone'));
+  assert.ok(financeCell?.templatePoolIds.includes('downtown_district'));
+  assert.ok(financeCell?.setPieceAnchors?.some((anchor) => anchor.templateId === 'city_park'));
+  assert.ok(luxuryCell?.templatePoolIds.includes('suburban_residential'));
+  assert.ok(luxuryCell?.setPieceAnchors?.some((anchor) => anchor.templateId === 'green_park'));
+  assert.ok(penthouseCell?.templatePoolIds.includes('walled_compound'));
+  assert.ok(penthouseCell?.setPieceAnchors?.some((anchor) => anchor.id === 'penthouse-vip-exit'));
+});
+
 test('districtTemplateContextForCell exposes landmark anchor and influence metadata for authored belts', () => {
   const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175);
   const row = Math.floor(macroCellsY / 2);
@@ -225,11 +250,29 @@ test('districtTemplateContextForCell activates secondary set-piece anchors with 
   assert.ok(nearbyContext?.templatePoolIds.includes(seamAnchor.templateId));
 });
 
+test('districtTemplateContextForCell exposes local authored template preferences so Level 1 reads as designed areas', () => {
+  const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175);
+  const row = Math.floor(macroCellsY / 2);
+  const desertCell = grid.find((cell) => cell.districtFamily === 'desert_approach' && cell.dy === row);
+  const ghostCell = grid.find((cell) => cell.districtFamily === 'ghost_town' && cell.dy === row);
+
+  const desertSpine = districtTemplateContextForCell(desertCell.dx * DISTRICT_CELL + 2, desertCell.dy * DISTRICT_CELL + 2, grid, macroCellsX);
+  const desertCorner = districtTemplateContextForCell(desertCell.dx * DISTRICT_CELL, desertCell.dy * DISTRICT_CELL, grid, macroCellsX);
+  const ghostMainStreet = districtTemplateContextForCell(ghostCell.dx * DISTRICT_CELL + 2, ghostCell.dy * DISTRICT_CELL + 2, grid, macroCellsX);
+
+  assert.ok(desertSpine?.preferredTemplateIds.includes('crypto_desert_salvage_basin'));
+  assert.ok(desertSpine?.preferredTemplateIds.includes('crypto_desert_outpost_yard'));
+  assert.ok(desertCorner?.preferredTemplateIds.includes('crypto_canyon_pass'));
+  assert.ok(ghostMainStreet?.preferredTemplateIds.includes('crypto_ghost_mainstreet_front'));
+  assert.ok(ghostMainStreet?.preferredTemplateIds.includes('crypto_ghost_saloon_square'));
+});
+
 test('districtTemplateContextForCell exposes authored transition-band metadata at belt boundaries', () => {
   const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175);
   const row = Math.floor(macroCellsY / 2);
   const countryCell = grid.find((cell) => cell.districtFamily === 'country_road' && cell.dy === row && grid.find((candidate) => candidate.dx === cell.dx + 1 && candidate.dy === row)?.districtFamily === 'residential_edge');
   const residentialCell = grid.find((cell) => cell.dx === countryCell.dx + 1 && cell.dy === row);
+
   assert.equal(residentialCell?.districtFamily, 'residential_edge');
 
   assert.equal(countryCell?.transitionEdges?.east?.toDistrictFamily, 'residential_edge');
@@ -246,6 +289,7 @@ test('districtTemplateContextForCell exposes authored transition-band metadata a
   assert.ok(boundaryContext?.templatePoolIds.includes('crypto_country_rest_stop'));
   assert.ok(boundaryContext?.templatePoolIds.includes('crypto_residential_square'));
   assert.ok(boundaryContext?.templatePoolIds.includes('crypto_country_residential_checkpoint'));
+  assert.ok(boundaryContext?.preferredTemplateIds.includes('crypto_country_residential_checkpoint'));
 });
 
 test('generateRoadNetwork produces roads between connected cells', () => {
@@ -312,4 +356,64 @@ test('hashU32 produces uniform distribution', () => {
   }
   // With 1000 samples, we should see good distribution (at least 800 unique)
   assert.ok(results.size >= 800, `hashU32 produced ${results.size} unique values out of 1000`);
+});
+
+test('generateDistrictGrid authors Level 1 branch lanes and POI spurs around the main spine', () => {
+  const { grid, macroCellsY } = generateDistrictGrid(12345, 700, 175);
+  const row = Math.floor(macroCellsY / 2);
+  const northPoiRow = row - 2;
+  const southPoiRow = row + 2;
+
+  const hashrateCell = grid.find((cell) => cell.districtFamily === 'desert_approach' && cell.dy === northPoiRow);
+  const rugpullCell = grid.find((cell) => cell.districtFamily === 'ghost_town' && cell.dy === southPoiRow);
+  const hubCell = grid.find((cell) => cell.districtFamily === 'country_road' && cell.dy === row && cell.isCrossroadsHub);
+  const citySeamCell = grid.find((cell) => cell.districtFamily === 'inner_city' && cell.dy === row);
+
+  assert.ok(hashrateCell, 'north POI lane contains the hashrate camp');
+  assert.ok(rugpullCell, 'south POI lane contains Rugpull Gulch');
+  assert.ok(hubCell, 'main spine marks a crossroads hub');
+  assert.ok(citySeamCell, 'main spine reaches the city seam');
+
+  assert.equal(hashrateCell.macroRole, 'poi-spur');
+  assert.equal(hashrateCell.poiId, 'old_hashrate_camp');
+  assert.equal(rugpullCell.macroRole, 'poi-spur');
+  assert.equal(rugpullCell.poiId, 'rugpull_gulch');
+  assert.equal(hubCell.branchLane, 'center');
+  assert.equal(citySeamCell.sightlineCue, 'litecoin-city-horizon');
+});
+
+test('districtTemplateContextForCell exposes POI-specific template pools and branch metadata', () => {
+  const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175);
+  const row = Math.floor(macroCellsY / 2);
+  const southPoiRow = row + 2;
+  const rugpullCell = grid.find((cell) => cell.districtFamily === 'ghost_town' && cell.dy === southPoiRow && cell.poiId === 'rugpull_gulch');
+  assert.ok(rugpullCell, 'found Rugpull Gulch POI cell');
+
+  const poiAnchor = rugpullCell.setPieceAnchors.find((anchor) => anchor.id === 'rugpull_gulch-anchor');
+  assert.ok(poiAnchor, 'Rugpull Gulch exposes a dedicated authored anchor');
+
+  const anchorCellX = rugpullCell.dx * DISTRICT_CELL + poiAnchor.localX;
+  const anchorCellY = rugpullCell.dy * DISTRICT_CELL + poiAnchor.localY;
+  const anchorContext = districtTemplateContextForCell(anchorCellX, anchorCellY, grid, macroCellsX);
+
+  assert.equal(anchorContext?.macroRole, 'poi-spur');
+  assert.equal(anchorContext?.branchLane, 'south');
+  assert.equal(anchorContext?.poiId, 'rugpull_gulch');
+  assert.equal(anchorContext?.poiRewardCategory, 'weapon-or-shield');
+  assert.equal(anchorContext?.poiMiniBossId, 'claim-jumper-sheriff');
+  assert.equal(anchorContext?.forceTemplateId, 'crypto_rugpull_gulch');
+  assert.ok(anchorContext?.templatePoolIds.includes('crypto_rugpull_gulch'));
+  assert.ok(anchorContext?.preferredTemplateIds.includes('crypto_rugpull_gulch'));
+});
+
+test('generateRoadNetwork exposes authored route kinds for spine, hub, shoulder, and POI links', () => {
+  const grid = generateDistrictGrid(12345, 700, 175);
+  const roads = generateRoadNetwork(grid.grid, grid.macroCellsX, grid.macroCellsY, 12345);
+  const routeKinds = new Set(roads.map((road) => road.routeKind));
+
+  assert.equal(routeKinds.has('belt-spine'), true);
+  assert.equal(routeKinds.has('hub-spine') || routeKinds.has('hub-connector'), true);
+  assert.equal(routeKinds.has('shoulder-loop'), true);
+  assert.equal(routeKinds.has('poi-connector'), true);
+  assert.equal(routeKinds.has('poi-spur'), true);
 });

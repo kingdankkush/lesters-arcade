@@ -509,6 +509,81 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
+  crypto_hashrate_camp: Object.freeze({
+    archetypeTags: ['wilderness', 'industrial'],
+    id: 'crypto_hashrate_camp', biomes: ['desert', 'rocky', 'road'], groundTheme: 'sand', weight: 0.34,
+    slots: [
+      { ...A('crypto/landmark-gas-station', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'scatter', count: 2 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 2 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  crypto_rugpull_gulch: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'crypto_rugpull_gulch', biomes: ['town', 'road'], groundTheme: 'pavement', weight: 0.34,
+    slots: [
+      { ...A('crypto/ghost-saloon-front', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.72 }), place: 'pathEdge', spacing: 2, count: 1 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 3 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'pathEdge', spacing: 2, count: 2 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_dry_forest_cave: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'crypto_dry_forest_cave', biomes: ['forest', 'grass', 'rocky'], groundTheme: 'grass', weight: 0.28,
+    slots: [
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.8 }), place: 'anchor', count: 1 },
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.72 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 2 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_crossroads_trading_post: Object.freeze({
+    archetypeTags: ['suburban', 'wilderness'],
+    id: 'crypto_crossroads_trading_post', biomes: ['road', 'town', 'grass', 'desert'], groundTheme: 'sand', weight: 0.32,
+    slots: [
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+      { ...A('crypto/landmark-gas-station', 'building', { radius: 0.76 }), place: 'pathEdge', spacing: 2, count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 2 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+    ],
+  }),
+
+  crypto_oasis_lakeside: Object.freeze({
+    archetypeTags: ['park', 'wilderness'],
+    id: 'crypto_oasis_lakeside', biomes: ['water', 'sand', 'grass'], groundTheme: 'sand', weight: 0.28,
+    slots: [
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('construct/river-straight', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.72 }), place: 'scatter', count: 2 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  crypto_mesa_overlook: Object.freeze({
+    archetypeTags: ['wilderness'],
+    id: 'crypto_mesa_overlook', biomes: ['desert', 'rocky', 'grass'], groundTheme: 'sand', weight: 0.26,
+    slots: [
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.82 }), place: 'anchor', count: 1 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'pathEdge', spacing: 2, count: 2 },
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.72 }), place: 'scatter', count: 1 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
   // --- ACT I / SLUMS + FOUNDRY authored anchors -----------------------------
   // These templates keep the currently available coherent-world assets but
   // arrange them around the accepted Level 1 canon: Underchain alleys,
@@ -860,6 +935,7 @@ export function pickTemplate(seed, cellX, cellY, biome, context = {}) {
     ? 1.3 + (2.7 * (1 - (landmarkHit.distance / Math.max(1, landmarkRadius))))
     : 1;
   const transitionTemplateIds = Array.isArray(context.transitionBand?.seamTemplateIds) ? context.transitionBand.seamTemplateIds : [];
+  const preferredTemplateIds = Array.isArray(context.preferredTemplateIds) ? context.preferredTemplateIds : [];
 
   // Compute effective weight for each candidate template.
   let total = 0;
@@ -875,6 +951,7 @@ export function pickTemplate(seed, cellX, cellY, biome, context = {}) {
     // a boost that tapers with distance.
     if (matchesLandmark) w *= landmarkBoost;
     if (transitionTemplateIds.includes(t.id)) w *= 3.2;
+    if (preferredTemplateIds.includes(t.id)) w *= 4.4;
     scored.push({ template: t, weight: w });
     total += w;
   }

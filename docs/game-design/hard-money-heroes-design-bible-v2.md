@@ -21,7 +21,7 @@ Biggest risk: the repo still contains a coherent side-scroller model. Until cons
 - Parent portal: **Lester's Arcade**.
 - First cabinet / child dapp game: **Hard Money Heroes**.
 - Active genre: **isometric run-and-gun roguelike / roguelite survival**.
-- Active world: **Litecoin City After Dark**.
+- Active world: **Crypto Wasteland -> Litecoin City**.
 - Main hero: **Lester**.
 - Lilly: future unlockable alternate hero/skin inside HMH with same stats/hitbox/moveset, different art/personality.
 - Lilly's Lightning / Mempool Mayhem: roadmap-flavor future cabinets until greenlit.
@@ -31,7 +31,7 @@ Biggest risk: the repo still contains a coherent side-scroller model. Until cons
 
 ## One-paragraph pitch
 
-Hard Money Heroes is a 20-minute isometric roguelite survival shooter set in Litecoin City After Dark: a neon, rain-slicked metropolis built on the wreckage of a failed financial system. You drop in as Lester, a Litecoin commando walking into the panic, and fight escalating waves of crypto-culture villains: rug pullers, gas fiends, shill bots, MEV reapers, and financial bosses farming the chaos. Every kill feeds XP; every level-up pauses the run for a fast two-pick-with-reroll upgrade draft; every run becomes a different build. Survive to the 20-minute Mainnet Express extraction and you win, then optionally push Overtime for leaderboard score. Free play is casual and untracked; ranked play is wallet-bound, paid, verified, and never pay-to-win.
+Hard Money Heroes is a 20-minute isometric roguelite survival shooter that now begins in the Crypto Wasteland: sun-bleached outer badlands built on the wreckage of a failed financial system, with Litecoin City glowing on the horizon as the next destination. You drop in as Lester, a Litecoin commando walking into the panic, and fight escalating waves of crypto-culture villains: rug pullers, gas fiends, shill bots, MEV reapers, and financial bosses farming the chaos. Every kill feeds XP; every level-up pauses the run for a fast two-pick-with-reroll upgrade draft; every run becomes a different build. Survive to the 20-minute Mainnet Express extraction and you win, then optionally push Overtime for leaderboard score. Free play is casual and untracked; ranked play is wallet-bound, paid, verified, and never pay-to-win.
 
 ## Design pillars
 
@@ -65,8 +65,8 @@ Hard Money Heroes is a 20-minute isometric roguelite survival shooter set in Lit
 
 | Act | Window | Biome/theme pool | Boss beat | Purpose |
 | --- | --- | --- | --- | --- |
-| I — The Slums | 0:00-6:30 | Underchain District + Industrial Foundry: alleys, broken billboards, mint furnaces, conveyors. | ~3:30 Warren the Spear Rider mini-boss; ~6:30 Rug Pull Baron. | Tutorial pressure: movement, aim, first draft choices, arena ring. |
-| II — The Tower | 6:30-13:30 | Financial District + Penthouse Rain: chrome/glass, server racks, ring-light glow, rooftop edges. | ~10:00 mini-boss; ~13:30 Mr. NGMI. | Ranged pressure, verticality cues, knockback edges, target-priority fights. |
+| I — Crypto Wasteland | 0:00-6:30 | Desert approach, ghost town, dry forest, crossroads hub, oasis / mesa spurs. | ~3:30 optional POI mini-boss; ~6:30 Rug Pull Baron. | Tutorial pressure: movement, aim, branching-path reads, first draft choices, arena ring. |
+| II — Litecoin City | 6:30-13:30 | Financial District + Penthouse Rain: chrome/glass, server racks, ring-light glow, rooftop edges. | ~10:00 mini-boss; ~13:30 Mr. NGMI. | Ranged pressure, verticality cues, knockback edges, target-priority fights. |
 | III — The Getaway | 13:30-20:00 | Mainnet Express: train cars, vault cars, rooftop rain, wind knockback, rails. | ~17:00 mini-boss; ~20:00 Quantum Hacker final. | Survival wall; elites dominate; extraction tension. |
 | Win — Extraction | 20:00 | Board the train. | Win screen and ranked submit prompt. | A real ending. |
 | Overtime | 20:00+ | Same run continues. | No new content gates. | Optional high-score mode with steep multiplier/scaling. |
@@ -142,8 +142,8 @@ Biome transitions: hold the current theme pool for an act window, then use a rou
 
 | Biome | Tileset | Hazards | Signature enemies | Mood |
 | --- | --- | --- | --- | --- |
-| Underchain Slums | asphalt, alley, grate, neon puddle, curb | steam grates, scam-sign flicker, yanked/unstable platforms | Trench Degen, Paper Hands, Rug Rat, FUD Goblin, Gas Fee Wisp | magenta/cyan neon, heavy rain |
-| Industrial Foundry | foundry metal, conveyor, smelt rim | conveyor vectors, smelt pits, press gates | Gas Beast, Honeypot Turret, Rugpull Summoner elite | orange molten glow |
+| Crypto Wasteland — Ghost Towns & Roads | sand, cracked earth, dirt road, cobble main street, scrub, culvert mud | quicksand slow, campfire burn, shallow-water drag, cliff-edge knockback | Claim-Jumper, Coyote Pack, Buzzard, Rattlesnake, FUD Goblin (cave-only) | sun-bleached silver-blue frontier ruin |
+| Crypto Wasteland — Salvage Camps & Canyons | rocky ground, salvage lots, cave mouths, cliff edges, reeds, lake shore | explosive barrels, cave darkness, culvert crossings, sniper ridges | Salvage Mercenary, Wild Boar, Bandit Captain, Scam-Cult Zealot | dusty amber heat with cool oasis breaks |
 | Financial District | chrome plaza, server-rack corridors, glass | atrium drops, elevator edges, rack flanks | Evil Banker, Crypto Bro, Bot Swarm, MEV Reaper | cold blue, sterile white |
 | Penthouse Rain | rooftop tar, glass parapet | open-air knockback edges, sponsored-post bombs | Bot Swarm shields, Phishing Angler, Slippage Skater | ring-light gold, storm |
 | Mainnet Express | train car, vault car, engine | wind knockback, sparking car, pylon flicker, camera shake | MEV Reaper, Liquidation Cascade Golem, mixed elites | strobing night, speed lines |

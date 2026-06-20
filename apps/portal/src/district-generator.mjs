@@ -137,19 +137,302 @@ export const LEVEL_ONE_BELTS = Object.freeze([
   }),
 ]);
 
+export const LEVEL_TWO_BELTS = Object.freeze([
+  Object.freeze({
+    id: 'outer_boulevard',
+    familyId: 'outer_boulevard',
+    districtId: 'outer_boulevard',
+    archetype: 'city_core',
+    landmarkTemplateId: 'street_block',
+    landmarkComplementArchetype: 'industrial',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['street_block', 'industrial_zone', 'walled_compound', 'downtown_district']),
+    roadDensity: 0.74,
+    routeShape: 'tram-boulevards-with-alley-cutthroughs',
+    landmarkRole: 'boulevard-checkpoint-or-service-yard',
+    loopCount: 2,
+    coverProfile: 'parked-cars-barriers-and-service-walls',
+    roadTypeKey: 'MAIN_STREET',
+    pathOrientation: 'horizontal',
+    ratioMax: 0.249,
+  }),
+  Object.freeze({
+    id: 'financial_core',
+    familyId: 'financial_core',
+    districtId: 'financial_core',
+    archetype: 'city_core',
+    landmarkTemplateId: 'downtown_district',
+    landmarkComplementArchetype: 'city_core',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['downtown_district', 'street_block', 'city_park', 'walled_compound']),
+    roadDensity: 0.82,
+    routeShape: 'plazas-with-cross-block-lanes-and-fountain-squares',
+    landmarkRole: 'plaza-or-ticker-court',
+    loopCount: 2,
+    coverProfile: 'planters-statues-and-lobby-barriers',
+    roadTypeKey: 'HIGHWAY',
+    pathOrientation: 'vertical',
+    ratioMax: 0.549,
+  }),
+  Object.freeze({
+    id: 'luxury_neighborhood',
+    familyId: 'luxury_neighborhood',
+    districtId: 'luxury_neighborhood',
+    archetype: 'suburban',
+    landmarkTemplateId: 'city_park',
+    landmarkComplementArchetype: 'park',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['city_park', 'green_park', 'suburban_residential', 'fenced_yard', 'walled_compound']),
+    roadDensity: 0.52,
+    routeShape: 'gated-drives-with-pool-courts-and-garden-loops',
+    landmarkRole: 'garden-court-or-security-gate',
+    loopCount: 2,
+    coverProfile: 'hedges-fountains-and-gated-corners',
+    roadTypeKey: 'SIDE_STREET',
+    pathOrientation: 'vertical',
+    ratioMax: 0.799,
+  }),
+  Object.freeze({
+    id: 'penthouse_rim',
+    familyId: 'penthouse_rim',
+    districtId: 'penthouse_rim',
+    archetype: 'industrial',
+    landmarkTemplateId: 'walled_compound',
+    landmarkComplementArchetype: 'city_core',
+    landmarkInfluenceRadius: 2,
+    templatePoolIds: Object.freeze(['walled_compound', 'downtown_district', 'street_block', 'industrial_zone']),
+    roadDensity: 0.68,
+    routeShape: 'roofline-corridors-with-vip-exit-lanes',
+    landmarkRole: 'vip-exit-or-skybridge-gate',
+    loopCount: 2,
+    coverProfile: 'tight-checkpoints-and-rooftop-service-covers',
+    roadTypeKey: 'MAIN_STREET',
+    pathOrientation: 'horizontal',
+    ratioMax: 1,
+  }),
+]);
+
+const LEVEL_ONE_POI_BLUEPRINTS = Object.freeze({
+  old_hashrate_camp: Object.freeze({
+    id: 'old_hashrate_camp',
+    role: 'mining-camp-salvage-yard',
+    primaryTemplateId: 'crypto_hashrate_camp',
+    templatePoolIds: Object.freeze(['crypto_hashrate_camp', 'crypto_desert_salvage_basin', 'crypto_desert_outpost_yard', 'crypto_canyon_pass']),
+    complementArchetype: 'industrial',
+    influenceRadius: 2,
+    rewardCategory: 'drone-or-orbital',
+    miniBossId: 'salvage-mercenary',
+    sightlineCue: 'salvage flare + silver-blue dust plume',
+  }),
+  rugpull_gulch: Object.freeze({
+    id: 'rugpull_gulch',
+    role: 'ghost-town-vault-square',
+    primaryTemplateId: 'crypto_rugpull_gulch',
+    templatePoolIds: Object.freeze(['crypto_rugpull_gulch', 'crypto_ghost_saloon_square', 'crypto_ghost_mainstreet_front', 'crypto_ghost_false_front']),
+    complementArchetype: 'city_core',
+    influenceRadius: 2,
+    rewardCategory: 'weapon-or-shield',
+    miniBossId: 'claim-jumper-sheriff',
+    sightlineCue: 'water tower + vault ruin',
+  }),
+  dry_forest_cave: Object.freeze({
+    id: 'dry_forest_cave',
+    role: 'forest-cave-ambush-pocket',
+    primaryTemplateId: 'crypto_dry_forest_cave',
+    templatePoolIds: Object.freeze(['crypto_dry_forest_cave', 'crypto_forest_greenbelt', 'tree_grove', 'river_crossing']),
+    complementArchetype: 'wilderness',
+    influenceRadius: 2,
+    rewardCategory: 'xp-luck-or-summon',
+    miniBossId: 'cave-warren-alpha',
+    sightlineCue: 'dark cave mouth + pine wall',
+  }),
+  crossroads_trading_post: Object.freeze({
+    id: 'crossroads_trading_post',
+    role: 'branching-trading-post',
+    primaryTemplateId: 'crypto_crossroads_trading_post',
+    templatePoolIds: Object.freeze(['crypto_crossroads_trading_post', 'crypto_country_rest_stop', 'crypto_country_bus_turnout', 'crypto_country_pull_off']),
+    complementArchetype: 'suburban',
+    influenceRadius: 2,
+    rewardCategory: 'reroll-economy',
+    miniBossId: 'bandit-captain',
+    sightlineCue: 'lantern line + signpost hub',
+  }),
+  oasis_lakeside: Object.freeze({
+    id: 'oasis_lakeside',
+    role: 'lake-shore-rest-beat',
+    primaryTemplateId: 'crypto_oasis_lakeside',
+    templatePoolIds: Object.freeze(['crypto_oasis_lakeside', 'river_crossing', 'beach_boardwalk', 'crypto_residential_greenbelt_pocket']),
+    complementArchetype: 'park',
+    influenceRadius: 2,
+    rewardCategory: 'regen-health',
+    miniBossId: 'sandbar-apex',
+    sightlineCue: 'water glint + reed bank',
+  }),
+  mesa_overlook: Object.freeze({
+    id: 'mesa_overlook',
+    role: 'ridge-sniper-overlook',
+    primaryTemplateId: 'crypto_mesa_overlook',
+    templatePoolIds: Object.freeze(['crypto_mesa_overlook', 'crypto_canyon_pass', 'crypto_canyon_gate', 'crypto_residential_greenbelt_pocket']),
+    complementArchetype: 'wilderness',
+    influenceRadius: 2,
+    rewardCategory: 'range-pierce',
+    miniBossId: 'ridge-raider',
+    sightlineCue: 'ridge glint + cliff silhouette',
+  }),
+});
+
+function levelOneLaneOffset(dy, macroCellsY) {
+  return dy - Math.floor(macroCellsY / 2);
+}
+
+function levelOnePoiIdForLane(offset, familyId) {
+  if (offset === -2) {
+    if (familyId === 'desert_approach') return 'old_hashrate_camp';
+    if (familyId === 'country_road') return 'dry_forest_cave';
+    if (familyId === 'residential_edge') return 'mesa_overlook';
+  }
+  if (offset === 2) {
+    if (familyId === 'ghost_town') return 'rugpull_gulch';
+    if (familyId === 'country_road') return 'crossroads_trading_post';
+    if (familyId === 'residential_edge') return 'oasis_lakeside';
+  }
+  return null;
+}
+
+function levelOnePoiBlueprint(poiId) {
+  return poiId ? LEVEL_ONE_POI_BLUEPRINTS[poiId] ?? null : null;
+}
+
+function levelOnePoiAnchorCell(laneOffset, dx) {
+  return {
+    localX: dx % 2 === 0 ? 2 : 3,
+    localY: laneOffset < 0 ? 1 : 3,
+  };
+}
+
+function levelOnePoiSetPieceAnchors(flowProfile, dx) {
+  const blueprint = flowProfile?.poiBlueprint;
+  if (!blueprint) return [];
+  const anchor = levelOnePoiAnchorCell(flowProfile.laneOffset, dx);
+  return [{
+    id: `${blueprint.id}-anchor`,
+    role: blueprint.role,
+    templateId: blueprint.primaryTemplateId,
+    localX: anchor.localX,
+    localY: anchor.localY,
+    influenceRadius: blueprint.influenceRadius,
+    complementArchetype: blueprint.complementArchetype,
+    templatePoolIds: mergeTemplatePools([blueprint.primaryTemplateId], blueprint.templatePoolIds),
+  }];
+}
+
+function buildLevelOneFlowProfile(dx, dy, macroCellsX, macroCellsY, belt) {
+  const laneOffset = levelOneLaneOffset(dy, macroCellsY);
+  const branchLane = laneOffset < 0 ? 'north' : laneOffset > 0 ? 'south' : 'center';
+  const poiId = belt ? levelOnePoiIdForLane(laneOffset, belt.familyId) : null;
+  const poiBlueprint = levelOnePoiBlueprint(poiId);
+  const poiApproachId = belt && Math.abs(laneOffset) === 1 ? levelOnePoiIdForLane(laneOffset < 0 ? -2 : 2, belt.familyId) : null;
+  const ratio = macroCellsX <= 1 ? 1 : dx / (macroCellsX - 1);
+  const isCrossroadsHub = belt?.familyId === 'country_road' && laneOffset === 0 && ratio >= 0.42 && ratio <= 0.58;
+  const isCitySeam = belt?.familyId === 'inner_city' && laneOffset === 0;
+  const restBeat = belt?.familyId === 'country_road' && Math.abs(laneOffset) === 1;
+
+  let macroRole = 'outer-wilds';
+  if (laneOffset === 0) macroRole = isCitySeam ? 'city-seam' : (isCrossroadsHub ? 'hub-spine' : 'main-spine');
+  else if (Math.abs(laneOffset) === 1 && poiApproachId) macroRole = 'shoulder-loop';
+  else if (Math.abs(laneOffset) === 2 && poiId) macroRole = 'poi-spur';
+
+  return {
+    laneOffset,
+    branchLane,
+    macroRole,
+    poiId,
+    poiApproachId,
+    poiBlueprint,
+    poiTemplatePoolIds: poiBlueprint?.templatePoolIds ?? [],
+    poiRewardCategory: poiBlueprint?.rewardCategory ?? null,
+    poiMiniBossId: poiBlueprint?.miniBossId ?? null,
+    sightlineCue: poiBlueprint?.sightlineCue ?? (isCitySeam ? 'litecoin-city-horizon' : (belt?.familyId === 'ghost_town' ? 'water-tower-silhouette' : null)),
+    waterFeature: poiId === 'oasis_lakeside' ? 'lake-shoreline' : (belt?.familyId === 'country_road' ? 'culvert-drainage' : null),
+    restBeat,
+    isCrossroadsHub,
+    isCitySeam,
+  };
+}
+
+function buildAuthoredMacroConnection(layout, fromCell, toCell, direction, targetIndex) {
+  if (!fromCell || !toCell) return null;
+  if (layout !== 'level1-authored') {
+    return {
+      target: targetIndex,
+      dir: direction,
+      routeKind: direction === 'east' ? 'belt-spine' : 'cross-belt-link',
+    };
+  }
+
+  const fromRole = fromCell.macroRole;
+  const toRole = toCell.macroRole;
+  const fromLane = fromCell.laneOffset;
+  const toLane = toCell.laneOffset;
+
+  if (direction === 'east') {
+    if (fromLane !== toLane) return null;
+    const spineRoles = new Set(['main-spine', 'hub-spine', 'city-seam']);
+    if (spineRoles.has(fromRole) && spineRoles.has(toRole)) {
+      return { target: targetIndex, dir: direction, routeKind: fromCell.isCrossroadsHub || toCell.isCrossroadsHub ? 'hub-spine' : 'belt-spine' };
+    }
+    if (fromRole === 'shoulder-loop' && toRole === 'shoulder-loop') {
+      return { target: targetIndex, dir: direction, routeKind: 'shoulder-loop' };
+    }
+    if (fromRole === 'poi-spur' && toRole === 'poi-spur' && fromCell.poiId && fromCell.poiId === toCell.poiId) {
+      return { target: targetIndex, dir: direction, routeKind: 'poi-spur' };
+    }
+    return null;
+  }
+
+  if (direction === 'south') {
+    if (Math.abs((fromLane ?? 99) - (toLane ?? 99)) !== 1) return null;
+    const connectorRoles = new Set(['main-spine', 'hub-spine', 'city-seam', 'shoulder-loop']);
+    if (connectorRoles.has(fromRole) && connectorRoles.has(toRole)) {
+      return {
+        target: targetIndex,
+        dir: direction,
+        routeKind: fromCell.isCrossroadsHub || toCell.isCrossroadsHub ? 'hub-connector' : 'cross-belt-link',
+      };
+    }
+    const fromPoiConnector = Boolean(fromCell.poiApproachId && toCell.poiId && fromCell.poiApproachId === toCell.poiId);
+    const toPoiConnector = Boolean(toCell.poiApproachId && fromCell.poiId && toCell.poiApproachId === fromCell.poiId);
+    if (fromPoiConnector || toPoiConnector) {
+      return { target: targetIndex, dir: direction, routeKind: 'poi-connector' };
+    }
+  }
+
+  return null;
+}
+
 function roadTypeFromKey(key) {
   return ROAD_TYPES[key] ?? ROAD_TYPES.SIDE_STREET;
 }
 
-function levelOneBeltForMacroCell(dx, macroCellsX) {
+function beltByMacroRatio(belts, dx, macroCellsX) {
   const ratio = macroCellsX <= 1 ? 1 : dx / (macroCellsX - 1);
-  return LEVEL_ONE_BELTS.find((belt) => ratio <= belt.ratioMax) ?? LEVEL_ONE_BELTS[LEVEL_ONE_BELTS.length - 1];
+  return belts.find((belt) => ratio <= belt.ratioMax) ?? belts[belts.length - 1];
+}
+
+function authoredBeltForMacroCell(layout, dx, macroCellsX) {
+  if (layout === 'level2-authored') return beltByMacroRatio(LEVEL_TWO_BELTS, dx, macroCellsX);
+  if (layout === 'level1-authored') return beltByMacroRatio(LEVEL_ONE_BELTS, dx, macroCellsX);
+  return null;
 }
 
 function beltPathOrientation(belt, dx, dy) {
   if (belt.familyId === 'country_road') return (dy % 2 === 0) ? 'horizontal' : 'vertical';
   if (belt.familyId === 'residential_edge') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
   if (belt.familyId === 'inner_city') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
+  if (belt.familyId === 'outer_boulevard') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
+  if (belt.familyId === 'financial_core') return ((dx + dy) % 2 === 0) ? 'vertical' : 'horizontal';
+  if (belt.familyId === 'luxury_neighborhood') return ((dx + dy) % 2 === 0) ? 'vertical' : 'horizontal';
+  if (belt.familyId === 'penthouse_rim') return ((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical';
   return belt.pathOrientation;
 }
 
@@ -159,6 +442,10 @@ function beltLandmarkAnchorCell(belt, dx, dy) {
   if (belt.familyId === 'country_road') return { localX: 2, localY: dy % 2 === 0 ? 1 : 3 };
   if (belt.familyId === 'residential_edge') return { localX: (dx + dy) % 2 === 0 ? 1 : 3, localY: 2 };
   if (belt.familyId === 'inner_city') return { localX: 2, localY: (dx % 2 === 0) ? 1 : 3 };
+  if (belt.familyId === 'outer_boulevard') return { localX: 2, localY: dy % 2 === 0 ? 1 : 3 };
+  if (belt.familyId === 'financial_core') return { localX: 2, localY: 2 };
+  if (belt.familyId === 'luxury_neighborhood') return { localX: (dx + dy) % 2 === 0 ? 3 : 1, localY: 2 };
+  if (belt.familyId === 'penthouse_rim') return { localX: 2, localY: (dx % 2 === 0) ? 1 : 3 };
   return { localX: 2, localY: 2 };
 }
 
@@ -390,6 +677,182 @@ function beltSetPieceAnchors(belt, dx, dy) {
       },
     ];
   }
+  if (belt.familyId === 'outer_boulevard') {
+    return [
+      {
+        id: 'outer-boulevard-spine',
+        role: belt.landmarkRole,
+        templateId: 'street_block',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['street_block', 'industrial_zone', 'walled_compound', 'downtown_district']),
+      },
+      {
+        id: 'outer-service-yard',
+        role: 'service-yard-or-traffic-jam',
+        templateId: 'industrial_zone',
+        localX: dx % 2 === 0 ? 4 : 0,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['industrial_zone', 'street_block', 'walled_compound']),
+      },
+      {
+        id: 'outer-hard-corner',
+        role: 'underpass-corner-or-bus-stop-pocket',
+        templateId: 'walled_compound',
+        localX: 2,
+        localY: dy % 2 === 0 ? 4 : 0,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['walled_compound', 'street_block', 'industrial_zone']),
+      },
+      {
+        id: 'outer-plaza-cut',
+        role: 'crosswalk-pocket-or-side-plaza',
+        templateId: 'downtown_district',
+        localX: dx % 2 === 0 ? 1 : 3,
+        localY: dy % 2 === 0 ? 1 : 3,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['downtown_district', 'street_block', 'industrial_zone']),
+      },
+    ];
+  }
+  if (belt.familyId === 'financial_core') {
+    return [
+      {
+        id: 'financial-core-plaza',
+        role: belt.landmarkRole,
+        templateId: 'downtown_district',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['downtown_district', 'street_block', 'city_park', 'walled_compound']),
+      },
+      {
+        id: 'financial-fountain-court',
+        role: 'fountain-court-or-hedge-maze',
+        templateId: 'city_park',
+        localX: dx % 2 === 0 ? 1 : 3,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'park',
+        templatePoolIds: mergeTemplatePools(['city_park', 'downtown_district', 'street_block']),
+      },
+      {
+        id: 'financial-lobby-choke',
+        role: 'lobby-choke-or-security-court',
+        templateId: 'walled_compound',
+        localX: 2,
+        localY: dx % 2 === 0 ? 4 : 0,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['walled_compound', 'downtown_district', 'street_block']),
+      },
+      {
+        id: 'financial-side-block',
+        role: 'trading-floor-side-block',
+        templateId: 'street_block',
+        localX: dx % 2 === 0 ? 4 : 0,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['street_block', 'downtown_district', 'city_park']),
+      },
+    ];
+  }
+  if (belt.familyId === 'luxury_neighborhood') {
+    return [
+      {
+        id: 'luxury-garden-core',
+        role: belt.landmarkRole,
+        templateId: 'city_park',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'park',
+        templatePoolIds: mergeTemplatePools(['city_park', 'green_park', 'suburban_residential', 'fenced_yard']),
+      },
+      {
+        id: 'luxury-gated-drive',
+        role: 'gated-drive-or-security-booth',
+        templateId: 'fenced_yard',
+        localX: 2,
+        localY: dy % 2 === 0 ? 4 : 0,
+        influenceRadius: 1,
+        complementArchetype: 'suburban',
+        templatePoolIds: mergeTemplatePools(['fenced_yard', 'suburban_residential', 'green_park']),
+      },
+      {
+        id: 'luxury-pool-court',
+        role: 'pool-court-or-sculpture-lawn',
+        templateId: 'green_park',
+        localX: dx % 2 === 0 ? 4 : 0,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'park',
+        templatePoolIds: mergeTemplatePools(['green_park', 'city_park', 'suburban_residential']),
+      },
+      {
+        id: 'luxury-villa-block',
+        role: 'villa-block-or-garden-lane',
+        templateId: 'suburban_residential',
+        localX: dx % 2 === 0 ? 1 : 3,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'suburban',
+        templatePoolIds: mergeTemplatePools(['suburban_residential', 'fenced_yard', 'green_park']),
+      },
+    ];
+  }
+  if (belt.familyId === 'penthouse_rim') {
+    return [
+      {
+        id: 'penthouse-vip-exit',
+        role: belt.landmarkRole,
+        templateId: 'walled_compound',
+        localX: primaryAnchor.localX,
+        localY: primaryAnchor.localY,
+        influenceRadius: 2,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['walled_compound', 'downtown_district', 'street_block', 'industrial_zone']),
+      },
+      {
+        id: 'penthouse-skybridge-gate',
+        role: 'skybridge-gate-or-rooftop-barrier',
+        templateId: 'downtown_district',
+        localX: dx % 2 === 0 ? 1 : 3,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['downtown_district', 'walled_compound', 'street_block']),
+      },
+      {
+        id: 'penthouse-service-lift',
+        role: 'service-lift-or-rooftop-yard',
+        templateId: 'industrial_zone',
+        localX: 2,
+        localY: dx % 2 === 0 ? 4 : 0,
+        influenceRadius: 1,
+        complementArchetype: 'industrial',
+        templatePoolIds: mergeTemplatePools(['industrial_zone', 'walled_compound', 'street_block']),
+      },
+      {
+        id: 'penthouse-lane-pocket',
+        role: 'vip-lane-pocket-or-helipad-approach',
+        templateId: 'street_block',
+        localX: dx % 2 === 0 ? 4 : 0,
+        localY: 2,
+        influenceRadius: 1,
+        complementArchetype: 'city_core',
+        templatePoolIds: mergeTemplatePools(['street_block', 'downtown_district', 'walled_compound']),
+      },
+    ];
+  }
   return [{
     id: `${belt.familyId}-primary-anchor`,
     role: belt.landmarkRole,
@@ -461,6 +924,76 @@ function transitionBandAtLocalCell(districtCell, localSceneCellX, localSceneCell
   return null;
 }
 
+function seamTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY) {
+  const edges = districtCell.transitionEdges ?? {};
+  const last = DISTRICT_CELL - 1;
+  return mergeTemplatePools(
+    localSceneCellX === 0 ? edges.west?.seamTemplateIds ?? [] : [],
+    localSceneCellX === last ? edges.east?.seamTemplateIds ?? [] : [],
+    localSceneCellY === 0 ? edges.north?.seamTemplateIds ?? [] : [],
+    localSceneCellY === last ? edges.south?.seamTemplateIds ?? [] : [],
+  );
+}
+
+function preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY) {
+  const center = Math.floor(DISTRICT_CELL / 2);
+  const last = DISTRICT_CELL - 1;
+  const onCenterRow = localSceneCellY === center;
+  const onCenterCol = localSceneCellX === center;
+  const onCross = onCenterRow || onCenterCol;
+  const onOuterRing = localSceneCellX === 0 || localSceneCellX === last || localSceneCellY === 0 || localSceneCellY === last;
+  const corner = (localSceneCellX === 0 || localSceneCellX === last) && (localSceneCellY === 0 || localSceneCellY === last);
+  const orientedSpine = districtCell.pathOrientation === 'vertical' ? onCenterCol : onCenterRow;
+  const seamTemplateIds = seamTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY);
+  const poiPreferenceIds = districtCell.macroRole === 'poi-spur' ? (districtCell.poiTemplatePoolIds ?? []) : [];
+
+  let localPreferenceIds = [];
+  switch (districtCell.districtFamily) {
+    case 'desert_approach':
+      localPreferenceIds = corner
+        ? ['crypto_canyon_pass', 'crypto_canyon_gate']
+        : orientedSpine
+          ? ['crypto_desert_outpost_yard', 'crypto_desert_salvage_basin', 'crypto_desert_outpost']
+          : onOuterRing
+            ? ['crypto_canyon_pass', 'crypto_desert_ghost_checkpoint', 'crypto_desert_outpost_yard']
+            : ['crypto_desert_salvage_basin', 'crypto_desert_outpost_yard', 'crypto_desert_outpost'];
+      break;
+    case 'ghost_town':
+      localPreferenceIds = onCenterRow
+        ? ['crypto_ghost_mainstreet_front', 'crypto_ghost_saloon_square', 'crypto_ghost_false_front']
+        : onOuterRing
+          ? ['crypto_ghost_town_block', 'street_block', 'downtown_district']
+          : ['crypto_ghost_saloon_square', 'crypto_ghost_town_block', 'crypto_ghost_false_front'];
+      break;
+    case 'country_road':
+      localPreferenceIds = orientedSpine
+        ? ['crypto_country_rest_stop', 'crypto_country_bus_turnout', 'crypto_country_pull_off']
+        : onOuterRing
+          ? ['crypto_country_pull_off', 'fenced_yard', 'street_block']
+          : ['crypto_country_bus_turnout', 'crypto_country_pull_off', 'street_block'];
+      break;
+    case 'residential_edge':
+      localPreferenceIds = onCross
+        ? ['crypto_residential_square', 'crypto_residential_greenbelt_pocket', 'crypto_residential_culdesac']
+        : onOuterRing
+          ? ['suburban_residential', 'green_park', 'fenced_yard']
+          : ['crypto_residential_greenbelt_pocket', 'crypto_residential_culdesac', 'suburban_residential'];
+      break;
+    case 'inner_city':
+      localPreferenceIds = onCross
+        ? ['crypto_innercity_industrial_gate', 'crypto_innercity_checkpoint_block', 'crypto_innercity_barricade_crossing']
+        : corner
+          ? ['walled_compound', 'industrial_zone', 'street_block']
+          : ['street_block', 'industrial_zone', 'downtown_district'];
+      break;
+    default:
+      localPreferenceIds = [];
+      break;
+  }
+
+  return mergeTemplatePools(poiPreferenceIds, localPreferenceIds, seamTemplateIds);
+}
+
 function buildAuthoredDistrictProfile(belt, biome) {
   return {
     id: belt.districtId,
@@ -521,11 +1054,22 @@ export function districtTemplateContextForCell(cellX, cellY, districtGrid, macro
     : null;
   const transitionBand = transitionBandAtLocalCell(districtCell, localSceneCellX, localSceneCellY);
   const setPieceTemplatePoolIds = activeSetPiece?.templatePoolIds ?? districtCell.templatePoolIds;
+  const preferredTemplateIds = preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY);
   return {
     districtFamily: districtCell.districtFamily,
     templatePoolIds: transitionBand ? mergeTemplatePools(setPieceTemplatePoolIds, transitionBand.templatePoolIds) : setPieceTemplatePoolIds,
+    preferredTemplateIds,
     archetype: districtCell.archetype,
     pathOrientation: districtCell.pathOrientation,
+    branchLane: districtCell.branchLane,
+    macroRole: districtCell.macroRole,
+    poiId: districtCell.poiId,
+    poiApproachId: districtCell.poiApproachId,
+    poiRewardCategory: districtCell.poiRewardCategory,
+    poiMiniBossId: districtCell.poiMiniBossId,
+    sightlineCue: districtCell.sightlineCue,
+    waterFeature: districtCell.waterFeature,
+    restBeat: districtCell.restBeat,
     landmarkRole: districtCell.landmarkRole,
     landmarkTemplateId: districtCell.landmarkTemplateId,
     forceTemplateId: activeSetPiece?.distance === 0 ? activeSetPiece.templateId : null,
@@ -566,11 +1110,28 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}
       const centerX = dx * DISTRICT_CELL * SCENE_CELL + Math.floor(DISTRICT_CELL * SCENE_CELL / 2);
       const centerY = dy * DISTRICT_CELL * SCENE_CELL + Math.floor(DISTRICT_CELL * SCENE_CELL / 2);
       const biome = biomeAtImpl(seed, centerX, centerY);
-      const belt = layout === 'level1-authored' ? levelOneBeltForMacroCell(dx, macroCellsX) : null;
+      const belt = authoredBeltForMacroCell(layout, dx, macroCellsX);
       const chosen = belt ? buildAuthoredDistrictProfile(belt, biome) : chooseDistrictTypeForBiome(seed, dx, dy, biome);
-      const setPieceAnchors = belt ? beltSetPieceAnchors(belt, dx, dy) : [];
+      const flowProfile = belt ? buildLevelOneFlowProfile(dx, dy, macroCellsX, macroCellsY, belt) : {
+        laneOffset: 0,
+        branchLane: 'center',
+        macroRole: 'generic-grid',
+        poiId: null,
+        poiApproachId: null,
+        poiBlueprint: null,
+        poiTemplatePoolIds: [],
+        poiRewardCategory: null,
+        poiMiniBossId: null,
+        sightlineCue: null,
+        waterFeature: null,
+        restBeat: false,
+        isCrossroadsHub: false,
+        isCitySeam: false,
+      };
+      const poiAnchors = layout === 'level1-authored' ? levelOnePoiSetPieceAnchors(flowProfile, dx) : [];
+      const setPieceAnchors = [...poiAnchors, ...(belt ? beltSetPieceAnchors(belt, dx, dy) : [])];
       const primarySetPiece = setPieceAnchors[0] ?? null;
-      
+
       grid.push({
         dx, dy,
         centerX, centerY,
@@ -589,9 +1150,22 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}
         setPieceAnchors,
         loopCount: belt?.loopCount ?? 1,
         coverProfile: belt?.coverProfile ?? 'mixed',
-        templatePoolIds: belt?.templatePoolIds ?? chosen.templates,
+        templatePoolIds: mergeTemplatePools(belt?.templatePoolIds ?? chosen.templates, flowProfile.poiTemplatePoolIds ?? []),
         archetype: belt?.archetype ?? chosen.id,
         pathOrientation: belt ? beltPathOrientation(belt, dx, dy) : (((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical'),
+        laneOffset: flowProfile.laneOffset,
+        branchLane: flowProfile.branchLane,
+        macroRole: flowProfile.macroRole,
+        poiId: flowProfile.poiId,
+        poiApproachId: flowProfile.poiApproachId,
+        poiTemplatePoolIds: flowProfile.poiTemplatePoolIds,
+        poiRewardCategory: flowProfile.poiRewardCategory,
+        poiMiniBossId: flowProfile.poiMiniBossId,
+        sightlineCue: flowProfile.sightlineCue,
+        waterFeature: flowProfile.waterFeature,
+        restBeat: flowProfile.restBeat,
+        isCrossroadsHub: flowProfile.isCrossroadsHub,
+        isCitySeam: flowProfile.isCitySeam,
         transitionEdges: {},
         roads: [],
         connections: [],
@@ -599,12 +1173,16 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}
     }
   }
   
-  // Build road connections between adjacent macro-cells
+  // Build authored road connections between adjacent macro-cells.
   for (let dy = 0; dy < macroCellsY; dy++) {
     for (let dx = 0; dx < macroCellsX; dx++) {
       const idx = dy * macroCellsX + dx;
-      if (dx < macroCellsX - 1) grid[idx].connections.push({ target: idx + 1, dir: 'east' });
-      if (dy < macroCellsY - 1) grid[idx].connections.push({ target: idx + macroCellsX, dir: 'south' });
+      const eastTarget = dx < macroCellsX - 1 ? idx + 1 : null;
+      const southTarget = dy < macroCellsY - 1 ? idx + macroCellsX : null;
+      const eastConn = eastTarget != null ? buildAuthoredMacroConnection(layout, grid[idx], grid[eastTarget], 'east', eastTarget) : null;
+      const southConn = southTarget != null ? buildAuthoredMacroConnection(layout, grid[idx], grid[southTarget], 'south', southTarget) : null;
+      if (eastConn) grid[idx].connections.push(eastConn);
+      if (southConn) grid[idx].connections.push(southConn);
     }
   }
 
@@ -650,7 +1228,7 @@ export function generateRoadNetwork(districtGrid, macroCellsX, macroCellsY, seed
         districtB: target.district.id,
         districtFamilyA: cell.districtFamily,
         districtFamilyB: target.districtFamily,
-        routeKind: conn.dir === 'east' ? 'belt-spine' : 'cross-belt-link',
+        routeKind: conn.routeKind ?? (conn.dir === 'east' ? 'belt-spine' : 'cross-belt-link'),
       });
     }
   }

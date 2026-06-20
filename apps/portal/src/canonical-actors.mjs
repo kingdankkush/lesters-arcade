@@ -208,6 +208,32 @@ function withDerivedCombatReadability(manifest) {
   });
 }
 
+
+export function canonicalActorIdForRuntimeEntity(entity = {}) {
+  const hay = `${entity?.id ?? ''} ${entity?.title ?? ''} ${entity?.enemyKey ?? ''} ${entity?.class ?? ''}`.toLowerCase();
+  if (hay.includes('cave-warren') || hay.includes('warren-alpha') || hay.includes('warren') || hay.includes('spear')) return 'warren-boss';
+  if (hay.includes('claim-jumper') || hay.includes('bandit-captain') || hay.includes('salvage-mercenary') || hay.includes('ridge-raider')) return 'evil-banker';
+  if (hay.includes('scorpion') || hay.includes('rattlesnake') || hay.includes('sandbar-apex')) return 'gas-beast';
+  if (hay.includes('coyote') || hay.includes('wild-boar') || hay.includes('fud-goblin-cave')) return 'trench-degen';
+  if (hay.includes('scam-cult') || hay.includes('zealot') || hay.includes('trench') || hay.includes('degen') || hay.includes('fud') || hay.includes('paper') || hay.includes('rug')) return 'trench-degen';
+  if (hay.includes('bank')) return 'evil-banker';
+  if (hay.includes('crypto') || hay.includes('bro') || hay.includes('kol')) return 'crypto-bro';
+  if (hay.includes('gas') && hay.includes('beast')) return 'gas-beast';
+  if (hay.includes('evil') && hay.includes('boss')) return 'evil-boss';
+  return null;
+}
+
+export function manifestEnemyArtKeyForRuntimeEntity(entity = {}) {
+  const canonical = canonicalActorIdForRuntimeEntity(entity);
+  if (canonical === 'trench-degen') return 'trenchDegen';
+  if (canonical === 'evil-banker') return 'evilBanker';
+  if (canonical === 'crypto-bro') return 'cryptoBro';
+  if (canonical === 'gas-beast') return 'gasBeast';
+  if (canonical === 'warren-boss') return 'warrenSpearRider';
+  if (canonical === 'evil-boss') return 'bitWhale';
+  return null;
+}
+
 export const CANONICAL_ACTOR_MANIFESTS = Object.freeze({
   lester: HMH_CANON_LESTER,
   lilly: HMH_CANON_LILLY,

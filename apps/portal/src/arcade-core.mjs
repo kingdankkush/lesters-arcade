@@ -23,6 +23,7 @@ import {
   hasSpecial,
   validateWeaponUpgrades,
 } from './weapon-upgrades.mjs';
+import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, syncConfiguredCharacterUnlocks, resolveSelectedCharacterId } from './hmh-character-config.mjs';
 
 export {
   LEADERBOARD_CADENCES,
@@ -97,10 +98,10 @@ export const HARD_MONEY_HEROES_CANON = Object.freeze({
   levels: Object.freeze([
     Object.freeze({
       id: 'the-slums',
-      title: 'Level 1 — The Slums',
-      route: 'Underchain District → Industrial Foundry',
+      title: 'Level 1 — Crypto Wasteland',
+      route: 'Desert Approach → Ghost Town → Crossroads → City Threshold',
       boss: 'The Rug Pull Baron',
-      visualShift: 'claustrophobic neon alleys and rugged-wallet kiosks open into amber steel counterfeit-mint furnaces and smelt-pits',
+      visualShift: 'sun-bleached roads, ghost-town ruins, dry forests, and oasis breaks gradually frame Litecoin City on the horizon',
       enemyTeaching: Object.freeze(['FUD Goblins', 'Paper Hands', 'Rug Rats', 'Honeypot Turrets', 'Gas Fee Wisps', 'Slippage Skaters']),
     }),
     Object.freeze({
@@ -512,7 +513,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   }),
   levelIntro: Object.freeze({
     levelId: 'level-1-underchain',
-    title: 'Level 1 // Underchain District',
+    title: 'Level 1 // Crypto Wasteland',
     durationSeconds: 8,
     hasBeginButton: true,
     controlsSummary: 'WASD/arrows move · Mouse aims (gun auto-fires) · Left click fire · Right click/F grenade',
@@ -1125,8 +1126,8 @@ const ACHIEVEMENT_DEFINITIONS = Object.freeze([
 
   defineAchievement({ key: 'BOSS_BREAKER', id: 'boss-breaker', title: 'Boss Breaker', description: 'Defeated any rotating Hard Money Heroes boss during an official run.', tier: 'gold', difficulty: 'hard', unlockType: 'boss', icon: '⚠', requirement: { bossId: 'any' } }),
   defineAchievement({ key: 'NO_DAMAGE_BOSS', id: 'no-damage-boss', title: 'Untouchable Boss Clear', description: 'Beat a boss without taking damage during the boss phase.', tier: 'gold', difficulty: 'hard', unlockType: 'skill', icon: '◆', requirement: { bossId: 'any', noDamage: true } }),
-  defineAchievement({ key: 'SLUMS_CLEAR', id: 'slums-clear', title: 'Slums Clear', description: 'Cleared the Underchain District stage set.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅰ', requirement: { stageIndexReached: 4 } }),
-  defineAchievement({ key: 'FOUNDRY_CLEAR', id: 'foundry-clear', title: 'Foundry Clear', description: 'Cleared the counterfeit-mint foundry stage set.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅱ', requirement: { stageIndexReached: 8 } }),
+  defineAchievement({ key: 'SLUMS_CLEAR', id: 'slums-clear', title: 'Wasteland Clear', description: 'Cleared the opening Crypto Wasteland district set.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅰ', requirement: { stageIndexReached: 4 } }),
+  defineAchievement({ key: 'FOUNDRY_CLEAR', id: 'foundry-clear', title: 'POI Clear', description: 'Cleared a Level 1 authored POI route without breaking the run.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅱ', requirement: { stageIndexReached: 8 } }),
   defineAchievement({ key: 'GETAWAY_CLEAR', id: 'getaway-clear', title: 'Getaway Clear', description: 'Cleared the Level 1 finale route.', tier: 'gold', difficulty: 'hard', unlockType: 'level-clear', icon: 'Ⅲ', requirement: { stageIndexReached: 13, bossId: 'any' } }),
   defineAchievement({ key: 'BIG_COMBO', id: 'big-combo', title: 'Big Combo', description: 'Reached a 15-hit combo.', tier: 'gold', difficulty: 'hard', unlockType: 'combo', icon: '×15', requirement: { maxCombo: 15 } }),
   defineAchievement({ key: 'DAMAGE_CHAIN', id: 'damage-chain', title: 'Damage Chain', description: 'Built a 250-damage chain before it broke.', tier: 'gold', difficulty: 'hard', unlockType: 'combo', icon: '⚡', requirement: { maxDamageCombo: 250 } }),
@@ -1384,7 +1385,7 @@ export const LESTER_BLASTER_POWER_UPS = Object.freeze([
 export const LESTER_BLASTER_ENVIRONMENTS = Object.freeze([
   Object.freeze({
     id: 'underchain-district',
-    title: 'The Slums: Underchain District',
+    title: 'Crypto Wasteland: Desert Approach',
     levelId: 'the-slums',
     runWindowMinutes: [0, 2],
     palette: ['#06142e', '#345dcc', '#ff3b1f', '#c8d3e8'],
@@ -1396,7 +1397,7 @@ export const LESTER_BLASTER_ENVIRONMENTS = Object.freeze([
   }),
   Object.freeze({
     id: 'industrial-foundry',
-    title: 'The Slums: Industrial Foundry',
+    title: 'Crypto Wasteland: Ghost Town & Salvage Belt',
     levelId: 'the-slums',
     runWindowMinutes: [2, 5],
     palette: ['#0f1117', '#ff8a22', '#345dcc', '#d6d9df'],
@@ -1445,18 +1446,24 @@ export const LESTER_BLASTER_ENVIRONMENTS = Object.freeze([
 ]);
 
 export const LESTER_BLASTER_ENEMY_CATALOG = Object.freeze([
-  Object.freeze({ id: 'fud-goblin', title: 'FUD Goblin', class: 'grunt', baseHealth: 7, damage: 7, speed: 1.8, score: 80, spawnAfterSeconds: 0, aiArchetype: 'swarm-shambler', animationStates: Object.freeze(['shamble', 'lob-sell', 'hit', 'red-candle-pop']), attackPatterns: Object.freeze(['slow-sell-arc', 'swarm-body-block']), deathEffect: 'puff of red candle smoke + always-on silver impact sparks', tells: 'mouth opens with SELL bubble wind-up' }),
-  Object.freeze({ id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 35, aiArchetype: 'hover-taxer', animationStates: Object.freeze(['float', 'tax-pulse', 'tar-drop', 'hit', 'pop']), attackPatterns: Object.freeze(['resource-tax', 'sticky-tar-puddle']), deathEffect: 'orange flame pop + pump handle fragments', tells: 'gas-pump body glows before taxing' }),
-  Object.freeze({ id: 'paper-hand', title: 'Paper Hands', class: 'panic-melee', baseHealth: 12, damage: 9, speed: 2.0, score: 120, spawnAfterSeconds: 0, aiArchetype: 'panic-charge-flee', animationStates: Object.freeze(['tremble', 'panic-charge', 'wild-swing', 'flee', 'crumple']), attackPatterns: Object.freeze(['wild-melee', 'ally-collision-chaos']), deathEffect: 'white paper confetti + optional red flecks if gore enabled', tells: 'crumpled hands shake before charge' }),
-  Object.freeze({ id: 'crypto-bro', title: 'Crypto Bro', class: 'kol-ranged-grunt', baseHealth: 18, damage: 12, speed: 1.9, score: 210, spawnAfterSeconds: 55, aiArchetype: 'taunt-strafe-shooter', enemyKey: 'cryptoBro', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack', 'hit']), attackPatterns: Object.freeze(['phone-taunt-shot', 'jump-back-flex', 'close-knife-panic']), deathEffect: 'shattered phone pixels + green candle confetti', tells: 'phone screen flashes before the shot/taunt' }),
-  Object.freeze({ id: 'gas-beast', title: 'Gas Beast', class: 'armored-bruiser', baseHealth: 32, damage: 16, speed: 0.95, score: 340, spawnAfterSeconds: 115, aiArchetype: 'gas-cloud-area-denial', enemyKey: 'gasBeast', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack', 'hit']), attackPatterns: Object.freeze(['gas-tax-pulse', 'slow-claw-swipe', 'short-hop-body-check']), deathEffect: 'orange/blue gas burst + ETH fee shards', tells: 'chest vents glow orange before gas pulse' }),
-  Object.freeze({ id: 'sybil-drone', title: 'Bot Swarm (Sybil Drones)', class: 'formation-flyer', baseHealth: 9, damage: 10, speed: 2.4, score: 150, spawnAfterSeconds: 80, aiArchetype: 'parent-drone-formation', animationStates: Object.freeze(['hover', 'sync-strafe', 'laser-ping', 'scatter', 'explode']), attackPatterns: Object.freeze(['formation-laser-ping', 'parent-drone-scatter']), deathEffect: 'cyan electric shards + wallet-address pixels', tells: 'blank wallet face flashes red target dot' }),
-  Object.freeze({ id: 'rug-rat', title: 'Rug Rat', class: 'disruptor', baseHealth: 8, damage: 7, speed: 3.3, score: 130, spawnAfterSeconds: 70, aiArchetype: 'platform-yanker', animationStates: Object.freeze(['scurry', 'rug-drag', 'floor-yank', 'hit', 'escape']), attackPatterns: Object.freeze(['platform-yank', 'low-dash-knockback']), deathEffect: 'torn carpet scraps + red dust puff', tells: 'tiny rolled rug lifts before dash' }),
-  Object.freeze({ id: 'honeypot-turret', title: 'Honeypot Turret', class: 'stationary-trap', baseHealth: 18, damage: 13, speed: 0, score: 220, spawnAfterSeconds: 90, aiArchetype: 'loot-bait-trap', animationStates: Object.freeze(['fake-loot', 'snap-open', 'clamp-fire', 'hit', 'shatter']), attackPatterns: Object.freeze(['short-range-spread', 'clamp-burst']), deathEffect: 'golden hex shards + blue reveal sparks', tells: 'too-perfect loot glow pulses twice' }),
-  Object.freeze({ id: 'slippage-skater', title: 'Slippage Skater', class: 'mid-tier-rusher', baseHealth: 20, damage: 14, speed: 3.6, score: 260, spawnAfterSeconds: 130, aiArchetype: 'overshoot-u-turn', animationStates: Object.freeze(['skate', 'slide-rush', 'u-turn', 'hit', 'wipeout']), attackPatterns: Object.freeze(['slide-rush', 'overshoot-return']), deathEffect: 'ice-trail shards + orange skid sparks', tells: 'skates spark before line rush' }),
-  Object.freeze({ id: 'phishing-angler', title: 'Phishing Angler', class: 'zoning-hook', baseHealth: 24, damage: 16, speed: 1.2, score: 300, spawnAfterSeconds: 180, aiArchetype: 'fake-wallet-lure', animationStates: Object.freeze(['idle-cast', 'popup-lure', 'reel', 'melee', 'hit', 'fade']), attackPatterns: Object.freeze(['connect-wallet-lure', 'hook-reel']), deathEffect: 'fake popup shatter + cloak smoke', tells: 'glowing Connect Wallet lure appears before hook is active' }),
-  Object.freeze({ id: 'mev-reaper', title: 'MEV Reaper', class: 'elite-flanker', baseHealth: 34, damage: 19, speed: 3.0, score: 420, spawnAfterSeconds: 240, aiArchetype: 'sandwich-pincer', animationStates: Object.freeze(['cloak', 'dash-flank', 'sandwich-strike', 'hit', 'vanish']), attackPatterns: Object.freeze(['two-sided-pincer', 'same-frame-blade-strike']), deathEffect: 'dark cloak tear + sandwich-blade sparks', tells: 'two shadows split to either side' }),
-  Object.freeze({ id: 'liquidation-cascade-golem', title: 'Liquidation Cascade Golem', class: 'armored-elite', baseHealth: 54, damage: 24, speed: 0.9, score: 560, spawnAfterSeconds: 360, aiArchetype: 'slow-armored-shockwave', animationStates: Object.freeze(['stomp', 'block-stack', 'shockwave', 'crack', 'cascade-collapse']), attackPatterns: Object.freeze(['armored-stomp', 'death-cascade-shockwave']), deathEffect: 'stacked red ticker blocks collapse into chain shockwave', tells: 'block stack flashes margin-call red before collapse' }),
+  Object.freeze({ id: 'fud-goblin', title: 'FUD Goblin', class: 'grunt', baseHealth: 7, damage: 7, speed: 1.8, score: 80, spawnAfterSeconds: 0, aiArchetype: 'swarm-shambler', districtFamilies: Object.freeze(['ghost_town', 'country_road', 'residential_edge']), animationStates: Object.freeze(['shamble', 'lob-sell', 'attack-tell', 'hit', 'red-candle-pop']), attackPatterns: Object.freeze(['slow-sell-arc', 'swarm-body-block']), deathEffect: 'puff of red candle smoke + always-on silver impact sparks', tells: 'mouth opens with SELL bubble wind-up' }),
+  Object.freeze({ id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 35, aiArchetype: 'hover-taxer', districtFamilies: Object.freeze(['desert_approach', 'inner_city']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['float', 'tax-pulse', 'attack-tell', 'tar-drop', 'hit', 'pop']), attackPatterns: Object.freeze(['resource-tax', 'sticky-tar-puddle']), deathEffect: 'orange flame pop + pump handle fragments', tells: 'gas-pump body glows before taxing' }),
+  Object.freeze({ id: 'paper-hand', title: 'Paper Hands', class: 'panic-melee', baseHealth: 12, damage: 9, speed: 2.0, score: 120, spawnAfterSeconds: 0, aiArchetype: 'panic-charge-flee', districtFamilies: Object.freeze(['ghost_town', 'inner_city']), preferredRangeMode: 'melee', animationStates: Object.freeze(['tremble', 'panic-charge', 'attack-tell', 'wild-swing', 'flee', 'hit', 'crumple', 'death']), attackPatterns: Object.freeze(['wild-melee', 'ally-collision-chaos']), deathEffect: 'white paper confetti + optional red flecks if gore enabled', tells: 'crumpled hands shake before charge' }),
+  Object.freeze({ id: 'fud-goblin-cave', title: 'Cave FUD Goblin', class: 'cave-grunt', baseHealth: 9, damage: 8, speed: 2.05, score: 110, spawnAfterSeconds: 45, aiArchetype: 'cave-lob-scatter', districtFamilies: Object.freeze(['country_road', 'dry_forest_cave']), poiIds: Object.freeze(['dry-forest-cave']), preferredRangeMode: 'melee', enemyKey: 'trenchDegen', animationStates: Object.freeze(['idle', 'run', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['torch-lob', 'cave-mouth-scatter']), deathEffect: 'torch ash burst + cave dust puff', tells: 'bright torch-up silhouette before the cave toss' }),
+  Object.freeze({ id: 'claim-jumper', title: 'Claim Jumper', class: 'rifle-bandit', baseHealth: 16, damage: 12, speed: 2.1, score: 190, spawnAfterSeconds: 120, aiArchetype: 'cover-peek-rifle', districtFamilies: Object.freeze(['ghost_town', 'residential_edge']), poiIds: Object.freeze(['rugpull-gulch', 'mesa-overlook']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'reload', 'hit', 'death']), attackPatterns: Object.freeze(['cover-peek-rifle', 'false-front-reposition']), deathEffect: 'hat flip + coin-spur sparks + dust burst', tells: 'rifle sights glint before the lane shot' }),
+  Object.freeze({ id: 'claim-jumper-sheriff', title: 'Claim-Jumper Sheriff', class: 'rifle-bandit-miniboss', baseHealth: 42, damage: 17, speed: 1.85, score: 620, spawnAfterSeconds: 180, aiArchetype: 'cover-peek-rifle-commander', districtFamilies: Object.freeze(['ghost_town']), poiIds: Object.freeze(['rugpull-gulch']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'reload', 'command-point', 'hit', 'death']), attackPatterns: Object.freeze(['cover-peek-rifle', 'false-front-reposition', 'command-volley']), deathEffect: 'sheriff badge spin + coin-spur sparks + dust plume', tells: 'badge glint and scoped rifle raise before the command volley' }),
+  Object.freeze({ id: 'scam-cult-zealot', title: 'Scam Cult Zealot', class: 'fan-shot-zealot', baseHealth: 21, damage: 14, speed: 2.15, score: 255, spawnAfterSeconds: 125, aiArchetype: 'chant-fan-shot', districtFamilies: Object.freeze(['ghost_town']), poiIds: Object.freeze(['rugpull-gulch']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'reload', 'hit', 'death']), attackPatterns: Object.freeze(['fan-shot-blast', 'chant-aura-stepback']), deathEffect: 'flare ash + robe shred + red dust burst', tells: 'lantern flare pulses before the shotgun fan' }),
+  Object.freeze({ id: 'crypto-bro', title: 'Crypto Bro', class: 'kol-ranged-grunt', baseHealth: 18, damage: 12, speed: 1.9, score: 210, spawnAfterSeconds: 55, aiArchetype: 'taunt-strafe-shooter', districtFamilies: Object.freeze(['inner_city', 'residential_edge']), preferredRangeMode: 'ranged', enemyKey: 'cryptoBro', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['phone-taunt-shot', 'jump-back-flex', 'close-knife-panic']), deathEffect: 'shattered phone pixels + green candle confetti', tells: 'phone screen flashes before the shot/taunt' }),
+  Object.freeze({ id: 'gas-beast', title: 'Gas Beast', class: 'armored-bruiser', baseHealth: 32, damage: 16, speed: 0.95, score: 340, spawnAfterSeconds: 115, aiArchetype: 'gas-cloud-area-denial', districtFamilies: Object.freeze(['inner_city', 'residential_edge']), preferredRangeMode: 'melee', enemyKey: 'gasBeast', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['gas-tax-pulse', 'slow-claw-swipe', 'short-hop-body-check']), deathEffect: 'orange/blue gas burst + ETH fee shards', tells: 'chest vents glow orange before gas pulse' }),
+  Object.freeze({ id: 'sybil-drone', title: 'Bot Swarm (Sybil Drones)', class: 'formation-flyer', baseHealth: 9, damage: 10, speed: 2.4, score: 150, spawnAfterSeconds: 80, aiArchetype: 'parent-drone-formation', districtFamilies: Object.freeze(['desert_approach', 'inner_city']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['hover', 'attack-tell', 'sync-strafe', 'laser-ping', 'scatter', 'hit', 'explode']), attackPatterns: Object.freeze(['formation-laser-ping', 'parent-drone-scatter']), deathEffect: 'cyan electric shards + wallet-address pixels', tells: 'blank wallet face flashes red target dot' }),
+  Object.freeze({ id: 'rug-rat', title: 'Rug Rat', class: 'disruptor', baseHealth: 8, damage: 7, speed: 3.3, score: 130, spawnAfterSeconds: 70, aiArchetype: 'platform-yanker', districtFamilies: Object.freeze(['ghost_town', 'country_road']), preferredRangeMode: 'melee', animationStates: Object.freeze(['scurry', 'attack-tell', 'rug-drag', 'floor-yank', 'hit', 'escape', 'death']), attackPatterns: Object.freeze(['platform-yank', 'low-dash-knockback']), deathEffect: 'torn carpet scraps + red dust puff', tells: 'tiny rolled rug lifts before dash' }),
+  Object.freeze({ id: 'honeypot-turret', title: 'Honeypot Turret', class: 'stationary-trap', baseHealth: 18, damage: 13, speed: 0, score: 220, spawnAfterSeconds: 90, aiArchetype: 'loot-bait-trap', districtFamilies: Object.freeze(['country_road', 'inner_city']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['fake-loot', 'snap-open', 'attack-tell', 'clamp-fire', 'hit', 'shatter', 'death']), attackPatterns: Object.freeze(['short-range-spread', 'clamp-burst']), deathEffect: 'golden hex shards + blue reveal sparks', tells: 'too-perfect loot glow pulses twice' }),
+  Object.freeze({ id: 'coyote-pack-runner', title: 'Coyote Pack Runner', class: 'pack-ambusher', enemyKey: 'trenchDegen', baseHealth: 18, damage: 13, speed: 3.5, score: 235, spawnAfterSeconds: 90, aiArchetype: 'pack-feint-lunge', districtFamilies: Object.freeze(['country_road', 'dry_forest_cave']), poiIds: Object.freeze(['dry-forest-cave', 'crossroads-trading-post']), preferredRangeMode: 'melee', animationStates: Object.freeze(['idle', 'run', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['pack-feint-lunge', 'side-lane-collapse']), deathEffect: 'dust skid + bone-chip burst', tells: 'head drops and shoulders coil before the pack leap' }),
+  Object.freeze({ id: 'slippage-skater', title: 'Slippage Skater', class: 'mid-tier-rusher', baseHealth: 20, damage: 14, speed: 3.6, score: 260, spawnAfterSeconds: 130, aiArchetype: 'overshoot-u-turn', districtFamilies: Object.freeze(['country_road', 'inner_city']), preferredRangeMode: 'melee', animationStates: Object.freeze(['skate', 'attack-tell', 'slide-rush', 'u-turn', 'hit', 'wipeout', 'death']), attackPatterns: Object.freeze(['slide-rush', 'overshoot-return']), deathEffect: 'ice-trail shards + orange skid sparks', tells: 'skates spark before line rush' }),
+  Object.freeze({ id: 'scorpion-ambusher', title: 'Scorpion Ambusher', class: 'burrow-trap', enemyKey: 'gasBeast', baseHealth: 22, damage: 15, speed: 2.4, score: 280, spawnAfterSeconds: 110, aiArchetype: 'burrow-tail-strike', districtFamilies: Object.freeze(['desert_approach', 'oasis_lakeside']), poiIds: Object.freeze(['old-hashrate-camp', 'oasis-lakeside']), preferredRangeMode: 'melee', animationStates: Object.freeze(['idle', 'burrow', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['sand-burrow-pop', 'tail-overhead-sting']), deathEffect: 'sand plume + neon venom spray', tells: 'tail rises out of the sand before the sting breaks the surface' }),
+  Object.freeze({ id: 'phishing-angler', title: 'Phishing Angler', class: 'zoning-hook', baseHealth: 24, damage: 16, speed: 1.2, score: 300, spawnAfterSeconds: 180, aiArchetype: 'fake-wallet-lure', districtFamilies: Object.freeze(['residential_edge', 'inner_city']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle-cast', 'attack-tell', 'popup-lure', 'reel', 'melee', 'hit', 'fade', 'death']), attackPatterns: Object.freeze(['connect-wallet-lure', 'hook-reel']), deathEffect: 'fake popup shatter + cloak smoke', tells: 'glowing Connect Wallet lure appears before hook is active' }),
+  Object.freeze({ id: 'mev-reaper', title: 'MEV Reaper', class: 'elite-flanker', baseHealth: 34, damage: 19, speed: 3.0, score: 420, spawnAfterSeconds: 240, aiArchetype: 'sandwich-pincer', districtFamilies: Object.freeze(['inner_city', 'residential_edge']), preferredRangeMode: 'melee', animationStates: Object.freeze(['cloak', 'attack-tell', 'dash-flank', 'sandwich-strike', 'hit', 'vanish', 'death']), attackPatterns: Object.freeze(['two-sided-pincer', 'same-frame-blade-strike']), deathEffect: 'dark cloak tear + sandwich-blade sparks', tells: 'two shadows split to either side' }),
+  Object.freeze({ id: 'liquidation-cascade-golem', title: 'Liquidation Cascade Golem', class: 'armored-elite', baseHealth: 54, damage: 24, speed: 0.9, score: 560, spawnAfterSeconds: 360, aiArchetype: 'slow-armored-shockwave', districtFamilies: Object.freeze(['inner_city']), preferredRangeMode: 'melee', animationStates: Object.freeze(['stomp', 'attack-tell', 'block-stack', 'shockwave', 'crack', 'cascade-collapse', 'death']), attackPatterns: Object.freeze(['armored-stomp', 'death-cascade-shockwave']), deathEffect: 'stacked red ticker blocks collapse into chain shockwave', tells: 'block stack flashes margin-call red before collapse' }),
 ]);
 
 export const LESTER_BLASTER_PERFORMANCE_TARGETS = Object.freeze({
@@ -1585,8 +1592,8 @@ export const LESTER_BLASTER_AI_DIRECTOR = Object.freeze({
 export const LESTER_BLASTER_LEVEL_PLAN = Object.freeze([
   Object.freeze({
     id: 'level-1-the-slums',
-    title: 'Level 1: The Slums',
-    subtitle: 'Underchain District → Industrial Foundry',
+    title: 'Level 1: Crypto Wasteland',
+    subtitle: 'Desert Approach → Ghost Town → Crossroads → City Threshold',
     mode: 'authored-scroll',
     scrolling: 'left-to-right',
     verticality: 'low-to-medium',
@@ -1915,7 +1922,7 @@ export function buildIsometricRoguelikeRunConfig({ seed = 1, mapRadiusTiles = 42
   });
 }
 
-export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId = 'lit-commando' } = {}) {
+export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId } = {}) {
   const config = buildIsometricRoguelikeRunConfig({ seed });
   return {
     mode,
@@ -2025,7 +2032,7 @@ function formatClock(seconds) {
   return `${Math.floor(safeSeconds / 60)}:${String(safeSeconds % 60).padStart(2, '0')}`;
 }
 
-function getCharacter(characterId = 'lit-commando') {
+function getCharacter(characterId = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId) {
   // Resolve by current id OR legacyId so old links/saves/tests using 'lester'/
   // 'lilly' still resolve to the renamed Lit Commando / Lit Valkyrie heroes.
   const character = LESTER_BLASTER_CHARACTER_ROSTER.find(
@@ -2133,14 +2140,44 @@ function aiStateMachineRoleForEnemy(enemy) {
   return 'coverShooter';
 }
 
-export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0 } = {}) {
+function normalizeSpawnAffinity(value = '') {
+  return String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+function enemyMatchesDistrictFamily(enemy, districtFamily) {
+  const target = normalizeSpawnAffinity(districtFamily);
+  if (!target) return false;
+  return (enemy.districtFamilies ?? []).some((value) => normalizeSpawnAffinity(value) === target);
+}
+
+function enemyMatchesPoi(enemy, poiId) {
+  const target = normalizeSpawnAffinity(poiId);
+  if (!target) return false;
+  return (enemy.poiIds ?? []).some((value) => normalizeSpawnAffinity(value) === target);
+}
+
+export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0, districtFamily = null, activePoiId = null, forceEnemyId = null } = {}) {
   const difficulty = getLesterBlasterDifficultyAt(elapsedSeconds);
-  const rawIndex = Math.abs(Math.floor(seed)) % LESTER_BLASTER_ENEMY_CATALOG.length;
-  const rawEnemy = LESTER_BLASTER_ENEMY_CATALOG[rawIndex];
   const eligible = LESTER_BLASTER_ENEMY_CATALOG.filter((enemy) => enemy.spawnAfterSeconds <= elapsedSeconds);
-  const enemy = rawEnemy.spawnAfterSeconds <= elapsedSeconds ? rawEnemy : (eligible.at(-1) ?? LESTER_BLASTER_ENEMY_CATALOG[0]);
+  const fallbackPool = eligible.length ? eligible : [LESTER_BLASTER_ENEMY_CATALOG[0]];
+  const forceKey = normalizeSpawnAffinity(forceEnemyId);
+  const forcedEnemy = forceKey
+    ? (LESTER_BLASTER_ENEMY_CATALOG.find((enemy) => normalizeSpawnAffinity(enemy.id) == forceKey) ?? null)
+    : null;
+  const poiPool = activePoiId ? fallbackPool.filter((enemy) => enemyMatchesPoi(enemy, activePoiId)) : [];
+  const districtPool = districtFamily ? fallbackPool.filter((enemy) => enemyMatchesDistrictFamily(enemy, districtFamily)) : [];
+  const themedPool = poiPool.length ? poiPool : districtPool.length ? districtPool : fallbackPool;
+  const source = forcedEnemy ? 'forced-id' : poiPool.length ? 'poi' : districtPool.length ? 'district-family' : 'timeline';
+  const rawIndex = Math.abs(Math.floor(seed));
+  const rawEnemy = LESTER_BLASTER_ENEMY_CATALOG[rawIndex % LESTER_BLASTER_ENEMY_CATALOG.length];
+  const enemy = forcedEnemy
+    ? forcedEnemy
+    : source === 'timeline'
+      ? (rawEnemy?.spawnAfterSeconds <= elapsedSeconds ? rawEnemy : (fallbackPool.at(-1) ?? LESTER_BLASTER_ENEMY_CATALOG[0]))
+      : (themedPool[rawIndex % themedPool.length] ?? themedPool[0] ?? LESTER_BLASTER_ENEMY_CATALOG[0]);
   const environmentIndex = Math.min(LESTER_BLASTER_ENVIRONMENTS.length - 1, Math.floor((elapsedSeconds / 60) / 4));
   const environment = LESTER_BLASTER_ENVIRONMENTS[environmentIndex];
+
   const scaledHealth = Math.ceil(enemy.baseHealth * (1 + difficulty.tier * 0.18));
   const stateMachineRole = aiStateMachineRoleForEnemy(enemy);
   const fairness = LESTER_BLASTER_ENEMY_AI_STATE_MACHINE.globalFairness;
@@ -2162,6 +2199,13 @@ export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0 } = {}) {
     },
     environment: clone(environment),
     difficulty,
+    spawnContext: {
+      source,
+      districtFamily: districtFamily ?? null,
+      activePoiId: activePoiId ?? null,
+      forceEnemyId: forceEnemyId ?? null,
+      poolSize: forcedEnemy ? 1 : themedPool.length,
+    },
   };
 }
 
@@ -3065,9 +3109,12 @@ export function createPlayerProfile(wallet, options = {}) {
     totalPaidRuns: 0,
     totalFreeRuns: 0,
     progress: {},
+    unlocks: { characters: {} },
+    preferences: { selectedCharacterId: HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId },
   };
 
   ensureAllGameProgress(profile);
+  syncConfiguredCharacterUnlocks(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
   return profile;
 }
 
@@ -3211,6 +3258,7 @@ export function connectPlayerAccount(state, wallet, options = {}) {
 
   const profile = state.profiles[normalizedWallet];
   ensureAllGameProgress(profile);
+  syncConfiguredCharacterUnlocks(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
 
   const loginEvent = {
     wallet: normalizedWallet,
@@ -3466,6 +3514,7 @@ export function recordScore(state, session, score, runStats = {}) {
   const unlockedAchievements = maybeUnlockRunAchievements(profile, score, runStats, progress);
   const parentSync = buildParentSyncPacket(session, { score, runStats, unlockedAchievements });
   updateRank(profile);
+  syncConfiguredCharacterUnlocks(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
 
   const entry = {
     sessionId: session.sessionId,
@@ -3650,6 +3699,9 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
       joinedAt: profile.joinedAt,
       totalPaidRuns: profile.totalPaidRuns,
       totalFreeRuns: profile.totalFreeRuns,
+      unlocks: clone(profile.unlocks ?? {}),
+      preferences: clone(profile.preferences ?? {}),
+      selectedCharacterId: resolveSelectedCharacterId(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG),
     },
     progress,
     achievementSummary: Object.freeze({
@@ -3909,7 +3961,7 @@ export function getBiasedEnemyRoles(districtId) {
 // grade. Assist-on runs are scored on a reduced multiplier so Assist-Off
 // boards stay meaningful (per build-risk review v2.1).
 export const HMH_LEVEL_TARGETS = Object.freeze({
-  1: Object.freeze({ level: 1, title: 'The Slums', targetSeconds: 300, masterySeconds: 270, brief: 'Easy completion — most players clear in ~5 minutes.' }),
+  1: Object.freeze({ level: 1, title: 'Crypto Wasteland', targetSeconds: 300, masterySeconds: 270, brief: 'Handcrafted badlands opener with optional POI pressure and a ~5 minute clear target.' }),
   2: Object.freeze({ level: 2, title: 'The Tower', targetSeconds: 360, masterySeconds: 324, brief: 'Vertical ascent, 6-minute target, real pressure begins.' }),
   3: Object.freeze({ level: 3, title: 'The Getaway', targetSeconds: 480, masterySeconds: 432, brief: 'Auto-scroll escape, 8-minute target, most players lose here.' }),
   4: Object.freeze({ level: 4, title: 'The Mempool Abyss', targetSeconds: 600, masterySeconds: 540, brief: 'Near-impossible 10-minute finale. Mastery = consistent sub-9:00.' }),
