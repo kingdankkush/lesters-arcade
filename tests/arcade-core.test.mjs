@@ -53,6 +53,7 @@ import {
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
   buildCombatOptionsMenuModel,
+  buildCombatPauseGate,
   buildHardMoneyHeroesAnimationProductionBriefs,
   buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
@@ -1215,6 +1216,68 @@ test('Lester Arcade custom MP3 playlist manifest drives a global minimal music p
     const idx = core.chooseArcadeMusicStartIndex({ queueLength: 26 });
     assert.equal(idx >= 0 && idx < 26, true);
   }
+});
+
+test('buildCombatPauseGate freezes sim + timer + input + audio together for every interruption', () => {
+  // Actively playing: nothing frozen.
+  const running = buildCombatPauseGate({ active: true });
+  assert.equal(running.simFrozen, false);
+  assert.equal(running.timerFrozen, false);
+  assert.equal(running.inputCaptured, false);
+  assert.equal(running.audioPaused, false);
+  assert.equal(running.overlayOpen, false);
+  assert.equal(running.reason, 'running');
+
+  // Explicit pause: sim, timer, and input freeze; audio idles; overlay open.
+  const paused = buildCombatPauseGate({ active: true, paused: true });
+  assert.equal(paused.simFrozen, true);
+  assert.equal(paused.timerFrozen, true);
+  assert.equal(paused.inputCaptured, true);
+  assert.equal(paused.audioPaused, true);
+  assert.equal(paused.overlayOpen, true);
+  assert.equal(paused.reason, 'paused');
+
+  // Level-up choice open: timer must freeze too (was the drift bug).
+  const levelUp = buildCombatPauseGate({ active: true, levelUpPaused: true });
+  assert.equal(levelUp.simFrozen, true);
+  assert.equal(levelUp.timerFrozen, true);
+  assert.equal(levelUp.inputCaptured, true);
+  assert.equal(levelUp.audioPaused, true);
+  assert.equal(levelUp.reason, 'level-up');
+
+  // Game over: frozen, overlay open, audio idle.
+  const over = buildCombatPauseGate({ active: true, gameOver: true });
+  assert.equal(over.simFrozen, true);
+  assert.equal(over.timerFrozen, true);
+  assert.equal(over.reason, 'game-over');
+
+  // Pre-begin window: sim frozen but it is not a dismissable overlay and audio
+  // is governed by its own lifecycle (not force-idled here).
+  const pending = buildCombatPauseGate({ active: true, pendingBegin: true });
+  assert.equal(pending.simFrozen, true);
+  assert.equal(pending.overlayOpen, false);
+  assert.equal(pending.audioPaused, false);
+  assert.equal(pending.reason, 'pending-begin');
+
+  // Inactive run: everything frozen regardless of other flags.
+  const inactive = buildCombatPauseGate({ active: false });
+  assert.equal(inactive.simFrozen, true);
+  assert.equal(inactive.inputCaptured, true);
+  assert.equal(inactive.reason, 'inactive');
+
+  // Precedence: an explicit pause during a pending-begin still reports paused.
+  const both = buildCombatPauseGate({ active: true, paused: true, pendingBegin: true });
+  assert.equal(both.reason, 'paused');
+  assert.equal(both.interrupted, true);
+});
+
+test('main.js wires the unified pause gate into the loop and pause toggle', () => {
+  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.equal(mainSource.includes('buildCombatPauseGate'), true);
+  // The loop gate uses the model's simFrozen flag rather than ad-hoc flag checks.
+  assert.equal(mainSource.includes('gate.simFrozen'), true);
+  // Audio rides the gate on pause toggle.
+  assert.equal(mainSource.includes('gate.audioPaused'), true);
 });
 
 test('Lester Arcade music player overlay is wired into the public UI without forcing individual game music', () => {

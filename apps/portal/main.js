@@ -74,6 +74,7 @@ import {
   computeWeaponUpgrades,
   WEAPON_UPGRADE_TREES,
   buildCombatOptionsMenuModel,
+  buildCombatPauseGate,
   buildTacticalBalanceDebugOverlayModel,
   buildCombatSandboxStatusModel,
   buildFullscreenViewportModel,
@@ -2308,6 +2309,20 @@ async function toggleCombatPause(forcePaused) {
   if (!combat.active && !combat.gameOver) return;
   combat.paused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
   playSfxCue('menu-click');
+  // Audio rides the unified pause gate: combat music idles while paused and
+  // resumes on unpause (respecting the player's music on/off + mute choice).
+  const gate = buildCombatPauseGate({
+    active: combat.active,
+    paused: combat.paused,
+    levelUpPaused: combat.levelUpPaused,
+    gameOver: combat.gameOver,
+    pendingBegin: combat.pendingBegin,
+  });
+  if (gate.audioPaused) {
+    pauseCombatMusic();
+  } else if (combat.musicEnabled) {
+    ensureCombatMusic('gameplay');
+  }
   if (combat.paused) spawnText('PAUSED', 350, 132, '#ffe84d');
   syncCombatOverlay();
 }
@@ -5087,7 +5102,18 @@ function updateStageDirector() {
 }
 
 function updateCombatStep(stepMs) {
-  if (!combat.active || combat.paused || combat.pendingBegin || combat.gameOver) {
+  // Unified pause gate: the sim AND the extraction timer freeze together for any
+  // interruption (explicit pause, open level-up choice, game-over, pre-begin, or
+  // inactive run). This closes the bug where the timer kept advancing during a
+  // level-up modal even though enemies/combat were frozen.
+  const gate = buildCombatPauseGate({
+    active: combat.active,
+    paused: combat.paused,
+    levelUpPaused: combat.levelUpPaused,
+    gameOver: combat.gameOver,
+    pendingBegin: combat.pendingBegin,
+  });
+  if (gate.simFrozen) {
     updateParticles(stepMs / 1000);
     updateFloatingTexts();
     return;

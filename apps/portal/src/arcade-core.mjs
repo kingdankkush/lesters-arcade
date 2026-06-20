@@ -879,6 +879,43 @@ export function chooseArcadeMusicStartIndex({
   return Math.floor(randomValue * safeLength);
 }
 
+// Single source of truth for the combat pause gate. The game loop, timer, input,
+// and audio all consult this so they freeze together — preventing the classic
+// "modal open but game still running" bug. The simulation (and the extraction
+// timer that advances with it) is frozen whenever the run is not actively
+// playing: an explicit pause, an open level-up choice, game-over, the
+// pre-run "pending begin" window, or an inactive run. Returns a structured
+// model so callers can also drive audio/input/UI consistently.
+export function buildCombatPauseGate({
+  active = false,
+  paused = false,
+  levelUpPaused = false,
+  gameOver = false,
+  pendingBegin = false,
+} = {}) {
+  // Any modal-style interruption that should halt the live simulation.
+  const interrupted = Boolean(paused || levelUpPaused || gameOver || pendingBegin);
+  // The sim (and the timer that rides on it) only advances while the run is
+  // active AND nothing is interrupting it.
+  const simFrozen = !active || interrupted;
+  const timerFrozen = simFrozen;
+  // Gameplay input is captured (ignored by the sim) whenever the sim is frozen,
+  // so on-screen touch controls can't "fire through" an open menu/modal.
+  const inputCaptured = simFrozen;
+  // Combat audio (SFX/ambient) should idle while paused or at game-over. The
+  // pre-begin and inactive states are handled by their own audio lifecycle.
+  const audioPaused = Boolean(paused || levelUpPaused || gameOver);
+  // A user-dismissable overlay is showing (pause menu or level-up choice).
+  const overlayOpen = Boolean(paused || levelUpPaused || gameOver);
+  let reason = 'running';
+  if (!active) reason = 'inactive';
+  else if (gameOver) reason = 'game-over';
+  else if (paused) reason = 'paused';
+  else if (levelUpPaused) reason = 'level-up';
+  else if (pendingBegin) reason = 'pending-begin';
+  return Object.freeze({ simFrozen, timerFrozen, inputCaptured, audioPaused, overlayOpen, interrupted, reason });
+}
+
 export function buildArcadeMusicPlayerModel({
   context = 'arcade',
   currentTrackId = null,
