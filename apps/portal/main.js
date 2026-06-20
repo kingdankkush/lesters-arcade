@@ -2429,6 +2429,15 @@ function resizeCombatCanvas() {
   }
 }
 
+function scheduleCombatViewportRelayout(delayMs = 0) {
+  const relayout = () => {
+    resizeCombatCanvas();
+    requestAnimationFrame(() => resizeCombatCanvas());
+  };
+  relayout();
+  if (delayMs > 0) setTimeout(relayout, delayMs);
+}
+
 async function requestCombatFullscreen() {
   const target = dom.officialCombatMount ?? dom.officialGameplay ?? dom.combatCanvas;
   const screenWidth = window.screen?.width ?? window.innerWidth;
@@ -2445,17 +2454,15 @@ async function requestCombatFullscreen() {
   try {
     if (!document.fullscreenElement && target?.requestFullscreen) {
       await target.requestFullscreen({ navigationUI: 'hide' });
-      // Resize canvas after fullscreen transition completes
-      requestAnimationFrame(() => {
-        resizeCombatCanvas();
-      });
+      // Resize canvas after fullscreen transition completes.
+      scheduleCombatViewportRelayout(120);
     }
   } catch (error) {
     combat.viewportMode = 'expanded-fullscreen';
     combat.status = `Browser fullscreen was blocked, so the combat canvas expanded inside the page: ${error?.message ?? 'request failed'}`;
     if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
     spawnText('FULLSCREEN BLOCKED', combat.playerX + 4, combat.playerY - 96, '#ff476f');
-    resizeCombatCanvas();
+    scheduleCombatViewportRelayout(120);
   }
   syncCombatOverlay();
 }
@@ -2474,8 +2481,8 @@ async function exitCombatFullscreen() {
     combat.status = `Fullscreen exit failed: ${error?.message ?? 'browser request failed'}`;
     if (dom.combatStatus) dom.combatStatus.textContent = combat.status;
   }
-  // Force immediate resize to windowed dimensions using the model
-  resizeCombatCanvas();
+  // Force immediate + settled resize to windowed dimensions using the model.
+  scheduleCombatViewportRelayout(120);
   // Apply the windowed model dimensions to the combat mount
   if (dom.officialCombatMount) {
     dom.officialCombatMount.style.setProperty('--combat-fullscreen-width', `${model.devicePixels.width}px`);
@@ -9436,10 +9443,8 @@ document.addEventListener('fullscreenchange', () => {
       dom.roguelikeStatBar.dataset.homeAnchor = 'true';
       dom.officialCombatMount.prepend(dom.roguelikeStatBar);
     }
-    // Resize canvas to match new fullscreen dimensions
-    requestAnimationFrame(() => {
-      resizeCombatCanvas();
-    });
+    // Resize canvas to match new fullscreen dimensions.
+    scheduleCombatViewportRelayout(120);
   } else if (combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen') {
     combat.viewportMode = 'windowed';
     // Return the stat bar to its normal slot above the gameplay controls.
@@ -9452,7 +9457,7 @@ document.addEventListener('fullscreenchange', () => {
         dom.officialGameplay.append(dom.roguelikeStatBar);
       }
     }
-    resizeCombatCanvas();
+    scheduleCombatViewportRelayout(120);
   }
   syncCombatOverlay();
 });
@@ -9460,7 +9465,7 @@ document.addEventListener('fullscreenchange', () => {
 // Handle window resize to update canvas dimensions in fullscreen/expanded modes
 window.addEventListener('resize', () => {
   if (combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen') {
-    resizeCombatCanvas();
+    scheduleCombatViewportRelayout(120);
   }
 });
 
@@ -9520,6 +9525,7 @@ function applyDeviceProfile() {
   document.body.classList.toggle('show-touch-controls', profile.showTouchControls);
   document.body.classList.toggle('suggest-landscape', profile.suggestLandscape);
   ensureTouchControls(profile);
+  if (officialAppStep === 'gameplay') scheduleCombatViewportRelayout(120);
   return profile;
 }
 
@@ -9689,7 +9695,13 @@ window.addEventListener('resize', () => {
   clearTimeout(deviceResizeTimer);
   deviceResizeTimer = setTimeout(applyDeviceProfile, 120);
 });
-window.addEventListener('orientationchange', () => setTimeout(applyDeviceProfile, 200));
+window.addEventListener('orientationchange', () => {
+  scheduleCombatViewportRelayout(120);
+  setTimeout(() => {
+    applyDeviceProfile();
+    scheduleCombatViewportRelayout(220);
+  }, 200);
+});
 
 // Initial paint honors the URL (deep-link / refresh) instead of always splash.
 applyRouteFromLocation();

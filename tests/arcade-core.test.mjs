@@ -636,6 +636,8 @@ test('fullscreen viewport model requires real browser fullscreen for expanded mo
   const windowed = buildFullscreenViewportModel({ mode: 'windowed', fullscreenElementActive: false });
   const expanded = buildFullscreenViewportModel({ mode: 'expanded-fullscreen', fullscreenElementActive: false });
   const active = buildFullscreenViewportModel({ mode: 'expanded-fullscreen', fullscreenElementActive: true, screenWidth: 2560, screenHeight: 1440 });
+  const portrait = buildFullscreenViewportModel({ mode: 'fullscreen', fullscreenElementActive: true, screenWidth: 1080, screenHeight: 1920 });
+  const landscape = buildFullscreenViewportModel({ mode: 'fullscreen', fullscreenElementActive: true, screenWidth: 1920, screenHeight: 1080 });
 
   assert.equal(windowed.browserApiAction, 'none');
   assert.equal(windowed.canvasCss.width, 'min(100%, 660px)');
@@ -645,6 +647,19 @@ test('fullscreen viewport model requires real browser fullscreen for expanded mo
   assert.equal(active.canvasCss.width, '100vw');
   assert.equal(active.canvasCss.height, '100vh');
   assert.equal(active.devicePixels.width, 2560);
+  assert.equal(portrait.devicePixels.width, 1080);
+  assert.equal(portrait.devicePixels.height, 1920);
+  assert.equal(landscape.devicePixels.width, 1920);
+  assert.equal(landscape.devicePixels.height, 1080);
+});
+
+test('main.js re-lays out gameplay on fullscreen and orientation changes', () => {
+  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.equal(mainSource.includes('function scheduleCombatViewportRelayout'), true);
+  assert.equal(mainSource.includes("document.addEventListener('fullscreenchange'"), true);
+  assert.equal(mainSource.includes("window.addEventListener('orientationchange'"), true);
+  assert.equal(mainSource.includes('scheduleCombatViewportRelayout(120);'), true);
+  assert.equal(mainSource.includes('if (officialAppStep === \'gameplay\') scheduleCombatViewportRelayout(120);'), true);
 });
 
 test('Lester Blaster difficulty scales over time and schedules boss encounters in the 3-5 minute window', () => {
