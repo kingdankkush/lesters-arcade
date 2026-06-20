@@ -222,18 +222,22 @@ test('connectPlayerAccount creates the parent account system used across every c
 test('player profiles initialize configurable character unlocks and selected-character preference', () => {
   const wallet = '0x' + 'a'.repeat(40);
   const profile = createPlayerProfile(wallet);
-  assert.equal(profile.unlocks.characters[HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId], true);
-  assert.equal(profile.unlocks.characters[HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId], false);
+  for (const starterId of HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds) {
+    assert.equal(profile.unlocks.characters[starterId], true);
+  }
   assert.equal(profile.preferences.selectedCharacterId, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId);
 });
 
-test('clearing the Level 1 finale unlocks the configured post-clear character in the profile snapshot', () => {
+test('clearing the Level 1 finale preserves the current starter roster until a separate post-clear hero id is represented in runtime', () => {
   const state = createInitialArcadeState();
   const wallet = '0x' + 'b'.repeat(40);
   const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
   recordScore(state, session, 4200, { elapsedSeconds: 620, bossId: 'rug-pull-tank', stageIndexReached: 13 });
   const snapshot = buildPlayerArcadeSnapshot(state, wallet);
-  assert.equal(snapshot.profile.unlocks.characters[HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId], true);
+  for (const starterId of HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds) {
+    assert.equal(snapshot.profile.unlocks.characters[starterId], true);
+  }
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, null);
 });
 
 test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteForge target, and parent-account sync permissions', () => {

@@ -1,8 +1,9 @@
 export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
-  rosterDecisionStatus: 'pending-justin-confirmation',
+  rosterDecisionStatus: 'resolved-commando-and-valkyrie-starters',
   directionMode: '8-direction-backbone',
   starterLegacyId: 'lester',
-  levelOneUnlockLegacyId: 'lilly',
+  startersLegacyIds: Object.freeze(['lester', 'lilly']),
+  levelOneUnlockLegacyId: null,
   levelOneUnlockAchievementId: 'getaway-clear',
 });
 
@@ -37,16 +38,23 @@ function clone(value) {
     : structuredClone(value);
 }
 
+function configuredStarterIds(config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
+  const starters = Array.isArray(config.startersLegacyIds) && config.startersLegacyIds.length
+    ? config.startersLegacyIds
+    : [config.starterLegacyId];
+  return Object.freeze(
+    [...new Set(starters.map((id) => normalizeId(id)).filter(Boolean))],
+  );
+}
+
 export function buildCharacterUnlockMap(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
-  const starterId = normalizeId(config.starterLegacyId);
+  const starterIds = configuredStarterIds(config);
   const unlockId = normalizeId(config.levelOneUnlockLegacyId);
   const earned = new Set((profile.achievements ?? []).map((id) => normalizeId(id)));
   const existing = profile.unlocks?.characters ?? {};
-  const unlocks = {
-    ...existing,
-    [starterId]: true,
-    [unlockId]: earned.has(normalizeId(config.levelOneUnlockAchievementId)),
-  };
+  const unlocks = { ...existing };
+  for (const starterId of starterIds) unlocks[starterId] = true;
+  if (unlockId) unlocks[unlockId] = earned.has(normalizeId(config.levelOneUnlockAchievementId));
   return Object.freeze(unlocks);
 }
 
@@ -54,8 +62,10 @@ export function syncConfiguredCharacterUnlocks(profile = {}, config = HARD_MONEY
   profile.unlocks ??= {};
   profile.unlocks.characters = clone(buildCharacterUnlockMap(profile, config));
   profile.preferences ??= {};
+  const starters = configuredStarterIds(config);
+  const fallback = starters[0] ?? normalizeId(config.starterLegacyId);
   if (!profile.preferences.selectedCharacterId || !profile.unlocks.characters[normalizeId(profile.preferences.selectedCharacterId)]) {
-    profile.preferences.selectedCharacterId = normalizeId(config.starterLegacyId);
+    profile.preferences.selectedCharacterId = fallback;
   }
   return profile.unlocks.characters;
 }
@@ -63,7 +73,9 @@ export function syncConfiguredCharacterUnlocks(profile = {}, config = HARD_MONEY
 export function resolveSelectedCharacterId(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
   const unlocks = buildCharacterUnlockMap(profile, config);
   const preferred = normalizeId(profile.preferences?.selectedCharacterId ?? config.starterLegacyId);
-  return unlocks[preferred] ? preferred : normalizeId(config.starterLegacyId);
+  if (unlocks[preferred]) return preferred;
+  const starters = configuredStarterIds(config);
+  return starters.find((id) => unlocks[id]) ?? normalizeId(config.starterLegacyId);
 }
 
 export function setPreferredCharacter(profile = {}, legacyId, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
@@ -80,12 +92,13 @@ export function setPreferredCharacter(profile = {}, legacyId, config = HARD_MONE
 export function buildCharacterSelectEntries(baseRoster = [], profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
   const unlocks = buildCharacterUnlockMap(profile, config);
   const selectedCharacterId = resolveSelectedCharacterId(profile, config);
+  const unlockId = normalizeId(config.levelOneUnlockLegacyId);
   return baseRoster.map((entry) => {
     const legacyId = normalizeId(entry.legacyId ?? entry.id);
     const unlocked = Boolean(unlocks[legacyId]);
     const cta = unlocked
       ? `SELECT — PLAY AS ${String(entry.name ?? entry.title ?? legacyId).toUpperCase()}`
-      : legacyId === normalizeId(config.levelOneUnlockLegacyId)
+      : legacyId === unlockId && unlockId
         ? 'CLEAR LEVEL 1 TO UNLOCK'
         : 'LOCKED';
     return Object.freeze({

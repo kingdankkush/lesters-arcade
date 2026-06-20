@@ -4787,7 +4787,7 @@ async function startCombat(options = {}) {
   // so shift everything by half the world to center the network on the player.
   // Biome (and therefore road style / bridge-vs-road) is re-sampled at the
   // SHIFTED coordinate so the visuals always match the actual ground there.
-  combat.roadTileIndex = buildRoadTileIndex(roadNetwork, seed, worldWidth / 2, worldHeight / 2);
+  combat.roadTileIndex = buildRoadTileIndex(campaignWorld.roadNetwork, seed, worldWidth / 2, worldHeight / 2);
   _themeCellCache.clear(); // theme cache key is seed-less; reset per run
   combat.roguelikeSpawnTimer = 0;
   combat.props = [];
@@ -4795,7 +4795,7 @@ async function startCombat(options = {}) {
   combat.platforms = [];
   combat.powerUpsCollected = 0;
   combat.collectedPowerUpTypes = new Set();
-  // Grenades start scarce and are replenished by map ammo pickups. (Axes were
+
   // removed from the loadout — grenade is the single manual throwable now.)
   combat.grenades = 3;
   combat.axes = 0;
@@ -8574,8 +8574,51 @@ function roguelikeEnemyWaveArt(enemy) {
   return enemyWaveStill(src);
 }
 
+function bespokeEnemySheet(src) {
+  if (!src) return null;
+  if (!enemyWaveImageCache.has(src)) enemyWaveImageCache.set(src, loadImageAsset(src));
+  return enemyWaveImageCache.get(src);
+}
+
+function drawBespokeEnemyKit(ctx, enemy, intent, renderProfile = {}) {
+  const kit = bespokeEnemyVisualKitFor(enemy);
+  if (!kit) return false;
+  const state = intent?.telegraphing
+    ? 'attack'
+    : Math.abs(enemy.vx ?? 0) + Math.abs(enemy.vy ?? 0) > 0.08
+      ? 'run'
+      : 'idle';
+  const sheetSrc = kit.sheets?.[state] ?? kit.sheets?.idle;
+  const sheet = bespokeEnemySheet(sheetSrc);
+  if (!imageReady(sheet)) return false;
+
+  const columns = Math.max(1, kit.layout?.columns ?? 4);
+  const rows = Math.max(1, kit.layout?.rows ?? 2);
+  const fallbackFrameWidth = Math.floor(sheet.naturalWidth / columns) || 96;
+  const fallbackFrameHeight = Math.floor(sheet.naturalHeight / rows) || 96;
+  const frameWidth = Math.max(1, kit.layout?.frameWidth ?? fallbackFrameWidth);
+  const frameHeight = Math.max(1, kit.layout?.frameHeight ?? fallbackFrameHeight);
+  const frameIndex = Math.floor((combat.frame ?? 0) / (state === 'attack' ? 4 : 7)) % (columns * rows);
+  const sx = (frameIndex % columns) * frameWidth;
+  const sy = Math.floor(frameIndex / columns) * frameHeight;
+  const sizeMul = enemy.sizeScale ?? 1;
+  const drawScaleMul = sizeMul * (renderProfile.scaleMul ?? 1) * (kit.drawScaleMul ?? 1);
+  const drawSize = Math.round(frameWidth * drawScaleMul);
+  const drawHeight = Math.round(frameHeight * drawScaleMul);
+  const ex = Math.round(enemy.x + 15 - drawSize / 2);
+  const ey = Math.round(enemy.y - drawHeight + 12 + (renderProfile.anchorBiasY ?? 0) + (kit.anchorBiasY ?? 0));
+
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(sheet, sx, sy, frameWidth, frameHeight, ex, ey, drawSize, drawHeight);
+  if (intent?.telegraphing) drawEnemyProxyTelegraph(ctx, enemy, renderProfile, Math.max(drawSize, drawHeight));
+  ctx.restore();
+  return true;
+}
+
 function drawEnemyProxyTelegraph(ctx, enemy, renderProfile, drawSize) {
   if (!renderProfile?.telegraphStyle) return;
+
   const centerX = enemy.x + 15;
   const centerY = enemy.y - 4;
   ctx.save();

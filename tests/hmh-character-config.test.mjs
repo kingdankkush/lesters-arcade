@@ -14,47 +14,42 @@ import {
   syncConfiguredCharacterUnlocks,
 } from '../apps/portal/src/hmh-character-config.mjs';
 
-test('character slot config is explicit about unresolved canon and keeps the default runtime roster decision configurable', () => {
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.rosterDecisionStatus, 'pending-justin-confirmation');
+test('character slot config keeps Lit Commando and Lit Valkyrie as default starters', () => {
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.rosterDecisionStatus, 'resolved-commando-and-valkyrie-starters');
   assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.directionMode, '8-direction-backbone');
   assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId, 'lester');
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, 'lilly');
+  assert.deepEqual([...HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds], ['lester', 'lilly']);
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, null);
 });
 
-test('buildCharacterUnlockMap supports flipping starter and Level 1 unlock roles without changing stable legacy ids', () => {
-  const alt = {
-    ...HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
-    starterLegacyId: 'lilly',
-    levelOneUnlockLegacyId: 'lester',
-  };
-  const locked = buildCharacterUnlockMap({ achievements: [] }, alt);
-  const unlocked = buildCharacterUnlockMap({ achievements: ['getaway-clear'] }, alt);
+test('buildCharacterUnlockMap keeps both starter heroes unlocked by default', () => {
+  const locked = buildCharacterUnlockMap({ achievements: [] });
+  const unlocked = buildCharacterUnlockMap({ achievements: ['getaway-clear'] });
 
-  assert.deepEqual(locked, { lilly: true, lester: false });
-  assert.deepEqual(unlocked, { lilly: true, lester: true });
+  assert.deepEqual(locked, { lester: true, lilly: true });
+  assert.deepEqual(unlocked, { lester: true, lilly: true });
 });
 
-test('syncConfiguredCharacterUnlocks initializes profile unlocks and selected character preference', () => {
+test('syncConfiguredCharacterUnlocks initializes both starters and a safe default selection', () => {
   const profile = { achievements: [] };
   const unlocks = syncConfiguredCharacterUnlocks(profile);
   assert.equal(unlocks.lester, true);
-  assert.equal(unlocks.lilly, false);
+  assert.equal(unlocks.lilly, true);
   assert.equal(profile.preferences.selectedCharacterId, 'lester');
 });
 
-test('setPreferredCharacter persists only unlocked characters and resolveSelectedCharacterId falls back safely', () => {
+test('setPreferredCharacter persists either unlocked starter and resolveSelectedCharacterId falls back safely', () => {
   const profile = { achievements: [], preferences: { selectedCharacterId: 'lilly' } };
   syncConfiguredCharacterUnlocks(profile);
 
-  assert.equal(resolveSelectedCharacterId(profile), 'lester');
-  assert.deepEqual(setPreferredCharacter(profile, 'lilly'), { ok: false, reason: 'locked', selectedCharacterId: 'lester' });
-  profile.achievements.push('getaway-clear');
-  syncConfiguredCharacterUnlocks(profile);
-  assert.deepEqual(setPreferredCharacter(profile, 'lilly'), { ok: true, selectedCharacterId: 'lilly' });
   assert.equal(resolveSelectedCharacterId(profile), 'lilly');
+  assert.deepEqual(setPreferredCharacter(profile, 'lilly'), { ok: true, selectedCharacterId: 'lilly' });
+  assert.deepEqual(setPreferredCharacter(profile, 'lester'), { ok: true, selectedCharacterId: 'lester' });
+  profile.preferences.selectedCharacterId = 'unknown-hero';
+  assert.equal(resolveSelectedCharacterId(profile), 'lester');
 });
 
-test('buildCharacterSelectEntries emits level-clear lock copy for the configured unlockable hero', () => {
+test('buildCharacterSelectEntries keeps Lit Commando and Lit Valkyrie playable by default', () => {
   const entries = buildCharacterSelectEntries([
     { id: 'lester', name: 'Lit Commando' },
     { id: 'lilly', name: 'Lit Valkyrie' },
@@ -64,8 +59,8 @@ test('buildCharacterSelectEntries emits level-clear lock copy for the configured
 
   assert.equal(lester.locked, false);
   assert.equal(lester.cta.includes('SELECT'), true);
-  assert.equal(lilly.locked, true);
-  assert.equal(lilly.cta, 'CLEAR LEVEL 1 TO UNLOCK');
+  assert.equal(lilly.locked, false);
+  assert.equal(lilly.cta.includes('SELECT'), true);
 });
 
 test('playable character visual kit metadata exposes repo-local Lester production manifest and direction mode', () => {
