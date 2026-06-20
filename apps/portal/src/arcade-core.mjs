@@ -3003,6 +3003,56 @@ export function normalizeWallet(wallet) {
   return normalized;
 }
 
+// --- Avatar sanitization helpers (pure, DOM-free, testable) ---------------
+//
+// Player avatars are user-supplied images. Storing the raw upload verbatim
+// keeps EXIF/GPS metadata and lets a 2MB 8000px image bloat state + the nav.
+// The real strip/re-encode happens on a <canvas> in main.js (drawing to a
+// canvas and reading back a data URL discards all metadata), but the box-fit
+// math + accept/size policy are pulled out here so they can be unit-tested.
+
+export const AVATAR_RULES = Object.freeze({
+  // Square output the UI renders at; uploads are downscaled to fit this box.
+  maxDimension: 256,
+  // Hard byte cap enforced before we even read the file.
+  maxBytes: 2 * 1024 * 1024,
+  allowedTypes: Object.freeze(['image/png', 'image/jpeg']),
+  // Re-encode target: JPEG keeps avatars small + uniformly strips metadata.
+  outputType: 'image/jpeg',
+  outputQuality: 0.85,
+});
+
+// Validate the file-level policy (type + size) before reading bytes. Returns
+// { ok, error, message } with a stable machine code on rejection.
+export function validateAvatarFile({ type, size } = {}) {
+  if (!AVATAR_RULES.allowedTypes.includes(type)) {
+    return { ok: false, error: 'invalid-type', message: 'Only .png or .jpg images are allowed.' };
+  }
+  if (!Number.isFinite(size) || size <= 0) {
+    return { ok: false, error: 'empty', message: 'That file looks empty. Try another image.' };
+  }
+  if (size > AVATAR_RULES.maxBytes) {
+    const mb = (size / 1024 / 1024).toFixed(1);
+    return { ok: false, error: 'too-large', message: `That image is ${mb}MB — max is 2MB.` };
+  }
+  return { ok: true, error: null, message: 'ok' };
+}
+
+// Compute the target draw box that fits (srcW x srcH) inside a square of
+// `maxDimension`, preserving aspect ratio and never upscaling. Returns integer
+// width/height (>=1). Pure math so the re-encode path is unit-testable.
+export function computeAvatarResize(srcW, srcH, maxDimension = AVATAR_RULES.maxDimension) {
+  const w = Math.max(0, Math.floor(Number(srcW) || 0));
+  const h = Math.max(0, Math.floor(Number(srcH) || 0));
+  const max = Math.max(1, Math.floor(Number(maxDimension) || 1));
+  if (w === 0 || h === 0) return { width: 0, height: 0 };
+  const scale = Math.min(1, max / Math.max(w, h));
+  return {
+    width: Math.max(1, Math.round(w * scale)),
+    height: Math.max(1, Math.round(h * scale)),
+  };
+}
+
 function normalizeChainId(chainId) {
   if (chainId === null || chainId === undefined || chainId === '') return null;
   if (typeof chainId === 'number') return `0x${chainId.toString(16)}`;

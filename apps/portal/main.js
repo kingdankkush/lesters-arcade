@@ -118,6 +118,9 @@ import {
   startPlaySession,
   formatUrlSessionId,
   nextGlobalSessionId,
+  AVATAR_RULES,
+  validateAvatarFile,
+  computeAvatarResize,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
@@ -3212,13 +3215,9 @@ function renderOfficialProfile() {
     pendingAvatarName = '';
     avatarSaveBtn.disabled = true;
     if (!file) return;
-    if (!['image/png', 'image/jpeg'].includes(file.type)) {
-      avatarFeedback.textContent = 'Only .png or .jpg images are allowed.';
-      avatarFeedback.dataset.state = 'error';
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      avatarFeedback.textContent = `That image is ${(file.size / 1024 / 1024).toFixed(1)}MB — max is 2MB.`;
+    const fileCheck = validateAvatarFile({ type: file.type, size: file.size });
+    if (!fileCheck.ok) {
+      avatarFeedback.textContent = fileCheck.message;
       avatarFeedback.dataset.state = 'error';
       return;
     }
@@ -3241,9 +3240,22 @@ function renderOfficialProfile() {
     };
     reader.readAsDataURL(file);
   });
-  avatarSaveBtn.addEventListener('click', () => {
+  avatarSaveBtn.addEventListener('click', async () => {
     if (!pendingAvatarDataUrl) return;
-    setPlayerAvatar(connectedWallet, pendingAvatarDataUrl);
+    avatarSaveBtn.disabled = true;
+    let storedDataUrl = pendingAvatarDataUrl;
+    try {
+      // Re-encode through a canvas to strip metadata + cap dimensions before
+      // persisting. Falls back to the raw preview only if re-encode fails.
+      storedDataUrl = await sanitizeAvatarImage(pendingAvatarDataUrl);
+    } catch (err) {
+      console.error('[avatar] sanitize failed, rejecting upload:', err);
+      avatarFeedback.textContent = 'Could not process that image. Try a different .png or .jpg.';
+      avatarFeedback.dataset.state = 'error';
+      avatarSaveBtn.disabled = false;
+      return;
+    }
+    setPlayerAvatar(connectedWallet, storedDataUrl);
     profileAvatarJustSaved = true; // surfaced as a persistent note on re-render
     // Refresh only the nav avatar chip + the profile panel in place. Do NOT call
     // the global render() here — it resets officialAppStep and bounces the user
@@ -4238,6 +4250,46 @@ function setPlayerAvatar(wallet, dataUrl) {
   if (!wallet || !state.profiles?.[wallet]) return;
   state.profiles[wallet].avatarDataUrl = dataUrl;
   persistArcadeStateSoon();
+}
+
+// Re-encode an uploaded avatar through an off-screen <canvas>: downscale to fit
+// AVATAR_RULES.maxDimension and re-emit as JPEG. Drawing to a canvas and reading
+// back a data URL inherently strips EXIF/GPS and any embedded metadata, and the
+// downscale caps stored size. Returns a sanitized data URL, or rejects on a
+// load error (e.g. a non-image masquerading as image/png). Pure box-fit math
+// lives in computeAvatarResize() (tested); this is the DOM-bound shell.
+function sanitizeAvatarImage(rawDataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const { width, height } = computeAvatarResize(
+          img.naturalWidth,
+          img.naturalHeight,
+          AVATAR_RULES.maxDimension,
+        );
+        if (!width || !height) {
+          reject(new Error('avatar-empty-dimensions'));
+          return;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('avatar-no-2d-context'));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        // toDataURL re-encodes pixels only — no source metadata survives.
+        resolve(canvas.toDataURL(AVATAR_RULES.outputType, AVATAR_RULES.outputQuality));
+      } catch (err) {
+        reject(err);
+      }
+    };
+    img.onerror = () => reject(new Error('avatar-decode-failed'));
+    img.src = rawDataUrl;
+  });
 }
 // Build a small avatar element: the uploaded image, or a colored initial chip.
 function renderAvatarChip(wallet, displayName, sizeClass = '') {

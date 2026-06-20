@@ -96,6 +96,9 @@ import {
   resolveAchievementUnlocksForRun,
   scheduleBossEncounter,
   startPlaySession,
+  AVATAR_RULES,
+  validateAvatarFile,
+  computeAvatarResize,
 } from '../apps/portal/src/arcade-core.mjs';
 
 function readRgbaPng(path) {
@@ -2092,6 +2095,56 @@ test('game-over summary surfaces death recap + extraction metrics when provided'
   // Legacy callers without the new fields keep the original 4-metric shape.
   const legacy = buildGameOverSummaryModel({ score: 100, elapsedSeconds: 10, kills: 1 });
   assert.equal(legacy.metrics.length, 4);
+});
+
+test('validateAvatarFile enforces type and size policy', () => {
+  assert.equal(validateAvatarFile({ type: 'image/png', size: 1024 }).ok, true);
+  assert.equal(validateAvatarFile({ type: 'image/jpeg', size: AVATAR_RULES.maxBytes }).ok, true);
+
+  const gif = validateAvatarFile({ type: 'image/gif', size: 1024 });
+  assert.equal(gif.ok, false);
+  assert.equal(gif.error, 'invalid-type');
+
+  const svg = validateAvatarFile({ type: 'image/svg+xml', size: 1024 });
+  assert.equal(svg.ok, false);
+  assert.equal(svg.error, 'invalid-type');
+
+  const empty = validateAvatarFile({ type: 'image/png', size: 0 });
+  assert.equal(empty.ok, false);
+  assert.equal(empty.error, 'empty');
+
+  const tooBig = validateAvatarFile({ type: 'image/png', size: AVATAR_RULES.maxBytes + 1 });
+  assert.equal(tooBig.ok, false);
+  assert.equal(tooBig.error, 'too-large');
+
+  // Missing/garbage input is rejected, never thrown.
+  assert.equal(validateAvatarFile().ok, false);
+  assert.equal(validateAvatarFile({}).ok, false);
+});
+
+test('computeAvatarResize fits inside the square box without upscaling', () => {
+  // Landscape source downscaled by its longest edge.
+  assert.deepEqual(computeAvatarResize(1024, 512, 256), { width: 256, height: 128 });
+  // Portrait source downscaled by its longest edge.
+  assert.deepEqual(computeAvatarResize(512, 1024, 256), { width: 128, height: 256 });
+  // Square source clamps to the box.
+  assert.deepEqual(computeAvatarResize(4000, 4000, 256), { width: 256, height: 256 });
+  // Already-small images are never upscaled.
+  assert.deepEqual(computeAvatarResize(64, 48, 256), { width: 64, height: 48 });
+  // Degenerate inputs collapse to zero rather than throwing.
+  assert.deepEqual(computeAvatarResize(0, 100, 256), { width: 0, height: 0 });
+  assert.deepEqual(computeAvatarResize('nope', 'nope', 256), { width: 0, height: 0 });
+  // Dimensions stay >=1 for tiny-but-nonzero aspect ratios.
+  const thin = computeAvatarResize(1000, 1, 256);
+  assert.equal(thin.width, 256);
+  assert.ok(thin.height >= 1);
+});
+
+test('AVATAR_RULES re-encodes to a metadata-stripping raster format', () => {
+  // JPEG/PNG re-encode discards EXIF; ensure we target a raster type, not SVG.
+  assert.ok(['image/jpeg', 'image/png'].includes(AVATAR_RULES.outputType));
+  assert.ok(AVATAR_RULES.maxDimension > 0 && AVATAR_RULES.maxDimension <= 1024);
+  assert.ok(AVATAR_RULES.outputQuality > 0 && AVATAR_RULES.outputQuality <= 1);
 });
 
 
