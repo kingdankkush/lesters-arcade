@@ -94,6 +94,8 @@ try {
     'officialFreeModeButton',
     'officialRankedModeButton',
     'combatPauseButton',
+    'combatMenuIconButton',
+    'combatSettingsPanel',
     'combatRestartButton',
     'combatReturnMenuButton',
     'combatExitButton',
@@ -109,13 +111,15 @@ try {
     'applyPlayerLedCameraMovement',
     'renderCombatHudOverlay',
     'renderTacticalBalanceDebugOverlay',
+    'renderCombatSettingsPanel',
+    'toggleCombatSettingsPanel',
     'buildTacticalBalanceDebugOverlayModel',
     'clearInactiveCombatOverlay',
     "officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'",
     'hmhDebug=balance',
     "event.key === 'F10'",
   ];
-  const requiredStyleMarkers = ['combat-hud-overlay', 'tactical-debug-overlay', 'debug-layer'];
+  const requiredStyleMarkers = ['combat-hud-overlay', 'tactical-debug-overlay', 'debug-layer', 'combat-menu-icon-button', 'combat-settings-panel'];
 
   for (const marker of requiredHtmlMarkers) assertIncludes('portal html', html, marker);
   for (const marker of requiredMainMarkers) assertIncludes('portal main.js', main, marker);

@@ -1183,6 +1183,7 @@ const dom = {
   combatMenuTitle: document.querySelector('#combatMenuTitle'),
   combatMenuCopy: document.querySelector('#combatMenuCopy'),
   combatMenuActionGrid: document.querySelector('#combatMenuActionGrid'),
+  combatSettingsPanel: document.querySelector('#combatSettingsPanel'),
   combatGameOverSummary: document.querySelector('#combatGameOverSummary'),
   combatHudOverlay: document.querySelector('#combatHudOverlay'),
   roguelikeStatBar: document.querySelector('#roguelikeStatBar'),
@@ -1297,6 +1298,7 @@ const CHARACTER_DISPLAY_NAMES = Object.freeze({
 const combat = {
   active: false,
   paused: false,
+  menuSettingsOpen: false,
   gameOver: false,
   gameOverReason: '',
   // Death-recap fields: lastHitBy tracks every hit, killedBy freezes at death.
@@ -1999,6 +2001,7 @@ function renderCombatMenuActionGrid() {
   });
   const actions = menu.actions.map((action) => {
     if (action.id === 'resume') return { ...action, run: () => toggleCombatPause(false) };
+    if (action.id === 'toggle-settings') return { ...action, run: toggleCombatSettingsPanel };
     if (action.id === 'submit-official-score') return { ...action, run: submitCombatGameOver };
     if (action.id === 'restart') return { ...action, run: restartCombatRun };
     if (action.id === 'toggle-music') return { ...action, run: toggleCombatMusic };
@@ -2284,9 +2287,12 @@ function syncCombatOverlay() {
     // technically paused, but showing the pause menu UNDER the ready overlay
     // reads as a broken double-menu. Keep it hidden until the player begins.
     dom.combatMenuPanel.hidden = combat.pendingBegin || !(combat.paused || combat.gameOver || combat.levelUpPaused);
-  const levelUpEl = document.getElementById('levelUpOverlay');
-  if (levelUpEl) levelUpEl.hidden = !combat.levelUpPaused;
+    const levelUpEl = document.getElementById('levelUpOverlay');
+    if (levelUpEl) levelUpEl.hidden = !combat.levelUpPaused;
     dom.combatMenuPanel.dataset.state = combat.gameOver ? 'game-over' : combat.levelUpPaused ? 'level-up' : 'paused';
+  }
+  if (combat.pendingBegin || !(combat.paused || combat.gameOver || combat.levelUpPaused)) {
+    combat.menuSettingsOpen = false;
   }
   const menu = buildCombatOptionsMenuModel({
     paused: combat.paused,
@@ -2309,11 +2315,13 @@ function syncCombatOverlay() {
   renderTacticalBalanceDebugOverlay();
   renderGameOverSummary();
   renderCombatMenuActionGrid();
+  renderCombatSettingsPanel();
 }
 
 async function toggleCombatPause(forcePaused) {
   if (!combat.active && !combat.gameOver) return;
   combat.paused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
+  if (!combat.paused) combat.menuSettingsOpen = false;
   playSfxCue('menu-click');
   // Audio rides the unified pause gate: combat music idles while paused and
   // resumes on unpause (respecting the player's music on/off + mute choice).
@@ -2331,6 +2339,51 @@ async function toggleCombatPause(forcePaused) {
   }
   if (combat.paused) spawnText('PAUSED', 350, 132, '#ffe84d');
   syncCombatOverlay();
+}
+
+function toggleCombatShakeSetting() {
+  gameSettings.screenShake = !gameSettings.screenShake;
+  saveGameSettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
+function toggleCombatGoreSetting() {
+  gameSettings.gore = !gameSettings.gore;
+  saveGameSettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
+function toggleCombatSettingsPanel() {
+  combat.menuSettingsOpen = !combat.menuSettingsOpen;
+  syncCombatOverlay();
+}
+
+function renderCombatSettingsPanel() {
+  if (!dom.combatSettingsPanel) return;
+  const shouldShow = combat.menuSettingsOpen && !combat.pendingBegin && (combat.paused || combat.gameOver || combat.levelUpPaused);
+  dom.combatSettingsPanel.hidden = !shouldShow;
+  if (!shouldShow) {
+    dom.combatSettingsPanel.replaceChildren();
+    return;
+  }
+  const title = el('h4', { className: 'combat-settings-title', textContent: 'Settings' });
+  const copy = el('p', { className: 'combat-settings-copy', textContent: 'Quick gameplay toggles from the pause menu. Accessibility controls land here next.' });
+  const grid = el('div', { className: 'combat-settings-grid' });
+  const settingsActions = [
+    { id: 'music', label: combat.musicEnabled ? 'Music On' : 'Music Off', run: toggleCombatMusic },
+    { id: 'shake', label: gameSettings.screenShake ? 'Shake On' : 'Shake Off', run: toggleCombatShakeSetting },
+    { id: 'gore', label: gameSettings.gore ? 'Gore On' : 'Gore Off', run: toggleCombatGoreSetting },
+    { id: 'viewport', label: combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', run: cycleCombatViewport },
+  ];
+  for (const action of settingsActions) {
+    const button = el('button', { className: 'combat-menu-action combat-settings-action', type: 'button' });
+    button.textContent = action.label;
+    button.addEventListener('click', () => action.run());
+    grid.append(button);
+  }
+  dom.combatSettingsPanel.replaceChildren(title, copy, grid);
 }
 
 async function restartCombatRun() {
@@ -9262,18 +9315,8 @@ dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatMenuIconButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatRestartButton?.addEventListener('click', restartCombatRun);
 dom.combatMusicButton?.addEventListener('click', toggleCombatMusic);
-dom.combatShakeButton?.addEventListener('click', () => {
-  gameSettings.screenShake = !gameSettings.screenShake;
-  saveGameSettings();
-  if (dom.combatShakeButton) dom.combatShakeButton.textContent = gameSettings.screenShake ? 'Shake On' : 'Shake Off';
-  playSfxCue('menu-click');
-});
-dom.combatGoreButton?.addEventListener('click', () => {
-  gameSettings.gore = !gameSettings.gore;
-  saveGameSettings();
-  if (dom.combatGoreButton) dom.combatGoreButton.textContent = gameSettings.gore ? 'Gore On' : 'Gore Off';
-  playSfxCue('menu-click');
-});
+dom.combatShakeButton?.addEventListener('click', toggleCombatShakeSetting);
+dom.combatGoreButton?.addEventListener('click', toggleCombatGoreSetting);
 dom.combatCharacterButton?.addEventListener('click', switchHero);
 dom.combatViewportButton?.addEventListener('click', cycleCombatViewport);
 dom.combatReturnMenuButton?.addEventListener('click', returnToOfficialGameMenu);

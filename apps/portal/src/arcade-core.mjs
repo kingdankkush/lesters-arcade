@@ -2464,6 +2464,7 @@ export function buildCombatOptionsMenuModel({
   const official = currentMode === 'paid' || currentMode === 'ranked';
   const actions = [
     ...(gameOver ? [] : [Object.freeze({ id: 'resume', label: 'Resume', icon: '▶', enabled: paused })]),
+    Object.freeze({ id: 'toggle-settings', label: 'Settings', icon: '⚙', enabled: true }),
     ...(gameOver && official ? [Object.freeze({ id: 'submit-official-score', label: officialScoreSubmitted ? 'Score Synced' : 'Submit Official Score', icon: '★', enabled: !officialScoreSubmitted })] : []),
     Object.freeze({ id: 'restart', label: gameOver ? 'Play Again' : (official ? 'Restart: New Credit' : 'Restart Free'), icon: '⟲', enabled: true }),
     Object.freeze({ id: 'toggle-music', label: musicEnabled ? 'Music On' : 'Music Off', icon: musicEnabled ? '♪' : '⊘', enabled: true }),

@@ -1693,6 +1693,7 @@ test('combat HUD and options models expose health, score, timer, power-ups, paus
   const actionIds = menu.actions.map((action) => action.id);
   assert.equal(menu.title, 'Paused');
   assert.equal(actionIds.includes('resume'), true);
+  assert.equal(actionIds.includes('toggle-settings'), true);
   assert.equal(actionIds.includes('restart'), true);
   assert.equal(actionIds.includes('toggle-music'), true);
   assert.equal(actionIds.includes('toggle-fullscreen'), true);
