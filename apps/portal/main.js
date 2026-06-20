@@ -7335,9 +7335,11 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   const loadStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
   const MIN_LOAD_MS = 1500; // always show the biome reveal for at least this long
   const seed = combat.roguelikeRun?.seed ?? 0;
-  const worldProps = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
+  const envManifest = hmh('HMH_LEVEL_ENVIRONMENT') ?? {};
+  const worldProps = envManifest.worldProps ?? [];
+  const bgs = envManifest.parallaxBackgrounds ?? [];
   const { districtGrid, roadNetwork } = worldStructure;
-  // Collect a coherent set of images for the spawn region + immediate neighbors.
+
   const startBiome = biomeAt(seed, 0, 0);
   const toWarm = new Set();
   const regionBiomes = new Set([startBiome]);
