@@ -14,11 +14,13 @@ const DEFAULT_LAYOUT = 'level1-authored';
 const LEVEL_LAYOUTS = Object.freeze({
   'level-1-crypto-wasteland': 'level1-authored',
   'level-2-litecoin-city': 'level2-authored',
+  'level-3-the-getaway': 'level2-authored',
 });
 
 const EXTRACTION_FAMILY_PRIORITY = Object.freeze({
   'level-1-crypto-wasteland': Object.freeze(['inner_city', 'residential_edge', 'country_road']),
   'level-2-litecoin-city': Object.freeze(['penthouse_rim', 'luxury_neighborhood', 'financial_core', 'outer_boulevard']),
+  'level-3-the-getaway': Object.freeze(['penthouse_rim', 'financial_core', 'outer_boulevard']),
 });
 
 const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
@@ -37,11 +39,11 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
   'dry-forest-cave': Object.freeze({
     arenaLayout: 'cave-mouth-funnel',
     miniBossEnemyId: 'coyote-pack-runner',
-    supportEnemyIds: Object.freeze(['fud-goblin-cave', 'coyote-pack-runner']),
-    previewEnemyIds: Object.freeze(['fud-goblin-cave']),
+    supportEnemyIds: Object.freeze(['fud-goblin-cave', 'wild-boar', 'coyote-pack-runner']),
+    previewEnemyIds: Object.freeze(['fud-goblin-cave', 'wild-boar']),
     spawnSlots: Object.freeze([
       Object.freeze({ enemyId: 'fud-goblin-cave', role: 'support', angleDeg: 228, radiusTiles: 5.2 }),
-      Object.freeze({ enemyId: 'fud-goblin-cave', role: 'support', angleDeg: 308, radiusTiles: 6.0 }),
+      Object.freeze({ enemyId: 'wild-boar', role: 'support', angleDeg: 308, radiusTiles: 6.0, elite: true }),
       Object.freeze({ enemyId: 'coyote-pack-runner', role: 'mini-boss', angleDeg: 28, radiusTiles: 3.9, miniBoss: true, elite: true }),
       Object.freeze({ enemyId: 'coyote-pack-runner', role: 'support', angleDeg: 140, radiusTiles: 5.0 }),
     ]),
@@ -49,32 +51,33 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
   'old-hashrate-camp': Object.freeze({
     arenaLayout: 'salvage-laser-crossfire',
     miniBossEnemyId: 'sybil-drone',
-    supportEnemyIds: Object.freeze(['sybil-drone', 'honeypot-turret']),
-    previewEnemyIds: Object.freeze(['sybil-drone']),
+    supportEnemyIds: Object.freeze(['sybil-drone', 'honeypot-turret', 'buzzard']),
+    previewEnemyIds: Object.freeze(['sybil-drone', 'buzzard']),
   }),
   'oasis-lakeside': Object.freeze({
     arenaLayout: 'sandbar-ring',
-    miniBossEnemyId: 'scorpion-ambusher',
-    supportEnemyIds: Object.freeze(['gas-fee-wisp', 'scorpion-ambusher']),
-    previewEnemyIds: Object.freeze(['gas-fee-wisp']),
+    miniBossEnemyId: 'rattlesnake',
+    supportEnemyIds: Object.freeze(['buzzard', 'gas-fee-wisp', 'rattlesnake']),
+    previewEnemyIds: Object.freeze(['buzzard', 'gas-fee-wisp']),
     spawnSlots: Object.freeze([
+      Object.freeze({ enemyId: 'buzzard', role: 'support', angleDeg: 208, radiusTiles: 6.9 }),
       Object.freeze({ enemyId: 'gas-fee-wisp', role: 'support', angleDeg: 248, radiusTiles: 6.5 }),
-      Object.freeze({ enemyId: 'gas-fee-wisp', role: 'support', angleDeg: 315, radiusTiles: 5.8 }),
-      Object.freeze({ enemyId: 'scorpion-ambusher', role: 'mini-boss', angleDeg: 58, radiusTiles: 3.8, miniBoss: true, elite: true }),
-      Object.freeze({ enemyId: 'scorpion-ambusher', role: 'support', angleDeg: 148, radiusTiles: 5.1 }),
+      Object.freeze({ enemyId: 'gas-fee-wisp', role: 'support', angleDeg: 315, radiusTiles: 5.8, elite: true }),
+      Object.freeze({ enemyId: 'rattlesnake', role: 'mini-boss', angleDeg: 58, radiusTiles: 3.8, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'rattlesnake', role: 'support', angleDeg: 148, radiusTiles: 5.1 }),
     ]),
   }),
   'mesa-overlook': Object.freeze({
     arenaLayout: 'switchback-sniper-lane',
-    miniBossEnemyId: 'claim-jumper',
-    supportEnemyIds: Object.freeze(['claim-jumper', 'phishing-angler']),
-    previewEnemyIds: Object.freeze(['claim-jumper']),
+    miniBossEnemyId: 'ridge-raider',
+    supportEnemyIds: Object.freeze(['claim-jumper', 'phishing-angler', 'rattlesnake']),
+    previewEnemyIds: Object.freeze(['claim-jumper', 'rattlesnake']),
   }),
   'crossroads-trading-post': Object.freeze({
     arenaLayout: 'wagon-circle-crossfire',
-    miniBossEnemyId: 'claim-jumper',
-    supportEnemyIds: Object.freeze(['claim-jumper', 'honeypot-turret', 'coyote-pack-runner']),
-    previewEnemyIds: Object.freeze(['claim-jumper', 'honeypot-turret']),
+    miniBossEnemyId: 'bandit-captain',
+    supportEnemyIds: Object.freeze(['claim-jumper', 'honeypot-turret', 'wild-boar']),
+    previewEnemyIds: Object.freeze(['claim-jumper', 'wild-boar']),
   }),
 });
 
@@ -147,7 +150,9 @@ function preferredExtractionAnchor(cell, levelId) {
   const anchors = Array.isArray(cell?.setPieceAnchors) ? cell.setPieceAnchors : [];
   const matcher = levelId === 'level-2-litecoin-city'
     ? /(vip|exit|gate|skybridge|plaza|penthouse)/i
-    : /(safehouse|checkpoint|gate|innercity|rest-stop|turnout)/i;
+    : levelId === 'level-3-the-getaway'
+      ? /(vip|exit|gate|skybridge|roof|rail|penthouse|launch)/i
+      : /(safehouse|checkpoint|gate|innercity|rest-stop|turnout)/i;
   return anchors.find((anchor) => matcher.test(`${anchor.id ?? ''} ${anchor.role ?? ''} ${anchor.templateId ?? ''}`))
     ?? anchors[0]
     ?? null;
@@ -242,11 +247,13 @@ export function buildCampaignExtractionPoint({
     templateId: anchor.templateId ?? cell.landmarkTemplateId ?? null,
     worldX: projected.worldX,
     worldY: projected.worldY,
-    radiusTiles: level.id === 'level-2-litecoin-city' ? 1.35 : 1.15,
-    label: level.id === 'level-2-litecoin-city' ? 'VIP EXIT' : 'SAFEHOUSE',
+    radiusTiles: level.id === 'level-2-litecoin-city' ? 1.35 : level.id === 'level-3-the-getaway' ? 1.4 : 1.15,
+    label: level.id === 'level-2-litecoin-city' ? 'VIP EXIT' : level.id === 'level-3-the-getaway' ? 'MAINNET EXIT' : 'SAFEHOUSE',
     detail: level.id === 'level-2-litecoin-city'
       ? 'Reach the penthouse extraction lane.'
-      : 'Reach the safehouse and leave the wasteland alive.',
+      : level.id === 'level-3-the-getaway'
+        ? 'Reach the Mainnet Express escape route.'
+        : 'Reach the safehouse and leave the wasteland alive.',
   });
 }
 

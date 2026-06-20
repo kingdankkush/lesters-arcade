@@ -1,5 +1,6 @@
 const LEVEL_1_ID = 'level-1-crypto-wasteland';
 const LEVEL_2_ID = 'level-2-litecoin-city';
+const LEVEL_3_ID = 'level-3-the-getaway';
 
 export const HMH_LEVEL_ONE_WASTELAND_POIS = Object.freeze([
   Object.freeze({
@@ -194,7 +195,7 @@ export const HMH_CAMPAIGN_LEVELS = Object.freeze([
     loadingStatus: 'PREPARING LEVEL 2...',
     bossId: 'mr-ngmi',
     bossTitle: 'Mr. NGMI',
-    nextLevelId: null,
+    nextLevelId: LEVEL_3_ID,
     timings: Object.freeze({
       bossSpawnSeconds: 360,
       extractionSpawnSeconds: 600,
@@ -228,6 +229,47 @@ export const HMH_CAMPAIGN_LEVELS = Object.freeze([
       'DAO Lobbyists',
       'Influencer Camera Drones',
       'Chainlink Security Clerks',
+    ]),
+  }),
+  Object.freeze({
+    id: LEVEL_3_ID,
+    number: 3,
+    shortTitle: 'The Getaway',
+    title: 'Level 3 - The Getaway',
+    bannerTitle: 'Level 3 — The Getaway',
+    gameplayTitle: 'Level 3: Mainnet Express',
+    loadingStatus: 'PREPARING LEVEL 3...',
+    bossId: 'mainnet-express-overseer',
+    bossTitle: 'Mainnet Express Overseer',
+    nextLevelId: null,
+    timings: Object.freeze({
+      bossSpawnSeconds: 300,
+      extractionSpawnSeconds: 480,
+    }),
+    scoring: Object.freeze({
+      targetSeconds: 480,
+      masterySeconds: 420,
+    }),
+    districtPlan: Object.freeze([
+      Object.freeze({ id: 'penthouse-launch-pad', label: 'Penthouse Launch Pad', assetMood: 'roof gardens, helipad clutter, wind-tossed signage, panicked VIP evac lanes' }),
+      Object.freeze({ id: 'skybridge-breakpoint', label: 'Skybridge Breakpoint', assetMood: 'glass catwalks, blinking warning rails, broken ad panels, vertical city drop-offs' }),
+      Object.freeze({ id: 'mainnet-express', label: 'Mainnet Express', assetMood: 'armored train cars, rooftop seams, power conduits, speed-line light bands, finale storm sky' }),
+    ]),
+    navigationGrammar: Object.freeze([
+      'The route is discrete and authored: penthouse exit to skybridge collapse to train-roof finale.',
+      'High-speed traversal pressure should come from lane commitment, wind, and narrow roof safety windows, not procedural maze shape.',
+      'Visual reads must always preserve escape direction toward the active train and final extraction point.',
+    ]),
+    missingAssetFocus: Object.freeze([
+      'penthouse evacuation clutter and roof-edge cover',
+      'skybridge fracture variants and warning-light rails',
+      'mainnet express roof modules, door seams, and conductor-car setpieces',
+    ]),
+    enemyFactions: Object.freeze([
+      'VIP Extraction Guards',
+      'Skybridge Interceptors',
+      'Mainnet Express Security',
+      'Pursuit Drones',
     ]),
   }),
 ]);
@@ -329,6 +371,31 @@ export function buildHmhCampaignObjectiveState({
       label: 'Push into the Inner City',
       shortLabel: 'ADVANCE',
       detail: 'Move boulevard to boulevard, then transition into the financial core and luxury neighborhoods.',
+    });
+  }
+
+  if (level.id === LEVEL_3_ID) {
+    if (extractionSpawned || safeElapsed >= level.timings.extractionSpawnSeconds) {
+      return Object.freeze({
+        phase: 'extract',
+        label: 'Final Escape Window Open',
+        shortLabel: 'ESCAPE',
+        detail: 'Stay on the Mainnet Express route and reach the final extraction car alive.',
+      });
+    }
+    if (bossTriggered || safeElapsed >= level.timings.bossSpawnSeconds) {
+      return Object.freeze({
+        phase: 'boss',
+        label: `${level.bossTitle} Active`,
+        shortLabel: 'FINALE BOSS',
+        detail: 'The getaway is collapsing into a train-roof finale. Survive the boss pressure and keep the route.',
+      });
+    }
+    return Object.freeze({
+      phase: 'advance',
+      label: 'Break for the Mainnet Express',
+      shortLabel: 'GETAWAY',
+      detail: 'Push across the rooftop escape chain, then board the Mainnet Express for the final runout.',
     });
   }
 

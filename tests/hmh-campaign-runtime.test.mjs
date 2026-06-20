@@ -14,6 +14,7 @@ import { generateDistrictGrid } from '../apps/portal/src/district-generator.mjs'
 test('getHmhCampaignLayout maps campaign levels to authored layouts', () => {
   assert.equal(getHmhCampaignLayout('level-1-crypto-wasteland'), 'level1-authored');
   assert.equal(getHmhCampaignLayout('level-2-litecoin-city'), 'level2-authored');
+  assert.equal(getHmhCampaignLayout('level-3-the-getaway'), 'level2-authored');
   assert.equal(getHmhCampaignLayout('unknown-level'), 'level1-authored');
 });
 
@@ -103,6 +104,22 @@ test('buildCampaignExtractionPoint prefers the authored late-run district for Le
   assert.equal(point.worldX, 101);
   assert.equal(point.worldY, 17);
   assert.equal(point.label, 'VIP EXIT');
+});
+
+test('buildCampaignExtractionPoint gives Level 3 a finale-specific extraction label', () => {
+  const districtGrid = [
+    {
+      dx: 2,
+      dy: 0,
+      districtFamily: 'penthouse_rim',
+      landmarkTemplateId: 'walled_compound',
+      setPieceAnchors: [{ id: 'penthouse-launch-exit', templateId: 'walled_compound', localX: 4, localY: 2 }],
+    },
+  ];
+
+  const point = buildCampaignExtractionPoint({ levelId: 'level-3-the-getaway', districtGrid, worldWidth: 175, worldHeight: 35 });
+  assert.equal(point.label, 'MAINNET EXIT');
+  assert.match(point.detail, /Mainnet Express/i);
 });
 
 test('buildCampaignPoiDirective telegraphs Rugpull Gulch from the ghost-town spine', () => {
@@ -195,7 +212,7 @@ test('buildCampaignPoiEncounterProfile gives Dry Forest Cave and Oasis Lakeside 
       id: 'oasis-lakeside',
       title: 'Oasis Lakeside',
       phaseHint: 'poi-arena',
-      miniBossId: 'scorpion-ambusher',
+      miniBossId: 'rattlesnake',
       miniBossTitle: 'Sandbar Apex',
       districtId: 'residential-edge',
     },
@@ -207,8 +224,10 @@ test('buildCampaignPoiEncounterProfile gives Dry Forest Cave and Oasis Lakeside 
   assert.equal(dryForest.visualPlan.propClusters.some((cluster) => cluster.id === 'cave-mouth-rocks'), true);
   assert.equal(dryForest.spawnSlots.some((slot) => slot.enemyId === 'coyote-pack-runner' && slot.role === 'mini-boss'), true);
   assert.equal(dryForest.spawnSlots.some((slot) => slot.enemyId === 'fud-goblin-cave' && slot.role === 'support'), true);
+  assert.equal(dryForest.spawnSlots.some((slot) => slot.enemyId === 'wild-boar' && slot.role === 'support'), true);
   assert.equal(oasis.visualPlan.telegraphCue.includes('waterline'), true);
   assert.equal(oasis.visualPlan.propClusters.some((cluster) => cluster.id === 'reed-bank-ring'), true);
-  assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'scorpion-ambusher' && slot.role === 'mini-boss'), true);
+  assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'rattlesnake' && slot.role === 'mini-boss'), true);
+  assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'buzzard' && slot.role === 'support'), true);
   assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'gas-fee-wisp' && slot.role === 'support'), true);
 });

@@ -14,10 +14,11 @@ import {
   enemyProxyRenderProfile,
 } from '../apps/portal/src/hmh-encounter-visuals.mjs';
 
-test('enemyProxyRenderProfile gives coyote, scorpion, and cave goblin bespoke proxy-readability treatment', () => {
+test('enemyProxyRenderProfile gives authored animal and human POI enemies bespoke proxy-readability treatment', () => {
   const coyote = enemyProxyRenderProfile({ id: 'coyote-pack-runner', state: 'melee-tell' });
   const scorpion = enemyProxyRenderProfile({ id: 'scorpion-ambusher', burrowing: true });
   const caveGoblin = enemyProxyRenderProfile({ id: 'fud-goblin-cave' });
+  const captain = enemyProxyRenderProfile({ id: 'bandit-captain' });
 
   assert.equal(coyote.proxyFamily, 'trenchDegen');
   assert.equal(coyote.scaleMul > 1, true);
@@ -31,6 +32,9 @@ test('enemyProxyRenderProfile gives coyote, scorpion, and cave goblin bespoke pr
   assert.equal(caveGoblin.proxyFamily, 'trenchDegen');
   assert.equal(caveGoblin.telegraphStyle, 'torch-pop');
   assert.equal(caveGoblin.scaleMul < coyote.scaleMul, true);
+
+  assert.equal(captain.proxyFamily, 'evilBanker');
+  assert.equal(captain.scaleMul > 1, true);
 });
 
 test('buildEncounterVisualPlan gives authored Dry Forest Cave, Oasis Lakeside, Crossroads, and Mesa visual staging', () => {
@@ -172,33 +176,46 @@ test('buildEncounterEnemyBehaviorProfile gives coyote and scorpion authored aren
 
 
 test('buildEncounterEnemyBehaviorProfile extends authored responses into Crossroads, Mesa, and Rugpull arenas', () => {
-  const crossroadsRunner = buildEncounterEnemyBehaviorProfile({ poiId: 'crossroads-trading-post', enemyId: 'coyote-pack-runner' });
+  const crossroadsBoar = buildEncounterEnemyBehaviorProfile({ poiId: 'crossroads-trading-post', enemyId: 'wild-boar' });
   const crossroadsTurret = buildEncounterEnemyBehaviorProfile({ poiId: 'crossroads-trading-post', enemyId: 'honeypot-turret' });
+  const crossroadsCaptain = buildEncounterEnemyBehaviorProfile({ poiId: 'crossroads-trading-post', enemyId: 'bandit-captain' });
   const mesaJumper = buildEncounterEnemyBehaviorProfile({ poiId: 'mesa-overlook', enemyId: 'claim-jumper' });
   const mesaAngler = buildEncounterEnemyBehaviorProfile({ poiId: 'mesa-overlook', enemyId: 'phishing-angler' });
+  const mesaRaider = buildEncounterEnemyBehaviorProfile({ poiId: 'mesa-overlook', enemyId: 'ridge-raider' });
   const rugpullSheriff = buildEncounterEnemyBehaviorProfile({ poiId: 'rugpull-gulch', enemyId: 'claim-jumper-sheriff' });
   const rugpullZealot = buildEncounterEnemyBehaviorProfile({ poiId: 'rugpull-gulch', enemyId: 'scam-cult-zealot' });
 
-  assert.equal(crossroadsRunner.speedMul > 1, true);
+  assert.equal(crossroadsBoar.speedMul > 1, true);
   assert.equal(crossroadsTurret.desiredDistanceMul > 1, true);
+  assert.equal(crossroadsCaptain.telegraphBonusFrames >= 3, true);
   assert.equal(mesaJumper.desiredDistanceMul > 1, true);
   assert.equal(mesaAngler.telegraphBonusFrames >= 2, true);
+  assert.equal(mesaRaider.desiredDistanceMul > 1, true);
   assert.equal(rugpullSheriff.telegraphBonusFrames >= 3, true);
   assert.equal(rugpullZealot.attackResetFrames < 92, true);
 });
 
-test('bespoke coyote and scorpion visual kits are registered with real generated sheet files', () => {
+test('bespoke authored enemy visual kits are registered with real generated sheet files', () => {
   const coyote = bespokeEnemyVisualKitFor({ id: 'coyote-pack-runner' });
   const scorpion = bespokeEnemyVisualKitFor({ id: 'scorpion-ambusher' });
+  const captain = bespokeEnemyVisualKitFor({ id: 'bandit-captain' });
+  const boar = bespokeEnemyVisualKitFor({ id: 'wild-boar' });
+  const buzzard = bespokeEnemyVisualKitFor({ id: 'buzzard' });
+  const rattlesnake = bespokeEnemyVisualKitFor({ id: 'rattlesnake' });
 
   assert.equal(BESPOKE_ENEMY_VISUAL_KITS['coyote-pack-runner'].states.length >= 3, true);
   assert.equal(BESPOKE_ENEMY_VISUAL_KITS['scorpion-ambusher'].states.length >= 3, true);
+  assert.equal(BESPOKE_ENEMY_VISUAL_KITS['bandit-captain'].states.length >= 3, true);
   assert.equal(coyote.id, 'coyote-pack-runner');
   assert.equal(scorpion.id, 'scorpion-ambusher');
+  assert.equal(captain.id, 'bandit-captain');
+  assert.equal(boar.id, 'wild-boar');
+  assert.equal(buzzard.id, 'buzzard');
+  assert.equal(rattlesnake.id, 'rattlesnake');
   assert.equal(coyote.layout.columns, 4);
   assert.equal(scorpion.layout.rows, 2);
 
-  for (const kit of [coyote, scorpion]) {
+  for (const kit of [coyote, scorpion, captain, boar, buzzard, rattlesnake]) {
     for (const state of kit.states) {
       const filePath = fileURLToPath(new URL(`../apps/portal/${kit.sheets[state]}`, import.meta.url));
       assert.equal(existsSync(filePath), true, `${kit.id} ${state} sheet exists`);

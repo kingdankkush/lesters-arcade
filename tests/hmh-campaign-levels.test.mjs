@@ -14,12 +14,15 @@ import {
   buildHmhExtractionGuidance,
 } from '../apps/portal/src/hmh-campaign-levels.mjs';
 
-test('campaign levels expose authored Level 1 and Level 2 roadmap metadata', () => {
-  assert.equal(HMH_CAMPAIGN_LEVELS.length >= 2, true);
+test('campaign levels expose authored Level 1 to Level 3 roadmap metadata', () => {
+  assert.equal(HMH_CAMPAIGN_LEVELS.length >= 3, true);
   assert.equal(getInitialHmhCampaignLevelId(), 'level-1-crypto-wasteland');
   assert.equal(getHmhCampaignLevel().shortTitle, 'Crypto Wasteland');
   assert.equal(getNextHmhCampaignLevel('level-1-crypto-wasteland')?.id, 'level-2-litecoin-city');
+  assert.equal(getNextHmhCampaignLevel('level-2-litecoin-city')?.id, 'level-3-the-getaway');
+  assert.equal(getNextHmhCampaignLevel('level-3-the-getaway'), null);
   assert.equal(formatHmhCampaignLevelBanner('level-2-litecoin-city'), 'Level 2 — Litecoin City');
+  assert.equal(formatHmhCampaignLevelBanner('level-3-the-getaway'), 'Level 3 — The Getaway');
 });
 
 test('level 1 metadata locks the authored macro model and canon reconciliation', () => {
@@ -99,4 +102,15 @@ test('extraction guidance reports heading and distance in tiles', () => {
   assert.equal(guidance.heading, 'NE');
   assert.equal(guidance.distanceTiles, 4.2);
   assert.equal(guidance.label, 'NE · 4.2t');
+});
+
+test('level 3 objective state reflects the discrete getaway finale', () => {
+  const advance = buildHmhCampaignObjectiveState({ levelId: 'level-3-the-getaway', elapsedSeconds: 120 });
+  const boss = buildHmhCampaignObjectiveState({ levelId: 'level-3-the-getaway', elapsedSeconds: 320, bossTriggered: true });
+  const extract = buildHmhCampaignObjectiveState({ levelId: 'level-3-the-getaway', elapsedSeconds: 500, extractionSpawned: true });
+
+  assert.equal(advance.shortLabel, 'GETAWAY');
+  assert.match(advance.detail, /Mainnet Express/i);
+  assert.equal(boss.shortLabel, 'FINALE BOSS');
+  assert.equal(extract.shortLabel, 'ESCAPE');
 });

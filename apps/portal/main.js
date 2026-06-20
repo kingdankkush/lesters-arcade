@@ -1170,6 +1170,7 @@ const dom = {
   officialGameStateCopy: document.querySelector('#officialGameStateCopy'),
   officialGameplayControls: document.querySelector('#officialGameplayControls'),
   combatPauseButton: document.querySelector('#combatPauseButton'),
+  combatMenuIconButton: document.querySelector('#combatMenuIconButton'),
   combatRestartButton: document.querySelector('#combatRestartButton'),
   combatMusicButton: document.querySelector('#combatMusicButton'),
   combatShakeButton: document.querySelector('#combatShakeButton'),
@@ -2255,6 +2256,11 @@ function syncCombatOverlay() {
   }
   if (dom.officialGameplayControls) dom.officialGameplayControls.dataset.mode = currentSession?.mode ?? 'free';
   if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Return to Game' : 'Pause';
+  if (dom.combatMenuIconButton) {
+    dom.combatMenuIconButton.textContent = combat.paused ? '▶' : '☰';
+    dom.combatMenuIconButton.setAttribute('aria-label', combat.paused ? 'Resume game' : 'Pause and open game menu');
+    dom.combatMenuIconButton.setAttribute('aria-expanded', String(Boolean(combat.paused)));
+  }
   if (dom.combatRestartButton) dom.combatRestartButton.textContent = currentSession?.isPaid ? 'Restart (New Credit)' : 'Restart Free';
   if (dom.combatMusicButton) dom.combatMusicButton.textContent = combat.musicEnabled ? 'Music On' : 'Music Off';
   if (dom.combatShakeButton) dom.combatShakeButton.textContent = gameSettings.screenShake ? 'Shake On' : 'Shake Off';
@@ -9208,6 +9214,7 @@ dom.shootButton.addEventListener('click', shoot);
 dom.grenadeButton.addEventListener('click', grenade);
 dom.powerUpButton.addEventListener('click', dropPowerUp);
 dom.combatPauseButton?.addEventListener('click', () => toggleCombatPause());
+dom.combatMenuIconButton?.addEventListener('click', () => toggleCombatPause());
 dom.combatRestartButton?.addEventListener('click', restartCombatRun);
 dom.combatMusicButton?.addEventListener('click', toggleCombatMusic);
 dom.combatShakeButton?.addEventListener('click', () => {
@@ -9560,12 +9567,9 @@ function ensureTouchControls(profile) {
   }
   layer.append(cluster);
 
-  // Pause button (top-right during gameplay).
-  const pauseBtn = el('button', { className: 'touch-pause-button', textContent: 'II' });
-  pauseBtn.type = 'button';
-  pauseBtn.setAttribute('aria-label', 'Pause');
-  pauseBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); toggleCombatPause(); });
-  layer.append(pauseBtn);
+  // NOTE: the persistent top-right pause/menu button (#combatMenuIconButton)
+  // lives in the gameplay view markup and is shown on all viewports, so the
+  // touch layer no longer needs its own pause button.
 
   document.body.append(layer);
   touchControlsBuilt = true;

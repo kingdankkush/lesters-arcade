@@ -79,7 +79,6 @@ export function buildEncounterVisualPlan({ poiId = null, arenaLayout = null } = 
   });
 }
 
-
 function sceneObj(id, sceneAssetKey, sceneRole, worldX, worldY, { solid = true, radius = 0.5, drawOrderBias = 0 } = {}) {
   return Object.freeze({ id, sceneAssetKey, sceneRole, worldX, worldY, solid, radius, drawOrderBias });
 }
@@ -137,7 +136,6 @@ export function buildEncounterSceneObjects({ poiId = null, arenaLayout = null, c
   return Object.freeze(objects);
 }
 
-
 const ENCOUNTER_TEMPLATE_RULES = Object.freeze({
   'dry-forest-cave': Object.freeze({ templateId: 'crypto_dry_forest_cave', radiusCells: 1, pathOrientation: 'vertical' }),
   'oasis-lakeside': Object.freeze({ templateId: 'crypto_oasis_lakeside', radiusCells: 1, pathOrientation: 'horizontal' }),
@@ -175,33 +173,35 @@ export function buildEncounterTerrainPressure({ poiId = null, centerX = 0, cente
   return Object.freeze({ moveSpeedMul: 1, hazardId: null, label: null });
 }
 
+const DEFAULT_KIT_LAYOUT = Object.freeze({ columns: 4, rows: 2, frameWidth: 96, frameHeight: 96 });
 
+function bespokeKit(id, { drawScaleMul = 1, anchorBiasY = 0 } = {}) {
+  return Object.freeze({
+    id,
+    layout: DEFAULT_KIT_LAYOUT,
+    states: Object.freeze(['idle', 'run', 'attack']),
+    sheets: Object.freeze({
+      idle: `./assets/generated/hmh-bespoke-enemy-kits/${id}/idle.png`,
+      run: `./assets/generated/hmh-bespoke-enemy-kits/${id}/run.png`,
+      attack: `./assets/generated/hmh-bespoke-enemy-kits/${id}/attack.png`,
+    }),
+    drawScaleMul,
+    anchorBiasY,
+  });
+}
 
 export const BESPOKE_ENEMY_VISUAL_KITS = Object.freeze({
-  'coyote-pack-runner': Object.freeze({
-    id: 'coyote-pack-runner',
-    layout: Object.freeze({ columns: 4, rows: 2, frameWidth: 96, frameHeight: 96 }),
-    states: Object.freeze(['idle', 'run', 'attack']),
-    sheets: Object.freeze({
-      idle: './assets/generated/hmh-bespoke-enemy-kits/coyote-pack-runner/idle.png',
-      run: './assets/generated/hmh-bespoke-enemy-kits/coyote-pack-runner/run.png',
-      attack: './assets/generated/hmh-bespoke-enemy-kits/coyote-pack-runner/attack.png',
-    }),
-    drawScaleMul: 1.08,
-    anchorBiasY: -10,
-  }),
-  'scorpion-ambusher': Object.freeze({
-    id: 'scorpion-ambusher',
-    layout: Object.freeze({ columns: 4, rows: 2, frameWidth: 96, frameHeight: 96 }),
-    states: Object.freeze(['idle', 'run', 'attack']),
-    sheets: Object.freeze({
-      idle: './assets/generated/hmh-bespoke-enemy-kits/scorpion-ambusher/idle.png',
-      run: './assets/generated/hmh-bespoke-enemy-kits/scorpion-ambusher/run.png',
-      attack: './assets/generated/hmh-bespoke-enemy-kits/scorpion-ambusher/attack.png',
-    }),
-    drawScaleMul: 1.12,
-    anchorBiasY: -8,
-  }),
+  'bandit-captain': bespokeKit('bandit-captain', { drawScaleMul: 1.12, anchorBiasY: -10 }),
+  buzzard: bespokeKit('buzzard', { drawScaleMul: 1.06, anchorBiasY: -12 }),
+  'claim-jumper': bespokeKit('claim-jumper', { drawScaleMul: 1.04, anchorBiasY: -9 }),
+  'claim-jumper-sheriff': bespokeKit('claim-jumper-sheriff', { drawScaleMul: 1.1, anchorBiasY: -10 }),
+  'coyote-pack-runner': bespokeKit('coyote-pack-runner', { drawScaleMul: 1.08, anchorBiasY: -10 }),
+  'fud-goblin-cave': bespokeKit('fud-goblin-cave', { drawScaleMul: 0.96, anchorBiasY: -4 }),
+  rattlesnake: bespokeKit('rattlesnake', { drawScaleMul: 1.08, anchorBiasY: -6 }),
+  'ridge-raider': bespokeKit('ridge-raider', { drawScaleMul: 1.08, anchorBiasY: -10 }),
+  'scam-cult-zealot': bespokeKit('scam-cult-zealot', { drawScaleMul: 1.08, anchorBiasY: -9 }),
+  'scorpion-ambusher': bespokeKit('scorpion-ambusher', { drawScaleMul: 1.12, anchorBiasY: -8 }),
+  'wild-boar': bespokeKit('wild-boar', { drawScaleMul: 1.12, anchorBiasY: -7 }),
 });
 
 export function bespokeEnemyVisualKitFor(entity = {}) {
@@ -212,32 +212,52 @@ export function bespokeEnemyVisualKitFor(entity = {}) {
 export function buildEncounterEnemyBehaviorProfile({ poiId = null, enemyId = null } = {}) {
   const poi = normalizeId(poiId);
   const enemy = normalizeId(enemyId);
+
   if (poi === 'dry-forest-cave' && enemy === 'coyote-pack-runner') {
     return Object.freeze({ speedMul: 1.12, desiredDistanceMul: 0.84, telegraphBonusFrames: 4, attackResetFrames: 40 });
   }
   if (poi === 'dry-forest-cave' && enemy === 'fud-goblin-cave') {
     return Object.freeze({ speedMul: 0.92, desiredDistanceMul: 1.25, telegraphBonusFrames: 3, attackResetFrames: 52 });
   }
-  if (poi === 'oasis-lakeside' && enemy === 'scorpion-ambusher') {
+  if (poi === 'dry-forest-cave' && enemy === 'wild-boar') {
+    return Object.freeze({ speedMul: 1.14, desiredDistanceMul: 0.78, telegraphBonusFrames: 4, attackResetFrames: 46 });
+  }
+
+  if (poi === 'oasis-lakeside' && (enemy === 'scorpion-ambusher' || enemy === 'rattlesnake')) {
     return Object.freeze({ speedMul: 1.16, desiredDistanceMul: 0.82, telegraphBonusFrames: 5, attackResetFrames: 38 });
   }
   if (poi === 'oasis-lakeside' && enemy === 'gas-fee-wisp') {
     return Object.freeze({ speedMul: 1.04, desiredDistanceMul: 1.2, telegraphBonusFrames: 2, attackResetFrames: 78 });
   }
-  if (poi === 'crossroads-trading-post' && enemy === 'coyote-pack-runner') {
-    return Object.freeze({ speedMul: 1.08, desiredDistanceMul: 0.9, telegraphBonusFrames: 3, attackResetFrames: 42 });
+  if (poi === 'oasis-lakeside' && enemy === 'buzzard') {
+    return Object.freeze({ speedMul: 1.1, desiredDistanceMul: 1.35, telegraphBonusFrames: 3, attackResetFrames: 48 });
   }
+
   if (poi === 'crossroads-trading-post' && enemy === 'honeypot-turret') {
     return Object.freeze({ speedMul: 1, desiredDistanceMul: 1.4, telegraphBonusFrames: 4, attackResetFrames: 70 });
   }
+  if (poi === 'crossroads-trading-post' && enemy === 'wild-boar') {
+    return Object.freeze({ speedMul: 1.1, desiredDistanceMul: 0.8, telegraphBonusFrames: 3, attackResetFrames: 44 });
+  }
+  if (poi === 'crossroads-trading-post' && enemy === 'bandit-captain') {
+    return Object.freeze({ speedMul: 1.02, desiredDistanceMul: 1.18, telegraphBonusFrames: 4, attackResetFrames: 60 });
+  }
+
   if (poi === 'mesa-overlook' && enemy === 'claim-jumper') {
     return Object.freeze({ speedMul: 0.96, desiredDistanceMul: 1.35, telegraphBonusFrames: 4, attackResetFrames: 66 });
   }
   if (poi === 'mesa-overlook' && enemy === 'phishing-angler') {
     return Object.freeze({ speedMul: 1.02, desiredDistanceMul: 1.3, telegraphBonusFrames: 3, attackResetFrames: 74 });
   }
+  if (poi === 'mesa-overlook' && enemy === 'ridge-raider') {
+    return Object.freeze({ speedMul: 0.98, desiredDistanceMul: 1.42, telegraphBonusFrames: 5, attackResetFrames: 62 });
+  }
+
   if (poi === 'rugpull-gulch' && enemy === 'claim-jumper-sheriff') {
     return Object.freeze({ speedMul: 0.94, desiredDistanceMul: 1.3, telegraphBonusFrames: 5, attackResetFrames: 62 });
+  }
+  if (poi === 'rugpull-gulch' && enemy === 'claim-jumper') {
+    return Object.freeze({ speedMul: 1.01, desiredDistanceMul: 1.22, telegraphBonusFrames: 3, attackResetFrames: 66 });
   }
   if (poi === 'rugpull-gulch' && enemy === 'scam-cult-zealot') {
     return Object.freeze({ speedMul: 1.03, desiredDistanceMul: 1.1, telegraphBonusFrames: 4, attackResetFrames: 68 });
@@ -245,15 +265,16 @@ export function buildEncounterEnemyBehaviorProfile({ poiId = null, enemyId = nul
   if (poi === 'rugpull-gulch' && enemy === 'rug-rat') {
     return Object.freeze({ speedMul: 1.18, desiredDistanceMul: 0.8, telegraphBonusFrames: 2, attackResetFrames: 34 });
   }
+
   return Object.freeze({ speedMul: 1, desiredDistanceMul: 1, telegraphBonusFrames: 0, attackResetFrames: null });
 }
 
 export function enemyProxyRenderProfile(entity = {}) {
   const hay = normalizeId(`${entity?.id ?? ''} ${entity?.title ?? ''} ${entity?.enemyKey ?? ''} ${entity?.class ?? ''}`);
-  if (hay.includes('coyote')) {
+  if (hay.includes('coyote') || hay.includes('wild-boar')) {
     return Object.freeze({
       proxyFamily: 'trenchDegen',
-      scaleMul: 1.08,
+      scaleMul: hay.includes('wild-boar') ? 1.12 : 1.08,
       anchorBiasY: -6,
       accentColor: '#d9a15b',
       telegraphColor: '#ffd27a',
@@ -281,6 +302,28 @@ export function enemyProxyRenderProfile(entity = {}) {
       telegraphColor: '#ffd37d',
       telegraphStyle: 'torch-pop',
       fallbackColor: '#ff9a3d',
+    });
+  }
+  if (hay.includes('claim-jumper') || hay.includes('bandit-captain') || hay.includes('ridge-raider') || hay.includes('scam-cult-zealot')) {
+    return Object.freeze({
+      proxyFamily: 'evilBanker',
+      scaleMul: hay.includes('bandit-captain') ? 1.1 : 1.04,
+      anchorBiasY: -6,
+      accentColor: hay.includes('scam-cult-zealot') ? '#ff8f5c' : '#c8d3e8',
+      telegraphColor: hay.includes('scam-cult-zealot') ? '#ffd37d' : '#ffe84d',
+      telegraphStyle: hay.includes('scam-cult-zealot') ? 'torch-pop' : null,
+      fallbackColor: hay.includes('scam-cult-zealot') ? '#ff9a3d' : '#9cb6e9',
+    });
+  }
+  if (hay.includes('buzzard')) {
+    return Object.freeze({
+      proxyFamily: 'cryptoBro',
+      scaleMul: 1.04,
+      anchorBiasY: -10,
+      accentColor: '#d6c7a2',
+      telegraphColor: '#f5dda3',
+      telegraphStyle: null,
+      fallbackColor: '#bda97b',
     });
   }
   return Object.freeze({
