@@ -15,6 +15,17 @@ Updated after Claude Opus 4.8 Build-Risk Review v2.1 ingestion.
 - [ ] Confirm portal branding direction: lead Litecoin/LitVM identity while architecting rails for third-party cabinets later.
 - [ ] Get written brand/legal sign-off before any commercial, real-funds, Litecoin-logo-heavy, Ł-heavy, LTC-denominated, or pay-to-play launch usage.
 
+## Platform Audit (2026-06-20, Claude Opus 4.8) — new decisions for Justin
+
+- [ ] Grant repo access (or paste key source) for a true code-level audit? Repo was not publicly reachable, so the audit's code-level items are marked "verify."
+- [ ] Shell architecture: SPA (React/Vue) vs progressive multi-page? Affects routing, code-split, and game-embedding approach. (Current build is a vanilla `officialAppStep` state machine with `pushState` routing.)
+- [ ] Are third-party games Free-only by default, or can they earn ranked eligibility? Sets how strict the determinism/verifier bar is for outside devs.
+- [ ] Revenue model for third-party cabinets (rev-share, listing, ads)? MONEY GATE — economic + legal.
+- [ ] Keep ads? If so, where & via what contact? Audit recommends a role address (e.g. `ads@lestersarcade.io`) over the personal Gmail currently in ad banners + footer. (Justin previously set `kingdankkush420@gmail.com` intentionally — confirm whether to keep or switch.)
+- [ ] Confirm LitVM RPC/chain/faucet/token before any deploy; Litecoin brand/legal sign-off. VERIFY + LEGAL GATE.
+- [ ] Move design-doc/codex content fully out of the served HTML build (currently behind a hidden dev-backstage toggle but still shipped) — strip from production or relocate to `/docs`?
+- [ ] Re-shoot legacy side-scroller key art (Underchain parallax JPGs) as isometric Crypto Wasteland art — asset production task.
+
 ## v2.1 recommendations accepted as active build direction unless Justin changes them
 
 - [x] Prove a deterministic 6:30 Act I vertical slice before full 20-minute breadth.
