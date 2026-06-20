@@ -71,6 +71,7 @@ import {
   buildLeaderboardModel,
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
+  buildCombatAccessibilitySettingsModel,
   computeWeaponUpgrades,
   WEAPON_UPGRADE_TREES,
   buildCombatOptionsMenuModel,
@@ -677,6 +678,10 @@ const combatAudio = {
 const gameSettings = {
   screenShake: true,
   gore: true,
+  reduceMotion: false,
+  reduceFlash: false,
+  colorblindTags: false,
+  autoAimAssist: true,
 };
 (function loadGameSettings() {
   try {
@@ -687,6 +692,13 @@ const gameSettings = {
 })();
 function saveGameSettings() {
   try { if (typeof localStorage !== 'undefined') localStorage.setItem('hmh-settings', JSON.stringify(gameSettings)); } catch { /* ignore */ }
+}
+
+function applyGameplayAccessibilitySettings() {
+  document.documentElement.dataset.reduceMotion = gameSettings.reduceMotion ? 'true' : 'false';
+  document.documentElement.dataset.reduceFlash = gameSettings.reduceFlash ? 'true' : 'false';
+  document.documentElement.dataset.colorblindTags = gameSettings.colorblindTags ? 'true' : 'false';
+  if (gameSettings.reduceMotion) combat.shake = 0;
 }
 
 function currentArcadeMusicTrack() {
@@ -1961,6 +1973,7 @@ function renderLevelUpActionGrid() {
     badge.setAttribute('aria-hidden', 'true');
     const titleWrap = el('div', { className: 'upgrade-card-titlewrap' });
     appendText(titleWrap, 'span', cat.label.toUpperCase(), 'upgrade-card-cat');
+    if (gameSettings.colorblindTags) appendText(titleWrap, 'span', `TONE ${String(cat.tone).toUpperCase()}`, 'upgrade-card-tone-tag');
     appendText(titleWrap, 'strong', choice.title, 'upgrade-card-title');
     head.append(badge, titleWrap);
     appendText(head, 'span', `+${choice.perLevelPercent}%`, 'upgrade-card-gain');
@@ -2152,7 +2165,7 @@ function renderRoguelikeStatBar() {
   if ((combat.powerUpTimers.magnet ?? 0) > 0) activeFx.push(`MAGNET ${Math.ceil(combat.powerUpTimers.magnet)}s`);
   if ((combat.powerUpTimers.slowEnemies ?? 0) > 0) activeFx.push(`SLOW ${Math.ceil(combat.powerUpTimers.slowEnemies)}s`);
   if ((combat.powerUpTimers.berserk ?? 0) > 0) activeFx.push(`BERSERK ${Math.ceil(combat.powerUpTimers.berserk)}s`);
-  const signature = `${heroName}|${stats.map((s) => s.value).join('|')}|xp${Math.round(xpRatio * 100)}|${activeFx.join(',')}`;
+  const signature = `${heroName}|${stats.map((s) => s.value).join('|')}|xp${Math.round(xpRatio * 100)}|${activeFx.join(',')}|cb${gameSettings.colorblindTags ? 1 : 0}`;
   if (bar.dataset.signature === signature) return;
   bar.dataset.signature = signature;
   bar.replaceChildren();
@@ -2164,6 +2177,7 @@ function renderRoguelikeStatBar() {
     const chip = el('div', { className: 'stat-chip', dataset: { tone: s.tone, stat: s.id } });
     appendText(chip, 'span', s.label);
     appendText(chip, 'strong', s.value);
+    if (gameSettings.colorblindTags) appendText(chip, 'small', `Tone ${String(s.tone).toUpperCase()}`, 'stat-tone-tag');
     chips.append(chip);
   }
   bar.append(chips);
@@ -2178,7 +2192,11 @@ function renderRoguelikeStatBar() {
   bar.append(xpWrap);
   if (activeFx.length) {
     const fxWrap = el('div', { className: 'stat-fx' });
-    for (const f of activeFx) appendText(fxWrap, 'span', f);
+    for (const f of activeFx) {
+      const chip = el('span', { textContent: f });
+      if (gameSettings.colorblindTags) chip.setAttribute('title', 'Colorblind-friendly tag enabled');
+      fxWrap.append(chip);
+    }
     bar.append(fxWrap);
   }
 }
@@ -2343,13 +2361,48 @@ async function toggleCombatPause(forcePaused) {
 
 function toggleCombatShakeSetting() {
   gameSettings.screenShake = !gameSettings.screenShake;
+  if (!gameSettings.screenShake) combat.shake = 0;
   saveGameSettings();
+  applyGameplayAccessibilitySettings();
   playSfxCue('menu-click');
   syncCombatOverlay();
 }
 
 function toggleCombatGoreSetting() {
   gameSettings.gore = !gameSettings.gore;
+  saveGameSettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
+function toggleCombatReduceMotionSetting() {
+  gameSettings.reduceMotion = !gameSettings.reduceMotion;
+  if (gameSettings.reduceMotion) combat.shake = 0;
+  saveGameSettings();
+  applyGameplayAccessibilitySettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
+function toggleCombatReduceFlashSetting() {
+  gameSettings.reduceFlash = !gameSettings.reduceFlash;
+  saveGameSettings();
+  applyGameplayAccessibilitySettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
+function toggleCombatColorblindTagsSetting() {
+  gameSettings.colorblindTags = !gameSettings.colorblindTags;
+  saveGameSettings();
+  applyGameplayAccessibilitySettings();
+  playSfxCue('menu-click');
+  renderRoguelikeStatBar();
+  syncCombatOverlay();
+}
+
+function toggleCombatAutoAimSetting() {
+  gameSettings.autoAimAssist = !gameSettings.autoAimAssist;
   saveGameSettings();
   playSfxCue('menu-click');
   syncCombatOverlay();
@@ -2368,22 +2421,47 @@ function renderCombatSettingsPanel() {
     dom.combatSettingsPanel.replaceChildren();
     return;
   }
-  const title = el('h4', { className: 'combat-settings-title', textContent: 'Settings' });
-  const copy = el('p', { className: 'combat-settings-copy', textContent: 'Quick gameplay toggles from the pause menu. Accessibility controls land here next.' });
-  const grid = el('div', { className: 'combat-settings-grid' });
-  const settingsActions = [
+  const quickTitle = el('h4', { className: 'combat-settings-title', textContent: 'Settings' });
+  const quickCopy = el('p', { className: 'combat-settings-copy', textContent: 'Quick gameplay toggles plus accessibility controls without leaving the run.' });
+  const quickGrid = el('div', { className: 'combat-settings-grid' });
+  const quickActions = [
     { id: 'music', label: combat.musicEnabled ? 'Music On' : 'Music Off', run: toggleCombatMusic },
-    { id: 'shake', label: gameSettings.screenShake ? 'Shake On' : 'Shake Off', run: toggleCombatShakeSetting },
     { id: 'gore', label: gameSettings.gore ? 'Gore On' : 'Gore Off', run: toggleCombatGoreSetting },
     { id: 'viewport', label: combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', run: cycleCombatViewport },
   ];
-  for (const action of settingsActions) {
+  for (const action of quickActions) {
     const button = el('button', { className: 'combat-menu-action combat-settings-action', type: 'button' });
     button.textContent = action.label;
     button.addEventListener('click', () => action.run());
-    grid.append(button);
+    quickGrid.append(button);
   }
-  dom.combatSettingsPanel.replaceChildren(title, copy, grid);
+
+  const accessibility = buildCombatAccessibilitySettingsModel({
+    reduceMotion: gameSettings.reduceMotion,
+    screenShake: gameSettings.screenShake,
+    reduceFlash: gameSettings.reduceFlash,
+    colorblindTags: gameSettings.colorblindTags,
+    autoAimAssist: gameSettings.autoAimAssist,
+  });
+  const accessibilityTitle = el('h4', { className: 'combat-settings-title', textContent: accessibility.title });
+  const accessibilityCopy = el('p', { className: 'combat-settings-copy', textContent: accessibility.copy });
+  const accessibilityGrid = el('div', { className: 'combat-settings-grid combat-accessibility-grid' });
+  const actionMap = {
+    'toggle-reduce-motion': toggleCombatReduceMotionSetting,
+    'toggle-screen-shake': toggleCombatShakeSetting,
+    'toggle-reduce-flash': toggleCombatReduceFlashSetting,
+    'toggle-colorblind-tags': toggleCombatColorblindTagsSetting,
+    'toggle-auto-aim': toggleCombatAutoAimSetting,
+  };
+  for (const action of accessibility.actions) {
+    const button = el('button', { className: 'combat-menu-action combat-settings-action combat-accessibility-action', type: 'button', dataset: { action: action.id } });
+    const label = el('strong', { textContent: action.label });
+    const desc = el('span', { className: 'combat-settings-action-desc', textContent: action.description });
+    button.append(label, desc);
+    button.addEventListener('click', () => actionMap[action.id]?.());
+    accessibilityGrid.append(button);
+  }
+  dom.combatSettingsPanel.replaceChildren(quickTitle, quickCopy, quickGrid, accessibilityTitle, accessibilityCopy, accessibilityGrid);
 }
 
 async function restartCombatRun() {
@@ -5898,14 +5976,14 @@ function spawnSlash(x, y) {
 }
 
 function spawnBlood(x, y, color) {
-  if (gameSettings.screenShake) combat.shake = Math.min(7, (combat.shake ?? 0) + 1.6);
+  if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(7, (combat.shake ?? 0) + 1.6);
   if (!gameSettings.gore) return; // gore toggle: skip blood splatter when off
   spawnFxImage('blood', x, y, 54, 0.38);
   for (let i = 0; i < 9; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
 }
 
 function spawnExplosion(x, y, color) {
-  if (gameSettings.screenShake) combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
+  if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
   spawnFxImage('fireball', x, y, 96, 0.5);
   spawnSpriteParticle('level-up-burst', x, y, { color, size: 112, life: 0.72 });
   for (let i = 0; i < 12; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 22 + Math.random() * 20, life: 0.8 + Math.random() * 0.35, maxLife: 1.15 });
@@ -5915,7 +5993,7 @@ function spawnExplosion(x, y, color) {
 // distinctly from the single-color boss/prop explosions. Alternates yellow,
 // red-orange, bright red, and a few white-hot core sparks for punch.
 function spawnGrenadeExplosion(x, y) {
-  if (gameSettings.screenShake) combat.shake = Math.min(14, (combat.shake ?? 0) + 8);
+  if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(14, (combat.shake ?? 0) + 8);
   const palette = ['#ffe84d', '#ffb347', '#ff5f1f', '#dc143c', '#fff3a0'];
   // Bright white-hot core flash — short lived but huge.
   spawnSpriteParticle('explosion-core', x, y, { color: '#fff5cc', size: 200, life: 0.28, scaleFrom: 0.5, scaleTo: 1.4 });
@@ -6059,7 +6137,7 @@ function updateAutoFire(dt) {
   if (combat.autoFireCooldown > 0) return;
   // If the pointer isn't steering aim, lock onto the nearest live enemy so the
   // hero still defends himself while the player just positions.
-  if (!combat.pointerActive && combat.enemies.length) {
+  if (!combat.pointerActive && gameSettings.autoAimAssist && combat.enemies.length) {
     let best = null;
     let bestD = Infinity;
     for (const e of combat.enemies) {
@@ -6088,7 +6166,7 @@ function shootRoguelike() {
   combat.clip -= 1;
   combat.ammo = combat.clip; // keep legacy mirror in sync
   combat.shots += 1;
-  combat.fireFlash = 4; // brief muzzle-flash brightening for the lighting pass
+  combat.fireFlash = gameSettings.reduceFlash ? 1 : 4; // brief muzzle-flash brightening for the lighting pass
   combat.lastShotFrame = combat.frame; // drives the animated-roster 'shoot' pose
   const damageScale = (combat.roguelikeRun?.stats.damage ?? 1) * ((combat.powerUpTimers.berserk ?? 0) > 0 ? 1.5 : 1);
   const bulletSpeed = 14 * (combat.roguelikeRun?.stats.bulletSpeed ?? 1);
@@ -7862,7 +7940,7 @@ function collectLightSources() {
   // Player light is limited to a brief muzzle flash while firing.
   const firing = (combat.fireFlash ?? 0) > 0;
   if (firing) {
-    lights.push({ x: combat.playerX + 14, y: combat.playerY - 14, r: 70, warm: true, muzzle: true });
+    lights.push({ x: combat.playerX + 14, y: combat.playerY - 14, r: gameSettings.reduceFlash ? 34 : 70, warm: true, muzzle: true });
   }
   // Warm light pools come ONLY from real, drawn obstacles that are plausibly
   // light-emitting (a building's windows, a vehicle's lights) in town/road
@@ -7993,7 +8071,7 @@ function drawCombatScene(timestamp = 0) {
   // --- Screen shake (juice): decays each frame, applied as a small translate. ---
   combat.shake = (combat.shake ?? 0) * 0.82;
   if (combat.fireFlash > 0) combat.fireFlash -= 1;
-  if (combat.shake < 0.15) combat.shake = 0;
+  if (combat.shake < 0.15 || gameSettings.reduceMotion || !gameSettings.screenShake) combat.shake = 0;
   const shakeApplied = combat.shake > 0;
   if (shakeApplied) {
     const ang = Math.random() * Math.PI * 2;
@@ -9524,6 +9602,7 @@ function applyDeviceProfile() {
   root.style.setProperty('--hud-scale', String(profile.hudScale));
   document.body.classList.toggle('show-touch-controls', profile.showTouchControls);
   document.body.classList.toggle('suggest-landscape', profile.suggestLandscape);
+  applyGameplayAccessibilitySettings();
   ensureTouchControls(profile);
   if (officialAppStep === 'gameplay') scheduleCombatViewportRelayout(120);
   return profile;

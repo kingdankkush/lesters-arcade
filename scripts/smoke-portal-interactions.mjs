@@ -113,6 +113,11 @@ try {
     'renderTacticalBalanceDebugOverlay',
     'renderCombatSettingsPanel',
     'toggleCombatSettingsPanel',
+    'toggleCombatReduceMotionSetting',
+    'toggleCombatReduceFlashSetting',
+    'toggleCombatColorblindTagsSetting',
+    'toggleCombatAutoAimSetting',
+    'buildCombatAccessibilitySettingsModel',
     'scheduleCombatViewportRelayout',
     "document.addEventListener('fullscreenchange'",
     "window.addEventListener('orientationchange'",
@@ -122,7 +127,18 @@ try {
     'hmhDebug=balance',
     "event.key === 'F10'",
   ];
-  const requiredStyleMarkers = ['combat-hud-overlay', 'tactical-debug-overlay', 'debug-layer', 'combat-menu-icon-button', 'combat-settings-panel'];
+  const requiredStyleMarkers = [
+    'combat-hud-overlay',
+    'tactical-debug-overlay',
+    'debug-layer',
+    'combat-menu-icon-button',
+    'combat-settings-panel',
+    'combat-accessibility-grid',
+    'combat-accessibility-action',
+    'combat-settings-action-desc',
+    'stat-tone-tag',
+    'upgrade-card-tone-tag',
+  ];
 
   for (const marker of requiredHtmlMarkers) assertIncludes('portal html', html, marker);
   for (const marker of requiredMainMarkers) assertIncludes('portal main.js', main, marker);

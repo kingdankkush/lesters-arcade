@@ -906,6 +906,40 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   gap: 10px;
 }
 
+.combat-accessibility-grid {
+  margin-top: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.combat-accessibility-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-height: 72px;
+  text-align: left;
+}
+
+.combat-accessibility-action strong {
+  color: white;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  letter-spacing: normal;
+}
+
+.combat-settings-action-desc {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  letter-spacing: normal;
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
 .combat-menu-action:hover,
 .combat-menu-action:focus-visible {
   transform: translateY(-2px);
@@ -2269,6 +2303,26 @@ button.menu-card.menu-option.interactive:active {
   text-shadow: 0 0 8px rgba(255, 95, 162, 0.85);
 }
 .level-up-upgrade-card[data-tone="weapon"] .upgrade-card-cat { color: #ff95c0; letter-spacing: 0.18em; }
+
+.stat-tone-tag,
+.upgrade-card-tone-tag {
+  display: none;
+}
+
+[data-colorblind-tags="true"] .stat-tone-tag,
+[data-colorblind-tags="true"] .upgrade-card-tone-tag {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 .combat-menu-action[data-action="level-up-reroll"] {
   background-image:

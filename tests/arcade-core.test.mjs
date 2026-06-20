@@ -52,6 +52,7 @@ import {
   buildLeaderboardModel,
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
+  buildCombatAccessibilitySettingsModel,
   buildCombatOptionsMenuModel,
   buildCombatPauseGate,
   buildHardMoneyHeroesAnimationProductionBriefs,
@@ -630,6 +631,28 @@ test('roguelike spawn director escalates enemy pressure toward a twenty minute s
   assert.equal(endgame.rangedEnemyShare > opening.rangedEnemyShare, true);
   assert.equal(endgame.eliteEnemyShare > mid.eliteEnemyShare, true);
   assert.equal(endgame.difficultyLabel, 'survival-wall');
+});
+
+test('combat accessibility settings model exposes motion flash color and aim toggles', () => {
+  const model = buildCombatAccessibilitySettingsModel({
+    reduceMotion: true,
+    screenShake: false,
+    reduceFlash: true,
+    colorblindTags: true,
+    autoAimAssist: false,
+  });
+
+  assert.equal(model.title, 'Accessibility');
+  assert.equal(model.actions.length, 5);
+  assert.deepEqual(
+    model.actions.map((action) => action.id),
+    ['toggle-reduce-motion', 'toggle-screen-shake', 'toggle-reduce-flash', 'toggle-colorblind-tags', 'toggle-auto-aim'],
+  );
+  assert.equal(model.actions[0].label, 'Reduce Motion On');
+  assert.equal(model.actions[1].label, 'Screen Shake Off');
+  assert.equal(model.actions[2].label, 'Reduce Flash On');
+  assert.equal(model.actions[3].label, 'Color Tags On');
+  assert.equal(model.actions[4].label, 'Auto Aim Off');
 });
 
 test('fullscreen viewport model requires real browser fullscreen for expanded monitor/device play', () => {

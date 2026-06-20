@@ -2453,6 +2453,26 @@ export function buildCombatHudOverlayModel({
   });
 }
 
+export function buildCombatAccessibilitySettingsModel({
+  reduceMotion = false,
+  screenShake = true,
+  reduceFlash = false,
+  colorblindTags = false,
+  autoAimAssist = true,
+} = {}) {
+  return Object.freeze({
+    title: 'Accessibility',
+    copy: 'Tune motion, flash, color labeling, and aim assist without leaving the run.',
+    actions: Object.freeze([
+      Object.freeze({ id: 'toggle-reduce-motion', label: reduceMotion ? 'Reduce Motion On' : 'Reduce Motion Off', icon: reduceMotion ? '◉' : '○', enabled: true, description: 'Softens camera motion and burst intensity.' }),
+      Object.freeze({ id: 'toggle-screen-shake', label: screenShake ? 'Screen Shake On' : 'Screen Shake Off', icon: screenShake ? '≈' : '—', enabled: true, description: 'Toggles camera shake from impacts and explosions.' }),
+      Object.freeze({ id: 'toggle-reduce-flash', label: reduceFlash ? 'Reduce Flash On' : 'Reduce Flash Off', icon: reduceFlash ? '☼' : '✦', enabled: true, description: 'Dials down muzzle flash and bright burst effects.' }),
+      Object.freeze({ id: 'toggle-colorblind-tags', label: colorblindTags ? 'Color Tags On' : 'Color Tags Off', icon: colorblindTags ? '🏷' : '⊙', enabled: true, description: 'Adds explicit text tags to color-coded UI chips.' }),
+      Object.freeze({ id: 'toggle-auto-aim', label: autoAimAssist ? 'Auto Aim On' : 'Auto Aim Off', icon: autoAimAssist ? '◎' : '◌', enabled: true, description: 'Nearest-enemy assist when you are not steering aim.' }),
+    ]),
+  });
+}
+
 export function buildCombatOptionsMenuModel({
   paused = false,
   gameOver = false,

@@ -85,7 +85,11 @@ private source and marked code-level claims `VERIFY`.
   shape, not color alone); auto-aim/auto-fire toggle (default on mobile, off desktop). Gore toggle
   locked pre-run; settings discoverable from pause menu + game-detail.
 - Current build has Shake/Gore toggles in the gameplay control bar — extend into a full accessibility
-  panel reachable from the pause menu.
+  panel reachable from the pause menu. **DONE:** pause-menu Settings now renders an Accessibility grid
+  (Reduce Motion, Screen Shake, Reduce Flash, Color Tags, Auto Aim) via
+  `buildCombatAccessibilitySettingsModel`; toggles persist to `hmh-settings`, drive `documentElement`
+  data-attrs, gate screen-shake/muzzle-flash intensity, and surface colorblind tone tags on stat chips
+  + upgrade cards. Auto-aim assist is now player-toggleable (default on).
 
 ---
 
