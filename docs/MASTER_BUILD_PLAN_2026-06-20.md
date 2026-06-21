@@ -59,6 +59,23 @@ Status legend: ⬜ TODO · 🟡 IN PROGRESS · ✅ DONE · 🔒 GATED (needs Jus
 Approved tool: **PixelLab API** (key present in `.env`). Accepted assets must be
 repo-local + manifest-ready before runtime use. Animation states per actor:
 **idle · walk/run · shoot (ranged) · melee/attack · take-damage/hit · death**
+
+### Account recon (2026-06-20) — concrete gaps
+PixelLab Tier 3 active, **7,139 generations remaining** (ample; the full gap
+below is ~300-600 gens). `list_characters` on the curated roster shows:
+- COMPLETE (harvest only, ~0 cost): lit-commando (70 anims), lit-valkyrie (63),
+  whale-dumper-boss (25), lester (24), gas-fee-wisp (12), fud-goblin (12), lilly (8).
+- **EMPTY — need full kits (the real work):** chain-reaper-boss, bit-whale-boss,
+  warren-spear-rider (miniboss), rugpull-summoner, gas-beast-tank,
+  crypto-bro-rusher, evil-banker-ranged — all 0 animations.
+- **trench-degen: only 1 anim** \u2014 THIS is the coyote ugliness: coyote-pack-runner
+  reuses trench-degen art, which is nearly empty, so it renders as broken fallback.
+Plan: harvest the complete set first (free), then slot-aware v3 8-dir animate the
+8 empty/thin characters (idle/walk/run/shoot/melee/hurt/death), collect, rebuild
+the runtime manifest, wire + verify. Use the slot-aware batch animator (max ~4
+inflight) to dodge the concurrency wall; always pass explicit 8 `directions` in
+v3 mode (south-only gotcha).
+
 (+ attack-tell for enemies). Heroes need **8 directions**.
 
 - ⬜ C1. **Replace off-style enemy sprites.** The newer enemies (coyote pack
