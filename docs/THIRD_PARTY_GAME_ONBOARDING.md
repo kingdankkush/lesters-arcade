@@ -2,6 +2,29 @@
 
 This document is the contract between the parent arcade portal and any third-party developer onboarding a game (e.g. Chikun, a LitVM port).
 
+## SDK contract module (v1)
+
+The formal, versioned contract lives in `apps/portal/src/arcade-sdk.mjs` (pure +
+unit-tested in `tests/arcade-sdk.test.mjs`). It is the single source of truth for:
+
+- **Lifecycle (parent → game):** `init(ctx)` · `start` · `pause` · `resume` ·
+  `end` · `teardown` · `resize`. `init(ctx)` receives a context with the player's
+  **display identity only** (truncated wallet, display name) and the session mode
+  — never a wallet provider, signer, or keys. `buildInitContext()` constructs it.
+- **Events (game → parent):** `arcade.ready` · `arcade.sessionStart` ·
+  `arcade.statUpdate` · `arcade.achievement` · `arcade.scoreSubmit` ·
+  `arcade.gameOver` · `arcade.requestWalletAction`. Build them with
+  `buildArcadeMessage(type, payload, { gameId, seq })`.
+- **Security gate (parent side):** `parseInboundMessage()` validates source tag,
+  SDK major, gameId binding (a cabinet can only speak for its own game), event
+  type, and per-event payload schema. `createMessageRateLimiter()` throttles
+  floods. `authorizeRankedSubmit()` enforces the free/ranked boundary + chain
+  guard + mock-wallet exclusion BEFORE the parent signs anything.
+
+The golden rule: **a game emits intent; the parent verifies, enforces, signs, and
+records.** A game can ask for a wallet action (`connect` / `submitRanked` /
+`getProfile`) but can never perform one itself.
+
 ## Architecture
 
 ```
