@@ -1,0 +1,20 @@
+{
+  "name": "Lester's Arcade",
+  "short_name": "Lester's Arcade",
+  "description": "Retro Litecoin-themed Web3 arcade on LitVM. Play Hard Money Heroes free, or connect a wallet for ranked on-chain runs.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05070f",
+  "theme_color": "#05070f",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "./assets/lester-pilot.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

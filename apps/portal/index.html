@@ -7,6 +7,8 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#05070f" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./assets/lester-pilot.svg" />
     <title>Lester's Arcade — LitVM Web3 Arcade Prototype</title>
     <!-- Preconnect to Vercel CDN -->
     <link rel="preconnect" href="https://vercel.com" />
@@ -520,5 +522,14 @@
     </main>
 
     <script type="module" src="./main.js?v=hmh-compression-v19"></script>
+    <script>
+      // Register the service worker for offline + repeat-visit caching. Fails
+      // silently on unsupported browsers / file:// and never blocks the app.
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>
