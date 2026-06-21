@@ -6,7 +6,7 @@ import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES, canonicalActorIdForRu
 import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
-import { sweptAABB, circlesOverlap, stepProjectile, knockback } from './src/combat-physics.mjs';
+import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt } from './src/combat-physics.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
@@ -4934,6 +4934,7 @@ async function startCombat(options = {}) {
   combat.crouching = false;
   combat.crouchFrames = 0;
   combat.bullets = [];
+  combat.activeGrenades = [];
   combat.enemyShots = [];
   combat.enemies = [];
   combat.particles = [];
@@ -5134,23 +5135,31 @@ function grenade() {
   playSfxCue('grenade', 0.075);
 
   if (combat.roguelikeRun) {
-    // Map-space blast centered slightly ahead of the hero along the aim vector.
-    const cx = combat.playerMapX + combat.aimMapX * 1.4;
-    const cy = combat.playerMapY + combat.aimMapY * 1.4;
-    const radius = 2.0; // map tiles
+    // Real fused throw (Level Design Bible §6.3): plan the landing point along the
+    // aim vector in map space, then arm a fused grenade that shows a landing-shadow
+    // blast-radius telegraph while the fuse counts down. The plan is deterministic
+    // (pure helper, no RNG) so a replay re-sims the same blast. Detonation damage is
+    // applied in updateRoguelikeGrenades() via the shared grenadeBlastDamageAt().
+    const plan = planGrenadeThrow({
+      originX: combat.playerMapX,
+      originY: combat.playerMapY,
+      aimX: combat.aimMapX,
+      aimY: combat.aimMapY,
+      reach: 1.4,
+      maxRange: 6.0,
+      blastRadius: 2.0,
+      fuseFrames: 42,
+    });
     const dmg = 34 * (combat.roguelikeRun?.stats.grenadeDamage ?? 1);
-    for (const enemy of combat.enemies) {
-      if (enemy.hp <= 0) continue;
-      const d = Math.hypot(enemy.mapX - cx, enemy.mapY - cy);
-      if (d <= radius) damageEnemy(enemy, dmg * (1 - d / (radius + 0.5)) + dmg * 0.4, 'grenade');
-    }
-    if (combat.boss && combat.boss.hp > 0) {
-      const d = Math.hypot((combat.boss.mapX ?? cx) - cx, (combat.boss.mapY ?? cy) - cy);
-      if (d <= radius + 1) damageBoss(40, 'grenade');
-    }
-    const burst = isoToScreen(cx, cy);
-    spawnGrenadeExplosion(burst.x, burst.y);
-    spawnText('💥', burst.x, burst.y - 30, '#ff7b2f');
+    combat.activeGrenades = combat.activeGrenades ?? [];
+    combat.activeGrenades.push({
+      x: plan.landX,
+      y: plan.landY,
+      radius: plan.blastRadius,
+      fuse: plan.fuseFrames,
+      maxFuse: plan.fuseFrames,
+      damage: dmg,
+    });
     return;
   }
 
@@ -6778,6 +6787,35 @@ function updateRoguelikeEnemies(director, dt) {
   updateCampaignPoiEncounter(director);
 }
 
+// Fused grenades (Level Design Bible §6.3): each armed grenade counts its fuse
+// down, then detonates with deterministic radial-falloff damage via the shared
+// grenadeBlastDamageAt() helper. The landing-shadow telegraph (drawn elsewhere)
+// reads from combat.activeGrenades while the fuse runs. Cosmetic explosion FX +
+// screen shake fire on detonation; they never feed the sim.
+function updateRoguelikeGrenades() {
+  if (!combat.activeGrenades || combat.activeGrenades.length === 0) return;
+  for (const g of combat.activeGrenades) {
+    if (g.detonated) continue;
+    g.fuse -= 1;
+    if (g.fuse > 0) continue;
+    g.detonated = true;
+    for (const enemy of combat.enemies) {
+      if (enemy.hp <= 0) continue;
+      const d = Math.hypot(enemy.mapX - g.x, enemy.mapY - g.y);
+      const dmg = grenadeBlastDamageAt({ distance: d, radius: g.radius, baseDamage: g.damage });
+      if (dmg > 0) damageEnemy(enemy, dmg, 'grenade');
+    }
+    if (combat.boss && combat.boss.hp > 0) {
+      const d = Math.hypot((combat.boss.mapX ?? g.x) - g.x, (combat.boss.mapY ?? g.y) - g.y);
+      if (d <= g.radius + 1) damageBoss(40, 'grenade');
+    }
+    const burst = isoToScreen(g.x, g.y);
+    spawnGrenadeExplosion(burst.x, burst.y);
+    spawnText('💥', burst.x, burst.y - 30, '#ff7b2f');
+  }
+  combat.activeGrenades = combat.activeGrenades.filter((g) => !g.detonated);
+}
+
 function updateRoguelikeXpGems() {
   const pickupRadius = 1.4 * (combat.roguelikeRun?.stats.pickupRadius ?? 1);
   for (const gem of combat.xpGems) {
@@ -6967,6 +7005,7 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   updateAutoFire(dt);
   updateRoguelikeEnemies(director, dt);
   updateRoguelikeBullets(dt);
+  updateRoguelikeGrenades();
   updateRoguelikeXpGems();
   updateRoguelikePowerUps();
   updateParticles(dt);
@@ -7922,6 +7961,36 @@ function drawRoguelikeScene(ctx, width, height) {
     ctx.stroke();
     
     ctx.restore();
+  }
+  // Grenade landing-shadow blast-radius telegraph (Level Design Bible §6.3:
+  // "landing shadow marker showing blast radius (readability!)"). Drawn on the
+  // ground under the actors, pulsing faster as the fuse nears zero so the player
+  // can read and vacate the danger zone before detonation.
+  if (combat.activeGrenades && combat.activeGrenades.length) {
+    for (const g of combat.activeGrenades) {
+      if (g.detonated) continue;
+      const projected = isoToScreen(g.x, g.y);
+      const rx = g.radius * (ISO_TILE_WIDTH / 2);
+      const ry = g.radius * (ISO_TILE_HEIGHT / 2);
+      const fuseRatio = g.maxFuse ? g.fuse / g.maxFuse : 0;
+      // Pulse speed ramps up as the fuse runs down (1 → 4 Hz-ish).
+      const pulse = 0.45 + 0.4 * Math.abs(Math.sin(combat.frame * (0.12 + (1 - fuseRatio) * 0.34)));
+      renderList.push({
+        depth: projected.y - 1, // just under ground clutter at this tile
+        draw: () => {
+          ctx.save();
+          ctx.translate(projected.x, projected.y);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = `rgba(255,123,47,${pulse})`;
+          ctx.fillStyle = `rgba(255,90,31,${0.12 * pulse})`;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        },
+      });
+    }
   }
   for (const gem of combat.xpGems) {
     const projected = isoToScreen(gem.worldX, gem.worldY);

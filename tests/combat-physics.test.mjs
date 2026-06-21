@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { sweptAABB, circlesOverlap, stepProjectile, knockback, validatePhysics } from '../apps/portal/src/combat-physics.mjs';
+import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, explosionImpulseAt, validatePhysics } from '../apps/portal/src/combat-physics.mjs';
 
 describe('combat-physics', () => {
   it('sweptAABB detects fast-moving bullet through enemy', () => {
@@ -58,5 +58,41 @@ describe('combat-physics', () => {
   it('validatePhysics passes all invariants', () => {
     const result = validatePhysics();
     assert.ok(result.ok, result.errors.join(', '));
+  });
+
+  it('planGrenadeThrow lands along the aim vector and clamps to max range', () => {
+    const plan = planGrenadeThrow({ originX: 10, originY: 10, aimX: 0, aimY: 1, reach: 99, maxRange: 6, blastRadius: 2 });
+    assert.equal(plan.distance, 6); // clamped to maxRange
+    assert.equal(plan.landX, 10); // pure-y aim, x unchanged
+    assert.equal(plan.landY, 16); // origin + 6 along +y
+    assert.equal(plan.marker.radius, 2); // landing-shadow telegraph radius == blast radius
+    assert.equal(plan.marker.x, plan.landX);
+    assert.equal(plan.marker.y, plan.landY);
+  });
+
+  it('planGrenadeThrow is deterministic for the same inputs (replay-safe)', () => {
+    const a = planGrenadeThrow({ originX: 3, originY: 7, aimX: 0.6, aimY: -0.8, reach: 1.4 });
+    const b = planGrenadeThrow({ originX: 3, originY: 7, aimX: 0.6, aimY: -0.8, reach: 1.4 });
+    assert.deepEqual(a, b);
+  });
+
+  it('grenadeBlastDamageAt falls off from center to rim and is zero outside radius', () => {
+    const center = grenadeBlastDamageAt({ distance: 0, radius: 2, baseDamage: 30 });
+    const mid = grenadeBlastDamageAt({ distance: 1, radius: 2, baseDamage: 30 });
+    const rim = grenadeBlastDamageAt({ distance: 2, radius: 2, baseDamage: 30 });
+    assert.ok(center > mid && mid > rim);
+    assert.ok(rim > 0); // still chips at the rim
+    assert.equal(grenadeBlastDamageAt({ distance: 2.01, radius: 2, baseDamage: 30 }), 0);
+  });
+
+  it('explosionImpulseAt pushes targets radially outward with falloff', () => {
+    const near = explosionImpulseAt({ sourceX: 0, sourceY: 0, targetX: 0.5, targetY: 0, radius: 2, power: 4 });
+    const far = explosionImpulseAt({ sourceX: 0, sourceY: 0, targetX: 1.5, targetY: 0, radius: 2, power: 4 });
+    assert.ok(near.inRange && far.inRange);
+    assert.ok(near.vx > far.vx); // closer target pushed harder (more falloff weight)
+    assert.ok(near.vx > 0); // pushed away from the blast (+x)
+    const outside = explosionImpulseAt({ sourceX: 0, sourceY: 0, targetX: 5, targetY: 0, radius: 2, power: 4 });
+    assert.equal(outside.inRange, false);
+    assert.equal(outside.vx, 0);
   });
 });
