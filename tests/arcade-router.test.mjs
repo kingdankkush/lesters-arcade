@@ -48,24 +48,31 @@ test('viewForPath is guest-first: arcade + free game entry reachable without a w
   assert.equal(viewForPath('/games/hard-money-heroes', { connected: false }).gameSlug, 'hard-money-heroes');
 });
 
-test('viewForPath gates wallet-bound routes to the homepage when not connected', () => {
-  // Ranked sessions are wallet-bound and stay gated.
+test('viewForPath gates ranked sessions but lets guests browse profile/scores/settings', () => {
+  // Ranked sessions are wallet-bound and stay gated to the homepage.
   assert.equal(viewForPath('/games/hard-money-heroes/game-session-000000001', { connected: false }).step, 'wallet-splash');
-  // Profile / leaderboards / settings are wallet-bound.
-  assert.equal(viewForPath('/profile', { connected: false }).step, 'wallet-splash');
-  assert.equal(viewForPath('/leaderboards', { connected: false }).step, 'wallet-splash');
-  assert.equal(viewForPath('/settings', { connected: false }).step, 'wallet-splash');
+  // Guest-first: profile / leaderboards / settings resolve directly (they render
+  // a "connect to save" state) so the nav never dead-ends.
+  assert.equal(viewForPath('/profile', { connected: false }).step, 'profile');
+  assert.equal(viewForPath('/leaderboards', { connected: false }).step, 'leaderboards');
+  assert.equal(viewForPath('/settings', { connected: false }).step, 'settings');
+  // Connected resolves them too.
+  assert.equal(viewForPath('/profile', { connected: true }).step, 'profile');
   // The homepage itself is always reachable.
   assert.equal(viewForPath('/', { connected: false }).step, 'wallet-splash');
 });
 
-test('isGuestAllowedStep marks browse/play-free steps and excludes wallet-bound ones', () => {
+test('isGuestAllowedStep marks browse/play-free steps and now also profile/scores/settings (guest-first)', () => {
   for (const step of ['wallet-splash', 'cabinet-select', 'mode-select', 'character-select', 'level-one-intro', 'gameplay']) {
     assert.equal(isGuestAllowedStep(step), true, `${step} should be guest-allowed`);
   }
+  // Guest-first nav: Profile / Scores / Settings are browsable without a wallet
+  // (they render a "connect to save" state) so the nav never dead-ends.
   for (const step of ['profile', 'leaderboards', 'settings']) {
-    assert.equal(isGuestAllowedStep(step), false, `${step} should require a wallet`);
+    assert.equal(isGuestAllowedStep(step), true, `${step} should be guest-browsable`);
   }
+  // A truly unknown step is still not guest-allowed.
+  assert.equal(isGuestAllowedStep('ranked-session-secret'), false);
 });
 
 test('viewForPath ignores query/hash and trailing junk', () => {

@@ -42,6 +42,11 @@ const GUEST_ALLOWED_STEPS = Object.freeze([
   'character-select',
   'level-one-intro',
   'gameplay',
+  // Guest-first: Profile / Scores / Settings are browsable without a wallet
+  // (they render a "connect to save" state) so the nav never dead-ends.
+  'profile',
+  'leaderboards',
+  'settings',
 ]);
 
 export function isGuestAllowedStep(step) {
@@ -89,9 +94,9 @@ export function viewForPath(pathname, { connected = false } = {}) {
   if (parts.length === 0) {
     return { step: 'wallet-splash', gameSlug: null, sessionId: null };
   }
-  if (parts[0] === 'profile') return gate('profile', connected);
-  if (parts[0] === 'leaderboards') return gate('leaderboards', connected);
-  if (parts[0] === 'settings') return gate('settings', connected);
+  if (parts[0] === 'profile') return guestGate('profile', connected);
+  if (parts[0] === 'leaderboards') return guestGate('leaderboards', connected);
+  if (parts[0] === 'settings') return guestGate('settings', connected);
 
   if (parts[0] === 'games') {
     // /games -> cabinet select (guest-allowed: browse before connecting)

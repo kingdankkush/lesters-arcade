@@ -2945,7 +2945,14 @@ function renderOfficialNav() {
   for (const item of (LESTERS_ARCADE_V2_APP_SHELL.primaryNav ?? LESTERS_ARCADE_V2_APP_SHELL.navigation)) {
     const button = el('button', { className: `official-nav-tab ${officialAppStep === item.id || (item.id === 'cabinets' && ['arcade-walk-in', 'cabinet-select', 'mode-select', 'character-select', 'level-one-intro', 'gameplay'].includes(officialAppStep)) ? 'active' : ''}` });
     button.type = 'button';
-    button.disabled = !connectedWallet && item.id !== 'cabinets';
+    // Guest-first: every primary view is browsable without a wallet. Profile /
+    // Scores render a clear "connect to save" state instead of being dead,
+    // disabled buttons. Connecting later upgrades the same session in place.
+    button.disabled = false;
+    if (!connectedWallet && item.id !== 'cabinets') {
+      button.classList.add('nav-tab-guest');
+      button.title = 'Browse as guest — connect a wallet to save progress here';
+    }
     button.append(renderArcadeIcon(iconById[item.id] ?? '◆', item.label), document.createTextNode(item.label));
     button.addEventListener('click', () => {
       playSfxCue('menu-click');
@@ -3774,9 +3781,10 @@ function renderOfficialApp() {
   dom.developerBackstageToggle.textContent = developerBackstageOpen ? 'Hide Backstage' : 'Dev Backstage';
   renderOfficialNav();
   renderOfficialWalletSplash();
-  // Guest-first: guests may browse the arcade floor, enter a cabinet, and play
-  // Free mode. Only wallet-bound steps (profile/leaderboards/settings, ranked
-  // sessions) bounce back to the splash when no wallet is connected.
+  // Guest-first: guests may browse the arcade floor, enter a cabinet, play Free
+  // mode, AND browse Profile / Scores / Settings (which render a "connect to
+  // save" state). Only a ranked session URL (carrying a game-session id) bounces
+  // back to the splash when no wallet is connected.
   if (!connectedWallet && !isGuestAllowedStep(officialAppStep)) officialAppStep = 'wallet-splash';
   if (['arcade-walk-in', 'cabinet-select', 'profile', 'leaderboards', 'settings'].includes(officialAppStep)) {
     showOfficialPanel(dom.officialArcadeFloor);
