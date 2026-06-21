@@ -171,6 +171,45 @@ export function explosionImpulseAt({
   };
 }
 
+// Deterministic environmental force zones (Level Design Bible §6.2: "environmental
+// forces as zones/forces: water buoyancy/slow, quicksand sink, conveyor push, wind").
+// Given a body at (x,y) with velocity (vx,vy) and a list of zones, return the
+// modified velocity + a sink factor. All gameplay-affecting, so it is pure +
+// deterministic (no RNG, no DOM) and re-sims identically from the same inputs.
+//
+// Zone shapes are axis-aligned rects {x,y,w,h,kind,...}. Supported kinds:
+//   - 'slow'      : scales velocity by `factor` (water/mud drag). factor in [0,1].
+//   - 'quicksand' : slow + a downward `sink` factor the renderer/sim applies to depth.
+//   - 'conveyor'  : adds a constant push (pushX,pushY).
+//   - 'wind'      : adds a constant drift (pushX,pushY); typically lighter than conveyor.
+export function applyEnvironmentalForces({ x = 0, y = 0, vx = 0, vy = 0, zones = [] } = {}) {
+  let nvx = vx;
+  let nvy = vy;
+  let sink = 0;
+  let slowFactor = 1;
+  const active = [];
+  for (const z of zones) {
+    if (!z) continue;
+    const inside = x >= z.x && x <= z.x + (z.w ?? 0) && y >= z.y && y <= z.y + (z.h ?? 0);
+    if (!inside) continue;
+    active.push(z.kind);
+    if (z.kind === 'slow' || z.kind === 'quicksand') {
+      const f = typeof z.factor === 'number' ? z.factor : 0.5;
+      slowFactor *= Math.max(0, Math.min(1, f));
+    }
+    if (z.kind === 'quicksand') {
+      sink += typeof z.sink === 'number' ? z.sink : 0.04;
+    }
+    if (z.kind === 'conveyor' || z.kind === 'wind') {
+      nvx += z.pushX ?? 0;
+      nvy += z.pushY ?? 0;
+    }
+  }
+  nvx *= slowFactor;
+  nvy *= slowFactor;
+  return { vx: nvx, vy: nvy, sink, slowFactor, active };
+}
+
 // Validate physics helper invariants (called during npm test).
 export function validatePhysics() {
   const errors = [];
@@ -193,5 +232,12 @@ export function validatePhysics() {
   const imp = explosionImpulseAt({ sourceX: 0, sourceY: 0, targetX: 1, targetY: 0, radius: 2, power: 4 });
   if (!(imp.vx > 0 && imp.inRange)) errors.push('explosion should push target outward when in range');
   if (explosionImpulseAt({ sourceX: 0, sourceY: 0, targetX: 5, targetY: 0, radius: 2, power: 4 }).inRange) errors.push('explosion outside radius should not be in range');
+  // Environmental force zones: slow scales velocity, conveyor pushes, quicksand sinks.
+  const slowed = applyEnvironmentalForces({ x: 5, y: 5, vx: 10, vy: 0, zones: [{ x: 0, y: 0, w: 10, h: 10, kind: 'slow', factor: 0.5 }] });
+  if (slowed.vx !== 5) errors.push('slow zone should halve velocity at factor 0.5');
+  const pushed = applyEnvironmentalForces({ x: 5, y: 5, vx: 0, vy: 0, zones: [{ x: 0, y: 0, w: 10, h: 10, kind: 'conveyor', pushX: 2 }] });
+  if (pushed.vx !== 2) errors.push('conveyor zone should add push');
+  const dry = applyEnvironmentalForces({ x: 50, y: 50, vx: 10, vy: 0, zones: [{ x: 0, y: 0, w: 10, h: 10, kind: 'slow', factor: 0.5 }] });
+  if (dry.vx !== 10) errors.push('body outside zone should be unaffected');
   return { ok: errors.length === 0, errors };
 }

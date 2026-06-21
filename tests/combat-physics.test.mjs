@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, explosionImpulseAt, validatePhysics } from '../apps/portal/src/combat-physics.mjs';
+import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, explosionImpulseAt, applyEnvironmentalForces, validatePhysics } from '../apps/portal/src/combat-physics.mjs';
 
 describe('combat-physics', () => {
   it('sweptAABB detects fast-moving bullet through enemy', () => {
@@ -94,5 +94,31 @@ describe('combat-physics', () => {
     const outside = explosionImpulseAt({ sourceX: 0, sourceY: 0, targetX: 5, targetY: 0, radius: 2, power: 4 });
     assert.equal(outside.inRange, false);
     assert.equal(outside.vx, 0);
+  });
+
+  it('applyEnvironmentalForces slows velocity inside a slow/water zone', () => {
+    const zones = [{ x: 0, y: 0, w: 10, h: 10, kind: 'slow', factor: 0.4 }];
+    const r = applyEnvironmentalForces({ x: 5, y: 5, vx: 10, vy: -5, zones });
+    assert.ok(Math.abs(r.vx - 4) < 1e-9);
+    assert.ok(Math.abs(r.vy - -2) < 1e-9);
+    assert.deepEqual(r.active, ['slow']);
+  });
+
+  it('applyEnvironmentalForces sinks + slows in quicksand and pushes on conveyor/wind', () => {
+    const quick = applyEnvironmentalForces({ x: 1, y: 1, vx: 8, vy: 0, zones: [{ x: 0, y: 0, w: 5, h: 5, kind: 'quicksand', factor: 0.5, sink: 0.06 }] });
+    assert.ok(quick.sink > 0);
+    assert.equal(quick.vx, 4);
+    const conveyor = applyEnvironmentalForces({ x: 1, y: 1, vx: 0, vy: 0, zones: [{ x: 0, y: 0, w: 5, h: 5, kind: 'conveyor', pushX: 3, pushY: -1 }] });
+    assert.equal(conveyor.vx, 3);
+    assert.equal(conveyor.vy, -1);
+  });
+
+  it('applyEnvironmentalForces leaves bodies outside every zone untouched and is deterministic', () => {
+    const zones = [{ x: 0, y: 0, w: 10, h: 10, kind: 'slow', factor: 0.5 }];
+    const a = applyEnvironmentalForces({ x: 99, y: 99, vx: 7, vy: 3, zones });
+    const b = applyEnvironmentalForces({ x: 99, y: 99, vx: 7, vy: 3, zones });
+    assert.equal(a.vx, 7);
+    assert.equal(a.vy, 3);
+    assert.deepEqual(a, b);
   });
 });
