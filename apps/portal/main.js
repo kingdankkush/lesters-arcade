@@ -4112,7 +4112,14 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
 
 
 function detectEthereumProvider() {
-  return globalThis.ethereum ?? null;
+  // Some wallet extensions define `ethereum` as a throwing getter, or multiple
+  // wallets race to define it. Never let provider detection itself throw — a
+  // throw here would bubble up through the connect handler and blank the app.
+  try {
+    return globalThis.ethereum ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function connectMockWallet() {
@@ -4351,23 +4358,38 @@ async function requestLiteForgeNetwork(provider = detectEthereumProvider()) {
 async function connectWallet() {
   const provider = detectEthereumProvider();
   if (provider?.request) {
+    // Phase 1: the actual connection (account request + chain guard). Only a
+    // failure HERE should fall back to the mock wallet.
+    let firstAccount = null;
     try {
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
-      const firstAccount = Array.isArray(accounts) ? accounts[0] : null;
-      if (firstAccount) {
-        connectedWallet = firstAccount.toLowerCase();
-        walletConnector = 'injected-evm';
+      firstAccount = Array.isArray(accounts) ? accounts[0] : null;
+    } catch (error) {
+      console.warn('Injected wallet connection declined or failed; using local mock fallback.', error);
+    }
+    if (firstAccount) {
+      connectedWallet = firstAccount.toLowerCase();
+      walletConnector = 'injected-evm';
+      // Chain guard is best-effort: a decline must NOT drop the connection.
+      try {
         await refreshInjectedChainId(provider);
         if (connectedChainId !== LITVM_LITEFORGE_NETWORK.chainIdHex) {
           await requestLiteForgeNetwork(provider);
         }
+      } catch (chainError) {
+        console.warn('LiteForge chain guard skipped (wallet declined or errored).', chainError);
+      }
+      // Phase 2: account + render. A throw HERE means the wallet connected fine
+      // but a downstream render failed — do NOT fall back to mock (that would
+      // re-render and throw again, blanking the app). Log + keep the connection.
+      try {
         connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
         persistArcadeStateSoon();
         render();
-        return connectedWallet;
+      } catch (renderError) {
+        console.error('Wallet connected but post-connect render failed:', renderError);
       }
-    } catch (error) {
-      console.warn('Injected wallet connection declined or failed; using local mock fallback.', error);
+      return connectedWallet;
     }
   }
   if (connectedWallet && walletConnector === 'injected-evm') return connectedWallet;

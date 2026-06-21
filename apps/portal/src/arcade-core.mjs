@@ -3805,7 +3805,14 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
   for (const [gameId, entries] of Object.entries(state.leaderboards)) {
     entries.forEach((entry, index) => {
       if (entry.wallet === profile.wallet) {
-        progress[gameId].officialLeaderboardRank = index + 1;
+        // Defensive: a leaderboard may exist for a gameId the profile hasn't
+        // initialized progress for (seeded boards, retired cabinets). Skip
+        // rather than throw on progress[gameId] being undefined — an uncaught
+        // throw here propagates up through render() and blanks the whole app
+        // right after wallet connect.
+        if (progress[gameId]) {
+          progress[gameId].officialLeaderboardRank = index + 1;
+        }
         highScores.push({ ...entry, rank: index + 1 });
       }
     });
