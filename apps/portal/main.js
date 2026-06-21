@@ -3850,6 +3850,22 @@ async function startOfficialMode(mode) {
       }
       playSfxCue('wallet-connect', 0.055);
     }
+    // Ranked requires a verified SIWE signature (not just a connected address).
+    // A real wallet that connected but skipped/declined the sign-in is prompted
+    // to sign now; a mock wallet can never be authenticated, so it can't rank.
+    if (!walletAuthenticated && walletConnector === 'injected-evm') {
+      const provider = detectEthereumProvider();
+      await authenticateWalletSiwe(provider, connectedWallet);
+    }
+    if (!walletAuthenticated) {
+      if (dom.officialRankedTooltip) {
+        dom.officialRankedTooltip.dataset.state = 'needs-wallet';
+        dom.officialRankedTooltip.replaceChildren();
+        appendText(dom.officialRankedTooltip, 'strong', 'Sign in to play Ranked');
+        appendText(dom.officialRankedTooltip, 'span', 'Ranked publishes your run on-chain, so it needs a wallet signature to prove you control the address. Free Mode is always available without signing.');
+      }
+      return;
+    }
     const approved = await requestRankedEntry();
     if (!approved) return; // user cancelled or chain guard blocked
   }
