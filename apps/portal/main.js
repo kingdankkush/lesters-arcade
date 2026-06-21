@@ -1,5 +1,6 @@
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
+import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES, canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actors.mjs';
@@ -1292,6 +1293,19 @@ let selectedGameId = 'lester-blaster';
 let connectedWallet = null;
 let connectedChainId = null;
 let walletConnector = 'none';
+let walletAuthenticated = false; // true once a SIWE signature is verified this session
+let walletAuthChallenge = null;  // the SIWE challenge we last issued
+// EIP-6963 multi-wallet discovery: collect every wallet that announces itself
+// (MetaMask, Rabby, ...) so we can pick one deterministically instead of
+// fighting over the single legacy window.ethereum slot.
+const eip6963Registry = createProviderRegistry();
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  window.addEventListener('eip6963:announceProvider', (event) => {
+    try { eip6963Registry.add(event?.detail); } catch { /* ignore malformed announce */ }
+  });
+  // Ask any already-loaded wallets to (re)announce.
+  try { window.dispatchEvent(new Event('eip6963:requestProvider')); } catch { /* older browsers */ }
+}
 let currentSession = null;
 let lastCompletedSession = null;
 let lastRunResult = null;
@@ -4112,13 +4126,42 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
 
 
 function detectEthereumProvider() {
-  // Some wallet extensions define `ethereum` as a throwing getter, or multiple
-  // wallets race to define it. Never let provider detection itself throw — a
-  // throw here would bubble up through the connect handler and blank the app.
+  // Prefer an EIP-6963-announced provider (handles MetaMask + Rabby installed
+  // together). Fall back to the legacy window.ethereum. Some wallet extensions
+  // expose `ethereum` as a throwing getter, or multiple wallets race to define
+  // it, so never let provider detection itself throw — a throw here would
+  // bubble up through the connect handler and blank the app.
+  try {
+    const preferred = eip6963Registry.preferred();
+    if (preferred?.provider?.request) return preferred.provider;
+  } catch { /* registry empty or malformed */ }
   try {
     return globalThis.ethereum ?? null;
   } catch {
     return null;
+  }
+}
+
+// Sign-In-With-Ethereum: ask the connected wallet to personal_sign a one-time
+// challenge so we cryptographically bind the session to the address. Best-effort
+// + non-blocking: if the wallet declines or errors, the player stays connected
+// (browse/free still work) but is not "authenticated" for ranked. Returns true
+// only on a verified signature.
+async function authenticateWalletSiwe(provider, address) {
+  if (!provider?.request || !address) return false;
+  try {
+    const domain = (typeof location !== 'undefined' && location.hostname) ? location.hostname : 'lestersarcade.io';
+    const chainId = LITVM_LITEFORGE_NETWORK.chainId;
+    const challenge = buildSiweChallenge({ domain, address, chainId });
+    walletAuthChallenge = challenge;
+    const signature = await provider.request({ method: 'personal_sign', params: [challenge.message, address] });
+    const ok = isValidLogin({ challenge, signature, signingAddress: address });
+    walletAuthenticated = ok;
+    return ok;
+  } catch (err) {
+    console.warn('SIWE sign-in declined or failed; wallet connected as guest (ranked needs a signature).', err);
+    walletAuthenticated = false;
+    return false;
   }
 }
 
@@ -4379,6 +4422,10 @@ async function connectWallet() {
       } catch (chainError) {
         console.warn('LiteForge chain guard skipped (wallet declined or errored).', chainError);
       }
+      // SIWE sign-in: bind the session to the address with a signature. Best-
+      // effort — a decline keeps the wallet connected (guest/free) but leaves
+      // walletAuthenticated=false so ranked still prompts for a signature.
+      await authenticateWalletSiwe(provider, connectedWallet);
       // Phase 2: account + render. A throw HERE means the wallet connected fine
       // but a downstream render failed — do NOT fall back to mock (that would
       // re-render and throw again, blanking the app). Log + keep the connection.
