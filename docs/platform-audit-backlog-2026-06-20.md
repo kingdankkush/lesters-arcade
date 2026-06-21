@@ -98,6 +98,38 @@ Onboarding · Routing/flow · Mobile layout · Controls · Menu/fullscreen · Fr
 Profile/Leaderboards · Perf · Audio. (Full step list in the audit PDF §3.) Track as a recurring QA
 checklist; each platform slice ships with a §3 pass.
 
+### §3 pass — 2026-06-20 (desktop browser + code-level mobile verification)
+- **Desktop full flow ✅** — splash → guest "Enter Arcade" → cabinet-select → mode-select →
+  character-select → Level 1 intro → live combat verified end-to-end in a real browser. Combat loop
+  confirmed live (canvas pixel-checksum changes frame-to-frame; SURVIVE timer, Score, Kills all
+  advance; auto-aim/auto-fire kills enemies with no manual input). Zero JS console errors at every
+  step.
+- **Pause + accessibility ✅** — Esc pauses (single gate freezes sim/timer); pause menu Settings
+  renders the Accessibility grid; toggling Color Tags flips `data-colorblind-tags=true` live and
+  injects 11 tone tags onto stat chips (e.g. HP→TONE RED). Reduce Motion/Flash/Shake/Auto-Aim present.
+- **Free vs Ranked gating ✅** — Free is guest-open; Ranked card shows "WALLET REQUIRED" and
+  `startOfficialMode('ranked')` forces `connectWallet()` then a ranked-entry + chain-guard approval
+  before play. Guests cannot reach ranked.
+- **Mobile (portrait 9:16 + landscape 16:9) ✅ via code** — browser viewport emulation was
+  unavailable this pass, so verified through `device-model.mjs` unit tests (mobile/tablet/desktop
+  classify + orientation + joystick mapping), responsive CSS audit (viewport-fit=cover,
+  user-scalable=no, 44px tap targets, top-right safe-area `#combatMenuIconButton`, portrait canvas
+  capped at `min(62vh,520px)`, fullscreen `object-fit:contain`), and the `resize`/`orientationchange`/
+  `fullscreenchange` relayout handlers (debounced `applyDeviceProfile` + `scheduleCombatViewportRelayout`).
+- **Bugs found & fixed this pass:**
+  1. **Overlapping mobile action buttons** — touch cluster builds `.touch-grenade` + `.touch-powerup`,
+     but CSS only positioned `.touch-powerup` (top:84px) and a dead `.touch-melee` rule; `.touch-grenade`
+     had no offset so both buttons stacked at the same spot. Fixed: `.touch-grenade { top:0 }`, removed
+     dead melee rule.
+  2. **Canon drift on the live cabinet card** — HMH cabinet description still read "tactical
+     run-and-gun score survival"; updated to "isometric roguelite score survival".
+  3. **AGENTS.md local-serve instruction was wrong** — `<base href="/">` means you must serve
+     `apps/portal` AS the web root, not the repo root + `/apps/portal/` (which 404s every asset with no
+     console error). Corrected the doc so future agents don't lose time on a phantom "app is dead" bug.
+- Remaining: a real on-device iOS + Android touch playtest still owed (synthetic + code verification
+  only here). Minor UX note: the pause Settings panel does a full `replaceChildren` re-render per
+  toggle (focus/ref churn) — functional, low priority.
+
 ## §4 Target architecture (keystone)
 - 4.1 Shell owns identity + rails; games never touch wallet or write official state directly.
 - 4.2 Game SDK contract: `init(ctx)` (no keys/signing) · `start/pause/resume/end/teardown/resize`;

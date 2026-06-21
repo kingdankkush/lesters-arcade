@@ -2417,8 +2417,8 @@ html:not([data-ingame="true"]) .touch-controls { display: none; }
   -webkit-tap-highlight-color: transparent;
 }
 .touch-action-button:active { transform: scale(.92); background: rgba(25,247,255,.2); }
-/* Two-button stack: Melee on top, Power below (left of the aim stick). */
-.touch-melee   { left: 0; top: 0; border-color: rgba(25,247,255,.6); color: #19f7ff; }
+/* Two-button stack (left of the aim stick): Grenade on top, Power below. */
+.touch-grenade { left: 0; top: 0; border-color: rgba(255,232,77,.6); color: var(--neon-yellow); }
 .touch-powerup { left: 0; top: 84px; border-color: rgba(69,255,138,.6); color: #45ff8a; }
 .touch-pause-button {
   position: absolute;

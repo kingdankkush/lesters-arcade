@@ -494,7 +494,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
       title: 'Hard Money Heroes',
       status: 'playable',
       playable: true,
-      description: 'The first playable Lester arcade cabinet: tactical run-and-gun score survival on LitVM LiteForge.',
+      description: 'The first playable Lester arcade cabinet: isometric roguelite score survival on LitVM LiteForge.',
       desktopCabinetSprite: HMH_CABINET_SPRITE_MANIFEST,
     }),
     Object.freeze({ id: 'mweb-invaders', gameId: 'mweb-invaders', title: 'MWEB Invaders', status: 'coming-soon', playable: false, description: 'Descending rows of privacy-shattering aliens — shield your Lit wallet!', bannerArt: './assets/generated/hmh-banners/mweb-invaders-keyart.jpg' }),
