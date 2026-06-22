@@ -461,7 +461,7 @@ test('ranked score is filed into all five cadence boards and returns a settlemen
 
   // settle (simulated) and confirm the tx hash is stamped + recorded
   const plan = buildSettlementPlan(result.settlementInput);
-  const settlement = await settleRun(plan);
+  const settlement = await settleRun(plan, { live: false });
   applySettlement(state, settlement);
   const snapshot = buildPlayerArcadeSnapshot(state, wallet);
   assert.equal(snapshot.settlements[0].mode, 'simulated');

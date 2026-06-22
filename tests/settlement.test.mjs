@@ -11,8 +11,8 @@ import {
 
 const WALLET = '0x' + 'a'.repeat(40);
 
-test('settlement is simulated (not live) by default', () => {
-  assert.equal(SETTLEMENT_LIVE, false);
+test('settlement is live (contracts deployed to LitVM testnet)', () => {
+  assert.equal(SETTLEMENT_LIVE, true);
 });
 
 test('estimateSettlementGas scales with achievements + profile change', () => {
@@ -62,8 +62,8 @@ test('settleRun (simulated) returns deterministic receipts and no live send', as
     wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-3', score: 777,
     unlockedAchievements: ['first-paid-run'],
   });
-  const r1 = await settleRun(plan);
-  const r2 = await settleRun(plan);
+  const r1 = await settleRun(plan, { live: false });
+  const r2 = await settleRun(plan, { live: false });
   assert.equal(r1.mode, 'simulated');
   assert.equal(r1.settled, true);
   assert.ok(r1.primaryTxHash.startsWith('0x'));

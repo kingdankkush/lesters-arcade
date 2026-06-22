@@ -21,18 +21,19 @@ import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, calcula
 
 // HARD GATE. Stays false until Justin deploys contracts to LiteForge and
 // explicitly approves live settlement. Until then, everything is simulated.
-// NOTE: As of 2026-06-22, Justin has provided his LitVM testnet dev wallet
-// (0x24501ad94A9245DC88Fb9546929cDA10b91420d4) and approved testnet settlement.
-// Contracts still need to be deployed before flipping this to true.
-export const SETTLEMENT_LIVE = false;
+// Contracts deployed to LitVM LiteForge testnet on 2026-06-22.
+// Justin's dev wallet (0x24501ad94A9245DC88Fb9546929cDA10b91420d4) is the
+// deployer + trusted verifier. Settlement is now LIVE on testnet.
+export const SETTLEMENT_LIVE = true;
 
 // Placeholder addresses; filled in at deploy time. Kept here so the plan shape
 // is complete and testable before deployment.
 export const LITVM_CONTRACT_ADDRESSES = Object.freeze({
-  playerProfileRegistry: null,
-  scoreSubmissionRegistry: null,
-  achievementRegistry: null,
-  arcadePaymentRouter: null,
+  playerProfileRegistry: '0x4F6D748abd58929C9A57d21d10BdF44467616703',
+  scoreSubmissionRegistry: '0xd104c2E45c53e0130A2979224bFd224E22A73409',
+  achievementRegistry: '0x356451392aE8F04e25d06843E9fC2e3964A24061',
+  arcadePaymentRouter: '0x7b50B60d7db5083EA1D9c1d70C07e655505919C7',
+  lestersArcadeCore: '0xc6352B2059897C6c5056f5b8ad9d1F6e33d1F528',
 });
 
 // Per-write zkLTC gas budget (testnet estimates, in wei-equivalent units of the
