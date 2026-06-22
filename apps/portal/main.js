@@ -8106,6 +8106,48 @@ function drawRoguelikeScene(ctx, width, height) {
   // read as broken in an isometric view. Floor tiles stay underneath; bullets,
   // particles, floating text and HUD stay on top as effects/UI.
   const renderList = [];
+  // zkLTC Rail: a moving train that circles the L2 Litecoin City map. This is
+  // a cosmetic signature element for Level 2 — the train moves on railroad
+  // tracks around the world perimeter, visible as it passes through the
+  // player's view. Drawn before the obstacle/actor render list so it sits
+  // on the ground layer beneath props and enemies.
+  if (isL2CampaignActive()) {
+    const train = combat.zklTcRailTrain ??= { progress: 0 };
+    train.progress = (train.progress + 0.0008) % 1; // slow loop around the map
+    const trackRadius = 18; // tiles from center
+    const angle = train.progress * Math.PI * 2;
+    const trainMapX = Math.cos(angle) * trackRadius;
+    const trainMapY = Math.sin(angle) * trackRadius * 0.6; // iso squish
+    const trainScreen = isoToScreen(trainMapX, trainMapY);
+    renderList.push({
+      depth: trainScreen.y - 2,
+      draw: () => {
+        ctx.save();
+        ctx.translate(trainScreen.x, trainScreen.y);
+        const dir = angle + Math.PI / 2;
+        const dx = Math.cos(dir) * 14;
+        const dy = Math.sin(dir) * 14 * 0.5;
+        for (let car = 0; car < 3; car += 1) {
+          const cx = -dx * car;
+          const cy = -dy * car;
+          ctx.fillStyle = car === 0 ? '#19f7ff' : '#2a4a8a';
+          ctx.fillRect(cx - 10, cy - 6, 20, 12);
+          ctx.strokeStyle = car === 0 ? '#7fffd4' : '#4a6aaa';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(cx - 10, cy - 6, 20, 12);
+          ctx.fillStyle = 'rgba(127,255,212,0.6)';
+          ctx.fillRect(cx - 6, cy - 4, 12, 4);
+        }
+        const headX = dx * 0.5;
+        const headY = dy * 0.5;
+        ctx.fillStyle = 'rgba(255,247,180,0.4)';
+        ctx.beginPath();
+        ctx.arc(headX, headY, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      },
+    });
+  }
   // Persistent collidable obstacles (buildings/trees/objects) depth-sorted with
   // everything else so the player walks behind/in-front of them correctly.
   for (const entry of buildObstacleRenderEntries(ctx)) renderList.push(entry);
