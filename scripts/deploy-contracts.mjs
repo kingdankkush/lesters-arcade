@@ -227,14 +227,7 @@ async function deploy() {
     artifacts.LestersArcadeCore.bytecode,
     deployer,
   );
-  const core = await coreFactory.deploy(
-    addresses.playerProfileRegistry,
-    addresses.gameRegistry,
-    addresses.arcadePaymentRouter,
-    addresses.scoreSubmissionRegistry,
-    addresses.achievementRegistry,
-    addresses.tournamentPool,
-  );
+  const core = await coreFactory.deploy(deployer.address);
   await core.waitForDeployment();
   addresses.lestersArcadeCore = await core.getAddress();
   console.log(`   Deployed at: ${addresses.lestersArcadeCore}`);
