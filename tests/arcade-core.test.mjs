@@ -1202,7 +1202,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./main.js?v=hmh-onchain-settlement-v21'), true);
+  assert.equal(indexSource.includes('./main.js?v=hmh-ranked-preflight-v22'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -1612,12 +1612,12 @@ test('game-over summary model separates free practice from ranked submit, replay
   assert.equal(freeSummary.actions.some((action) => action.id === 'return-to-arcade' && action.target === 'cabinet-select'), true);
 
   assert.equal(rankedSummary.channel, 'official');
-  assert.equal(rankedSummary.trackingCopy.includes('Submit Official Score'), true);
+  assert.equal(rankedSummary.trackingCopy.includes('Retry Publish'), true);
   assert.equal(rankedSummary.actions.some((action) => action.id === 'submit-official-score' && action.enabled), true);
   assert.equal(rankedSummary.actions.some((action) => action.id === 'play-again-ranked' && action.cost.includes('new testnet credit')), true);
 
   assert.equal(syncedSummary.actions.find((action) => action.id === 'submit-official-score').enabled, false);
-  assert.equal(syncedSummary.trackingCopy.includes('synced'), true);
+  assert.equal(syncedSummary.trackingCopy.includes('published'), true);
 });
 
 test('enemy AI state machine formalizes readable tells, cover choices, role caps, and recovery windows', () => {

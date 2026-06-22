@@ -130,7 +130,7 @@ import {
   buildPlayerArcadeSnapshot,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
-import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl } from './src/litvm-chain-client.mjs';
+import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
@@ -1177,6 +1177,7 @@ const dom = {
   rankedEntryModal: document.querySelector('#rankedEntryModal'),
   rankedEntryWallet: document.querySelector('#rankedEntryWallet'),
   rankedEntryNetwork: document.querySelector('#rankedEntryNetwork'),
+  rankedEntryBalance: document.querySelector('#rankedEntryBalance'),
   rankedEntryChainGuard: document.querySelector('#rankedEntryChainGuard'),
   rankedEntryStatus: document.querySelector('#rankedEntryStatus'),
   rankedEntryApprove: document.querySelector('#rankedEntryApprove'),
@@ -1328,6 +1329,14 @@ let officialSelectedMode = null;
 // Last on-chain settlement outcome (for the game-over screen explorer link + errors).
 let lastSettlementTxUrl = null;
 let lastSettlementError = null;
+// Retained ranked-run settlement input + stats so the game-over Retry Publish
+// button can re-attempt the LitVM transaction without replaying the run.
+let lastSettlementInput = null;
+let lastRunStatsForSettlement = null;
+// True only after the run actually published on-chain (or simulated for mock).
+// Drives the game-over "Published ✓" vs "Retry Publish" state, so a declined
+// wallet tx is never shown as a successful publish.
+let lastSettlementSucceeded = false;
 let developerBackstageOpen = false;
 
 // Playable hero display names. The in-game roguelike heroes were renamed from
@@ -1820,7 +1829,7 @@ function currentGameOverSummaryModel() {
     elapsedSeconds: combat.elapsedGameSeconds || lastRunElapsedSeconds,
     kills: combat.kills,
     bossesDefeated: (combat.bossDefeated || combat.scriptedBossTriggered || Boolean(lastBossId)) ? 1 : 0,
-    acceptedForGlobalLeaderboard: Boolean(combat.gameOverSubmitted || lastRunResult?.acceptedForGlobalLeaderboard),
+    acceptedForGlobalLeaderboard: Boolean(lastSettlementSucceeded),
     extraction,
     killedBy: cleared ? null : combat.killedBy,
     bestUpgrade: bestRoguelikeUpgradeTitle(),
@@ -1937,22 +1946,31 @@ function submitCombatGameOver() {
     kills: combat.kills,
     survivalTime: Math.round(combat.elapsedGameSeconds || 0),
   }, connectedWallet);
-  dom.combatStatus.textContent = 'Submit Official Score complete: ranked result synced to parent progress, achievements, leaderboard, and transaction history. No hidden paid-run sync happened before this button.';
   renderOfficialRunStatus();
   renderGameOverSummary();
   renderCombatMenuActionGrid();
 
-  // Settle the tracked run to LitVM. Paid Mode zkLTC funds the gas. The live
-  // on-chain send is gated behind SETTLEMENT_LIVE (off until contracts deploy +
-  // explicit approval); until then this produces a deterministic simulated tx.
+  // Auto-publish the run to LitVM from the player's own wallet (one confirmation).
+  // Retained so the Retry Publish button can re-attempt if the player declines
+  // the wallet tx or it errors.
   if (result.acceptedForGlobalLeaderboard && result.settlementInput) {
-    settleRankedRun(result.settlementInput, {
+    lastSettlementInput = result.settlementInput;
+    lastRunStatsForSettlement = {
       kills: combat.kills,
       maxCombo: combat.maxCombo,
       survivalSeconds: Math.round(combat.elapsedGameSeconds || 0),
       bossId: combat.bossDefeated ? lastBossId : null,
-    });
+    };
+    settleRankedRun(lastSettlementInput, lastRunStatsForSettlement);
   }
+}
+
+// Retry the on-chain publish for a finished ranked run whose auto-submit was
+// declined or failed. The local record already exists; this only re-attempts
+// the LitVM transaction.
+function retryPublishGameOver() {
+  if (!lastSettlementInput) return;
+  settleRankedRun(lastSettlementInput, lastRunStatsForSettlement || {});
 }
 
 async function settleRankedRun(settlementInput, runStats = {}) {
@@ -1997,9 +2015,12 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         dom.combatStatus.textContent = `✓ Run published on-chain to LitVM. Tx ${shortTx}. Your score, kills, combo, and achievements are now permanent and feed the global leaderboard + your profile.`;
       }
       lastSettlementTxUrl = explorerTxUrl(txHash);
+      lastSettlementError = null;
+      lastSettlementSucceeded = true;
       if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
       if (officialAppStep === 'profile') renderOfficialProfile();
       renderGameOverSummary();
+      renderCombatMenuActionGrid();
       return;
     } catch (err) {
       // User rejected, wrong chain, or RPC error. Keep the local record; tell
@@ -2012,7 +2033,9 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         dom.combatStatus.textContent = `Score saved locally, but the on-chain publish did not complete: ${reason} You can retry from the game-over screen.`;
       }
       lastSettlementError = reason;
+      lastSettlementSucceeded = false;
       renderGameOverSummary();
+      renderCombatMenuActionGrid();
       return;
     }
   }
@@ -2023,6 +2046,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     const settlement = await settleRun(plan, { live: false });
     applySettlement(state, settlement);
     persistArcadeStateSoon();
+    lastSettlementSucceeded = true;
     const shortTx = settlement.primaryTxHash ? `${settlement.primaryTxHash.slice(0, 10)}…${settlement.primaryTxHash.slice(-6)}` : 'pending';
     if (dom.combatStatus) {
       dom.combatStatus.textContent = `Official score recorded (simulated settlement — connect a real wallet for an on-chain publish). Tx ${shortTx}.`;
@@ -2143,12 +2167,12 @@ function renderCombatMenuActionGrid() {
     musicEnabled: combat.musicEnabled,
     viewportMode: combat.viewportMode,
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
-    officialScoreSubmitted: combat.gameOverSubmitted,
+    officialScoreSubmitted: lastSettlementSucceeded,
   });
   const actions = menu.actions.map((action) => {
     if (action.id === 'resume') return { ...action, run: () => toggleCombatPause(false) };
     if (action.id === 'toggle-settings') return { ...action, run: toggleCombatSettingsPanel };
-    if (action.id === 'submit-official-score') return { ...action, run: submitCombatGameOver };
+    if (action.id === 'submit-official-score') return { ...action, run: retryPublishGameOver };
     if (action.id === 'restart') return { ...action, run: restartCombatRun };
     if (action.id === 'toggle-music') return { ...action, run: toggleCombatMusic };
     if (action.id === 'toggle-fullscreen') return { ...action, run: cycleCombatViewport };
@@ -2402,6 +2426,12 @@ function clearInactiveCombatOverlay() {
 }
 
 function syncCombatOverlay() {
+  // Auto-submit a finished ranked run to LitVM the moment the game-over state
+  // is reached (no manual "Submit Official Score" step). One wallet confirmation
+  // fires automatically. Guarded by gameOverSubmitted so it runs exactly once.
+  if (combat.gameOver && currentSession?.isPaid && !combat.gameOverSubmitted) {
+    submitCombatGameOver();
+  }
   if (dom.officialGameStateCopy) dom.officialGameStateCopy.textContent = gameplaySyncCopy();
   if (dom.officialCombatMount) {
     dom.officialCombatMount.dataset.viewport = combat.viewportMode;
@@ -2451,7 +2481,7 @@ function syncCombatOverlay() {
     musicEnabled: combat.musicEnabled,
     viewportMode: combat.viewportMode,
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
-    officialScoreSubmitted: combat.gameOverSubmitted,
+    officialScoreSubmitted: lastSettlementSucceeded,
   });
   if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.levelUpPaused ? `Level ${combat.roguelikeRun?.level ?? 1} Upgrade` : menu.title;
   if (dom.combatMenuCopy) {
@@ -3759,28 +3789,35 @@ function renderOfficialLeaderboards() {
   // --- Game switcher: leaderboards are per-game. HMH is the only playable board
   // now; future cabinets appear as locked "SOON" tabs and become selectable once
   // they ship. Keeps the board game-specific so each game owns its own rankings.
+  // MVP: only show playable games (Hard Money Heroes) as selectable boards. The
+  // not-yet-built cabinets get a single "coming soon" banner below instead of a
+  // row of dead locked tabs.
   const gameBar = el('div', { className: 'leaderboard-game-tabs' });
-  for (const game of ARCADE_GAMES) {
-    const playable = game.status === 'playable';
+  const playableGames = ARCADE_GAMES.filter((game) => game.status === 'playable');
+  for (const game of playableGames) {
     const isActive = game.id === leaderboardGameId;
     const tab = el('button', {
-      className: `pixel-button leaderboard-game-tab${isActive ? ' is-active' : ''}${playable ? '' : ' is-locked'}`,
+      className: `pixel-button leaderboard-game-tab${isActive ? ' is-active' : ''}`,
       type: 'button',
     });
     appendText(tab, 'span', game.title, 'leaderboard-game-tab-title');
-    if (!playable) appendText(tab, 'span', 'SOON', 'leaderboard-game-tab-badge');
-    tab.disabled = !playable;
-    if (playable) {
-      tab.addEventListener('click', () => {
-        if (leaderboardGameId === game.id) return;
-        leaderboardGameId = game.id;
-        leaderboardSearch = '';
-        renderOfficialLeaderboards();
-      });
-    }
+    tab.addEventListener('click', () => {
+      if (leaderboardGameId === game.id) return;
+      leaderboardGameId = game.id;
+      leaderboardSearch = '';
+      renderOfficialLeaderboards();
+    });
     gameBar.append(tab);
   }
   dom.officialCabinetGrid.append(gameBar);
+
+  // Coming-soon banner for the next cabinet on the roadmap (Chikun's Escape).
+  // Its own leaderboard unlocks when the game ships.
+  const comingSoon = el('article', { className: 'official-info-card leaderboard-coming-soon-banner' });
+  appendText(comingSoon, 'span', 'Next Cabinet // Coming Soon', 'cabinet-status-label');
+  appendText(comingSoon, 'strong', "Chikun's Escape");
+  appendText(comingSoon, 'small', 'Tap to flap, dodge the forks, stack the silver. One-button flappy arcade on LitVM. Its own ranked leaderboard unlocks when the cabinet ships.');
+  dom.officialCabinetGrid.append(comingSoon);
 
   // cadence tab bar
   const tabBar = el('div', { className: 'leaderboard-cadence-tabs' });
@@ -4147,24 +4184,23 @@ async function startOfficialMode(mode) {
       }
       playSfxCue('wallet-connect', 0.055);
     }
-    // Ranked requires a verified SIWE signature (not just a connected address).
-    // A real wallet that connected but skipped/declined the sign-in is prompted
-    // to sign now; a mock wallet can never be authenticated, so it can't rank.
-    if (!walletAuthenticated && walletConnector === 'injected-evm') {
-      const provider = detectEthereumProvider();
-      await authenticateWalletSiwe(provider, connectedWallet);
-    }
-    if (!walletAuthenticated) {
+    // The wallet already proved control of the address via the SIWE signature at
+    // connect time, so we do NOT ask for another signature here. A mock wallet
+    // (offline QA) can't rank because it can't sign / hold zkLTC.
+    if (walletConnector !== 'injected-evm') {
       if (dom.officialRankedTooltip) {
         dom.officialRankedTooltip.dataset.state = 'needs-wallet';
         dom.officialRankedTooltip.replaceChildren();
-        appendText(dom.officialRankedTooltip, 'strong', 'Sign in to play Ranked');
-        appendText(dom.officialRankedTooltip, 'span', 'Ranked publishes your run on-chain, so it needs a wallet signature to prove you control the address. Free Mode is always available without signing.');
+        appendText(dom.officialRankedTooltip, 'strong', 'Connect a real wallet to play Ranked');
+        appendText(dom.officialRankedTooltip, 'span', 'Ranked publishes your run on-chain and needs a real EVM wallet (MetaMask/Rabby) with testnet zkLTC. Free Mode is always available.');
       }
       return;
     }
-    const approved = await requestRankedEntry();
-    if (!approved) return; // user cancelled or chain guard blocked
+    // Pre-flight: confirm the wallet is on LitVM 4441 AND holds enough zkLTC to
+    // publish the score at game over. This front-loads the gas requirement so a
+    // player never finishes a run and then can't settle it.
+    const ready = await requestRankedEntry();
+    if (!ready) return; // user cancelled, wrong chain unresolved, or unfunded
   }
   officialSelectedMode = mode;
   await startMode(mode === 'ranked' ? 'paid' : 'free');
@@ -4173,50 +4209,27 @@ async function startOfficialMode(mode) {
   render();
 }
 
-// Ranked entry-fee + chain-guard modal. Returns a Promise<boolean> that resolves
-// true when the player approves (and the chain guard passes), false on cancel.
-// LIVE PATH IS FULLY WIRED but inert: when SETTLEMENT_LIVE is false the approval
-// is simulated (no real tx). Flip SETTLEMENT_LIVE + deploy contracts to go live.
+// Ranked PRE-FLIGHT modal. Returns Promise<boolean> — true when the wallet is on
+// LitVM LiteForge (4441) AND holds enough zkLTC to publish a run at game over.
+// No signature and no transaction happen here; the only on-chain write is the
+// auto-submit at game over. If the player is on the wrong chain we offer an
+// in-place switch; if they're short on zkLTC we surface the faucet and block
+// start until they're funded (re-checkable without closing the modal).
 function requestRankedEntry() {
   return new Promise((resolve) => {
     const modal = dom.rankedEntryModal;
     if (!modal) { resolve(true); return; }
+    const provider = detectEthereumProvider();
     const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
     dom.rankedEntryWallet.textContent = walletShort;
     dom.rankedEntryNetwork.textContent = `${LITVM_LITEFORGE_NETWORK.name} · ${LITVM_LITEFORGE_NETWORK.chainId}`;
     dom.rankedEntryStatus.textContent = '';
     dom.rankedEntryStatus.dataset.state = '';
-    // Update the modal copy to reflect free testnet (no entry fee, just gas at game-over)
-    const feeLabel = dom.rankedEntryModal?.querySelector('.ranked-entry-fee');
-    if (feeLabel) feeLabel.textContent = 'FREE (testnet) — only zkLTC gas at game over';
-
-    // Chain guard: compare the connected chain (normalized) to the expected 4441.
-    const expectedHex = LITVM_LITEFORGE_NETWORK.chainIdHex;
-    const normalize = (id) => {
-      if (id == null) return null;
-      return typeof id === 'string' && id.startsWith('0x') ? parseInt(id, 16) : Number(id);
-    };
-    const onExpectedChain = !connectedChainId || normalize(connectedChainId) === LITVM_LITEFORGE_NETWORK.chainId;
+    if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = 'Checking…';
     const guard = dom.rankedEntryChainGuard;
-    if (onExpectedChain) {
-      guard.hidden = true;
-      dom.rankedEntryApprove.disabled = false;
-    } else {
-      guard.hidden = false;
-      guard.replaceChildren();
-      appendText(guard, 'strong', '⚠ Wrong network');
-      appendText(guard, 'span', `Switch your wallet to ${LITVM_LITEFORGE_NETWORK.name} (${LITVM_LITEFORGE_NETWORK.chainId} / ${expectedHex}) to continue.`);
-      const switchBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Switch Network' });
-      switchBtn.addEventListener('click', async () => {
-        switchBtn.textContent = 'Switching…';
-        const ok = await requestLiteForgeNetwork();
-        if (ok) { guard.hidden = true; dom.rankedEntryApprove.disabled = false; }
-        else switchBtn.textContent = 'Switch Network';
-      });
-      guard.append(switchBtn);
-      dom.rankedEntryApprove.disabled = true;
-    }
-
+    guard.hidden = true;
+    guard.replaceChildren();
+    dom.rankedEntryApprove.disabled = true;
     modal.hidden = false;
 
     const cleanup = () => {
@@ -4225,31 +4238,59 @@ function requestRankedEntry() {
       dom.rankedEntryCancel.removeEventListener('click', onCancel);
     };
     const onCancel = () => { playSfxCue('menu-click', 0.04); cleanup(); resolve(false); };
-    const onApprove = async () => {
-      console.log('[Ranked] Approve clicked, SETTLEMENT_LIVE:', SETTLEMENT_LIVE);
-      dom.rankedEntryApprove.disabled = true;
-      dom.rankedEntryStatus.dataset.state = 'pending';
-      if (SETTLEMENT_LIVE) {
-        // LIVE: the settlement happens at game-over, not here. Here we just
-        // confirm the player wants to play ranked and start the session.
-        // The actual on-chain tx (score submit) happens after the run ends.
-        console.log('[Ranked] LIVE path — starting ranked session...');
-        dom.rankedEntryStatus.textContent = '✓ Ranked session starting. Score will publish to LitVM at game over.';
-        dom.rankedEntryStatus.dataset.state = 'ok';
-        setTimeout(() => { cleanup(); resolve(true); }, 400);
-        return;
-      }
-      // SIMULATED (default): same UX, no real tx. Short "signing" beat.
+    const onApprove = () => {
       playSfxCue('wallet-connect', 0.05);
-      dom.rankedEntryStatus.textContent = 'Signing zkLTC-gas transaction (testnet simulation)…';
-      setTimeout(() => {
-        dom.rankedEntryStatus.textContent = '✓ Run will publish to LitVM at game over (simulated). Starting ranked run.';
-        dom.rankedEntryStatus.dataset.state = 'ok';
-        setTimeout(() => { cleanup(); resolve(true); }, 550);
-      }, 650);
+      cleanup();
+      resolve(true);
     };
     dom.rankedEntryApprove.addEventListener('click', onApprove);
     dom.rankedEntryCancel.addEventListener('click', onCancel);
+
+    // Run the readiness check (chain + balance) and paint the result.
+    const runCheck = async () => {
+      dom.rankedEntryApprove.disabled = true;
+      guard.hidden = true;
+      guard.replaceChildren();
+      const r = await checkRankedReadiness(provider);
+      // Wrong chain → offer in-place switch.
+      if (!r.onChain) {
+        if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = '—';
+        guard.hidden = false;
+        guard.replaceChildren();
+        appendText(guard, 'strong', '⚠ Wrong network');
+        appendText(guard, 'span', `Switch your wallet to ${LITVM_LITEFORGE_NETWORK.name} (${LITVM_LITEFORGE_NETWORK.chainId}). Detected chain ${r.chainId ?? 'unknown'}.`);
+        const switchBtn = el('button', { className: 'pixel-button', type: 'button', textContent: 'Switch Network' });
+        switchBtn.addEventListener('click', async () => {
+          switchBtn.textContent = 'Switching…';
+          const ok = await requestLiteForgeNetwork();
+          if (ok) runCheck();
+          else switchBtn.textContent = 'Switch Network';
+        });
+        guard.append(switchBtn);
+        return;
+      }
+      // Right chain → show balance.
+      const bal = Number(r.balanceEth || '0');
+      if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = `${bal.toFixed(4)} zkLTC`;
+      if (!r.hasFunds) {
+        // Funded check failed → faucet + recheck, block start.
+        guard.hidden = false;
+        guard.replaceChildren();
+        appendText(guard, 'strong', '⚠ Not enough zkLTC for gas');
+        appendText(guard, 'span', 'Ranked publishes your run on-chain at game over, which costs a little zkLTC gas. Grab free testnet zkLTC from the faucet, then re-check.');
+        const faucet = el('a', { className: 'pixel-button', textContent: 'Open zkLTC Faucet', href: LITVM_LITEFORGE_NETWORK.faucetUrl, target: '_blank', rel: 'noreferrer' });
+        const recheck = el('button', { className: 'pixel-button', type: 'button', textContent: 'Re-check Balance' });
+        recheck.addEventListener('click', () => { recheck.textContent = 'Checking…'; runCheck(); });
+        guard.append(faucet, recheck);
+        dom.rankedEntryApprove.disabled = true;
+        return;
+      }
+      // All good → enable start.
+      dom.rankedEntryStatus.dataset.state = 'ok';
+      dom.rankedEntryStatus.textContent = '✓ Ready. Your run will auto-publish to LitVM at game over (one wallet confirmation).';
+      dom.rankedEntryApprove.disabled = false;
+    };
+    runCheck();
   });
 }
 
@@ -5297,6 +5338,12 @@ async function startCombat(options = {}) {
 
   combat.gameOver = false;
   combat.gameOverSubmitted = false;
+  // Reset on-chain settlement tracking for the new run.
+  lastSettlementSucceeded = false;
+  lastSettlementInput = null;
+  lastRunStatsForSettlement = null;
+  lastSettlementError = null;
+  lastSettlementTxUrl = null;
   combat.gameOverReason = '';
   combat.lastHitBy = null;
   combat.killedBy = null;

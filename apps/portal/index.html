@@ -57,24 +57,22 @@
       <section id="officialApp" class="official-app" aria-label="Lester's Arcade official app">
         <div class="official-scanline" aria-hidden="true"></div>
 
-        <div id="rankedEntryModal" class="ranked-entry-overlay" hidden role="dialog" aria-modal="true" aria-label="Publish ranked run on-chain">
+        <div id="rankedEntryModal" class="ranked-entry-overlay" hidden role="dialog" aria-modal="true" aria-label="Ranked pre-flight check">
           <div class="ranked-entry-card">
-            <p class="eyebrow">Ranked · Publish to LitVM</p>
-            <h2>Settle Your Run On-Chain</h2>
-            <p class="ranked-entry-copy">Ranked is official. Your score, achievements, and display name are published on-chain to LitVM as a permanent run record. On testnet the only cost is the <strong>zkLTC gas</strong> to write it — no entry fee, no real funds.</p>
+            <p class="eyebrow">Ranked · Pre-Flight Check</p>
+            <p class="ranked-entry-copy">Ranked is official: when your run ends, your score, kills, combo, achievements, and name are published on-chain to LitVM as a permanent record. On testnet the only cost is the <strong>zkLTC gas</strong> to write it. We check below that you're set up before you start, so you never finish a run and get stuck unable to publish.</p>
             <div class="ranked-entry-rows">
-              <div class="ranked-entry-row"><span>Publishing</span><strong id="rankedEntryFee">Score · Achievements · Name</strong></div>
-              <div class="ranked-entry-row"><span>Cost</span><strong id="rankedEntryGas">zkLTC gas only (testnet)</strong></div>
               <div class="ranked-entry-row"><span>Network</span><strong id="rankedEntryNetwork">LitVM LiteForge · 4441</strong></div>
               <div class="ranked-entry-row"><span>Wallet</span><strong id="rankedEntryWallet">—</strong></div>
+              <div class="ranked-entry-row"><span>zkLTC balance</span><strong id="rankedEntryBalance">Checking…</strong></div>
             </div>
             <div id="rankedEntryChainGuard" class="ranked-entry-chainguard" hidden></div>
             <p id="rankedEntryStatus" class="ranked-entry-status"></p>
             <div class="ranked-entry-actions">
               <button id="rankedEntryCancel" class="back-nav-button" type="button">Cancel</button>
-              <button id="rankedEntryApprove" class="primary-button big-action" type="button">Sign &amp; Play Ranked</button>
+              <button id="rankedEntryApprove" class="primary-button big-action" type="button">Start Ranked Run</button>
             </div>
-            <p class="tiny-note" id="rankedEntryFootnote">Showcasing how Lester's Arcade + Hard Money Heroes publish player data to LitVM. Testnet only — the wallet signs a zkLTC-gas transaction; no purchase is made.</p>
+            <p class="tiny-note" id="rankedEntryFootnote">Testnet only. No signature or transaction is needed to start — you'll confirm one zkLTC-gas transaction in your wallet automatically when the run ends, to publish your score.</p>
           </div>
         </div>
 
@@ -545,7 +543,7 @@
       </div>
     </main>
 
-    <script type="module" src="./main.js?v=hmh-onchain-settlement-v21"></script>
+    <script type="module" src="./main.js?v=hmh-ranked-preflight-v22"></script>
     <script>
       // Register the service worker for offline + repeat-visit caching. Fails
       // silently on unsupported browsers / file:// and never blocks the app.

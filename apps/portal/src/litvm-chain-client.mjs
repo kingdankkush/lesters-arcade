@@ -215,3 +215,49 @@ export function explorerTxUrl(txHash) {
   if (!txHash) return null;
   return `${LITVM_LITEFORGE_NETWORK.explorerUrl}/tx/${txHash}`;
 }
+
+// --- PRE-FLIGHT: chain + zkLTC balance check for Ranked entry ----------------
+// Before a Ranked run starts we confirm the wallet is (a) on LitVM LiteForge and
+// (b) holds enough zkLTC to pay the score-submission gas at game over. This
+// front-loads the gas problem so a player never finishes a run and then finds
+// they can't publish it. Returns a plain status object the UI renders.
+//
+//   { ok, onChain, chainId, hasFunds, balanceWei, balanceEth, needWei, error }
+//
+// `ok` is true only when on the right chain AND funded. Reads are cheap; this
+// adds no transaction and no signature.
+export async function checkRankedReadiness(walletProvider, { minGasWei = null } = {}) {
+  const result = {
+    ok: false, onChain: false, chainId: null,
+    hasFunds: false, balanceWei: 0n, balanceEth: '0', needWei: 0n, error: null,
+  };
+  if (!walletProvider?.request) { result.error = 'No wallet connected.'; return result; }
+  try {
+    const ethers = await loadEthers();
+    const browserProvider = new ethers.BrowserProvider(walletProvider);
+    const net = await browserProvider.getNetwork();
+    result.chainId = Number(net.chainId);
+    result.onChain = result.chainId === LITVM_LITEFORGE_NETWORK.chainId;
+
+    // Estimated worst-case gas for a single submitSession write. The actual
+    // observed gas was ~300k; we pad to 400k * gasPrice for headroom.
+    const gasUnits = 400_000n;
+    let gasPriceWei = 1_000_000_000n; // 1 gwei fallback
+    try {
+      const fee = await browserProvider.getFeeData();
+      if (fee?.gasPrice && fee.gasPrice > 0n) gasPriceWei = fee.gasPrice;
+    } catch { /* use fallback */ }
+    result.needWei = minGasWei ?? (gasUnits * gasPriceWei);
+
+    const signer = await browserProvider.getSigner();
+    const addr = await signer.getAddress();
+    result.balanceWei = await browserProvider.getBalance(addr);
+    result.balanceEth = ethers.formatEther(result.balanceWei);
+    result.hasFunds = result.balanceWei >= result.needWei;
+    result.ok = result.onChain && result.hasFunds;
+    return result;
+  } catch (err) {
+    result.error = err?.message || String(err);
+    return result;
+  }
+}

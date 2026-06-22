@@ -2843,13 +2843,13 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
   return Object.freeze({
     channel: 'official',
     state: acceptedForGlobalLeaderboard ? 'official-score-synced' : 'official-submit-ready',
-    title: acceptedForGlobalLeaderboard ? 'Official Score Synced' : 'Ranked Run Complete',
+    title: acceptedForGlobalLeaderboard ? 'Official Score Published' : 'Ranked Run Complete',
     metrics,
     trackingCopy: acceptedForGlobalLeaderboard
-      ? 'Official score synced to parent progress, achievements, leaderboard, and transaction history.'
-      : 'Submit Official Score to write this ranked result. Until then, nothing is synced to the official leaderboard.',
+      ? 'Score published on-chain to LitVM and synced to the global leaderboard, achievements, and your profile.'
+      : 'Publishing your run to LitVM… confirm the transaction in your wallet. If you declined or it failed, use Retry Publish.',
     actions: Object.freeze([
-      Object.freeze({ id: 'submit-official-score', label: acceptedForGlobalLeaderboard ? 'Score Already Synced' : 'Submit Official Score', cost: 'paid run receipt', target: 'parent-sync', enabled: !acceptedForGlobalLeaderboard }),
+      Object.freeze({ id: 'submit-official-score', label: acceptedForGlobalLeaderboard ? 'Published On-Chain ✓' : 'Retry Publish', cost: 'zkLTC gas', target: 'parent-sync', enabled: !acceptedForGlobalLeaderboard }),
       ...baseActions,
     ]),
     exitRampCopy: LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.find((ramp) => ramp.id === 'return-to-arcade')?.copy,
