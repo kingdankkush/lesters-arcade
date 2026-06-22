@@ -9,9 +9,11 @@ const contractFiles = [
   'contracts/src/GameRegistry.sol',
   'contracts/src/ArcadePaymentRouter.sol',
   'contracts/src/ScoreSubmissionRegistry.sol',
+  'contracts/src/SessionLedger.sol',
   'contracts/src/AchievementRegistry.sol',
   'contracts/src/TournamentPool.sol',
   'contracts/src/LestersArcadeCore.sol',
+  'contracts/src/interfaces/IERC20.sol',
 ];
 
 const sources = Object.fromEntries(

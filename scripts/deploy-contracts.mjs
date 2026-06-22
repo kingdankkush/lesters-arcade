@@ -38,6 +38,7 @@ const requiredContracts = [
   'GameRegistry.json',
   'ArcadePaymentRouter.json',
   'ScoreSubmissionRegistry.json',
+  'SessionLedger.json',
   'AchievementRegistry.json',
   'TournamentPool.json',
   'LestersArcadeCore.json',
@@ -75,6 +76,7 @@ const artifacts = {
   AchievementRegistry: loadArtifact('AchievementRegistry'),
   TournamentPool: loadArtifact('TournamentPool'),
   LestersArcadeCore: loadArtifact('LestersArcadeCore'),
+  SessionLedger: loadArtifact('SessionLedger'),
 };
 
 console.log('All contract artifacts loaded successfully.');
@@ -131,7 +133,7 @@ async function deploy() {
   const addresses = {};
 
   // 1. Deploy PlayerProfileRegistry
-  console.log('1/7: PlayerProfileRegistry...');
+  console.log('1/8: PlayerProfileRegistry...');
   const playerProfileFactory = new ethers.ContractFactory(
     artifacts.PlayerProfileRegistry.abi,
     artifacts.PlayerProfileRegistry.bytecode,
@@ -143,7 +145,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.playerProfileRegistry}`);
 
   // 2. Deploy GameRegistry
-  console.log('2/7: GameRegistry...');
+  console.log('2/8: GameRegistry...');
   const gameRegistryFactory = new ethers.ContractFactory(
     artifacts.GameRegistry.abi,
     artifacts.GameRegistry.bytecode,
@@ -155,7 +157,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.gameRegistry}`);
 
   // 3. Deploy ScoreSubmissionRegistry
-  console.log('3/7: ScoreSubmissionRegistry...');
+  console.log('3/8: ScoreSubmissionRegistry...');
   const scoreSubmissionFactory = new ethers.ContractFactory(
     artifacts.ScoreSubmissionRegistry.abi,
     artifacts.ScoreSubmissionRegistry.bytecode,
@@ -166,20 +168,38 @@ async function deploy() {
   addresses.scoreSubmissionRegistry = await scoreSubmissions.getAddress();
   console.log(`   Deployed at: ${addresses.scoreSubmissionRegistry}`);
 
-  // 4. Deploy AchievementRegistry
-  console.log('4/7: AchievementRegistry...');
+  // 4. Deploy SessionLedger (needs gameRegistry + paymentRouter + entryToken)
+  // On testnet, use the deployer address as a placeholder entry token (no real
+  // ERC-20 entry token exists yet; settlement is testnet-only with free zkLTC gas).
+  console.log('4/8: SessionLedger...');
+  const sessionLedgerFactory = new ethers.ContractFactory(
+    artifacts.SessionLedger.abi,
+    artifacts.SessionLedger.bytecode,
+    deployer,
+  );
+  const sessionLedger = await sessionLedgerFactory.deploy(
+    addresses.gameRegistry,
+    addresses.arcadePaymentRouter,
+    deployer.address, // placeholder entry token (no real ERC-20 on testnet yet)
+  );
+  await sessionLedger.waitForDeployment();
+  addresses.sessionLedger = await sessionLedger.getAddress();
+  console.log(`   Deployed at: ${addresses.sessionLedger}`);
+
+  // 5. Deploy AchievementRegistry (needs sessionLedger)
+  console.log('5/8: AchievementRegistry...');
   const achievementFactory = new ethers.ContractFactory(
     artifacts.AchievementRegistry.abi,
     artifacts.AchievementRegistry.bytecode,
     deployer,
   );
-  const achievements = await achievementFactory.deploy();
+  const achievements = await achievementFactory.deploy(addresses.sessionLedger);
   await achievements.waitForDeployment();
   addresses.achievementRegistry = await achievements.getAddress();
   console.log(`   Deployed at: ${addresses.achievementRegistry}`);
 
-  // 5. Deploy ArcadePaymentRouter
-  console.log('5/7: ArcadePaymentRouter...');
+  // 6. Deploy ArcadePaymentRouter
+  console.log('6/8: ArcadePaymentRouter...');
   const paymentRouterFactory = new ethers.ContractFactory(
     artifacts.ArcadePaymentRouter.abi,
     artifacts.ArcadePaymentRouter.bytecode,
@@ -191,7 +211,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.arcadePaymentRouter}`);
 
   // 6. Deploy TournamentPool
-  console.log('6/7: TournamentPool...');
+  console.log('7/8: TournamentPool...');
   const tournamentFactory = new ethers.ContractFactory(
     artifacts.TournamentPool.abi,
     artifacts.TournamentPool.bytecode,
@@ -203,7 +223,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.tournamentPool}`);
 
   // 7. Deploy LestersArcadeCore (composition wrapper)
-  console.log('7/7: LestersArcadeCore...');
+  console.log('8/8: LestersArcadeCore...');
   const coreFactory = new ethers.ContractFactory(
     artifacts.LestersArcadeCore.abi,
     artifacts.LestersArcadeCore.bytecode,
