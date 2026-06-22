@@ -23,6 +23,7 @@
     "design:weekly": "node scripts/write-hmh-weekly-design-review.mjs",
     "design:animation-prompts": "node scripts/write-hmh-animation-production-requests.mjs",
     "contracts:check": "node scripts/contract-structure-check.mjs",
+    "contracts:deploy": "node scripts/deploy-contracts.mjs",
     "verify:full": "npm run assets:verify && npm test && npm run check && npm run contracts:check && npm run design:audit && npm run design:balance && npm run smoke:portal && npm run smoke:portal:interactions && npm run design:animation-prompts && npm run design:weekly",
     "vercel:build": "npm run assets:verify && npm test && npm run check && npm run contracts:check",
     "serve": "python -m http.server 8791 --bind 127.0.0.1",
