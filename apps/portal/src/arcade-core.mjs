@@ -499,7 +499,27 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
       desktopCabinetSprite: HMH_CABINET_SPRITE_MANIFEST,
     }),
     Object.freeze({ id: 'mweb-invaders', gameId: 'mweb-invaders', title: 'MWEB Invaders', status: 'coming-soon', playable: false, description: 'Descending rows of privacy-shattering aliens — shield your Lit wallet!', bannerArt: './assets/generated/hmh-banners/mweb-invaders-keyart.jpg' }),
-    Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but it’s actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
+    Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but its actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
+    Object.freeze({
+      id: 'chikun',
+      gameId: 'chikun',
+      title: "Chikun's Escape",
+      status: 'coming-soon',
+      playable: false,
+      description: 'Tap to flap. Dodge the forks. Stack the silver. One-button flappy-bird arcade with Litecoin coin mechanic on LitVM.',
+      desktopCabinetSprite: Object.freeze({
+        id: 'chikun-cabinet',
+        frameDurationMs: 600,
+        frames: Object.freeze([
+          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front.png', durationMs: 600 }),
+          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right.png', durationMs: 600 }),
+          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-right.png', durationMs: 600 }),
+          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-back.png', durationMs: 600 }),
+          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-left.png', durationMs: 600 }),
+          Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png', durationMs: 600 }),
+        ]),
+      }),
+    }),
   ]),
   modeSelect: Object.freeze({
     free: Object.freeze({ label: 'Free Mode', official: false, copy: 'Practice locally with no official leaderboard, achievement, progress, or transaction writes. The parent Lester’s Arcade wallet profile is already active.' }),
