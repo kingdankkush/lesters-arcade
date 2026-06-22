@@ -119,7 +119,20 @@ export function buildAmbientZoneModel({ districtFamily = null, poiId = null, wea
     'country-road': 'country-road-cicadas',
     'residential-edge': 'lakeside-reeds',
     'inner-city': 'city-gate-hum',
+    'outer-boulevard': 'city-artery-hum',
+    'financial-core': 'financial-downtown-hum',
+    'luxury-neighborhoods': 'luxury-halo-hum',
+    'penthouse-rim': 'penthouse-wind-hum',
   };
+  if (district.includes('litecoin') || district.includes('urban') || district.includes('city')) {
+    return Object.freeze({
+      ambientBed: poiSpecific?.ambientBed ?? 'litecoin-city-neon-hum',
+      dangerCue: weatherId === 'fog' ? 'neon-fog-siren' : 'rail-groove-rumble',
+      poiTensionCue: poiSpecific?.poiTensionCue ?? (poi ? 'district-pressure-rise' : 'city-pressure-rise'),
+      weatherId,
+    });
+  }
+
   return Object.freeze({
     ambientBed: byDistrict[district] ?? 'wasteland-night-air',
     dangerCue: weatherId === 'dust-storm' ? 'sand-whip' : 'distant-metal-creak',

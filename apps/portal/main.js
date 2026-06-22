@@ -31,6 +31,7 @@ import {
   formatHmhCampaignLevelBanner,
   buildHmhCampaignObjectiveState,
   buildHmhExtractionGuidance,
+  HMH_LEVEL_TWO_LITECOIN_CITY_POIS,
 } from './src/hmh-campaign-levels.mjs';
 import {
   buildCampaignExtractionPoint,
@@ -1655,11 +1656,32 @@ function currentCampaignPoi() {
 
 function currentCampaignPoiEncounter() {
   const activePoi = currentCampaignPoi();
-  const activeEncounterVisualPlan = combat.activePoiEncounterVisualPlan ?? null;
   return buildCampaignPoiEncounterProfile({
     levelId: combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID,
     activePoi,
   });
+}
+
+function isL2CampaignActive() {
+  return (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === 'level-2-litecoin-city';
+}
+
+function l2CampaignCombatTuning() {
+  return isL2CampaignActive()
+    ? Object.freeze({
+        enemySpawnIntervalMul: 0.48,
+        enemyHpMul: 1.95,
+        enemyDamageMul: 1.6,
+        bossHpMul: 2.7,
+        maxEnemiesOnMapBonus: 28,
+      })
+    : Object.freeze({
+        enemySpawnIntervalMul: 1,
+        enemyHpMul: 1,
+        enemyDamageMul: 1,
+        bossHpMul: 1,
+        maxEnemiesOnMapBonus: 0,
+      });
 }
 
 function currentCampaignObjective() {
@@ -1819,33 +1841,42 @@ function renderGameOverSummary() {
     dom.combatGameOverSummary.replaceChildren();
     return;
   }
-
   const summary = currentGameOverSummaryModel();
   const nextLevel = combat.nextCampaignLevelId ? getHmhCampaignLevel(combat.nextCampaignLevelId) : null;
-  dom.combatGameOverSummary.dataset.channel = summary.channel;
+  const win = Boolean(combat.clearedCampaignLevelId) && isL2CampaignActive();
+  dom.combatGameOverSummary.dataset.channel = win ? 'victory' : summary.channel;
   dom.combatGameOverSummary.replaceChildren();
-  appendText(dom.combatGameOverSummary, 'strong', combat.levelClearTitle || summary.title, 'game-over-summary-title');
-  appendText(dom.combatGameOverSummary, 'p', summary.trackingCopy, 'game-over-summary-copy');
+  appendText(dom.combatGameOverSummary, 'strong', win ? 'YOU WIN' : (combat.levelClearTitle || summary.title), 'game-over-summary-title');
+  appendText(dom.combatGameOverSummary, 'p', win
+    ? 'Litecoin City survived. The final boss is down. Quarter-arcade legend achieved.'
+    : summary.trackingCopy, 'game-over-summary-copy');
 
   const metricGrid = el('div', { className: 'game-over-summary-grid' });
   for (const metric of summary.metrics) {
     const card = el('article', { className: 'summary-metric-card' });
-    appendText(card, 'span', metric.label);
-    appendText(card, 'strong', metric.value);
+    appendText(card, 'span', metric.label, 'summary-metric-label');
+    appendText(card, 'strong', metric.value, 'summary-metric-value');
     metricGrid.append(card);
   }
   dom.combatGameOverSummary.append(metricGrid);
 
   const actionNote = el('p', { className: 'game-over-action-copy' });
-  const continueCopy = nextLevel && combat.clearedCampaignLevelId
-    ? ` // Continue: loads ${nextLevel.title}`
+  const continueCopy = combat.clearedCampaignLevelId && nextLevel
+    ? `Next up: ${nextLevel.gameplayTitle}.`
     : '';
   actionNote.textContent = `${summary.actions.map((action) => `${action.label}: ${action.cost}`).join(' // ')}.${continueCopy} ${summary.exitRampCopy}`;
   dom.combatGameOverSummary.append(actionNote);
 
-  if (nextLevel && combat.clearedCampaignLevelId) {
-    const continueButton = el('button', { className: 'combat-menu-action', type: 'button' });
-    continueButton.textContent = `Continue — ${nextLevel.title}`;
+  const replayButton = el('button', { className: 'combat-action-button combat-action-button-primary' });
+  replayButton.type = 'button';
+  replayButton.textContent = 'Play Again';
+  replayButton.addEventListener('click', () => { playSfxCue('menu-click'); restartCombatRun(); });
+  dom.combatGameOverSummary.append(replayButton);
+
+  if (nextLevel && combat.clearedCampaignLevelId && !win) {
+    const continueButton = el('button', { className: 'combat-action-button combat-action-button-primary' });
+    continueButton.type = 'button';
+    continueButton.textContent = `Continue to ${nextLevel.shortTitle}`;
     continueButton.addEventListener('click', () => {
       playSfxCue('menu-click');
       continueToCampaignLevel(nextLevel.id);
@@ -2913,7 +2944,11 @@ function completeStage() {
   if (isFinalBossStage()) {
     combat.active = false;
     combat.gameOver = true;
-    combat.gameOverReason = 'Level 1: The Crypto Wasteland cleared — boss defeated';
+    combat.bossDefeated = true;
+    combat.clearedCampaignLevelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID;
+    combat.gameOverReason = isL2CampaignActive()
+      ? 'Level 2: Litecoin City cleared — boss defeated'
+      : 'Level 1: The Crypto Wasteland cleared — boss defeated';
     combat.scrollLockReason = 'LEVEL CLEAR';
     spawnText('LEVEL CLEAR', 318, 120, '#45ff8a');
     playSfxCue('game-over', 0.08);
@@ -5499,7 +5534,8 @@ function updateCombatStep(stepMs) {
 }
 
 function spawnEnemy(options = {}) {
-  const cap = enemyCapForStage(options.stageIndex ?? combat.stageIndex);
+  const l2Tuning = l2CampaignCombatTuning();
+  const cap = enemyCapForStage(options.stageIndex ?? combat.stageIndex) + l2Tuning.maxEnemiesOnMapBonus;
   const liveStageEnemies = combat.enemies.filter((enemy) => enemy.stageIndex === (options.stageIndex ?? combat.stageIndex)).length;
   if (liveStageEnemies >= cap) return null;
   const spawn = chooseEnemySpawn({ elapsedSeconds: combat.elapsedGameSeconds, seed: combat.frame + combat.kills + combat.waveEnemiesSpawned });
@@ -5512,14 +5548,14 @@ function spawnEnemy(options = {}) {
     ...spawn.enemy,
     x: 820 + combat.waveEnemiesSpawned * 22,
     y: flying ? GROUND_Y - 52 - laneOffset : GROUND_Y - laneOffset,
-    hp: Math.max(12, Math.round(spawn.scaledHealth * 0.72)),
-    maxHp: Math.max(12, Math.round(spawn.scaledHealth * 0.72)),
+    hp: Math.max(18, Math.round(spawn.scaledHealth * l2Tuning.enemyHpMul * 1.15)),
+    maxHp: Math.max(18, Math.round(spawn.scaledHealth * l2Tuning.enemyHpMul * 1.15)),
     attackTimer: role === 'aggressive-melee-rusher'
-      ? Math.max(82, Math.round(tacticalRoomTuning.rangedShotCooldownFrames * 0.72))
-      : tacticalRoomTuning.rangedShotCooldownFrames + (combat.frame % 34),
+      ? Math.max(54, Math.round(tacticalRoomTuning.rangedShotCooldownFrames * 0.5))
+      : Math.max(36, Math.round((tacticalRoomTuning.rangedShotCooldownFrames + (combat.frame % 34)) * 0.58)),
     tellFrames: 0,
     recoveryFrames: spawn.ai?.recoveryFrames ?? 20,
-    recoveryFramesRemaining: 0,
+
     ai: spawn.ai,
     role,
     state: role === 'cover-shooter' ? 'seeking-cover' : 'rushing',
@@ -5566,11 +5602,12 @@ function spawnMiniBoss() {
 
 function spawnBoss(bossData) {
   const canonicalBoss = LESTER_BLASTER_BOSS_SYSTEM.bosses.find((boss) => boss.id === bossData.id) ?? bossData;
+  const l2Tuning = l2CampaignCombatTuning();
   combat.boss = {
     ...bossData,
     x: 650,
-    hp: 280,
-    maxHp: 280,
+    hp: Math.max(280, Math.round((bossData.hp ?? 280) * l2Tuning.bossHpMul)),
+    maxHp: Math.max(280, Math.round((bossData.maxHp ?? 280) * l2Tuning.bossHpMul)),
     phase: 1,
     lastPhase: 1,
     attackTimer: 124,
@@ -5578,7 +5615,7 @@ function spawnBoss(bossData) {
     superMoves: canonicalBoss.superMoves ?? [],
     stageIndex: combat.stageIndex,
   };
-  combat.stagePhase = 'boss';
+
   combat.miniBossLock = true;
   combat.scrollLockReason = `BOSS LOCK // defeat ${bossData.title}`;
   lastBossId = bossData.id;
