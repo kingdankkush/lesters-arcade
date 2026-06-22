@@ -144,7 +144,7 @@ async function deploy() {
     artifacts.GameRegistry.bytecode || artifacts.GameRegistry.evm?.bytecode?.object,
     deployer,
   );
-  const gameRegistry = await gameRegistryFactory.deploy();
+  const gameRegistry = await gameRegistryFactory.deploy(deployer.address);
   await gameRegistry.waitForDeployment();
   addresses.gameRegistry = await gameRegistry.getAddress();
   console.log(`   Deployed at: ${addresses.gameRegistry}`);

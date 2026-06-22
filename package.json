@@ -48,5 +48,8 @@
   },
   "overrides": {
     "tmp": "^0.2.6"
+  },
+  "dependencies": {
+    "ethers": "^6.17.0"
   }
 }

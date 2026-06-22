@@ -11,6 +11,7 @@ import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow,
 import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollDrop } from './src/drop-tables.mjs';
+import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
@@ -1299,6 +1300,10 @@ let connectedChainId = null;
 let walletConnector = 'none';
 let walletAuthenticated = false; // true once a SIWE signature is verified this session
 let walletAuthChallenge = null;  // the SIWE challenge we last issued
+
+// SDK adapter: bridges the in-process HMH runtime to the arcade.* event schema.
+// Created per game session; emits real events from actual gameplay.
+let gameAdapter = null;
 // EIP-6963 multi-wallet discovery: collect every wallet that announces itself
 // (MetaMask, Rabby, ...) so we can pick one deterministically instead of
 // fighting over the single legacy window.ethereum slot.
@@ -2398,6 +2403,11 @@ async function toggleCombatPause(forcePaused) {
   combat.paused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
   if (!combat.paused) combat.menuSettingsOpen = false;
   playSfxCue('menu-click');
+  // SDK adapter: emit pause/resume lifecycle.
+  if (gameAdapter) {
+    if (combat.paused) gameAdapter.pause();
+    else gameAdapter.resume();
+  }
   // Audio rides the unified pause gate: combat music idles while paused and
   // resumes on unpause (respecting the player's music on/off + mute choice).
   const gate = buildCombatPauseGate({
@@ -2948,11 +2958,16 @@ function completeStage() {
     combat.clearedCampaignLevelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID;
     combat.gameOverReason = isL2CampaignActive()
       ? 'Level 2: Litecoin City cleared — boss defeated'
-      : 'Level 1: The Crypto Wasteland cleared — boss defeated';
+      : `${level.title} cleared — extraction reached`;
     combat.scrollLockReason = 'LEVEL CLEAR';
-    spawnText('LEVEL CLEAR', 318, 120, '#45ff8a');
+    spawnText('EXTRACTION COMPLETE', ISO_CENTER_X - 78, ISO_CENTER_Y - 92, '#45ff8a');
     playSfxCue('game-over', 0.08);
     ensureCombatMusic('game-over');
+    // SDK adapter: emit gameOver with final stats.
+    if (gameAdapter) {
+      gameAdapter.end({ score: combat.score, kills: combat.kills, survived: combat.elapsedGameSeconds });
+      console.log('[SDK] Game ended:', gameAdapter.getState(), gameAdapter.getStats());
+    }
     syncCombatOverlay();
     return;
   }
@@ -4048,6 +4063,11 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
   }, level);
   // Wait for the player to press SPACE or click the ready overlay.
   await waitForPlayerReady();
+
+  // SDK adapter: emit sessionStart now that the player has begun.
+  gameAdapter = createInProcessGameAdapter({ gameId: 'hard-money-heroes' });
+  gameAdapter.start({ mode: officialSelectedMode ?? 'free', characterId: combat.characterId });
+  console.log('[SDK] Game session started:', gameAdapter.gameId, gameAdapter.getState());
 }
 
 async function continueToCampaignLevel(levelId) {
@@ -7228,6 +7248,10 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   }).total + xpScore;
   combat.score = Math.round(combat.score); // whole-number score only (no decimals)
   combat.longestSurvivalThisRun = Math.max(combat.longestSurvivalThisRun, combat.elapsedGameSeconds);
+  // SDK adapter: emit periodic stat updates (throttled to every 30 frames to avoid spam).
+  if (gameAdapter && combat.frame % 30 === 0) {
+    gameAdapter.emitStatUpdate({ score: combat.score, kills: combat.kills, survived: combat.elapsedGameSeconds });
+  }
   syncCampaignProgression();
   // 20:00 survival wall. Announce once (the old code spawned this floating
   // text EVERY STEP — 60/sec — flooding the text array), and snapshot the
