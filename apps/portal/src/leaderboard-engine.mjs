@@ -3,6 +3,8 @@
 // Replaces the single flat top-10 list with five time-bucketed boards per game:
 //   daily, weekly, monthly, yearly, all-time
 //
+import { isCurrentVersion } from './version-tracking.mjs';
+
 // Each ranked run is filed into the period it belongs to (derived from the run
 // timestamp, UTC). Reads filter to the *current* period for daily/weekly/etc,
 // and to everything for all-time. Display name is resolved at read time so a
@@ -110,6 +112,7 @@ export function getLeaderboard(state, gameId, cadence, {
   now = Date.now(),
   wallet = null,
   displayNameFor = (w) => w,
+  filterToCurrentVersion = true,
 } = {}) {
   if (!LEADERBOARD_CADENCES.includes(cadence)) {
     throw new Error(`Unknown leaderboard cadence: ${cadence}`);
@@ -118,7 +121,15 @@ export function getLeaderboard(state, gameId, cadence, {
   const key = periodKeyFor(cadence, now);
   const rows = store[key] ?? [];
 
-  const ranked = rows.map((row, index) => ({
+  // Version filtering: when enabled (default), only show scores from the current
+  // deploy version. Old-version scores are retained in state for historical lookup
+  // but filtered from the live boards so each deploy starts with fresh leaderboards.
+  // Scores without a version field (e.g. seeded test data) are treated as current.
+  const versionFiltered = filterToCurrentVersion
+    ? rows.filter((row) => !row.version || isCurrentVersion(row.version))
+    : rows;
+
+  const ranked = versionFiltered.map((row, index) => ({
     ...row,
     rank: index + 1,
     displayName: displayNameFor(row.wallet),

@@ -3,6 +3,7 @@ import { HMH_EXPANDED_PIXEL_PACK_MANIFEST } from '../assets/generated/hmh-expand
 import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
+import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
 import {
   LEADERBOARD_CADENCES,
   recordCadenceScore,
@@ -61,7 +62,7 @@ export const DEFAULT_REVENUE_SPLIT_BPS = Object.freeze({
 // Placeholder until Justin provides his real address; settlement stays simulated
 // (SETTLEMENT_LIVE=false) so no funds move until deploy + approval.
 export const DEV_WALLET = Object.freeze({
-  address: null, // set to Justin's dev wallet address before live settlement
+  address: '0x24501ad94A9245DC88Fb9546929cDA10b91420d4',
   label: "Justin's Dev Wallet",
   purpose: 'Funds future game development, community building, and Lester\'s Arcade growth.',
   receives: Object.freeze(['dev share of every Ranked fee', 'unused settlement-gas remainder']),
@@ -3480,6 +3481,10 @@ export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken =
     revenueSplit: isPaid ? calculateRevenueSplit(game.entryFeeMicroUsdc) : null,
     parentWriteScopes: isPaid ? [...LESTER_ARCADE_WALLET_RAILS.permissions.writeScopes] : [],
     startedAt: nowIso(),
+    // Version tracking: every session records the site + game version at run
+    // time so leaderboards can be scoped per-deploy (new deploy = new version =
+    // fresh boards; old scores retained historically but filtered out).
+    version: { siteVersion: SITE_VERSION, gameVersion: GAME_VERSION },
   };
 }
 

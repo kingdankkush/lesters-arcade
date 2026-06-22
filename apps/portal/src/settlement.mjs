@@ -21,6 +21,9 @@ import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, calcula
 
 // HARD GATE. Stays false until Justin deploys contracts to LiteForge and
 // explicitly approves live settlement. Until then, everything is simulated.
+// NOTE: As of 2026-06-22, Justin has provided his LitVM testnet dev wallet
+// (0x24501ad94A9245DC88Fb9546929cDA10b91420d4) and approved testnet settlement.
+// Contracts still need to be deployed before flipping this to true.
 export const SETTLEMENT_LIVE = false;
 
 // Placeholder addresses; filled in at deploy time. Kept here so the plan shape
