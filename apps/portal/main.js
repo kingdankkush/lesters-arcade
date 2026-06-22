@@ -3912,7 +3912,10 @@ function renderOfficialApp() {
 }
 
 async function connectOfficialWallet() {
-  if (!connectedWallet) await connectWallet();
+  if (!connectedWallet) {
+    await connectWallet();
+    if (!connectedWallet) return; // connection failed/declined
+  }
   playSfxCue('wallet-connect', 0.055);
   officialAppStep = 'arcade-walk-in';
   render();
@@ -9805,7 +9808,7 @@ dom.officialCharacterBackButton?.addEventListener('click', () => { playSfxCue('m
 dom.officialLevelBackButton?.addEventListener('click', () => { playSfxCue('menu-click', 0.05); setOfficialView('character-select'); });
 dom.officialBeginLevelButton.addEventListener('click', beginOfficialLevel);
 
-dom.connectWalletButton.addEventListener('click', connectWallet);
+dom.connectWalletButton.addEventListener('click', connectOfficialWallet);
 dom.freePlayButton.addEventListener('click', () => startMode('free'));
 dom.paidPlayButton.addEventListener('click', () => startMode('paid'));
 dom.simulateRunButton.addEventListener('click', completePrototypeRun);

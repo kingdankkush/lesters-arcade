@@ -323,13 +323,13 @@ test('free mode session is playable but not global-leaderboard eligible', () => 
   assert.equal(session.entryFeeMicroUsdc, 0);
 });
 
-test('paid mode session uses quarter-entry economics and leaderboard eligibility', () => {
+test('paid mode session uses free-entry (testnet) economics and leaderboard eligibility', () => {
   const session = startPlaySession({ wallet: '0x2222222222222222222222222222222222222222', gameId: 'lester-blaster', mode: 'paid' });
 
   assert.equal(session.isPaid, true);
   assert.equal(session.leaderboardEligible, true);
   assert.equal(session.lives, 3);
-  assert.equal(session.entryFeeMicroUsdc, 250_000);
+  assert.equal(session.entryFeeMicroUsdc, 0); // free on testnet
 });
 
 test('revenue split reserves settlement gas and routes the rest (dev wallet biggest share)', () => {
@@ -391,7 +391,7 @@ test('paid score submission updates leaderboard, achievements, transactions, and
   assert.equal(snapshot.progress['lester-blaster'].longestRunSeconds, 316);
   assert.equal(snapshot.progress['lester-blaster'].bossesDefeated.includes('rug-pull-tank'), true);
   assert.equal(snapshot.transactions[0].kind, 'paid-session');
-  assert.equal(snapshot.transactions[0].amountMicroUsdc, 250_000);
+  assert.equal(snapshot.transactions[0].amountMicroUsdc, 0); // free on testnet
   assert.equal(snapshot.transactions[0].network, 'LitVM LiteForge testnet simulation');
   assert.equal(snapshot.transactions[0].chainId, 4441);
   assert.equal(snapshot.transactions[0].chainIdHex, '0x1159');

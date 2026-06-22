@@ -44,7 +44,7 @@ export {
 export const HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST = HMH_ENVIRONMENT_ASSET_MANIFEST;
 export const HARD_MONEY_HEROES_EXPANDED_PIXEL_PACK_MANIFEST = HMH_EXPANDED_PIXEL_PACK_MANIFEST;
 
-export const DEFAULT_ENTRY_FEE_MICRO_USDC = 250_000;
+export const DEFAULT_ENTRY_FEE_MICRO_USDC = 0; // Ranked is free on testnet — only zkLTC gas for settlement
 
 // Ranked $0.25 fee split. Cost-first intent: a settlement reserve covers the
 // on-chain gas to write the player's score/achievements/username; the dev bucket
@@ -523,7 +523,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   ]),
   modeSelect: Object.freeze({
     free: Object.freeze({ label: 'Free Mode', official: false, copy: 'Practice locally with no official leaderboard, achievement, progress, or transaction writes. The parent Lester’s Arcade wallet profile is already active.' }),
-    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked publishes your score, achievements, and name on-chain to LitVM as a permanent run record — showcasing the Lester’s Arcade ↔ LitVM integration. On testnet the only cost is the zkLTC gas to write it (free from the faucet, no real value).' }),
+    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked publishes your score, achievements, and name on-chain to LitVM as a permanent run record. Free on testnet — only the zkLTC gas to write it (free from the faucet, no real value). Wallet required.' }),
   }),
   gameIntro: Object.freeze({
     id: 'hard-money-heroes-intro-splash',
