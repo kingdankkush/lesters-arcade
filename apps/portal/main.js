@@ -7,7 +7,7 @@ import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES, canonicalActorIdForRu
 import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
-import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt } from './src/combat-physics.mjs';
+import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollDrop } from './src/drop-tables.mjs';
@@ -6742,6 +6742,24 @@ function updateRoguelikeMovement(dt) {
     const resolved = resolveWaterCollision(seed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt);
     combat.playerMapX = resolved.x;
     combat.playerMapY = resolved.y;
+    // Level Design Bible §6.2: apply environmental force zones (quicksand slow,
+    // conveyor push, wind drift) deterministically. Zones are authored rects in
+    // map space; the pure helper returns the modified velocity + sink factor.
+    // Currently the roguelike doesn't author hazard zones, but the wiring is in
+    // place for L2 district content packs (heat vents, electrified cables, etc.).
+    if (combat.environmentalForceZones?.length) {
+      const vx = combat.playerMapX - fromX;
+      const vy = combat.playerMapY - fromY;
+      const forced = applyEnvironmentalForces({
+        x: combat.playerMapX,
+        y: combat.playerMapY,
+        vx, vy,
+        zones: combat.environmentalForceZones,
+      });
+      // Apply the zone-adjusted displacement (push/drift) on top of the base move.
+      combat.playerMapX += forced.vx - vx;
+      combat.playerMapY += forced.vy - vy;
+    }
     combat._heroMoving = true;
   } else {
     combat._heroMoving = false;
