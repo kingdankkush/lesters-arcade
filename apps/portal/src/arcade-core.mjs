@@ -1903,6 +1903,18 @@ export const ARCADE_GAMES = Object.freeze([
       cartridgeAsset: './assets/cartridge-chikun.svg',
       marquee: 'CHIKUN',
     }),
+    desktopCabinetSprite: Object.freeze({
+      id: 'chikun-cabinet',
+      frameDurationMs: 600,
+      frames: Object.freeze([
+        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front.png', durationMs: 600 }),
+        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right.png', durationMs: 600 }),
+        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-right.png', durationMs: 600 }),
+        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-back.png', durationMs: 600 }),
+        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-left.png', durationMs: 600 }),
+        Object.freeze({ src: './assets/generated/chikun-cabinet/chikun-cabinet-front-right-low.png', durationMs: 600 }),
+      ]),
+    }),
   },
 ]);
 
