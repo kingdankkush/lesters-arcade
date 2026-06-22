@@ -9122,10 +9122,19 @@ function rosterKeyForEntity(entity, role) {
   const hay = `${entity.id ?? ''} ${entity.title ?? ''} ${entity.enemyKey ?? ''} ${entity.class ?? ''}`.toLowerCase();
   if (role === 'boss') {
     if (hay.includes('whale') || hay.includes('bank') || hay.includes('tycoon')) return 'whale-dumper-boss';
+    if (hay.includes('chain') || hay.includes('reaper')) return 'chain-reaper-boss';
     return 'whale-dumper-boss';
   }
+  // Check the bespoke kit registry first for an explicit roster key mapping
+  const kit = bespokeEnemyVisualKitFor(entity);
+  if (kit?.rosterKey) return kit.rosterKey;
+  // Fallback keyword matching for enemies without a bespoke kit entry
   if (hay.includes('goblin') || hay.includes('fud') || hay.includes('paper') || hay.includes('degen') || hay.includes('rug')) return 'fud-goblin';
   if (hay.includes('wisp') || hay.includes('gas') || hay.includes('cloud') || hay.includes('flying')) return 'gas-fee-wisp';
+  if (hay.includes('crypto-bro') || hay.includes('bro')) return 'crypto-bro-rusher';
+  if (hay.includes('evil-banker') || hay.includes('banker')) return 'evil-banker-ranged';
+  if (hay.includes('gas-beast') || hay.includes('beast')) return 'gas-beast-tank';
+  if (hay.includes('trench')) return 'trench-degen';
   // Default grunt animation set.
   return 'fud-goblin';
 }
@@ -9380,39 +9389,11 @@ function bespokeEnemySheet(src) {
 }
 
 function drawBespokeEnemyKit(ctx, enemy, intent, renderProfile = {}) {
-  const kit = bespokeEnemyVisualKitFor(enemy);
-  if (!kit) return false;
-  const state = intent?.telegraphing
-    ? 'attack'
-    : Math.abs(enemy.vx ?? 0) + Math.abs(enemy.vy ?? 0) > 0.08
-      ? 'run'
-      : 'idle';
-  const sheetSrc = kit.sheets?.[state] ?? kit.sheets?.idle;
-  const sheet = bespokeEnemySheet(sheetSrc);
-  if (!imageReady(sheet)) return false;
-
-  const columns = Math.max(1, kit.layout?.columns ?? 4);
-  const rows = Math.max(1, kit.layout?.rows ?? 2);
-  const fallbackFrameWidth = Math.floor(sheet.naturalWidth / columns) || 96;
-  const fallbackFrameHeight = Math.floor(sheet.naturalHeight / rows) || 96;
-  const frameWidth = Math.max(1, kit.layout?.frameWidth ?? fallbackFrameWidth);
-  const frameHeight = Math.max(1, kit.layout?.frameHeight ?? fallbackFrameHeight);
-  const frameIndex = Math.floor((combat.frame ?? 0) / (state === 'attack' ? 4 : 7)) % (columns * rows);
-  const sx = (frameIndex % columns) * frameWidth;
-  const sy = Math.floor(frameIndex / columns) * frameHeight;
-  const sizeMul = enemy.sizeScale ?? 1;
-  const drawScaleMul = sizeMul * (renderProfile.scaleMul ?? 1) * (kit.drawScaleMul ?? 1);
-  const drawSize = Math.round(frameWidth * drawScaleMul);
-  const drawHeight = Math.round(frameHeight * drawScaleMul);
-  const ex = Math.round(enemy.x + 15 - drawSize / 2);
-  const ey = Math.round(enemy.y - drawHeight + 12 + (renderProfile.anchorBiasY ?? 0) + (kit.anchorBiasY ?? 0));
-
-  ctx.save();
-  ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(sheet, sx, sy, frameWidth, frameHeight, ex, ey, drawSize, drawHeight);
-  if (intent?.telegraphing) drawEnemyProxyTelegraph(ctx, enemy, renderProfile, Math.max(drawSize, drawHeight));
-  ctx.restore();
-  return true;
+  // The bespoke kit system now provides roster-key mappings instead of static
+  // sprite sheets. The actual 8-dir animated rendering is handled by the
+  // animated roster system (roguelikeEnemyAnimatedFrame + drawSingleEnemy).
+  // This function returns false so the renderer falls through to the roster.
+  return false;
 }
 
 function drawEnemyProxyTelegraph(ctx, enemy, renderProfile, drawSize) {

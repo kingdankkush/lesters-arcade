@@ -1,0 +1,81 @@
+{
+  "paper-hand": {
+    "character_id": "6eae0151-464f-49c6-846c-09c964d87408",
+    "animations": {
+      "idle": {
+        "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      },
+      "attack": {
+        "queued": true
+      },
+      "hit": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
+      }
+    }
+  },
+  "honeypot-turret": {
+    "character_id": "527b7c1a-1b10-4d10-9474-98c06d7b473e",
+    "animations": {
+      "idle": {
+        "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      },
+      "attack": {
+        "queued": true
+      }
+    }
+  },
+  "slippage-skater": {
+    "character_id": "591e81cc-fe62-49a2-a6be-dc9fa53b9378",
+    "animations": {
+      "attack": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
+      }
+    }
+  },
+  "phishing-angler": {
+    "character_id": "2d8a546e-7a9c-4d60-a73a-54916604695f",
+    "animations": {
+      "run": {
+        "queued": true
+      }
+    }
+  },
+  "mev-reaper": {
+    "character_id": "741efea8-2306-4d06-9dfe-0d60d8b46dca",
+    "animations": {
+      "run": {
+        "queued": true
+      }
+    }
+  },
+  "liquidation-cascade-golem": {
+    "character_id": "5c858dfd-fc10-4c1f-8da9-ee3bf596cd1d",
+    "animations": {}
+  },
+  "sybil-drone": {
+    "character_id": "9ff63a91-4e1c-4704-9db4-e8b03ce8ce9e",
+    "animations": {
+      "idle": {
+        "queued": true
+      }
+    }
+  }
+}

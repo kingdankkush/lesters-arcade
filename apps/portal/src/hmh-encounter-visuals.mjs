@@ -173,36 +173,55 @@ export function buildEncounterTerrainPressure({ poiId = null, centerX = 0, cente
   return Object.freeze({ moveSpeedMul: 1, hazardId: null, label: null });
 }
 
-const DEFAULT_KIT_LAYOUT = Object.freeze({ columns: 4, rows: 2, frameWidth: 96, frameHeight: 96 });
-
-function bespokeKit(id, { drawScaleMul = 1, anchorBiasY = 0 } = {}) {
-  return Object.freeze({
-    id,
-    layout: DEFAULT_KIT_LAYOUT,
-    states: Object.freeze(['idle', 'run', 'attack']),
-    sheets: Object.freeze({
-      idle: `./assets/generated/hmh-bespoke-enemy-kits/${id}/idle.png`,
-      run: `./assets/generated/hmh-bespoke-enemy-kits/${id}/run.png`,
-      attack: `./assets/generated/hmh-bespoke-enemy-kits/${id}/attack.png`,
-    }),
-    drawScaleMul,
-    anchorBiasY,
-  });
-}
-
-export const BESPOKE_ENEMY_VISUAL_KITS = Object.freeze({
-  'bandit-captain': bespokeKit('bandit-captain', { drawScaleMul: 1.12, anchorBiasY: -10 }),
-  buzzard: bespokeKit('buzzard', { drawScaleMul: 1.06, anchorBiasY: -12 }),
-  'claim-jumper': bespokeKit('claim-jumper', { drawScaleMul: 1.04, anchorBiasY: -9 }),
-  'claim-jumper-sheriff': bespokeKit('claim-jumper-sheriff', { drawScaleMul: 1.1, anchorBiasY: -10 }),
-  'coyote-pack-runner': bespokeKit('coyote-pack-runner', { drawScaleMul: 1.08, anchorBiasY: -10 }),
-  'fud-goblin-cave': bespokeKit('fud-goblin-cave', { drawScaleMul: 0.96, anchorBiasY: -4 }),
-  rattlesnake: bespokeKit('rattlesnake', { drawScaleMul: 1.08, anchorBiasY: -6 }),
-  'ridge-raider': bespokeKit('ridge-raider', { drawScaleMul: 1.08, anchorBiasY: -10 }),
-  'scam-cult-zealot': bespokeKit('scam-cult-zealot', { drawScaleMul: 1.08, anchorBiasY: -9 }),
-  'scorpion-ambusher': bespokeKit('scorpion-ambusher', { drawScaleMul: 1.12, anchorBiasY: -8 }),
-  'wild-boar': bespokeKit('wild-boar', { drawScaleMul: 1.12, anchorBiasY: -7 }),
+// Animated roster kit references — enemies now use 8-direction PixelLab animated
+// sprites from the hmh-animated-roster directory instead of static sprite sheets.
+// The roster key maps each enemy to its character directory under
+// assets/generated/hmh-animated-roster/<key>/ with idle/walk/run/attack/hit/death
+// subdirectories containing per-direction frame PNGs.
+const ENEMY_ROSTER_KEYS = Object.freeze({
+  'bandit-captain': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.12, anchorBiasY: -10 },
+  buzzard: { rosterKey: 'crypto-bro-rusher', drawScaleMul: 1.06, anchorBiasY: -12 },
+  'claim-jumper': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.04, anchorBiasY: -9 },
+  'claim-jumper-sheriff': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.1, anchorBiasY: -10 },
+  'coyote-pack-runner': { rosterKey: 'coyote-pack-runner', drawScaleMul: 1.08, anchorBiasY: -10 },
+  'fud-goblin-cave': { rosterKey: 'trench-degen', drawScaleMul: 0.96, anchorBiasY: -4 },
+  rattlesnake: { rosterKey: 'rattlesnake', drawScaleMul: 1.08, anchorBiasY: -6 },
+  'ridge-raider': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.08, anchorBiasY: -10 },
+  'scam-cult-zealot': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.08, anchorBiasY: -9 },
+  'scorpion-ambusher': { rosterKey: 'scorpion-ambusher', drawScaleMul: 1.12, anchorBiasY: -8 },
+  'wild-boar': { rosterKey: 'wild-boar', drawScaleMul: 1.12, anchorBiasY: -7 },
+  'paper-hand': { rosterKey: 'paper-hand', drawScaleMul: 1.0, anchorBiasY: -6 },
+  'honeypot-turret': { rosterKey: 'honeypot-turret', drawScaleMul: 1.1, anchorBiasY: -4 },
+  'slippage-skater': { rosterKey: 'slippage-skater', drawScaleMul: 1.06, anchorBiasY: -8 },
+  'phishing-angler': { rosterKey: 'phishing-angler', drawScaleMul: 1.04, anchorBiasY: -8 },
+  'mev-reaper': { rosterKey: 'mev-reaper', drawScaleMul: 1.08, anchorBiasY: -10 },
+  'liquidation-cascade-golem': { rosterKey: 'liquidation-cascade-golem', drawScaleMul: 1.16, anchorBiasY: -6 },
+  'sybil-drone': { rosterKey: 'sybil-drone', drawScaleMul: 0.92, anchorBiasY: -12 },
+  'rug-rat': { rosterKey: 'rug-rat', drawScaleMul: 0.88, anchorBiasY: -4 },
+  'gas-beast': { rosterKey: 'gas-beast-tank', drawScaleMul: 1.14, anchorBiasY: -4 },
+  'crypto-bro': { rosterKey: 'crypto-bro-rusher', drawScaleMul: 1.04, anchorBiasY: -8 },
+  'evil-banker': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.06, anchorBiasY: -8 },
+  'fud-goblin': { rosterKey: 'fud-goblin', drawScaleMul: 0.96, anchorBiasY: -4 },
+  'gas-fee-wisp': { rosterKey: 'gas-fee-wisp', drawScaleMul: 0.94, anchorBiasY: -12 },
 });
+
+// BESPOKE_ENEMY_VISUAL_KITS is kept as a backward-compatible export but now returns
+// roster-key-based kit descriptors instead of static sheet paths. The renderer uses
+// these to look up the animated roster entry for 8-dir frame selection.
+export const BESPOKE_ENEMY_VISUAL_KITS = Object.freeze(
+  Object.fromEntries(
+    Object.entries(ENEMY_ROSTER_KEYS).map(([id, spec]) => [
+      id,
+      Object.freeze({
+        id,
+        rosterKey: spec.rosterKey,
+        states: Object.freeze(['idle', 'walk', 'run', 'attack', 'hit', 'death']),
+        drawScaleMul: spec.drawScaleMul,
+        anchorBiasY: spec.anchorBiasY,
+      }),
+    ]),
+  ),
+);
 
 export function bespokeEnemyVisualKitFor(entity = {}) {
   const id = normalizeId(entity?.id ?? entity?.enemyKey ?? '');

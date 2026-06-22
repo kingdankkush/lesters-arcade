@@ -195,7 +195,7 @@ test('buildEncounterEnemyBehaviorProfile extends authored responses into Crossro
   assert.equal(rugpullZealot.attackResetFrames < 92, true);
 });
 
-test('bespoke authored enemy visual kits are registered with real generated sheet files', () => {
+test('bespoke authored enemy visual kits are registered with roster-key references for 8-dir animated sprites', () => {
   const coyote = bespokeEnemyVisualKitFor({ id: 'coyote-pack-runner' });
   const scorpion = bespokeEnemyVisualKitFor({ id: 'scorpion-ambusher' });
   const captain = bespokeEnemyVisualKitFor({ id: 'bandit-captain' });
@@ -212,13 +212,14 @@ test('bespoke authored enemy visual kits are registered with real generated shee
   assert.equal(boar.id, 'wild-boar');
   assert.equal(buzzard.id, 'buzzard');
   assert.equal(rattlesnake.id, 'rattlesnake');
-  assert.equal(coyote.layout.columns, 4);
-  assert.equal(scorpion.layout.rows, 2);
-
-  for (const kit of [coyote, scorpion, captain, boar, buzzard, rattlesnake]) {
-    for (const state of kit.states) {
-      const filePath = fileURLToPath(new URL(`../apps/portal/${kit.sheets[state]}`, import.meta.url));
-      assert.equal(existsSync(filePath), true, `${kit.id} ${state} sheet exists`);
-    }
-  }
+  // Each kit now has a rosterKey pointing to the animated roster directory
+  assert.equal(typeof coyote.rosterKey, 'string');
+  assert.equal(typeof scorpion.rosterKey, 'string');
+  assert.equal(typeof captain.rosterKey, 'string');
+  assert.equal(typeof coyote.drawScaleMul, 'number');
+  assert.equal(typeof coyote.anchorBiasY, 'number');
+  // States include the full animation set
+  assert.equal(coyote.states.includes('idle'), true);
+  assert.equal(coyote.states.includes('attack'), true);
+  assert.equal(coyote.states.includes('death'), true);
 });

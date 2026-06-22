@@ -1,0 +1,381 @@
+{
+  "chain-reaper-boss": {
+    "death": {
+      "north-west": 7,
+      "north": 7,
+      "east": 7,
+      "west": 7,
+      "north-east": 7,
+      "south-east": 7,
+      "south-west": 7,
+      "south": 7
+    },
+    "hurt": {
+      "south": 7,
+      "south-east": 7,
+      "west": 7,
+      "east": 7,
+      "north-east": 7,
+      "north-west": 7,
+      "south-west": 7,
+      "north": 7
+    },
+    "attack-slam": {
+      "north": 7,
+      "south-west": 7,
+      "south-east": 7,
+      "east": 7,
+      "west": 7,
+      "north-west": 7,
+      "south": 7,
+      "north-east": 7
+    },
+    "shoot": {
+      "north-east": 7,
+      "north": 7,
+      "south-west": 7,
+      "south": 7,
+      "west": 7,
+      "south-east": 7,
+      "east": 7,
+      "north-west": 7
+    },
+    "attack": {
+      "north-west": 7,
+      "south": 7,
+      "south-west": 7,
+      "south-east": 7,
+      "north": 7,
+      "west": 7,
+      "north-east": 7,
+      "east": 7
+    },
+    "idle": {
+      "south-west": 7,
+      "north-west": 7,
+      "south-east": 7,
+      "north": 7,
+      "west": 7,
+      "south": 7,
+      "north-east": 7,
+      "east": 7
+    },
+    "walk": {
+      "north-west": 7,
+      "east": 7,
+      "south-west": 7,
+      "west": 7,
+      "north": 7,
+      "south": 7,
+      "north-east": 7,
+      "south-east": 7
+    }
+  },
+  "gas-beast-tank": {
+    "hurt": {
+      "north-west": 7,
+      "west": 7,
+      "south": 7,
+      "east": 7,
+      "south-west": 7,
+      "south-east": 7,
+      "north-east": 7,
+      "north": 7
+    },
+    "attack": {
+      "west": 7,
+      "south-west": 7,
+      "north-east": 7,
+      "north-west": 7,
+      "south-east": 7,
+      "north": 7,
+      "east": 7,
+      "south": 7
+    }
+  },
+  "evil-banker-ranged": {
+    "walk": {
+      "east": 7,
+      "north-west": 7,
+      "west": 7,
+      "south-west": 7,
+      "north": 7,
+      "north-east": 7,
+      "south-east": 7,
+      "south": 7
+    },
+    "hurt": {
+      "south-east": 7,
+      "south-west": 7,
+      "north-east": 7,
+      "east": 7,
+      "south": 7,
+      "west": 7,
+      "north": 7
+    },
+    "idle": {
+      "south-east": 7,
+      "north": 7,
+      "north-east": 7,
+      "north-west": 7,
+      "east": 7,
+      "west": 7,
+      "south": 7,
+      "south-west": 7
+    },
+    "attack": {
+      "north-east": 7,
+      "south-west": 7,
+      "north-west": 7,
+      "north": 7,
+      "west": 7,
+      "east": 7,
+      "south-east": 7,
+      "south": 7
+    }
+  },
+  "crypto-bro-rusher": {
+    "idle": {
+      "east": 7,
+      "north": 7,
+      "south-west": 7,
+      "west": 7,
+      "north-east": 7,
+      "south-east": 7,
+      "north-west": 7,
+      "south": 7
+    },
+    "walk": {
+      "south-east": 7,
+      "south-west": 7,
+      "west": 7,
+      "north": 7,
+      "east": 7,
+      "north-west": 7,
+      "south": 7,
+      "north-east": 7
+    }
+  },
+  "trench-degen": {
+    "walk": {
+      "north-east": 7,
+      "east": 7,
+      "west": 7,
+      "north": 7,
+      "south-east": 7,
+      "north-west": 7,
+      "south": 7,
+      "south-west": 7
+    },
+    "idle": {
+      "north-east": 7,
+      "south-west": 7,
+      "south-east": 7,
+      "north": 7,
+      "east": 7,
+      "south": 7,
+      "north-west": 7,
+      "west": 7
+    },
+    "hurt": {
+      "south": 7
+    }
+  },
+  "lilly-iso": {
+    "death": {
+      "south": 7
+    },
+    "hurt": {
+      "south": 7
+    },
+    "throw": {
+      "south": 7
+    },
+    "run": {
+      "south": 7
+    },
+    "melee": {
+      "south": 7
+    },
+    "idle": {
+      "south": 7
+    },
+    "shoot": {
+      "south": 7
+    },
+    "walk": {
+      "south": 7
+    }
+  },
+  "lit-commando": {
+    "hurt": {
+      "north-east": 7,
+      "south-west": 7,
+      "north-west": 7,
+      "south-east": 7,
+      "east": 7,
+      "south": 7,
+      "west": 7
+    },
+    "walk": {
+      "south-west": 7,
+      "west": 7,
+      "north-west": 7,
+      "north": 7,
+      "north-east": 7,
+      "east": 7,
+      "south-east": 7,
+      "south": 7
+    },
+    "shoot-shotgun": {
+      "south-west": 7,
+      "west": 7,
+      "north-west": 7,
+      "north-east": 7,
+      "east": 7,
+      "north": 7,
+      "south-east": 7,
+      "south": 7
+    },
+    "throw": {
+      "west": 7,
+      "south-west": 7,
+      "north-west": 7,
+      "north-east": 7,
+      "north": 7,
+      "east": 7,
+      "south-east": 7,
+      "south": 7
+    },
+    "melee": {
+      "south-west": 7,
+      "west": 7,
+      "north-west": 7,
+      "north": 7,
+      "east": 7,
+      "north-east": 7,
+      "south": 7,
+      "south-east": 7
+    },
+    "shoot": {
+      "south-west": 7,
+      "west": 7,
+      "north-west": 7,
+      "north": 7,
+      "east": 7,
+      "north-east": 7,
+      "south": 7
+    },
+    "levelup": {
+      "south-west": 7,
+      "west": 7,
+      "north-west": 7,
+      "north": 7,
+      "north-east": 7,
+      "east": 7,
+      "south-east": 7,
+      "south": 7
+    },
+    "run": {
+      "south-west": 7,
+      "west": 7,
+      "north-west": 7,
+      "north": 7,
+      "north-east": 7,
+      "east": 7,
+      "south-east": 7,
+      "south": 7
+    },
+    "idle": {
+      "south-west": 7,
+      "west": 7,
+      "north-west": 7,
+      "north": 7,
+      "north-east": 7,
+      "east": 7,
+      "south-east": 7,
+      "south": 7
+    }
+  },
+  "lit-valkyrie": {
+    "death": {
+      "west": 7,
+      "south": 7,
+      "north-east": 7,
+      "north": 7,
+      "south-east": 7,
+      "south-west": 7,
+      "east": 7
+    },
+    "throw": {
+      "south": 7,
+      "west": 7,
+      "south-east": 7,
+      "north": 7,
+      "south-west": 7,
+      "east": 7,
+      "north-east": 7,
+      "north-west": 7
+    },
+    "hurt": {
+      "south": 7,
+      "east": 7,
+      "north-west": 7,
+      "south-east": 7,
+      "north": 7,
+      "north-east": 7,
+      "south-west": 7,
+      "west": 7
+    },
+    "shoot": {
+      "south-east": 7,
+      "south-west": 7,
+      "north": 7,
+      "north-west": 7,
+      "west": 7,
+      "north-east": 7,
+      "east": 7,
+      "south": 7
+    },
+    "melee": {
+      "south-east": 7,
+      "west": 7,
+      "north": 7,
+      "north-west": 7,
+      "south-west": 7,
+      "east": 7,
+      "south": 7,
+      "north-east": 7
+    },
+    "run": {
+      "south-west": 7,
+      "north-east": 7,
+      "north": 7,
+      "west": 7,
+      "north-west": 7,
+      "south-east": 7,
+      "east": 7,
+      "south": 7
+    },
+    "walk": {
+      "east": 7,
+      "south": 7,
+      "north": 7,
+      "north-east": 7,
+      "west": 7,
+      "north-west": 7,
+      "south-west": 7,
+      "south-east": 7
+    },
+    "idle": {
+      "west": 7,
+      "south-west": 7,
+      "north-west": 7,
+      "north": 7,
+      "north-east": 7,
+      "east": 7,
+      "south-east": 7,
+      "south": 7
+    }
+  }
+}
