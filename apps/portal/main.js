@@ -8,6 +8,7 @@ import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemy
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt } from './src/combat-physics.mjs';
+import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
@@ -2745,12 +2746,31 @@ function damageProp(prop, damage, source = 'impact') {
   if (prop.hp <= 0) {
     spawnExplosion(prop.x + prop.w / 2, prop.y + prop.h / 2, prop.explosive ? '#ff7b2f' : '#aab6d3');
     if (prop.explosive) {
+      // Level Design Bible §6.6: chain detonation — destroying an explosive barrel
+      // detonates other nearby explosive barrels, reshaping the arena dynamically.
+      const chainResult = computeChainDetonation({
+        props: combat.props ?? [],
+        triggerId: prop.id ?? null,
+        chainRadius: 70,
+      });
       const blast = { x: prop.x - 70, y: prop.y - 48, w: prop.w + 140, h: prop.h + 96 };
       for (const enemy of combat.enemies) {
         if (rectsOverlap(blast, enemyHitbox(enemy))) damageEnemy(enemy, 16, source);
       }
       const bossBox = bossHitbox();
       if (bossBox && rectsOverlap(blast, bossBox)) damageBoss(18, source);
+      // Detonate chained barrels — each gets its own explosion + blast damage.
+      for (const chainedId of chainResult.detonated) {
+        const chained = (combat.props ?? []).find((p) => p.id === chainedId);
+        if (!chained) continue;
+        chained.hp = 0;
+        spawnExplosion(chained.x + chained.w / 2, chained.y + chained.h / 2, '#ff7b2f');
+        const chainBlast = { x: chained.x - 70, y: chained.y - 48, w: chained.w + 140, h: chained.h + 96 };
+        for (const enemy of combat.enemies) {
+          if (rectsOverlap(chainBlast, enemyHitbox(enemy))) damageEnemy(enemy, 16, 'chain-explosion');
+        }
+        if (bossBox && rectsOverlap(chainBlast, bossBox)) damageBoss(18, 'chain-explosion');
+      }
     }
   }
   return prop.hp <= 0;
