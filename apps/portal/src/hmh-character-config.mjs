@@ -95,13 +95,20 @@ export function setPreferredCharacter(profile = {}, legacyId, config = HARD_MONE
 export function buildCharacterSelectEntries(baseRoster = [], profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
   const unlocks = buildCharacterUnlockMap(profile, config);
   const selectedCharacterId = resolveSelectedCharacterId(profile, config);
-  const unlockId = normalizeId(config.levelOneUnlockLegacyId);
+  const unlockCharId = normalizeId(config.levelOneUnlockCharacterId);
   return baseRoster.map((entry) => {
     const legacyId = normalizeId(entry.legacyId ?? entry.id);
-    const unlocked = Boolean(unlocks[legacyId]);
+    const entryId = normalizeId(entry.id);
+    // The Level 1 unlock character is keyed by its own id in the unlock map
+    // (not its legacyId, which collides with a starter). All other characters
+    // use their legacyId for the unlock lookup.
+    const isLevelOneUnlock = unlockCharId && entryId === unlockCharId;
+    const unlocked = isLevelOneUnlock
+      ? Boolean(unlocks[entryId])
+      : Boolean(unlocks[legacyId]);
     const cta = unlocked
       ? `SELECT — PLAY AS ${String(entry.name ?? entry.title ?? legacyId).toUpperCase()}`
-      : legacyId === unlockId && unlockId
+      : isLevelOneUnlock
         ? 'CLEAR LEVEL 1 TO UNLOCK'
         : 'LOCKED';
     return Object.freeze({

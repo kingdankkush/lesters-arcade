@@ -1543,6 +1543,12 @@ const HERO_ROSTER_BASE = [
     bio: 'Teal-plasma energy warrior with short teal hair. Faster movement, higher fire-rate and crit chance — but more fragile. Darts through the panic and punishes mistakes.',
     stats: [['Power', 4], ['Speed', 5], ['Armor', 2], ['Luck', 5]],
   },
+  {
+    id: 'lester-original', name: 'Lester (Original)', locked: true,
+    tagline: 'The Original Commando',
+    bio: 'The legendary Litecoin commando from the arcade days. Balanced stats across the board. Unlock by completing Level 1: The Crypto Wasteland.',
+    stats: [['Power', 3], ['Speed', 3], ['Armor', 3], ['Luck', 3]],
+  },
 ];
 
 // Glyph per hero skill type, shown beside the stat label on the hero cards.
