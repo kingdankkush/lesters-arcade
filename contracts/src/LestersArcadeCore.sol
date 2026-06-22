@@ -31,7 +31,7 @@ contract LestersArcadeCore {
         playerProfiles = new PlayerProfileRegistry();
         gameRegistry = new GameRegistry(trustedVerifier);
         paymentRouter = new ArcadePaymentRouter();
-        scoreSubmissions = new ScoreSubmissionRegistry(trustedVerifier);
+        scoreSubmissions = new ScoreSubmissionRegistry();
         achievements = new AchievementRegistry(trustedVerifier);
         tournaments = new TournamentPool();
 

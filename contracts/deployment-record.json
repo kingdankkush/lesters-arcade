@@ -1,0 +1,16 @@
+{
+  "network": "LitVM LiteForge Testnet",
+  "chainId": 4441,
+  "deployedAt": "2026-06-22T21:54:23.846Z",
+  "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "addresses": {
+    "playerProfileRegistry": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+    "gameRegistry": "0x09C6f94e73f6aA16177549952Dc47dB5AEb83406",
+    "arcadePaymentRouter": "0x7c999E9570D44090b9279dbAbE33B361e94bf78B",
+    "scoreSubmissionRegistry": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+    "sessionLedger": "0x699c2313884A68B7dfCffC01337eB429b6609798",
+    "achievementRegistry": "0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53",
+    "tournamentPool": "0xbc88DFBaaA82D0F0Cce356924e619f9DCBD17c66",
+    "lestersArcadeCore": "0x609CBED352699003dec2381a79EFe5090B56F1D2"
+  }
+}

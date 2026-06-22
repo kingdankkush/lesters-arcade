@@ -15,7 +15,7 @@
 // IMPORTANT: This script sends real testnet transactions. It requires zkLTC
 // in the deployer wallet (free from the LitVM faucet). All actions are testnet-only.
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -175,7 +175,7 @@ async function deploy() {
     artifacts.ScoreSubmissionRegistry.bytecode,
     deployer,
   );
-  const scoreSubmissions = await scoreSubmissionFactory.deploy(deployer.address);
+  const scoreSubmissions = await scoreSubmissionFactory.deploy();
   await scoreSubmissions.waitForDeployment();
   addresses.scoreSubmissionRegistry = await scoreSubmissions.getAddress();
   console.log(`   Deployed at: ${addresses.scoreSubmissionRegistry}`);
@@ -258,6 +258,28 @@ async function deploy() {
   const recordPath = join(root, 'contracts', 'deployment-record.json');
   writeFileSync(recordPath, JSON.stringify(deploymentRecord, null, 2));
   console.log(`Deployment record saved to: contracts/deployment-record.json`);
+
+  // Auto-patch settlement.mjs LITVM_CONTRACT_ADDRESSES so the runtime points at
+  // the freshly deployed contracts without a manual copy/paste step.
+  try {
+    const settlementPath = join(root, 'apps', 'portal', 'src', 'settlement.mjs');
+    let settlementSrc = readFileSync(settlementPath, 'utf8');
+    const block = `export const LITVM_CONTRACT_ADDRESSES = Object.freeze({\n` +
+      `  playerProfileRegistry: '${addresses.playerProfileRegistry}',\n` +
+      `  scoreSubmissionRegistry: '${addresses.scoreSubmissionRegistry}',\n` +
+      `  achievementRegistry: '${addresses.achievementRegistry}',\n` +
+      `  arcadePaymentRouter: '${addresses.arcadePaymentRouter}',\n` +
+      `  lestersArcadeCore: '${addresses.lestersArcadeCore}',\n` +
+      `});`;
+    settlementSrc = settlementSrc.replace(
+      /export const LITVM_CONTRACT_ADDRESSES = Object\.freeze\(\{[\s\S]*?\}\);/,
+      block,
+    );
+    writeFileSync(settlementPath, settlementSrc);
+    console.log('Patched apps/portal/src/settlement.mjs with new addresses.');
+  } catch (err) {
+    console.warn('Could not auto-patch settlement.mjs:', err.message);
+  }
 }
 
 deploy().catch((err) => {

@@ -29,11 +29,11 @@ export const SETTLEMENT_LIVE = true;
 // Placeholder addresses; filled in at deploy time. Kept here so the plan shape
 // is complete and testable before deployment.
 export const LITVM_CONTRACT_ADDRESSES = Object.freeze({
-  playerProfileRegistry: '0x4F6D748abd58929C9A57d21d10BdF44467616703',
-  scoreSubmissionRegistry: '0xd104c2E45c53e0130A2979224bFd224E22A73409',
-  achievementRegistry: '0x356451392aE8F04e25d06843E9fC2e3964A24061',
-  arcadePaymentRouter: '0x7b50B60d7db5083EA1D9c1d70C07e655505919C7',
-  lestersArcadeCore: '0xc6352B2059897C6c5056f5b8ad9d1F6e33d1F528',
+  playerProfileRegistry: '0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96',
+  scoreSubmissionRegistry: '0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0',
+  achievementRegistry: '0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53',
+  arcadePaymentRouter: '0x7c999E9570D44090b9279dbAbE33B361e94bf78B',
+  lestersArcadeCore: '0x609CBED352699003dec2381a79EFe5090B56F1D2',
 });
 
 // Per-write zkLTC gas budget (testnet estimates, in wei-equivalent units of the

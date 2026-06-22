@@ -6,8 +6,9 @@ pragma solidity ^0.8.24;
 /// @notice Wallet-indexed parent account for every cabinet in Lester's Arcade.
 ///         One wallet -> one profile. Profiles are the locked identity for
 ///         scores, achievements, avatars, and LitVM settlement receipts.
-/// @dev Deployed on LitVM once the chain is live. Gas-paid by the parent
-///      arcade operator (SETTLEMENT_RESERVE).
+/// @dev    Player-signed: every write is keyed to msg.sender, so a player owns
+///         and pays for their own profile. No trusted operator required, which
+///         is what a static-site (no backend) deployment needs.
 contract PlayerProfileRegistry {
     struct Profile {
         bytes32 handle;       // keccak256 of display name (on-chain, gas-light)
@@ -28,35 +29,49 @@ contract PlayerProfileRegistry {
     /// @notice Register a new profile for msg.sender. Fails if wallet already registered.
     function registerProfile(string calldata displayName, string calldata avatarUri) external {
         require(!profiles[msg.sender].exists, "Already registered");
-        bytes32 handle = keccak256(abi.encodePacked(displayName));
-        require(handleOwners[handle] == address(0), "Handle taken");
-
-        profiles[msg.sender] = Profile({
-            handle: handle,
-            displayName: displayName,
-            avatarUri: avatarUri,
-            createdAt: block.timestamp,
-            lastUpdated: block.timestamp,
-            exists: true
-        });
-        handleOwners[handle] = msg.sender;
-
-        emit ProfileCreated(msg.sender, handle, displayName);
-        emit HandleReserved(msg.sender, handle);
+        _writeProfile(displayName, avatarUri);
     }
 
-    /// @notice Update display name and avatar. Fails if handle collides with
-    ///         another wallet's active registration.
+    /// @notice Update display name and avatar. Fails if not yet registered.
     function updateProfile(string calldata displayName, string calldata avatarUri) external {
         require(profiles[msg.sender].exists, "Not registered");
+        _writeProfile(displayName, avatarUri);
+    }
+
+    /// @notice Idempotent create-or-update. The runtime calls this so a player's
+    ///         first ranked run can settle a profile in the same flow without a
+    ///         separate registration step. Reverts only on handle collision.
+    function setProfile(string calldata displayName, string calldata avatarUri) external {
+        _writeProfile(displayName, avatarUri);
+    }
+
+    function _writeProfile(string calldata displayName, string calldata avatarUri) private {
         bytes32 handle = keccak256(abi.encodePacked(displayName));
         if (handleOwners[handle] != address(0) && handleOwners[handle] != msg.sender) {
             revert("Handle taken");
         }
+
+        bool firstTime = !profiles[msg.sender].exists;
+        if (firstTime) {
+            profiles[msg.sender] = Profile({
+                handle: handle,
+                displayName: displayName,
+                avatarUri: avatarUri,
+                createdAt: block.timestamp,
+                lastUpdated: block.timestamp,
+                exists: true
+            });
+            handleOwners[handle] = msg.sender;
+            emit ProfileCreated(msg.sender, handle, displayName);
+            emit HandleReserved(msg.sender, handle);
+            return;
+        }
+
         bytes32 oldHandle = profiles[msg.sender].handle;
         if (oldHandle != handle) {
             delete handleOwners[oldHandle];
             handleOwners[handle] = msg.sender;
+            emit HandleReserved(msg.sender, handle);
         }
         profiles[msg.sender].handle = handle;
         profiles[msg.sender].displayName = displayName;

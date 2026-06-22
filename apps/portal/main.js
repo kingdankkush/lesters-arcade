@@ -130,6 +130,7 @@ import {
   buildPlayerArcadeSnapshot,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
+import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
@@ -1324,6 +1325,9 @@ let lastRunElapsedSeconds = 0;
 let lastBossId = null;
 let officialAppStep = 'wallet-splash';
 let officialSelectedMode = null;
+// Last on-chain settlement outcome (for the game-over screen explorer link + errors).
+let lastSettlementTxUrl = null;
+let lastSettlementError = null;
 let developerBackstageOpen = false;
 
 // Playable hero display names. The in-game roguelike heroes were renamed from
@@ -1942,20 +1946,86 @@ function submitCombatGameOver() {
   // on-chain send is gated behind SETTLEMENT_LIVE (off until contracts deploy +
   // explicit approval); until then this produces a deterministic simulated tx.
   if (result.acceptedForGlobalLeaderboard && result.settlementInput) {
-    settleRankedRun(result.settlementInput);
+    settleRankedRun(result.settlementInput, {
+      kills: combat.kills,
+      maxCombo: combat.maxCombo,
+      survivalSeconds: Math.round(combat.elapsedGameSeconds || 0),
+      bossId: combat.bossDefeated ? lastBossId : null,
+    });
   }
 }
 
-async function settleRankedRun(settlementInput) {
+async function settleRankedRun(settlementInput, runStats = {}) {
+  // LIVE player-signed path: if settlement is live AND the player connected a
+  // real injected wallet (not the mock), submit the run on-chain from THEIR
+  // wallet (one confirmation, they pay the zkLTC gas). Otherwise fall back to
+  // the deterministic simulated receipt so offline/mock QA still works.
+  const provider = detectEthereumProvider();
+  const isRealWallet = walletConnector === 'injected-evm' && Boolean(provider?.request);
+
+  if (SETTLEMENT_LIVE && isRealWallet) {
+    if (dom.combatStatus) {
+      dom.combatStatus.textContent = 'Publishing your run to LitVM… confirm the transaction in your wallet to pay the zkLTC gas.';
+    }
+    try {
+      const { txHash } = await submitRankedSession(provider, {
+        sessionId: settlementInput.sessionId,
+        gameId: settlementInput.gameId,
+        score: settlementInput.score,
+        kills: runStats.kills ?? 0,
+        maxCombo: runStats.maxCombo ?? 0,
+        survivalSeconds: runStats.survivalSeconds ?? 0,
+        bossId: runStats.bossId ?? null,
+        achievements: settlementInput.unlockedAchievements ?? [],
+      });
+      const settlement = {
+        mode: 'live',
+        settled: true,
+        wallet: settlementInput.wallet,
+        gameId: settlementInput.gameId,
+        sessionId: settlementInput.sessionId,
+        score: settlementInput.score,
+        cadenceKeys: { ...(settlementInput.cadenceKeys || {}) },
+        receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitSession', txHash }],
+        primaryTxHash: txHash,
+        settledAt: new Date().toISOString(),
+      };
+      applySettlement(state, settlement);
+      persistArcadeStateSoon();
+      const shortTx = `${txHash.slice(0, 10)}…${txHash.slice(-6)}`;
+      if (dom.combatStatus) {
+        dom.combatStatus.textContent = `✓ Run published on-chain to LitVM. Tx ${shortTx}. Your score, kills, combo, and achievements are now permanent and feed the global leaderboard + your profile.`;
+      }
+      lastSettlementTxUrl = explorerTxUrl(txHash);
+      if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
+      if (officialAppStep === 'profile') renderOfficialProfile();
+      renderGameOverSummary();
+      return;
+    } catch (err) {
+      // User rejected, wrong chain, or RPC error. Keep the local record; tell
+      // them clearly and let them retry. Do NOT silently fall back to a fake tx.
+      console.warn('[settlement] on-chain submit failed:', err);
+      const reason = /user rejected|denied|4001/i.test(err?.message || '')
+        ? 'You declined the wallet transaction.'
+        : (err?.message || 'Unknown error');
+      if (dom.combatStatus) {
+        dom.combatStatus.textContent = `Score saved locally, but the on-chain publish did not complete: ${reason} You can retry from the game-over screen.`;
+      }
+      lastSettlementError = reason;
+      renderGameOverSummary();
+      return;
+    }
+  }
+
+  // SIMULATED fallback (mock wallet / offline QA): deterministic receipt.
   try {
     const plan = buildSettlementPlan(settlementInput);
-    const settlement = await settleRun(plan, { live: SETTLEMENT_LIVE });
+    const settlement = await settleRun(plan, { live: false });
     applySettlement(state, settlement);
     persistArcadeStateSoon();
     const shortTx = settlement.primaryTxHash ? `${settlement.primaryTxHash.slice(0, 10)}…${settlement.primaryTxHash.slice(-6)}` : 'pending';
-    const modeLabel = settlement.mode === 'live' ? 'LitVM settlement' : 'LitVM settlement (simulated; enable after contract deploy)';
     if (dom.combatStatus) {
-      dom.combatStatus.textContent = `Official score settled to ${modeLabel}. zkLTC fee covered ${plan.calls.length} contract call(s). Tx ${shortTx}. Score history & achievements now read from this settlement.`;
+      dom.combatStatus.textContent = `Official score recorded (simulated settlement — connect a real wallet for an on-chain publish). Tx ${shortTx}.`;
     }
     if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
     if (officialAppStep === 'profile') renderOfficialProfile();
@@ -3009,6 +3079,123 @@ function setOfficialView(step) {
   officialAppStep = step;
   syncRouteForView(step);
   render();
+  // When entering the global boards or a profile, pull the latest on-chain data
+  // so other players' runs (and this player's runs from other devices) show up.
+  // Best-effort + async: the view renders immediately from local state, then
+  // re-renders when the chain read resolves.
+  if (step === 'leaderboards') hydrateLeaderboardFromChain();
+  if (step === 'profile') hydrateProfileFromChain();
+}
+
+// --- on-chain hydration ----------------------------------------------------
+// Merge LitVM ScoreSubmissionRegistry records into local state so the global
+// leaderboard + profile reflect the chain (cross-device, cross-player). Dedup
+// is by sessionId, so re-hydrating is idempotent and never double-counts.
+let _hydratingLeaderboard = false;
+const _gameIdByHash = new Map(); // bytes32 -> local gameId, lazily filled
+
+async function ensureGameIdHashes() {
+  if (_gameIdByHash.size) return;
+  const { toBytes32Id } = await import('./src/litvm-chain-client.mjs');
+  for (const g of ARCADE_GAMES) {
+    // The runtime submits the per-cabinet gameId used in recordScore (game.id).
+    const h = await toBytes32Id(g.id);
+    _gameIdByHash.set(h.toLowerCase(), g.id);
+  }
+}
+
+function mergeChainRecordIntoState(rec, gameId) {
+  // Skip if this session already exists locally (dedup).
+  state.officialSessions ??= [];
+  if (state.officialSessions.some((s) => s.onChainSessionId32 === rec.sessionId32)) return false;
+  const recordedAt = new Date(rec.submittedAt * 1000).toISOString();
+  const syntheticSessionId = `chain:${rec.sessionId32.slice(0, 18)}`;
+  // File into the cadence boards (what the leaderboard UI reads).
+  try {
+    recordCadenceScore(state, gameId, {
+      wallet: rec.player,
+      score: rec.score,
+      sessionId: syntheticSessionId,
+      recordedAt,
+      runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
+      settlementTxHash: rec.sessionId32,
+    });
+  } catch { /* numeric guard already in engine */ }
+  // Flat board mirror.
+  state.leaderboards ??= {};
+  state.leaderboards[gameId] ??= [];
+  state.leaderboards[gameId].push({
+    sessionId: syntheticSessionId,
+    wallet: rec.player,
+    handle: null,
+    displayName: `${rec.player.slice(0, 6)}…${rec.player.slice(-4)}`,
+    gameId,
+    score: rec.score,
+    mode: 'paid',
+    runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
+    recordedAt,
+    onChain: true,
+  });
+  state.leaderboards[gameId].sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
+  // Track that we ingested this on-chain session (dedup key).
+  state.officialSessions.push({
+    sessionId: syntheticSessionId,
+    onChainSessionId32: rec.sessionId32,
+    wallet: rec.player,
+    gameId,
+    score: rec.score,
+    runStats: { kills: rec.kills, maxCombo: rec.maxCombo, elapsedSeconds: rec.survivalSeconds },
+    status: 'on-chain',
+    syncedAt: recordedAt,
+  });
+  return true;
+}
+
+async function hydrateLeaderboardFromChain() {
+  if (_hydratingLeaderboard) return;
+  _hydratingLeaderboard = true;
+  try {
+    await ensureGameIdHashes();
+    const provider = detectEthereumProvider();
+    const { fetchGlobalLeaderboard } = await import('./src/litvm-chain-client.mjs');
+    const res = await fetchGlobalLeaderboard({ walletProvider: provider, scan: 200, top: 200 });
+    if (!res.ok || !res.records.length) return;
+    let merged = 0;
+    for (const rec of res.records) {
+      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase()) ?? 'lester-blaster';
+      if (mergeChainRecordIntoState(rec, gameId)) merged += 1;
+    }
+    if (merged > 0) {
+      persistArcadeStateSoon();
+      if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
+    }
+  } catch (err) {
+    console.warn('[chain] leaderboard hydration failed (showing local only):', err?.message || err);
+  } finally {
+    _hydratingLeaderboard = false;
+  }
+}
+
+async function hydrateProfileFromChain() {
+  if (!connectedWallet) return;
+  try {
+    await ensureGameIdHashes();
+    const provider = detectEthereumProvider();
+    const { fetchPlayerSessions } = await import('./src/litvm-chain-client.mjs');
+    const res = await fetchPlayerSessions(connectedWallet, { walletProvider: provider, limit: 100 });
+    if (!res.ok || !res.records.length) return;
+    let merged = 0;
+    for (const rec of res.records) {
+      const gameId = _gameIdByHash.get((rec.gameId32 || '').toLowerCase()) ?? 'lester-blaster';
+      if (mergeChainRecordIntoState(rec, gameId)) merged += 1;
+    }
+    if (merged > 0) {
+      persistArcadeStateSoon();
+      if (officialAppStep === 'profile') renderOfficialProfile();
+    }
+  } catch (err) {
+    console.warn('[chain] profile hydration failed (showing local only):', err?.message || err);
+  }
 }
 
 function showOfficialPanel(activePanel) {
