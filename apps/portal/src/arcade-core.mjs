@@ -1254,6 +1254,22 @@ export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
     artDirection: 'chunky arcade bruiser placeholder only; do not produce final assets until approved.',
     animations: Object.freeze(['idle', 'run', 'jump', 'double-jump', 'shoot', 'melee', 'grenade', 'hurt', 'victory']),
   }),
+  Object.freeze({
+    id: 'lester-original',
+    title: 'Lester (Original)',
+    role: 'unlockable Hard Money Hero — the original arcade commando',
+    tagline: 'The legendary Litecoin commando from the arcade days. Unlocked by clearing Level 1: The Crypto Wasteland.',
+    personality: 'Rambo-like arcade commando: stubborn, brave, over-the-top, one-liners implied, walks against the panic.',
+    spriteSheet: './assets/generated/hmh-animated-roster/lester/idle/south-west/00.png',
+    portraitAsset: './assets/generated/hmh-animated-roster/lester/idle/south-west/00.png',
+    legacyId: 'lester',
+    unlock: 'achievement:getaway-clear',
+    unlockDescription: 'Complete Level 1: The Crypto Wasteland to unlock the original Lester commando.',
+    stats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
+    startStatMods: Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0 }),
+    artDirection: 'classic 8-bit/Neo-Geo arcade commando: green bandana, leather jacket, readable muzzle flashes, 8-direction isometric.',
+    animations: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death', 'victory']),
+  }),
 ]);
 
 export const LESTER_BLASTER_WEAPON_SYSTEM = Object.freeze({

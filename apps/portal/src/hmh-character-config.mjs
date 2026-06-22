@@ -1,10 +1,13 @@
 export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
-  rosterDecisionStatus: 'resolved-commando-and-valkyrie-starters',
+  rosterDecisionStatus: 'resolved-commando-valkyrie-starters-lester-unlockable',
   directionMode: '8-direction-backbone',
   starterLegacyId: 'lester',
   startersLegacyIds: Object.freeze(['lester', 'lilly']),
-  levelOneUnlockLegacyId: null,
+  levelOneUnlockLegacyId: 'lester-original',
   levelOneUnlockAchievementId: 'getaway-clear',
+  levelOneUnlockCharacterId: 'lester-original',
+  levelOneUnlockTitle: 'Lester (Original)',
+  levelOneUnlockDescription: 'Unlock the original arcade commando by completing Level 1: The Crypto Wasteland.',
 });
 
 export const HMH_PLAYABLE_CHARACTER_VISUAL_KITS = Object.freeze({

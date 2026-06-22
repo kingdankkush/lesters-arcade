@@ -232,7 +232,7 @@ test('player profiles initialize configurable character unlocks and selected-cha
   assert.equal(profile.preferences.selectedCharacterId, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId);
 });
 
-test('clearing the Level 1 finale preserves the current starter roster until a separate post-clear hero id is represented in runtime', () => {
+test('clearing the Level 1 finale preserves the current starter roster and unlocks Lester (Original)', () => {
   const state = createInitialArcadeState();
   const wallet = '0x' + 'b'.repeat(40);
   const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
@@ -241,7 +241,10 @@ test('clearing the Level 1 finale preserves the current starter roster until a s
   for (const starterId of HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds) {
     assert.equal(snapshot.profile.unlocks.characters[starterId], true);
   }
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, null);
+  // Lester (Original) is now the Level 1 unlock — config must point to it.
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, 'lester-original');
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockCharacterId, 'lester-original');
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockAchievementId, 'getaway-clear');
 });
 
 test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteForge target, and parent-account sync permissions', () => {

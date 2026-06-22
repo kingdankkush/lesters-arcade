@@ -14,20 +14,30 @@ import {
   syncConfiguredCharacterUnlocks,
 } from '../apps/portal/src/hmh-character-config.mjs';
 
-test('character slot config keeps Lit Commando and Lit Valkyrie as default starters', () => {
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.rosterDecisionStatus, 'resolved-commando-and-valkyrie-starters');
+test('character slot config keeps Lit Commando and Lit Valkyrie as default starters, Lester as Level 1 unlockable', () => {
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.rosterDecisionStatus, 'resolved-commando-valkyrie-starters-lester-unlockable');
   assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.directionMode, '8-direction-backbone');
   assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId, 'lester');
   assert.deepEqual([...HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds], ['lester', 'lilly']);
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, null);
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, 'lester-original');
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockCharacterId, 'lester-original');
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockAchievementId, 'getaway-clear');
+  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockTitle, 'Lester (Original)');
 });
 
-test('buildCharacterUnlockMap keeps both starter heroes unlocked by default', () => {
+test('buildCharacterUnlockMap keeps starters unlocked, locks Lester (Original) until getaway-clear', () => {
   const locked = buildCharacterUnlockMap({ achievements: [] });
   const unlocked = buildCharacterUnlockMap({ achievements: ['getaway-clear'] });
 
-  assert.deepEqual(locked, { lester: true, lilly: true });
-  assert.deepEqual(unlocked, { lester: true, lilly: true });
+  // Starters always unlocked.
+  assert.equal(locked.lester, true);
+  assert.equal(locked.lilly, true);
+  assert.equal(unlocked.lester, true);
+  assert.equal(unlocked.lilly, true);
+
+  // Lester (Original) locked until getaway-clear.
+  assert.equal(locked['lester-original'], false);
+  assert.equal(unlocked['lester-original'], true);
 });
 
 test('syncConfiguredCharacterUnlocks initializes both starters and a safe default selection', () => {
