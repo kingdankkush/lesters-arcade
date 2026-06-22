@@ -244,6 +244,8 @@
   align-items: center;
   gap: 12px;
   margin: 4px auto 0;
+  position: relative;
+  z-index: 20;
 }
 .wallet-splash-view .splash-cta-row .big-action {
   margin: 0;
@@ -969,8 +971,13 @@
   /* Auto-height so wrapped text is never clipped; min keeps the art readable. */
   min-height: 64px;
   background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0)), url('./assets/ads/ad-horizontal-bg.jpg');
-  z-index: 17;
+  z-index: 5;
   margin: 0;
+  /* Let clicks pass through to splash-screen buttons behind the banner. */
+  pointer-events: none;
+}
+.ad-banner-horizontal .ad-banner-overlay {
+  pointer-events: none;
 }
 .ad-banner-horizontal:hover { transform: translateX(-50%) translateY(-2px); }
 .ad-banner-vertical {
@@ -981,10 +988,18 @@
   width: clamp(150px, 14vw, 200px);
   min-height: 300px;
   background-image: url('./assets/ads/ad-vertical-bg.jpg');
-  z-index: 17;
+  z-index: 5;
   margin: 0;
+  /* Let clicks pass through to elements behind the banner (Connect Wallet,
+     Enter Arcade buttons on the splash screen). The <a> tag itself still
+     receives clicks on its visible area via pointer-events: auto below. */
+  pointer-events: none;
 }
-.ad-banner-vertical .ad-banner-overlay { justify-content: flex-end; padding-bottom: 16px; }
+.ad-banner-vertical .ad-banner-overlay {
+  justify-content: flex-end;
+  padding-bottom: 16px;
+  pointer-events: none;
+}
 /* Ad banners only belong on the wallet-splash landing, not inside gameplay/menus. */
 #officialApp:not([data-step="wallet-splash"]) .ad-banner-horizontal,
 #officialApp:not([data-step="wallet-splash"]) .ad-banner-vertical {

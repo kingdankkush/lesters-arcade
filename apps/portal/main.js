@@ -127,6 +127,7 @@ import {
   AVATAR_RULES,
   validateAvatarFile,
   computeAvatarResize,
+  buildPlayerArcadeSnapshot,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
