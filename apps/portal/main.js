@@ -3998,6 +3998,9 @@ function requestRankedEntry() {
     dom.rankedEntryNetwork.textContent = `${LITVM_LITEFORGE_NETWORK.name} · ${LITVM_LITEFORGE_NETWORK.chainId}`;
     dom.rankedEntryStatus.textContent = '';
     dom.rankedEntryStatus.dataset.state = '';
+    // Update the modal copy to reflect free testnet (no entry fee, just gas at game-over)
+    const feeLabel = dom.rankedEntryModal?.querySelector('.ranked-entry-fee');
+    if (feeLabel) feeLabel.textContent = 'FREE (testnet) — only zkLTC gas at game over';
 
     // Chain guard: compare the connected chain (normalized) to the expected 4441.
     const expectedHex = LITVM_LITEFORGE_NETWORK.chainIdHex;
@@ -4035,25 +4038,17 @@ function requestRankedEntry() {
     };
     const onCancel = () => { playSfxCue('menu-click', 0.04); cleanup(); resolve(false); };
     const onApprove = async () => {
+      console.log('[Ranked] Approve clicked, SETTLEMENT_LIVE:', SETTLEMENT_LIVE);
       dom.rankedEntryApprove.disabled = true;
       dom.rankedEntryStatus.dataset.state = 'pending';
       if (SETTLEMENT_LIVE) {
-        // LIVE: request the on-chain publish transaction signature here.
-        dom.rankedEntryStatus.textContent = 'Confirm the zkLTC-gas transaction in your wallet to publish your run…';
-        try {
-          const provider = detectEthereumProvider();
-          // Real publish tx (score/achievements/name -> ArcadePaymentRouter +
-          // registries) would be submitted here. Deploy + wire contract address
-          // before enabling SETTLEMENT_LIVE.
-          await refreshInjectedChainId(provider);
-          dom.rankedEntryStatus.textContent = '✓ Run published on-chain to LitVM.';
-          dom.rankedEntryStatus.dataset.state = 'ok';
-          setTimeout(() => { cleanup(); resolve(true); }, 500);
-        } catch {
-          dom.rankedEntryStatus.textContent = 'Signature rejected. Try again or cancel.';
-          dom.rankedEntryStatus.dataset.state = 'error';
-          dom.rankedEntryApprove.disabled = false;
-        }
+        // LIVE: the settlement happens at game-over, not here. Here we just
+        // confirm the player wants to play ranked and start the session.
+        // The actual on-chain tx (score submit) happens after the run ends.
+        console.log('[Ranked] LIVE path — starting ranked session...');
+        dom.rankedEntryStatus.textContent = '✓ Ranked session starting. Score will publish to LitVM at game over.';
+        dom.rankedEntryStatus.dataset.state = 'ok';
+        setTimeout(() => { cleanup(); resolve(true); }, 400);
         return;
       }
       // SIMULATED (default): same UX, no real tx. Short "signing" beat.
@@ -4538,41 +4533,48 @@ async function requestLiteForgeNetwork(provider = detectEthereumProvider()) {
 
 async function connectWallet() {
   const provider = detectEthereumProvider();
+  console.log('[Wallet] connectWallet called, provider:', !!provider?.request);
   if (provider?.request) {
     // Phase 1: the actual connection (account request + chain guard). Only a
     // failure HERE should fall back to the mock wallet.
     let firstAccount = null;
     try {
+      console.log('[Wallet] Requesting accounts...');
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
       firstAccount = Array.isArray(accounts) ? accounts[0] : null;
+      console.log('[Wallet] Accounts received:', firstAccount ? firstAccount.slice(0, 10) + '...' : 'none');
     } catch (error) {
-      console.warn('Injected wallet connection declined or failed; using local mock fallback.', error);
+      console.warn('[Wallet] Connection declined or failed:', error);
     }
     if (firstAccount) {
       connectedWallet = firstAccount.toLowerCase();
       walletConnector = 'injected-evm';
+      console.log('[Wallet] Connected:', connectedWallet);
       // Chain guard is best-effort: a decline must NOT drop the connection.
+      // Skip chain switching during connect — the ranked modal handles it.
       try {
         await refreshInjectedChainId(provider);
-        if (connectedChainId !== LITVM_LITEFORGE_NETWORK.chainIdHex) {
-          await requestLiteForgeNetwork(provider);
-        }
+        console.log('[Wallet] Chain ID:', connectedChainId);
       } catch (chainError) {
-        console.warn('LiteForge chain guard skipped (wallet declined or errored).', chainError);
+        console.warn('[Wallet] Chain ID refresh skipped:', chainError.message);
       }
       // SIWE sign-in: bind the session to the address with a signature. Best-
       // effort — a decline keeps the wallet connected (guest/free) but leaves
       // walletAuthenticated=false so ranked still prompts for a signature.
+      console.log('[Wallet] Starting SIWE authentication for', connectedWallet);
       await authenticateWalletSiwe(provider, connectedWallet);
+      console.log('[Wallet] SIWE result:', walletAuthenticated);
       // Phase 2: account + render. A throw HERE means the wallet connected fine
       // but a downstream render failed — do NOT fall back to mock (that would
       // re-render and throw again, blanking the app). Log + keep the connection.
       try {
+        console.log('[Wallet] Connecting player account + rendering...');
         connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
         persistArcadeStateSoon();
         render();
+        console.log('[Wallet] Post-connect render complete. connectedWallet:', connectedWallet, 'officialAppStep:', officialAppStep);
       } catch (renderError) {
-        console.error('Wallet connected but post-connect render failed:', renderError);
+        console.error('[Wallet] Connected but post-connect render failed:', renderError);
       }
       return connectedWallet;
     }
