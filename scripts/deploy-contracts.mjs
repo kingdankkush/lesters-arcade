@@ -31,8 +31,8 @@ if (!DEPLOYER_PRIVATE_KEY) {
   process.exit(1);
 }
 
-// Check if compiled contracts exist
-const compiledDir = join(root, 'contracts', 'compiled');
+// Check if compiled contract artifacts exist
+const compiledDir = join(root, 'contracts', 'artifacts');
 const requiredContracts = [
   'PlayerProfileRegistry.json',
   'GameRegistry.json',
@@ -59,7 +59,12 @@ console.log('');
 // Load compiled contract artifacts
 function loadArtifact(name) {
   const path = join(compiledDir, `${name}.json`);
-  return JSON.parse(readFileSync(path, 'utf8'));
+  const raw = JSON.parse(readFileSync(path, 'utf8'));
+  // Artifacts store bytecode under evm.bytecode.object (solc output)
+  const bytecode = raw.bytecode || raw.evm?.bytecode?.object;
+  if (!bytecode) throw new Error(`No bytecode found in ${name}.json`);
+  // Ensure bytecode has 0x prefix
+  return { abi: raw.abi, bytecode: bytecode.startsWith('0x') ? bytecode : '0x' + bytecode };
 }
 
 const artifacts = {
@@ -129,7 +134,7 @@ async function deploy() {
   console.log('1/7: PlayerProfileRegistry...');
   const playerProfileFactory = new ethers.ContractFactory(
     artifacts.PlayerProfileRegistry.abi,
-    artifacts.PlayerProfileRegistry.bytecode || artifacts.PlayerProfileRegistry.evm?.bytecode?.object,
+    artifacts.PlayerProfileRegistry.bytecode,
     deployer,
   );
   const playerProfiles = await playerProfileFactory.deploy();
@@ -141,7 +146,7 @@ async function deploy() {
   console.log('2/7: GameRegistry...');
   const gameRegistryFactory = new ethers.ContractFactory(
     artifacts.GameRegistry.abi,
-    artifacts.GameRegistry.bytecode || artifacts.GameRegistry.evm?.bytecode?.object,
+    artifacts.GameRegistry.bytecode,
     deployer,
   );
   const gameRegistry = await gameRegistryFactory.deploy(deployer.address);
@@ -153,7 +158,7 @@ async function deploy() {
   console.log('3/7: ScoreSubmissionRegistry...');
   const scoreSubmissionFactory = new ethers.ContractFactory(
     artifacts.ScoreSubmissionRegistry.abi,
-    artifacts.ScoreSubmissionRegistry.bytecode || artifacts.ScoreSubmissionRegistry.evm?.bytecode?.object,
+    artifacts.ScoreSubmissionRegistry.bytecode,
     deployer,
   );
   const scoreSubmissions = await scoreSubmissionFactory.deploy(deployer.address);
@@ -165,7 +170,7 @@ async function deploy() {
   console.log('4/7: AchievementRegistry...');
   const achievementFactory = new ethers.ContractFactory(
     artifacts.AchievementRegistry.abi,
-    artifacts.AchievementRegistry.bytecode || artifacts.AchievementRegistry.evm?.bytecode?.object,
+    artifacts.AchievementRegistry.bytecode,
     deployer,
   );
   const achievements = await achievementFactory.deploy();
@@ -177,7 +182,7 @@ async function deploy() {
   console.log('5/7: ArcadePaymentRouter...');
   const paymentRouterFactory = new ethers.ContractFactory(
     artifacts.ArcadePaymentRouter.abi,
-    artifacts.ArcadePaymentRouter.bytecode || artifacts.ArcadePaymentRouter.evm?.bytecode?.object,
+    artifacts.ArcadePaymentRouter.bytecode,
     deployer,
   );
   const paymentRouter = await paymentRouterFactory.deploy();
@@ -189,7 +194,7 @@ async function deploy() {
   console.log('6/7: TournamentPool...');
   const tournamentFactory = new ethers.ContractFactory(
     artifacts.TournamentPool.abi,
-    artifacts.TournamentPool.bytecode || artifacts.TournamentPool.evm?.bytecode?.object,
+    artifacts.TournamentPool.bytecode,
     deployer,
   );
   const tournaments = await tournamentFactory.deploy();
@@ -201,7 +206,7 @@ async function deploy() {
   console.log('7/7: LestersArcadeCore...');
   const coreFactory = new ethers.ContractFactory(
     artifacts.LestersArcadeCore.abi,
-    artifacts.LestersArcadeCore.bytecode || artifacts.LestersArcadeCore.evm?.bytecode?.object,
+    artifacts.LestersArcadeCore.bytecode,
     deployer,
   );
   const core = await coreFactory.deploy(
