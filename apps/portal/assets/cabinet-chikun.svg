@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280" width="200" height="280">
+  <rect width="200" height="280" fill="#0a0a1a" rx="8"/>
+  <rect x="10" y="10" width="180" height="260" fill="none" stroke="#333" stroke-width="2" rx="6"/>
+  <text x="100" y="140" text-anchor="middle" fill="#555" font-family="monospace" font-size="14" font-weight="bold">COMING SOON</text>
+  <text x="100" y="165" text-anchor="middle" fill="#444" font-family="monospace" font-size="10">CHIKUN</text>
+</svg>

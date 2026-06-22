@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <rect width="120" height="160" fill="#0a0a1a" rx="4"/>
+  <rect x="5" y="5" width="110" height="150" fill="none" stroke="#333" stroke-width="1" rx="3"/>
+  <text x="60" y="85" text-anchor="middle" fill="#555" font-family="monospace" font-size="10" font-weight="bold">SOON</text>
+</svg>
