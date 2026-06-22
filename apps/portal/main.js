@@ -9,6 +9,8 @@ import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemy
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt } from './src/combat-physics.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
+import { computeGoreDampening } from './src/gore-system.mjs';
+import { rollDrop } from './src/drop-tables.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
@@ -6158,8 +6160,15 @@ function spawnSlash(x, y) {
 function spawnBlood(x, y, color) {
   if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(7, (combat.shake ?? 0) + 1.6);
   if (!gameSettings.gore) return; // gore toggle: skip blood splatter when off
-  spawnFxImage('blood', x, y, 54, 0.38);
-  for (let i = 0; i < 9; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
+  // Level Design Bible §6.4: dampen cosmetic gore FX at high threat count so
+  // telegraphs/pickups/player stay readable. The dampening factor scales the
+  // particle count (not the damage — gore is cosmetic-only, never affects the sim).
+  const threatCount = combat.enemies?.filter((e) => e.hp > 0).length ?? 0;
+  const dampening = computeGoreDampening({ threatCount, goreEnabled: true });
+  if (dampening <= 0) return;
+  spawnFxImage('blood', x, y, 54, 0.38 * dampening);
+  const particleCount = Math.max(2, Math.round(9 * dampening));
+  for (let i = 0; i < particleCount; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
 }
 
 function spawnExplosion(x, y, color) {
@@ -6974,10 +6983,31 @@ function powerUpById(id) {
 }
 
 function dropRoguelikePowerUp(worldX, worldY, { rare = false } = {}) {
-  const pool = rare ? ROGUELIKE_POWERUP_RARE : ROGUELIKE_POWERUP_POOL;
-  const pick = pool[(combat.frame + combat.kills + combat.powerUps.length) % pool.length];
-  const def = powerUpById(pick);
-  if (!def) return;
+  // Level Design Bible §6.5: use the parameterized drop-table model for the drop
+  // decision. rollDrop is seeded (deterministic per frame+kill) and parameterized
+  // by tier × luck. The result is mapped to the existing power-up pool so the
+  // runtime spawn behavior is unchanged.
+  const tier = rare ? 'elite' : 'grunt';
+  const luck = combat.roguelikeRun?.stats?.luck ?? 1;
+  const seed = (combat.frame * 31 + combat.kills * 17 + combat.powerUps.length) >>> 0;
+  const dropId = rollDrop({ seed, tier, luck, dropChance: rare ? 1.0 : 0.35 });
+  if (!dropId) return;
+  // Map drop-table ids to the existing power-up pool. The table already uses the
+  // same ids (heal-pack, shield-cache, ammo-cache, magnet-surge, etc.) so most
+  // map directly; rare-only ids fall back to the rare pool.
+  const def = powerUpById(dropId);
+  if (!def) {
+    // Fall back to the pool pick if the table returned an unmapped id.
+    const pool = rare ? ROGUELIKE_POWERUP_RARE : ROGUELIKE_POWERUP_POOL;
+    const fallback = pool[(combat.frame + combat.kills + combat.powerUps.length) % pool.length];
+    const fallbackDef = powerUpById(fallback);
+    if (!fallbackDef) return;
+    return spawnRoguelikePowerUp(fallbackDef, worldX, worldY);
+  }
+  return spawnRoguelikePowerUp(def, worldX, worldY);
+}
+
+function spawnRoguelikePowerUp(def, worldX, worldY) {
   const projected = isoToScreen(worldX, worldY);
   combat.powerUps.push({
     ...def,
