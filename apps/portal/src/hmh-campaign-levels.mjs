@@ -181,6 +181,37 @@ export const HMH_LEVEL_TWO_LITECOIN_CITY_POIS = Object.freeze([
     reward: Object.freeze({ type: 'fire-rate-heat', examples: Object.freeze(['Hash Rail Overclock', 'Thermal Vent Blast', 'ASIC Armor']) }),
     riskRewardRead: 'heat-vent hazard arena with a rig-array boss guarding fire-rate/heat power-ups.',
   }),
+  // Additional L2 districts (Bible §3.2 — remaining content packs)
+  Object.freeze({
+    id: 'artisan-district',
+    title: 'Artisan District',
+    districtId: 'luxury-neighborhoods',
+    lane: 'west-spur',
+    telegraph: 'mural-covered alleyways, gallery atriums with neon art, kiln smoke, and maker workshops with open forge doors',
+    miniBoss: Object.freeze({ id: 'the-counterfeiter', title: 'The Counterfeiter', phases: 2, telegraphFrames: 28, adds: ['counterfeit-NFT golems', 'knockoff-bots'], counterplay: 'destroy the forgery presses during the casting animation, then punish the quality-control sweep.' }),
+    reward: Object.freeze({ type: 'weapon-upgrade', examples: Object.freeze(['Block Breaker Mk II', 'Canvas Shield', 'Forgery Scanner']) }),
+    riskRewardRead: 'maker-quarter arena with breakable pottery and kiln fire hazards, guarding weapon upgrade power-ups.',
+  }),
+  Object.freeze({
+    id: 'parks-green-belt',
+    title: 'Parks & Green Belt',
+    districtId: 'luxury-neighborhoods',
+    lane: 'hub-connector',
+    telegraph: 'manicured lawns, fountain courts, amphitheater ruins, and a botanical dome visible from the park trails',
+    miniBoss: Object.freeze({ id: 'park-warden', title: 'Park Warden', phases: 2, telegraphFrames: 24, adds: ['stablecoin socialites'], counterplay: 'use the fountain for cover during the baton charge, then punish the whistle-stun recovery.' }),
+    reward: Object.freeze({ type: 'heal-shield', examples: Object.freeze(['Cold Storage Medkit', 'Silver Shield Cache', 'XP Burst Cache']) }),
+    riskRewardRead: 'breather district with lower spawn density — a rest beat between dense zones with a small cache reward.',
+  }),
+  Object.freeze({
+    id: 'penthouse-rim',
+    title: 'Penthouse Rain (Level 3 Seam)',
+    districtId: 'penthouse-rim',
+    lane: 'final-approach',
+    telegraph: 'rooftop tar fields, glass parapets, helipad lights, and sponsored-post billboards against a storm-swept skyline',
+    miniBoss: Object.freeze({ id: 'mr-ngmi', title: 'Mr. NGMI', phases: 3, telegraphFrames: 32, adds: ['sybil swarm drones', 'shill-beam turrets'], counterplay: 'dodge the sybil swarm shield during the sponsored-post bombardment, then punish the influencer meltdown phase.' }),
+    reward: Object.freeze({ type: 'final-extraction', examples: Object.freeze(['Level 2 Clear', 'Mr. NGMI Defeated', 'Extraction Unlocked']) }),
+    riskRewardRead: 'final boss arena on the penthouse rooftop — storm, wind, and knockback edges make this the hardest fight in Level 2.',
+  }),
 ]);
 
 const LEVEL_2_ENVIRONMENT_ASSET_LIBRARY = Object.freeze({

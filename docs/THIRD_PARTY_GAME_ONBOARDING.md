@@ -1,152 +1,130 @@
-# Lester's Arcade — Third-Party Game Onboarding Guide
+# Lester's Arcade — Third-Party Game SDK Onboarding Guide
 
-This document is the contract between the parent arcade portal and any third-party developer onboarding a game (e.g. Chikun, a LitVM port).
+This guide walks a third-party game developer through integrating a game into
+Lester's Arcade as a sandboxed cabinet. It covers the SDK contract, manifest
+schema, security requirements, and step-by-step onboarding.
 
-## SDK contract module (v1)
+## 1. Overview
 
-The formal, versioned contract lives in `apps/portal/src/arcade-sdk.mjs` (pure +
-unit-tested in `tests/arcade-sdk.test.mjs`). It is the single source of truth for:
+Lester's Arcade is a parent portal that owns wallet identity, profiles,
+leaderboards, and on-chain settlement. Games run as child cabinets that
+request actions through the SDK — they never touch the wallet directly.
 
-- **Lifecycle (parent → game):** `init(ctx)` · `start` · `pause` · `resume` ·
-  `end` · `teardown` · `resize`. `init(ctx)` receives a context with the player's
-  **display identity only** (truncated wallet, display name) and the session mode
-  — never a wallet provider, signer, or keys. `buildInitContext()` constructs it.
-- **Events (game → parent):** `arcade.ready` · `arcade.sessionStart` ·
-  `arcade.statUpdate` · `arcade.achievement` · `arcade.scoreSubmit` ·
-  `arcade.gameOver` · `arcade.requestWalletAction`. Build them with
-  `buildArcadeMessage(type, payload, { gameId, seq })`.
-- **Security gate (parent side):** `parseInboundMessage()` validates source tag,
-  SDK major, gameId binding (a cabinet can only speak for its own game), event
-  type, and per-event payload schema. `createMessageRateLimiter()` throttles
-  floods. `authorizeRankedSubmit()` enforces the free/ranked boundary + chain
-  guard + mock-wallet exclusion BEFORE the parent signs anything.
-
-The golden rule: **a game emits intent; the parent verifies, enforces, signs, and
-records.** A game can ask for a wallet action (`connect` / `submitRanked` /
-`getProfile`) but can never perform one itself.
-
-## Architecture
-
+**Architecture:**
 ```
-┌─────────────────────────────────────────────────┐
-│  Portal Shell (always eager, ~220 KB + CSS)     │
-│  ┌────────────────────────────────────────────┐ │
-│  │ Wallet, profile, achievements, leaderboards│ │
-│  │ Cabinet grid UI, game-registry.mjs         │ │
-│  └────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────┘
-                     │ user clicks a cabinet
-                     ▼ (lazy import() — per-game loader.mjs)
-┌─────────────────────────────────────────────────┐
-│  games/<game-id>/loader.mjs                     │
-│  • exports `load<Game>Game()`                   │
-│  • dynamically imports the game's manifests     │
-│  • returns { manifest, entryPoint, adapter }    │
-└─────────────────────────────────────────────────┘
+Player → Lester's Arcade (parent) → Sandboxed iframe (game cabinet)
+                ↑                            ↓
+        Wallet / Profile /         arcade.* events via postMessage
+        Leaderboard / Chain        (scoreSubmit, achievement, etc.)
 ```
 
-## Onboarding checklist for a new game
+## 2. SDK Contract
 
-### 1. Create a loader module
+### Lifecycle methods
+The parent calls these on the game via `postMessage`:
+- `init(ctx)` — game receives context (gameId, profile snapshot, mode)
+- `start` — game begins a session
+- `pause` / `resume` — parent requests pause/resume
+- `end` — parent requests game end (e.g. timeout)
+- `teardown` — game cleans up
+- `resize` — viewport changed
 
-Path: `apps/portal/src/games/<your-game-id>/loader.mjs`
-
-See `apps/portal/src/games/chikun/loader.mjs` for a worked example.
-
-Your loader must export a single async function named `load<X>Game()`. Keep the dynamic imports inside the function so they don't bloat the parent shell.
-
-### 2. Register the game
-
-In the portal's `ARCADE_GAMES` constant (`apps/portal/src/arcade-core.mjs`), add an entry:
-
-```js
-{
-  id: '<your-game-id>',
-  title: '<Your Game Title>',
-  cabinet: 'RUN-N-GUN CABINET NN',
-  genre: '<one-line genre description>',
-  status: 'playable' | 'coming-soon' | 'locked',
-  developer: '<your dev team name>',
-  entryFeeMicroUsdc: 250_000, // default $0.25
-  livesPaid: 3,
-  livesFree: 3,
-  tagline: '<one-line player-facing tagline>',
-  systemRole: 'child-dapp-cartridge',
-  parentSystem: "Lester's Arcade",
-}
-```
-
-### 3. Wire the loader into the cabinet click handler
-
-In `apps/portal/main.js`, inside the cabinet-selection `click` listener, add:
-
-```js
-if (cabinet.id === '<your-game-id>') {
-  card.classList.add('is-loading');
-  try {
-    const chikun = await loadChikunGame();
-    CHIKUN_PAYLOAD = chikun;
-  } finally {
-    card.classList.remove('is-loading');
-  }
-}
-```
-
-### 4. Implement the adapter contract
-
-Your loader must return an object with:
-
-- `manifest`: the static data your game needs (asset URLs, config)
-- `entryPoint`: a function the parent calls to start the game
-- `adapter.normalizeStats(raw)`: maps your game's native stats object to the shared ranked-run shape:
-
-```js
-{
-  score: Number,
-  kills: Number | undefined,
-  coinsCollected: Number | undefined,
-  survivalTime: Number, // seconds
-  achievements: String[],
-}
-```
-
-If your game is very different from a combat game (e.g. a flappy bird clone), drop `kills` — the shared model handles missing fields.
-
-### 5. Submit runs through the registry
-
-On game over, call:
-
-```js
-import { submitGameRun } from '../../../src/game-registry.mjs';
-await submitGameRun('<your-game-id>', adapter.normalizeStats(myRun), playerWallet);
-```
-
-This routes through the parent's shared session ledger. In the on-chain phase this will sign an EIP-712 packet and commit to LitVM's `SessionLedger.sol`.
-
-## What you DO NOT need to implement
-
-The parent portal owns:
-- Wallet connection + chain guard
-- Display name / avatar / profile persistence
-- Leaderboard rankings across cadences (daily, weekly, monthly, yearly, all-time)
-- Achievement unlocks (parent-defined)
-- Revenue split calculation and on-chain settlement routing
-- Arcade music + ambient sound mixing
-- Cabinet art rotation and UI chrome
-
-Focus on: gameplay, art pipeline (Pixellab-friendly), and the stats adapter.
-
-## Currently onboarded cabinets
-
-| Game ID | Developer | Status |
+### Event schema (game → parent)
+Games emit these events via `postMessage` to the parent:
+| Event | When | Payload |
 |---|---|---|
-| `hard-money-heroes` | Lester's Arcade Core | Live |
-| `chikun` | LitVM port | Stub loaded, assets pending |
+| `arcade.ready` | Game loaded, ready to start | `{ gameId }` |
+| `arcade.sessionStart` | Session begins | `{ gameId, mode, characterId }` |
+| `arcade.statUpdate` | Periodic stats | `{ gameId, score, kills, survived }` |
+| `arcade.achievement` | Achievement unlocked | `{ gameId, achievementId }` |
+| `arcade.scoreSubmit` | Final score submission | `{ gameId, score, ...runStats }` |
+| `arcade.gameOver` | Game over | `{ gameId, score, kills, survived }` |
+| `arcade.requestWalletAction` | Request wallet op (connect/submitRanked) | `{ kind, ... }` |
 
-## LitVM Contract Phase (future)
+### Security rules
+- Game runs in sandboxed iframe with `allow-scripts` only (no `allow-same-origin`)
+- Game NEVER has access to `window.ethereum`, wallet provider, or private keys
+- All wallet operations go through `arcade.requestWalletAction`
+- Parent validates every inbound message (schema + rate limit + source tag)
+- Game code is static-scanned before onboarding (no eval, no remote code, no drainer patterns)
 
-When the smart contracts go live:
-- `submitGameRun` → signs EIP-712 hash of run summary → commits to `SessionLedger.sol`
-- Revenue split executed by `PaymentRouter.sol` based on game's registered `feeSplit`
-- `AchievementRegistry.sol` mints NFTs for parent-defined milestones
-- `PlayerProfileRegistry.sol` on-chain identity for cross-game stats
+## 3. Game Manifest
+
+Every cabinet ships a `game.manifest.json`:
+
+```json
+{
+  "id": "chikun",
+  "name": "Chikun's Escape",
+  "version": "1.0.0",
+  "sdkVersion": "1.0.0",
+  "status": "coming-soon",
+  "developer": "Your Name",
+  "description": "Game description...",
+  "genre": "one-button-arcade",
+  "aspectSupport": ["9:16", "16:9"],
+  "controlScheme": "touch-tap",
+  "capabilities": ["scoreSubmit", "leaderboards"],
+  "rankedEligible": true,
+  "endpoints": {
+    "loader": "games/chikun/loader.mjs",
+    "assets": "./assets/generated/chikun-cabinet/"
+  },
+  "checksum": null
+}
+```
+
+### Required fields
+- `id` — unique slug (lowercase, hyphenated)
+- `name` — display title
+- `version` — semver
+- `sdkVersion` — must match `ARCADE_SDK_VERSION` ("1.0.0")
+- `aspectSupport` — must support both 9:16 and 16:9
+- `controlScheme` — one of: `touch-tap`, `touch-twin-stick`, `keyboard-mouse`, `hybrid`
+- `capabilities` — what the game needs: `scoreSubmit`, `leaderboards`, `achievements`
+- `rankedEligible` — can this game participate in ranked/paid runs?
+
+## 4. Onboarding Steps
+
+1. **Create your game manifest** — copy the template above, fill in your game's details
+2. **Implement the SDK adapter** — use `createInProcessGameAdapter` from `apps/portal/src/game-adapter.mjs` as a reference. For sandboxed iframe mode, use `postMessage` with the `arcade.*` event schema
+3. **Build your game loader** — create `games/<your-game>/loader.mjs` that initializes your game
+4. **Test locally** — serve your game in an iframe, verify events flow to the parent
+5. **Security review** — your code will be static-scanned for:
+   - No `window.ethereum` or wallet provider access
+   - No `eval()` or `Function()` constructors
+   - No remote code loading (no `import()` from external URLs)
+   - No undeclared network endpoints
+   - No drainer patterns (transaction signing, approval requests)
+6. **Register your game** — submit your manifest + loader to the Lester's Arcade registry
+7. **QA pass** — playtest on desktop + mobile, verify scores submit correctly
+
+## 5. Chikun's Escape — Reference Implementation
+
+Chikun's Escape is the first third-party game being onboarded:
+
+- **Manifest**: `games/chikun/game.manifest.json` (already created)
+- **Cabinet art**: `apps/portal/assets/generated/chikun-cabinet/` (6 angle sprites)
+- **Game registry**: `apps/portal/src/game-registry.mjs` (already registered)
+- **Adapter pattern**: `apps/portal/src/game-adapter.mjs` (reference implementation)
+
+### Chikun integration checklist
+- [ ] Create `games/chikun/loader.mjs` — loads the Chikun game code
+- [ ] Implement the game (one-button flappy-bird with Litecoin coin mechanic)
+- [ ] Emit `arcade.ready` → `arcade.sessionStart` → `arcade.statUpdate` → `arcade.scoreSubmit` → `arcade.gameOver`
+- [ ] Support both 9:16 (mobile portrait) and 16:9 (desktop/landscape)
+- [ ] Pass security scan (no wallet access, no eval, no remote code)
+- [ ] Flip `status` from `coming-soon` to `playable` in the manifest + registry
+- [ ] QA playtest
+
+## 6. SDK Module Reference
+
+- **SDK contract**: `apps/portal/src/arcade-sdk.mjs` — event schema, validators, rate limiter
+- **Game manifest**: `apps/portal/src/game-manifest.mjs` — manifest validation, registry
+- **In-process adapter**: `apps/portal/src/game-adapter.mjs` — reference adapter (transitional)
+- **Game registry**: `apps/portal/src/game-registry.mjs` — runtime game registration
+- **Tests**: `tests/arcade-sdk.test.mjs`, `tests/game-adapter.test.mjs`
+
+## 7. Questions?
+
+Contact Justin at kingdankkush420@gmail.com or through the Lester's Arcade GitHub repo.
