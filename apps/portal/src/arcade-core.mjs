@@ -62,10 +62,10 @@ export const DEFAULT_REVENUE_SPLIT_BPS = Object.freeze({
 // Placeholder until Justin provides his real address; settlement stays simulated
 // (SETTLEMENT_LIVE=false) so no funds move until deploy + approval.
 export const DEV_WALLET = Object.freeze({
-  address: '0x24501ad94A9245DC88Fb9546929cDA10b91420d4',
-  label: "Justin's Dev Wallet",
-  purpose: 'Funds future game development, community building, and Lester\'s Arcade growth.',
-  receives: Object.freeze(['dev share of every Ranked fee', 'unused settlement-gas remainder']),
+  address: '0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26',
+  label: "Justin's Revenue Wallet",
+  purpose: 'Receives all Lester\'s Arcade profit share (dev share of Ranked fees + unused settlement-gas remainder). For third-party games, receives 25% of revenue with 75% going to the creator.',
+  receives: Object.freeze(['dev share of every Ranked fee', 'unused settlement-gas remainder', '25% of third-party game revenue']),
 });
 
 export const HARD_MONEY_HEROES_CANON = Object.freeze({

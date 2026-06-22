@@ -13,16 +13,16 @@ const REGISTERED_GAMES = {
   'hard-money-heroes': Object.freeze({
     id: 'hard-money-heroes',
     name: 'Hard Money Heroes',
-    devWallet: null, // set when LitVM contracts go live
-    feeSplit: { dev: 60, platform: 20, liquidity: 10, treasury: 10 },
+    devWallet: '0x07cec6Fc49CAf6528F2f2F796042629cd3f48B26',
+    feeSplit: { dev: 100, platform: 0, liquidity: 0, treasury: 0 }, // 100% to Lester's Arcade (first-party)
     adapter: null, // native cabinet — no adapter needed
     status: 'live',
   }),
   'chikun': Object.freeze({
     id: 'chikun',
     name: 'Chikun: The Flying Coin',
-    devWallet: null, // set when LitVM contracts go live (LitVM team)
-    feeSplit: { dev: 60, platform: 20, liquidity: 10, treasury: 10 },
+    devWallet: null, // set when Chikun creator provides their wallet
+    feeSplit: { dev: 75, platform: 25, liquidity: 0, treasury: 0 }, // 75% creator / 25% Lester's Arcade
     adapter: 'games/chikun/loader.mjs',
     status: 'coming-soon', // flips to 'live' when assets are onboarded
   }),
