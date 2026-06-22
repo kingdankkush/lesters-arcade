@@ -156,8 +156,20 @@ async function deploy() {
   addresses.gameRegistry = await gameRegistry.getAddress();
   console.log(`   Deployed at: ${addresses.gameRegistry}`);
 
-  // 3. Deploy ScoreSubmissionRegistry
-  console.log('3/8: ScoreSubmissionRegistry...');
+  // 3. Deploy ArcadePaymentRouter (no constructor args — needed by SessionLedger)
+  console.log('3/8: ArcadePaymentRouter...');
+  const paymentRouterFactory = new ethers.ContractFactory(
+    artifacts.ArcadePaymentRouter.abi,
+    artifacts.ArcadePaymentRouter.bytecode,
+    deployer,
+  );
+  const paymentRouter = await paymentRouterFactory.deploy();
+  await paymentRouter.waitForDeployment();
+  addresses.arcadePaymentRouter = await paymentRouter.getAddress();
+  console.log(`   Deployed at: ${addresses.arcadePaymentRouter}`);
+
+  // 4. Deploy ScoreSubmissionRegistry (needs deployer as trustedVerifier)
+  console.log('4/8: ScoreSubmissionRegistry...');
   const scoreSubmissionFactory = new ethers.ContractFactory(
     artifacts.ScoreSubmissionRegistry.abi,
     artifacts.ScoreSubmissionRegistry.bytecode,
@@ -168,10 +180,8 @@ async function deploy() {
   addresses.scoreSubmissionRegistry = await scoreSubmissions.getAddress();
   console.log(`   Deployed at: ${addresses.scoreSubmissionRegistry}`);
 
-  // 4. Deploy SessionLedger (needs gameRegistry + paymentRouter + entryToken)
-  // On testnet, use the deployer address as a placeholder entry token (no real
-  // ERC-20 entry token exists yet; settlement is testnet-only with free zkLTC gas).
-  console.log('4/8: SessionLedger...');
+  // 5. Deploy SessionLedger (needs gameRegistry + paymentRouter + entryToken)
+  console.log('5/8: SessionLedger...');
   const sessionLedgerFactory = new ethers.ContractFactory(
     artifacts.SessionLedger.abi,
     artifacts.SessionLedger.bytecode,
@@ -186,8 +196,8 @@ async function deploy() {
   addresses.sessionLedger = await sessionLedger.getAddress();
   console.log(`   Deployed at: ${addresses.sessionLedger}`);
 
-  // 5. Deploy AchievementRegistry (needs sessionLedger)
-  console.log('5/8: AchievementRegistry...');
+  // 6. Deploy AchievementRegistry (needs sessionLedger)
+  console.log('6/8: AchievementRegistry...');
   const achievementFactory = new ethers.ContractFactory(
     artifacts.AchievementRegistry.abi,
     artifacts.AchievementRegistry.bytecode,
@@ -198,19 +208,7 @@ async function deploy() {
   addresses.achievementRegistry = await achievements.getAddress();
   console.log(`   Deployed at: ${addresses.achievementRegistry}`);
 
-  // 6. Deploy ArcadePaymentRouter
-  console.log('6/8: ArcadePaymentRouter...');
-  const paymentRouterFactory = new ethers.ContractFactory(
-    artifacts.ArcadePaymentRouter.abi,
-    artifacts.ArcadePaymentRouter.bytecode,
-    deployer,
-  );
-  const paymentRouter = await paymentRouterFactory.deploy();
-  await paymentRouter.waitForDeployment();
-  addresses.arcadePaymentRouter = await paymentRouter.getAddress();
-  console.log(`   Deployed at: ${addresses.arcadePaymentRouter}`);
-
-  // 6. Deploy TournamentPool
+  // 7. Deploy TournamentPool
   console.log('7/8: TournamentPool...');
   const tournamentFactory = new ethers.ContractFactory(
     artifacts.TournamentPool.abi,
