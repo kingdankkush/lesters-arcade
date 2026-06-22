@@ -123,6 +123,94 @@ const LEVEL_1_PLACEMENT_RULES = Object.freeze([
   'Tall props must occlusion-fade and preserve silhouette readability during combat.',
 ]);
 
+// ---------------------------------------------------------------------------
+// Level 2 — Litecoin City: POIs, environment asset library, VFX, placement
+// (Level Design Bible §3 — Litecoin City districts as content packs on the
+// shared L1 engine. Hub-and-spoke: Litecoin Square branches via streets to
+// optional risk/reward district POIs.)
+// ---------------------------------------------------------------------------
+
+export const HMH_LEVEL_TWO_LITECOIN_CITY_POIS = Object.freeze([
+  Object.freeze({
+    id: 'litecoin-square-hub',
+    title: 'Litecoin Square',
+    districtId: 'litecoin-plaza',
+    lane: 'hub',
+    telegraph: 'central silver LTC monument, fountain plaza, and branching streets with ticker billboards',
+    miniBoss: Object.freeze({ id: 'plaza-warden', title: 'Plaza Warden', phases: 2, telegraphFrames: 26, adds: ['Bitcoin Maximalist Riot Cops'], counterplay: 'use the fountain for cover during the baton charge, then punish the shield-bash recovery.' }),
+    reward: Object.freeze({ type: 'hub-routing', examples: Object.freeze(['access to all district spokes']) }),
+    riskRewardRead: 'central hub — safe-ish rest beat that branches to all districts.',
+  }),
+  Object.freeze({
+    id: 'defi-harbor',
+    title: 'DeFi Harbor',
+    districtId: 'waterfront',
+    lane: 'east-spur',
+    telegraph: 'crane silhouettes, shipping container stacks, and the cross-chain Bridge landmark visible from the pier boardwalk',
+    miniBoss: Object.freeze({ id: 'bridge-exploiter', title: 'The Bridge Exploiter', phases: 3, telegraphFrames: 30, adds: ['liquidator pirates', 'bridge-exploit raiders'], counterplay: 'bait the anchor slam near the container maze, then punish during the chain re-org animation.' }),
+    reward: Object.freeze({ type: 'drone-or-orbital', examples: Object.freeze(['Liquidity Drone', 'Orbital Liquidation Strike', 'Chain Bridge Shield']) }),
+    riskRewardRead: 'high-risk waterfront arena with water knockback edges and a 3-phase boss guarding premium utility drops.',
+  }),
+  Object.freeze({
+    id: 'financial-downtown',
+    title: 'Financial Downtown',
+    districtId: 'financial-core',
+    lane: 'north-spur',
+    telegraph: 'chrome-glass towers, trading-floor atriums, and server-rack corridors with neon ticker light',
+    miniBoss: Object.freeze({ id: 'the-whale', title: 'The Whale', phases: 3, telegraphFrames: 32, adds: ['Evil Bankers', 'MEV Reapers', 'Bot Swarms'], counterplay: 'use the elevator shaft for vertical escape during the market-crash AoE, then punish the margin-call recovery.' }),
+    reward: Object.freeze({ type: 'score-economy', examples: Object.freeze(['Score Multiplier Surge', 'Flash Loan Burst', 'Yield Farm Shield']) }),
+    riskRewardRead: 'vertical downtown arena with knockback edges and a heavy boss guarding score/economy power-ups.',
+  }),
+  Object.freeze({
+    id: 'mimblewimble-grove',
+    title: 'MimbleWimble Grove',
+    districtId: 'luxury-neighborhoods',
+    lane: 'west-spur',
+    telegraph: 'fog-draped hedge maze, glowing privacy-glyph lanterns, and confidential vault greenhouses',
+    miniBoss: Object.freeze({ id: 'the-obfuscator', title: 'The Obfuscator', phases: 2, telegraphFrames: 28, adds: ['Privacy Phantoms', 'veiled stalkers'], counterplay: 'track the phase-cloak shimmer through the fog, then punish the decloak tell.' }),
+    reward: Object.freeze({ type: 'stealth-evasion', examples: Object.freeze(['Privacy Cloak', 'MimbleWimble Dash', 'Confidential Cache']) }),
+    riskRewardRead: 'fog-reduced-sight stealth arena with a cloaking boss guarding evasion power-ups.',
+  }),
+  Object.freeze({
+    id: 'hashrate-district',
+    title: 'Hashrate District',
+    districtId: 'financial-core',
+    lane: 'south-spur',
+    telegraph: 'humming PoW mining rigs, cooling vent steam, and blinking rig LED arrays behind server-stack corridors',
+    miniBoss: Object.freeze({ id: 'fifty-one-percent', title: 'The 51% Boss', phases: 3, telegraphFrames: 30, adds: ['overclock drones', 'rogue-rig bots'], counterplay: 'break the rig array during the hash-power buildup, then punish the chain-reorg cooldown.' }),
+    reward: Object.freeze({ type: 'fire-rate-heat', examples: Object.freeze(['Hash Rail Overclock', 'Thermal Vent Blast', 'ASIC Armor']) }),
+    riskRewardRead: 'heat-vent hazard arena with a rig-array boss guarding fire-rate/heat power-ups.',
+  }),
+]);
+
+const LEVEL_2_ENVIRONMENT_ASSET_LIBRARY = Object.freeze({
+  groundTerrain: Object.freeze(['asphalt', 'cracked asphalt', 'sidewalk concrete', 'cobble plaza', 'rooftop tar', 'dock planks', 'park grass', 'tile transition strips']),
+  urbanProps: Object.freeze(['streetlight', 'traffic signal', 'parking meter', 'fire hydrant', 'trash can', 'newspaper box', 'bench', 'barricade', 'chain-link fence', 'concrete median']),
+  structures: Object.freeze(['skyscraper facade', 'shopfront', 'market stall', 'greenhouse', 'fountain', 'silver LTC monument', 'neon billboard', 'elevator shaft', 'skybridge', 'crane', 'shipping container', 'pier boardwalk', 'hedge maze wall', 'server rack']),
+  waterFeatures: Object.freeze(['harbor water', 'fountain pool', 'reflecting pool', 'tidal edge', 'drainage channel']),
+  flora: Object.freeze(['park tree', 'hedge', 'planter box', 'rooftop garden plant', 'bonsai']),
+  setDressing: Object.freeze(['neon signs', 'holographic ads', 'graffiti', 'construction cones', 'spilled coffee cups', 'broken glass', 'tangled cables', 'blinking LED strips']),
+  acceptanceChecklist: Object.freeze(['iso-ready', 'locked anchor across variants', 'collision footprint separate from sprite box', 'zHeight authored', 'biome tagged', '2-3 organic variants', 'interactive/destructible/hazard flag', 'assets:verify pass']),
+});
+
+const LEVEL_2_VFX_AND_INTERACTIVITY = Object.freeze([
+  'Neon billboard flicker + holographic ad shimmer on building facades.',
+  'Rain-slick street reflections with neon color bleed (cosmetic, render-side).',
+  'Water FX: harbor ripples, fountain spray, tidal edge slow zone, splash entry.',
+  'Destructibles: market stalls, shipping containers, glass storefronts, server racks.',
+  'Hazards: elevator shaft knockback edge, cooling vent burn, electrified cables, water slow zone.',
+  'Verticality cues: elevator off-mesh links, skybridge crossings, rooftop edge clamps.',
+]);
+
+const LEVEL_2_PLACEMENT_RULES = Object.freeze([
+  'Street grid creates strong N-S/E-W blocks; alley cut-throughs are authored shortcuts, not random.',
+  'Litecoin Square hub is always reachable and orients the player to all district spokes.',
+  'Water/harbor edges use knockback clamps (no fall-through to void); elevator edges clamp to nav.',
+  'POI district spurs telegraph risk/reward before commitment and reconnect to the hub.',
+  'No enemy, pickup, or displacement destination may overlap collision, hazard, or void footprints.',
+  'Tall skyscraper props must occlusion-fade and preserve silhouette readability during combat.',
+]);
+
 export const HMH_CAMPAIGN_LEVELS = Object.freeze([
   Object.freeze({
     id: LEVEL_1_ID,

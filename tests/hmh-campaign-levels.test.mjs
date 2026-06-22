@@ -6,6 +6,7 @@ import {
   HMH_LEVEL_ONE_WASTELAND_ENEMIES,
   HMH_LEVEL_ONE_WASTELAND_MACRO_LAYOUT,
   HMH_LEVEL_ONE_WASTELAND_POIS,
+  HMH_LEVEL_TWO_LITECOIN_CITY_POIS,
   getInitialHmhCampaignLevelId,
   getHmhCampaignLevel,
   getNextHmhCampaignLevel,
@@ -47,6 +48,26 @@ test('level 1 POIs define telegraphed optional risk-reward arenas', () => {
   assert.match(rugpull.telegraph, /water tower/i);
   assert.equal(rugpull.miniBoss.phases, 2);
   assert.equal(rugpull.miniBoss.telegraphFrames >= 24, true);
+});
+
+test('level 2 Litecoin City POIs define hub-and-spoke district arenas with mini-bosses', () => {
+  assert.ok(HMH_LEVEL_TWO_LITECOIN_CITY_POIS.length >= 5, 'should have at least 5 L2 POIs');
+  // Hub must exist and be the routing center.
+  const hub = HMH_LEVEL_TWO_LITECOIN_CITY_POIS.find((poi) => poi.id === 'litecoin-square-hub');
+  assert.ok(hub);
+  assert.equal(hub.lane, 'hub');
+  // DeFi Harbor spoke (the Bible's recommended first district for water systems).
+  const harbor = HMH_LEVEL_TWO_LITECOIN_CITY_POIS.find((poi) => poi.id === 'defi-harbor');
+  assert.ok(harbor);
+  assert.equal(harbor.lane, 'east-spur');
+  assert.ok(harbor.miniBoss.phases >= 3, 'Bridge Exploiter should be a 3-phase boss');
+  // Every POI must have a telegraph, mini-boss with phases, and a reward type.
+  for (const poi of HMH_LEVEL_TWO_LITECOIN_CITY_POIS) {
+    assert.ok(poi.telegraph, `${poi.id} needs a telegraph`);
+    assert.ok(poi.miniBoss && poi.miniBoss.phases >= 2, `${poi.id} needs a mini-boss with >= 2 phases`);
+    assert.ok(poi.reward && poi.reward.type, `${poi.id} needs a reward type`);
+    assert.ok(poi.riskRewardRead, `${poi.id} needs a risk/reward read`);
+  }
 });
 
 test('level 1 enemy roster covers new wasteland archetypes with readable telegraphs', () => {
