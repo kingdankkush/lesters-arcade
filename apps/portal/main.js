@@ -3191,7 +3191,35 @@ function renderOfficialProfile() {
   }
   dom.officialCabinetGrid.append(profileHero);
 
-  if (!connectedWallet) return;
+  // Guest profile: show local play stats so guests feel they have a profile too.
+  if (!connectedWallet) {
+    const guestCard = el('article', { className: 'official-info-card profile-guest-card' });
+    appendText(guestCard, 'span', 'Guest Session // Local Stats', 'cabinet-status-label');
+    appendText(guestCard, 'strong', 'Playing as Guest');
+    appendText(guestCard, 'small', 'Your free-mode runs are tracked locally on this device. Connect a wallet to save progress permanently, unlock Ranked mode, and appear on global leaderboards.');
+    // Pull local stats from the game state if available.
+    const localBest = combat?.longestSurvivalThisRun ?? 0;
+    const localKills = combat?.kills ?? 0;
+    const localScore = combat?.score ?? 0;
+    const guestStats = el('div', { className: 'profile-hero-stats' });
+    for (const [label, value] of [
+      ['Best Score', localScore.toLocaleString()],
+      ['Total Kills', localKills.toLocaleString()],
+      ['Longest Survival', `${Math.floor(localBest / 60)}:${String(localBest % 60).padStart(2, '0')}`],
+      ['Mode', 'Free Practice'],
+    ]) {
+      const stat = el('div', { className: 'profile-hero-stat' });
+      appendText(stat, 'span', label);
+      appendText(stat, 'strong', value);
+      guestStats.append(stat);
+    }
+    guestCard.append(guestStats);
+    const connectCta = el('button', { className: 'pixel-button profile-action-primary', type: 'button', textContent: 'Connect Wallet to Save Progress' });
+    connectCta.addEventListener('click', () => { playSfxCue('menu-click'); connectWallet(); });
+    guestCard.append(connectCta);
+    dom.officialCabinetGrid.append(guestCard);
+    return;
+  }
 
   const walletModel = buildWalletConnectionModel({
     providerAvailable: Boolean(detectEthereumProvider()?.request),
