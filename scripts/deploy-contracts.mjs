@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY;
-const RPC_URL = process.env.RPC_URL || 'https://rpc.litvm.com';
+const RPC_URL = process.env.RPC_URL || 'https://liteforge.rpc.caldera.xyz/http';
 const CHAIN_ID = 4441;
 
 if (!DEPLOYER_PRIVATE_KEY) {
