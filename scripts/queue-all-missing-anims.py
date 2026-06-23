@@ -14,7 +14,7 @@ ALL_DIRS = ["south","south-east","east","north-east","north","north-west","west"
 # Animation kits
 HUMANOID_KIT = [
     ("idle", "idle breathing animation, subtle weight shift, ready combat stance", 6),
-    ("walk", "walking locomotion cycle, full body movement, natural stride", 7),
+    ("walk", "walking locomotion cycle, full body movement, natural stride", 8),
     ("run", "running sprint cycle, aggressive forward lean, fast stride", 8),
     ("attack", "attack strike animation, wind up and lunge forward, aggressive melee hit", 6),
     ("attack-tell", "attack telegraph wind-up, readable anticipation before strike, pre-attack pose with clear tell", 4),
@@ -24,7 +24,7 @@ HUMANOID_KIT = [
 
 QUAD_KIT = [
     ("idle", "quadruped idle breathing, subtle head movement, alert stance, tail sway", 6),
-    ("walk", "quadruped walking gait cycle, four-legged locomotion, natural pace", 7),
+    ("walk", "quadruped walking gait cycle, four-legged locomotion, natural pace", 8),
     ("run", "quadruped sprint gallop, aggressive loping charge, fast four-legged stride", 8),
     ("attack", "quadruped attack lunge, bite or claw strike forward, aggressive pounce", 6),
     ("attack-tell", "quadruped attack wind-up, crouch and coil before lunge, readable anticipation", 4),
@@ -35,7 +35,7 @@ QUAD_KIT = [
 # Playable hero kit: movement, ranged, melee, throwables, damage, death.
 HERO_KIT = [
     ("idle", "hero idle breathing animation, weapon ready, subtle combat stance", 6),
-    ("walk", "hero walking locomotion cycle, weapon in hand, natural stride", 7),
+    ("walk", "hero walking locomotion cycle, weapon in hand, natural stride", 8),
     ("run", "hero running sprint cycle, weapon in hand, fast readable stride", 8),
     ("shoot", "hero shooting animation, raise gun and fire with muzzle recoil", 6),
     ("melee", "hero melee knife slash, forward slash with clear attack arc", 6),
@@ -119,37 +119,58 @@ async def get_char_info(session, char_id):
 
 async def queue_one(session, char_id, char_key, anim_name, action_desc, frame_count, ledger):
     """Queue a single animation with slot awareness"""
-    # Check processing count
-    for attempt in range(3):
-        anims, processing, _ = await get_char_info(session, char_id)
-        if processing < 4:
-            break
-        print(f'    [WAIT] {processing} processing, sleeping 20s (attempt {attempt+1})', flush=True)
-        await asyncio.sleep(20)
-    
-    try:
-        result = await session.call_tool('animate_character', {
-            'character_id': char_id,
-            'mode': 'v3',
-            'action_description': action_desc,
-            'animation_name': anim_name,
-            'directions': ALL_DIRS,
-            'frame_count': frame_count,
-            'confirm_cost': True,
-        })
-        text = ' '.join(c.text for c in result.content if hasattr(c, 'text'))
-        if 'error' in text.lower():
-            print(f'    [ERROR] {anim_name}: {text[:200]}', flush=True)
-            return False
-        else:
+    if frame_count % 2 != 0:
+        frame_count += 1
+
+    # PixelLab has a global 20-job wall. get_character only tells us this
+    # character's processing count, so also parse slot-wall errors and wait/retry.
+    for submit_attempt in range(8):
+        for wait_attempt in range(4):
+            _, processing, _ = await get_char_info(session, char_id)
+            if processing < 3:
+                break
+            print(f'    [WAIT] {processing} processing on {char_key}, sleeping 25s (attempt {wait_attempt+1})', flush=True)
+            await asyncio.sleep(25)
+
+        try:
+            result = await session.call_tool('animate_character', {
+                'character_id': char_id,
+                'mode': 'v3',
+                'action_description': action_desc,
+                'animation_name': anim_name,
+                'directions': ALL_DIRS,
+                'frame_count': frame_count,
+                'confirm_cost': True,
+            })
+            text = ' '.join(c.text for c in result.content if hasattr(c, 'text'))
+            lower = text.lower()
+            if 'error' in lower:
+                if 'job slots' in lower or 'only' in lower and 'available' in lower:
+                    print(f'    [SLOT-WAIT] {anim_name}: {text[:160]} — sleeping 45s', flush=True)
+                    await asyncio.sleep(45)
+                    continue
+                if 'rotation image not found' in lower:
+                    print(f'    [MISSING-ROTATION] {anim_name}: {text[:180]}', flush=True)
+                    return False
+                print(f'    [ERROR] {anim_name}: {text[:200]}', flush=True)
+                return False
+
             print(f'    [OK] {anim_name} queued', flush=True)
             if char_key not in ledger:
                 ledger[char_key] = {'character_id': char_id, 'animations': {}}
             ledger[char_key]['animations'][anim_name] = {'queued': True}
             return True
-    except Exception as e:
-        print(f'    [ERROR] {anim_name}: {e}', flush=True)
-        return False
+        except Exception as e:
+            text = str(e)
+            if 'job slots' in text.lower() or 'available' in text.lower():
+                print(f'    [SLOT-WAIT] {anim_name}: {text[:160]} — sleeping 45s', flush=True)
+                await asyncio.sleep(45)
+                continue
+            print(f'    [ERROR] {anim_name}: {e}', flush=True)
+            return False
+
+    print(f'    [DEFER] {anim_name}: slot wall persisted after retries', flush=True)
+    return False
 
 async def main():
     token = load_token()

@@ -6313,6 +6313,10 @@ function damageEnemy(enemy, damage, source, opts = {}) {
     source === 'axe' ? '#c62828' :
     '#dc143c'; // crimson — the requested red spurt for bullet-on-enemy
   spawnBlood(enemy.x + 12, enemy.y - 30, bloodColor);
+  emitCombatVfxParticles(createHitSparks(enemy.x + 12, enemy.y - 32, source === 'hash-rail' ? 14 : 8));
+  if (source === 'hash-rail') {
+    emitCombatVfxParticles(createBulletTrail(enemy.x - 22, enemy.y - 32, enemy.x + 22, enemy.y - 32, 'rail'));
+  }
   spawnDamageNumber(present.label ?? `${Math.round(applied)}`, enemy.x + 12, enemy.y - 40, present.color ?? '#ffe84d', Boolean(present.crit));
 }
 
@@ -6328,6 +6332,7 @@ function damageBoss(damage, source, opts = {}) {
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
   playSfxCue('boss-warning', 0.035);
   spawnBlood(combat.boss.x + 40, GROUND_Y - 70, source === 'hash-rail' ? '#19f7ff' : '#ff236d');
+  emitCombatVfxParticles(createHitSparks(combat.boss.x + 40, GROUND_Y - 72, source === 'grenade' ? 18 : 12));
   spawnDamageNumber(present.label ?? `${Math.round(applied)}`, combat.boss.x + 40, GROUND_Y - 84, present.color ?? '#ffe84d', Boolean(present.crit));
 }
 
@@ -6385,6 +6390,7 @@ function killEnemy(enemy) {
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   spawnText(`+${enemy.score ?? 100}`, enemy.x, enemy.y - 70, '#ffe84d');
   spawnExplosion(enemy.x + 12, enemy.y - 28, enemy.miniBoss ? '#ff7b2f' : '#ff476f');
+  emitCombatVfxParticles(createDeathBurst(enemy.x + 12, enemy.y - 34, enemy.id ?? enemy.enemyKey ?? 'unknown-enemy'));
   // Legacy side-scroller miniboss drop. In the isometric roguelike, power-up
   // drops are handled by dropRoguelikePowerUp() in updateRoguelikeEnemies()
   // (world-coordinate pickups), so skip the screen-space legacy drop there.
@@ -6466,10 +6472,24 @@ function spawnSpriteParticle(type, x, y, options = {}) {
   });
 }
 
+function emitCombatVfxParticles(particles = []) {
+  for (const particle of particles) {
+    combat.particles.push({
+      ...particle,
+      // Main-loop particles are frame-updated by updateParticles(), so preserve
+      // maxLife for fade math and normalize missing velocity/size fields.
+      vx: particle.vx ?? 0,
+      vy: particle.vy ?? 0,
+      size: particle.size ?? 8,
+      life: particle.life ?? 1,
+      maxLife: particle.maxLife ?? particle.life ?? 1,
+    });
+  }
+}
+
 function spawnMuzzleFlash(x, y, weaponId) {
-  // ONE clean muzzle flash — no secondary shell-casing particles. The flash
-  // is the "firing effect" and stands alone; extra sparks on top looked like
-  // the reload was generating particles of its own.
+  // Layer a readable sprite-sized flash with the combat-vfx starburst particles
+  // so shooting reads both at camera scale and in close-up GIF captures.
   spawnSpriteParticle('muzzle-flash', x, y, {
     vx: 1.4,
     vy: -0.1,
@@ -6479,6 +6499,7 @@ function spawnMuzzleFlash(x, y, weaponId) {
     scaleFrom: 0.8,
     scaleTo: 1.15,
   });
+  emitCombatVfxParticles(createMuzzleFlash(x, y, weaponId === 'hash-rail' ? 'rail' : 'east'));
 }
 
 function spawnSlash(x, y) {
@@ -6717,7 +6738,9 @@ function shootRoguelike() {
     });
   }
   const muzzle = isoToScreen(combat.playerMapX + combat.aimMapX * 0.8, combat.playerMapY + combat.aimMapY * 0.8);
+  const tracerEnd = isoToScreen(combat.playerMapX + combat.aimMapX * (weapon.id === 'scatter-shotgun' ? 2.2 : 3.4), combat.playerMapY + combat.aimMapY * (weapon.id === 'scatter-shotgun' ? 2.2 : 3.4));
   spawnMuzzleFlash(muzzle.x, muzzle.y, weapon.id);
+  emitCombatVfxParticles(createBulletTrail(muzzle.x, muzzle.y, tracerEnd.x, tracerEnd.y, weapon.id === 'hash-rail' ? 'rail' : 'pistol'));
   playSfxCue('weapon-fire', weapon.id === 'hash-rail' ? 0.045 : 0.035);
 }
 
@@ -7124,6 +7147,7 @@ function updateRoguelikeBullets(dt) {
     // Solid obstacles block bullets (inanimate objects take no damage, but they
     // stop shots — you have to shoot around buildings/trees, not through them).
     if (obstacleHitAt(bullet.worldX, bullet.worldY, obstacles)) {
+      emitCombatVfxParticles(createHitSparks(projected.x, projected.y + 18, 6));
       for (let i = 0; i < 3; i += 1) {
         combat.particles.push({ type: 'impact-sparks', x: projected.x, y: projected.y + 18, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2, color: i % 2 ? '#f9f7ff' : '#9aa7c7', size: 12 + Math.random() * 8, life: 0.3, maxLife: 0.3 });
       }
@@ -7285,6 +7309,7 @@ function updateRoguelikeGrenades() {
     }
     const burst = isoToScreen(g.x, g.y);
     spawnGrenadeExplosion(burst.x, burst.y);
+    emitCombatVfxParticles(createExplosion(burst.x, burst.y, g.radius * 18));
     spawnText('💥', burst.x, burst.y - 30, '#ff7b2f');
   }
   combat.activeGrenades = combat.activeGrenades.filter((g) => !g.detonated);

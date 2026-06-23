@@ -210,6 +210,9 @@
       },
       "attack-tell": {
         "queued": true
+      },
+      "shoot": {
+        "queued": true
       }
     }
   },
@@ -225,8 +228,7 @@
         "raw": "error: 404: Character rotation image not found for direction: south"
       },
       "run": {
-        "queued": true,
-        "raw": "error: 404: Character rotation image not found for direction: south"
+        "queued": true
       },
       "attack": {
         "queued": true,
@@ -250,24 +252,76 @@
     "animations": {
       "hit": {
         "queued": true
+      },
+      "idle": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
       }
     }
   },
   "plaza-warden": {
     "character_id": "c69c76d7-bd1c-4336-9253-6c33bd69e0c5",
-    "animations": {}
+    "animations": {
+      "run": {
+        "queued": true
+      },
+      "attack-tell": {
+        "queued": true
+      },
+      "hit": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
+      }
+    }
   },
   "bridge-exploiter": {
     "character_id": "334e34c1-366c-4628-9500-256987ccfa84",
-    "animations": {}
+    "animations": {
+      "idle": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      },
+      "attack": {
+        "queued": true
+      },
+      "attack-tell": {
+        "queued": true
+      }
+    }
   },
   "the-obfuscator": {
     "character_id": "39e9c54b-e30e-4007-a490-863aef3adef9",
-    "animations": {}
+    "animations": {
+      "attack-tell": {
+        "queued": true
+      },
+      "hit": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
+      },
+      "shoot": {
+        "queued": true
+      }
+    }
   },
   "bitcoin-maximalist-riot-cop": {
     "character_id": "7cdfd405-491c-49d7-8dd5-b27ef518b8e5",
-    "animations": {}
+    "animations": {
+      "attack": {
+        "queued": true
+      },
+      "attack-tell": {
+        "queued": true
+      }
+    }
   },
   "dao-lobbyist": {
     "character_id": "83f6fc50-a2b0-4925-8198-28e544105a69",
@@ -279,11 +333,22 @@
   },
   "nft-valet": {
     "character_id": "eddc9f33-7ebb-42c2-8436-9f3e043612f3",
-    "animations": {}
+    "animations": {
+      "attack": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
+      }
+    }
   },
   "stablecoin-socialite": {
     "character_id": "75206fcf-6c8c-4230-8283-fab97d19a8c9",
-    "animations": {}
+    "animations": {
+      "idle": {
+        "queued": true
+      }
+    }
   },
   "coyote-pack-runner": {
     "character_id": "92611a02-7a89-4c99-a6c5-43a58019a2a4",
@@ -295,14 +360,59 @@
   },
   "buzzard": {
     "character_id": "bf8c1cb2-a133-47e3-b060-969ab6f6cb68",
-    "animations": {}
+    "animations": {
+      "idle": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      }
+    }
   },
   "rattlesnake": {
     "character_id": "76702029-90eb-4ce9-b113-f6d9eb8721b0",
-    "animations": {}
+    "animations": {
+      "hit": {
+        "queued": true
+      }
+    }
   },
   "scorpion-ambusher": {
     "character_id": "ca55115c-5744-4af0-97d8-64f44d004a8c",
-    "animations": {}
+    "animations": {
+      "death": {
+        "queued": true
+      }
+    }
+  },
+  "lilly": {
+    "character_id": "61b040dd-d2cb-4f78-ab59-b1ad703bce84",
+    "animations": {
+      "idle": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      }
+    }
+  },
+  "fud-goblin": {
+    "character_id": "d0470066-7d2b-4195-bcb6-9e7c6f4638d8",
+    "animations": {
+      "hit": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
+      }
+    }
+  },
+  "gas-fee-wisp": {
+    "character_id": "afb5c6c3-9d0a-48a0-a059-edc00b97aa50",
+    "animations": {
+      "death": {
+        "queued": true
+      }
+    }
   }
 }
