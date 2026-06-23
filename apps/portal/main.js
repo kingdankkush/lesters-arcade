@@ -137,6 +137,11 @@ import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
 
+const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
+function debugRuntimeLog(...args) {
+  if (DEBUG_ARCADE_RUNTIME) console.log(...args);
+}
+
 const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
 const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
 const GROUND_Y = 276;
@@ -3123,7 +3128,7 @@ function completeStage() {
     // SDK adapter: emit gameOver with final stats.
     if (gameAdapter) {
       gameAdapter.end({ score: combat.score, kills: combat.kills, survived: combat.elapsedGameSeconds });
-      console.log('[SDK] Game ended:', gameAdapter.getState(), gameAdapter.getStats());
+      debugRuntimeLog('[SDK] Game ended:', gameAdapter.getState(), gameAdapter.getStats());
     }
     syncCombatOverlay();
     return;
@@ -4359,7 +4364,7 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
 
   // GameRegistry integration for shared profile (parent-account identity)
   const profile = await getSharedPlayerProfile(connectedWallet);
-  console.log('[GameRegistry] Profile loaded for run:', profile.displayName);
+  debugRuntimeLog('[GameRegistry] Profile loaded for run:', profile.displayName);
 
   // Show cinematic loading screen with keyart + progress + level title.
   // The game world is generated INSIDE the loading callback but kept FROZEN
@@ -4378,7 +4383,7 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
   // SDK adapter: emit sessionStart now that the player has begun.
   gameAdapter = createInProcessGameAdapter({ gameId: 'hard-money-heroes' });
   gameAdapter.start({ mode: officialSelectedMode ?? 'free', characterId: combat.characterId });
-  console.log('[SDK] Game session started:', gameAdapter.gameId, gameAdapter.getState());
+  debugRuntimeLog('[SDK] Game session started:', gameAdapter.gameId, gameAdapter.getState());
 }
 
 async function continueToCampaignLevel(levelId) {
@@ -4587,7 +4592,7 @@ function connectMockWallet() {
   connectedWallet = MOCK_WALLET;
   // GameRegistry shared profile (parent-account identity) — fire and forget
   getSharedPlayerProfile(connectedWallet).then((profile) => {
-    console.log('[GameRegistry] Loaded shared profile:', profile);
+    debugRuntimeLog('[GameRegistry] Loaded shared profile:', profile);
   });
 
   connectedChainId = null;
@@ -4818,46 +4823,46 @@ async function requestLiteForgeNetwork(provider = detectEthereumProvider()) {
 
 async function connectWallet() {
   const provider = detectEthereumProvider();
-  console.log('[Wallet] connectWallet called, provider:', !!provider?.request);
+  debugRuntimeLog('[Wallet] connectWallet called, provider:', !!provider?.request);
   if (provider?.request) {
     // Phase 1: the actual connection (account request + chain guard). Only a
     // failure HERE should fall back to the mock wallet.
     let firstAccount = null;
     try {
-      console.log('[Wallet] Requesting accounts...');
+      debugRuntimeLog('[Wallet] Requesting accounts...');
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
       firstAccount = Array.isArray(accounts) ? accounts[0] : null;
-      console.log('[Wallet] Accounts received:', firstAccount ? firstAccount.slice(0, 10) + '...' : 'none');
+      debugRuntimeLog('[Wallet] Accounts received:', firstAccount ? firstAccount.slice(0, 10) + '...' : 'none');
     } catch (error) {
       console.warn('[Wallet] Connection declined or failed:', error);
     }
     if (firstAccount) {
       connectedWallet = firstAccount.toLowerCase();
       walletConnector = 'injected-evm';
-      console.log('[Wallet] Connected:', connectedWallet);
+      debugRuntimeLog('[Wallet] Connected:', connectedWallet);
       // Chain guard is best-effort: a decline must NOT drop the connection.
       // Skip chain switching during connect — the ranked modal handles it.
       try {
         await refreshInjectedChainId(provider);
-        console.log('[Wallet] Chain ID:', connectedChainId);
+        debugRuntimeLog('[Wallet] Chain ID:', connectedChainId);
       } catch (chainError) {
         console.warn('[Wallet] Chain ID refresh skipped:', chainError.message);
       }
       // SIWE sign-in: bind the session to the address with a signature. Best-
       // effort — a decline keeps the wallet connected (guest/free) but leaves
       // walletAuthenticated=false so ranked still prompts for a signature.
-      console.log('[Wallet] Starting SIWE authentication for', connectedWallet);
+      debugRuntimeLog('[Wallet] Starting SIWE authentication for', connectedWallet);
       await authenticateWalletSiwe(provider, connectedWallet);
-      console.log('[Wallet] SIWE result:', walletAuthenticated);
+      debugRuntimeLog('[Wallet] SIWE result:', walletAuthenticated);
       // Phase 2: account + render. A throw HERE means the wallet connected fine
       // but a downstream render failed — do NOT fall back to mock (that would
       // re-render and throw again, blanking the app). Log + keep the connection.
       try {
-        console.log('[Wallet] Connecting player account + rendering...');
+        debugRuntimeLog('[Wallet] Connecting player account + rendering...');
         connectPlayerAccount(state, connectedWallet, { handle: 'LitVM Pilot' });
         persistArcadeStateSoon();
         render();
-        console.log('[Wallet] Post-connect render complete. connectedWallet:', connectedWallet, 'officialAppStep:', officialAppStep);
+        debugRuntimeLog('[Wallet] Post-connect render complete. connectedWallet:', connectedWallet, 'officialAppStep:', officialAppStep);
       } catch (renderError) {
         console.error('[Wallet] Connected but post-connect render failed:', renderError);
       }
