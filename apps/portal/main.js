@@ -44,6 +44,8 @@ import {
 import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
+import { getAuthoredSceneObjects, getDistrictEdgeTreatment } from './src/authored-world-layout.mjs';
+import { createMuzzleFlash, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -1384,6 +1386,7 @@ const combat = {
   enemyShots: [],
   enemies: [],
   particles: [],
+  vfxParticles: [],
   floatingTexts: [],
   powerUps: [],
   // Active timed power-up effects (seconds remaining). 0 = inactive.
@@ -9128,13 +9131,24 @@ function rosterKeyForEntity(entity, role) {
   // Check the bespoke kit registry first for an explicit roster key mapping
   const kit = bespokeEnemyVisualKitFor(entity);
   if (kit?.rosterKey) return kit.rosterKey;
-  // Fallback keyword matching for enemies without a bespoke kit entry
-  if (hay.includes('goblin') || hay.includes('fud') || hay.includes('paper') || hay.includes('degen') || hay.includes('rug')) return 'fud-goblin';
-  if (hay.includes('wisp') || hay.includes('gas') || hay.includes('cloud') || hay.includes('flying')) return 'gas-fee-wisp';
+  // Direct enemy ID matching (preferred — each enemy gets its own art)
+  if (hay.includes('paper-hand') || hay.includes('paper')) return 'paper-hand';
+  if (hay.includes('honeypot-turret') || hay.includes('honeypot')) return 'honeypot-turret';
+  if (hay.includes('slippage-skater') || hay.includes('slippage')) return 'slippage-skater';
   if (hay.includes('crypto-bro') || hay.includes('bro')) return 'crypto-bro-rusher';
-  if (hay.includes('evil-banker') || hay.includes('banker')) return 'evil-banker-ranged';
-  if (hay.includes('gas-beast') || hay.includes('beast')) return 'gas-beast-tank';
-  if (hay.includes('trench')) return 'trench-degen';
+  if (hay.includes('evil-banker') || hay.includes('banker') || hay.includes('bandit-captain') || hay.includes('ridge-raider') || hay.includes('claim-jumper')) return 'evil-banker-ranged';
+  if (hay.includes('gas-beast') || hay.includes('beast') || hay.includes('liquidation') || hay.includes('cascade')) return 'gas-beast-tank';
+  if (hay.includes('goblin') || hay.includes('fud')) return 'fud-goblin';
+  if (hay.includes('wisp') || hay.includes('gas-fee') || hay.includes('tax')) return 'gas-fee-wisp';
+  if (hay.includes('trench') || hay.includes('degen')) return 'trench-degen';
+  // Animals and creatures that need their own sprites (not human proxies)
+  // For now, use the closest thematic match until bespoke sprites are generated
+  if (hay.includes('coyote') || hay.includes('boar') || hay.includes('wild-boar')) return 'trench-degen';
+  if (hay.includes('buzzard') || hay.includes('flyer') || hay.includes('sybil') || hay.includes('drone')) return 'crypto-bro-rusher';
+  if (hay.includes('rattlesnake') || hay.includes('scorpion') || hay.includes('snake')) return 'gas-beast-tank';
+  if (hay.includes('rug-rat') || hay.includes('rug')) return 'fud-goblin';
+  if (hay.includes('mev-reaper') || hay.includes('phishing') || hay.includes('angler')) return 'evil-banker-ranged';
+  if (hay.includes('scam-cult') || hay.includes('zealot')) return 'evil-banker-ranged';
   // Default grunt animation set.
   return 'fud-goblin';
 }
