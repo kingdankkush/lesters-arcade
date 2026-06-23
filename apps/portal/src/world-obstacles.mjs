@@ -161,6 +161,93 @@ export function isWaterAt(seed, worldX, worldY, biomeAt) {
   return biomeAt(seed, Math.round(worldX), Math.round(worldY)) === 'water';
 }
 
+function isDryAt(seed, worldX, worldY, biomeAt) {
+  return typeof biomeAt !== 'function' || !isWaterAt(seed, worldX, worldY, biomeAt);
+}
+
+function finiteOr(value, fallback) {
+  return Number.isFinite(value) ? value : fallback;
+}
+
+// Find the closest dry tile for initial player placement. The runtime can no
+// longer assume world origin is land: some seeded campaign layouts put (0,0) in
+// water, and water collision intentionally keeps the player stuck if their
+// starting point is already wet. This deterministic ring search moves the hero
+// to the nearest dry shoreline before the run starts.
+export function findNearestDrySpawn(seed, desiredX = 0, desiredY = 0, biomeAt, opts = {}) {
+  const startX = finiteOr(desiredX, 0);
+  const startY = finiteOr(desiredY, 0);
+  if (isDryAt(seed, startX, startY, biomeAt)) {
+    return { x: startX, y: startY, distance: 0, adjusted: false, found: true };
+  }
+
+  const step = Math.max(0.5, finiteOr(opts.step, 1));
+  const maxRadius = Math.max(step, finiteOr(opts.maxRadius, 48));
+  const candidateCount = Math.max(8, Math.round(finiteOr(opts.candidateCount, 32)));
+  const startIndex = Math.abs(seed | 0) % candidateCount;
+  for (let radius = step; radius <= maxRadius + 1e-6; radius += step) {
+    for (let i = 0; i < candidateCount; i += 1) {
+      const angle = (((i + startIndex) % candidateCount) / candidateCount) * Math.PI * 2;
+      const x = startX + Math.cos(angle) * radius;
+      const y = startY + Math.sin(angle) * radius;
+      if (isDryAt(seed, x, y, biomeAt)) {
+        return { x, y, distance: Math.hypot(x - startX, y - startY), adjusted: true, found: true };
+      }
+    }
+  }
+
+  return { x: startX, y: startY, distance: 0, adjusted: false, found: false };
+}
+
+// Enemies and mini-bosses must enter from a visible distance, never on the hero.
+// If authored slots or caller-provided coordinates are too close/wet, search a
+// deterministic dry ring around the player. The hard fallback still preserves
+// the minimum distance even in pathological all-water test stubs.
+export function resolveDistantSpawnPosition({
+  seed = 0,
+  playerX = 0,
+  playerY = 0,
+  desiredX = 0,
+  desiredY = 0,
+  minDistance = 8,
+  fallbackAngleRadians = 0,
+  fallbackRadiusTiles = 10,
+  biomeAt,
+  maxAttempts = 48,
+} = {}) {
+  const px = finiteOr(playerX, 0);
+  const py = finiteOr(playerY, 0);
+  const dx = finiteOr(desiredX, px);
+  const dy = finiteOr(desiredY, py);
+  const min = Math.max(0, finiteOr(minDistance, 8));
+  const desiredDistance = Math.hypot(dx - px, dy - py);
+  if (desiredDistance >= min && isDryAt(seed, dx, dy, biomeAt)) {
+    return { x: dx, y: dy, distance: desiredDistance, adjusted: false, found: true };
+  }
+
+  const baseAngle = Number.isFinite(fallbackAngleRadians)
+    ? fallbackAngleRadians
+    : (desiredDistance > 1e-6 ? Math.atan2(dy - py, dx - px) : 0);
+  const baseRadius = Math.max(min, finiteOr(fallbackRadiusTiles, min), desiredDistance);
+  const attempts = Math.max(1, Math.round(finiteOr(maxAttempts, 48)));
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const ring = Math.floor(attempt / 16);
+    const radius = baseRadius + ring * 2;
+    const angle = attempt === 0 ? baseAngle : baseAngle + attempt * goldenAngle;
+    const x = px + Math.cos(angle) * radius;
+    const y = py + Math.sin(angle) * radius;
+    const distance = Math.hypot(x - px, y - py);
+    if (distance >= min && isDryAt(seed, x, y, biomeAt)) {
+      return { x, y, distance, adjusted: true, found: true };
+    }
+  }
+
+  const x = px + Math.cos(baseAngle) * min;
+  const y = py + Math.sin(baseAngle) * min;
+  return { x, y, distance: min, adjusted: true, found: false };
+}
+
 // Resolve a desired move against water: if the destination tile is water, keep
 // the axis that stays on land where possible (slide along the shoreline), else
 // stay put. `fromX/fromY` must be on non-water ground.

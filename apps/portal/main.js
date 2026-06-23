@@ -16,7 +16,7 @@ import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-g
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
-import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision } from './src/world-obstacles.mjs';
+import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
@@ -145,6 +145,9 @@ function debugRuntimeLog(...args) {
 const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
 const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
 const GROUND_Y = 276;
+const ROGUELIKE_PLAYER_START_SEARCH_RADIUS_TILES = 56;
+const ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES = 9;
+const ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES = 11;
 const FIXED_STEP_MS = 1000 / LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps;
 const NORMAL_HIT_DAMAGE = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.damagePerNormalHitPercent;
 const PLAYER_MAX_HEALTH = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.playerMaxPercent;
@@ -5413,6 +5416,8 @@ async function startCombat(options = {}) {
   combat.extractionSnapshotAt = null;
   combat.startedAt = performance.now();
   combat.frame = 0;
+  _obstacleCacheFrame = -1;
+  _obstacleCache = [];
   combat.elapsedGameSeconds = 0;
   combat.playerX = PLAYER_X;
   combat.playerY = GROUND_Y;
@@ -5462,6 +5467,18 @@ async function startCombat(options = {}) {
   // connecting district centers, so the world reads as a planned place
   // (streets between blocks, trails between groves) instead of raw biome noise.
   const seed = combat.roguelikeRun.seed;
+  const safePlayerStart = findNearestDrySpawn(seed, 0, 0, biomeAt, {
+    maxRadius: ROGUELIKE_PLAYER_START_SEARCH_RADIUS_TILES,
+    step: 1,
+  });
+  combat.playerMapX = safePlayerStart.x;
+  combat.playerMapY = safePlayerStart.y;
+  combat.roguelikeRun.player.x = safePlayerStart.x;
+  combat.roguelikeRun.player.y = safePlayerStart.y;
+  syncProjectedPlayerPosition();
+  if (safePlayerStart.adjusted) {
+    debugRuntimeLog('[spawn] moved player start off water', safePlayerStart);
+  }
   const worldWidth = 2000;  // Large world for exploration
   const worldHeight = 2000;
   const campaignWorld = buildCampaignWorldSetup({
@@ -7013,6 +7030,27 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
       : rangedRoll < director.rangedEnemyShare);
   const elite = options.elite ?? ((((combat.frame + combat.kills) % 100) / 100) < director.eliteEnemyShare);
   const miniBoss = Boolean(options.miniBoss);
+  const desiredMapX = options.mapX ?? (combat.playerMapX + Math.cos(angle) * radius);
+  const desiredMapY = options.mapY ?? (combat.playerMapY + Math.sin(angle) * radius);
+  const safeSpawn = resolveDistantSpawnPosition({
+    seed: combat.roguelikeRun?.seed ?? 0,
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    desiredX: desiredMapX,
+    desiredY: desiredMapY,
+    minDistance: options.minDistanceTiles ?? (miniBoss ? ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES : ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES),
+    fallbackAngleRadians: angle,
+    fallbackRadiusTiles: radius,
+    biomeAt,
+  });
+  if (safeSpawn.adjusted) {
+    debugRuntimeLog('[spawn] adjusted enemy spawn away from player/water', {
+      enemyId: spawn.enemy.id,
+      miniBoss,
+      requested: { x: desiredMapX, y: desiredMapY },
+      resolved: safeSpawn,
+    });
+  }
   let sizeScale;
   if (miniBoss || spawn.enemy.boss || spawn.enemy.tier === 'heavy') {
     sizeScale = 0.9 + Math.random() * 0.7;
@@ -7023,8 +7061,8 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
   const enemy = {
     ...spawn.enemy,
     title: options.title ?? spawn.enemy.title,
-    mapX: options.mapX ?? (combat.playerMapX + Math.cos(angle) * radius),
-    mapY: options.mapY ?? (combat.playerMapY + Math.sin(angle) * radius),
+    mapX: safeSpawn.x,
+    mapY: safeSpawn.y,
     hp: Math.max(8, Math.round(spawn.scaledHealth * durabilityScale)),
     maxHp: Math.max(8, Math.round(spawn.scaledHealth * durabilityScale)),
     speed: (spawn.enemy.speed ?? 1) * (miniBoss ? 0.94 : elite ? 1.08 : 0.9),
