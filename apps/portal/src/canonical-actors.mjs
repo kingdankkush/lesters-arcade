@@ -211,10 +211,23 @@ function withDerivedCombatReadability(manifest) {
 
 export function canonicalActorIdForRuntimeEntity(entity = {}) {
   const hay = `${entity?.id ?? ''} ${entity?.title ?? ''} ${entity?.enemyKey ?? ''} ${entity?.class ?? ''}`.toLowerCase();
+  // Enemies with their own harvested PixelLab sprite kits — return null so the
+  // renderer falls through to the bespoke kit path (BESPOKE_ENEMY_VISUAL_KITS)
+  // which uses the enemy's own roster key instead of a proxy.
+  const HAS_OWN_KIT = [
+    'coyote-pack-runner', 'wild-boar', 'buzzard', 'rattlesnake', 'scorpion-ambusher',
+    'claim-jumper', 'scam-cult-zealot', 'rug-rat', 'sybil-drone', 'mev-reaper',
+    'phishing-angler', 'slippage-skater', 'paper-hand', 'honeypot-turret',
+    'liquidation-cascade-golem', 'plaza-warden', 'bridge-exploiter', 'the-obfuscator',
+    'bitcoin-maximalist-riot-cop', 'dao-lobbyist', 'influencer-camera-drone',
+    'nft-valet', 'stablecoin-socialite', 'plaza-warden', 'bridge-exploiter',
+    'the-obfuscator',
+  ];
+  for (const ownId of HAS_OWN_KIT) {
+    if (hay.includes(ownId)) return null;
+  }
   if (hay.includes('cave-warren') || hay.includes('warren-alpha') || hay.includes('warren') || hay.includes('spear')) return 'warren-boss';
-  if (hay.includes('claim-jumper') || hay.includes('bandit-captain') || hay.includes('salvage-mercenary') || hay.includes('ridge-raider')) return 'evil-banker';
-  if (hay.includes('scorpion') || hay.includes('rattlesnake') || hay.includes('sandbar-apex')) return 'gas-beast';
-  if (hay.includes('coyote') || hay.includes('wild-boar') || hay.includes('fud-goblin-cave')) return 'trench-degen';
+  if (hay.includes('bandit-captain') || hay.includes('salvage-mercenary') || hay.includes('ridge-raider')) return 'evil-banker';
   if (hay.includes('scam-cult') || hay.includes('zealot') || hay.includes('trench') || hay.includes('degen') || hay.includes('fud') || hay.includes('paper') || hay.includes('rug')) return 'trench-degen';
   if (hay.includes('bank')) return 'evil-banker';
   if (hay.includes('crypto') || hay.includes('bro') || hay.includes('kol')) return 'crypto-bro';

@@ -7,29 +7,44 @@ import {
   manifestEnemyArtKeyForRuntimeEntity,
 } from '../apps/portal/src/canonical-actors.mjs';
 
-test('canonicalActorIdForRuntimeEntity maps authored wasteland human variants onto real ingested actor manifests', () => {
+test('canonicalActorIdForRuntimeEntity returns null for enemies with their own PixelLab sprite kits', () => {
+  // These enemies now have their own harvested animation kits on PixelLab,
+  // so canonicalActorIdForRuntimeEntity returns null to let the renderer
+  // fall through to the bespoke kit path (BESPOKE_ENEMY_VISUAL_KITS).
   const claim = canonicalActorIdForRuntimeEntity({ id: 'claim-jumper' });
   const sheriff = canonicalActorIdForRuntimeEntity({ id: 'claim-jumper-sheriff' });
   const zealot = canonicalActorIdForRuntimeEntity({ id: 'scam-cult-zealot' });
+  const coyote = canonicalActorIdForRuntimeEntity({ id: 'coyote-pack-runner' });
+  const scorpion = canonicalActorIdForRuntimeEntity({ id: 'scorpion-ambusher' });
+  const sybil = canonicalActorIdForRuntimeEntity({ id: 'sybil-drone' });
 
-  assert.equal(claim, 'evil-banker');
-  assert.equal(sheriff, 'evil-banker');
-  assert.equal(zealot, 'trench-degen');
-  assert.ok(CANONICAL_ACTOR_MANIFESTS[claim]);
-  assert.ok(CANONICAL_ACTOR_MANIFESTS[zealot]);
+  assert.equal(claim, null, 'claim-jumper should use its own kit, not proxy');
+  assert.equal(sheriff, null, 'claim-jumper-sheriff should use its own kit');
+  assert.equal(zealot, null, 'scam-cult-zealot should use its own kit');
+  assert.equal(coyote, null, 'coyote-pack-runner should use its own kit');
+  assert.equal(scorpion, null, 'scorpion-ambusher should use its own kit');
+  assert.equal(sybil, null, 'sybil-drone should use its own kit');
 });
 
+test('canonicalActorIdForRuntimeEntity still proxies enemies without own kits', () => {
+  // Bandit captain and ridge raider still proxy to evil-banker.
+  const captain = canonicalActorIdForRuntimeEntity({ id: 'bandit-captain' });
+  const ridge = canonicalActorIdForRuntimeEntity({ id: 'ridge-raider' });
+  const salvage = canonicalActorIdForRuntimeEntity({ id: 'salvage-mercenary' });
 
-test('canonicalActorIdForRuntimeEntity and manifestEnemyArtKeyForRuntimeEntity map authored wasteland animal variants onto real runtime art families', () => {
+  assert.equal(captain, 'evil-banker');
+  assert.equal(ridge, 'evil-banker');
+  assert.equal(salvage, 'evil-banker');
+  assert.ok(CANONICAL_ACTOR_MANIFESTS['evil-banker'], 'evil-banker manifest exists');
+});
+
+test('manifestEnemyArtKeyForRuntimeEntity returns null for enemies with own kits', () => {
   const coyote = { id: 'coyote-pack-runner', title: 'Coyote Pack Runner' };
   const scorpion = { id: 'scorpion-ambusher', title: 'Scorpion Ambusher' };
-  const caveGoblin = { id: 'fud-goblin-cave', title: 'Cave FUD Goblin' };
+  const claim = { id: 'claim-jumper', title: 'Claim Jumper' };
 
-  assert.equal(canonicalActorIdForRuntimeEntity(coyote), 'trench-degen');
-  assert.equal(canonicalActorIdForRuntimeEntity(scorpion), 'gas-beast');
-  assert.equal(canonicalActorIdForRuntimeEntity(caveGoblin), 'trench-degen');
-
-  assert.equal(manifestEnemyArtKeyForRuntimeEntity(coyote), 'trenchDegen');
-  assert.equal(manifestEnemyArtKeyForRuntimeEntity(scorpion), 'gasBeast');
-  assert.equal(manifestEnemyArtKeyForRuntimeEntity(caveGoblin), 'trenchDegen');
+  // These now return null because they have their own kits
+  assert.equal(manifestEnemyArtKeyForRuntimeEntity(coyote), null);
+  assert.equal(manifestEnemyArtKeyForRuntimeEntity(scorpion), null);
+  assert.equal(manifestEnemyArtKeyForRuntimeEntity(claim), null);
 });

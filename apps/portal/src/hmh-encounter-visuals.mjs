@@ -181,13 +181,13 @@ export function buildEncounterTerrainPressure({ poiId = null, centerX = 0, cente
 const ENEMY_ROSTER_KEYS = Object.freeze({
   'bandit-captain': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.12, anchorBiasY: -10 },
   buzzard: { rosterKey: 'crypto-bro-rusher', drawScaleMul: 1.06, anchorBiasY: -12 },
-  'claim-jumper': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.04, anchorBiasY: -9 },
-  'claim-jumper-sheriff': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.1, anchorBiasY: -10 },
+  'claim-jumper': { rosterKey: 'claim-jumper', drawScaleMul: 1.04, anchorBiasY: -9 },
+  'claim-jumper-sheriff': { rosterKey: 'claim-jumper', drawScaleMul: 1.1, anchorBiasY: -10 },
   'coyote-pack-runner': { rosterKey: 'coyote-pack-runner', drawScaleMul: 1.08, anchorBiasY: -10 },
   'fud-goblin-cave': { rosterKey: 'trench-degen', drawScaleMul: 0.96, anchorBiasY: -4 },
   rattlesnake: { rosterKey: 'rattlesnake', drawScaleMul: 1.08, anchorBiasY: -6 },
   'ridge-raider': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.08, anchorBiasY: -10 },
-  'scam-cult-zealot': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.08, anchorBiasY: -9 },
+  'scam-cult-zealot': { rosterKey: 'scam-cult-zealot', drawScaleMul: 1.08, anchorBiasY: -9 },
   'scorpion-ambusher': { rosterKey: 'scorpion-ambusher', drawScaleMul: 1.12, anchorBiasY: -8 },
   'wild-boar': { rosterKey: 'wild-boar', drawScaleMul: 1.12, anchorBiasY: -7 },
   'paper-hand': { rosterKey: 'paper-hand', drawScaleMul: 1.0, anchorBiasY: -6 },
@@ -203,6 +203,15 @@ const ENEMY_ROSTER_KEYS = Object.freeze({
   'evil-banker': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.06, anchorBiasY: -8 },
   'fud-goblin': { rosterKey: 'fud-goblin', drawScaleMul: 0.96, anchorBiasY: -4 },
   'gas-fee-wisp': { rosterKey: 'gas-fee-wisp', drawScaleMul: 0.94, anchorBiasY: -12 },
+  // Level 2 enemies and minibosses
+  'plaza-warden': { rosterKey: 'plaza-warden', drawScaleMul: 1.14, anchorBiasY: -8 },
+  'bridge-exploiter': { rosterKey: 'bridge-exploiter', drawScaleMul: 1.18, anchorBiasY: -10 },
+  'the-obfuscator': { rosterKey: 'the-obfuscator', drawScaleMul: 1.12, anchorBiasY: -8 },
+  'bitcoin-maximalist-riot-cop': { rosterKey: 'bitcoin-maximalist-riot-cop', drawScaleMul: 1.1, anchorBiasY: -8 },
+  'dao-lobbyist': { rosterKey: 'dao-lobbyist', drawScaleMul: 1.06, anchorBiasY: -8 },
+  'influencer-camera-drone': { rosterKey: 'influencer-camera-drone', drawScaleMul: 0.9, anchorBiasY: -14 },
+  'nft-valet': { rosterKey: 'nft-valet', drawScaleMul: 1.04, anchorBiasY: -6 },
+  'stablecoin-socialite': { rosterKey: 'stablecoin-socialite', drawScaleMul: 1.06, anchorBiasY: -8 },
 });
 
 // BESPOKE_ENEMY_VISUAL_KITS is kept as a backward-compatible export but now returns
