@@ -42,6 +42,7 @@ import {
   isCampaignExtractionReached,
 } from './src/hmh-campaign-runtime.mjs';
 import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
+import { calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
@@ -6153,7 +6154,13 @@ function updateEnemies(difficulty) {
     const enemyBox = enemyHitbox(enemy);
     const distanceToPlayer = enemy.x - (combat.playerX + playerBox.w);
     const isFlying = enemy.class?.includes('flying');
-    const baseSpeed = enemy.miniBoss ? 0.24 : (enemy.speed ?? 1) * (enemy.role === 'aggressive-melee-rusher' ? 1.18 : 0.55);
+    const baseSpeed = calculateSideScrollerEnemySpeed({
+      enemySpeed: enemy.speed ?? 1,
+      role: enemy.role,
+      miniBoss: enemy.miniBoss,
+      difficultyAiLevel: difficulty.enemyAiLevel,
+      playerMoveSpeed: 3.1,
+    });
 
     if (enemy.miniBoss) {
       if (enemy.recoveryFramesRemaining > 0) {
@@ -6179,7 +6186,7 @@ function updateEnemies(difficulty) {
         enemy.recoveryFramesRemaining -= 1;
       } else {
         enemy.state = distanceToPlayer > 46 ? 'rushing' : 'melee-tell';
-        if (distanceToPlayer > 46) enemy.x -= baseSpeed + difficulty.enemyAiLevel * 0.015;
+        if (distanceToPlayer > 46) enemy.x -= baseSpeed;
         enemy.attackTimer -= 1;
         if (distanceToPlayer <= 58 && enemy.attackTimer <= 28) enemy.tellFrames = 28 - enemy.attackTimer;
         if (distanceToPlayer <= 58 && enemy.attackTimer <= 0) {
@@ -7409,7 +7416,15 @@ function updateRoguelikeEnemies(director, dt) {
       enemy.postVolley = enemy.ranged;
     } else {
       if (distance > desiredDistance) {
-        const speed = (enemy.speed ?? 1) * (enemy.elite ? 2.15 : 1.65) * (1 + director.pressure * 0.65) * (encounterBehavior.speedMul ?? 1) * slowFactor;
+        const playerMoveSpeed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
+        const speed = calculateEnemyChaseSpeed({
+          enemySpeed: enemy.speed ?? 1,
+          elite: enemy.elite,
+          pressure: director.pressure,
+          encounterSpeedMul: encounterBehavior.speedMul ?? 1,
+          slowFactor,
+          playerMoveSpeed,
+        });
         enemy.mapX += (dx / distance) * speed * dt;
         enemy.mapY += (dy / distance) * speed * dt;
       } else if (enemy.ranged) {
@@ -7427,8 +7442,8 @@ function updateRoguelikeEnemies(director, dt) {
       if (!enemy.ranged && distance < 0.82 && enemy.attackTimer <= 0) {
         enemy.lunging = enemy.id === 'coyote-pack-runner' || enemy.id === 'scorpion-ambusher';
         enemy.state = 'attack';
-        damagePlayer(enemy.elite ? NORMAL_HIT_DAMAGE * 1.5 : NORMAL_HIT_DAMAGE, 'enemy-melee', enemy.elite ? `Elite ${enemy.title ?? 'enemy'}` : enemy.title);
-        enemy.attackTimer = encounterBehavior.attackResetFrames ?? 46;
+        damagePlayer(calculateEnemyMeleeDamage({ normalHitDamage: NORMAL_HIT_DAMAGE, elite: enemy.elite }), 'enemy-melee', enemy.elite ? `Elite ${enemy.title ?? 'enemy'}` : enemy.title);
+        enemy.attackTimer = calculateMeleeAttackResetFrames({ preferredResetFrames: encounterBehavior.attackResetFrames ?? 46 });
         enemy.recoveryFramesRemaining = enemy.recoveryFrames ?? 20;
       }
       if (enemy.ranged && enemy.attackTimer <= 0) {

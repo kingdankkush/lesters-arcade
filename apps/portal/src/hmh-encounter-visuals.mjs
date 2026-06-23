@@ -242,17 +242,17 @@ export function buildEncounterEnemyBehaviorProfile({ poiId = null, enemyId = nul
   const enemy = normalizeId(enemyId);
 
   if (poi === 'dry-forest-cave' && enemy === 'coyote-pack-runner') {
-    return Object.freeze({ speedMul: 1.12, desiredDistanceMul: 0.84, telegraphBonusFrames: 4, attackResetFrames: 40 });
+    return Object.freeze({ speedMul: 0.92, desiredDistanceMul: 0.92, telegraphBonusFrames: 6, attackResetFrames: 78 });
   }
   if (poi === 'dry-forest-cave' && enemy === 'fud-goblin-cave') {
-    return Object.freeze({ speedMul: 0.92, desiredDistanceMul: 1.25, telegraphBonusFrames: 3, attackResetFrames: 52 });
+    return Object.freeze({ speedMul: 0.88, desiredDistanceMul: 1.25, telegraphBonusFrames: 4, attackResetFrames: 76 });
   }
   if (poi === 'dry-forest-cave' && enemy === 'wild-boar') {
-    return Object.freeze({ speedMul: 1.14, desiredDistanceMul: 0.78, telegraphBonusFrames: 4, attackResetFrames: 46 });
+    return Object.freeze({ speedMul: 0.9, desiredDistanceMul: 0.92, telegraphBonusFrames: 6, attackResetFrames: 82 });
   }
 
   if (poi === 'oasis-lakeside' && (enemy === 'scorpion-ambusher' || enemy === 'rattlesnake')) {
-    return Object.freeze({ speedMul: 1.16, desiredDistanceMul: 0.82, telegraphBonusFrames: 5, attackResetFrames: 38 });
+    return Object.freeze({ speedMul: 0.9, desiredDistanceMul: 0.95, telegraphBonusFrames: 7, attackResetFrames: 82 });
   }
   if (poi === 'oasis-lakeside' && enemy === 'gas-fee-wisp') {
     return Object.freeze({ speedMul: 1.04, desiredDistanceMul: 1.2, telegraphBonusFrames: 2, attackResetFrames: 78 });
@@ -265,7 +265,7 @@ export function buildEncounterEnemyBehaviorProfile({ poiId = null, enemyId = nul
     return Object.freeze({ speedMul: 1, desiredDistanceMul: 1.4, telegraphBonusFrames: 4, attackResetFrames: 70 });
   }
   if (poi === 'crossroads-trading-post' && enemy === 'wild-boar') {
-    return Object.freeze({ speedMul: 1.1, desiredDistanceMul: 0.8, telegraphBonusFrames: 3, attackResetFrames: 44 });
+    return Object.freeze({ speedMul: 0.9, desiredDistanceMul: 0.95, telegraphBonusFrames: 5, attackResetFrames: 82 });
   }
   if (poi === 'crossroads-trading-post' && enemy === 'bandit-captain') {
     return Object.freeze({ speedMul: 1.02, desiredDistanceMul: 1.18, telegraphBonusFrames: 4, attackResetFrames: 60 });
@@ -291,7 +291,7 @@ export function buildEncounterEnemyBehaviorProfile({ poiId = null, enemyId = nul
     return Object.freeze({ speedMul: 1.03, desiredDistanceMul: 1.1, telegraphBonusFrames: 4, attackResetFrames: 68 });
   }
   if (poi === 'rugpull-gulch' && enemy === 'rug-rat') {
-    return Object.freeze({ speedMul: 1.18, desiredDistanceMul: 0.8, telegraphBonusFrames: 2, attackResetFrames: 34 });
+    return Object.freeze({ speedMul: 0.88, desiredDistanceMul: 0.95, telegraphBonusFrames: 5, attackResetFrames: 78 });
   }
 
   return Object.freeze({ speedMul: 1, desiredDistanceMul: 1, telegraphBonusFrames: 0, attackResetFrames: null });

@@ -157,16 +157,18 @@ test('buildEncounterEnemyBehaviorProfile gives coyote and scorpion authored aren
   const wisp = buildEncounterEnemyBehaviorProfile({ poiId: 'oasis-lakeside', enemyId: 'gas-fee-wisp' });
   const neutral = buildEncounterEnemyBehaviorProfile({ poiId: 'crossroads-trading-post', enemyId: 'claim-jumper' });
 
-  assert.equal(coyote.speedMul > 1, true);
-  assert.equal(coyote.desiredDistanceMul < 1, true);
-  assert.equal(coyote.telegraphBonusFrames >= 2, true);
+  assert.equal(coyote.speedMul < 1, true);
+  assert.equal(coyote.desiredDistanceMul >= 0.9, true);
+  assert.equal(coyote.telegraphBonusFrames >= 5, true);
+  assert.equal(coyote.attackResetFrames >= 72, true);
 
   assert.equal(caveGoblin.speedMul < 1, true);
   assert.equal(caveGoblin.desiredDistanceMul > 1, true);
+  assert.equal(caveGoblin.attackResetFrames >= 72, true);
 
-  assert.equal(scorpion.speedMul > 1, true);
-  assert.equal(scorpion.attackResetFrames < 46, true);
-  assert.equal(scorpion.telegraphBonusFrames >= 3, true);
+  assert.equal(scorpion.speedMul < 1, true);
+  assert.equal(scorpion.attackResetFrames >= 72, true);
+  assert.equal(scorpion.telegraphBonusFrames >= 5, true);
 
   assert.equal(wisp.desiredDistanceMul > 1, true);
   assert.equal(wisp.attackResetFrames < 92, true);
@@ -185,7 +187,8 @@ test('buildEncounterEnemyBehaviorProfile extends authored responses into Crossro
   const rugpullSheriff = buildEncounterEnemyBehaviorProfile({ poiId: 'rugpull-gulch', enemyId: 'claim-jumper-sheriff' });
   const rugpullZealot = buildEncounterEnemyBehaviorProfile({ poiId: 'rugpull-gulch', enemyId: 'scam-cult-zealot' });
 
-  assert.equal(crossroadsBoar.speedMul > 1, true);
+  assert.equal(crossroadsBoar.speedMul < 1, true);
+  assert.equal(crossroadsBoar.attackResetFrames >= 72, true);
   assert.equal(crossroadsTurret.desiredDistanceMul > 1, true);
   assert.equal(crossroadsCaptain.telegraphBonusFrames >= 3, true);
   assert.equal(mesaJumper.desiredDistanceMul > 1, true);
