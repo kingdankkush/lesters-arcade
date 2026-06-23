@@ -141,7 +141,8 @@ function validateLesterProductionSprites() {
 }
 
 function resolvePortalAsset(src) {
-  return path.resolve(root, 'apps/portal', src.replace(/^\.\//, ''));
+  const cleanSrc = String(src).split('?')[0];
+  return path.resolve(root, 'apps/portal', cleanSrc.replace(/^\.\//, ''));
 }
 
 function validateHardMoneyHeroesCabinetSprites() {

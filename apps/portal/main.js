@@ -560,7 +560,15 @@ function productionAnimationFps(art, name, fallback = 12) {
 }
 
 function productionCabinetSprite() {
-  return hmh('HMH_PRODUCTION_ART_PASS')?.cabinet?.frames?.length ? hmh('HMH_PRODUCTION_ART_PASS')?.cabinet : null;
+  // The game-selection/splash cabinet should always use the hand-authored
+  // six-view user sprite sheet, even after the heavy HMH payload is loaded.
+  // The production art pass still carries an older PixelLab 8-direction object;
+  // letting that override the app-shell manifest makes the rotating cabinet swap
+  // art after the first load. Pull from the app shell so every rotating Hard
+  // Money Heroes cabinet stays on the same approved sprite sheet.
+  const shellCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets
+    .find((cabinet) => cabinet.id === 'hard-money-heroes')?.desktopCabinetSprite;
+  return shellCabinet?.frames?.length ? shellCabinet : null;
 }
 
 // Every post-connect screen (and the splash) uses the SAME clean Hard Money
@@ -3348,7 +3356,7 @@ function renderOfficialWalletSplash() {
   if (!dom.officialWalletSplash) return;
   applyHardMoneyHeroScreenBackground(dom.officialWalletSplash, 'splash');
   const featuredCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
-  const featuredSprite = productionCabinetSprite() ?? featuredCabinet?.desktopCabinetSprite;
+  const featuredSprite = featuredCabinet?.desktopCabinetSprite ?? productionCabinetSprite();
   if (dom.splashFeaturedCabinet && featuredSprite) {
     // Show the original 3D rotating cabinet sprite animation (no static banner).
     dom.splashFeaturedCabinet.replaceChildren(renderRotatingCabinetSprite(featuredSprite, 'splash'));
@@ -3364,7 +3372,7 @@ function renderOfficialCabinets() {
   dom.officialCabinetGrid.replaceChildren();
   for (const cabinet of LESTERS_ARCADE_V2_APP_SHELL.cabinets) {
     const cabinetSprite = cabinet.id === 'hard-money-heroes'
-      ? (productionCabinetSprite() ?? cabinet.desktopCabinetSprite)
+      ? (cabinet.desktopCabinetSprite ?? productionCabinetSprite())
       : cabinet.desktopCabinetSprite;
     const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'} ${cabinetSprite ? 'featured-cabinet-card' : ''}` });
     card.type = 'button';
@@ -3854,45 +3862,67 @@ function renderOfficialLeaderboards() {
   dom.officialCabinetGrid.replaceChildren();
   const displayNameFor = (wallet) => resolveDisplayName(state.profiles?.[wallet], wallet);
 
-  // --- Game switcher: leaderboards are per-game. HMH is the only playable board
-  // now; future cabinets appear as locked "SOON" tabs and become selectable once
-  // they ship. Keeps the board game-specific so each game owns its own rankings.
-  // MVP: only show playable games (Hard Money Heroes) as selectable boards. The
-  // not-yet-built cabinets get a single "coming soon" banner below instead of a
-  // row of dead locked tabs.
-  const gameBar = el('div', { className: 'leaderboard-game-tabs' });
-  const playableGames = ARCADE_GAMES.filter((game) => game.status === 'playable');
-  for (const game of playableGames) {
-    const isActive = game.id === leaderboardGameId;
+  // --- Filter bar ----------------------------------------------------------
+  // Games and time windows are filters for ONE primary leaderboard, not separate
+  // page cards. Keep them compact above the board so the ranked table remains
+  // the focus of the page.
+  const leaderboardGameFilters = LESTERS_ARCADE_V2_APP_SHELL.cabinets
+    .filter((cabinet) => ['lester-blaster', 'chikun'].includes(cabinet.gameId));
+  if (!leaderboardGameFilters.some((cabinet) => cabinet.gameId === leaderboardGameId)) {
+    leaderboardGameId = leaderboardGameFilters[0]?.gameId ?? 'lester-blaster';
+  }
+
+  const active = getLeaderboard(state, leaderboardGameId, officialLeaderboardCadence, {
+    wallet: connectedWallet,
+    displayNameFor,
+    limit: 50,
+  });
+  const activeLeaderboardCabinet = leaderboardGameFilters.find((cabinet) => cabinet.gameId === leaderboardGameId);
+  const activeLeaderboardTitle = activeLeaderboardCabinet?.title ?? getGame(leaderboardGameId).title;
+
+  const filterPanel = el('section', { className: 'official-info-card leaderboard-filter-panel leaderboard-filter-shell' });
+  const filterHead = el('div', { className: 'leaderboard-filter-head' });
+  const filterCopy = el('div', { className: 'leaderboard-filter-copy' });
+  appendText(filterCopy, 'span', 'Leaderboard Filters', 'cabinet-status-label');
+  appendText(filterCopy, 'strong', 'Choose a game and score window');
+  appendText(filterCopy, 'small', 'Hard Money Heroes and Chikun\'s Escape are score filters. Daily, weekly, monthly, yearly, and all-time are time filters for the same ranked board below.');
+  const filterSummary = el('div', { className: 'leaderboard-filter-summary' });
+  appendText(filterSummary, 'span', activeLeaderboardTitle, 'leaderboard-filter-summary-game');
+  appendText(filterSummary, 'strong', `${active.total.toLocaleString()} ranked run${active.total === 1 ? '' : 's'}`);
+  appendText(filterSummary, 'small', officialLeaderboardCadence.replace('-', ' ').toUpperCase());
+  filterHead.append(filterCopy, filterSummary);
+  filterPanel.append(filterHead);
+
+  const filterGrid = el('div', { className: 'leaderboard-filter-grid' });
+  const gameGroup = el('div', { className: 'leaderboard-filter-group leaderboard-game-filter' });
+  appendText(gameGroup, 'span', 'Game', 'leaderboard-filter-label');
+  const gameBar = el('div', { className: 'leaderboard-game-tabs leaderboard-filter-buttons' });
+  for (const cabinet of leaderboardGameFilters) {
+    const isActive = cabinet.gameId === leaderboardGameId;
     const tab = el('button', {
-      className: `pixel-button leaderboard-game-tab${isActive ? ' is-active' : ''}`,
+      className: `pixel-button leaderboard-game-tab leaderboard-game-filter leaderboard-filter-button${isActive ? ' is-active' : ''}`,
       type: 'button',
     });
-    appendText(tab, 'span', game.title, 'leaderboard-game-tab-title');
+    appendText(tab, 'span', cabinet.title, 'leaderboard-game-tab-title');
     tab.addEventListener('click', () => {
-      if (leaderboardGameId === game.id) return;
-      leaderboardGameId = game.id;
+      if (leaderboardGameId === cabinet.gameId) return;
+      leaderboardGameId = cabinet.gameId;
       leaderboardSearch = '';
+      leaderboardSortKey = 'score';
+      leaderboardSortDir = 'desc';
       renderOfficialLeaderboards();
     });
     gameBar.append(tab);
   }
-  dom.officialCabinetGrid.append(gameBar);
+  gameGroup.append(gameBar);
 
-  // Coming-soon banner for the next cabinet on the roadmap (Chikun's Escape).
-  // Its own leaderboard unlocks when the game ships.
-  const comingSoon = el('article', { className: 'official-info-card leaderboard-coming-soon-banner' });
-  appendText(comingSoon, 'span', 'Next Cabinet // Coming Soon', 'cabinet-status-label');
-  appendText(comingSoon, 'strong', "Chikun's Escape");
-  appendText(comingSoon, 'small', 'Tap to flap, dodge the forks, stack the silver. One-button flappy arcade on LitVM. Its own ranked leaderboard unlocks when the cabinet ships.');
-  dom.officialCabinetGrid.append(comingSoon);
-
-  // cadence tab bar
-  const tabBar = el('div', { className: 'leaderboard-cadence-tabs' });
+  const timeGroup = el('div', { className: 'leaderboard-filter-group leaderboard-time-filter' });
+  appendText(timeGroup, 'span', 'Time', 'leaderboard-filter-label');
+  const tabBar = el('div', { className: 'leaderboard-cadence-tabs leaderboard-filter-buttons' });
   for (const board of getAllCadenceLeaderboards(state, leaderboardGameId, { wallet: connectedWallet, displayNameFor })) {
     const tab = el('button', {
-      className: `pixel-button leaderboard-cadence-tab${board.cadence === officialLeaderboardCadence ? ' is-active' : ''}`,
-      textContent: board.cadence.toUpperCase(),
+      className: `pixel-button leaderboard-cadence-tab leaderboard-time-filter leaderboard-filter-button${board.cadence === officialLeaderboardCadence ? ' is-active' : ''}`,
+      textContent: board.cadence.replace('-', ' ').toUpperCase(),
       type: 'button',
     });
     tab.dataset.cadence = board.cadence;
@@ -3902,18 +3932,15 @@ function renderOfficialLeaderboards() {
     });
     tabBar.append(tab);
   }
-  dom.officialCabinetGrid.append(tabBar);
-
-  const active = getLeaderboard(state, leaderboardGameId, officialLeaderboardCadence, {
-    wallet: connectedWallet,
-    displayNameFor,
-    limit: 50,
-  });
+  timeGroup.append(tabBar);
+  filterGrid.append(gameGroup, timeGroup);
+  filterPanel.append(filterGrid);
+  dom.officialCabinetGrid.append(filterPanel);
 
   const board = el('article', { className: 'official-info-card leaderboard-board-card leaderboard-board-v9 hmh-visual-polish-v12' });
   const header = el('div', { className: 'leaderboard-header leaderboard-header-v9' });
   const headerCopy = el('div', { className: 'leaderboard-header-copy' });
-  appendText(headerCopy, 'h3', `🏆 ${getGame(leaderboardGameId).title.toUpperCase()}`, 'leaderboard-title');
+  appendText(headerCopy, 'h3', `🏆 ${activeLeaderboardTitle.toUpperCase()}`, 'leaderboard-title');
   appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${active.total} ranked runs`, 'cabinet-status-label');
   const headerStats = el('div', { className: 'leaderboard-header-stats' });
   const topScore = active.topEntries[0]?.score ?? 0;

@@ -1151,11 +1151,14 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
   const hardMoneyHeroesCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'hard-money-heroes');
   assert.equal(hardMoneyHeroesCabinet.playable, true);
   assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.id, 'hard-money-heroes-arcade-cabinet-rotation');
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.generatedFrom, 'Hard-Money-Heroes-ArcadeCabinet-white-bg.png');
   assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.generatedFrom.includes('C:'), false);
-  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.length >= 6, true);
-  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.every((frame) => frame.src.endsWith('.png') && frame.width > 0 && frame.height > 0), true);
+  assert.deepEqual(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.map((frame) => frame.id), ['front', 'front-right', 'right-side', 'back', 'left-side', 'front-left']);
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.length, 6);
+  assert.equal(hardMoneyHeroesCabinet.desktopCabinetSprite.frames.every((frame) => frame.src.includes('.png?v=hmh-cabinet-white-bg-v1') && frame.width > 0 && frame.height > 0), true);
   for (const frame of hardMoneyHeroesCabinet.desktopCabinetSprite.frames) {
-    const framePath = fileURLToPath(new URL(`../apps/portal/${frame.src.replace('./', '')}`, import.meta.url));
+    const cleanSrc = frame.src.split('?')[0];
+    const framePath = fileURLToPath(new URL(`../apps/portal/${cleanSrc.replace('./', '')}`, import.meta.url));
     assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
   }
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 1);
@@ -1235,7 +1238,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./main.js?v=hmh-ranked-preflight-v22'), true);
+  assert.equal(indexSource.includes('./main.js?v=cabinet-leaderboard-v20'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -1245,6 +1248,25 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(styleSource.includes('object-fit: contain'), true);
   assert.equal(styleSource.includes('@keyframes hmhCabinetFloat'), true);
   assert.equal(styleSource.includes('@keyframes arcadePulse'), true);
+});
+
+test('leaderboard page treats games and time windows as compact filters above the board', () => {
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
+  const polishSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url)), 'utf8');
+  assert.equal(mainSource.includes('leaderboard-filter-shell'), true);
+  assert.equal(mainSource.includes('chikun'), true);
+  assert.equal(mainSource.includes('leaderboard-game-filter'), true);
+  assert.equal(mainSource.includes('leaderboard-time-filter'), true);
+  assert.equal(mainSource.includes('leaderboard-coming-soon-banner'), false);
+  assert.equal(styleSource.includes('.leaderboard-filter-shell'), true);
+  assert.equal(polishSource.includes('.leaderboard-filter-shell'), true);
+});
+
+test('public HMH screens use the user-supplied cabinet sheet over the older production placeholder', () => {
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.equal(mainSource.includes('featuredCabinet?.desktopCabinetSprite ?? productionCabinetSprite()'), true);
+  assert.equal(mainSource.includes('cabinet.desktopCabinetSprite ?? productionCabinetSprite()'), true);
 });
 
 test('Lester Arcade custom MP3 playlist manifest drives a global minimal music player and Hard Money Heroes queue', async () => {
@@ -1986,7 +2008,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-compression-v19'), true);
+  assert.equal(smokeScript.includes('cabinet-leaderboard-v20'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

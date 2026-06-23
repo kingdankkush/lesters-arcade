@@ -1,7 +1,7 @@
 {
   "id": "hard-money-heroes-arcade-cabinet-rotation",
   "source": "./assets/hard-money-heroes/cabinet/source/Hard-Money-Heroes-ArcadeCabinet.png",
-  "generatedFrom": "Hard-Money-Heroes-ArcadeCabinet.png",
+  "generatedFrom": "Hard-Money-Heroes-ArcadeCabinet-white-bg.png",
   "layout": "six-view-rotation",
   "canvas": {
     "width": 512,
@@ -13,85 +13,85 @@
     {
       "id": "front",
       "label": "Front marquee cabinet",
-      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png",
+      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-00-front.png?v=hmh-cabinet-white-bg-v1",
       "width": 512,
       "height": 560,
       "durationMs": 720,
       "sourceCrop": [
-        74,
-        14,
-        472,
-        554
+        78,
+        19,
+        475,
+        552
       ]
     },
     {
       "id": "front-right",
       "label": "Front-right three-quarter cabinet",
-      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-01-front-right.png",
+      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-01-front-right.png?v=hmh-cabinet-white-bg-v1",
       "width": 512,
       "height": 560,
       "durationMs": 720,
       "sourceCrop": [
-        536,
-        14,
-        976,
-        556
+        540,
+        13,
+        1017,
+        568
       ]
     },
     {
       "id": "right-side",
       "label": "Right-side cabinet art",
-      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-02-right-side.png",
+      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-02-right-side.png?v=hmh-cabinet-white-bg-v1",
       "width": 512,
       "height": 560,
       "durationMs": 720,
       "sourceCrop": [
-        1102,
-        8,
-        1392,
-        552
+        1078,
+        11,
+        1383,
+        551
       ]
     },
     {
       "id": "back",
       "label": "Back service-panel cabinet",
-      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-03-back.png",
+      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-03-back.png?v=hmh-cabinet-white-bg-v1",
       "width": 512,
       "height": 560,
       "durationMs": 720,
       "sourceCrop": [
-        96,
-        572,
-        452,
-        1056
+        104,
+        571,
+        449,
+        1049
       ]
     },
     {
       "id": "left-side",
       "label": "Left-side cabinet art",
-      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-04-left-side.png",
+      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-04-left-side.png?v=hmh-cabinet-white-bg-v1",
       "width": 512,
       "height": 560,
       "durationMs": 720,
       "sourceCrop": [
-        568,
-        556,
-        856,
-        1054
+        571,
+        572,
+        846,
+        1049
       ]
     },
     {
       "id": "front-left",
       "label": "Front-left three-quarter cabinet",
-      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-05-front-left.png",
+      "src": "./assets/hard-money-heroes/cabinet/rotation/hmh-cabinet-rotation-05-front-left.png?v=hmh-cabinet-white-bg-v1",
       "width": 512,
       "height": 560,
       "durationMs": 720,
       "sourceCrop": [
-        930,
-        556,
-        1346,
-        1054
+        941,
+        557,
+        1357,
+        1064
       ]
     }
   ],

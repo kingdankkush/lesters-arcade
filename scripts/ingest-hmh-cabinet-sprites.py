@@ -1,9 +1,10 @@
 """Ingest the user-provided Hard Money Heroes cabinet sprite sheet.
 
-The source art is one RGB PNG with a checkerboard preview background and six cabinet
-views. This script copies the original source into the repo, keys out the checkerboard,
-normalizes each view onto a stable transparent canvas, and writes a tiny runtime
-manifest consumed by the portal UI.
+The source art is one PNG sprite sheet with six cabinet views. Newer exports ship
+with real transparency; older previews had checkerboard/white matting. This script
+copies the original source into the repo, removes any preview matting when present,
+normalizes each view onto a stable transparent canvas, and writes the runtime
+manifest consumed by every rotating Hard Money Heroes cabinet preview.
 """
 
 from __future__ import annotations
@@ -27,31 +28,47 @@ MANIFEST_MJS = CABINET_ROOT / "hmh-cabinet-sprite-manifest.mjs"
 
 CANVAS_SIZE = (512, 560)
 FRAME_PADDING = 10
+CACHE_BUST_VERSION = "hmh-cabinet-white-bg-v1"
 
-# Manual crop boxes are based on the six cabinet views in the provided sprite sheet.
-# Keeping the crop boxes explicit makes this deterministic and avoids accidentally
-# treating title text or cabinet highlights as separate sprites.
+# Manual crop boxes are based on the six cabinet views in the 1448×1086
+# transparent PNG the user supplied. Keeping the crop boxes explicit makes this
+# deterministic and avoids accidentally treating title text, weapon flashes, or
+# cabinet highlights as separate sprites.
 FRAME_CROPS = [
-    ("front", "Front marquee cabinet", (74, 14, 472, 554)),
-    ("front-right", "Front-right three-quarter cabinet", (536, 14, 976, 556)),
-    ("right-side", "Right-side cabinet art", (1102, 8, 1392, 552)),
-    ("back", "Back service-panel cabinet", (96, 572, 452, 1056)),
-    ("left-side", "Left-side cabinet art", (568, 556, 856, 1054)),
-    ("front-left", "Front-left three-quarter cabinet", (930, 556, 1346, 1054)),
+    ("front", "Front marquee cabinet", (78, 19, 475, 552)),
+    ("front-right", "Front-right three-quarter cabinet", (540, 13, 1017, 568)),
+    ("right-side", "Right-side cabinet art", (1078, 11, 1383, 551)),
+    ("back", "Back service-panel cabinet", (104, 571, 449, 1049)),
+    ("left-side", "Left-side cabinet art", (571, 572, 846, 1049)),
+    ("front-left", "Front-left three-quarter cabinet", (941, 557, 1357, 1064)),
 ]
 
 
-def checkerboard_to_alpha(image: Image.Image) -> Image.Image:
-    """Remove the high-value neutral checkerboard background from a cropped frame."""
+def preview_matte_to_alpha(image: Image.Image) -> Image.Image:
+    """Remove transparent/neutral/orange preview matting from a cropped frame."""
 
     rgba = image.convert("RGBA")
     pixels = rgba.load()
     width, height = rgba.size
+    # Source sheets use a flat preview matte. Sample the crop corners so the
+    # keyed color follows both the orange matte in the latest drop and older
+    # neutral/white previews without damaging similarly-bright cabinet details.
+    corner_colors = [
+        pixels[0, 0][:3],
+        pixels[width - 1, 0][:3],
+        pixels[0, height - 1][:3],
+        pixels[width - 1, height - 1][:3],
+    ]
+
+    def close_to_corner(red: int, green: int, blue: int) -> bool:
+        return any(abs(red - cr) <= 42 and abs(green - cg) <= 42 and abs(blue - cb) <= 42 for cr, cg, cb in corner_colors)
+
     for y in range(height):
         for x in range(width):
             red, green, blue, alpha = pixels[x, y]
             neutral_spread = max(red, green, blue) - min(red, green, blue)
-            if alpha < 8 or (max(red, green, blue) >= 205 and neutral_spread <= 32):
+            neutral_preview = max(red, green, blue) >= 205 and neutral_spread <= 32
+            if alpha < 8 or neutral_preview or close_to_corner(red, green, blue):
                 pixels[x, y] = (red, green, blue, 0)
     return rgba
 
@@ -85,8 +102,9 @@ def normalize_frame(image: Image.Image) -> Image.Image:
     return canvas
 
 
-def public_src(path: Path) -> str:
-    return "./" + path.relative_to(PUBLIC_ROOT).as_posix()
+def public_src(path: Path, *, cache_bust: bool = False) -> str:
+    src = "./" + path.relative_to(PUBLIC_ROOT).as_posix()
+    return f"{src}?v={CACHE_BUST_VERSION}" if cache_bust else src
 
 
 def frozen_js(value) -> str:
@@ -108,7 +126,7 @@ def main() -> None:
     frames = []
     for index, (frame_id, label, crop_box) in enumerate(FRAME_CROPS):
         crop = source_image.crop(crop_box)
-        keyed = checkerboard_to_alpha(crop)
+        keyed = preview_matte_to_alpha(crop)
         trimmed = trim_to_art(keyed)
         normalized = normalize_frame(trimmed)
         out_path = ROTATION_OUT / f"hmh-cabinet-rotation-{index:02d}-{frame_id}.png"
@@ -117,7 +135,7 @@ def main() -> None:
             {
                 "id": frame_id,
                 "label": label,
-                "src": public_src(out_path),
+                "src": public_src(out_path, cache_bust=True),
                 "width": normalized.width,
                 "height": normalized.height,
                 "durationMs": 720,

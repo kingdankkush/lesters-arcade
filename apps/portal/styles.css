@@ -2725,6 +2725,7 @@ body.suggest-landscape.ingame::after {
 .avatar-chip-default { background: #0a0a1e; }
 
 /* ---- Leaderboard: contained, scrollable Top-50 table + toggle filters ---- */
+.leaderboard-filter-shell { width: 100%; }
 /* Cadence filters as compact toggles across the top (not tall cards). */
 .leaderboard-cadence-tabs {
   display: flex;
@@ -2800,4 +2801,8 @@ body.suggest-landscape.ingame::after {
 .lt-combo { color: #ffb454; }
 .leaderboard-empty { padding: 14px; text-align: center; color: #8895c5; }
 
+.leaderboard-filter-shell {
+  grid-column: 1 / -1;
+  width: 100%;
+}
 
