@@ -32,6 +32,18 @@ QUAD_KIT = [
     ("death", "quadruped death collapse, fall to side and dissolve, final tumble", 8),
 ]
 
+# Playable hero kit: movement, ranged, melee, throwables, damage, death.
+HERO_KIT = [
+    ("idle", "hero idle breathing animation, weapon ready, subtle combat stance", 6),
+    ("walk", "hero walking locomotion cycle, weapon in hand, natural stride", 7),
+    ("run", "hero running sprint cycle, weapon in hand, fast readable stride", 8),
+    ("shoot", "hero shooting animation, raise gun and fire with muzzle recoil", 6),
+    ("melee", "hero melee knife slash, forward slash with clear attack arc", 6),
+    ("throw", "hero grenade throw animation, overhand toss with follow-through", 6),
+    ("hurt", "hero damage taken reaction, flinch backward, recoil stagger", 4),
+    ("death", "hero death animation, collapse and fall defeated", 8),
+]
+
 # Ranged enemy kit (adds shoot)
 RANGED_KIT = HUMANOID_KIT + [
     ("shoot", "ranged shooting animation, raise weapon and fire projectile, muzzle flash recoil", 6),
@@ -45,6 +57,10 @@ BOSS_KIT = HUMANOID_KIT + [
 
 # Map character keys to their kits
 CHAR_KITS = {
+    # South-only existing characters that need true 8-dir coverage
+    "lilly": "hero",
+    "fud-goblin": "humanoid",
+    "gas-fee-wisp": "humanoid",
     # Level 1 quadrupeds
     "coyote-pack-runner": "quadruped",
     "wild-boar": "quadruped",
@@ -119,6 +135,7 @@ async def queue_one(session, char_id, char_key, anim_name, action_desc, frame_co
             'animation_name': anim_name,
             'directions': ALL_DIRS,
             'frame_count': frame_count,
+            'confirm_cost': True,
         })
         text = ' '.join(c.text for c in result.content if hasattr(c, 'text'))
         if 'error' in text.lower():
@@ -140,13 +157,15 @@ async def main():
     headers = {'Authorization': f'Bearer {token}'}
     
     ledger = json.loads(LEDGER.read_text(encoding='utf-8')) if LEDGER.exists() else {}
+    roster_ledger_path = ROSTER_DIR / 'roster-ledger.json'
+    roster_ledger = json.loads(roster_ledger_path.read_text(encoding='utf-8')) if roster_ledger_path.exists() else {}
     
     async with streamablehttp_client(url, headers=headers) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
             
             for char_key, kit_type in CHAR_KITS.items():
-                char_id = ledger.get(char_key, {}).get('character_id')
+                char_id = ledger.get(char_key, {}).get('character_id') or roster_ledger.get(char_key, {}).get('character_id')
                 if not char_id:
                     print(f'[SKIP] {char_key}: no character_id', flush=True)
                     continue
@@ -158,7 +177,9 @@ async def main():
                 print(f'  Existing: {len(existing)} anims, {proc} processing', flush=True)
                 
                 # Pick kit
-                if kit_type == 'quadruped':
+                if kit_type == 'hero':
+                    kit = HERO_KIT
+                elif kit_type == 'quadruped':
                     kit = QUAD_KIT
                 elif kit_type == 'ranged':
                     kit = RANGED_KIT
