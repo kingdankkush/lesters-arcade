@@ -6,10 +6,12 @@ import { fileURLToPath } from 'node:url';
 import {
   HMH_AUTHORED_LEVEL_GRAMMAR,
   HMH_AUTHORED_SETPIECE_PACKS,
+  HMH_AUTHORED_SETPIECE_ZONE_PLANS,
   authoredLevelSetpieceManifestFor,
   authoredPreferredTemplateIdsForContext,
   authoredSetpiecePacksForContext,
   authoredTemplatePoolIdsForContext,
+  authoredZonePlansForContext,
 } from '../apps/portal/src/hmh-authored-setpieces.mjs';
 import { SCENE_TEMPLATES } from '../apps/portal/src/scene-templates.mjs';
 import {
@@ -99,6 +101,60 @@ test('context helper selects biome-specific authored setpieces without treating 
   assert.equal(preferred.includes('authored_desert_dune_wash'), true);
 });
 
+test('every authored setpiece has a concrete zone plan that preserves path-first map design', () => {
+  for (const pack of HMH_AUTHORED_SETPIECE_PACKS) {
+    const zonePlan = HMH_AUTHORED_SETPIECE_ZONE_PLANS[pack.id];
+    assert.ok(zonePlan, `${pack.id} has a zone plan`);
+    assert.equal(zonePlan.routeZones.length >= 1, true, `${pack.id} route zones`);
+    assert.equal(zonePlan.hardBoundaryZones.length >= 1, true, `${pack.id} hard boundaries`);
+    assert.equal(zonePlan.softDressingZones.length >= 1, true, `${pack.id} soft dressing`);
+    assert.equal(zonePlan.landmarkZones.length >= 1, true, `${pack.id} landmarks`);
+    assert.equal(zonePlan.gameplayZones.length >= 1, true, `${pack.id} gameplay`);
+    assert.equal(zonePlan.routeZones.every((zone) => zone.clearanceTiles >= 3), true, `${pack.id} keeps traversal lanes open`);
+    assert.equal(zonePlan.hardBoundaryZones.every((zone) => zone.collision === true), true, `${pack.id} hard boundaries collide`);
+    assert.equal(zonePlan.softDressingZones.every((zone) => zone.collision === false), true, `${pack.id} dressing is soft`);
+    assert.equal(zonePlan.gameplayZones.every((zone) => zone.keepsMainLaneClear === true), true, `${pack.id} gameplay does not block the main lane`);
+  }
+});
+
+test('zone plans encode lived-in town/city alignment and water/forest/desert boundary grammar', () => {
+  const town = HMH_AUTHORED_SETPIECE_ZONE_PLANS['town-mainstreet-lived-in'];
+  assert.match(town.routeZones[0].shape, /street/);
+  assert.match(town.hardBoundaryZones[0].purpose, /buildings face the street/);
+  assert.match(town.softDressingZones[0].spacing, /storefronts|corners/);
+
+  const city = authoredZonePlansForContext({
+    levelId: 'level-2-litecoin-city',
+    districtFamily: 'financial_core',
+    macroRole: 'main-spine',
+  });
+  assert.equal(city.some((plan) => plan.routeZones[0].id === 'plaza-street-grid'), true);
+
+  const creek = authoredZonePlansForContext({
+    levelId: 'level-1-crypto-wasteland',
+    districtFamily: 'country_road',
+    macroRole: 'shoulder-loop',
+    waterFeature: 'culvert-drainage',
+  });
+  assert.equal(creek.some((plan) => plan.hardBoundaryZones[0].materials.includes('deep water')), true);
+
+  const desert = authoredZonePlansForContext({
+    levelId: 'level-1-crypto-wasteland',
+    districtFamily: 'desert_approach',
+    macroRole: 'main-spine',
+  });
+  assert.equal(desert.some((plan) => plan.routeZones[0].clearanceTiles >= 5), true);
+});
+
+test('authored setpiece manifests include zone plan ids for design-preview tooling', () => {
+  const levelOne = authoredLevelSetpieceManifestFor('level-1-crypto-wasteland');
+  const levelTwo = authoredLevelSetpieceManifestFor('level-2-litecoin-city');
+  assert.equal(levelOne.zonePlanIds.includes('oasis-lake-shore'), true);
+  assert.equal(levelOne.zonePlanIds.includes('rock-wall-canyon-corridor'), true);
+  assert.equal(levelTwo.zonePlanIds.includes('city-civic-plaza-block'), true);
+  assert.equal(levelTwo.zonePlanIds.includes('harbor-industrial-service-edge'), true);
+});
+
 test('authored setpiece manifests are attached to level ids and expose runtime template contracts', () => {
   const levelOne = authoredLevelSetpieceManifestFor('level-1-crypto-wasteland');
   const levelTwo = authoredLevelSetpieceManifestFor('level-2-litecoin-city');
@@ -139,6 +195,7 @@ test('district generator exposes authored setpiece packs and preferred templates
   );
   assert.equal(desertContext.authoredSetpiecePackIds.includes('desert-wash-and-dunes'), true);
   assert.equal(desertContext.preferredTemplateIds.includes('authored_desert_dune_wash'), true);
+  assert.equal(desertContext.authoredSetpieceZonePlans.some((plan) => plan.routeZones[0].id === 'wide-sandy-wash'), true);
 
   const southPoiRow = levelOneRow + 2;
   const oasisCell = levelOne.grid.find((cell) => cell.poiId === 'oasis_lakeside' && cell.dy === southPoiRow);

@@ -417,3 +417,21 @@ test('generateRoadNetwork exposes authored route kinds for spine, hub, shoulder,
   assert.equal(routeKinds.has('poi-connector'), true);
   assert.equal(routeKinds.has('poi-spur'), true);
 });
+
+test('districtTemplateContextForCell exposes authored zone plans for future visual-preview tooling', () => {
+  const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175, { layout: 'level1-authored' });
+  const row = Math.floor(macroCellsY / 2);
+  const ghostTownCell = grid.find((cell) => cell.districtFamily === 'ghost_town' && cell.dy === row);
+  assert.ok(ghostTownCell, 'found ghost-town spine cell');
+
+  const context = districtTemplateContextForCell(
+    ghostTownCell.dx * DISTRICT_CELL + 2,
+    ghostTownCell.dy * DISTRICT_CELL + 2,
+    grid,
+    macroCellsX,
+  );
+
+  assert.equal(context.authoredSetpiecePackIds.includes('town-mainstreet-lived-in'), true);
+  assert.equal(context.authoredSetpieceZonePlans.some((plan) => plan.routeZones[0].id === 'main-street-sidewalk'), true);
+  assert.equal(context.authoredSetpieceZonePlans.some((plan) => /buildings face the street/.test(plan.hardBoundaryZones[0].purpose)), true);
+});

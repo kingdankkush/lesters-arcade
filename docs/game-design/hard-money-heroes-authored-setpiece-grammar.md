@@ -49,6 +49,21 @@ Each pack defines:
 - gameplay hooks
 - runtime scene-template ids
 - preferred template ids for generator biasing
+- concrete zone plans for future visual-preview tooling
+
+## Zone plans
+
+Each setpiece now carries a concrete zone plan. The zone plan is not a full level editor; it is the authored contract that tells future rendering/preview code how to assemble the space from small tiles and assets.
+
+Every zone plan includes:
+
+- `routeZones`: the player-readable path first, with explicit clearance tiles.
+- `hardBoundaryZones`: collision boundaries such as tree walls, buildings, rock walls, water edges, fences, medians, warehouse fronts, and cliffs.
+- `softDressingZones`: non-blocking clustered decoration such as flowers, reeds, lily pads, cacti, benches, trash cans, mailboxes, cones, crates, and curb clutter.
+- `landmarkZones`: the memorable visual anchor for orientation.
+- `gameplayZones`: ambush pockets, side caches, chokepoints, miniboss rings, kite loops, and reward spaces that must keep the main lane clear.
+
+This makes the design specific enough to preview or generate original assets later while still preserving the reference-only image policy.
 
 ## Runtime integration
 

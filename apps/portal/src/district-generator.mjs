@@ -13,6 +13,7 @@ import {
   authoredPreferredTemplateIdsForContext,
   authoredSetpiecePacksForContext,
   authoredTemplatePoolIdsForContext,
+  authoredZonePlansForContext,
 } from './hmh-authored-setpieces.mjs';
 
 // Default biomeAt function - overridden by tests or main.js
@@ -1085,6 +1086,7 @@ export function districtTemplateContextForCell(cellX, cellY, districtGrid, macro
     authoredSetpiecePackIds: districtCell.authoredSetpiecePackIds ?? [],
     authoredTemplatePoolIds: districtCell.authoredTemplatePoolIds ?? [],
     authoredPreferredTemplateIds: districtCell.authoredPreferredTemplateIds ?? [],
+    authoredSetpieceZonePlans: districtCell.authoredSetpieceZonePlans ?? [],
     landmarkRole: districtCell.landmarkRole,
     landmarkTemplateId: districtCell.landmarkTemplateId,
     forceTemplateId: activeSetPiece?.distance === 0 ? activeSetPiece.templateId : null,
@@ -1153,6 +1155,7 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}
       const authoredSetpiecePacks = authoredSetpiecePacksForContext(authoredSetpieceContext);
       const authoredTemplatePoolIds = authoredTemplatePoolIdsForContext(authoredSetpieceContext);
       const authoredPreferredTemplateIds = authoredPreferredTemplateIdsForContext(authoredSetpieceContext);
+      const authoredSetpieceZonePlans = authoredZonePlansForContext(authoredSetpieceContext);
       const poiAnchors = layout === 'level1-authored' ? levelOnePoiSetPieceAnchors(flowProfile, dx) : [];
       const setPieceAnchors = [...poiAnchors, ...(belt ? beltSetPieceAnchors(belt, dx, dy) : [])];
       const primarySetPiece = setPieceAnchors[0] ?? null;
@@ -1177,6 +1180,7 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}
         authoredSetpiecePacks,
         authoredTemplatePoolIds,
         authoredPreferredTemplateIds,
+        authoredSetpieceZonePlans,
         loopCount: belt?.loopCount ?? 1,
         coverProfile: belt?.coverProfile ?? 'mixed',
         templatePoolIds: mergeTemplatePools(belt?.templatePoolIds ?? chosen.templates, flowProfile.poiTemplatePoolIds ?? [], authoredTemplatePoolIds),

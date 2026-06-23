@@ -10,6 +10,8 @@ const LEVEL_3_ID = 'level-3-the-getaway';
 
 const freezeArray = (items) => Object.freeze(items.map((item) => Object.freeze(item)));
 const unique = (...lists) => Object.freeze(Array.from(new Set(lists.flat().filter(Boolean))));
+const compact = (items) => Object.freeze(items.filter(Boolean));
+
 
 export const HMH_AUTHORED_LEVEL_GRAMMAR = Object.freeze({
   referencePolicy: 'Reference images guide composition only; do not ship the provided reference files as level art.',
@@ -208,6 +210,80 @@ export const HMH_AUTHORED_SETPIECE_PACKS = freezeArray([
 
 const PACKS_BY_ID = Object.freeze(Object.fromEntries(HMH_AUTHORED_SETPIECE_PACKS.map((pack) => [pack.id, pack])));
 
+
+export const HMH_AUTHORED_SETPIECE_ZONE_PLANS = Object.freeze({
+  'forest-trail-boundary': Object.freeze({
+    routeZones: Object.freeze([{ id: 'curving-forest-trail', shape: 's-curve', clearanceTiles: 4, surfaces: ['dirt path', 'leaf litter'], traversalRead: 'warm dirt lane against green boundary mass' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'north-and-south', materials: ['dense tree line', 'fallen logs', 'boulders'], collision: true, purpose: 'make the forest edge read as the wall, not random trees' }]),
+    softDressingZones: Object.freeze([{ placement: 'inside-edge-clusters', materials: ['ferns', 'flowers', 'small rocks', 'stumps'], collision: false, spacing: 'clustered, never evenly scattered' }]),
+    landmarkZones: Object.freeze([{ anchor: 'trail bend', silhouettes: ['old tree', 'signpost', 'cave-mouth read'], sightline: 'visible before the bend' }]),
+    gameplayZones: Object.freeze([{ role: 'ambush-pocket', placement: 'off the outside of the curve', keepsMainLaneClear: true }, { role: 'pickup-nook', placement: 'behind soft foliage, not behind hard tree walls', keepsMainLaneClear: true }]),
+  }),
+  'creek-ford-crossing': Object.freeze({
+    routeZones: Object.freeze([{ id: 'ford-or-bridge-crossing', shape: 'narrow-crossing-plus-bank-loop', clearanceTiles: 3, surfaces: ['wood bridge', 'stepping stones', 'mud bank'], traversalRead: 'the bridge/ford is the only intentional crossing' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'waterline', materials: ['deep water', 'rock bank', 'dense reeds', 'bridge rails'], collision: true, purpose: 'separate passable shallow water from hard water boundary' }]),
+    softDressingZones: Object.freeze([{ placement: 'shoreline-clumps', materials: ['reeds', 'lily pads', 'ripples', 'driftwood'], collision: false, spacing: 'denser near water, sparse on the path' }]),
+    landmarkZones: Object.freeze([{ anchor: 'crossing center', silhouettes: ['wood bridge', 'culvert mouth', 'oasis glint'], sightline: 'water shine leads the eye to the crossing' }]),
+    gameplayZones: Object.freeze([{ role: 'bridge-chokepoint', placement: 'center crossing', keepsMainLaneClear: true }, { role: 'bank-reward-pocket', placement: 'dry bank outside enemy line', keepsMainLaneClear: true }]),
+  }),
+  'oasis-lake-shore': Object.freeze({
+    routeZones: Object.freeze([{ id: 'dry-bank-loop', shape: 'loop-around-water', clearanceTiles: 4, surfaces: ['sand', 'wet sand', 'grass fringe'], traversalRead: 'dry bank clearly loops around the deep pool' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'pool-center-and-cliff-back', materials: ['deep water', 'cliff shelf', 'boulder ring'], collision: true, purpose: 'turn the oasis into a readable arena boundary' }]),
+    softDressingZones: Object.freeze([{ placement: 'shoreline-and-sandbar', materials: ['reeds', 'small flowers', 'shoreline rocks', 'palms/cacti equivalent'], collision: false, spacing: 'cluster at water edge and leave kite lane open' }]),
+    landmarkZones: Object.freeze([{ anchor: 'pool center', silhouettes: ['oasis pool', 'water shrine', 'sandbar arena'], sightline: 'blue water contrast is visible from approach' }]),
+    gameplayZones: Object.freeze([{ role: 'miniboss-ring', placement: 'dry-bank loop', keepsMainLaneClear: true }, { role: 'regen-cache', placement: 'quiet sandbar pocket', keepsMainLaneClear: true }]),
+  }),
+  'desert-wash-and-dunes': Object.freeze({
+    routeZones: Object.freeze([{ id: 'wide-sandy-wash', shape: 'wide-main-lane', clearanceTiles: 5, surfaces: ['sand', 'cracked earth', 'gravel scatter'], traversalRead: 'wide pale wash is always the safest direction of travel' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'outer-wash', materials: ['canyon cliff', 'large boulders', 'dry creek lip'], collision: true, purpose: 'frame the desert without filling the lane with rocks' }]),
+    softDressingZones: Object.freeze([{ placement: 'dune-shadow-clusters', materials: ['cacti', 'dead bushes', 'tumbleweed', 'bones'], collision: false, spacing: 'small clusters near boundaries and salvage pockets' }]),
+    landmarkZones: Object.freeze([{ anchor: 'dune fork', silhouettes: ['salvage flare', 'gas-station ruin', 'dune fork'], sightline: 'roadside object breaks the horizon' }]),
+    gameplayZones: Object.freeze([{ role: 'long-sightline-fight', placement: 'center wash', keepsMainLaneClear: true }, { role: 'salvage-side-pocket', placement: 'behind dune shadow, not on critical path', keepsMainLaneClear: true }]),
+  }),
+  'rock-wall-canyon-corridor': Object.freeze({
+    routeZones: Object.freeze([{ id: 'bent-canyon-corridor', shape: 'angled-corridor-with-corners', clearanceTiles: 4, surfaces: ['rocky ground', 'sand', 'cliff shadow'], traversalRead: 'corridor bends are intentional combat beats' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'both-sides', materials: ['rock wall', 'mesa shelf', 'boulder choke', 'cave mouth'], collision: true, purpose: 'solid wall pieces create corners and chokepoints' }]),
+    softDressingZones: Object.freeze([{ placement: 'base-of-wall', materials: ['pebbles', 'dry shrubs', 'small cactus', 'dust plumes'], collision: false, spacing: 'hug the wall base, do not dot the lane' }]),
+    landmarkZones: Object.freeze([{ anchor: 'ridge-turn', silhouettes: ['mesa overlook', 'canyon gate', 'sniper ridge'], sightline: 'ridge/cave silhouette marks danger ahead' }]),
+    gameplayZones: Object.freeze([{ role: 'chokepoint-fight', placement: 'narrow bend', keepsMainLaneClear: true }, { role: 'side-alcove-reward', placement: 'short dead-end off bend', keepsMainLaneClear: true }]),
+  }),
+  'marsh-boardwalk-pocket': Object.freeze({
+    routeZones: Object.freeze([{ id: 'raised-boardwalk', shape: 'zigzag-plank-lane', clearanceTiles: 3, surfaces: ['wood planks', 'mud island'], traversalRead: 'planks and dry islands are the safe path through wet ground' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'wetland-bands', materials: ['deep marsh', 'fallen logs', 'reed wall'], collision: true, purpose: 'marsh reads as shaped wetland, not random puddles' }]),
+    softDressingZones: Object.freeze([{ placement: 'marsh-edge-clusters', materials: ['lily pads', 'reeds', 'moss clumps', 'flowers'], collision: false, spacing: 'dense in water, sparse on boardwalk' }]),
+    landmarkZones: Object.freeze([{ anchor: 'boardwalk bend', silhouettes: ['sunken crate', 'glowing marsh pool', 'dry island'], sightline: 'wetland object marks the turn' }]),
+    gameplayZones: Object.freeze([{ role: 'slow-mud-hazard', placement: 'off-boardwalk edge', keepsMainLaneClear: true }, { role: 'dry-island-cache', placement: 'small island past bend', keepsMainLaneClear: true }]),
+  }),
+  'town-mainstreet-lived-in': Object.freeze({
+    routeZones: Object.freeze([{ id: 'main-street-sidewalk', shape: 'street-plus-sidewalk-corridor', clearanceTiles: 4, surfaces: ['dusty pavement', 'sidewalk', 'crosswalk'], traversalRead: 'road and sidewalk form the readable combat lane' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'storefront-frontage', materials: ['storefronts', 'fences', 'parked wagons/cars equivalent', 'wall corners'], collision: true, purpose: 'buildings face the street and define the block' }]),
+    softDressingZones: Object.freeze([{ placement: 'curb-and-frontage', materials: ['trash cans', 'benches', 'mailboxes', 'crates', 'signs'], collision: false, spacing: 'small lived-in clusters along storefronts and corners' }]),
+    landmarkZones: Object.freeze([{ anchor: 'street-square', silhouettes: ['bank/vault ruin', 'saloon/storefront', 'trading post sign'], sightline: 'major storefront faces the lane' }]),
+    gameplayZones: Object.freeze([{ role: 'street-duel-lane', placement: 'open road', keepsMainLaneClear: true }, { role: 'alley-cut-through', placement: 'between building fronts', keepsMainLaneClear: true }]),
+  }),
+  'city-civic-plaza-block': Object.freeze({
+    routeZones: Object.freeze([{ id: 'plaza-street-grid', shape: 'street-grid-around-plaza', clearanceTiles: 5, surfaces: ['asphalt', 'sidewalk', 'plaza tile'], traversalRead: 'grid streets and plaza tile orient the player' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'city-block-facades', materials: ['civic building facade', 'concrete medians', 'statue/fountain base', 'street walls'], collision: true, purpose: 'predictable city blocks instead of prop scatter' }]),
+    softDressingZones: Object.freeze([{ placement: 'sidewalk-furniture', materials: ['benches', 'trash cans', 'hydrants', 'street lamps', 'mailboxes'], collision: false, spacing: 'aligned to sidewalk rhythm' }]),
+    landmarkZones: Object.freeze([{ anchor: 'plaza-center', silhouettes: ['LTC monument', 'city hall/bank facade', 'fountain plaza'], sightline: 'center monument is visible from each approach' }]),
+    gameplayZones: Object.freeze([{ role: 'circular-combat-lane', placement: 'around fountain/monument', keepsMainLaneClear: true }, { role: 'hub-orientation', placement: 'plaza approach roads', keepsMainLaneClear: true }]),
+  }),
+  'residential-neighborhood-loop': Object.freeze({
+    routeZones: Object.freeze([{ id: 'driveway-sidewalk-loop', shape: 'looping-neighborhood-lane', clearanceTiles: 4, surfaces: ['sidewalk', 'driveway', 'yard dirt'], traversalRead: 'sidewalk and driveway loop communicates safe traversal' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'yard-fronts', materials: ['hedge wall', 'fence run', 'house frontage', 'gate'], collision: true, purpose: 'yards and homes carve loops without random fences' }]),
+    softDressingZones: Object.freeze([{ placement: 'yard-and-curb-clusters', materials: ['mailboxes', 'flower beds', 'trash cans', 'small trees', 'benches'], collision: false, spacing: 'lived-in curb cadence' }]),
+    landmarkZones: Object.freeze([{ anchor: 'cul-de-sac-or-park', silhouettes: ['cul-de-sac', 'park pocket', 'gated driveway'], sightline: 'neighborhood landmark marks the loop return' }]),
+    gameplayZones: Object.freeze([{ role: 'kite-loop', placement: 'sidewalk/driveway ring', keepsMainLaneClear: true }, { role: 'yard-pickup', placement: 'front yard pocket', keepsMainLaneClear: true }]),
+  }),
+  'harbor-industrial-service-edge': Object.freeze({
+    routeZones: Object.freeze([{ id: 'dock-service-road', shape: 'dock-lane-plus-service-road', clearanceTiles: 4, surfaces: ['dock planks', 'wet concrete', 'asphalt'], traversalRead: 'dock/service road keeps the player away from hard water edge' }]),
+    hardBoundaryZones: Object.freeze([{ edge: 'water-and-warehouse', materials: ['water edge', 'fence line', 'crate/container rows', 'warehouse wall'], collision: true, purpose: 'water and industrial rows create lanes' }]),
+    softDressingZones: Object.freeze([{ placement: 'service-edge-clutter', materials: ['trash cans', 'cones', 'crates', 'cables', 'lamps'], collision: false, spacing: 'worksite clusters, not field scatter' }]),
+    landmarkZones: Object.freeze([{ anchor: 'service-gate', silhouettes: ['dock bridge', 'service gate', 'warehouse frontage'], sightline: 'gate/warehouse facade marks the objective edge' }]),
+    gameplayZones: Object.freeze([{ role: 'crate-cover-fight', placement: 'service road beside crates', keepsMainLaneClear: true }, { role: 'water-edge-risk', placement: 'dock edge with clamp boundary', keepsMainLaneClear: true }]),
+  }),
+});
+
 function listMatches(list, value) {
   return !list?.length || (value != null && list.includes(value));
 }
@@ -220,6 +296,10 @@ function poiListMatches(list, value) {
 
 export function authoredSetpiecePackById(id) {
   return PACKS_BY_ID[id] ?? null;
+}
+
+export function authoredSetpieceZonePlanById(id) {
+  return HMH_AUTHORED_SETPIECE_ZONE_PLANS[id] ?? null;
 }
 
 export function authoredSetpiecePacksForContext({
@@ -246,6 +326,10 @@ export function authoredPreferredTemplateIdsForContext(context = {}) {
   return unique(...authoredSetpiecePacksForContext(context).map((pack) => pack.preferredTemplateIds));
 }
 
+export function authoredZonePlansForContext(context = {}) {
+  return compact(authoredSetpiecePacksForContext(context).map((pack) => authoredSetpieceZonePlanById(pack.id)));
+}
+
 export function authoredLevelSetpieceManifestFor(levelId = LEVEL_1_ID) {
   const packs = HMH_AUTHORED_SETPIECE_PACKS.filter((pack) => pack.levelIds.includes(levelId));
   return Object.freeze({
@@ -254,6 +338,7 @@ export function authoredLevelSetpieceManifestFor(levelId = LEVEL_1_ID) {
     buildOrder: HMH_AUTHORED_LEVEL_GRAMMAR.buildOrder,
     packIds: Object.freeze(packs.map((pack) => pack.id)),
     templateIds: unique(...packs.map((pack) => pack.templateIds)),
+    zonePlanIds: compact(packs.map((pack) => HMH_AUTHORED_SETPIECE_ZONE_PLANS[pack.id] ? pack.id : null)),
     requiredLayerKeys: Object.freeze(Object.keys(HMH_AUTHORED_LEVEL_GRAMMAR.layers)),
     designContract: Object.freeze([
       'paths remain open before decoration',
