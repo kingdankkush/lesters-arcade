@@ -238,5 +238,41 @@
         "raw": "error: 404: Character rotation image not found for direction: south"
       }
     }
+  },
+  "rug-rat": {
+    "character_id": "791b7a1e-6e95-4feb-b094-cbf01baa6fea",
+    "animations": {}
+  },
+  "plaza-warden": {
+    "character_id": "c69c76d7-bd1c-4336-9253-6c33bd69e0c5",
+    "animations": {}
+  },
+  "bridge-exploiter": {
+    "character_id": "334e34c1-366c-4628-9500-256987ccfa84",
+    "animations": {}
+  },
+  "the-obfuscator": {
+    "character_id": "39e9c54b-e30e-4007-a490-863aef3adef9",
+    "animations": {}
+  },
+  "bitcoin-maximalist-riot-cop": {
+    "character_id": "7cdfd405-491c-49d7-8dd5-b27ef518b8e5",
+    "animations": {}
+  },
+  "dao-lobbyist": {
+    "character_id": "83f6fc50-a2b0-4925-8198-28e544105a69",
+    "animations": {}
+  },
+  "influencer-camera-drone": {
+    "character_id": "fb7ee889-51e7-4eb2-a897-2aeaef6e20dc",
+    "animations": {}
+  },
+  "nft-valet": {
+    "character_id": "eddc9f33-7ebb-42c2-8436-9f3e043612f3",
+    "animations": {}
+  },
+  "stablecoin-socialite": {
+    "character_id": "75206fcf-6c8c-4230-8283-fab97d19a8c9",
+    "animations": {}
   }
 }
