@@ -53,6 +53,14 @@ ROSTER = {
     # New playable heroes (created via pixellab-new-heroes-pipeline.py).
     "lit-commando": ("c96d19d1-8958-4fcd-b517-9dfded9e0051", "hero"),
     "lit-valkyrie": ("74b5efc0-e7d8-4400-85f5-9db85ef05db9", "hero"),
+    # Enemies with existing animation kits on PixelLab (harvest, don't regenerate).
+    "paper-hand": ("6eae0151-464f-49c6-846c-09c964d87408", "enemy"),
+    "honeypot-turret": ("527b7c1a-1b10-4d10-9474-98c06d7b473e", "enemy"),
+    "slippage-skater": ("591e81cc-fe62-49a2-a6be-dc9fa53b9378", "enemy"),
+    "phishing-angler": ("2d8a546e-7a9c-4d60-a73a-54916604695f", "enemy"),
+    "mev-reaper": ("741efea8-2306-4d06-9dfe-0d60d8b46dca", "enemy"),
+    "sybil-drone": ("9ff63a91-4e1c-4704-9db4-e8b03ce8ce9e", "enemy"),
+    "liquidation-cascade-golem": ("5c858dfd-fc10-4c1f-8da9-ee3bf596cd1d", "enemy"),
 }
 
 DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
