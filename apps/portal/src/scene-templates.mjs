@@ -509,6 +509,127 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
+  authored_forest_trail_edge: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'authored_forest_trail_edge', biomes: ['forest', 'grass'], groundTheme: 'grass', weight: 0.36,
+    slots: [
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.72 }), place: 'pathEdge', spacing: 2, count: 5 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'anchor', count: 1 },
+      { ...A('nature/boulder', 'rock', { radius: 0.55 }), place: 'scatter', count: 2 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  authored_creek_shallow_ford: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'authored_creek_shallow_ford', biomes: ['forest', 'water', 'grass'], groundTheme: 'grass', weight: 0.34,
+    slots: [
+      { ...A('construct/river-bend', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('crypto/shoreline-water-edge', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  authored_oasis_lake_shore: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'authored_oasis_lake_shore', biomes: ['sand', 'water', 'grass'], groundTheme: 'sand', weight: 0.36,
+    slots: [
+      { ...A('crypto/shoreline-water-edge', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('nature/fountain', 'bigprop', { radius: 0.68 }), place: 'anchor', count: 1 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.58 }), place: 'scatter', count: 2 },
+      { ...A('crypto/desert-cactus', 'tree', { radius: 0.5 }), place: 'scatter', count: 1 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  authored_desert_dune_wash: Object.freeze({
+    archetypeTags: ['wilderness'],
+    id: 'authored_desert_dune_wash', biomes: ['desert', 'rocky'], groundTheme: 'sand', weight: 0.34,
+    slots: [
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.58 }), place: 'pathEdge', spacing: 3, count: 3 },
+      { ...A('crypto/desert-cactus', 'tree', { radius: 0.5 }), place: 'scatter', count: 2 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('street/bus-stop-sign', 'sign', { radius: 0.4 }), place: 'anchor', count: 1 },
+    ],
+  }),
+
+  authored_rock_wall_corridor: Object.freeze({
+    archetypeTags: ['wilderness'],
+    id: 'authored_rock_wall_corridor', biomes: ['desert', 'rocky'], groundTheme: 'sand', weight: 0.34,
+    slots: [
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.82 }), place: 'pathEdge', spacing: 1, count: 6 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.62 }), place: 'scatter', count: 3 },
+      { ...A('crypto/desert-cactus', 'tree', { radius: 0.5 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  authored_marsh_boardwalk: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'authored_marsh_boardwalk', biomes: ['water', 'forest', 'grass'], groundTheme: 'grass', weight: 0.32,
+    slots: [
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('construct/river-bend', 'water-strip', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 2 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  authored_town_mainstreet_lived_in: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'authored_town_mainstreet_lived_in', biomes: ['town', 'road'], groundTheme: 'pavement', weight: 0.36,
+    slots: [
+      { ...A('crypto/ghost-saloon-front', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.72 }), place: 'pathEdge', spacing: 4, count: 2 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 3 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 2 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+      { ...A('interior/wooden-crate', 'crate', { radius: 0.35 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  authored_city_civic_block: Object.freeze({
+    archetypeTags: ['city_core', 'park'],
+    id: 'authored_city_civic_block', biomes: ['town', 'pavement'], groundTheme: 'pavement', weight: 0.36,
+    slots: [
+      { ...A('nature/fountain', 'bigprop', { radius: 0.7 }), place: 'anchor', count: 1 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('construct/brick-wall-segment', 'wall', { radius: 0.4 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 2 },
+      { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('street/fire-hydrant', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  authored_residential_neighborhood: Object.freeze({
+    archetypeTags: ['suburban', 'park'],
+    id: 'authored_residential_neighborhood', biomes: ['town', 'grass'], groundTheme: 'grass', weight: 0.34,
+    slots: [
+      { ...A('crypto/residential-hedge-run', 'fence', { radius: 0.38 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('construct/fence-gate', 'fence', { radius: 0.32 }), place: 'anchor', count: 1 },
+      { ...A('street/mailbox', 'smallprop', { radius: 0.3 }), place: 'pathEdge', spacing: 4, count: 2 },
+      { ...A('nature/oak-tree', 'tree', { radius: 0.6 }), place: 'scatter', count: 1 },
+      { ...A('nature/flower-patch', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 3 },
+      { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  authored_harbor_service_edge: Object.freeze({
+    archetypeTags: ['industrial', 'city_core'],
+    id: 'authored_harbor_service_edge', biomes: ['pavement', 'water', 'road'], groundTheme: 'pavement', weight: 0.34,
+    slots: [
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 4 },
+      { ...A('crypto/shoreline-water-edge', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('crypto/industrial-warehouse-facade', 'building', { radius: 0.8 }), place: 'anchor', count: 1 },
+      { ...A('interior/stacked-boxes', 'crate', { radius: 0.4 }), place: 'scatter', count: 3 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'scatter', count: 2 },
+      { ...A('street/traffic-cone', 'smallprop', { radius: 0.25 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
   crypto_hashrate_camp: Object.freeze({
     archetypeTags: ['wilderness', 'industrial'],
     id: 'crypto_hashrate_camp', biomes: ['desert', 'rocky', 'road'], groundTheme: 'sand', weight: 0.34,

@@ -1,3 +1,8 @@
+import {
+  HMH_AUTHORED_LEVEL_GRAMMAR,
+  authoredLevelSetpieceManifestFor,
+} from './hmh-authored-setpieces.mjs';
+
 const LEVEL_1_ID = 'level-1-crypto-wasteland';
 const LEVEL_2_ID = 'level-2-litecoin-city';
 const LEVEL_3_ID = 'level-3-the-getaway';
@@ -290,6 +295,8 @@ export const HMH_CAMPAIGN_LEVELS = Object.freeze([
       authoredMacro: Object.freeze(['district graph', 'roads', 'rivers', 'hub signage', 'POI arenas', 'city seam exit']),
       proceduralMicro: Object.freeze(['spawn director', 'minor prop scatter', 'pickup routing', 'elite composition', 'filler between landmarks']),
     }),
+    authoredLevelGrammar: HMH_AUTHORED_LEVEL_GRAMMAR,
+    authoredSetpieceSystem: authoredLevelSetpieceManifestFor(LEVEL_1_ID),
     pois: HMH_LEVEL_ONE_WASTELAND_POIS,
     enemyRoster: HMH_LEVEL_ONE_WASTELAND_ENEMIES,
     vfxAndInteractivity: LEVEL_1_VFX_AND_INTERACTIVITY,
@@ -334,6 +341,8 @@ export const HMH_CAMPAIGN_LEVELS = Object.freeze([
       'Luxury neighborhoods contrast with the financial core through cleaner tilesets, water features, and richer vegetation pockets.',
       'Interactive signage, gates, service elevators, and plaza chokepoints become the authored movement puzzle pieces.',
     ]),
+    authoredLevelGrammar: HMH_AUTHORED_LEVEL_GRAMMAR,
+    authoredSetpieceSystem: authoredLevelSetpieceManifestFor(LEVEL_2_ID),
     missingAssetFocus: Object.freeze([
       'urban sidewalk corners and medians',
       'streetlight / traffic signal kits',

@@ -35,6 +35,9 @@ test('level 1 metadata locks the authored macro model and canon reconciliation',
   assert.equal(level.canonReconciliation.codeWatchlist.includes('arcade-core Level 1 display copy'), true);
   assert.deepEqual(HMH_LEVEL_ONE_WASTELAND_MACRO_LAYOUT.mainSpine, ['desert-approach', 'ghost-town', 'country-road', 'residential-edge', 'inner-city-threshold']);
   assert.equal(HMH_LEVEL_ONE_WASTELAND_MACRO_LAYOUT.citySeam.destinationLevelId, 'level-2-litecoin-city');
+  assert.equal(level.authoredSetpieceSystem.packIds.includes('desert-wash-and-dunes'), true);
+  assert.equal(level.authoredSetpieceSystem.packIds.includes('town-mainstreet-lived-in'), true);
+  assert.equal(level.authoredLevelGrammar.layers.route.minClearTiles >= 4, true);
 });
 
 test('level 1 POIs define telegraphed optional risk-reward arenas', () => {

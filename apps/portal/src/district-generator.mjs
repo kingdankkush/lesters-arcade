@@ -9,6 +9,11 @@
 
 import { SCENE_CELL, SCENE_TEMPLATES, buildScene, groundThemeForCell } from './scene-templates.mjs';
 import { biomeAt } from './biome-model.mjs';
+import {
+  authoredPreferredTemplateIdsForContext,
+  authoredSetpiecePacksForContext,
+  authoredTemplatePoolIdsForContext,
+} from './hmh-authored-setpieces.mjs';
 
 // Default biomeAt function - overridden by tests or main.js
 let biomeAtImpl = biomeAt;
@@ -417,6 +422,12 @@ function roadTypeFromKey(key) {
 function beltByMacroRatio(belts, dx, macroCellsX) {
   const ratio = macroCellsX <= 1 ? 1 : dx / (macroCellsX - 1);
   return belts.find((belt) => ratio <= belt.ratioMax) ?? belts[belts.length - 1];
+}
+
+function levelIdForAuthoredLayout(layout) {
+  if (layout === 'level2-authored') return 'level-2-litecoin-city';
+  if (layout === 'level1-authored') return 'level-1-crypto-wasteland';
+  return null;
 }
 
 function authoredBeltForMacroCell(layout, dx, macroCellsX) {
@@ -946,6 +957,7 @@ function preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSc
   const orientedSpine = districtCell.pathOrientation === 'vertical' ? onCenterCol : onCenterRow;
   const seamTemplateIds = seamTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY);
   const poiPreferenceIds = districtCell.macroRole === 'poi-spur' ? (districtCell.poiTemplatePoolIds ?? []) : [];
+  const authoredPreferenceIds = districtCell.authoredPreferredTemplateIds ?? [];
 
   let localPreferenceIds = [];
   switch (districtCell.districtFamily) {
@@ -991,7 +1003,7 @@ function preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSc
       break;
   }
 
-  return mergeTemplatePools(poiPreferenceIds, localPreferenceIds, seamTemplateIds);
+  return mergeTemplatePools(poiPreferenceIds, localPreferenceIds, seamTemplateIds, authoredPreferenceIds);
 }
 
 function buildAuthoredDistrictProfile(belt, biome) {
@@ -1070,6 +1082,9 @@ export function districtTemplateContextForCell(cellX, cellY, districtGrid, macro
     sightlineCue: districtCell.sightlineCue,
     waterFeature: districtCell.waterFeature,
     restBeat: districtCell.restBeat,
+    authoredSetpiecePackIds: districtCell.authoredSetpiecePackIds ?? [],
+    authoredTemplatePoolIds: districtCell.authoredTemplatePoolIds ?? [],
+    authoredPreferredTemplateIds: districtCell.authoredPreferredTemplateIds ?? [],
     landmarkRole: districtCell.landmarkRole,
     landmarkTemplateId: districtCell.landmarkTemplateId,
     forceTemplateId: activeSetPiece?.distance === 0 ? activeSetPiece.templateId : null,
@@ -1128,6 +1143,16 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}
         isCrossroadsHub: false,
         isCitySeam: false,
       };
+      const authoredSetpieceContext = {
+        levelId: levelIdForAuthoredLayout(layout),
+        districtFamily: belt?.familyId ?? chosen.id,
+        poiId: flowProfile.poiId,
+        macroRole: flowProfile.macroRole,
+        waterFeature: flowProfile.waterFeature,
+      };
+      const authoredSetpiecePacks = authoredSetpiecePacksForContext(authoredSetpieceContext);
+      const authoredTemplatePoolIds = authoredTemplatePoolIdsForContext(authoredSetpieceContext);
+      const authoredPreferredTemplateIds = authoredPreferredTemplateIdsForContext(authoredSetpieceContext);
       const poiAnchors = layout === 'level1-authored' ? levelOnePoiSetPieceAnchors(flowProfile, dx) : [];
       const setPieceAnchors = [...poiAnchors, ...(belt ? beltSetPieceAnchors(belt, dx, dy) : [])];
       const primarySetPiece = setPieceAnchors[0] ?? null;
@@ -1148,9 +1173,13 @@ export function generateDistrictGrid(seed, worldWidth, worldHeight, options = {}
         landmarkInfluenceRadius: primarySetPiece?.influenceRadius ?? belt?.landmarkInfluenceRadius ?? 1,
         landmarkAnchorCell: primarySetPiece ? { localX: primarySetPiece.localX, localY: primarySetPiece.localY } : (belt ? beltLandmarkAnchorCell(belt, dx, dy) : { localX: 2, localY: 2 }),
         setPieceAnchors,
+        authoredSetpiecePackIds: Object.freeze(authoredSetpiecePacks.map((pack) => pack.id)),
+        authoredSetpiecePacks,
+        authoredTemplatePoolIds,
+        authoredPreferredTemplateIds,
         loopCount: belt?.loopCount ?? 1,
         coverProfile: belt?.coverProfile ?? 'mixed',
-        templatePoolIds: mergeTemplatePools(belt?.templatePoolIds ?? chosen.templates, flowProfile.poiTemplatePoolIds ?? []),
+        templatePoolIds: mergeTemplatePools(belt?.templatePoolIds ?? chosen.templates, flowProfile.poiTemplatePoolIds ?? [], authoredTemplatePoolIds),
         archetype: belt?.archetype ?? chosen.id,
         pathOrientation: belt ? beltPathOrientation(belt, dx, dy) : (((dx + dy) % 2 === 0) ? 'horizontal' : 'vertical'),
         laneOffset: flowProfile.laneOffset,
