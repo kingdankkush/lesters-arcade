@@ -36,6 +36,12 @@
       },
       "attack": {
         "queued": true
+      },
+      "hit": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
       }
     }
   },
@@ -46,6 +52,18 @@
         "queued": true
       },
       "death": {
+        "queued": true
+      },
+      "idle": {
+        "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      },
+      "hit": {
         "queued": true
       }
     }
