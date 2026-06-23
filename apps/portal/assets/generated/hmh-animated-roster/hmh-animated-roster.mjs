@@ -4768,5 +4768,1307 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
         ]
       }
     }
+  },
+  "claim-jumper": {
+    "role": "enemy",
+    "character_id": "16517af3-5056-425d-8dcb-557b1520db20",
+    "animations": {
+      "attack-tell": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-west/04.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/west/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/west/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/west/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/west/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/west/04.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-west/04.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north/04.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-east/04.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/east/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/east/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/east/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/east/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/east/04.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south/04.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-east/04.png"
+        ]
+      },
+      "shoot": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/east/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/east/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/east/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/east/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/east/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/east/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/east/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/06.png"
+        ]
+      }
+    }
+  },
+  "scam-cult-zealot": {
+    "role": "enemy",
+    "character_id": "6c0fc5f3-4b96-45f0-b21e-a26a252b7fd9",
+    "animations": {
+      "attack-tell": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-west/04.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north-east/04.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/west/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/west/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/west/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/west/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/west/04.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south/04.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-east/04.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/south-west/04.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/east/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/east/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/east/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/east/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/east/04.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north/00.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north/01.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north/02.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north/03.png",
+          "./assets/generated/hmh-animated-roster/scam-cult-zealot/attack-tell/north/04.png"
+        ]
+      }
+    }
+  },
+  "sybil-drone": {
+    "role": "enemy",
+    "character_id": "9ff63a91-4e1c-4704-9db4-e8b03ce8ce9e",
+    "animations": {
+      "attack": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/west/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/west/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/west/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/west/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/west/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/west/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/west/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-west/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/east/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/east/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/east/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/east/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/east/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/east/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-west/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/south-east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/attack/north-east/06.png"
+        ]
+      },
+      "idle": {
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-west/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-east/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south-west/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/west/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/west/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/west/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/west/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/west/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/west/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/west/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/east/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/east/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/east/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/east/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/east/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/east/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/east/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/south/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/sybil-drone/idle/north-east/06.png"
+        ]
+      }
+    }
+  },
+  "mev-reaper": {
+    "role": "enemy",
+    "character_id": "741efea8-2306-4d06-9dfe-0d60d8b46dca",
+    "animations": {
+      "run": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-east/08.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-west/08.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/east/08.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north/08.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south-east/08.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/north-west/08.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/west/08.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/00.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/01.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/02.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/03.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/04.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/05.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/06.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/07.png",
+          "./assets/generated/hmh-animated-roster/mev-reaper/run/south/08.png"
+        ]
+      }
+    }
+  },
+  "phishing-angler": {
+    "role": "enemy",
+    "character_id": "2d8a546e-7a9c-4d60-a73a-54916604695f",
+    "animations": {
+      "idle": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-east/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south-west/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/east/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/east/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/east/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/east/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/east/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/east/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/east/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/west/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/west/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/west/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/west/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/west/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/west/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/west/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/north-west/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/idle/south/06.png"
+        ]
+      },
+      "run": {
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-east/08.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north-west/08.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/north/08.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/west/08.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south/08.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-east/08.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/south-west/08.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/00.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/01.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/02.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/03.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/04.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/05.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/06.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/07.png",
+          "./assets/generated/hmh-animated-roster/phishing-angler/run/east/08.png"
+        ]
+      }
+    }
+  },
+  "plaza-warden": {
+    "role": "enemy",
+    "character_id": "c69c76d7-bd1c-4336-9253-6c33bd69e0c5",
+    "animations": {
+      "attack-tell": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/east/04.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north/04.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-east/04.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/west/04.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south/04.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-east/04.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/south-west/04.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/attack-tell/north-west/04.png"
+        ]
+      },
+      "run": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north/08.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-east/08.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/west/08.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-west/08.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south-east/08.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/east/08.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/north-west/08.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/run/south/08.png"
+        ]
+      },
+      "death": {
+        "north": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north/08.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-west/08.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/east/08.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south-east/08.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-west/08.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/west/08.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/north-east/08.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/00.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/01.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/02.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/03.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/04.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/05.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/06.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/07.png",
+          "./assets/generated/hmh-animated-roster/plaza-warden/death/south/08.png"
+        ]
+      }
+    }
+  },
+  "bridge-exploiter": {
+    "role": "enemy",
+    "character_id": "334e34c1-366c-4628-9500-256987ccfa84",
+    "animations": {
+      "attack": {
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-east/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/west/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/west/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/west/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/west/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/west/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/west/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south-west/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-east/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/north-west/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/south/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/east/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/east/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/east/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/east/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/east/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/east/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/attack/east/06.png"
+        ]
+      },
+      "run": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/east/08.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/west/08.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-west/08.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-west/08.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south/08.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north-east/08.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/north/08.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/06.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/bridge-exploiter/run/south-east/08.png"
+        ]
+      }
+    }
+  },
+  "the-obfuscator": {
+    "role": "enemy",
+    "character_id": "39e9c54b-e30e-4007-a490-863aef3adef9",
+    "animations": {
+      "attack-tell": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-west/04.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north/04.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/west/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/west/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/west/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/west/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/west/04.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-east/04.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/north-west/04.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/east/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/east/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/east/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/east/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/east/04.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south-east/04.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/attack-tell/south/04.png"
+        ]
+      },
+      "hit": {
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-west/04.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north/04.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/west/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/west/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/west/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/west/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/west/04.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-west/04.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south/04.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/east/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/east/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/east/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/east/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/east/04.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/north-east/04.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/the-obfuscator/hit/south-east/04.png"
+        ]
+      }
+    }
+  },
+  "bitcoin-maximalist-riot-cop": {
+    "role": "enemy",
+    "character_id": "7cdfd405-491c-49d7-8dd5-b27ef518b8e5",
+    "animations": {
+      "attack": {
+        "east": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/east/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/east/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/east/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/east/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/east/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/east/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/east/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-east/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north-west/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/north/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/west/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/west/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/west/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/west/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/west/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/west/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/bitcoin-maximalist-riot-cop/attack/south-west/06.png"
+        ]
+      }
+    }
+  },
+  "rug-rat": {
+    "role": "enemy",
+    "character_id": "791b7a1e-6e95-4feb-b094-cbf01baa6fea",
+    "animations": {
+      "hit": {
+        "west": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/west/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/west/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/west/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/west/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/west/04.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/east/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/east/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/east/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/east/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/east/04.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south/04.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-west/04.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/south-east/04.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-east/04.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north-west/04.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north/00.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north/01.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north/02.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north/03.png",
+          "./assets/generated/hmh-animated-roster/rug-rat/hit/north/04.png"
+        ]
+      }
+    }
   }
 });
