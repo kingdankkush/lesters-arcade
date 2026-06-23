@@ -19,8 +19,8 @@ const TILE_SIZE = 30;
 const CELL_SIZE = SCENE_CELL ?? 7; // scene cells per macro-cell
 
 // Helper: create a placed object with world coordinates
-function placed(id, assetKey, role, gridX, gridY, { solid = true, zHeight = 0, variant = 0 } = {}) {
-  return Object.freeze({ id, assetKey, role, gridX, gridY, solid, zHeight, variant });
+function placed(id, assetKey, role, gridX, gridY, { solid = true, zHeight = 0, variant = 0, ...metadata } = {}) {
+  return Object.freeze({ id, assetKey, role, gridX, gridY, solid, zHeight, variant, ...metadata });
 }
 
 // Helper: create a prop cluster (group of related props at relative positions)
@@ -285,7 +285,10 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
       transitionTo: 'financial-core',
       transitionCue: 'shopfronts give way to glass towers and plazas',
     }),
-    navigationCues: Object.freeze([]),
+    navigationCues: Object.freeze([
+      { id: 'ob-sign-tram', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 4, gridY: 5, text: 'TRAM STOP / MARKET ROW' },
+      { id: 'ob-sign-core', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 15, gridY: 6, text: '→ FINANCIAL CORE' },
+    ]),
   }),
 
   financialCore: Object.freeze({
@@ -313,7 +316,10 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
       transitionTo: 'luxury-neighborhoods',
       transitionCue: 'towers give way to gated drives and manicured lawns',
     }),
-    navigationCues: Object.freeze([]),
+    navigationCues: Object.freeze([
+      { id: 'fc-sign-ticker', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 29, gridY: 5, text: 'TICKER PLAZA' },
+      { id: 'fc-sign-garden', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 34, gridY: 7, text: '→ GATED DISTRICT' },
+    ]),
   }),
 
   luxuryNeighborhoods: Object.freeze({
@@ -342,7 +348,10 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
       transitionTo: 'penthouse-rim',
       transitionCue: 'mansions shrink as rooftop helipads and skybridges appear',
     }),
-    navigationCues: Object.freeze([]),
+    navigationCues: Object.freeze([
+      { id: 'ln-sign-garden', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 42, gridY: 4, text: 'GARDEN COURT LOOP' },
+      { id: 'ln-sign-penthouse', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 51, gridY: 6, text: '→ PENTHOUSE RIM' },
+    ]),
   }),
 
   penthouseRim: Object.freeze({
@@ -370,7 +379,10 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
       transitionTo: 'level-3-the-getaway',
       transitionCue: 'storm breaks, helicopter sounds, train visible on adjacent rooftop',
     }),
-    navigationCues: Object.freeze([]),
+    navigationCues: Object.freeze([
+      { id: 'pr-sign-skybridge', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 63, gridY: 5, text: 'SKYBRIDGE CHOKE' },
+      { id: 'pr-sign-exit', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 66, gridY: 3, text: 'VIP EXIT / LEVEL 3 →' },
+    ]),
   }),
 });
 
@@ -431,6 +443,65 @@ export function getAuthoredEncounterBeats(levelId = 'level-1-crypto-wasteland') 
     label: node.label,
   })));
 }
+
+// ============================================================================
+// FOREGROUND STAGING: near-plane occluders and ambient motion cues
+// These use existing coherent-world sprites now, but carry animationCue +
+// foregroundBand metadata so the renderer/art pipeline can later swap in
+// PixelLab animated foreground variants without changing level design data.
+// ============================================================================
+
+function foreground(id, assetKey, role, gridX, gridY, animationCue, { band = 'near', drawOrderBias = 36, zHeight = 2 } = {}) {
+  return placed(id, assetKey, role, gridX, gridY, {
+    solid: false,
+    zHeight,
+    foregroundBand: band,
+    drawOrderBias,
+    animationCue,
+  });
+}
+
+export const LEVEL_1_FOREGROUND_STAGING = Object.freeze({
+  desertApproach: Object.freeze([
+    foreground('fg-da-cactus-near', 'crypto/desert-cactus', 'cactus', 10, 8, 'heat-haze cactus sway at lower screen edge'),
+    foreground('fg-da-pole-wire', 'crypto/utility-pole', 'pole', 23, 8, 'subtle wire wobble and dust mote drift', { drawOrderBias: 28 }),
+  ]),
+  ghostTown: Object.freeze([
+    foreground('fg-gt-lantern-left', 'street/street-lamp', 'lamp', 37, 8, 'lantern flicker foreground frame'),
+    foreground('fg-gt-store-post', 'construct/fence-post', 'post', 45, 8, 'windy porch-post creak silhouette', { drawOrderBias: 30 }),
+  ]),
+  countryRoad: Object.freeze([
+    foreground('fg-cr-tree-branch', 'crypto/forest-tree-line', 'tree', 57, 8, 'tree-line branch sway over crossroads'),
+    foreground('fg-cr-mailbox', 'street/mailbox', 'post', 64, 8, 'mailbox flag rattle near camera', { drawOrderBias: 24 }),
+  ]),
+  residentialEdge: Object.freeze([
+    foreground('fg-re-flowers', 'nature/flower-patch', 'bush', 82, 8, 'flower petals flutter at oasis foreground', { drawOrderBias: 24 }),
+    foreground('fg-re-oak-canopy', 'nature/oak-tree', 'tree', 87, 8, 'oak canopy sway framing water landmark'),
+  ]),
+  innerCityThreshold: Object.freeze([
+    foreground('fg-ic-traffic-cone', 'street/traffic-cone', 'post', 91, 8, 'warning cone blink and dust kick'),
+    foreground('fg-ic-billboard-frame', 'crypto/innercity-billboard-frame', 'billboard', 97, 8, 'neon billboard foreground shimmer', { drawOrderBias: 44, zHeight: 4 }),
+  ]),
+});
+
+export const LEVEL_2_FOREGROUND_STAGING = Object.freeze({
+  outerBoulevard: Object.freeze([
+    foreground('fg-ob-lamp', 'street/street-lamp', 'lamp', 6, 8, 'street-lamp foreground flicker'),
+    foreground('fg-ob-hydrant', 'street/fire-hydrant', 'post', 13, 8, 'hydrant steam puff cue', { drawOrderBias: 24 }),
+  ]),
+  financialCore: Object.freeze([
+    foreground('fg-fc-billboard', 'crypto/innercity-billboard-frame', 'billboard', 32, 8, 'ticker billboard cyan pulse', { drawOrderBias: 44, zHeight: 4 }),
+    foreground('fg-fc-fountain-spray', 'nature/fountain', 'fountain', 29, 8, 'foreground fountain spray loop', { drawOrderBias: 28 }),
+  ]),
+  luxuryNeighborhoods: Object.freeze([
+    foreground('fg-ln-hedge', 'crypto/residential-hedge-run', 'hedge', 43, 8, 'manicured hedge shimmer and leaf sway'),
+    foreground('fg-ln-flowerbed', 'nature/flower-patch', 'bush', 50, 8, 'flowerbed petal flutter', { drawOrderBias: 24 }),
+  ]),
+  penthouseRim: Object.freeze([
+    foreground('fg-pr-antenna', 'crypto/utility-pole', 'pole', 66, 8, 'antenna beacon blink and wind sway', { drawOrderBias: 38, zHeight: 4 }),
+    foreground('fg-pr-rail', 'construct/fence-segment', 'fence', 63, 8, 'foreground guardrail rain streak cue', { drawOrderBias: 26 }),
+  ]),
+});
 
 // ============================================================================
 // Helper: Get the authored layout for a district by ID
@@ -501,6 +572,17 @@ export function getAuthoredSceneObjects(districtId, levelId = 'level-1-crypto-wa
 export function getDistrictEdgeTreatment(districtId, levelId = 'level-1-crypto-wasteland') {
   const layout = getAuthoredDistrictLayout(districtId, levelId);
   return layout?.edgeTreatment ?? null;
+}
+
+export function getAuthoredForegroundSceneObjects(districtId, levelId = 'level-1-crypto-wasteland') {
+  const foregrounds = levelId === 'level-2-litecoin-city'
+    ? LEVEL_2_FOREGROUND_STAGING
+    : LEVEL_1_FOREGROUND_STAGING;
+  const foregroundKey = Object.keys(foregrounds).find((k) =>
+    k === districtId ||
+    k.replace(/-/g, '').toLowerCase() === districtId.replace(/-/g, '').toLowerCase(),
+  );
+  return Object.freeze(foregroundKey ? foregrounds[foregroundKey] : []);
 }
 
 // ============================================================================
@@ -869,5 +951,6 @@ export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto
     routeBeat: node.beat,
     objective: node.objective,
   }));
-  return Object.freeze([...base, ...extra, ...routeMarkers]);
+  const foregrounds = getAuthoredForegroundSceneObjects(districtId, levelId);
+  return Object.freeze([...base, ...extra, ...routeMarkers, ...foregrounds]);
 }

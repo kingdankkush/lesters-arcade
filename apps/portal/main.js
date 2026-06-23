@@ -45,7 +45,7 @@ import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnem
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
-import { createMuzzleFlash, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
+import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -1390,7 +1390,7 @@ const combat = {
   floatingTexts: [],
   powerUps: [],
   // Active timed power-up effects (seconds remaining). 0 = inactive.
-  powerUpTimers: { magnet: 0, slowEnemies: 0, berserk: 0 },
+  powerUpTimers: { magnet: 0, slowEnemies: 0, berserk: 0, weapon: 0 },
   // Per-weapon upgrade tree choices: { weaponId: { rateOfFire: tier, damage: tier, reloadSpeed: tier } }.
   weaponUpgrades: {},
   xpGems: [],
@@ -2325,6 +2325,7 @@ function renderRoguelikeStatBar() {
   if ((combat.powerUpTimers.magnet ?? 0) > 0) activeFx.push(`MAGNET ${Math.ceil(combat.powerUpTimers.magnet)}s`);
   if ((combat.powerUpTimers.slowEnemies ?? 0) > 0) activeFx.push(`SLOW ${Math.ceil(combat.powerUpTimers.slowEnemies)}s`);
   if ((combat.powerUpTimers.berserk ?? 0) > 0) activeFx.push(`BERSERK ${Math.ceil(combat.powerUpTimers.berserk)}s`);
+  if ((combat.powerUpTimers.weapon ?? 0) > 0 && combat.weaponId !== 'coin-blaster') activeFx.push(`${(weapon.displayName ?? weapon.title).toUpperCase()} ${Math.ceil(combat.powerUpTimers.weapon)}s`);
   const signature = `${heroName}|${stats.map((s) => s.value).join('|')}|xp${Math.round(xpRatio * 100)}|${activeFx.join(',')}|cb${gameSettings.colorblindTags ? 1 : 0}`;
   if (bar.dataset.signature === signature) return;
   bar.dataset.signature = signature;
@@ -2822,6 +2823,58 @@ function weaponById(weaponId) {
       : base.clip,
     _upgrades: u,
   };
+}
+
+function projectileProfileForWeapon(weaponId) {
+  // Bullets are coded combat VFX, not sprites. This profile controls the physics
+  // object (rate/clip comes from weaponById) and the canvas-only tracer/slug look
+  // drawn in drawBullets().
+  if (weaponId === 'scatter-shotgun') {
+    return {
+      color: '#ffb347', coreColor: '#fff4c2', speed: 12.2, ttl: 24,
+      spreadRadians: 0.58, hitRadius: 0.46, coreLength: 5.5, coreWidth: 2.1,
+      trailAlpha: 0.36, trailWidth: 2.2, casingCount: 1, screenShake: 1.4,
+    };
+  }
+  if (weaponId === 'auto-miner') {
+    return {
+      color: '#8cf7ff', coreColor: '#ffffff', speed: 16.8, ttl: 58,
+      spreadRadians: 0.055, hitRadius: 0.34, coreLength: 6.5, coreWidth: 1.8,
+      trailAlpha: 0.42, trailWidth: 1.8, casingCount: 1, screenShake: 0.22,
+    };
+  }
+  if (weaponId === 'spread-ltc') {
+    return {
+      color: '#74e0d6', coreColor: '#ffffff', speed: 13.8, ttl: 34,
+      spreadRadians: 0.48, hitRadius: 0.38, coreLength: 5.8, coreWidth: 1.9,
+      trailAlpha: 0.38, trailWidth: 2, casingCount: 1, screenShake: 0.55,
+    };
+  }
+  if (weaponId === 'hash-rail') {
+    return {
+      color: '#19f7ff', coreColor: '#ffffff', speed: 20.5, ttl: 82,
+      spreadRadians: 0.01, hitRadius: 0.52, coreLength: 16, coreWidth: 3.2,
+      trailAlpha: 0.72, trailWidth: 3.4, casingCount: 0, screenShake: 1.1,
+    };
+  }
+  return {
+    color: '#ffe84d', coreColor: '#ffffff', speed: 14.8, ttl: 68,
+    spreadRadians: 0.035, hitRadius: 0.36, coreLength: 6, coreWidth: 2,
+    trailAlpha: 0.34, trailWidth: 2, casingCount: 1, screenShake: 0.35,
+  };
+}
+
+function equipRoguelikeWeapon(weaponId, durationSeconds = 0) {
+  combat.weaponId = weaponId;
+  const weapon = weaponById(weaponId);
+  combat.clipSize = weapon.clip ?? (Number.isFinite(weapon.ammo) ? weapon.ammo : 8);
+  combat.clip = combat.clipSize;
+  combat.ammo = combat.clip;
+  combat.reloading = false;
+  combat.reloadRemaining = 0;
+  combat.autoFireCooldown = 0;
+  combat.powerUpTimers.weapon = Math.max(0, durationSeconds ?? 0);
+  return weapon;
 }
 
 function currentLevel() {
@@ -5387,7 +5440,7 @@ async function startCombat(options = {}) {
   combat.particles = [];
   combat.floatingTexts = [];
   combat.powerUps = [];
-  combat.powerUpTimers = { magnet: 0, slowEnemies: 0, berserk: 0 };
+  combat.powerUpTimers = { magnet: 0, slowEnemies: 0, berserk: 0, weapon: 0 };
   // Power-up telegraph and animated spawns
   if (combat.powerUpSpawnTimer && combat.powerUpSpawnTimer < 15) {
     spawnSpriteParticle('powerup-telegraph', combat.nextPowerUpX || combat.playerX + 80, combat.nextPowerUpY || combat.playerY + 80, { color: '#fde047', size: 35, life: 15 });
@@ -6488,18 +6541,18 @@ function emitCombatVfxParticles(particles = []) {
 }
 
 function spawnMuzzleFlash(x, y, weaponId) {
-  // Layer a readable sprite-sized flash with the combat-vfx starburst particles
-  // so shooting reads both at camera scale and in close-up GIF captures.
-  spawnSpriteParticle('muzzle-flash', x, y, {
-    vx: 1.4,
-    vy: -0.1,
-    color: weaponId === 'hash-rail' ? '#19f7ff' : weaponId === 'scatter-shotgun' ? '#ffb347' : '#fff2b3',
-    size: weaponId === 'scatter-shotgun' ? 70 : weaponId === 'hash-rail' ? 58 : 50,
-    life: 0.22,
-    scaleFrom: 0.8,
-    scaleTo: 1.15,
-  });
-  emitCombatVfxParticles(createMuzzleFlash(x, y, weaponId === 'hash-rail' ? 'rail' : 'east'));
+  // Coded muzzle flash VFX only: no sprite-sheet flash glued to the character.
+  // The projectile itself is a pooled physics object; this is just the brief
+  // barrel pop/shell feedback.
+  const flashParticles = createMuzzleFlash(x, y, weaponId === 'hash-rail' ? 'rail' : 'east').map((particle) => ({
+    ...particle,
+    color: weaponId === 'auto-miner' ? '#8cf7ff'
+      : weaponId === 'scatter-shotgun' ? '#ffb347'
+      : weaponId === 'hash-rail' ? '#19f7ff'
+      : particle.color,
+    size: (particle.size ?? 3) * (weaponId === 'scatter-shotgun' ? 1.35 : weaponId === 'auto-miner' ? 0.75 : 1),
+  }));
+  emitCombatVfxParticles(flashParticles);
 }
 
 function spawnSlash(x, y) {
@@ -6705,43 +6758,64 @@ function shootRoguelike() {
   combat.ammo = combat.clip; // keep legacy mirror in sync
   combat.shots += 1;
   combat.fireFlash = gameSettings.reduceFlash ? 1 : 4; // brief muzzle-flash brightening for the lighting pass
-  combat.lastShotFrame = combat.frame; // drives the animated-roster 'shoot' pose
+  combat.lastShotFrame = combat.frame; // drives only the actor firing pose; bullets are VFX objects below
+
+  const profile = projectileProfileForWeapon(weapon.id);
   const damageScale = (combat.roguelikeRun?.stats.damage ?? 1) * ((combat.powerUpTimers.berserk ?? 0) > 0 ? 1.5 : 1);
-  const bulletSpeed = 14 * (combat.roguelikeRun?.stats.bulletSpeed ?? 1);
-  // Shotgun fires a spread of pellets; everything else fires a single round.
+  const speedScale = combat.roguelikeRun?.stats.bulletSpeed ?? 1;
+  const baseAng = Math.atan2(combat.aimMapY, combat.aimMapX);
+  const aimX = Math.cos(baseAng);
+  const aimY = Math.sin(baseAng);
+  const sideX = -aimY;
+  const sideY = aimX;
+  const muzzleWorldX = combat.playerMapX + aimX * 0.72 + sideX * 0.08;
+  const muzzleWorldY = combat.playerMapY + aimY * 0.72 + sideY * 0.08;
+  const muzzle = isoToScreen(muzzleWorldX, muzzleWorldY);
+
+  // Shotgun/spread weapons emit separate pellet physics objects. Pistol and
+  // machine-gun power-up emit one slug per rate-of-fire tick. No bullet sprites or
+  // instant full-length rays: drawBullets renders short coded tracer segments from
+  // each projectile's previous/current world position.
   const pellets = weapon.pellets ?? 1;
-  if (pellets > 1) {
-    const baseAng = Math.atan2(combat.aimMapY, combat.aimMapX);
-    const spread = 0.42; // total cone in radians
-    for (let i = 0; i < pellets; i += 1) {
-      const t = pellets === 1 ? 0 : (i / (pellets - 1)) - 0.5;
-      const ang = baseAng + t * spread;
-      combat.bullets.push({
-        worldX: combat.playerMapX + Math.cos(ang) * 0.65,
-        worldY: combat.playerMapY + Math.sin(ang) * 0.65,
-        vx: Math.cos(ang) * bulletSpeed,
-        vy: Math.sin(ang) * bulletSpeed,
-        damage: weapon.damage * damageScale,
-        weaponId: weapon.id,
-        ttl: 60, // shotgun pellets fall off faster (short range)
-      });
-    }
-  } else {
+  const spread = pellets > 1 ? profile.spreadRadians : profile.spreadRadians * 0.5;
+  for (let i = 0; i < pellets; i += 1) {
+    const t = pellets === 1 ? 0 : (i / (pellets - 1)) - 0.5;
+    const deterministicJitter = pellets === 1 ? ((combat.shots % 3) - 1) * spread : 0;
+    const ang = baseAng + t * spread + deterministicJitter;
+    const vx = Math.cos(ang) * profile.speed * speedScale;
+    const vy = Math.sin(ang) * profile.speed * speedScale;
+    const projected = isoToScreen(muzzleWorldX, muzzleWorldY);
     combat.bullets.push({
-      worldX: combat.playerMapX + combat.aimMapX * 0.65,
-      worldY: combat.playerMapY + combat.aimMapY * 0.65,
-      vx: combat.aimMapX * bulletSpeed,
-      vy: combat.aimMapY * bulletSpeed,
+      worldX: muzzleWorldX,
+      worldY: muzzleWorldY,
+      prevWorldX: muzzleWorldX - Math.cos(ang) * 0.06,
+      prevWorldY: muzzleWorldY - Math.sin(ang) * 0.06,
+      vx,
+      vy,
+      x: projected.x,
+      y: projected.y,
       damage: weapon.damage * damageScale,
       weaponId: weapon.id,
-      ttl: 92,
+      ttl: profile.ttl,
+      maxTtl: profile.ttl,
+      hitRadius: profile.hitRadius,
+      visual: {
+        color: profile.color,
+        coreColor: profile.coreColor,
+        coreLength: profile.coreLength,
+        coreWidth: profile.coreWidth,
+        trailAlpha: profile.trailAlpha,
+        trailWidth: profile.trailWidth,
+      },
     });
   }
-  const muzzle = isoToScreen(combat.playerMapX + combat.aimMapX * 0.8, combat.playerMapY + combat.aimMapY * 0.8);
-  const tracerEnd = isoToScreen(combat.playerMapX + combat.aimMapX * (weapon.id === 'scatter-shotgun' ? 2.2 : 3.4), combat.playerMapY + combat.aimMapY * (weapon.id === 'scatter-shotgun' ? 2.2 : 3.4));
+
   spawnMuzzleFlash(muzzle.x, muzzle.y, weapon.id);
-  emitCombatVfxParticles(createBulletTrail(muzzle.x, muzzle.y, tracerEnd.x, tracerEnd.y, weapon.id === 'hash-rail' ? 'rail' : 'pistol'));
-  playSfxCue('weapon-fire', weapon.id === 'hash-rail' ? 0.045 : 0.035);
+  for (let i = 0; i < (profile.casingCount ?? 0); i += 1) {
+    emitCombatVfxParticles(createShellCasing(muzzle.x - sideX * 7, muzzle.y - sideY * 4));
+  }
+  if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(8, (combat.shake ?? 0) + profile.screenShake);
+  playSfxCue('weapon-fire', weapon.id === 'auto-miner' ? 0.022 : weapon.id === 'hash-rail' ? 0.045 : 0.035);
 }
 
 function openLevelUpMenu() {
@@ -7138,6 +7212,8 @@ function updateRoguelikeMovement(dt) {
 function updateRoguelikeBullets(dt) {
   const obstacles = currentObstacles();
   for (const bullet of combat.bullets) {
+    bullet.prevWorldX = bullet.worldX;
+    bullet.prevWorldY = bullet.worldY;
     bullet.worldX += bullet.vx * dt;
     bullet.worldY += bullet.vy * dt;
     bullet.ttl -= 1;
@@ -7155,7 +7231,7 @@ function updateRoguelikeBullets(dt) {
       continue;
     }
     for (const enemy of combat.enemies) {
-      if (enemy.hp > 0 && Math.hypot(enemy.mapX - bullet.worldX, enemy.mapY - bullet.worldY) < 0.72) {
+      if (enemy.hp > 0 && Math.hypot(enemy.mapX - bullet.worldX, enemy.mapY - bullet.worldY) < (bullet.hitRadius ?? 0.72)) {
         damageEnemy(enemy, bullet.damage, bullet.weaponId);
         bullet.ttl = 0;
         break;
@@ -7340,17 +7416,18 @@ function updateRoguelikeXpGems() {
 // isometric roguelike spawns power-ups at world coordinates where an enemy died,
 // gently attracts them toward the hero, and collects them within a pickup radius
 // (boosted while the Magnet Wallet Surge is active). Effects route through
-// applyRoguelikePowerUp so the 4 roguelike power-ups (magnet / time-dilation /
-// berserk / liquidation-nuke) get real gameplay behavior, not just an icon.
+// applyRoguelikePowerUp so the weapon pickups and timed utility/offense buffs get
+// real gameplay behavior, not just an icon.
 const ROGUELIKE_POWERUP_POOL = Object.freeze([
-  'heal-pack', 'shield-cache', 'ammo-cache', 'magnet-surge',
+  'health-pack', 'shield-cache', 'ammo-cache', 'block-breaker-shells', 'hashstorm-drum', 'magnet-surge',
   'time-dilation', 'berserk-candle', 'ltc-cache',
 ]);
 // Rarer, run-swinging drops reserved for elites / mini-bosses.
-const ROGUELIKE_POWERUP_RARE = Object.freeze(['nuke-liquidation', 'berserk-candle', 'time-dilation']);
+const ROGUELIKE_POWERUP_RARE = Object.freeze(['nuke-liquidation', 'hashstorm-drum', 'block-breaker-shells', 'berserk-candle', 'time-dilation']);
 
 function powerUpById(id) {
-  return LESTER_BLASTER_POWER_UPS.find((p) => p.id === id) ?? null;
+  const normalizedId = id === 'heal-pack' ? 'health-pack' : id;
+  return LESTER_BLASTER_POWER_UPS.find((p) => p.id === normalizedId) ?? null;
 }
 
 function dropRoguelikePowerUp(worldX, worldY, { rare = false } = {}) {
@@ -7428,8 +7505,16 @@ function applyRoguelikePowerUp(power) {
       combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 25));
       break;
     case 'ammo':
-      combat.ammo = Number.isFinite(combat.ammo) ? combat.ammo + (power.amount ?? 30) : combat.ammo;
+      combat.clip = Math.min(combat.clipSize ?? combat.clip ?? 0, (combat.clip ?? 0) + (power.amount ?? combat.clipSize ?? 8));
+      combat.ammo = combat.clip;
+      combat.reloading = false;
+      combat.reloadRemaining = 0;
       break;
+    case 'weapon': {
+      const weapon = equipRoguelikeWeapon(power.weaponId, power.durationSeconds ?? 16);
+      spawnText(`${(weapon.displayName ?? weapon.title).toUpperCase()} READY`, px, py - 18, '#8cf7ff');
+      break;
+    }
     case 'shield':
       combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 1) * 15);
       combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
@@ -7478,6 +7563,12 @@ function updateRoguelikePowerUpTimers(dt) {
   t.magnet = Math.max(0, (t.magnet ?? 0) - dt);
   t.slowEnemies = Math.max(0, (t.slowEnemies ?? 0) - dt);
   t.berserk = Math.max(0, (t.berserk ?? 0) - dt);
+  const previousWeaponTimer = t.weapon ?? 0;
+  t.weapon = Math.max(0, previousWeaponTimer - dt);
+  if (previousWeaponTimer > 0 && t.weapon <= 0 && combat.weaponId !== 'coin-blaster') {
+    equipRoguelikeWeapon('coin-blaster', 0);
+    spawnText('PISTOL READY', combat.playerX + 8, combat.playerY - 76, '#ffe84d');
+  }
 }
 
 function syncCampaignProgression() {
@@ -8211,9 +8302,11 @@ function _buildAuthoredObstaclesForLevel(levelId) {
         biome: null,
         sceneAssetKey: obj.assetKey,
         sceneRole: obj.role,
-        drawOrderBias: obj.zHeight ?? 0,
+        drawOrderBias: obj.drawOrderBias ?? obj.zHeight ?? 0,
         zHeight: obj.zHeight ?? 0,
         text: obj.text ?? null,
+        foregroundBand: obj.foregroundBand ?? null,
+        animationCue: obj.animationCue ?? null,
       });
     }
   }
@@ -8414,7 +8507,7 @@ function buildObstacleRenderEntries(ctx) {
     const baseY = Math.round(projected.y + style.ground - drawH);
     const shadowW = Math.max(14, w * 0.32);
     entries.push({
-          depth: projected.y,
+          depth: projected.y + (o.drawOrderBias ?? 0),
           draw: () => {
             ctx.save();
             ctx.imageSmoothingEnabled = false;
@@ -9242,13 +9335,17 @@ function rosterKeyForEntity(entity, role) {
   if (hay.includes('goblin') || hay.includes('fud')) return 'fud-goblin';
   if (hay.includes('wisp') || hay.includes('gas-fee') || hay.includes('tax')) return 'gas-fee-wisp';
   if (hay.includes('trench') || hay.includes('degen')) return 'trench-degen';
-  // Animals and creatures that need their own sprites (not human proxies)
-  // For now, use the closest thematic match until bespoke sprites are generated
-  if (hay.includes('coyote') || hay.includes('boar') || hay.includes('wild-boar')) return 'trench-degen';
-  if (hay.includes('buzzard') || hay.includes('flyer') || hay.includes('sybil') || hay.includes('drone')) return 'crypto-bro-rusher';
-  if (hay.includes('rattlesnake') || hay.includes('scorpion') || hay.includes('snake')) return 'gas-beast-tank';
-  if (hay.includes('rug-rat') || hay.includes('rug')) return 'fud-goblin';
-  if (hay.includes('mev-reaper') || hay.includes('phishing') || hay.includes('angler')) return 'evil-banker-ranged';
+  // Animals and creatures now use their own PixelLab roster keys when the
+  // entity ID is not caught by the explicit bespoke kit registry above.
+  if (hay.includes('coyote')) return 'coyote-pack-runner';
+  if (hay.includes('wild-boar') || hay.includes('boar')) return 'wild-boar';
+  if (hay.includes('buzzard')) return 'buzzard';
+  if (hay.includes('rattlesnake') || hay.includes('snake')) return 'rattlesnake';
+  if (hay.includes('scorpion')) return 'scorpion-ambusher';
+  if (hay.includes('rug-rat') || hay.includes('rug')) return 'rug-rat';
+  if (hay.includes('flyer') || hay.includes('sybil') || hay.includes('drone')) return 'sybil-drone';
+  if (hay.includes('mev-reaper')) return 'mev-reaper';
+  if (hay.includes('phishing') || hay.includes('angler')) return 'phishing-angler';
   if (hay.includes('scam-cult') || hay.includes('zealot')) return 'evil-banker-ranged';
   // Default grunt animation set.
   return 'fud-goblin';
@@ -9690,50 +9787,52 @@ function drawBullets(ctx) {
   for (const bullet of combat.bullets) {
     const vx = bullet.vx ?? 0;
     const vy = bullet.vy ?? 0;
-    const ang = Math.atan2(vy, vx);
-    const color = bullet.weaponId === 'hash-rail' ? '#19f7ff'
-      : bullet.weaponId === 'oracle-slayer' ? '#b86cff'
+    const speed = Math.hypot(vx, vy) || 1;
+    const visual = bullet.visual ?? projectileProfileForWeapon(bullet.weaponId);
+    const color = visual.color ?? (bullet.weaponId === 'hash-rail' ? '#19f7ff'
+      : bullet.weaponId === 'auto-miner' ? '#8cf7ff'
       : bullet.weaponId === 'scatter-shotgun' ? '#ff9a3d'
-      : '#ffe84d';
-    const coreLen = bullet.weaponId === 'hash-rail' ? 26 : 12;
-    const coreW = bullet.weaponId === 'hash-rail' ? 5 : 3.2;
-    const sizeScale = combat.roguelikeRun?.stats.bulletSize ?? 1;
+      : '#ffe84d');
+    const coreColor = visual.coreColor ?? '#ffffff';
+    const prev = (bullet.prevWorldX !== undefined && bullet.prevWorldY !== undefined)
+      ? isoToScreen(bullet.prevWorldX, bullet.prevWorldY)
+      : { x: bullet.x - (vx / speed) * 8, y: bullet.y - (vy / speed) * 8 };
+    const ageFade = Math.max(0.2, Math.min(1, (bullet.ttl ?? 1) / Math.max(1, bullet.maxTtl ?? bullet.ttl ?? 1)));
 
-    ctx.save();
-    ctx.translate(bullet.x, bullet.y);
-    ctx.rotate(ang);
+    // Coded projectile VFX: a short per-frame tracer line + tiny bright head.
+    // This sells fast bullets without sprite sheets or an instant full ray from
+    // the character. Shotgun pellets are many tiny independent traces; machine
+    // gun is high-rate small traces; pistol is one readable slug per shot.
+    const dx = bullet.x - prev.x;
+    const dy = bullet.y - prev.y;
+    const dist = Math.hypot(dx, dy) || 1;
+    const ux = dx / dist;
+    const uy = dy / dist;
+    const tracerLen = Math.min(dist + (visual.coreLength ?? 6), bullet.weaponId === 'hash-rail' ? 42 : 22);
+    const tailX = bullet.x - ux * tracerLen;
+    const tailY = bullet.y - uy * tracerLen;
 
-    // Long streak trail (fades out behind the bullet)
-    const trailLen = coreLen * 3.4 * sizeScale;
-    const trailGrad = ctx.createLinearGradient(-trailLen, 0, 0, 0);
-    trailGrad.addColorStop(0, hexToRgba(color, 0));
-    trailGrad.addColorStop(1, hexToRgba(color, 0.55));
-    ctx.fillStyle = trailGrad;
+    const grad = ctx.createLinearGradient(tailX, tailY, bullet.x, bullet.y);
+    grad.addColorStop(0, hexToRgba(color, 0));
+    grad.addColorStop(0.55, hexToRgba(color, (visual.trailAlpha ?? 0.35) * ageFade));
+    grad.addColorStop(1, hexToRgba(coreColor, 0.92 * ageFade));
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = (visual.trailWidth ?? 2) * (combat.roguelikeRun?.stats.bulletSize ?? 1);
+    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.ellipse(-trailLen / 2, 0, trailLen / 2, coreW * 1.7 * sizeScale, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.moveTo(tailX, tailY);
+    ctx.lineTo(bullet.x, bullet.y);
+    ctx.stroke();
 
-    // Bright core bullet
-    const coreGrad = ctx.createLinearGradient(-coreLen / 2, 0, coreLen / 2, 0);
-    coreGrad.addColorStop(0, hexToRgba(color, 0.4));
-    coreGrad.addColorStop(0.5, '#ffffff');
-    coreGrad.addColorStop(1, hexToRgba(color, 0.95));
-    ctx.fillStyle = coreGrad;
+    const headR = Math.max(1.6, (visual.coreWidth ?? 2.2) * 1.2 * (combat.roguelikeRun?.stats.bulletSize ?? 1));
+    const glow = ctx.createRadialGradient(bullet.x, bullet.y, 0, bullet.x, bullet.y, headR * 3.2);
+    glow.addColorStop(0, hexToRgba(coreColor, 0.95 * ageFade));
+    glow.addColorStop(0.45, hexToRgba(color, 0.62 * ageFade));
+    glow.addColorStop(1, hexToRgba(color, 0));
+    ctx.fillStyle = glow;
     ctx.beginPath();
-    ctx.ellipse(0, 0, (coreLen / 2) * sizeScale, coreW * sizeScale, 0, 0, Math.PI * 2);
+    ctx.arc(bullet.x, bullet.y, headR * 3.2, 0, Math.PI * 2);
     ctx.fill();
-
-    // Muzzle light (small glow at the head of the bullet)
-    const glowGrad = ctx.createRadialGradient(coreLen / 2 * sizeScale, 0, 0, coreLen / 2 * sizeScale, 0, 9 * sizeScale);
-    glowGrad.addColorStop(0, hexToRgba('#ffffff', 0.9));
-    glowGrad.addColorStop(0.5, hexToRgba(color, 0.4));
-    glowGrad.addColorStop(1, hexToRgba(color, 0));
-    ctx.fillStyle = glowGrad;
-    ctx.beginPath();
-    ctx.arc(coreLen / 2 * sizeScale, 0, 9 * sizeScale, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
   }
 
   // --- Enemy shots (hostile projectiles): red-orange glow with short dark tail ---
@@ -9809,7 +9908,7 @@ function powerUpIconFor(power) {
   if (power.effect === 'shield') return productionImage('pickups', 'crypto-bomb') ?? combatArt.icons.shield;
   if (power.effect === 'ammo') return productionImage('pickups', 'ammo-pack') ?? combatArt.icons.ammo;
   if (power.effect === 'life') return productionImage('pickups', 'crypto-bomb') ?? combatArt.icons.oneUp;
-  if (power.effect === 'weapon') return productionImage('weapons', combat.weaponId) ?? productionImage('weapons', 'coin-blaster') ?? combatArt.icons.weapon;
+  if (power.effect === 'weapon') return productionImage('weapons', power.weaponId ?? combat.weaponId) ?? productionImage('weapons', 'coin-blaster') ?? combatArt.icons.weapon;
   if (power.effect === 'scoreMultiplier' || power.effect === 'scoreBonus') return productionImage('pickups', 'xp-shard') ?? combatArt.icons.score;
   return fxIcon ?? null;
 }

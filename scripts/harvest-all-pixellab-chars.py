@@ -9,11 +9,10 @@ import json
 import os
 import re
 import urllib.request
+from pathlib import Path
 from mcp.client.streamable_http import streamablehttp_client
 from mcp import ClientSession
 
-PIXELLAB_URL = "https://api.pixellab.ai/mcp"
-PIXELLAB_TOKEN = "7f098cf2-1fc2-4f27-8af9-8ce3e0a352af"
 
 # Base output directory
 ROSTER_DIR = os.path.join(os.path.dirname(__file__), "..", "apps", "portal", "assets", "generated", "hmh-animated-roster")
@@ -36,6 +35,14 @@ HARVEST_TARGETS = {
 
 # Direction order for parsing
 DIRECTIONS = ["south-east", "north-east", "north-west", "south-west", "south", "north", "east", "west"]
+
+def load_server():
+    data = json.loads((Path.home() / ".claude.json").read_text(encoding="utf-8"))
+    for project in data.get("projects", {}).values():
+        server = project.get("mcpServers", {}).get("pixellab")
+        if server:
+            return server
+    raise SystemExit("no pixellab MCP server found in ~/.claude.json")
 
 def parse_character_listing(text):
     """Parse get_character text output to extract animation names, directions, and frame URLs.
@@ -166,7 +173,8 @@ async def main():
     print(f"Output directory: {ROSTER_DIR}")
     print(f"Targets: {len(HARVEST_TARGETS)} characters")
     
-    async with streamablehttp_client(PIXELLAB_URL, headers={"Authorization": f"Bearer {PIXELLAB_TOKEN}"}) as (read, write, _):
+    server = load_server()
+    async with streamablehttp_client(server["url"], headers=server.get("headers", {})) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
             

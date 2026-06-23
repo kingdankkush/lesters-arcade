@@ -751,7 +751,12 @@ test('power ups refine health, grenades, score multipliers, lives, shields, ammo
   run.health.current = 42;
   const healed = applyPowerUp(run, 'health-pack');
   const grenades = applyPowerUp(run, 'grenade-crate');
-  const spread = applyPowerUp(run, 'spread-ltc-chip');
+  const spreadRun = createCombatRunState({ mode: 'paid', characterId: 'lester' });
+  const shotgunRun = createCombatRunState({ mode: 'paid', characterId: 'lester' });
+  const machineGunRun = createCombatRunState({ mode: 'paid', characterId: 'lester' });
+  const spread = applyPowerUp(spreadRun, 'spread-ltc-chip');
+  const shotgun = applyPowerUp(shotgunRun, 'block-breaker-shells');
+  const machineGun = applyPowerUp(machineGunRun, 'hashstorm-drum');
   const multiplier = applyPowerUp(run, 'score-multiplier');
   const shield = applyPowerUp(run, 'shield-cache');
   const ammo = applyPowerUp(run, 'ammo-cache');
@@ -760,6 +765,8 @@ test('power ups refine health, grenades, score multipliers, lives, shields, ammo
   assert.equal(healed.health.current > 42, true);
   assert.equal(grenades.grenades > 3, true);
   assert.equal(spread.loadout.primaryWeapon.id, 'spread-ltc');
+  assert.equal(shotgun.loadout.primaryWeapon.id, 'scatter-shotgun');
+  assert.equal(machineGun.loadout.primaryWeapon.id, 'auto-miner');
   assert.equal(multiplier.scoreMultiplier > 1, true);
   assert.equal(shield.health.shieldCharges > 0, true);
   assert.equal(ammo.ammoReserve > 0, true);
@@ -2004,6 +2011,18 @@ test('roguelike power-ups expose the effect contract the runtime depends on', ()
   assert.ok(berserk, 'berserk-candle power-up must exist');
   assert.equal(berserk.effect, 'berserk');
   assert.ok(berserk.durationSeconds > 0, 'berserk is a timed buff');
+
+  const shotgun = byId['block-breaker-shells'];
+  assert.ok(shotgun, 'block-breaker-shells shotgun pickup must exist');
+  assert.equal(shotgun.effect, 'weapon');
+  assert.equal(shotgun.weaponId, 'scatter-shotgun');
+  assert.ok(shotgun.durationSeconds > 0, 'shotgun pickup is a timed weapon swap');
+
+  const machineGun = byId['hashstorm-drum'];
+  assert.ok(machineGun, 'hashstorm-drum machine-gun pickup must exist');
+  assert.equal(machineGun.effect, 'weapon');
+  assert.equal(machineGun.weaponId, 'auto-miner');
+  assert.ok(machineGun.durationSeconds > 0, 'machine-gun pickup is a timed weapon swap');
 
   const nuke = byId['nuke-liquidation'];
   assert.ok(nuke, 'nuke-liquidation power-up must exist');

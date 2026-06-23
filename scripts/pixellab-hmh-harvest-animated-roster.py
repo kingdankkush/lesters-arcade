@@ -32,7 +32,12 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT_ROOT = ROOT / "apps/portal/assets/generated/hmh-animated-roster"
 MANIFEST = OUT_ROOT / "hmh-animated-roster.mjs"
 LEDGER = OUT_ROOT / "roster-ledger.json"
+CHAR_LEDGER = OUT_ROOT / "char-creation-ledger.json"
 URL_RE = re.compile(r"https?://[^\s,)\]>'\"]+")
+LABEL_RE = re.compile(
+    r"^\s*([a-z][a-z0-9-]+)\s*\((?:south-east|north-east|north-west|south-west|south|north|east|west)\b",
+    re.M,
+)
 
 # Curated roster: friendly key -> (character_id, role). Picked the richest /
 # canonical instances from list_characters recon.
@@ -82,6 +87,34 @@ ROSTER = {
 
 DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
 
+NAME_MAP = {
+    # Renderer-facing canonical names. Some PixelLab jobs were created with
+    # weapon/action-specific names, but runtime state requests `shoot`, `melee`,
+    # `throw`, and `shoot-shotgun`.
+    "fire-pistol": "shoot",
+    "melee-knife": "melee",
+    "throw-axe": "throw",
+    "fire-shotgun": "shoot-shotgun",
+}
+
+
+def roster_entries() -> dict[str, tuple[str, str]]:
+    """Return the harvest roster, overriding IDs with recreated characters when present.
+
+    Some older PixelLab characters can fail with missing rotation images. The
+    recreate script writes fresh character_ids into char-creation-ledger.json;
+    harvesting should follow those IDs without needing hand-edits to this file.
+    """
+    entries = dict(ROSTER)
+    if CHAR_LEDGER.exists():
+        char_ledger = json.loads(CHAR_LEDGER.read_text(encoding="utf-8"))
+        for key, data in char_ledger.items():
+            cid = data.get("character_id")
+            if key in entries and cid:
+                _, role = entries[key]
+                entries[key] = (cid, role)
+    return entries
+
 
 def load_server() -> dict[str, Any]:
     d = json.loads((Path.home() / ".claude.json").read_text(encoding="utf-8"))
@@ -127,12 +160,12 @@ def parse_character(text: str) -> dict[str, Any]:
             dirs[direction] = [u for _, u in sorted(dirs[direction])]
     # Parse labels to get base animation names
     # Labels look like: '  idle-8dir (south, 5f)' or 'walk-8dir (east, 5f)'
-    label_pattern = re.compile(r"^\s+([a-z][a-z0-9-]+)\s*\((?:south|north|east|west|south-east|north-east|north-west|south-west)")
-    labels = label_pattern.findall(text)
+    labels = LABEL_RE.findall(text)
     # Build mapping: anim_id -> base_name (strip -8dir suffix, keep base like 'idle', 'walk', 'run', 'shoot', 'melee', 'hurt', 'death', 'throw')
     for idx, aid in enumerate(anim_order):
         raw = labels[idx] if idx < len(labels) else f"anim{idx}"
         base = raw.replace("-8dir", "")  # e.g., 'idle-8dir' -> 'idle'
+        base = NAME_MAP.get(base, base)
         # Find the direction for this anim_id
         dirs = list(anims[aid].keys())
         direction = dirs[0] if dirs else "south"
@@ -155,14 +188,16 @@ def download(url: str, dest: Path) -> bool:
         return False
 
 
-async def harvest() -> None:
+async def harvest(only: set[str] | None = None) -> None:
     server = load_server()
-    ledger: dict[str, Any] = {}
+    ledger: dict[str, Any] = json.loads(LEDGER.read_text(encoding="utf-8")) if LEDGER.exists() else {}
     total = 0
     async with streamablehttp_client(server["url"], headers=server.get("headers", {})) as (r, w, _):
         async with ClientSession(r, w) as sess:
             await sess.initialize()
-            for key, (cid, role) in ROSTER.items():
+            for key, (cid, role) in roster_entries().items():
+                if only and key not in only:
+                    continue
                 try:
                     res = await sess.call_tool("get_character", {"character_id": cid})
                     parsed = parse_character(result_text(res))
@@ -194,15 +229,39 @@ async def harvest() -> None:
                     if sorted_dirs:
                         entry["animations"][base_name] = sorted_dirs
                         print(f"  {key}/{base_name}: {sum(len(v) for v in sorted_dirs.values())} frames across {len(sorted_dirs)} dirs", flush=True)
+                if not entry["animations"]:
+                    print(f"{key}: 0 animations harvested; preserving existing ledger entry", flush=True)
+                    continue
                 ledger[key] = entry
+                OUT_ROOT.mkdir(parents=True, exist_ok=True)
+                LEDGER.write_text(json.dumps(ledger, indent=2), encoding="utf-8")
                 print(f"{key}: {len(entry['animations'])} animations harvested", flush=True)
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
     LEDGER.write_text(json.dumps(ledger, indent=2), encoding="utf-8")
     print(json.dumps({"characters": len(ledger), "frames_downloaded": total}, indent=2))
 
 
+def canonicalize_animation_names(ledger: dict[str, Any]) -> dict[str, Any]:
+    """Normalize legacy/custom PixelLab animation labels to runtime names."""
+    for entry in ledger.values():
+        animations = entry.get("animations") or {}
+        for old_name, new_name in NAME_MAP.items():
+            if old_name not in animations:
+                continue
+            if new_name in animations:
+                merged = dict(animations[new_name])
+                for direction, frames in animations[old_name].items():
+                    merged.setdefault(direction, frames)
+                animations[new_name] = merged
+            else:
+                animations[new_name] = animations[old_name]
+            del animations[old_name]
+    return ledger
+
+
 def build_manifest() -> None:
-    ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+    ledger = canonicalize_animation_names(json.loads(LEDGER.read_text(encoding="utf-8")))
+    LEDGER.write_text(json.dumps(ledger, indent=2), encoding="utf-8")
     body = json.dumps(ledger, indent=2)
     MANIFEST.write_text(
         "// AUTO-GENERATED by pixellab-hmh-harvest-animated-roster.py. Do not hand-edit.\n"
@@ -219,7 +278,7 @@ async def show_list() -> None:
     async with streamablehttp_client(server["url"], headers=server.get("headers", {})) as (r, w, _):
         async with ClientSession(r, w) as sess:
             await sess.initialize()
-            for key, (cid, role) in ROSTER.items():
+            for key, (cid, role) in roster_entries().items():
                 res = await sess.call_tool("get_character", {"character_id": cid})
                 parsed = parse_character(result_text(res))
                 print(f"{key} ({role}): {len(parsed['anim_order'])} anims, labels={parsed['labels'][:12]}")
@@ -228,9 +287,11 @@ async def show_list() -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("command", choices=["list", "harvest", "manifest"])
+    ap.add_argument("--only", help="comma-separated roster keys to harvest (keeps long refreshes resumable/targeted)")
     args = ap.parse_args()
     if args.command == "harvest":
-        asyncio.run(harvest())
+        only = {p.strip() for p in args.only.split(",") if p.strip()} if args.only else None
+        asyncio.run(harvest(only=only))
         build_manifest()
     elif args.command == "manifest":
         build_manifest()

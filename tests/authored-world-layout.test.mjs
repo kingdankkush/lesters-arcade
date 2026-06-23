@@ -9,6 +9,7 @@ import {
   getAuthoredRouteNodes,
   getAuthoredDistrictRouteNodes,
   getAuthoredEncounterBeats,
+  getAuthoredForegroundSceneObjects,
   getAuthoredDistrictLayout,
   getAuthoredSceneObjects,
   getAllAuthoredSceneObjects,
@@ -109,10 +110,16 @@ test('getAuthoredDistrictLayout returns null for unknown districts', () => {
   assert.equal(unknown, null);
 });
 
-test('navigation cues include text labels for player guidance', () => {
+test('navigation cues include text labels for player guidance in both levels', () => {
   const countryRoad = getAuthoredSceneObjects('country-road', 'level-1-crypto-wasteland');
-  const signposts = countryRoad.filter((o) => o.role === 'sign' && o.text);
-  assert.ok(signposts.length >= 2, 'Country Road should have at least 2 signposts with text');
+  const countrySignposts = countryRoad.filter((o) => o.role === 'sign' && o.text);
+  assert.ok(countrySignposts.length >= 2, 'Country Road should have at least 2 signposts with text');
+
+  const level2Districts = ['outer-boulevard', 'financial-core', 'luxury-neighborhoods', 'penthouse-rim'];
+  for (const districtId of level2Districts) {
+    const signs = getAuthoredSceneObjects(districtId, 'level-2-litecoin-city').filter((o) => o.role === 'sign' && o.text);
+    assert.ok(signs.length >= 2, `${districtId} should have at least 2 Level 2 navigation signs`);
+  }
 });
 
 test('LEVEL_1_EXPANDED_PROPS has richer props for all 5 districts', () => {
@@ -185,4 +192,21 @@ test('authored encounter beats expose ordered labels and objectives for HUD/desi
   assert.equal(beats.length, 8);
   assert.deepEqual(beats.map((beat) => beat.index), [0, 1, 2, 3, 4, 5, 6, 7]);
   assert.ok(beats.every((beat) => beat.label && beat.objective));
+});
+
+test('authored foreground staging adds non-solid near-plane animation cues to every district', () => {
+  const checks = [
+    ['level-1-crypto-wasteland', ['desert-approach', 'ghost-town', 'country-road', 'residential-edge', 'inner-city-threshold']],
+    ['level-2-litecoin-city', ['outer-boulevard', 'financial-core', 'luxury-neighborhoods', 'penthouse-rim']],
+  ];
+  for (const [levelId, districts] of checks) {
+    for (const districtId of districts) {
+      const foregrounds = getAuthoredForegroundSceneObjects(districtId, levelId);
+      assert.ok(foregrounds.length >= 2, `${levelId}/${districtId} should have foreground staging`);
+      assert.ok(foregrounds.every((o) => o.solid === false), 'foreground staging should never block traversal');
+      assert.ok(foregrounds.every((o) => o.foregroundBand && o.animationCue && o.drawOrderBias > 0));
+      const allObjects = getAllAuthoredSceneObjects(districtId, levelId);
+      assert.ok(allObjects.some((o) => o.foregroundBand === 'near'), `${levelId}/${districtId} should render near-plane foreground objects`);
+    }
+  }
 });

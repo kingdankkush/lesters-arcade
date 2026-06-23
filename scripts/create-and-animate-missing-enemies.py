@@ -28,6 +28,18 @@ DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west"
 STYLE = "isometric pixel art, high top-down 3/4 view, bold single-color dark outline, clean readable silhouette, transparent background"
 PALETTE = "Litecoin silver and warm desert palette with subtle cyan accents"
 
+# PixelLab v3 does not support quadruped character creation; pro/standard
+# quadrupeds require a template. Keep the animal mapping explicit so old retry
+# scripts do not recreate broken no-rotation characters again.
+QUADRUPED_TEMPLATES = {
+    "coyote-pack-runner": "dog",
+    "wild-boar": "bear",
+    "buzzard": "cat",
+    "rattlesnake": "cat",
+    "scorpion-ambusher": "cat",
+    "rug-rat": "cat",
+}
+
 # Characters to create
 NEW_CHARS = [
     {
@@ -83,13 +95,13 @@ NEW_CHARS = [
 # Characters that exist but need more animations
 EXISTING_NEED_ANIMS = ["phishing-angler", "mev-reaper", "sybil-drone", "liquidation-cascade-golem"]
 
-# Standard 6-anim enemy kit
+# Standard 6-anim enemy kit. PixelLab requires an even frame_count between 4 and 16.
 ANIMATIONS = [
     ("idle", "idle breathing animation, subtle body movement, alert stance", 6),
     ("walk", "walking animation, steady forward movement, limb cycle", 8),
     ("run", "running animation, fast pursuit movement, aggressive stride", 8),
     ("attack", "attack animation, aggressive lunge or strike with telegraph wind-up", 6),
-    ("hit", "hit reaction, flinch backward, damage taken response", 5),
+    ("hit", "hit reaction, flinch backward, damage taken response", 6),
     ("death", "death animation, collapse and dissolve into pixels or dust", 8),
 ]
 
@@ -137,13 +149,16 @@ async def create_chars(session, ledger):
         args = {
             "description": spec["description"],
             "body_type": spec["body_type"],
-            "mode": "v3",
+            "mode": "pro" if spec.get("body_type") == "quadruped" else "v3",
             "n_directions": 8,
             "size": spec["size"],
             "view": "high top-down",
             "outline": "single color outline",
             "shading": "detailed shading",
         }
+        template = spec.get("template") or QUADRUPED_TEMPLATES.get(key)
+        if template:
+            args["template"] = template
         try:
             result = await session.call_tool("create_character", args)
             text = text_of(result)
@@ -186,23 +201,38 @@ async def animate_chars(session, ledger):
                 print(f"  {key}: {processing} processing, waiting 20s...", flush=True)
                 await asyncio.sleep(20)
 
-            try:
-                result = await session.call_tool("animate_character", {
-                    "character_id": char_id,
-                    "action_description": anim_desc,
-                    "animation_name": anim_name,
-                    "directions": DIRECTIONS,
-                    "frame_count": frame_count,
-                    "confirm_cost": True,
-                })
-                text = text_of(result)
-                ledger[key]["animations"][anim_name] = {"queued": True, "raw": text[:200]}
-                save_ledger(ledger)
-                print(f"  queued {key}/{anim_name}", flush=True)
-                await asyncio.sleep(3)
-            except Exception as e:
-                print(f"  ERROR {key}/{anim_name}: {e}", flush=True)
-                await asyncio.sleep(5)
+            retries = 0
+            while retries < 10:
+                try:
+                    result = await session.call_tool("animate_character", {
+                        "character_id": char_id,
+                        "action_description": anim_desc,
+                        "animation_name": anim_name,
+                        "directions": DIRECTIONS,
+                        "frame_count": frame_count,
+                        "confirm_cost": True,
+                    })
+                    text = text_of(result)
+                    lower = text.lower()
+                    if "error" in lower and "slot" in lower:
+                        retries += 1
+                        print(f"  {key}/{anim_name}: slots full, waiting 30s (retry {retries}/10)", flush=True)
+                        await asyncio.sleep(30)
+                        continue
+                    if "error" in lower:
+                        ledger[key]["animations"].setdefault(anim_name, {})["last_error"] = text[:240]
+                        save_ledger(ledger)
+                        print(f"  ERROR {key}/{anim_name}: {text[:220]}", flush=True)
+                        break
+                    ledger[key]["animations"][anim_name] = {"queued": True, "raw": text[:200]}
+                    save_ledger(ledger)
+                    print(f"  queued {key}/{anim_name}", flush=True)
+                    await asyncio.sleep(3)
+                    break
+                except Exception as e:
+                    retries += 1
+                    print(f"  ERROR {key}/{anim_name}: {e}", flush=True)
+                    await asyncio.sleep(10)
 
 
 async def main():

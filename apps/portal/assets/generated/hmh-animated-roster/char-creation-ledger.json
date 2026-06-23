@@ -351,12 +351,76 @@
     }
   },
   "coyote-pack-runner": {
-    "character_id": "92611a02-7a89-4c99-a6c5-43a58019a2a4",
-    "animations": {}
+    "character_id": "f4b8d117-c9f8-4d5d-87b7-9241d5b6b167",
+    "animations": {
+      "idle": {
+        "queued": true,
+        "complete": true
+      },
+      "walk": {
+        "queued": true,
+        "complete": true
+      },
+      "run": {
+        "queued": true,
+        "complete": true
+      },
+      "attack": {
+        "queued": true,
+        "complete": true
+      },
+      "attack-tell": {
+        "queued": true,
+        "complete": true
+      },
+      "hit": {
+        "queued": true,
+        "complete": true
+      },
+      "death": {
+        "queued": true,
+        "complete": true
+      }
+    },
+    "recreate_status": "created",
+    "recreate_raw": "id: f4b8d117-c9f8-4d5d-87b7-9241d5b6b167\nname: lean wiry coyote\nmode: pro (25 generations, 8 directions)\nbody: quadruped (dog)\nsize: 96x96px\nview: high top-down\nstatus: processing (~3-5 min)\n\nhint: get_character(character_id=\"f4b8d117-c9f8-4d5d-87b7-9241d5b6b167\")",
+    "recreated_from": "92611a02-7a89-4c99-a6c5-43a58019a2a4"
   },
   "wild-boar": {
-    "character_id": "400567e7-710b-4940-bf41-460128772fc4",
-    "animations": {}
+    "character_id": "57c9c13a-1a25-4142-b614-88a19dca50b6",
+    "animations": {
+      "idle": {
+        "queued": true,
+        "complete": true
+      },
+      "walk": {
+        "queued": true,
+        "complete": true
+      },
+      "run": {
+        "queued": true,
+        "complete": true
+      },
+      "attack": {
+        "queued": true,
+        "complete": true
+      },
+      "attack-tell": {
+        "queued": true,
+        "complete": true
+      },
+      "hit": {
+        "queued": true,
+        "complete": true
+      },
+      "death": {
+        "queued": true,
+        "complete": true
+      }
+    },
+    "recreate_status": "created",
+    "recreate_raw": "id: 57c9c13a-1a25-4142-b614-88a19dca50b6\nname: massive wild boar\nmode: pro (25 generations, 8 directions)\nbody: quadruped (bear)\nsize: 112x112px\nview: high top-down\nstatus: processing (~3-5 min)\n\nhint: get_character(character_id=\"57c9c13a-1a25-4142-b614-88a19dca50b6\")",
+    "recreated_from": "400567e7-710b-4940-bf41-460128772fc4"
   },
   "buzzard": {
     "character_id": "bf8c1cb2-a133-47e3-b060-969ab6f6cb68",
@@ -366,6 +430,21 @@
       },
       "run": {
         "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "attack": {
+        "queued": true
+      },
+      "attack-tell": {
+        "queued": true
+      },
+      "hit": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
       }
     }
   },
@@ -373,6 +452,24 @@
     "character_id": "76702029-90eb-4ce9-b113-f6d9eb8721b0",
     "animations": {
       "hit": {
+        "queued": true
+      },
+      "idle": {
+        "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      },
+      "attack": {
+        "queued": true
+      },
+      "attack-tell": {
+        "queued": true
+      },
+      "death": {
         "queued": true
       }
     }
@@ -393,6 +490,24 @@
       },
       "run": {
         "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "shoot": {
+        "queued": true
+      },
+      "melee": {
+        "queued": true
+      },
+      "throw": {
+        "queued": true
+      },
+      "hurt": {
+        "queued": true
+      },
+      "death": {
+        "queued": true
       }
     }
   },
@@ -404,6 +519,21 @@
       },
       "death": {
         "queued": true
+      },
+      "idle": {
+        "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      },
+      "attack": {
+        "queued": true
+      },
+      "attack-tell": {
+        "queued": true
       }
     }
   },
@@ -411,6 +541,24 @@
     "character_id": "afb5c6c3-9d0a-48a0-a059-edc00b97aa50",
     "animations": {
       "death": {
+        "queued": true
+      },
+      "idle": {
+        "queued": true
+      },
+      "walk": {
+        "queued": true
+      },
+      "run": {
+        "queued": true
+      },
+      "attack": {
+        "queued": true
+      },
+      "attack-tell": {
+        "queued": true
+      },
+      "hit": {
         "queued": true
       }
     }

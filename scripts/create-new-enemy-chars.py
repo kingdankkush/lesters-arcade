@@ -6,11 +6,10 @@ import json
 import os
 import re
 import time
+from pathlib import Path
 from mcp.client.streamable_http import streamablehttp_client
 from mcp import ClientSession
 
-PIXELLAB_URL = "https://api.pixellab.ai/mcp"
-PIXELLAB_TOKEN = "7f098cf2-1fc2-4f27-8af9-8ce3e0a352af"
 
 LEDGER_PATH = os.path.join(os.path.dirname(__file__), "..", "apps", "portal", "assets", "generated", "hmh-animated-roster", "char-creation-ledger.json")
 LEDGER_PATH = os.path.abspath(LEDGER_PATH)
@@ -20,8 +19,20 @@ LEDGER_PATH = os.path.abspath(LEDGER_PATH)
 STYLE_BASE = "isometric pixel art, high top-down 3/4 view, bold single-color dark outline, clean readable silhouette, transparent background"
 PALETTE = "Litecoin silver and warm desert palette with subtle cyan accents"
 
+# PixelLab v3 does not support quadruped character creation; pro/standard
+# quadrupeds require a template. Keep old retry scripts aligned with the
+# recreation pipeline so they do not produce broken no-rotation characters.
+QUADRUPED_TEMPLATES = {
+    "coyote-pack-runner": "dog",
+    "wild-boar": "bear",
+    "buzzard": "cat",
+    "rattlesnake": "cat",
+    "scorpion-ambusher": "cat",
+    "rug-rat": "cat",
+}
+
 NEW_CHARACTERS = [
-    # Animal enemies (quadrupeds)
+
     {
         "key": "coyote-pack-runner",
         "description": f"lean hungry coyote pack runner, tawny brown fur with grey markings, pinned back ears, yellow eyes, low aggressive stance, {STYLE_BASE}, {PALETTE}, 96px game sprite",
@@ -111,9 +122,17 @@ ANIMATIONS = [
     {"animation_name": "walk", "action_description": "walking animation, steady forward movement, limb cycle", "frame_count": 8},
     {"animation_name": "run", "action_description": "running animation, fast pursuit movement, aggressive stride", "frame_count": 8},
     {"animation_name": "attack", "action_description": "attack animation, aggressive lunge or strike with telegraph wind-up", "frame_count": 6},
-    {"animation_name": "hit", "action_description": "hit reaction, flinch backward, damage taken response", "frame_count": 5},
+    {"animation_name": "hit", "action_description": "hit reaction, flinch backward, damage taken response", "frame_count": 6},
     {"animation_name": "death", "action_description": "death animation, collapse and dissolve into pixels or dust", "frame_count": 8},
 ]
+
+def load_server():
+    data = json.loads((Path.home() / ".claude.json").read_text(encoding="utf-8"))
+    for project in data.get("projects", {}).values():
+        server = project.get("mcpServers", {}).get("pixellab")
+        if server:
+            return server
+    raise SystemExit("no pixellab MCP server found in ~/.claude.json")
 
 def load_ledger():
     if os.path.exists(LEDGER_PATH):
@@ -146,14 +165,17 @@ async def create_characters(session):
         args = {
             "description": spec["description"],
             "body_type": spec["body_type"],
-            "mode": "v3",
+            "mode": "pro" if spec.get("body_type") == "quadruped" else "v3",
             "n_directions": 8,
             "size": spec["size"],
             "view": "high top-down",
             "outline": "single color outline",
             "shading": "detailed shading",
         }
-        
+        template = spec.get("template") or QUADRUPED_TEMPLATES.get(key)
+        if template:
+            args["template"] = template
+
         try:
             result = await session.call_tool("create_character", args)
             text = result.content[0].text if result.content else ""
@@ -237,7 +259,8 @@ async def main():
     print(f"Total animation jobs: {len(NEW_CHARACTERS) * len(ANIMATIONS)}")
     print("=" * 60)
     
-    async with streamablehttp_client(PIXELLAB_URL, headers={"Authorization": f"Bearer {PIXELLAB_TOKEN}"}) as (read, write, _):
+    server = load_server()
+    async with streamablehttp_client(server["url"], headers=server.get("headers", {})) as (read, write, _):
         async with ClientSession(read, write) as session:
             await session.initialize()
             
