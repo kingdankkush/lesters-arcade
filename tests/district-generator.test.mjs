@@ -435,3 +435,50 @@ test('districtTemplateContextForCell exposes authored zone plans for future visu
   assert.equal(context.authoredSetpieceZonePlans.some((plan) => plan.routeZones[0].id === 'main-street-sidewalk'), true);
   assert.equal(context.authoredSetpieceZonePlans.some((plan) => /buildings face the street/.test(plan.hardBoundaryZones[0].purpose)), true);
 });
+
+test('districtTemplateContextForCell classifies authored cells so runtime can suppress random scatter soup', () => {
+  const { grid, macroCellsX, macroCellsY } = generateDistrictGrid(12345, 700, 175, { layout: 'level1-authored' });
+  const row = Math.floor(macroCellsY / 2);
+  const ghostTownCell = grid.find((cell) => cell.districtFamily === 'ghost_town' && cell.dy === row && cell.macroRole === 'main-spine');
+  assert.ok(ghostTownCell, 'found ghost-town spine cell');
+
+  const routeContext = districtTemplateContextForCell(
+    ghostTownCell.dx * DISTRICT_CELL + 2,
+    ghostTownCell.dy * DISTRICT_CELL + 2,
+    grid,
+    macroCellsX,
+  );
+  assert.equal(routeContext.authoredComposition.role, 'landmark-anchor');
+  assert.equal(routeContext.sceneDensity, 1);
+  assert.equal(routeContext.authoredComposition.skipScatter, true);
+
+  const edgeContext = districtTemplateContextForCell(
+    ghostTownCell.dx * DISTRICT_CELL + 2,
+    ghostTownCell.dy * DISTRICT_CELL + 1,
+    grid,
+    macroCellsX,
+  );
+  assert.equal(['setpiece-ring', 'route-edge-dressing', 'clear-route-corridor'].includes(edgeContext.authoredComposition.role), true);
+  assert.equal(edgeContext.sceneDensity <= 0.58, true);
+
+  const negativeSpaceSample = grid.flatMap((cell) => {
+    const samples = [];
+    for (let localY = 0; localY < DISTRICT_CELL; localY += 1) {
+      for (let localX = 0; localX < DISTRICT_CELL; localX += 1) {
+        const context = districtTemplateContextForCell(
+          cell.dx * DISTRICT_CELL + localX,
+          cell.dy * DISTRICT_CELL + localY,
+          grid,
+          macroCellsX,
+        );
+        samples.push(context);
+      }
+    }
+    return samples;
+  }).find((context) => context?.authoredComposition?.ambientAllowed === false);
+
+  assert.ok(negativeSpaceSample, 'found an authored negative-space cell');
+  assert.equal(negativeSpaceSample.authoredComposition.skipScatter, true);
+  assert.equal(negativeSpaceSample.sceneDensity < 0.1, true);
+  assert.equal(negativeSpaceSample.authoredComposition.ambientAllowed, false);
+});

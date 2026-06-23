@@ -52,6 +52,50 @@ test('water cells stay open (no scene objects)', () => {
   assert.deepEqual(buildScene(SEED, 2, 2, 'water'), []);
 });
 
+test('authored composition density can intentionally leave filler cells empty', () => {
+  const empty = buildScene(SEED, 9, 9, 'town', {
+    reserveRadius: 0,
+    density: 1,
+    templateContext: {
+      sceneDensity: 0,
+      templatePoolIds: ['street_block'],
+      authoredComposition: { role: 'authored-negative-space', skipAnchor: true, skipScatter: true },
+    },
+  });
+
+  assert.deepEqual(empty, []);
+});
+
+test('authored route corridors suppress anchors and scatter while preserving aligned path-edge dressing', () => {
+  const route = buildScene(SEED, 9, 9, 'town', {
+    reserveRadius: 0,
+    templateContext: {
+      sceneDensity: 1,
+      templatePoolIds: ['street_block'],
+      pathOrientation: 'horizontal',
+      authoredComposition: { role: 'clear-route-corridor', skipAnchor: true, skipScatter: true, maxPathEdgeCount: 2 },
+    },
+  });
+
+  assert.equal(route.length > 0, true);
+  assert.equal(route.every((obj) => obj.place === 'pathEdge'), true);
+  assert.equal(route.length <= 2, true);
+  assert.equal(route.some((obj) => obj.assetKey === 'street/street-lamp'), true);
+});
+
+test('forced authored landmarks still render anchors even under route/open-space suppression', () => {
+  const landmark = buildScene(SEED, 10, 10, 'desert', {
+    reserveRadius: 0,
+    templateContext: {
+      sceneDensity: 0,
+      forceTemplateId: 'crypto_desert_outpost',
+      authoredComposition: { role: 'landmark-anchor', skipAnchor: false, skipScatter: false },
+    },
+  });
+
+  assert.equal(landmark.some((obj) => obj.place === 'anchor' && obj.assetKey === 'crypto/landmark-gas-station'), true);
+});
+
 test('street lamps ONLY appear as path-edge placements at fixed spacing', () => {
   // Find a town cell that rolled the street_block template, then assert its
   // lamps are pathEdge and evenly spaced along one axis.

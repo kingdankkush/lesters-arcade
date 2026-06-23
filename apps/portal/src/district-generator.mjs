@@ -1050,6 +1050,37 @@ export function districtCellAtSceneCell(cellX, cellY, districtGrid, macroCellsX,
   return districtGrid[dy * macroCellsX + dx] ?? null;
 }
 
+function authoredCompositionForLocalCell(districtCell, localSceneCellX, localSceneCellY, activeSetPiece, transitionBand) {
+  const role = districtCell?.macroRole ?? 'generic-grid';
+  const routeAligned = districtCell?.pathOrientation === 'vertical'
+    ? localSceneCellX === 2
+    : localSceneCellY === 2;
+  const nearRoute = districtCell?.pathOrientation === 'vertical'
+    ? Math.abs(localSceneCellX - 2) <= 1
+    : Math.abs(localSceneCellY - 2) <= 1;
+  const authoredRouteRole = ['main-spine', 'hub-spine', 'city-seam', 'shoulder-loop', 'poi-spur'].includes(role);
+
+  if (activeSetPiece?.distance === 0) {
+    return Object.freeze({ role: 'landmark-anchor', sceneDensity: 1, skipAnchor: false, skipScatter: true, maxScatterCount: 0, maxPathEdgeCount: 3, ambientAllowed: true, ambientChancePct: 10 });
+  }
+  if (activeSetPiece) {
+    return Object.freeze({ role: 'setpiece-ring', sceneDensity: activeSetPiece.distance <= 1 ? 0.18 : 0.04, skipAnchor: true, skipScatter: true, maxPathEdgeCount: 2, ambientAllowed: activeSetPiece.distance <= 1, ambientChancePct: activeSetPiece.distance <= 1 ? 5 : 0 });
+  }
+  if (transitionBand) {
+    return Object.freeze({ role: 'transition-seam', sceneDensity: 0.12, skipAnchor: true, skipScatter: true, maxPathEdgeCount: 2, ambientAllowed: false, ambientChancePct: 0 });
+  }
+  if (authoredRouteRole && routeAligned) {
+    return Object.freeze({ role: 'clear-route-corridor', sceneDensity: 0.08, skipAnchor: true, skipScatter: true, maxPathEdgeCount: 2, ambientAllowed: false, ambientChancePct: 0 });
+  }
+  if (authoredRouteRole && nearRoute) {
+    return Object.freeze({ role: 'route-edge-dressing', sceneDensity: 0.04, skipAnchor: true, skipScatter: true, maxPathEdgeCount: 1, ambientAllowed: false, ambientChancePct: 0 });
+  }
+  if (role === 'outer-wilds') {
+    return Object.freeze({ role: 'open-wilds-negative-space', sceneDensity: 0.02, skipAnchor: true, skipScatter: true, ambientAllowed: false, ambientChancePct: 0 });
+  }
+  return Object.freeze({ role: 'authored-negative-space', sceneDensity: 0.02, skipAnchor: true, skipScatter: true, ambientAllowed: false, ambientChancePct: 0 });
+}
+
 export function districtTemplateContextForCell(cellX, cellY, districtGrid, macroCellsX, options = {}) {
   const districtCell = districtCellAtSceneCell(cellX, cellY, districtGrid, macroCellsX, options);
   if (!districtCell) return null;
@@ -1068,12 +1099,17 @@ export function districtTemplateContextForCell(cellX, cellY, districtGrid, macro
   const transitionBand = transitionBandAtLocalCell(districtCell, localSceneCellX, localSceneCellY);
   const setPieceTemplatePoolIds = activeSetPiece?.templatePoolIds ?? districtCell.templatePoolIds;
   const preferredTemplateIds = preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY);
+  const authoredComposition = authoredCompositionForLocalCell(districtCell, localSceneCellX, localSceneCellY, activeSetPiece, transitionBand);
   return {
     districtFamily: districtCell.districtFamily,
     templatePoolIds: transitionBand ? mergeTemplatePools(setPieceTemplatePoolIds, transitionBand.templatePoolIds) : setPieceTemplatePoolIds,
     preferredTemplateIds,
     archetype: districtCell.archetype,
     pathOrientation: districtCell.pathOrientation,
+    localSceneCellX,
+    localSceneCellY,
+    authoredComposition,
+    sceneDensity: authoredComposition.sceneDensity,
     branchLane: districtCell.branchLane,
     macroRole: districtCell.macroRole,
     poiId: districtCell.poiId,

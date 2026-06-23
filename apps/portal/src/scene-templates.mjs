@@ -1090,9 +1090,11 @@ export function pickTemplate(seed, cellX, cellY, biome, context = {}) {
 // so the map breathes. `reserveRadius` keeps the player spawn (origin) clear.
 export function buildScene(seed, cellX, cellY, biome, { reserveRadius = 6, density = 0.62, templateContext = null } = {}) {
   if (biome === 'water') return []; // water stays open + impassable (handled elsewhere)
+  const composition = templateContext?.authoredComposition ?? {};
+  const effectiveDensity = Number.isFinite(templateContext?.sceneDensity) ? templateContext.sceneDensity : density;
   const forceLandmarkTemplate = Boolean(templateContext?.forceTemplateId);
   const cellHash = hashU32((cellX * 73856093) ^ seed, cellY * 19349663);
-  if (!forceLandmarkTemplate && (cellHash % 100) >= Math.round(density * 100)) return [];
+  if (!forceLandmarkTemplate && (cellHash % 100) >= Math.round(effectiveDensity * 100)) return [];
   const template = pickTemplate(seed, cellX, cellY, biome, templateContext ?? {});
   if (!template) return [];
 
@@ -1119,6 +1121,7 @@ export function buildScene(seed, cellX, cellY, biome, { reserveRadius = 6, densi
     const count = slot.count ?? 1;
 
     if (slot.place === 'anchor') {
+      if (composition.skipAnchor && !forceLandmarkTemplate) continue;
       const x = baseX, y = baseY;
       if (inSpawn(x, y)) continue;
       const obj = mkObj(template, slot, cellX, cellY, slotIndex, 0, x, y);
@@ -1128,8 +1131,9 @@ export function buildScene(seed, cellX, cellY, biome, { reserveRadius = 6, densi
       // Drop one every `spacing` tiles along the path, alternating sides so they
       // line a curb/aisle realistically (lamps/fences/cabinets in a row).
       const spacing = slot.spacing ?? 3;
-      const half = Math.floor((count * spacing) / 2);
-      for (let i = 0; i < count; i += 1) {
+      const pathEdgeCount = Number.isFinite(composition.maxPathEdgeCount) ? Math.min(count, Math.max(0, Math.floor(composition.maxPathEdgeCount))) : count;
+      const half = Math.floor((pathEdgeCount * spacing) / 2);
+      for (let i = 0; i < pathEdgeCount; i += 1) {
         const along = -half + i * spacing;
         const side = (i % 2 === 0 ? 1 : -1) * 1; // 1 tile off the path centerline
         const x = horizontal ? baseX + along : baseX + side;
@@ -1139,7 +1143,9 @@ export function buildScene(seed, cellX, cellY, biome, { reserveRadius = 6, densi
         occupied.push({ x, y, r: slot.radius });
       }
     } else if (slot.place === 'scatter') {
-      for (let i = 0; i < count; i += 1) {
+      if (composition.skipScatter) continue;
+      const scatterCount = Number.isFinite(composition.maxScatterCount) ? Math.min(count, Math.max(0, Math.floor(composition.maxScatterCount))) : count;
+      for (let i = 0; i < scatterCount; i += 1) {
         let placedThis = false;
         for (let attempt = 0; attempt < 6 && !placedThis; attempt += 1) {
           const ox = Math.round((rand01(seed, cellX * 97 + slotIndex, cellY * 41 + i * 7 + attempt) - 0.5) * (SCENE_CELL - 1));

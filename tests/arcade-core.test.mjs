@@ -1394,6 +1394,13 @@ test('HMH loading gate keeps gameplay pending and uses responsive loading overla
   assert.equal(styleSource.includes('overflow-wrap: anywhere'), true);
 });
 
+test('main.js uses authored composition metadata to keep ambient level props intentional', () => {
+  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.equal(mainSource.includes('sceneContext?.authoredComposition?.ambientChancePct'), true);
+  assert.equal(mainSource.includes('sceneContext?.authoredComposition?.ambientAllowed === false'), true);
+  assert.equal(mainSource.includes('authored levels keep ambient FX sparse and intentional'), true);
+});
+
 test('Lester Arcade music player overlay is wired into the public UI without forcing individual game music', () => {
   const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');

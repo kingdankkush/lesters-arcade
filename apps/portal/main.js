@@ -8002,7 +8002,14 @@ function collectAnimatedProps(ctx) {
       const cellX = baseX + gx * LATTICE;
       const cellY = baseY + gy * LATTICE;
       const h = Math.abs(((cellX * 374761393) ^ (cellY * 668265263)) >>> 0);
-      if ((h % 100) > 42) continue; // ~42% of lattice cells host an animated prop
+      const sceneContext = sceneTemplateContextAt(
+        Math.floor(cellX / SCENE_CELL),
+        Math.floor(cellY / SCENE_CELL),
+      );
+      const authoredAmbientChance = sceneContext?.authoredComposition?.ambientChancePct;
+      const ambientChance = Number.isFinite(authoredAmbientChance) ? authoredAmbientChance : 42;
+      if (sceneContext?.authoredComposition?.ambientAllowed === false) continue;
+      if ((h % 100) > ambientChance) continue; // authored levels keep ambient FX sparse and intentional
       const biome = biomeAt(seed, cellX, cellY);
       const pool = BIOME_ANIM_PROPS[biome] ?? BIOME_ANIM_PROPS.town;
       const slug = pool[h % pool.length];
