@@ -1332,12 +1332,12 @@ test('buildCombatPauseGate freezes sim + timer + input + audio together for ever
   assert.equal(over.timerFrozen, true);
   assert.equal(over.reason, 'game-over');
 
-  // Pre-begin window: sim frozen but it is not a dismissable overlay and audio
-  // is governed by its own lifecycle (not force-idled here).
+  // Pre-begin window: sim, timer, input, and combat audio stay frozen until
+  // loading has fully finished and the player presses/clicks READY.
   const pending = buildCombatPauseGate({ active: true, pendingBegin: true });
   assert.equal(pending.simFrozen, true);
   assert.equal(pending.overlayOpen, false);
-  assert.equal(pending.audioPaused, false);
+  assert.equal(pending.audioPaused, true);
   assert.equal(pending.reason, 'pending-begin');
 
   // Inactive run: everything frozen regardless of other flags.
@@ -1359,6 +1359,17 @@ test('main.js wires the unified pause gate into the loop and pause toggle', () =
   assert.equal(mainSource.includes('gate.simFrozen'), true);
   // Audio rides the gate on pause toggle.
   assert.equal(mainSource.includes('gate.audioPaused'), true);
+});
+
+test('HMH loading gate keeps gameplay pending and uses responsive loading overlays', () => {
+  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  const styleSource = readFileSync(new URL('../apps/portal/styles.css', import.meta.url), 'utf8');
+  assert.equal(mainSource.includes('startCombat({ levelId: level.id, carryOver: options.carryOver ?? null, startPendingBegin: true })'), true);
+  assert.equal(mainSource.includes("overlay.className = 'hmh-loading-overlay'"), true);
+  assert.equal(mainSource.includes("titleOverlay.className = 'hmh-loading-title-overlay'"), true);
+  assert.equal(styleSource.includes('.hmh-loading-title-card'), true);
+  assert.equal(styleSource.includes('max-width: calc(100vw - 24px)'), true);
+  assert.equal(styleSource.includes('overflow-wrap: anywhere'), true);
 });
 
 test('Lester Arcade music player overlay is wired into the public UI without forcing individual game music', () => {

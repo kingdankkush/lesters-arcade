@@ -55,26 +55,23 @@ const DEFAULT_DEATH_VFX = Object.freeze({
   name: 'generic dust + spark burst',
 });
 
-// Muzzle flash VFX: 2-frame flash at barrel position
+// Muzzle flash VFX: a single tiny static flash at the weapon barrel. Keep this
+// readable and minimal so player bullets/tracers don't get lost in a particle spray.
 export function createMuzzleFlash(x, y, direction = 'east') {
-  const flashes = [];
-  const colors = ['#ffff66', '#ffffff', '#ffcc33'];
-  for (let i = 0; i < 4; i++) {
-    const angle = (Math.random() * Math.PI * 0.5) - Math.PI * 0.25;
-    const speed = 1 + Math.random() * 2;
-    flashes.push(vfxParticle(
-      `mf-${Date.now()}-${i}`,
-      'muzzle-flash',
-      x, y,
-      Math.cos(angle) * speed,
-      Math.sin(angle) * speed - 0.5,
-      6 + Math.random() * 4,
-      colors[i % colors.length],
-      3 + Math.random() * 2,
-      0.1,
-    ));
-  }
-  return flashes;
+  const color = direction === 'rail' ? '#19f7ff' : '#fff5cc';
+  const size = direction === 'rail' ? 4 : 3;
+  return [vfxParticle(
+    `mf-${Date.now()}`,
+    'muzzle-flash',
+    x,
+    y,
+    0,
+    0,
+    direction === 'rail' ? 4 : 3,
+    color,
+    size,
+    0,
+  )];
 }
 
 // Shell casing VFX: small brass pixel ejected downward

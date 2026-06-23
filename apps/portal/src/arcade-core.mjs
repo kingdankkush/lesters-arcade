@@ -945,9 +945,10 @@ export function buildCombatPauseGate({
   // Gameplay input is captured (ignored by the sim) whenever the sim is frozen,
   // so on-screen touch controls can't "fire through" an open menu/modal.
   const inputCaptured = simFrozen;
-  // Combat audio (SFX/ambient) should idle while paused or at game-over. The
-  // pre-begin and inactive states are handled by their own audio lifecycle.
-  const audioPaused = Boolean(paused || levelUpPaused || gameOver);
+  // Combat audio (SFX/ambient) should idle for every frozen live-combat state,
+  // including the pre-begin READY gate so auto-fire cannot be heard behind the
+  // level loading/title screens.
+  const audioPaused = Boolean(paused || levelUpPaused || gameOver || pendingBegin);
   // A user-dismissable overlay is showing (pause menu or level-up choice).
   const overlayOpen = Boolean(paused || levelUpPaused || gameOver);
   let reason = 'running';

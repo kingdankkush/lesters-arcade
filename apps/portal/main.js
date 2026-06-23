@@ -4365,7 +4365,6 @@ function requestRankedEntry() {
 async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID, options = {}) {
   const level = getHmhCampaignLevel(levelId);
   combat.currentCampaignLevelId = level.id;
-  playSfxCue('level-start');
   if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
   setOfficialView('gameplay');
 
@@ -4378,14 +4377,14 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
   // (combat.paused + combat.pendingBegin) until the player confirms ready,
   // so they see the canvas behind the ready overlay before the game starts.
   await showHMHLoadingScreen(async () => {
-    await startCombat({ levelId: level.id, carryOver: options.carryOver ?? null });
-    // Freeze the game: world generated and on-screen, but no ticking yet.
-    combat.pendingBegin = true;
-    combat.paused = true;
+    await startCombat({ levelId: level.id, carryOver: options.carryOver ?? null, startPendingBegin: true });
+    // World is generated and painted, but the sim/audio stay frozen until READY.
     render();
   }, level);
   // Wait for the player to press SPACE or click the ready overlay.
   await waitForPlayerReady();
+  playSfxCue('level-start');
+  await startArcadeMusicForGame('hard-money-heroes');
 
   // SDK adapter: emit sessionStart now that the player has begun.
   gameAdapter = createInProcessGameAdapter({ gameId: 'hard-money-heroes' });
@@ -4474,20 +4473,21 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
   // we're ready to reveal the freshly-initialized roguelike scene).
   const overlay = document.createElement('div');
   overlay.id = 'hmhLoadingOverlay';
-  overlay.style.cssText = `position:fixed;inset:0;z-index:99999;background:#0a0c14 url(${bgUrl}) center/cover no-repeat;display:flex;align-items:center;justify-content:center;flex-direction:column;`;
+  overlay.className = 'hmh-loading-overlay';
+  overlay.style.backgroundImage = `url(${bgUrl})`;
 
 
   // Progress bar container
   const barContainer = document.createElement('div');
-  barContainer.style.cssText = 'width:60%;max-width:520px;height:12px;background:rgba(255,255,255,0.15);border:2px solid #ffe84d;border-radius:999px;overflow:hidden;margin-bottom:24px;';
+  barContainer.className = 'hmh-loading-progress-shell';
 
   const bar = document.createElement('div');
-  bar.style.cssText = 'height:100%;width:0%;background:linear-gradient(90deg,#ffe84d,#fff);transition:width 80ms linear;';
+  bar.className = 'hmh-loading-progress-fill';
   barContainer.appendChild(bar);
 
   // Status text
   const status = document.createElement('div');
-  status.style.cssText = 'color:#ffe84d;font-family:monospace;font-size:15px;letter-spacing:2px;margin-bottom:12px;';
+  status.className = 'hmh-loading-status';
   status.textContent = 'INITIALIZING HARD MONEY HEROES...';
 
   overlay.append(barContainer, status);
@@ -4537,10 +4537,10 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
 
   const titleOverlay = document.createElement('div');
   titleOverlay.id = 'hmhLoadingTitleOverlay';
-  titleOverlay.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:#0a0c14;';
+  titleOverlay.className = 'hmh-loading-title-overlay';
 
   const title = document.createElement('div');
-  title.style.cssText = 'font-size:72px;font-weight:900;color:#fff;text-shadow:0 0 40px rgba(255,232,77,0.9), 4px 4px 0 #000;letter-spacing:4px;opacity:0;transform:translateY(30px);transition:all 520ms cubic-bezier(0.23,1,0.32,1);';
+  title.className = 'hmh-loading-title-card';
   title.textContent = formatHmhCampaignLevelBanner(level).toUpperCase();
   titleOverlay.appendChild(title);
   document.body.appendChild(titleOverlay);
@@ -5406,6 +5406,7 @@ function renderCodexPanels() {
 async function startCombat(options = {}) {
   const level = getHmhCampaignLevel(options.levelId ?? combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID);
   const carryOver = options.carryOver ?? null;
+  const startPendingBegin = Boolean(options.startPendingBegin);
   combat.currentCampaignLevelId = level.id;
   combat.nextCampaignLevelId = getNextHmhCampaignLevel(level.id)?.id ?? null;
   combat.scriptedBossTriggered = false;
@@ -5414,6 +5415,8 @@ async function startCombat(options = {}) {
   combat.levelClearSource = null;
   combat.levelClearTitle = '';
   combat.active = true;
+  combat.pendingBegin = startPendingBegin;
+  combat.paused = startPendingBegin;
 
   combat.gameOver = false;
   combat.gameOverSubmitted = false;
@@ -5593,9 +5596,13 @@ async function startCombat(options = {}) {
     }
   }
 
-  combat.status = 'Isometric roguelike run live: survive 20 minutes, kite enemy swarms, collect XP, and pause only for level-up augments.';
-  playSfxCue('level-start');
-  await startArcadeMusicForGame('hard-money-heroes');
+  combat.status = startPendingBegin
+    ? 'Level ready: press Space or click the READY overlay to begin.'
+    : 'Isometric roguelike run live: survive 20 minutes, kite enemy swarms, collect XP, and pause only for level-up augments.';
+  if (!startPendingBegin) {
+    playSfxCue('level-start');
+    await startArcadeMusicForGame('hard-money-heroes');
+  }
   renderCombatSandboxStatus();
   syncCombatOverlay();
 }

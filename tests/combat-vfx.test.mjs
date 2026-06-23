@@ -15,17 +15,19 @@ import {
   getRegisteredDeathVfxIds,
 } from '../apps/portal/src/combat-vfx.mjs';
 
-test('createMuzzleFlash produces multiple flash particles with color and size', () => {
+test('createMuzzleFlash produces one tiny static barrel flash instead of a particle spray', () => {
   const flashes = createMuzzleFlash(100, 200, 'east');
-  assert.ok(flashes.length >= 3);
-  for (const f of flashes) {
-    assert.equal(f.type, 'muzzle-flash');
-    assert.equal(typeof f.x, 'number');
-    assert.equal(typeof f.y, 'number');
-    assert.ok(f.life > 0);
-    assert.ok(f.color.startsWith('#'));
-    assert.ok(f.size > 0);
-  }
+  assert.equal(flashes.length, 1);
+  const flash = flashes[0];
+  assert.equal(flash.type, 'muzzle-flash');
+  assert.equal(flash.x, 100);
+  assert.equal(flash.y, 200);
+  assert.equal(flash.vx, 0);
+  assert.equal(flash.vy, 0);
+  assert.equal(flash.gravity, 0);
+  assert.ok(flash.life > 0 && flash.life <= 5);
+  assert.ok(flash.color.startsWith('#'));
+  assert.ok(flash.size > 0 && flash.size <= 4);
 });
 
 test('createShellCasing produces a brass-colored casing particle', () => {
