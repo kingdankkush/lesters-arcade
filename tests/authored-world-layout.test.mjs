@@ -6,6 +6,9 @@ import {
   LEVEL_2_AUTHORED_LAYOUT,
   LEVEL_1_EXPANDED_PROPS,
   LEVEL_2_EXPANDED_PROPS,
+  getAuthoredRouteNodes,
+  getAuthoredDistrictRouteNodes,
+  getAuthoredEncounterBeats,
   getAuthoredDistrictLayout,
   getAuthoredSceneObjects,
   getAllAuthoredSceneObjects,
@@ -150,4 +153,36 @@ test('expanded props include road segments for navigation', () => {
   const desertAll = getAllAuthoredSceneObjects('desert-approach', 'level-1-crypto-wasteland');
   const roads = desertAll.filter((o) => o.role === 'road');
   assert.ok(roads.length >= 20, 'Desert approach should have road segments (got ' + roads.length + ')');
+});
+
+test('authored routes define a complete critical path for both campaign levels', () => {
+  const level1 = getAuthoredRouteNodes('level-1-crypto-wasteland');
+  const level2 = getAuthoredRouteNodes('level-2-litecoin-city');
+  assert.equal(level1[0].beat, 'spawn');
+  assert.equal(level1.at(-1).beat, 'extract');
+  assert.equal(level2[0].beat, 'spawn');
+  assert.equal(level2.at(-1).beat, 'extract');
+  assert.ok(level1.some((node) => node.beat === 'arena'));
+  assert.ok(level2.some((node) => node.beat === 'chokepoint'));
+});
+
+test('every authored district has at least one route marker object in getAllAuthoredSceneObjects', () => {
+  const checks = [
+    ['level-1-crypto-wasteland', ['desert-approach', 'ghost-town', 'country-road', 'residential-edge', 'inner-city-threshold']],
+    ['level-2-litecoin-city', ['outer-boulevard', 'financial-core', 'luxury-neighborhoods', 'penthouse-rim']],
+  ];
+  for (const [levelId, districts] of checks) {
+    for (const districtId of districts) {
+      assert.ok(getAuthoredDistrictRouteNodes(districtId, levelId).length >= 1, `${levelId}/${districtId} should have route node data`);
+      const objects = getAllAuthoredSceneObjects(districtId, levelId);
+      assert.ok(objects.some((o) => o.id.startsWith(`route-${districtId}-`) && o.objective), `${levelId}/${districtId} should render a route marker`);
+    }
+  }
+});
+
+test('authored encounter beats expose ordered labels and objectives for HUD/design tooling', () => {
+  const beats = getAuthoredEncounterBeats('level-2-litecoin-city');
+  assert.equal(beats.length, 8);
+  assert.deepEqual(beats.map((beat) => beat.index), [0, 1, 2, 3, 4, 5, 6, 7]);
+  assert.ok(beats.every((beat) => beat.label && beat.objective));
 });

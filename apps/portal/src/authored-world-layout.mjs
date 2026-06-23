@@ -375,6 +375,64 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
 });
 
 // ============================================================================
+// AUTHORED CRITICAL PATH: route nodes + encounter beats
+// These are not random decoration. They mark the intended traversal spine,
+// arena knots, rest/landmark breaths, and extraction hand-offs for each level.
+// The renderer receives them as non-solid sign/marker objects through
+// getAllAuthoredSceneObjects(), while tests can assert the level design has a
+// complete gameplay route rather than loose prop scatter.
+// ============================================================================
+
+function routeNode(id, districtId, gridX, gridY, label, objective, { assetKey = 'street/bus-stop-sign', beat = 'navigate' } = {}) {
+  return Object.freeze({ id, districtId, gridX, gridY, label, objective, assetKey, beat });
+}
+
+export const LEVEL_1_AUTHORED_ROUTE = Object.freeze([
+  routeNode('spawn-gas-station', 'desert-approach', 4, 5, 'Salvage Gas Station', 'learn the road spine and pick first cover', { beat: 'spawn' }),
+  routeNode('dry-creek-crossing', 'desert-approach', 14, 5, 'Dry Creek Crossing', 'first animal ambush and bridge read', { assetKey: 'construct/wood-bridge', beat: 'ambush' }),
+  routeNode('saloon-square', 'ghost-town', 40, 6, 'Ghost Town Main Street', 'cover-heavy shootout around saloon fronts', { beat: 'arena' }),
+  routeNode('warehouse-alley', 'ghost-town', 48, 4, 'Warehouse Alley', 'side loop teaches alley cut-throughs', { assetKey: 'street/street-lamp', beat: 'loop' }),
+  routeNode('crossroads-post', 'country-road', 60, 6, 'Crossroads Trading Post', 'branching hub with utility-pole sightline', { beat: 'hub' }),
+  routeNode('oasis-park', 'residential-edge', 84, 6, 'Oasis Park', 'water landmark and softer residential cover', { assetKey: 'street/park-bench', beat: 'breather' }),
+  routeNode('city-checkpoint', 'inner-city-threshold', 90, 6, 'Inner City Checkpoint', 'final barricade pressure before extraction', { beat: 'gate' }),
+  routeNode('litecoin-city-gate', 'inner-city-threshold', 98, 5, 'Litecoin City Gate', 'level hand-off to the urban campaign', { assetKey: 'crypto/innercity-billboard-frame', beat: 'extract' }),
+]);
+
+export const LEVEL_2_AUTHORED_ROUTE = Object.freeze([
+  routeNode('tram-stop', 'outer-boulevard', 4, 6, 'Outer Boulevard Tram Stop', 're-enter from Level 1 with clear street-grid orientation', { beat: 'spawn' }),
+  routeNode('service-yard-cut', 'outer-boulevard', 14, 5, 'Service Yard Cut-through', 'teach alleys and flanking through shop clutter', { assetKey: 'street/street-lamp', beat: 'loop' }),
+  routeNode('ticker-plaza', 'financial-core', 30, 6, 'Ticker Plaza', 'wide plaza arena with benches, fountain, and tower sightlines', { assetKey: 'crypto/innercity-billboard-frame', beat: 'arena' }),
+  routeNode('bank-barricade', 'financial-core', 26, 7, 'Bank Barricade', 'hard cover knot before luxury district transition', { assetKey: 'construct/brick-wall-corner', beat: 'gate' }),
+  routeNode('garden-court', 'luxury-neighborhoods', 42, 5, 'Garden Court', 'hedge-loop and mansion grounds breather', { assetKey: 'nature/flower-patch', beat: 'breather' }),
+  routeNode('pool-security', 'luxury-neighborhoods', 46, 4, 'Pool Security Check', 'gated ambush beside water and hedge cover', { assetKey: 'construct/fence-gate', beat: 'ambush' }),
+  routeNode('skybridge', 'penthouse-rim', 64, 4, 'Penthouse Skybridge', 'narrow bridge choke point with rooftop falloff read', { assetKey: 'construct/wood-bridge', beat: 'chokepoint' }),
+  routeNode('vip-exit', 'penthouse-rim', 66, 2, 'VIP Exit Antenna', 'final rooftop extraction marker', { assetKey: 'crypto/utility-pole', beat: 'extract' }),
+]);
+
+function routeForLevel(levelId = 'level-1-crypto-wasteland') {
+  return levelId === 'level-2-litecoin-city' ? LEVEL_2_AUTHORED_ROUTE : LEVEL_1_AUTHORED_ROUTE;
+}
+
+export function getAuthoredRouteNodes(levelId = 'level-1-crypto-wasteland') {
+  return routeForLevel(levelId);
+}
+
+export function getAuthoredDistrictRouteNodes(districtId, levelId = 'level-1-crypto-wasteland') {
+  return Object.freeze(routeForLevel(levelId).filter((node) => node.districtId === districtId));
+}
+
+export function getAuthoredEncounterBeats(levelId = 'level-1-crypto-wasteland') {
+  return Object.freeze(routeForLevel(levelId).map((node, index) => Object.freeze({
+    index,
+    id: node.id,
+    districtId: node.districtId,
+    beat: node.beat,
+    objective: node.objective,
+    label: node.label,
+  })));
+}
+
+// ============================================================================
 // Helper: Get the authored layout for a district by ID
 // ============================================================================
 
@@ -798,5 +856,18 @@ export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto
     k.replace(/-/g, '').toLowerCase() === districtId.replace(/-/g, '').toLowerCase(),
   );
   const extra = expandedKey ? expanded[expandedKey] : [];
-  return Object.freeze([...base, ...extra]);
+  const routeMarkers = getAuthoredDistrictRouteNodes(districtId, levelId).map((node) => Object.freeze({
+    id: `route-${node.districtId}-${node.id}`,
+    assetKey: node.assetKey,
+    role: 'sign',
+    gridX: node.gridX,
+    gridY: node.gridY,
+    solid: false,
+    zHeight: 1,
+    variant: 0,
+    text: node.label,
+    routeBeat: node.beat,
+    objective: node.objective,
+  }));
+  return Object.freeze([...base, ...extra, ...routeMarkers]);
 }
