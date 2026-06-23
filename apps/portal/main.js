@@ -8158,6 +8158,70 @@ function preloadWorldPropImages() {
 let _obstacleCacheFrame = -1;
 let _obstacleCache = [];
 
+// Authored world layout: convert handcrafted landmark placements into runtime
+// obstacle objects that merge with the procedural scene-template layer. This
+// gives each district a readable identity (gas station, saloon, crossroads
+// signpost, oasis, billboard) at fixed world coordinates the player can
+// navigate toward and recognize. District IDs in authored-world-layout.mjs use
+// hyphens (desert-approach); the district generator uses underscores
+// (desert_approach). We normalize and load all districts for the active level.
+const _authoredObstacleCache = new Map(); // districtKey -> [obstacle objects]
+function _buildAuthoredObstaclesForLevel(levelId) {
+  const allDistricts = levelId === 'level-2-litecoin-city'
+    ? Object.keys(LEVEL_2_AUTHORED_LAYOUT_KEYS)
+    : Object.keys(LEVEL_1_AUTHORED_LAYOUT_KEYS);
+  const result = [];
+  for (const districtKey of allDistricts) {
+    const objects = getAuthoredSceneObjects(districtKey, levelId);
+    for (const obj of objects) {
+      const styleKey = SCENE_ROLE_TO_STYLE[obj.role] ?? 'smallprop';
+      const style = PROP_ROLE_STYLE[styleKey] ?? PROP_ROLE_STYLE.smallprop;
+      result.push({
+        id: obj.id,
+        worldX: obj.gridX,
+        worldY: obj.gridY,
+        radius: style.radius,
+        solid: obj.solid,
+        kind: obj.role === 'building' || obj.role === 'wall' || obj.role === 'landmark' ? 'building' : 'doodad',
+        biome: null,
+        sceneAssetKey: obj.assetKey,
+        sceneRole: obj.role,
+        drawOrderBias: obj.zHeight ?? 0,
+        zHeight: obj.zHeight ?? 0,
+        text: obj.text ?? null,
+      });
+    }
+  }
+  return result;
+}
+const LEVEL_1_AUTHORED_LAYOUT_KEYS = Object.freeze({
+  'desert-approach': true,
+  'ghost-town': true,
+  'country-road': true,
+  'residential-edge': true,
+  'inner-city-threshold': true,
+});
+const LEVEL_2_AUTHORED_LAYOUT_KEYS = Object.freeze({
+  'outer-boulevard': true,
+  'financial-core': true,
+  'luxury-neighborhoods': true,
+  'penthouse-rim': true,
+});
+let _authoredLevelCache = null;
+let _authoredLevelCacheId = null;
+function authoredObstaclesNear(playerX, playerY, window) {
+  const levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID;
+  if (_authoredLevelCacheId !== levelId) {
+    _authoredLevelCache = _buildAuthoredObstaclesForLevel(levelId);
+    _authoredLevelCacheId = levelId;
+  }
+  if (!_authoredLevelCache.length) return [];
+  // Return authored objects within the render window of the player
+  return _authoredLevelCache.filter((o) =>
+    Math.abs(o.worldX - playerX) <= window + 5 && Math.abs(o.worldY - playerY) <= window + 5,
+  );
+}
+
 // Coherent-world asset path + decode cache (scene-template placement).
 const coherentWorldImageCache = new Map();
 function coherentWorldImage(assetKey) {
@@ -8175,6 +8239,11 @@ const SCENE_ROLE_TO_STYLE = Object.freeze({
   // Constructive pieces: fences/walls are short solid barriers; water strips +
   // bridges are flat ground-level pieces.
   fence: 'smallprop', wall: 'smallprop', bridge: 'smallprop', 'water-strip': 'smallprop',
+  // Authored layout landmark roles
+  landmark: 'building', billboard: 'building', hedge: 'bigprop',
+  cactus: 'tree', pole: 'smallprop', rock: 'bigprop', post: 'smallprop',
+  gate: 'smallprop', water: 'smallprop', log: 'smallprop', bench: 'smallprop',
+  sign: 'tree', lamp: 'tree', edge: 'smallprop', 'water-strip': 'smallprop',
 });
 
 function currentObstacles() {
@@ -8225,7 +8294,13 @@ function currentObstacles() {
         drawOrderBias: o.drawOrderBias ?? 0,
       }))
     : [];
-  _obstacleCache = [...sceneObstacles, ...encounterSceneObjects];
+  // AUTHORED WORLD LAYOUT: inject handcrafted landmark placements from
+  // authored-world-layout.mjs so the world reads as a designed place with
+  // readable landmarks (gas station, saloon, crossroads signpost, oasis,
+  // billboard) instead of purely procedural scatter. These objects are placed
+  // at fixed world coordinates that define each district's visual identity.
+  const authoredObjects = authoredObstaclesNear(combat.playerMapX, combat.playerMapY, sceneWindow);
+  _obstacleCache = [...sceneObstacles, ...encounterSceneObjects, ...authoredObjects];
 
   _obstacleCacheFrame = combat.frame;
   return _obstacleCache;

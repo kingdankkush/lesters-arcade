@@ -61,6 +61,23 @@ ROSTER = {
     "mev-reaper": ("741efea8-2306-4d06-9dfe-0d60d8b46dca", "enemy"),
     "sybil-drone": ("9ff63a91-4e1c-4704-9db4-e8b03ce8ce9e", "enemy"),
     "liquidation-cascade-golem": ("5c858dfd-fc10-4c1f-8da9-ee3bf596cd1d", "enemy"),
+    # New characters created in recent sessions — harvest their animations.
+    "claim-jumper": ("16517af3-5056-425d-8dcb-557b1520db20", "enemy"),
+    "scam-cult-zealot": ("6c0fc5f3-4b96-45f0-b21e-a26a252b7fd9", "enemy"),
+    "rug-rat": ("791b7a1e-6e95-4feb-b094-cbf01baa6fea", "enemy"),
+    "plaza-warden": ("c69c76d7-bd1c-4336-9253-6c33bd69e0c5", "miniboss"),
+    "bridge-exploiter": ("334e34c1-366c-4628-9500-256987ccfa84", "miniboss"),
+    "the-obfuscator": ("39e9c54b-e30e-4007-a490-863aef3adef9", "miniboss"),
+    "bitcoin-maximalist-riot-cop": ("7cdfd405-491c-49d7-8dd5-b27ef518b8e5", "enemy"),
+    "dao-lobbyist": ("83f6fc50-a2b0-4925-8198-28e544105a69", "enemy"),
+    "influencer-camera-drone": ("fb7ee889-51e7-4eb2-a897-2aeaef6e20dc", "enemy"),
+    "nft-valet": ("eddc9f33-7ebb-42c2-8436-9f3e043612f3", "enemy"),
+    "stablecoin-socialite": ("75206fcf-6c8c-4230-8283-fab97d19a8c9", "enemy"),
+    "coyote-pack-runner": ("92611a02-7a89-4c99-a6c5-43a58019a2a4", "enemy"),
+    "wild-boar": ("400567e7-710b-4940-bf41-460128772fc4", "enemy"),
+    "buzzard": ("bf8c1cb2-a133-47e3-b060-969ab6f6cb68", "enemy"),
+    "rattlesnake": ("76702029-90eb-4ce9-b113-f6d9eb8721b0", "enemy"),
+    "scorpion-ambusher": ("ca55115c-5744-4af0-97d8-64f44d004a8c", "enemy"),
 }
 
 DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
