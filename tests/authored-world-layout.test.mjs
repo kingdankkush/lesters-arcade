@@ -4,8 +4,11 @@ import assert from 'node:assert/strict';
 import {
   LEVEL_1_AUTHORED_LAYOUT,
   LEVEL_2_AUTHORED_LAYOUT,
+  LEVEL_1_EXPANDED_PROPS,
+  LEVEL_2_EXPANDED_PROPS,
   getAuthoredDistrictLayout,
   getAuthoredSceneObjects,
+  getAllAuthoredSceneObjects,
   getDistrictEdgeTreatment,
 } from '../apps/portal/src/authored-world-layout.mjs';
 
@@ -107,4 +110,44 @@ test('navigation cues include text labels for player guidance', () => {
   const countryRoad = getAuthoredSceneObjects('country-road', 'level-1-crypto-wasteland');
   const signposts = countryRoad.filter((o) => o.role === 'sign' && o.text);
   assert.ok(signposts.length >= 2, 'Country Road should have at least 2 signposts with text');
+});
+
+test('LEVEL_1_EXPANDED_PROPS has richer props for all 5 districts', () => {
+  const districts = Object.keys(LEVEL_1_EXPANDED_PROPS);
+  assert.equal(districts.length, 5);
+  for (const district of districts) {
+    const props = LEVEL_1_EXPANDED_PROPS[district];
+    assert.ok(props.length >= 10, `${district} should have >= 10 expanded props (got ${props.length})`);
+    // Every prop has gridX, gridY, assetKey, role
+    for (const p of props) {
+      assert.ok(typeof p.gridX === 'number');
+      assert.ok(typeof p.gridY === 'number');
+      assert.ok(typeof p.assetKey === 'string');
+      assert.ok(typeof p.role === 'string');
+    }
+  }
+});
+
+test('LEVEL_2_EXPANDED_PROPS has richer props for all 4 districts', () => {
+  const districts = Object.keys(LEVEL_2_EXPANDED_PROPS);
+  assert.equal(districts.length, 4);
+  for (const district of districts) {
+    const props = LEVEL_2_EXPANDED_PROPS[district];
+    assert.ok(props.length >= 5, `${district} should have >= 5 expanded props (got ${props.length})`);
+  }
+});
+
+test('getAllAuthoredSceneObjects returns base + expanded objects', () => {
+  const base = getAuthoredSceneObjects('desert-approach', 'level-1-crypto-wasteland');
+  const all = getAllAuthoredSceneObjects('desert-approach', 'level-1-crypto-wasteland');
+  assert.ok(all.length > base.length, 'getAllAuthoredSceneObjects should return more objects than base');
+  // Verify no duplicate IDs
+  const ids = new Set(all.map((o) => o.id));
+  assert.equal(ids.size, all.length, 'No duplicate IDs in combined objects');
+});
+
+test('expanded props include road segments for navigation', () => {
+  const desertAll = getAllAuthoredSceneObjects('desert-approach', 'level-1-crypto-wasteland');
+  const roads = desertAll.filter((o) => o.role === 'road');
+  assert.ok(roads.length >= 20, 'Desert approach should have road segments (got ' + roads.length + ')');
 });

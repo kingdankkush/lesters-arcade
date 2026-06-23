@@ -444,3 +444,359 @@ export function getDistrictEdgeTreatment(districtId, levelId = 'level-1-crypto-w
   const layout = getAuthoredDistrictLayout(districtId, levelId);
   return layout?.edgeTreatment ?? null;
 }
+
+// ============================================================================
+// EXPANDED LAYOUT: Richer prop clusters, road segments, environmental
+// storytelling, and POI arena staging. These give each district the density
+// and authored feel of a real game world, not just a few landmarks.
+// ============================================================================
+
+// Road segment helper: creates a line of road tiles along a direction
+function roadLine(id, startX, startY, length, dir = 'horizontal', assetKey = 'crypto/road-straight') {
+  const tiles = [];
+  for (let i = 0; i < length; i += 1) {
+    const x = dir === 'horizontal' ? startX + i : startX;
+    const y = dir === 'horizontal' ? startY : startY + i;
+    tiles.push(placed(`${id}-r${i}`, assetKey, 'road', x, y, { solid: false, zHeight: 0 }));
+  }
+  return Object.freeze(tiles);
+}
+
+// Scatter helper: creates a naturalistic cluster of props at semi-random offsets
+// using a deterministic hash so the same props always appear in the same spots.
+function scatter(id, centerX, centerY, specs) {
+  return Object.freeze(specs.map((s, i) => placed(
+    `${id}-s${i}`,
+    s.assetKey,
+    s.role,
+    centerX + s.dx,
+    centerY + s.dy,
+    { solid: s.solid ?? true, zHeight: s.zHeight ?? 0 },
+  )));
+}
+
+// ============================================================================
+// LEVEL 1 EXPANSION: Richer district staging
+// ============================================================================
+
+export const LEVEL_1_EXPANDED_PROPS = Object.freeze({
+  desertApproach: Object.freeze([
+    // Main road spine through the desert
+    ...roadLine('da-road', 0, 5, 30, 'horizontal'),
+    // Salvage yard detail around the gas station
+    ...scatter('da-salvage-yard', 8, 4, [
+      { assetKey: 'crypto/desert-boulder', role: 'rock', dx: -3, dy: 0 },
+      { assetKey: 'crypto/desert-boulder', role: 'rock', dx: -2, dy: 2 },
+      { assetKey: 'crypto/desert-cactus', role: 'cactus', dx: 4, dy: -1 },
+      { assetKey: 'crypto/desert-cactus', role: 'cactus', dx: 5, dy: 1 },
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: -1, dy: -2 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: 2, dy: -2 },
+    ]),
+    // Dry creek bed with rocks and crossing
+    ...scatter('da-creek-detail', 14, 5, [
+      { assetKey: 'nature/boulder', role: 'rock', dx: -3, dy: -1 },
+      { assetKey: 'nature/boulder', role: 'rock', dx: 3, dy: 1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: -1, dy: 2 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 1, dy: -2 },
+      { assetKey: 'crypto/desert-cactus', role: 'cactus', dx: -4, dy: 0 },
+    ]),
+    // Canyon wall detail
+    ...scatter('da-canyon', 26, 1, [
+      { assetKey: 'crypto/canyon-cliff-edge', role: 'wall', dx: 0, dy: 0, zHeight: 4 },
+      { assetKey: 'crypto/canyon-cliff-edge', role: 'wall', dx: 2, dy: 0, zHeight: 4 },
+      { assetKey: 'crypto/desert-boulder', role: 'rock', dx: -1, dy: 2 },
+      { assetKey: 'crypto/desert-boulder', role: 'rock', dx: 1, dy: 3 },
+    ]),
+    // Desert flora scatter
+    ...scatter('da-flora', 12, 7, [
+      { assetKey: 'crypto/desert-cactus', role: 'cactus', dx: 0, dy: 0 },
+      { assetKey: 'crypto/desert-cactus', role: 'cactus', dx: 4, dy: 1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 2, dy: -1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: -2, dy: 2 },
+    ]),
+    // Mining rig debris (environmental storytelling)
+    ...scatter('da-rig-debris', 20, 3, [
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: 0, dy: 0 },
+      { assetKey: 'crypto/utility-pole', role: 'pole', dx: 2, dy: -1, solid: false },
+      { assetKey: 'nature/boulder', role: 'rock', dx: -2, dy: 1 },
+    ]),
+  ]),
+
+  ghostTown: Object.freeze([
+    // Main street road
+    ...roadLine('gt-mainstreet', 34, 6, 20, 'horizontal'),
+    // Saloon square detail
+    ...scatter('gt-saloon-square', 40, 3, [
+      { assetKey: 'street/park-bench', role: 'bench', dx: -2, dy: 2 },
+      { assetKey: 'street/park-bench', role: 'bench', dx: 2, dy: 2 },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: -3, dy: 1, solid: false },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: 3, dy: 1, solid: false },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 0, dy: 3 },
+    ]),
+    // Boarded storefront detail
+    ...scatter('gt-storefront', 36, 5, [
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: -2, dy: 1 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: -1, dy: 1 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 2, dy: 0 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 3, dy: 0 },
+    ]),
+    // Warehouse district
+    ...scatter('gt-warehouse', 48, 3, [
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: 2, dy: 2 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: 3, dy: 1 },
+      { assetKey: 'construct/brick-wall-corner', role: 'wall', dx: -1, dy: 3 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 0, dy: 3 },
+    ]),
+    // Wagon barricade detail
+    ...scatter('gt-barricade', 42, 7, [
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: 1, dy: 0 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: -1, dy: 0 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 2, dy: -1 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: -2, dy: -1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 0, dy: 1 },
+    ]),
+    // Alley detail between buildings
+    ...scatter('gt-alley', 44, 4, [
+      { assetKey: 'street/trash-can', role: 'crate', dx: 0, dy: 0 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 1, dy: 1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: -1, dy: 1 },
+    ]),
+  ]),
+
+  countryRoad: Object.freeze([
+    // Country road spine
+    ...roadLine('cr-road', 54, 6, 20, 'horizontal'),
+    // Crossroads hub detail
+    ...scatter('cr-hub', 60, 5, [
+      { assetKey: 'street/park-bench', role: 'bench', dx: -3, dy: 1 },
+      { assetKey: 'street/park-bench', role: 'bench', dx: 3, dy: 1 },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: -2, dy: -1, solid: false },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: 2, dy: -1, solid: false },
+      { assetKey: 'street/mailbox', role: 'post', dx: 0, dy: 2 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: -4, dy: 0 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 4, dy: 0 },
+    ]),
+    // Tree line detail
+    ...scatter('gt-treeline', 55, 1, [
+      { assetKey: 'crypto/forest-tree-line', role: 'tree', dx: 0, dy: 0 },
+      { assetKey: 'nature/oak-tree', role: 'tree', dx: 3, dy: 1 },
+      { assetKey: 'nature/pine-tree', role: 'tree', dx: 6, dy: 0 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 2, dy: 2 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 5, dy: 2 },
+    ]),
+    ...scatter('cr-treeline2', 68, 1, [
+      { assetKey: 'crypto/forest-tree-line', role: 'tree', dx: 0, dy: 0 },
+      { assetKey: 'nature/pine-tree', role: 'tree', dx: -2, dy: 1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 1, dy: 2 },
+    ]),
+    // Wagon circle detail
+    ...scatter('cr-wagon', 60, 7, [
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: 1, dy: 0 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: -1, dy: 0 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: 0, dy: -1 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 2, dy: 1 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: -2, dy: 1 },
+    ]),
+    // Roadside utility line
+    ...scatter('cr-utility', 58, 8, [
+      { assetKey: 'crypto/utility-pole', role: 'pole', dx: 0, dy: 0, solid: false },
+      { assetKey: 'crypto/utility-pole', role: 'pole', dx: 5, dy: 0, solid: false },
+      { assetKey: 'crypto/utility-pole', role: 'pole', dx: 10, dy: 0, solid: false },
+    ]),
+    // Pasture fence
+    ...scatter('cr-pasture', 62, 3, [
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 0, dy: 0 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 2, dy: 0 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 4, dy: 0 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 1, dy: 0 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 3, dy: 0 },
+      { assetKey: 'construct/fence-gate', role: 'gate', dx: 5, dy: 0 },
+    ]),
+  ]),
+
+  residentialEdge: Object.freeze([
+    // Road continues
+    ...roadLine('re-road', 74, 6, 18, 'horizontal'),
+    // Oasis lakeside detail
+    ...scatter('re-oasis-detail', 84, 6, [
+      { assetKey: 'construct/river-straight', role: 'water', dx: 0, dy: 0, solid: false },
+      { assetKey: 'construct/river-straight', role: 'water', dx: 1, dy: 0, solid: false },
+      { assetKey: 'construct/river-straight', role: 'water', dx: -1, dy: 0, solid: false },
+      { assetKey: 'construct/river-straight', role: 'water', dx: 0, dy: 1, solid: false },
+      { assetKey: 'nature/fallen-log', role: 'log', dx: 2, dy: -1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: -2, dy: 1 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 3, dy: 0 },
+      { assetKey: 'nature/flower-patch', role: 'bush', dx: -3, dy: -1, solid: false },
+    ]),
+    // Hedge maze entrance
+    ...scatter('re-hedge-maze', 78, 4, [
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 0, dy: 0 },
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 0, dy: 2 },
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 3, dy: 0 },
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 3, dy: 2 },
+      { assetKey: 'construct/fence-gate', role: 'gate', dx: 1, dy: 1 },
+      { assetKey: 'street/park-bench', role: 'bench', dx: -2, dy: 1 },
+    ]),
+    // Mesa cliff base
+    ...scatter('re-mesa', 80, 1, [
+      { assetKey: 'crypto/canyon-cliff-edge', role: 'wall', dx: 0, dy: 0, zHeight: 4 },
+      { assetKey: 'crypto/desert-boulder', role: 'rock', dx: 1, dy: 2 },
+      { assetKey: 'crypto/desert-boulder', role: 'rock', dx: 2, dy: 3 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 0, dy: 3 },
+    ]),
+    // Park bench area
+    ...scatter('re-park', 82, 5, [
+      { assetKey: 'street/park-bench', role: 'bench', dx: 0, dy: 0 },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: 2, dy: -1, solid: false },
+      { assetKey: 'nature/flower-patch', role: 'bush', dx: -1, dy: 1, solid: false },
+      { assetKey: 'nature/oak-tree', role: 'tree', dx: 3, dy: 0 },
+    ]),
+  ]),
+
+  innerCityThreshold: Object.freeze([
+    // Asphalt road
+    ...roadLine('ic-road', 86, 6, 16, 'horizontal'),
+    // Billboard plaza
+    ...scatter('ic-billboard-plaza', 92, 2, [
+      { assetKey: 'crypto/innercity-billboard-frame', role: 'billboard', dx: 0, dy: 0, zHeight: 5 },
+      { assetKey: 'crypto/utility-pole', role: 'pole', dx: -2, dy: 0, solid: false },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: 1, dy: 2, solid: false },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: -1, dy: 2, solid: false },
+    ]),
+    // Warehouse staging
+    ...scatter('ic-warehouse', 96, 4, [
+      { assetKey: 'crypto/industrial-warehouse-facade', role: 'landmark', dx: 0, dy: 0, zHeight: 3 },
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: 3, dy: 1 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: 4, dy: 0 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: -1, dy: 2 },
+    ]),
+    // Barricade checkpoint
+    ...scatter('ic-checkpoint', 90, 6, [
+      { assetKey: 'construct/brick-wall-corner', role: 'wall', dx: 0, dy: 0 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 1, dy: 0 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 2, dy: 1 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: -1, dy: 1 },
+      { assetKey: 'street/traffic-cone', role: 'post', dx: 3, dy: 0 },
+      { assetKey: 'street/traffic-cone', role: 'post', dx: -2, dy: 0 },
+    ]),
+    // Road edge transition
+    ...scatter('ic-transition', 88, 7, [
+      { assetKey: 'crypto/ground-dirt-asphalt-edge', role: 'edge', dx: 0, dy: 0, solid: false },
+      { assetKey: 'crypto/ground-dirt-asphalt-edge', role: 'edge', dx: 2, dy: 0, solid: false },
+      { assetKey: 'street/trash-can', role: 'crate', dx: 4, dy: -1 },
+    ]),
+  ]),
+});
+
+// ============================================================================
+// LEVEL 2 EXPANSION: Richer urban district staging
+// ============================================================================
+
+export const LEVEL_2_EXPANDED_PROPS = Object.freeze({
+  outerBoulevard: Object.freeze([
+    ...roadLine('ob-street', 2, 6, 16, 'horizontal'),
+    ...scatter('ob-shopfronts', 8, 3, [
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: -2, dy: 1, solid: false },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: 3, dy: 1, solid: false },
+      { assetKey: 'street/park-bench', role: 'bench', dx: 0, dy: 2 },
+      { assetKey: 'street/mailbox', role: 'post', dx: 2, dy: 2 },
+      { assetKey: 'street/trash-can', role: 'crate', dx: -1, dy: 1 },
+      { assetKey: 'street/traffic-cone', role: 'post', dx: 4, dy: 0 },
+    ]),
+    ...scatter('ob-corner', 14, 5, [
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: 0, dy: 1 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 2, dy: 0 },
+      { assetKey: 'street/fire-hydrant', role: 'post', dx: -1, dy: 1 },
+    ]),
+  ]),
+
+  financialCore: Object.freeze([
+    ...roadLine('fc-street', 22, 6, 16, 'horizontal'),
+    ...scatter('fc-plaza-detail', 30, 6, [
+      { assetKey: 'construct/river-straight', role: 'water', dx: 0, dy: 0, solid: false },
+      { assetKey: 'construct/river-straight', role: 'water', dx: 1, dy: 0, solid: false },
+      { assetKey: 'street/park-bench', role: 'bench', dx: -2, dy: 1 },
+      { assetKey: 'street/park-bench', role: 'bench', dx: 3, dy: 1 },
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 0, dy: 2 },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: -3, dy: 0, solid: false },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: 4, dy: 0, solid: false },
+      { assetKey: 'nature/flower-patch', role: 'bush', dx: 1, dy: 2, solid: false },
+    ]),
+    ...scatter('fc-tower-base', 28, 3, [
+      { assetKey: 'construct/brick-wall-corner', role: 'wall', dx: 0, dy: 0 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 1, dy: 0 },
+      { assetKey: 'street/traffic-cone', role: 'post', dx: -1, dy: 1 },
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: 2, dy: 1 },
+    ]),
+    ...scatter('fc-barricade', 26, 7, [
+      { assetKey: 'construct/brick-wall-corner', role: 'wall', dx: 0, dy: 0 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 1, dy: 0 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 2, dy: 0 },
+    ]),
+  ]),
+
+  luxuryNeighborhoods: Object.freeze([
+    ...roadLine('ln-street', 40, 6, 14, 'horizontal'),
+    ...scatter('ln-garden-detail', 42, 5, [
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 0, dy: 0 },
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 0, dy: 2 },
+      { assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 3, dy: 0 },
+      { assetKey: 'construct/fence-gate', role: 'gate', dx: 1, dy: 1 },
+      { assetKey: 'street/park-bench', role: 'bench', dx: 4, dy: 1 },
+      { assetKey: 'nature/flower-patch', role: 'bush', dx: 2, dy: 1, solid: false },
+      { assetKey: 'nature/flower-patch', role: 'bush', dx: 4, dy: 2, solid: false },
+      { assetKey: 'street/street-lamp', role: 'lamp', dx: -1, dy: 1, solid: false },
+    ]),
+    ...scatter('ln-pool-area', 46, 4, [
+      { assetKey: 'construct/river-straight', role: 'water', dx: 0, dy: 0, solid: false },
+      { assetKey: 'construct/river-straight', role: 'water', dx: 1, dy: 0, solid: false },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: -1, dy: 0 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 2, dy: 0 },
+      { assetKey: 'street/park-bench', role: 'bench', dx: 0, dy: -1 },
+    ]),
+    ...scatter('ln-mansion-grounds', 48, 3, [
+      { assetKey: 'nature/oak-tree', role: 'tree', dx: 3, dy: 1 },
+      { assetKey: 'nature/oak-tree', role: 'tree', dx: -2, dy: 2 },
+      { assetKey: 'nature/bush', role: 'bush', dx: 2, dy: 2 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 4, dy: 0 },
+    ]),
+  ]),
+
+  penthouseRim: Object.freeze([
+    ...scatter('pr-rooftop-detail', 60, 5, [
+      { assetKey: 'construct/brick-wall-corner', role: 'wall', dx: 0, dy: 0 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 1, dy: 0 },
+      { assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 2, dy: 0 },
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: 0, dy: 2 },
+      { assetKey: 'interior/wooden-crate', role: 'crate', dx: 3, dy: 1 },
+      { assetKey: 'street/traffic-cone', role: 'post', dx: -1, dy: 1 },
+    ]),
+    ...scatter('pr-skybridge', 64, 4, [
+      { assetKey: 'construct/wood-bridge', role: 'bridge', dx: 0, dy: 0 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 0, dy: -1 },
+      { assetKey: 'construct/fence-segment', role: 'fence', dx: 0, dy: 1 },
+      { assetKey: 'construct/fence-post', role: 'post', dx: 1, dy: 0 },
+    ]),
+    ...scatter('pr-antenna', 66, 2, [
+      { assetKey: 'crypto/utility-pole', role: 'pole', dx: 0, dy: 0, solid: false, zHeight: 4 },
+      { assetKey: 'crypto/utility-pole', role: 'pole', dx: 2, dy: 1, solid: false, zHeight: 3 },
+      { assetKey: 'interior/stacked-boxes', role: 'crate', dx: -1, dy: 2 },
+    ]),
+  ]),
+});
+
+// Get ALL authored objects (base layout + expanded props) for a district
+export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto-wasteland') {
+  const base = getAuthoredSceneObjects(districtId, levelId);
+  const expanded = levelId === 'level-2-litecoin-city'
+    ? LEVEL_2_EXPANDED_PROPS
+    : LEVEL_1_EXPANDED_PROPS;
+  // Normalize district ID: authored-layout uses camelCase keys, expanded uses
+  // the hyphenated districtId. Match by trying both case-insensitive and hyphen-stripped.
+  const expandedKey = Object.keys(expanded).find((k) =>
+    k === districtId ||
+    k.replace(/-/g, '').toLowerCase() === districtId.replace(/-/g, '').toLowerCase(),
+  );
+  const extra = expandedKey ? expanded[expandedKey] : [];
+  return Object.freeze([...base, ...extra]);
+}

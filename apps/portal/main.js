@@ -44,7 +44,7 @@ import {
 import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
-import { getAuthoredSceneObjects, getDistrictEdgeTreatment } from './src/authored-world-layout.mjs';
+import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
 import { createMuzzleFlash, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
 
 import {
@@ -8172,7 +8172,7 @@ function _buildAuthoredObstaclesForLevel(levelId) {
     : Object.keys(LEVEL_1_AUTHORED_LAYOUT_KEYS);
   const result = [];
   for (const districtKey of allDistricts) {
-    const objects = getAuthoredSceneObjects(districtKey, levelId);
+    const objects = getAllAuthoredSceneObjects(districtKey, levelId);
     for (const obj of objects) {
       const styleKey = SCENE_ROLE_TO_STYLE[obj.role] ?? 'smallprop';
       const style = PROP_ROLE_STYLE[styleKey] ?? PROP_ROLE_STYLE.smallprop;
@@ -8244,6 +8244,7 @@ const SCENE_ROLE_TO_STYLE = Object.freeze({
   cactus: 'tree', pole: 'smallprop', rock: 'bigprop', post: 'smallprop',
   gate: 'smallprop', water: 'smallprop', log: 'smallprop', bench: 'smallprop',
   sign: 'tree', lamp: 'tree', edge: 'smallprop', 'water-strip': 'smallprop',
+  road: 'smallprop', bush: 'smallprop',
 });
 
 function currentObstacles() {
