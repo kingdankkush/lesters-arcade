@@ -93,27 +93,27 @@ test('findNearestDrySpawn moves an initial player start off water', () => {
   assert.ok(Math.hypot(spawn.x, spawn.y) >= 3, `spawn should leave origin lake, got ${spawn.x},${spawn.y}`);
 });
 
-test('resolveDistantSpawnPosition never allows enemies to spawn on top of the player', () => {
+test('resolveDistantSpawnPosition keeps regular enemies far from a moving player', () => {
   const resolved = resolveDistantSpawnPosition({
     seed: 3,
     playerX: 12,
     playerY: -4,
     desiredX: 12,
     desiredY: -4,
-    minDistance: 9,
+    minDistance: 18,
     fallbackAngleRadians: 0,
     fallbackRadiusTiles: 4,
     biomeAt: biomeStub,
   });
 
-  assert.ok(resolved.distance >= 9, `enemy spawn distance should be >= 9, got ${resolved.distance}`);
+  assert.ok(resolved.distance >= 18, `enemy spawn distance should be >= 18, got ${resolved.distance}`);
   assert.notDeepEqual([resolved.x, resolved.y], [12, -4]);
 });
 
 test('resolveDistantSpawnPosition pushes authored mini-boss slots out to a safe dry ring', () => {
   const moatEastOfPlayer = (seed, x, y) => {
     const dist = Math.hypot(x, y);
-    if (x > 0 && dist >= 9 && dist < 12) return 'water';
+    if (x > 0 && dist >= 20 && dist < 25) return 'water';
     return 'town';
   };
   const resolved = resolveDistantSpawnPosition({
@@ -122,13 +122,13 @@ test('resolveDistantSpawnPosition pushes authored mini-boss slots out to a safe 
     playerY: 0,
     desiredX: 2,
     desiredY: 0,
-    minDistance: 11,
+    minDistance: 24,
     fallbackAngleRadians: 0,
     fallbackRadiusTiles: 4.8,
     biomeAt: moatEastOfPlayer,
   });
 
-  assert.ok(resolved.distance >= 11, `mini-boss spawn distance should be >= 11, got ${resolved.distance}`);
+  assert.ok(resolved.distance >= 24, `mini-boss spawn distance should be >= 24, got ${resolved.distance}`);
   assert.equal(isWaterAt(4, resolved.x, resolved.y, moatEastOfPlayer), false);
 });
 

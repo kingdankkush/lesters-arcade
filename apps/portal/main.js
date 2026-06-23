@@ -109,6 +109,7 @@ import {
   ARCADE_GAMES,
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
+  calculateRoguelikeKillXp,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
   calculateExtractionScore,
@@ -146,8 +147,11 @@ const MOCK_WALLET = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
 const PLAYER_X = LESTER_BLASTER_TACTICAL_CAMERA_MODEL.playerStartScreenX;
 const GROUND_Y = 276;
 const ROGUELIKE_PLAYER_START_SEARCH_RADIUS_TILES = 56;
-const ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES = 9;
-const ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES = 11;
+const ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES = 18;
+const ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES = 20;
+const ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES = 24;
+const ROGUELIKE_MIN_BOSS_SPAWN_DISTANCE_TILES = 28;
+const ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES = 96;
 const FIXED_STEP_MS = 1000 / LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps;
 const NORMAL_HIT_DAMAGE = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.damagePerNormalHitPercent;
 const PLAYER_MAX_HEALTH = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.playerMaxPercent;
@@ -4358,7 +4362,7 @@ function requestRankedEntry() {
   });
 }
 
-async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) {
+async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID, options = {}) {
   const level = getHmhCampaignLevel(levelId);
   combat.currentCampaignLevelId = level.id;
   playSfxCue('level-start');
@@ -4374,7 +4378,7 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
   // (combat.paused + combat.pendingBegin) until the player confirms ready,
   // so they see the canvas behind the ready overlay before the game starts.
   await showHMHLoadingScreen(async () => {
-    await startCombat({ levelId: level.id });
+    await startCombat({ levelId: level.id, carryOver: options.carryOver ?? null });
     // Freeze the game: world generated and on-screen, but no ticking yet.
     combat.pendingBegin = true;
     combat.paused = true;
@@ -4391,13 +4395,23 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
 
 async function continueToCampaignLevel(levelId) {
   const level = getHmhCampaignLevel(levelId);
+  const carryOver = {
+    health: combat.health,
+    grenades: combat.grenades,
+    weaponId: combat.weaponId,
+    weaponUpgrades: { ...(combat.weaponUpgrades ?? {}) },
+    roguelikeRun: combat.roguelikeRun ? {
+      stats: { ...(combat.roguelikeRun.stats ?? {}) },
+      skills: { ...(combat.roguelikeRun.skills ?? {}) },
+    } : null,
+  };
   combat.currentCampaignLevelId = level.id;
   combat.gameOver = false;
   combat.levelClearTitle = '';
   combat.clearedCampaignLevelId = null;
   combat.levelClearSource = null;
   dom.combatGameOverSummary?.replaceChildren();
-  await beginOfficialLevel(level.id);
+  await beginOfficialLevel(level.id, { carryOver });
 }
 
 // Block until the user presses SPACE / Enter / clicks the ready overlay. The
@@ -5391,6 +5405,7 @@ function renderCodexPanels() {
 
 async function startCombat(options = {}) {
   const level = getHmhCampaignLevel(options.levelId ?? combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID);
+  const carryOver = options.carryOver ?? null;
   combat.currentCampaignLevelId = level.id;
   combat.nextCampaignLevelId = getNextHmhCampaignLevel(level.id)?.id ?? null;
   combat.scriptedBossTriggered = false;
@@ -5428,7 +5443,7 @@ async function startCombat(options = {}) {
   combat.velocityX = 0;
   combat.velocityY = 0;
   combat.jumpsLeft = 2;
-  combat.health = PLAYER_MAX_HEALTH;
+  combat.health = Math.max(1, Math.min(PLAYER_MAX_HEALTH, carryOver?.health ?? PLAYER_MAX_HEALTH));
   combat.lives = 1;
   combat.score = 0;
   combat.kills = 0;
@@ -5459,7 +5474,14 @@ async function startCombat(options = {}) {
   combat.xpGems = [];
   combat.levelUpChoices = [];
   combat.levelUpPaused = false;
-  combat.roguelikeRun = createRoguelikeRunState({ seed: Date.now(), mode: currentSession?.mode ?? 'free', characterId: combat.characterId });
+  combat.roguelikeRun = createRoguelikeRunState({
+    seed: Date.now(),
+    mode: currentSession?.mode ?? 'free',
+    characterId: combat.characterId,
+    campaignLevelId: level.id,
+    campaignLevelNumber: level.number,
+    carryOver: carryOver?.roguelikeRun ?? null,
+  });
   preloadHeroRoster(combat.characterId); // decode hurt/death/melee frames up front (no first-hit art pop)
   preloadWorldPropImages(); // decode all world-prop art up front (no scroll-in pop-in)
   
@@ -5510,7 +5532,7 @@ async function startCombat(options = {}) {
   combat.collectedPowerUpTypes = new Set();
 
   // removed from the loadout — grenade is the single manual throwable now.)
-  combat.grenades = 3;
+  combat.grenades = carryOver?.grenades ?? 3;
   combat.axes = 0;
   combat.completedCampaignPoiIds = new Set();
   combat.triggeredCampaignPoiIds = new Set();
@@ -5519,7 +5541,8 @@ async function startCombat(options = {}) {
   combat.activePoiEncounterVisualPlan = null;
   combat.activePoiEncounterCenterX = null;
   combat.activePoiEncounterCenterY = null;
-  combat.weaponId = 'coin-blaster';
+  combat.weaponId = carryOver?.weaponId ?? 'coin-blaster';
+  combat.weaponUpgrades = { ...(carryOver?.weaponUpgrades ?? {}) };
   // Clip/reload model: each weapon has a clip; auto-fire empties it, then a timed
   // auto-reload refills it. The starter pistol begins fully loaded.
   const startWeapon = weaponById(combat.weaponId);
@@ -7032,15 +7055,24 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
   const miniBoss = Boolean(options.miniBoss);
   const desiredMapX = options.mapX ?? (combat.playerMapX + Math.cos(angle) * radius);
   const desiredMapY = options.mapY ?? (combat.playerMapY + Math.sin(angle) * radius);
+  const isPoiSpawn = String(options.spawnSource ?? '').startsWith('poi-');
+  const minSpawnDistance = options.minDistanceTiles
+    ?? (spawn.enemy.boss
+      ? ROGUELIKE_MIN_BOSS_SPAWN_DISTANCE_TILES
+      : miniBoss
+        ? ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES
+        : isPoiSpawn
+          ? ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES
+          : ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES);
   const safeSpawn = resolveDistantSpawnPosition({
     seed: combat.roguelikeRun?.seed ?? 0,
     playerX: combat.playerMapX,
     playerY: combat.playerMapY,
     desiredX: desiredMapX,
     desiredY: desiredMapY,
-    minDistance: options.minDistanceTiles ?? (miniBoss ? ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES : ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES),
+    minDistance: minSpawnDistance,
     fallbackAngleRadians: angle,
-    fallbackRadiusTiles: radius,
+    fallbackRadiusTiles: Math.max(radius, minSpawnDistance),
     biomeAt,
   });
   if (safeSpawn.adjusted) {
@@ -7075,7 +7107,7 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
     poiEncounterId: options.poiEncounterId ?? null,
     macroRole: districtContext?.macroRole ?? null,
     spawnSource: options.spawnSource ?? (spawn.spawnContext?.source ?? 'timeline'),
-    attackTimer: options.attackTimer ?? (ranged ? 70 + (combat.frame % 40) : 36),
+    attackTimer: Math.max(options.attackTimer ?? (ranged ? 110 + (combat.frame % 50) : 90), ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES),
     tellFrames: 0,
     recoveryFrames: miniBoss ? Math.max(spawn.ai?.recoveryFrames ?? 20, 28) : (spawn.ai?.recoveryFrames ?? 20),
     recoveryFramesRemaining: 0,
@@ -7135,8 +7167,13 @@ function updateCampaignPoiEncounter(director) {
         miniBoss: Boolean(slot.miniBoss || slot.role === 'mini-boss'),
         title: slot.role === 'mini-boss' ? (slot.title ?? encounter.miniBossTitle) : undefined,
         angleRadians: ((slot.angleDeg ?? 0) * Math.PI) / 180,
-        radiusTiles: slot.radiusTiles ?? 5.5,
-        attackTimer: slot.role === 'mini-boss' ? 58 : undefined,
+        radiusTiles: Math.max(slot.radiusTiles ?? 5.5, slot.role === 'mini-boss'
+          ? ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES
+          : ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES),
+        minDistanceTiles: slot.role === 'mini-boss'
+          ? ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES
+          : ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES,
+        attackTimer: slot.role === 'mini-boss' ? 132 : ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES,
       });
     }
     combat.roguelikeSpawnTimer = Math.max(combat.roguelikeSpawnTimer, director.spawnIntervalSeconds * 1.25);
@@ -7386,11 +7423,7 @@ function updateRoguelikeEnemies(director, dt) {
     // Per-enemy-type kill tracking (feeds the game-stats module + balanced XP).
     const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
     combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
-    // XP scales with the enemy's catalog score value so tougher foes are worth
-    // more progression, instead of a flat 14/28. Baseline grunt (~80 score) -> ~12 XP;
-    // elites and high-value foes scale up. Elite bonus on top.
-    const baseXp = Math.round(8 + (enemy.score ?? 80) * 0.06);
-    const xpValue = enemy.elite ? Math.round(baseXp * 1.6) : baseXp;
+    const xpValue = calculateRoguelikeKillXp(enemy);
     combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: xpValue, ttl: 900 });
     // Power-up drops: elites/mini-bosses always drop a rare run-swinger; normal
     // grunts have a small chance at a standard drop. Deterministic per frame/kill.

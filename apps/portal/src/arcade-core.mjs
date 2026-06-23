@@ -648,13 +648,14 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
   ]),
 });
 
-const roguelikeSkill = (id, title, stat, category, description) => Object.freeze({
+const roguelikeSkill = (id, title, stat, category, description, options = {}) => Object.freeze({
   id,
   title,
   stat,
   category,
-  maxLevel: 5,
-  perLevelPercent: 5,
+  maxLevel: options.maxLevel ?? 5,
+  perLevelPercent: options.perLevelPercent ?? 5,
+  availableFromCampaignLevel: options.availableFromCampaignLevel ?? 1,
   description,
 });
 
@@ -699,6 +700,27 @@ export const LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY = Object.freeze([
   roguelikeSkill('revive', 'Second Wallet', 'revive', 'defense', '+5% revive budget per rank.'),
   roguelikeSkill('loot-quality', 'Loot Quality', 'lootQuality', 'economy', '+5% upgrade rarity weight per rank.'),
   roguelikeSkill('cooldown-global', 'Global Cooldown', 'globalCooldown', 'utility', '+5% global cooldown recovery per rank.'),
+
+  // Level 2: Litecoin City adds its own upgrade pool on top of carried Level 1
+  // builds. These cards start appearing only after the player continues into
+  // Level 2, so the city has fresh progression instead of replaying the same
+  // Wasteland deck.
+  roguelikeSkill('l2-neon-aim', 'Neon Aim Stabilizer', 'damage', 'city-offense', '+5% city weapon damage per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-boulevard-runner', 'Boulevard Runner', 'movementSpeed', 'city-mobility', '+5% city movement speed per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-crosswalk-dodge', 'Crosswalk Dodge', 'dashDistance', 'city-mobility', '+5% city dash distance per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-street-medic', 'Street Medic Kit', 'maxHealth', 'city-defense', '+5% city max health per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-silver-vest', 'Silver Vest Plating', 'armor', 'city-defense', '+5% city armor per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-market-crit', 'Market Open Crits', 'criticalChance', 'city-offense', '+5% city critical chance budget per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-ticker-pierce', 'Ticker Tape Pierce', 'pierce', 'city-offense', '+5% city pierce budget per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-harbor-magnet', 'Harbor Magnet', 'pickupRadius', 'city-utility', '+5% city pickup radius per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-plaza-luck', 'Plaza Luck', 'luck', 'city-economy', '+5% city drop luck per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-yield-score', 'Yield Score Engine', 'scoreMultiplier', 'city-economy', '+5% city score multiplier per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-rig-overclock', 'Rig Overclock', 'rateOfFire', 'city-offense', '+5% city fire-rate per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-fountain-shield', 'Fountain Shield', 'shieldCapacity', 'city-defense', '+5% city shield capacity per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-drone-routing', 'Drone Routing', 'droneDamage', 'city-summon', '+5% city drone damage per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-orbital-permit', 'Orbital Permit', 'orbitals', 'city-summon', '+5% city orbital uptime per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-vent-control', 'Vent Control', 'enemySlow', 'city-control', '+5% city enemy slow power per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill('l2-vip-revive', 'VIP Revive Clause', 'revive', 'city-defense', '+5% city revive budget per rank.', { availableFromCampaignLevel: 2 }),
 ]);
 
 export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
@@ -735,14 +757,14 @@ export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
   }),
   xp: Object.freeze({
     source: 'enemy-kills-drop-xp-gems',
-    baseXpPerKill: 12,
-    curve: 'level cost starts at 100 XP and rises by 25 XP per level',
+    baseXpPerKill: 6,
+    curve: 'campaign levels use a slower 150+ XP curve so upgrades pace across each 8-10 minute level instead of chaining several level-ups from one pack',
   }),
   levelUp: Object.freeze({
     pausesGame: true,
     choicesPerLevel: 2,
     rerollsPerLevel: 1,
-    skills: 40,
+    skills: 56,
     levelsPerSkill: 5,
     statStepPercent: 5,
   }),
@@ -1470,7 +1492,7 @@ export const LESTER_BLASTER_POWER_UPS = Object.freeze([
   Object.freeze({ id: 'score-multiplier', title: '2x Hard Money Multiplier', category: 'score', effect: 'scoreMultiplier', multiplier: 2, durationSeconds: 20, sprite: 'gold x2 token with subtle blue rim', rarity: 'uncommon' }),
   Object.freeze({ id: 'shield-cache', title: 'Cold Wallet Shield', category: 'defense', effect: 'shield', amount: 1, durationSeconds: 12, sprite: 'hovering blue-and-silver hex barrier device', rarity: 'uncommon' }),
   Object.freeze({ id: 'ammo-cache', title: 'Ammo Cache', category: 'ammo', effect: 'ammo', amount: 30, sprite: 'silver magazine crate with orange hazard stripe', rarity: 'common' }),
-  Object.freeze({ id: 'ltc-cache', title: 'LTC Cache', category: 'score', effect: 'scoreBonus', score: 500, sprite: 'sparkling silver coin pile used as pickup accent, not wallpaper', rarity: 'common' }),
+  Object.freeze({ id: 'ltc-cache', title: 'LTC Cache', category: 'score', effect: 'scoreBonus', score: 250, sprite: 'sparkling silver coin pile used as pickup accent, not wallpaper', rarity: 'common' }),
   // --- Roguelike power-ups (wave: hmh-fx-powerups) ---
   Object.freeze({ id: 'magnet-surge', title: 'Magnet Wallet Surge', category: 'utility', effect: 'magnet', durationSeconds: 8, sprite: 'glowing horseshoe magnet with blue pull rings', rarity: 'uncommon' }),
   Object.freeze({ id: 'time-dilation', title: 'Block-Time Dilation', category: 'utility', effect: 'slowEnemies', durationSeconds: 6, sprite: 'blue hourglass with slow-motion swirl', rarity: 'rare' }),
@@ -1988,8 +2010,21 @@ function roguelikeStartingStatsFor(characterId) {
   return stats;
 }
 
-function roguelikeXpCostForLevel(level = 1) {
-  return 100 + Math.max(0, Math.floor(level) - 1) * 25;
+export function roguelikeXpCostForLevel(level = 1) {
+  const safeLevel = Math.max(1, Math.floor(Number(level) || 1));
+  const completedLevels = safeLevel - 1;
+  return 150 + completedLevels * 70 + completedLevels * completedLevels * 8;
+}
+
+export function calculateRoguelikeKillXp(enemy = {}) {
+  const score = Math.max(0, Number(enemy.score) || 80);
+  const tier = enemy.tier ?? null;
+  let value = 5 + Math.round(Math.min(score, 180) / 55);
+  if (tier === 'heavy') value += 2;
+  if (enemy.elite) value += 5;
+  if (enemy.miniBoss) value = Math.max(value, 34);
+  if (enemy.boss) value = Math.max(value, 60);
+  return Math.max(4, Math.min(enemy.miniBoss ? 45 : enemy.boss ? 75 : 18, value));
 }
 
 function seededIndex(seed, salt, length) {
@@ -2036,12 +2071,24 @@ export function buildIsometricRoguelikeRunConfig({ seed = 1, mapRadiusTiles = 42
   });
 }
 
-export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId } = {}) {
+export function createRoguelikeRunState({
+  seed = 1,
+  mode = 'free',
+  characterId = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId,
+  campaignLevelId = 'level-1-crypto-wasteland',
+  campaignLevelNumber = 1,
+  carryOver = null,
+} = {}) {
   const config = buildIsometricRoguelikeRunConfig({ seed });
+  const carriedStats = carryOver?.stats ? { ...carryOver.stats } : null;
+  const carriedSkills = carryOver?.skills ? { ...carryOver.skills } : null;
+  const skills = Object.fromEntries(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((skill) => [skill.id, carriedSkills?.[skill.id] ?? 0]));
   return {
     mode,
     seed: config.seed,
     characterId,
+    campaignLevelId,
+    campaignLevelNumber: Math.max(1, Math.floor(Number(campaignLevelNumber) || 1)),
     level: 1,
     xp: 0,
     xpToNextLevel: roguelikeXpCostForLevel(1),
@@ -2049,8 +2096,8 @@ export function createRoguelikeRunState({ seed = 1, mode = 'free', characterId =
     pendingUpgradeChoices: 0,
     rerollsRemaining: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel,
     player: { x: config.player.startWorld.x, y: config.player.startWorld.y, facing: 'E' },
-    stats: roguelikeStartingStatsFor(characterId),
-    skills: Object.fromEntries(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((skill) => [skill.id, 0])),
+    stats: carriedStats ?? roguelikeStartingStatsFor(characterId),
+    skills,
     map: { procedural: true, tilesetPerspective: config.map.tilesetPerspective, seedLabel: config.map.seedLabel },
     spawnDirector: getRoguelikeSpawnDirectorAt(0),
   };
@@ -2072,7 +2119,11 @@ export function grantRoguelikeXp(run, amount = 0) {
 }
 
 export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false } = {}) {
-  const available = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => (run.skills?.[skill.id] ?? 0) < skill.maxLevel);
+  const campaignLevelNumber = Math.max(1, Math.floor(Number(run?.campaignLevelNumber) || 1));
+  const available = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => {
+    if ((skill.availableFromCampaignLevel ?? 1) > campaignLevelNumber) return false;
+    return (run.skills?.[skill.id] ?? 0) < skill.maxLevel;
+  });
   const choices = [];
   const saltBase = (run.level ?? 1) * 17 + (reroll ? 101 : 0);
   for (let i = 0; i < Math.min(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, available.length); i += 1) {

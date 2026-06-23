@@ -231,3 +231,17 @@ test('buildCampaignPoiEncounterProfile gives Dry Forest Cave and Oasis Lakeside 
   assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'buzzard' && slot.role === 'support'), true);
   assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'gas-fee-wisp' && slot.role === 'support'), true);
 });
+
+
+test('POI encounter spawn slots are authored outside the player nearfield', () => {
+  for (const poiId of ['rugpull-gulch', 'dry-forest-cave', 'oasis-lakeside']) {
+    const profile = buildCampaignPoiEncounterProfile({
+      levelId: 'level-1-crypto-wasteland',
+      activePoi: { id: poiId, title: poiId, phaseHint: 'poi-arena', districtId: 'country-road' },
+    });
+    for (const slot of profile.spawnSlots) {
+      const min = slot.role === 'mini-boss' ? 24 : 20;
+      assert.ok(slot.radiusTiles >= min, `${poiId} ${slot.enemyId} should spawn at least ${min} tiles out, got ${slot.radiusTiles}`);
+    }
+  }
+});

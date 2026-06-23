@@ -86,6 +86,8 @@ import {
   getCartridgeSelectModel,
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
+  roguelikeXpCostForLevel,
+  calculateRoguelikeKillXp,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
   calculateExtractionScore,
@@ -605,13 +607,15 @@ test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike 
   assert.equal(config.spawnDirector.targetPressureCurveMinutes.at(-1), 20);
 });
 
-test('roguelike skill library exposes forty five-rank upgrades and deterministic two-choice level-up offers', () => {
+test('roguelike skill library exposes Level 1 plus Level 2 upgrade pools with deterministic two-choice offers', () => {
   const run = createRoguelikeRunState({ seed: 11, mode: 'free' });
-  const leveled = grantRoguelikeXp(run, 125);
+  const leveled = grantRoguelikeXp(run, roguelikeXpCostForLevel(1));
   const offered = chooseRoguelikeUpgradeOptions(leveled, { seed: 5 });
   const upgraded = applyRoguelikeSkillUpgrade(leveled, offered.options[0].id);
+  const level2Run = createRoguelikeRunState({ seed: 12, mode: 'free', campaignLevelNumber: 2, carryOver: upgraded });
+  const level2Offer = chooseRoguelikeUpgradeOptions({ ...level2Run, level: 2 }, { seed: 8 });
 
-  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length, 40);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length >= 56, true);
   assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.maxLevel === 5), true);
   assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.perLevelPercent === 5), true);
   assert.equal(leveled.level, 2);
@@ -619,10 +623,32 @@ test('roguelike skill library exposes forty five-rank upgrades and deterministic
   assert.equal(leveled.pendingUpgradeChoices, 2);
   assert.equal(leveled.rerollsRemaining, 1);
   assert.equal(offered.options.length, 2);
+  assert.equal(offered.options.every((option) => (option.availableFromCampaignLevel ?? 1) === 1), true);
   assert.equal(new Set(offered.options.map((option) => option.id)).size, 2);
   assert.equal(upgraded.pausedForLevelUp, false);
   assert.equal(upgraded.skills[offered.options[0].id], 1);
   assert.equal(upgraded.stats[offered.options[0].stat] > leveled.stats[offered.options[0].stat], true);
+  assert.equal(level2Run.skills[offered.options[0].id], 1);
+  assert.equal(level2Offer.options.some((option) => (option.availableFromCampaignLevel ?? 1) >= 2), true);
+});
+
+test('roguelike XP pacing prevents one enemy pack from chaining multiple level-ups', () => {
+  const run = createRoguelikeRunState({ seed: 21, mode: 'free' });
+  const gruntXp = calculateRoguelikeKillXp({ score: 80, elite: false });
+  const eliteXp = calculateRoguelikeKillXp({ score: 180, elite: true });
+  const miniBossXp = calculateRoguelikeKillXp({ score: 900, elite: true, miniBoss: true });
+  const packXp = eliteXp + miniBossXp + gruntXp * 5;
+  const afterPack = grantRoguelikeXp(run, packXp);
+  const afterHugeBurst = grantRoguelikeXp(run, roguelikeXpCostForLevel(1) + roguelikeXpCostForLevel(2) + 500);
+
+  assert.ok(roguelikeXpCostForLevel(1) >= 150);
+  assert.ok(roguelikeXpCostForLevel(3) > roguelikeXpCostForLevel(2));
+  assert.ok(gruntXp <= 8, `grunt XP should stay modest, got ${gruntXp}`);
+  assert.ok(eliteXp <= 14, `elite XP should stay capped, got ${eliteXp}`);
+  assert.ok(miniBossXp <= 45, `mini-boss XP should stay capped, got ${miniBossXp}`);
+  assert.equal(afterPack.level <= 2, true, `one pack should not jump several levels, got level ${afterPack.level}`);
+  assert.equal(afterHugeBurst.level, 2, 'grantRoguelikeXp should pause after one level-up even with overflow XP');
+  assert.equal(afterHugeBurst.pausedForLevelUp, true);
 });
 
 test('roguelike spawn director escalates enemy pressure toward a twenty minute survival wall', () => {

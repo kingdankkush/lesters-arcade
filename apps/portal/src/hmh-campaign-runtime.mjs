@@ -30,10 +30,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['claim-jumper', 'scam-cult-zealot', 'rug-rat']),
     previewEnemyIds: Object.freeze(['claim-jumper', 'rug-rat']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'claim-jumper', role: 'support', angleDeg: 205, radiusTiles: 6.3, elite: true }),
-      Object.freeze({ enemyId: 'scam-cult-zealot', role: 'support', angleDeg: 332, radiusTiles: 5.7 }),
-      Object.freeze({ enemyId: 'rug-rat', role: 'support', angleDeg: 98, radiusTiles: 6.6 }),
-      Object.freeze({ enemyId: 'claim-jumper-sheriff', role: 'mini-boss', angleDeg: 38, radiusTiles: 4.7, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'claim-jumper', role: 'support', angleDeg: 205, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'scam-cult-zealot', role: 'support', angleDeg: 332, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'rug-rat', role: 'support', angleDeg: 98, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'claim-jumper-sheriff', role: 'mini-boss', angleDeg: 38, radiusTiles: 24.0, miniBoss: true, elite: true }),
     ]),
   }),
   'dry-forest-cave': Object.freeze({
@@ -42,10 +42,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['fud-goblin-cave', 'wild-boar', 'coyote-pack-runner']),
     previewEnemyIds: Object.freeze(['fud-goblin-cave', 'wild-boar']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'fud-goblin-cave', role: 'support', angleDeg: 228, radiusTiles: 5.2 }),
-      Object.freeze({ enemyId: 'wild-boar', role: 'support', angleDeg: 308, radiusTiles: 6.0, elite: true }),
-      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'mini-boss', angleDeg: 28, radiusTiles: 3.9, miniBoss: true, elite: true }),
-      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'support', angleDeg: 140, radiusTiles: 5.0 }),
+      Object.freeze({ enemyId: 'fud-goblin-cave', role: 'support', angleDeg: 228, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'wild-boar', role: 'support', angleDeg: 308, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'mini-boss', angleDeg: 28, radiusTiles: 24.0, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'support', angleDeg: 140, radiusTiles: 20.0 }),
     ]),
   }),
   'litecoin-square-hub': Object.freeze({
@@ -54,10 +54,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['bitcoin-maximalist-riot-cop', 'dao-lobbyist', 'influencer-camera-drone']),
     previewEnemyIds: Object.freeze(['bitcoin-maximalist-riot-cop', 'dao-lobbyist']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'bitcoin-maximalist-riot-cop', role: 'support', angleDeg: 190, radiusTiles: 6.4, elite: true }),
-      Object.freeze({ enemyId: 'dao-lobbyist', role: 'support', angleDeg: 320, radiusTiles: 5.8 }),
-      Object.freeze({ enemyId: 'influencer-camera-drone', role: 'support', angleDeg: 72, radiusTiles: 5.2 }),
-      Object.freeze({ enemyId: 'plaza-warden', role: 'mini-boss', angleDeg: 20, radiusTiles: 4.3, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'bitcoin-maximalist-riot-cop', role: 'support', angleDeg: 190, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'dao-lobbyist', role: 'support', angleDeg: 320, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'influencer-camera-drone', role: 'support', angleDeg: 72, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'plaza-warden', role: 'mini-boss', angleDeg: 20, radiusTiles: 24.0, miniBoss: true, elite: true }),
     ]),
   }),
   'defi-harbor': Object.freeze({
@@ -66,10 +66,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['nft-valet', 'stablecoin-socialite', 'chainlink-security-clerk']),
     previewEnemyIds: Object.freeze(['nft-valet', 'stablecoin-socialite']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'nft-valet', role: 'support', angleDeg: 214, radiusTiles: 5.7 }),
-      Object.freeze({ enemyId: 'stablecoin-socialite', role: 'support', angleDeg: 287, radiusTiles: 6.2, elite: true }),
-      Object.freeze({ enemyId: 'chainlink-security-clerk', role: 'support', angleDeg: 48, radiusTiles: 6.0 }),
-      Object.freeze({ enemyId: 'bridge-exploiter', role: 'mini-boss', angleDeg: 352, radiusTiles: 4.0, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'nft-valet', role: 'support', angleDeg: 214, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'stablecoin-socialite', role: 'support', angleDeg: 287, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'chainlink-security-clerk', role: 'support', angleDeg: 48, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'bridge-exploiter', role: 'mini-boss', angleDeg: 352, radiusTiles: 24.0, miniBoss: true, elite: true }),
     ]),
   }),
   'financial-downtown': Object.freeze({
@@ -78,10 +78,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['dao-lobbyist', 'bitcoin-maximalist-riot-cop', 'influencer-camera-drone']),
     previewEnemyIds: Object.freeze(['dao-lobbyist', 'bitcoin-maximalist-riot-cop']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'dao-lobbyist', role: 'support', angleDeg: 228, radiusTiles: 6.1 }),
-      Object.freeze({ enemyId: 'bitcoin-maximalist-riot-cop', role: 'support', angleDeg: 306, radiusTiles: 6.0, elite: true }),
-      Object.freeze({ enemyId: 'influencer-camera-drone', role: 'support', angleDeg: 92, radiusTiles: 5.4 }),
-      Object.freeze({ enemyId: 'the-whale', role: 'mini-boss', angleDeg: 16, radiusTiles: 3.9, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'dao-lobbyist', role: 'support', angleDeg: 228, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'bitcoin-maximalist-riot-cop', role: 'support', angleDeg: 306, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'influencer-camera-drone', role: 'support', angleDeg: 92, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'the-whale', role: 'mini-boss', angleDeg: 16, radiusTiles: 24.0, miniBoss: true, elite: true }),
     ]),
   }),
   'mimblewimble-grove': Object.freeze({
@@ -90,10 +90,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['stablecoin-socialite', 'chainlink-security-clerk', 'nft-valet']),
     previewEnemyIds: Object.freeze(['stablecoin-socialite', 'chainlink-security-clerk']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'stablecoin-socialite', role: 'support', angleDeg: 196, radiusTiles: 5.9 }),
-      Object.freeze({ enemyId: 'chainlink-security-clerk', role: 'support', angleDeg: 286, radiusTiles: 6.4, elite: true }),
-      Object.freeze({ enemyId: 'nft-valet', role: 'support', angleDeg: 56, radiusTiles: 5.1 }),
-      Object.freeze({ enemyId: 'the-obfuscator', role: 'mini-boss', angleDeg: 8, radiusTiles: 4.1, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'stablecoin-socialite', role: 'support', angleDeg: 196, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'chainlink-security-clerk', role: 'support', angleDeg: 286, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'nft-valet', role: 'support', angleDeg: 56, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'the-obfuscator', role: 'mini-boss', angleDeg: 8, radiusTiles: 24.0, miniBoss: true, elite: true }),
     ]),
   }),
   'hashrate-district': Object.freeze({
@@ -102,10 +102,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['influencer-camera-drone', 'chainlink-security-clerk', 'bitcoin-maximalist-riot-cop']),
     previewEnemyIds: Object.freeze(['influencer-camera-drone', 'chainlink-security-clerk']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'influencer-camera-drone', role: 'support', angleDeg: 216, radiusTiles: 5.8 }),
-      Object.freeze({ enemyId: 'chainlink-security-clerk', role: 'support', angleDeg: 300, radiusTiles: 6.0, elite: true }),
-      Object.freeze({ enemyId: 'bitcoin-maximalist-riot-cop', role: 'support', angleDeg: 72, radiusTiles: 5.2 }),
-      Object.freeze({ enemyId: 'fifty-one-percent', role: 'mini-boss', angleDeg: 24, radiusTiles: 4.0, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'influencer-camera-drone', role: 'support', angleDeg: 216, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'chainlink-security-clerk', role: 'support', angleDeg: 300, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'bitcoin-maximalist-riot-cop', role: 'support', angleDeg: 72, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'fifty-one-percent', role: 'mini-boss', angleDeg: 24, radiusTiles: 24.0, miniBoss: true, elite: true }),
     ]),
   }),
   'old-hashrate-camp': Object.freeze({
@@ -120,11 +120,11 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['buzzard', 'gas-fee-wisp', 'rattlesnake']),
     previewEnemyIds: Object.freeze(['buzzard', 'gas-fee-wisp']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'buzzard', role: 'support', angleDeg: 208, radiusTiles: 6.9 }),
-      Object.freeze({ enemyId: 'gas-fee-wisp', role: 'support', angleDeg: 248, radiusTiles: 6.5 }),
-      Object.freeze({ enemyId: 'gas-fee-wisp', role: 'support', angleDeg: 315, radiusTiles: 5.8, elite: true }),
-      Object.freeze({ enemyId: 'rattlesnake', role: 'mini-boss', angleDeg: 58, radiusTiles: 3.8, miniBoss: true, elite: true }),
-      Object.freeze({ enemyId: 'rattlesnake', role: 'support', angleDeg: 148, radiusTiles: 5.1 }),
+      Object.freeze({ enemyId: 'buzzard', role: 'support', angleDeg: 208, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'gas-fee-wisp', role: 'support', angleDeg: 248, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'gas-fee-wisp', role: 'support', angleDeg: 315, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'rattlesnake', role: 'mini-boss', angleDeg: 58, radiusTiles: 24.0, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'rattlesnake', role: 'support', angleDeg: 148, radiusTiles: 20.0 }),
     ]),
   }),
   'mesa-overlook': Object.freeze({
