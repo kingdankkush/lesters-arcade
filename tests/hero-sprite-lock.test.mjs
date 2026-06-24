@@ -12,9 +12,10 @@ import { HMH_COMPLETE_ANIMATIONS_READY } from '../apps/portal/assets/generated/h
 // roster are OK — the renderer falls back to other anims of the SAME design.)
 const HERO_LOCKED_ROSTER = {
   'lit-commando': 'lit-commando',
-  lester: 'lester',
   'lit-valkyrie': 'lit-valkyrie',
-  lilly: 'lit-valkyrie',
+  'lester-original': 'lester',
+  lester: 'lester',
+  lilly: 'lilly',
 };
 // Core states every hero roster must cover with REAL multi-direction art so
 // moment-to-moment gameplay (move + fight) never falls back awkwardly.
@@ -24,7 +25,7 @@ const HERO_CORE_STATES = ['idle', 'walk', 'run', 'shoot', 'melee'];
 // Minimum direction coverage for the core states (8 = full kit; lester's
 // legacy kit carries walk/idle at 8-dir and the rest as south-only stills
 // that the renderer mirrors, so we gate per-roster below).
-const FULL_8DIR_ROSTERS = ['lit-valkyrie', 'lit-commando'];
+const FULL_8DIR_ROSTERS = ['lit-valkyrie', 'lit-commando', 'lilly'];
 
 test('every hero locks to one roster that covers the core animation states', () => {
   for (const [hero, key] of Object.entries(HERO_LOCKED_ROSTER)) {
@@ -59,6 +60,8 @@ test('main.js HERO_LOCKED_ROSTER mapping stays in sync with the locked designs',
   assert.equal(src.includes('const HERO_LOCKED_ROSTER'), true);
   assert.equal(src.includes("'lit-commando': 'lit-commando'"), true);
   assert.equal(src.includes("'lit-valkyrie': 'lit-valkyrie'"), true);
+  assert.equal(src.includes("'lester-original': 'lester'"), true);
+  assert.equal(src.includes("lilly: 'lilly'"), true);
 });
 
 test('each enemy/boss roster with frames represents a single coherent design', () => {

@@ -1366,8 +1366,11 @@ let developerBackstageOpen = false;
 // the old mascot working titles (lester/lilly) to their combat identities. The
 // internal ids stay stable so saved data / canon keep working.
 const CHARACTER_DISPLAY_NAMES = Object.freeze({
-  lester: 'Lit Commando',
-  lilly: 'Lit Valkyrie',
+  'lit-commando': 'Lit Commando',
+  'lit-valkyrie': 'Lit Valkyrie',
+  'lester-original': 'Lester',
+  lester: 'Lester',
+  lilly: 'Lilly',
 });
 
 const combat = {
@@ -1578,22 +1581,28 @@ function heroRotationSprite(characterId) {
 }
 const HERO_ROSTER_BASE = [
   {
-    id: 'lester', name: 'Lit Commando', locked: false,
+    id: 'lit-commando', name: 'Lit Commando', locked: false,
     tagline: 'Tanky Bruiser',
     bio: 'Litecoin-silver tactical commando in cyan-visor combat armor. More HP, armor, and damage — a touch slower. Walks straight into the panic with hard money on his side.',
     stats: [['Power', 5], ['Speed', 3], ['Armor', 5], ['Luck', 3]],
   },
   {
-    id: 'lilly', name: 'Lit Valkyrie', locked: false,
+    id: 'lit-valkyrie', name: 'Lit Valkyrie', locked: false,
     tagline: 'Agile Glass-Cannon',
     bio: 'Teal-plasma energy warrior with short teal hair. Faster movement, higher fire-rate and crit chance — but more fragile. Darts through the panic and punishes mistakes.',
     stats: [['Power', 4], ['Speed', 5], ['Armor', 2], ['Luck', 5]],
   },
   {
-    id: 'lester-original', name: 'Lester (Original)', locked: true,
-    tagline: 'The Original Commando',
-    bio: 'The legendary Litecoin commando from the arcade days. Balanced stats across the board. Unlock by completing Level 1: The Crypto Wasteland.',
+    id: 'lester-original', name: 'Lester', locked: true,
+    tagline: 'Original Commando',
+    bio: 'The blue-masked original arcade commando. Balanced stats across the board. Unlock by completing Level 1: The Crypto Wasteland.',
     stats: [['Power', 3], ['Speed', 3], ['Armor', 3], ['Luck', 3]],
+  },
+  {
+    id: 'lilly', name: 'Lilly', locked: true,
+    tagline: 'Ranked Veteran',
+    bio: 'Teal-haired tactical companion with glasses and gold/teal armor. Unlock by playing 10 ranked Hard Money Heroes matches.',
+    stats: [['Power', 3], ['Speed', 4], ['Armor', 3], ['Luck', 4]],
   },
 ];
 
@@ -9305,8 +9314,12 @@ function selectHeroFrame() {
     return null; // draw nothing this frame rather than the wrong character
   }
   // Prefer canonical hand-made hero art (Lester/Lilly) via the durable pipeline.
-  const heroActorId = combat.characterId === 'lilly' ? 'lilly' : 'lester';
-  if (HMH_ACTOR_REGISTRY.has(heroActorId)) {
+  const heroActorId = combat.characterId === 'lilly'
+    ? 'lilly'
+    : combat.characterId === 'lester' || combat.characterId === 'lester-original'
+      ? 'lester'
+      : null;
+  if (heroActorId && HMH_ACTOR_REGISTRY.has(heroActorId)) {
     const actor = HMH_ACTOR_REGISTRY.get(heroActorId);
     const state = heroStateFromCombat(combat, GROUND_Y);
     // Use tracked movement direction for smooth animation blending when transitioning
@@ -9606,16 +9619,15 @@ function heroAnimState() {
 // animation state (e.g. idle from one design, shoot from another) is what made
 // the hero visibly swap between 3-4 different character designs mid-run.
 //
-// Asset reality (2026-06-10): 'lit-valkyrie' now has its own full 8-direction
-// kit (idle/walk/run/shoot/melee/throw/hurt; death still generating — the
-// renderer falls back within the SAME design until it lands). Lit Commando
-// stays on the 'lester' roster (complete kit incl. hurt/death); the new
-// 'lit-commando' roster will take over once its hurt/death finish generating.
+// Asset reality (2026-06-24): starters are Lit Commando and Lit Valkyrie.
+// Lester and Lilly are separate unlockable characters; each locks to its own
+// roster/reference-driven production path so no selected hero swaps designs.
 const HERO_LOCKED_ROSTER = Object.freeze({
   'lit-commando': 'lit-commando',
-  lester: 'lester',
   'lit-valkyrie': 'lit-valkyrie',
-  lilly: 'lit-valkyrie',
+  'lester-original': 'lester',
+  lester: 'lester',
+  lilly: 'lilly',
 });
 
 function heroRosterKey(characterId) {

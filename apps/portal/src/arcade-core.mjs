@@ -93,8 +93,10 @@ export const HARD_MONEY_HEROES_CANON = Object.freeze({
     campaignRhythm: 'Level 1 moves outward across the ground, Level 2 climbs vertically, Level 3 hurls forward at train speed.',
   }),
   characters: Object.freeze([
-    Object.freeze({ id: 'lester', title: 'Lester', playable: true, personality: 'Rambo-like arcade commando: stubborn, brave, over-the-top, one-liners implied, walks against the panic.', role: 'main playable hero' }),
-    Object.freeze({ id: 'lilly', title: 'Lilly', playable: 'unlockable-later', personality: 'same moveset as Lester with different art/sprites once designed.', role: 'future unlockable character' }),
+    Object.freeze({ id: 'lit-commando', title: 'Lit Commando', playable: true, personality: 'stubborn, brave, goofy-gritty arcade tough guy; says little, solves scams with steel and gunfire', role: 'starter playable Hard Money Hero' }),
+    Object.freeze({ id: 'lit-valkyrie', title: 'Lit Valkyrie', playable: true, personality: 'sharp, quick, fearless skirmisher; darts through the panic and punishes mistakes', role: 'starter playable Hard Money Hero' }),
+    Object.freeze({ id: 'lester-original', title: 'Lester', playable: 'unlockable-level-1-clear', personality: 'Rambo-like arcade commando: stubborn, brave, over-the-top, one-liners implied, walks against the panic.', role: 'unlockable playable Hard Money Hero' }),
+    Object.freeze({ id: 'lilly', title: 'Lilly', playable: 'unlockable-10-ranked-matches', personality: 'teal-haired tactical companion with agile veteran energy and distinct weapon silhouettes.', role: 'unlockable playable Hard Money Hero' }),
   ]),
   levels: Object.freeze([
     Object.freeze({
@@ -1272,7 +1274,7 @@ export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
     personality: 'stubborn, brave, goofy-gritty arcade tough guy; says little, solves scams with steel and gunfire',
     spriteSheet: './assets/sprite-lester-commando.svg',
     portraitAsset: './assets/sprite-lester-commando.svg',
-    legacyId: 'lester',
+    legacyId: 'lit-commando',
     unlock: 'starter',
     stats: Object.freeze({ maxHealth: 120, speed: 0.92, jump: 1.0, melee: 1.15, luck: 0.95 }),
     startStatMods: Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
@@ -1287,7 +1289,7 @@ export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
     personality: 'sharp, quick, fearless skirmisher; darts through the panic and punishes mistakes',
     spriteSheet: './assets/sprite-lilly-runner.svg',
     portraitAsset: './assets/sprite-lilly-runner.svg',
-    legacyId: 'lilly',
+    legacyId: 'lit-valkyrie',
     unlock: 'starter',
     stats: Object.freeze({ maxHealth: 88, speed: 1.15, jump: 1.0, melee: 0.95, luck: 1.15 }),
     startStatMods: Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
@@ -1295,20 +1297,8 @@ export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
     animations: Object.freeze(['idle', 'walk', 'run', 'fire-pistol', 'melee-knife', 'throw-axe', 'fire-shotgun', 'fire-machinegun', 'hurt', 'stun', 'pickup', 'levelup', 'death']),
   }),
   Object.freeze({
-    id: 'max-mempool',
-    title: 'Max Mempool',
-    role: 'parked future character concept',
-    tagline: 'Retained as a non-canon placeholder until Justin approves a third hero.',
-    spriteSheet: './assets/sprite-max-mempool.svg',
-    portraitAsset: './assets/sprite-max-mempool.svg',
-    unlock: 'parked; not part of current Hard Money Heroes canon',
-    stats: Object.freeze({ maxHealth: 124, speed: 0.86, jump: 0.84, melee: 1.28, luck: 0.88 }),
-    artDirection: 'chunky arcade bruiser placeholder only; do not produce final assets until approved.',
-    animations: Object.freeze(['idle', 'run', 'jump', 'double-jump', 'shoot', 'melee', 'grenade', 'hurt', 'victory']),
-  }),
-  Object.freeze({
     id: 'lester-original',
-    title: 'Lester (Original)',
+    title: 'Lester',
     role: 'unlockable Hard Money Hero — the original arcade commando',
     tagline: 'The legendary Litecoin commando from the arcade days. Unlocked by clearing Level 1: The Crypto Wasteland.',
     personality: 'Rambo-like arcade commando: stubborn, brave, over-the-top, one-liners implied, walks against the panic.',
@@ -1316,11 +1306,27 @@ export const LESTER_BLASTER_CHARACTER_ROSTER = Object.freeze([
     portraitAsset: './assets/generated/hmh-animated-roster/lester/idle/south-west/00.png',
     legacyId: 'lester',
     unlock: 'achievement:getaway-clear',
-    unlockDescription: 'Complete Level 1: The Crypto Wasteland to unlock the original Lester commando.',
+    unlockDescription: 'Complete Level 1: The Crypto Wasteland to unlock Lester.',
     stats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
     startStatMods: Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0 }),
-    artDirection: 'classic 8-bit/Neo-Geo arcade commando: green bandana, leather jacket, readable muzzle flashes, 8-direction isometric.',
-    animations: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death', 'victory']),
+    artDirection: 'classic Lester reference-first commando: blue mask/helmet with white face mark, tan pants, black boots/gloves, ammo bandolier, pistol/shotgun/machine-gun/grenade/knife poses, 8-direction isometric.',
+    animations: Object.freeze(['idle', 'walk', 'run', 'fire-pistol', 'melee-knife', 'throw-grenade', 'fire-shotgun', 'fire-machinegun', 'hurt', 'stun', 'pickup', 'levelup', 'death', 'victory']),
+  }),
+  Object.freeze({
+    id: 'lilly',
+    title: 'Lilly',
+    role: 'unlockable Hard Money Hero — 10 ranked match reward',
+    tagline: 'Teal-haired tactical companion. Unlocked after playing 10 ranked matches.',
+    personality: 'confident, quick, and precise; a distinct named hero, not the Lit Valkyrie starter skin.',
+    spriteSheet: './assets/generated/hmh-animated-roster/lilly/idle/south/00.png',
+    portraitAsset: './assets/generated/hmh-animated-roster/lilly/idle/south/00.png',
+    legacyId: 'lilly',
+    unlock: 'achievement:ten-paid-runs',
+    unlockDescription: 'Complete 10 ranked Hard Money Heroes matches to unlock Lilly.',
+    stats: Object.freeze({ maxHealth: 96, speed: 1.08, jump: 1.0, melee: 1.05, luck: 1.08 }),
+    startStatMods: Object.freeze({ movementSpeed: 1.08, rateOfFire: 1.05, criticalChance: 1.08, maxHealth: 0.96 }),
+    artDirection: 'reference-first Lilly: long teal hair, round glasses, dark tactical armor with gold/teal accents, pistol/shotgun/machine-gun/grenade/knife poses, readable 8-direction isometric silhouette.',
+    animations: Object.freeze(['idle', 'walk', 'run', 'fire-pistol', 'melee-knife', 'throw-grenade', 'fire-shotgun', 'fire-machinegun', 'hurt', 'stun', 'pickup', 'levelup', 'death', 'victory']),
   }),
 ]);
 
@@ -1699,8 +1705,8 @@ export const LESTER_BLASTER_SOUND_DESIGN = Object.freeze({
 export const LESTER_BLASTER_UNLOCKABLES = Object.freeze([
   Object.freeze({ id: 'skin-classic-lester', type: 'skin', title: 'Classic Lester Jacket', unlock: 'starter' }),
   Object.freeze({ id: 'skin-litecoin-silver', type: 'skin', title: 'Litecoin Silver Armor', unlock: 'score 10,000+ in paid mode' }),
-  Object.freeze({ id: 'character-lilly', type: 'character', title: 'Lilly Alternate Hero', unlock: 'future unlockable after Lester sprite pass' }),
-  Object.freeze({ id: 'character-max-mempool', type: 'character', title: 'Max Mempool Placeholder', unlock: 'parked concept, not current canon' }),
+  Object.freeze({ id: 'character-lester', type: 'character', title: 'Lester', unlock: 'clear Level 1: The Crypto Wasteland' }),
+  Object.freeze({ id: 'character-lilly', type: 'character', title: 'Lilly', unlock: 'play 10 ranked matches' }),
   Object.freeze({ id: 'weapon-hashstorm', type: 'weapon', title: 'Hashstorm Permanent Loadout', unlock: 'Hashstorm Specialist achievement' }),
   Object.freeze({ id: 'music-mainnet-express', type: 'music', title: 'Mainnet Express Rooftop Jukebox Track', unlock: 'survive 15 minutes' }),
   Object.freeze({ id: 'cabinet-boss-rush-marquee', type: 'cabinet-art', title: 'Boss Rush Marquee', unlock: 'defeat five bosses' }),
@@ -1992,12 +1998,13 @@ const roguelikeStatDefaults = () => Object.fromEntries(
 // upgrades stack on top of these starting values. Trade-offs keep them even:
 //   lit-commando = tanky bruiser (more HP/damage/armor, a touch slower)
 //   lit-valkyrie = agile glass-cannon (faster, higher fire-rate/crit, less HP)
+//   lester-original = balanced unlockable based on Justin's Lester reference art
+//   lilly = agile unlockable based on Justin's Lilly reference art
 export const HERO_STARTING_STAT_MODIFIERS = Object.freeze({
   'lit-commando': Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
   'lit-valkyrie': Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
-  // Legacy ids alias to the new heroes so old saves/links don't break.
-  lester: Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
-  lilly: Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
+  'lester-original': Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0 }),
+  lilly: Object.freeze({ movementSpeed: 1.08, rateOfFire: 1.05, criticalChance: 1.08, maxHealth: 0.96 }),
 });
 
 function roguelikeStartingStatsFor(characterId) {
@@ -2199,8 +2206,9 @@ function formatClock(seconds) {
 }
 
 function getCharacter(characterId = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId) {
-  // Resolve by current id OR legacyId so old links/saves/tests using 'lester'/
-  // 'lilly' still resolve to the renamed Lit Commando / Lit Valkyrie heroes.
+  // Resolve by current id OR explicit legacyId. The current playable canon is
+  // starter Lit Commando/Lit Valkyrie plus unlockable Lester/Lilly; old `lester`
+  // links intentionally resolve to the Lester unlockable, not to Lit Commando.
   const character = LESTER_BLASTER_CHARACTER_ROSTER.find(
     (candidate) => candidate.id === characterId || candidate.legacyId === characterId,
   );
@@ -2226,7 +2234,7 @@ function getPowerUp(powerUpId) {
   return powerUp;
 }
 
-export function buildRunLoadout({ characterId = 'lester', weaponId = 'coin-blaster', grenadeId = 'satoshi-frag' } = {}) {
+export function buildRunLoadout({ characterId = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId, weaponId = 'coin-blaster', grenadeId = 'satoshi-frag' } = {}) {
   const character = getCharacter(characterId);
   return {
     character: clone(character),
@@ -2236,7 +2244,7 @@ export function buildRunLoadout({ characterId = 'lester', weaponId = 'coin-blast
   };
 }
 
-export function createCombatRunState({ mode = 'free', characterId = 'lester', weaponId = 'coin-blaster', grenadeId = 'satoshi-frag' } = {}) {
+export function createCombatRunState({ mode = 'free', characterId = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId, weaponId = 'coin-blaster', grenadeId = 'satoshi-frag' } = {}) {
   if (!['free', 'paid'].includes(mode)) throw new Error(`Unsupported combat mode: ${mode}`);
   const loadout = buildRunLoadout({ characterId, weaponId, grenadeId });
   const maxHealth = loadout.character.stats.maxHealth;

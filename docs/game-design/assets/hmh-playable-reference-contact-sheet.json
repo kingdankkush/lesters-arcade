@@ -1,0 +1,305 @@
+{
+  "items": [
+    {
+      "actor": "Lester",
+      "name": "Lester/Lester-Facing.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Facing.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester/Lester-Facing-Shotgun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Facing-Shotgun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester/Lester-Left-SideProfile.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Left-SideProfile.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester/Lester-Left-Side-Shotgun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Left-Side-Shotgun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester/Lester-Right-SideProfile.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Right-SideProfile.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester/Lester-Right-Side-Shotgun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Right-Side-Shotgun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-Facing-Grenade.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Facing-Grenade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-Facing-Machine-Gun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Facing-Machine-Gun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-Facing-Melee-Knife.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Facing-Melee-Knife.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-Knife.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Knife.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-LeftSide-Grenade.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-LeftSide-Grenade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-LeftSide-Machine-Gun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-LeftSide-Machine-Gun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-RightSide-Grenade.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-RightSide-Grenade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-RightSide-Machine-Gun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-RightSide-Machine-Gun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lester",
+      "name": "Lester-RightSide-Melee-Knife.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-RightSide-Melee-Knife.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-Facing-Grenade.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Grenade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-Facing-MachineGun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-MachineGun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-Facing-Melee-Knife.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Melee-Knife.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-Facing-Pistol.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Pistol.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-Facing-Shotgun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Shotgun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-LeftSide-Grenade.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Grenade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-LeftSide-MachineGun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-MachineGun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-LeftSide-Melee-Knife.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Melee-Knife.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-LeftSide-Pistol.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Pistol.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-LeftSide-Shotgun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Shotgun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-RightSide-Grenade.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Grenade.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-RightSide-MachineGun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-MachineGun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-RightSide-Melee-Knife.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Melee-Knife.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-RightSide-Pistol.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Pistol.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "actor": "Lilly",
+      "name": "Lilly-RightSide-Shotgun.png",
+      "path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Shotgun.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA"
+    }
+  ],
+  "contactSheet": "C:\\Users\\just_\\lesters-arcade\\docs\\game-design\\assets\\hmh-playable-reference-contact-sheet.png"
+}

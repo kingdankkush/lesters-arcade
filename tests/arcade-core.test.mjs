@@ -234,7 +234,7 @@ test('player profiles initialize configurable character unlocks and selected-cha
   assert.equal(profile.preferences.selectedCharacterId, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId);
 });
 
-test('clearing the Level 1 finale preserves the current starter roster and unlocks Lester (Original)', () => {
+test('clearing the Level 1 finale preserves the starter roster and unlocks Lester', () => {
   const state = createInitialArcadeState();
   const wallet = '0x' + 'b'.repeat(40);
   const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
@@ -243,10 +243,26 @@ test('clearing the Level 1 finale preserves the current starter roster and unloc
   for (const starterId of HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds) {
     assert.equal(snapshot.profile.unlocks.characters[starterId], true);
   }
-  // Lester (Original) is now the Level 1 unlock — config must point to it.
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockLegacyId, 'lester-original');
+  // Lester is now the Level 1 unlock — config must point to it.
   assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockCharacterId, 'lester-original');
   assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockAchievementId, 'getaway-clear');
+  assert.equal(snapshot.profile.unlocks.characters['lester-original'], true);
+  assert.equal(snapshot.profile.unlocks.characters.lilly, false);
+});
+
+test('ten ranked matches unlock Lilly as a playable character', () => {
+  const state = createInitialArcadeState();
+  const wallet = '0x' + 'c'.repeat(40);
+
+  for (let index = 0; index < 10; index += 1) {
+    const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+    recordScore(state, session, 1000 + index, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
+  }
+
+  buildPlayerArcadeSnapshot(state, wallet);
+  const profile = state.profiles[wallet];
+  assert.equal(profile.achievements.includes('ten-paid-runs'), true);
+  assert.equal(profile.unlocks.characters.lilly, true);
 });
 
 test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteForge target, and parent-account sync permissions', () => {
@@ -559,7 +575,9 @@ test('Hard Money Heroes canon captures Justin confirmed title, tone, world, econ
   assert.equal(HARD_MONEY_HEROES_CANON.gore.defaultMode, 'sparks-only');
   assert.equal(HARD_MONEY_HEROES_CANON.gore.toggleBeforeRun, true);
   assert.equal(HARD_MONEY_HEROES_CANON.world.name, 'Litecoin City After Dark');
-  assert.equal(HARD_MONEY_HEROES_CANON.characters.find((character) => character.id === 'lester').personality.includes('Rambo'), true);
+  assert.equal(HARD_MONEY_HEROES_CANON.characters.find((character) => character.id === 'lester-original').personality.includes('Rambo'), true);
+  assert.equal(HARD_MONEY_HEROES_CANON.characters.find((character) => character.id === 'lit-commando').role.includes('starter'), true);
+  assert.equal(HARD_MONEY_HEROES_CANON.characters.find((character) => character.id === 'lit-valkyrie').role.includes('starter'), true);
   assert.deepEqual(HARD_MONEY_HEROES_CANON.economy.acceptedPayments, ['USDC', 'ETH', 'LTC']);
   assert.deepEqual(HARD_MONEY_HEROES_CANON.leaderboards.cadences, ['daily', 'weekly', 'monthly', 'yearly', 'all-time']);
   assert.equal(HARD_MONEY_HEROES_CANON.web3.dappitTiming, 'later-after-playable-prototype');
@@ -756,7 +774,7 @@ test('Lester Blaster design codex covers characters, art, controls, weapons, env
 test('combat run state applies character stats, paid/free health rules, controls, and loadout defaults', () => {
   const freeRun = createCombatRunState({ mode: 'free', characterId: 'lit-commando' });
   const paidRun = createCombatRunState({ mode: 'paid', characterId: 'lit-valkyrie' });
-  const loadout = buildRunLoadout({ characterId: 'max-mempool', weaponId: 'hash-rail', grenadeId: 'chain-cluster' });
+  const loadout = buildRunLoadout({ characterId: 'lester-original', weaponId: 'hash-rail', grenadeId: 'chain-cluster' });
 
   assert.equal(freeRun.mode, 'free');
   assert.equal(freeRun.lives, Infinity);
@@ -765,8 +783,9 @@ test('combat run state applies character stats, paid/free health rules, controls
   assert.equal(paidRun.mode, 'paid');
   assert.equal(paidRun.lives, 3);
   assert.equal(paidRun.character.id, 'lit-valkyrie');
-  // Legacy id still resolves to the renamed hero (backward compat).
-  assert.equal(createCombatRunState({ mode: 'free', characterId: 'lilly' }).character.id, 'lit-valkyrie');
+  // Lester/Lilly are now separate unlockable characters rather than aliases for the starters.
+  assert.equal(createCombatRunState({ mode: 'free', characterId: 'lester-original' }).character.id, 'lester-original');
+  assert.equal(createCombatRunState({ mode: 'free', characterId: 'lilly' }).character.id, 'lilly');
   assert.equal(paidRun.loadout.primaryWeapon.id, 'coin-blaster');
   assert.equal(loadout.primaryWeapon.id, 'hash-rail');
   assert.equal(loadout.grenade.id, 'chain-cluster');

@@ -1,29 +1,72 @@
 export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
-  rosterDecisionStatus: 'resolved-commando-valkyrie-starters-lester-unlockable',
+  rosterDecisionStatus: 'resolved-commando-valkyrie-starters-lester-lilly-unlockables',
   directionMode: '8-direction-backbone',
-  starterLegacyId: 'lester',
-  startersLegacyIds: Object.freeze(['lester', 'lilly']),
+  starterLegacyId: 'lit-commando',
+  startersLegacyIds: Object.freeze(['lit-commando', 'lit-valkyrie']),
+  starterCharacterIds: Object.freeze(['lit-commando', 'lit-valkyrie']),
   levelOneUnlockLegacyId: 'lester-original',
   levelOneUnlockAchievementId: 'getaway-clear',
   levelOneUnlockCharacterId: 'lester-original',
-  levelOneUnlockTitle: 'Lester (Original)',
-  levelOneUnlockDescription: 'Unlock the original arcade commando by completing Level 1: The Crypto Wasteland.',
+  levelOneUnlockTitle: 'Lester',
+  levelOneUnlockDescription: 'Unlock Lester by completing Level 1: The Crypto Wasteland.',
+  tenRankedUnlockCharacterId: 'lilly',
+  tenRankedUnlockLegacyId: 'lilly',
+  tenRankedUnlockAchievementId: 'ten-paid-runs',
+  tenRankedUnlockTitle: 'Lilly',
+  tenRankedUnlockDescription: 'Unlock Lilly after completing 10 ranked Hard Money Heroes matches.',
+  unlockableCharacters: Object.freeze([
+    Object.freeze({
+      id: 'lester-original',
+      legacyId: 'lester-original',
+      title: 'Lester',
+      achievementId: 'getaway-clear',
+      cta: 'CLEAR LEVEL 1 TO UNLOCK',
+      description: 'Unlock Lester by completing Level 1: The Crypto Wasteland.',
+    }),
+    Object.freeze({
+      id: 'lilly',
+      legacyId: 'lilly',
+      title: 'Lilly',
+      achievementId: 'ten-paid-runs',
+      paidRunsRequired: 10,
+      cta: 'PLAY 10 RANKED MATCHES TO UNLOCK',
+      description: 'Unlock Lilly after completing 10 ranked Hard Money Heroes matches.',
+    }),
+  ]),
 });
 
 export const HMH_PLAYABLE_CHARACTER_VISUAL_KITS = Object.freeze({
-  lester: Object.freeze({
-    legacyId: 'lester',
-    source: 'lester-production-manifest',
-    manifestPath: './assets/lester-production/lester-production-sprite-manifest.json',
-    directionMode: '8-direction-backbone',
-    states: Object.freeze(['idle', 'walk', 'run', 'jump']),
-  }),
-  lilly: Object.freeze({
-    legacyId: 'lilly',
+  'lit-commando': Object.freeze({
+    id: 'lit-commando',
     source: 'animated-roster',
     manifestPath: './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs',
     directionMode: '8-direction-backbone',
-    states: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee']),
+    states: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death']),
+    productionStatus: 'needs death plus missing shoot/hurt directions before AAA lock',
+  }),
+  'lit-valkyrie': Object.freeze({
+    id: 'lit-valkyrie',
+    source: 'animated-roster',
+    manifestPath: './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs',
+    directionMode: '8-direction-backbone',
+    states: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death']),
+    productionStatus: 'needs one missing death direction before AAA lock',
+  }),
+  'lester-original': Object.freeze({
+    id: 'lester-original',
+    source: 'lester-production-manifest + user reference stills',
+    manifestPath: './assets/lester-production/lester-production-sprite-manifest.json',
+    directionMode: '8-direction-backbone',
+    states: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death']),
+    productionStatus: 'reference locked; needs full 8-direction production pass for every combat state',
+  }),
+  lilly: Object.freeze({
+    id: 'lilly',
+    source: 'animated-roster + user reference stills',
+    manifestPath: './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs',
+    directionMode: '8-direction-backbone',
+    states: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death']),
+    productionStatus: 'runtime kit currently complete, but should be rebuilt/QAed against Justin reference sprites for AAA lock',
   }),
 });
 
@@ -42,22 +85,51 @@ function clone(value) {
 }
 
 function configuredStarterIds(config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
-  const starters = Array.isArray(config.startersLegacyIds) && config.startersLegacyIds.length
-    ? config.startersLegacyIds
-    : [config.starterLegacyId];
+  const starters = Array.isArray(config.starterCharacterIds) && config.starterCharacterIds.length
+    ? config.starterCharacterIds
+    : Array.isArray(config.startersLegacyIds) && config.startersLegacyIds.length
+      ? config.startersLegacyIds
+      : [config.starterLegacyId];
   return Object.freeze(
     [...new Set(starters.map((id) => normalizeId(id)).filter(Boolean))],
   );
 }
 
+function configuredUnlockables(config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
+  if (Array.isArray(config.unlockableCharacters) && config.unlockableCharacters.length) {
+    return Object.freeze(config.unlockableCharacters.map((unlock) => Object.freeze({ ...unlock, id: normalizeId(unlock.id ?? unlock.legacyId) })));
+  }
+  const legacyLevelOne = normalizeId(config.levelOneUnlockCharacterId ?? config.levelOneUnlockLegacyId);
+  return legacyLevelOne
+    ? Object.freeze([Object.freeze({ id: legacyLevelOne, achievementId: config.levelOneUnlockAchievementId, cta: 'CLEAR LEVEL 1 TO UNLOCK' })])
+    : Object.freeze([]);
+}
+
+function profileRankedRuns(profile = {}) {
+  const topLevel = Math.max(0, Number(profile.totalPaidRuns) || 0);
+  const progressMax = Math.max(
+    0,
+    ...Object.values(profile.progress ?? {}).map((game) => Number(game?.paidRuns) || 0),
+  );
+  return Math.max(topLevel, progressMax);
+}
+
+function unlockEarned(unlock = {}, profile = {}, earned = new Set()) {
+  const achievementId = normalizeId(unlock.achievementId);
+  if (achievementId && earned.has(achievementId)) return true;
+  if (Number.isFinite(Number(unlock.paidRunsRequired)) && profileRankedRuns(profile) >= Number(unlock.paidRunsRequired)) return true;
+  return false;
+}
+
 export function buildCharacterUnlockMap(profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
   const starterIds = configuredStarterIds(config);
-  const unlockId = normalizeId(config.levelOneUnlockLegacyId);
   const earned = new Set((profile.achievements ?? []).map((id) => normalizeId(id)));
   const existing = profile.unlocks?.characters ?? {};
   const unlocks = { ...existing };
   for (const starterId of starterIds) unlocks[starterId] = true;
-  if (unlockId) unlocks[unlockId] = earned.has(normalizeId(config.levelOneUnlockAchievementId));
+  for (const unlock of configuredUnlockables(config)) {
+    if (unlock.id) unlocks[unlock.id] = unlockEarned(unlock, profile, earned);
+  }
   return Object.freeze(unlocks);
 }
 
@@ -81,8 +153,8 @@ export function resolveSelectedCharacterId(profile = {}, config = HARD_MONEY_HER
   return starters.find((id) => unlocks[id]) ?? normalizeId(config.starterLegacyId);
 }
 
-export function setPreferredCharacter(profile = {}, legacyId, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
-  const desired = normalizeId(legacyId);
+export function setPreferredCharacter(profile = {}, characterId, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
+  const desired = normalizeId(characterId);
   const unlocks = buildCharacterUnlockMap(profile, config);
   if (!unlocks[desired]) {
     return { ok: false, reason: 'locked', selectedCharacterId: resolveSelectedCharacterId(profile, config) };
@@ -95,33 +167,29 @@ export function setPreferredCharacter(profile = {}, legacyId, config = HARD_MONE
 export function buildCharacterSelectEntries(baseRoster = [], profile = {}, config = HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG) {
   const unlocks = buildCharacterUnlockMap(profile, config);
   const selectedCharacterId = resolveSelectedCharacterId(profile, config);
-  const unlockCharId = normalizeId(config.levelOneUnlockCharacterId);
+  const unlockById = new Map(configuredUnlockables(config).map((unlock) => [normalizeId(unlock.id), unlock]));
   return baseRoster.map((entry) => {
-    const legacyId = normalizeId(entry.legacyId ?? entry.id);
     const entryId = normalizeId(entry.id);
-    // The Level 1 unlock character is keyed by its own id in the unlock map
-    // (not its legacyId, which collides with a starter). All other characters
-    // use their legacyId for the unlock lookup.
-    const isLevelOneUnlock = unlockCharId && entryId === unlockCharId;
-    const unlocked = isLevelOneUnlock
-      ? Boolean(unlocks[entryId])
-      : Boolean(unlocks[legacyId]);
+    const legacyId = normalizeId(entry.legacyId ?? entry.id);
+    const lookupId = entryId || legacyId;
+    const unlock = unlockById.get(lookupId);
+    const unlocked = Boolean(unlocks[lookupId]);
     const cta = unlocked
-      ? `SELECT — PLAY AS ${String(entry.name ?? entry.title ?? legacyId).toUpperCase()}`
-      : isLevelOneUnlock
-        ? 'CLEAR LEVEL 1 TO UNLOCK'
-        : 'LOCKED';
+      ? `SELECT — PLAY AS ${String(entry.name ?? entry.title ?? lookupId).toUpperCase()}`
+      : unlock?.cta ?? 'LOCKED';
     return Object.freeze({
       ...entry,
-      legacyId,
+      id: lookupId,
+      legacyId: lookupId,
       locked: !unlocked,
       unlocked,
-      selected: selectedCharacterId === legacyId,
+      selected: selectedCharacterId === lookupId,
+      unlockDescription: unlock?.description ?? entry.unlockDescription,
       cta,
     });
   });
 }
 
-export function playableCharacterVisualKitFor(legacyId) {
-  return HMH_PLAYABLE_CHARACTER_VISUAL_KITS[normalizeId(legacyId)] ?? null;
+export function playableCharacterVisualKitFor(characterId) {
+  return HMH_PLAYABLE_CHARACTER_VISUAL_KITS[normalizeId(characterId)] ?? null;
 }
