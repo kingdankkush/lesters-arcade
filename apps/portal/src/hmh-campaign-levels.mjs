@@ -2,6 +2,10 @@ import {
   HMH_AUTHORED_LEVEL_GRAMMAR,
   authoredLevelSetpieceManifestFor,
 } from './hmh-authored-setpieces.mjs';
+import {
+  HMH_LEVEL_ONE_SKETCH_LAYOUT,
+  HMH_LEVEL_ONE_SKETCH_NEW_ASSET_REQUESTS,
+} from './hmh-level-one-sketch-layout.mjs';
 
 const LEVEL_1_ID = 'level-1-crypto-wasteland';
 const LEVEL_2_ID = 'level-2-litecoin-city';
@@ -276,6 +280,8 @@ export const HMH_CAMPAIGN_LEVELS = Object.freeze([
     }),
     hybridModel: HMH_LEVEL_ONE_WASTELAND_MACRO_LAYOUT.model,
     macroLayout: HMH_LEVEL_ONE_WASTELAND_MACRO_LAYOUT,
+    sketchMapPlan: HMH_LEVEL_ONE_SKETCH_LAYOUT,
+    sketchAssetRequests: HMH_LEVEL_ONE_SKETCH_NEW_ASSET_REQUESTS,
     districtPlan: Object.freeze([
       Object.freeze({ id: 'desert-approach', label: 'Desert Approach', role: 'start lane / heat tutorial', assetMood: 'sand flats, berms, dry creek beds, rusted salvage, early sightlines toward the skyline' }),
       Object.freeze({ id: 'ghost-town', label: 'Rugpull Gulch / Ghost Town', role: 'main-street combat knot + first high-value detour', assetMood: 'abandoned false fronts, vault ruin, lanterns, fences, water tower, broken project billboards' }),
