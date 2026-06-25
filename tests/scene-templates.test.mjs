@@ -6,6 +6,8 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
   SCENE_CELL,
   SCENE_TEMPLATES,
@@ -14,6 +16,7 @@ import {
   sceneObjectsNear,
   groundThemeForCell,
 } from '../apps/portal/src/scene-templates.mjs';
+import { HMH_LEVEL_ONE_SKETCH_ASSET_WAVE } from '../apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.mjs';
 
 const SEED = 1234;
 // A biome function that returns a fixed biome (so tests are deterministic and
@@ -29,7 +32,7 @@ test('every template slot references a hmh-coherent-world asset key with a set/ 
     assert.ok(Array.isArray(t.slots) && t.slots.length > 0, `${t.id} has slots`);
     assert.ok(typeof t.groundTheme === 'string' && t.groundTheme, `${t.id} has groundTheme`);
     for (const s of t.slots) {
-      assert.match(s.assetKey, /^[a-z]+\/[a-z0-9-]+$/, `${t.id} slot assetKey ${s.assetKey}`);
+      assert.match(s.assetKey, /^[a-z0-9-]+\/[a-z0-9-]+$/, `${t.id} slot assetKey ${s.assetKey}`);
       assert.ok(['anchor', 'pathEdge', 'scatter', 'onHost'].includes(s.place), `${t.id} valid place`);
     }
   }
@@ -165,6 +168,74 @@ test('sceneObjectsNear aggregates a window and stays stable', () => {
   const near2 = sceneObjectsNear(SEED, 0, 0, 14, constBiome('town'), { reserveRadius: 6 });
   assert.deepEqual(near1, near2, 'deterministic window');
   assert.ok(Array.isArray(near1));
+});
+
+test('Level 1 sketch asset wave ships original road, water, cliff, town, farm, and flora PNGs', () => {
+  assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.id, 'hmh-level-one-sketch-asset-wave-v1');
+  assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.sourcePolicy.includes('reference-only') || HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.sourcePolicy.includes('layout reference'), true);
+  assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assetCount, 44);
+
+  const categories = new Set(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets.map((asset) => asset.category));
+  for (const category of ['road', 'water', 'terrain', 'structure', 'farm', 'flora', 'bridge']) {
+    assert.equal(categories.has(category), true, `${category} category exists`);
+  }
+
+  for (const asset of HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets) {
+    assert.match(asset.key, /^sketch-level1\/[a-z0-9-]+$/);
+    assert.equal(existsSync(fileURLToPath(new URL(`../${asset.path}`, import.meta.url))), true, `${asset.path} exists`);
+    assert.equal(asset.width > 0 && asset.height > 0, true, `${asset.key} has dimensions`);
+  }
+
+  const animatedWater = HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets.filter((asset) => asset.category === 'water' && asset.animated);
+  assert.equal(animatedWater.length >= 12, true, 'river/lake/pond animated frame sets are present');
+  assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets.some((asset) => asset.key === 'sketch-level1/barn-red'), true);
+  assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets.some((asset) => asset.key === 'sketch-level1/asphalt-road-crossroad'), true);
+});
+
+test('Level 1 sketch scene templates turn the map sketch into usable runtime setpieces', () => {
+  const requiredTemplates = [
+    'sketch_asphalt_road_spine',
+    'sketch_painted_crossroad',
+    'sketch_animated_river_bridge',
+    'sketch_lake_pond_edge',
+    'sketch_cliff_hill_boundary',
+    'sketch_town_boundary_fronts',
+    'sketch_farmstead_crop_road',
+    'sketch_farm_silo_yard',
+    'sketch_forest_boundary_wall',
+  ];
+
+  for (const id of requiredTemplates) {
+    const template = SCENE_TEMPLATES[id];
+    assert.ok(template, `${id} exists`);
+    assert.equal(template.slots.some((slot) => slot.assetKey.startsWith('sketch-level1/')), true, `${id} uses sketch asset wave`);
+  }
+
+  const farm = buildScene(SEED, 15, 15, 'grass', {
+    reserveRadius: 0,
+    density: 1,
+    templateContext: {
+      sceneDensity: 1,
+      templatePoolIds: ['sketch_farmstead_crop_road'],
+      forceTemplateId: 'sketch_farmstead_crop_road',
+      authoredComposition: { role: 'landmark-anchor', skipAnchor: false, skipScatter: false },
+    },
+  });
+  assert.equal(farm.some((obj) => obj.assetKey === 'sketch-level1/barn-red'), true);
+  assert.equal(farm.some((obj) => obj.assetKey === 'sketch-level1/corn-row-loop-00'), true);
+
+  const bridge = buildScene(SEED, 16, 16, 'road', {
+    reserveRadius: 0,
+    density: 1,
+    templateContext: {
+      sceneDensity: 1,
+      templatePoolIds: ['sketch_animated_river_bridge'],
+      forceTemplateId: 'sketch_animated_river_bridge',
+      authoredComposition: { role: 'landmark-anchor', skipAnchor: false, skipScatter: false },
+    },
+  });
+  assert.equal(bridge.some((obj) => obj.assetKey === 'sketch-level1/road-bridge-wood'), true);
+  assert.equal(bridge.some((obj) => obj.assetKey === 'sketch-level1/river-water-loop-00'), true);
 });
 
 test('groundThemeForCell returns the chosen template ground theme', () => {

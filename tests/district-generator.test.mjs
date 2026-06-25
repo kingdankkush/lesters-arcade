@@ -260,11 +260,23 @@ test('districtTemplateContextForCell exposes local authored template preferences
   const desertCorner = districtTemplateContextForCell(desertCell.dx * DISTRICT_CELL, desertCell.dy * DISTRICT_CELL, grid, macroCellsX);
   const ghostMainStreet = districtTemplateContextForCell(ghostCell.dx * DISTRICT_CELL + 2, ghostCell.dy * DISTRICT_CELL + 2, grid, macroCellsX);
 
+  assert.ok(desertSpine?.preferredTemplateIds.includes('sketch_asphalt_road_spine'));
   assert.ok(desertSpine?.preferredTemplateIds.includes('crypto_desert_salvage_basin'));
   assert.ok(desertSpine?.preferredTemplateIds.includes('crypto_desert_outpost_yard'));
+  assert.ok(desertCorner?.preferredTemplateIds.includes('sketch_cliff_hill_boundary'));
   assert.ok(desertCorner?.preferredTemplateIds.includes('crypto_canyon_pass'));
+  assert.ok(ghostMainStreet?.preferredTemplateIds.includes('sketch_painted_crossroad'));
+  assert.ok(ghostMainStreet?.preferredTemplateIds.includes('sketch_town_boundary_fronts'));
   assert.ok(ghostMainStreet?.preferredTemplateIds.includes('crypto_ghost_mainstreet_front'));
   assert.ok(ghostMainStreet?.preferredTemplateIds.includes('crypto_ghost_saloon_square'));
+
+  const countryCell = grid.find((cell) => cell.districtFamily === 'country_road' && cell.dy === row);
+  const countrySpine = districtTemplateContextForCell(countryCell.dx * DISTRICT_CELL + 2, countryCell.dy * DISTRICT_CELL + 2, grid, macroCellsX);
+  const countryOuter = districtTemplateContextForCell(countryCell.dx * DISTRICT_CELL, countryCell.dy * DISTRICT_CELL, grid, macroCellsX);
+  assert.ok(countrySpine?.preferredTemplateIds.includes('sketch_asphalt_road_spine'));
+  assert.ok(countrySpine?.preferredTemplateIds.includes('sketch_animated_river_bridge'));
+  assert.ok(countryOuter?.preferredTemplateIds.includes('sketch_farmstead_crop_road'));
+  assert.ok(countryOuter?.preferredTemplateIds.includes('sketch_forest_boundary_wall'));
 });
 
 test('districtTemplateContextForCell exposes authored transition-band metadata at belt boundaries', () => {

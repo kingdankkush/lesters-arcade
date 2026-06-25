@@ -246,4 +246,20 @@ We do **not** yet have a real AAA farm kit.
 
 ## Status
 
-This pass creates the authored data contract and asset backlog. It does not yet generate the final P0 environment art or replace the live map renderer with the full sketch-derived macro graph.
+This plan now has two implementation layers:
+
+1. **Sketch layout contract — complete locally**
+   - `apps/portal/src/hmh-level-one-sketch-layout.mjs`
+   - `HMH_CAMPAIGN_LEVELS[Level 1].sketchMapPlan`
+   - `tests/hmh-level-one-sketch-layout.test.mjs`
+
+2. **First runtime craft / asset wave — complete locally**
+   - `scripts/generate-hmh-level-one-sketch-assets.py`
+   - `apps/portal/assets/generated/hmh-coherent-world/sketch-level1/`
+   - `apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.mjs`
+   - `docs/game-design/assets/hmh-level-1-sketch-asset-wave-contact-sheet.png`
+   - `docs/game-design/hard-money-heroes-level-1-sketch-asset-wave.md`
+   - `apps/portal/src/scene-templates.mjs` now exposes sketch-specific road, water, cliff, town, farm, and forest templates.
+   - `apps/portal/src/district-generator.mjs` now biases Level 1 district preferences toward those sketch templates.
+
+The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch. It does not yet replace every ground tile with a fully hand-polished AAA tileset or add a map-editor viewport, but it is now real runtime data/art rather than a docs-only plan.

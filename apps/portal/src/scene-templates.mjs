@@ -833,6 +833,101 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
+  sketch_asphalt_road_spine: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'sketch_asphalt_road_spine', biomes: ['road', 'town', 'pavement', 'desert'], groundTheme: 'pavement', weight: 0.48,
+    slots: [
+      { ...A('sketch-level1/asphalt-road-straight-ew', 'road', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 5 },
+      { ...A('sketch-level1/asphalt-road-curve', 'road', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/dirt-asphalt-farm-driveway', 'ground-transition', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  sketch_painted_crossroad: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'sketch_painted_crossroad', biomes: ['road', 'town', 'pavement'], groundTheme: 'pavement', weight: 0.44,
+    slots: [
+      { ...A('sketch-level1/asphalt-road-crossroad', 'road', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/asphalt-road-tjunction', 'road', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('street/street-lamp', 'lamp', { radius: 0.35 }), place: 'pathEdge', spacing: 4, count: 2 },
+    ],
+  }),
+
+  sketch_animated_river_bridge: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'sketch_animated_river_bridge', biomes: ['forest', 'water', 'grass', 'road'], groundTheme: 'grass', weight: 0.44,
+    slots: [
+      { ...A('sketch-level1/river-water-loop-00', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('sketch-level1/road-bridge-wood', 'bridge', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/lake-water-loop-00', 'shoreline', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
+      { ...A('sketch-level1/oak-tree-sway-00', 'tree', { radius: 0.58 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  sketch_lake_pond_edge: Object.freeze({
+    archetypeTags: ['park', 'wilderness'],
+    id: 'sketch_lake_pond_edge', biomes: ['water', 'forest', 'grass', 'sand'], groundTheme: 'grass', weight: 0.4,
+    slots: [
+      { ...A('sketch-level1/lake-water-loop-00', 'shoreline', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('sketch-level1/pond-water-loop-00', 'pond', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/pine-tree-sway-00', 'tree', { radius: 0.58 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  sketch_cliff_hill_boundary: Object.freeze({
+    archetypeTags: ['wilderness'],
+    id: 'sketch_cliff_hill_boundary', biomes: ['desert', 'rocky', 'sand'], groundTheme: 'sand', weight: 0.46,
+    slots: [
+      { ...A('sketch-level1/cliff-face-north', 'wall', { radius: 0.82 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('sketch-level1/mesa-hill-plateau', 'wall', { radius: 0.76 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/cliff-corner-shadow', 'wall', { radius: 0.72 }), place: 'scatter', count: 1 },
+      { ...A('sketch-level1/cactus-cluster', 'tree', { radius: 0.45 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  sketch_town_boundary_fronts: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'sketch_town_boundary_fronts', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.46,
+    slots: [
+      { ...A('sketch-level1/town-front-1', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/town-front-2', 'building', { radius: 0.74 }), place: 'pathEdge', spacing: 4, count: 2 },
+      { ...A('sketch-level1/town-front-3', 'building', { radius: 0.74 }), place: 'pathEdge', spacing: 4, count: 2 },
+      { ...A('sketch-level1/asphalt-road-straight-ew', 'road', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  sketch_farmstead_crop_road: Object.freeze({
+    archetypeTags: ['suburban', 'wilderness'],
+    id: 'sketch_farmstead_crop_road', biomes: ['town', 'road', 'grass', 'desert'], groundTheme: 'grass', weight: 0.46,
+    slots: [
+      { ...A('sketch-level1/barn-red', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/corn-row-loop-00', 'crop', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('sketch-level1/farmhouse-cream', 'building', { radius: 0.7 }), place: 'scatter', count: 1 },
+      { ...A('sketch-level1/hay-bale', 'smallprop', { radius: 0.34 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  sketch_farm_silo_yard: Object.freeze({
+    archetypeTags: ['suburban', 'wilderness'],
+    id: 'sketch_farm_silo_yard', biomes: ['town', 'road', 'grass', 'desert'], groundTheme: 'grass', weight: 0.36,
+    slots: [
+      { ...A('sketch-level1/silo-stone', 'building', { radius: 0.62 }), place: 'anchor', count: 1 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('sketch-level1/farmhouse-cream', 'building', { radius: 0.7 }), place: 'scatter', count: 1 },
+      { ...A('sketch-level1/corn-row-loop-00', 'crop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  sketch_forest_boundary_wall: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'sketch_forest_boundary_wall', biomes: ['forest', 'grass', 'town'], groundTheme: 'grass', weight: 0.4,
+    slots: [
+      { ...A('sketch-level1/pine-tree-sway-00', 'tree', { radius: 0.58 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('sketch-level1/oak-tree-sway-00', 'tree', { radius: 0.58 }), place: 'anchor', count: 1 },
+      { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
 });
 
 // Templates available for a biome (with relative weights; default weight 1).

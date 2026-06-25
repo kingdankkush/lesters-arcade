@@ -964,33 +964,33 @@ function preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSc
   switch (districtCell.districtFamily) {
     case 'desert_approach':
       localPreferenceIds = corner
-        ? ['crypto_canyon_pass', 'crypto_canyon_gate']
+        ? ['sketch_cliff_hill_boundary', 'crypto_canyon_pass', 'crypto_canyon_gate']
         : orientedSpine
-          ? ['crypto_desert_outpost_yard', 'crypto_desert_salvage_basin', 'crypto_desert_outpost']
+          ? ['sketch_asphalt_road_spine', 'crypto_desert_outpost_yard', 'crypto_desert_salvage_basin', 'crypto_desert_outpost']
           : onOuterRing
-            ? ['crypto_canyon_pass', 'crypto_desert_ghost_checkpoint', 'crypto_desert_outpost_yard']
-            : ['crypto_desert_salvage_basin', 'crypto_desert_outpost_yard', 'crypto_desert_outpost'];
+            ? ['sketch_cliff_hill_boundary', 'crypto_canyon_pass', 'crypto_desert_ghost_checkpoint', 'crypto_desert_outpost_yard']
+            : ['sketch_cliff_hill_boundary', 'crypto_desert_salvage_basin', 'crypto_desert_outpost_yard', 'crypto_desert_outpost'];
       break;
     case 'ghost_town':
       localPreferenceIds = onCenterRow
-        ? ['crypto_ghost_mainstreet_front', 'crypto_ghost_saloon_square', 'crypto_ghost_false_front']
+        ? ['sketch_painted_crossroad', 'sketch_town_boundary_fronts', 'crypto_ghost_mainstreet_front', 'crypto_ghost_saloon_square', 'crypto_ghost_false_front']
         : onOuterRing
-          ? ['crypto_ghost_town_block', 'street_block', 'downtown_district']
-          : ['crypto_ghost_saloon_square', 'crypto_ghost_town_block', 'crypto_ghost_false_front'];
+          ? ['sketch_town_boundary_fronts', 'crypto_ghost_town_block', 'street_block', 'downtown_district']
+          : ['sketch_town_boundary_fronts', 'crypto_ghost_saloon_square', 'crypto_ghost_town_block', 'crypto_ghost_false_front'];
       break;
     case 'country_road':
       localPreferenceIds = orientedSpine
-        ? ['crypto_country_rest_stop', 'crypto_country_bus_turnout', 'crypto_country_pull_off']
+        ? ['sketch_asphalt_road_spine', 'sketch_animated_river_bridge', 'crypto_country_rest_stop', 'crypto_country_bus_turnout', 'crypto_country_pull_off']
         : onOuterRing
-          ? ['crypto_country_pull_off', 'fenced_yard', 'street_block']
-          : ['crypto_country_bus_turnout', 'crypto_country_pull_off', 'street_block'];
+          ? ['sketch_farmstead_crop_road', 'sketch_forest_boundary_wall', 'crypto_country_pull_off', 'fenced_yard', 'street_block']
+          : ['sketch_farmstead_crop_road', 'sketch_farm_silo_yard', 'crypto_country_bus_turnout', 'crypto_country_pull_off', 'street_block'];
       break;
     case 'residential_edge':
       localPreferenceIds = onCross
-        ? ['crypto_residential_square', 'crypto_residential_greenbelt_pocket', 'crypto_residential_culdesac']
+        ? ['sketch_lake_pond_edge', 'sketch_painted_crossroad', 'crypto_residential_square', 'crypto_residential_greenbelt_pocket', 'crypto_residential_culdesac']
         : onOuterRing
-          ? ['suburban_residential', 'green_park', 'fenced_yard']
-          : ['crypto_residential_greenbelt_pocket', 'crypto_residential_culdesac', 'suburban_residential'];
+          ? ['sketch_forest_boundary_wall', 'sketch_lake_pond_edge', 'suburban_residential', 'green_park', 'fenced_yard']
+          : ['sketch_farm_silo_yard', 'crypto_residential_greenbelt_pocket', 'crypto_residential_culdesac', 'suburban_residential'];
       break;
     case 'inner_city':
       localPreferenceIds = onCross
