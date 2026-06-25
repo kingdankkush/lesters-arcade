@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+import { HMH_FINAL_COMBAT_VFX_PACK, finalCombatVfxAssetByKey } from '../apps/portal/assets/generated/hmh-final-combat-vfx/hmh-final-combat-vfx-manifest.mjs';
+
 import {
   createMuzzleFlash,
   createShellCasing,
@@ -12,8 +17,48 @@ import {
   updateVfxParticles,
   drawVfxParticles,
   getDeathVfxName,
+  getFinalCombatVfxAsset,
   getRegisteredDeathVfxIds,
 } from '../apps/portal/src/combat-vfx.mjs';
+
+
+test('final combat VFX pack ships original spritesheets for readable large effects only', () => {
+  assert.equal(HMH_FINAL_COMBAT_VFX_PACK.id, 'hmh-final-combat-vfx-v1');
+  assert.match(HMH_FINAL_COMBAT_VFX_PACK.sourcePolicy, /original repo-owned/i);
+  assert.equal(HMH_FINAL_COMBAT_VFX_PACK.assetCount >= 10, true);
+  assert.equal(HMH_FINAL_COMBAT_VFX_PACK.excludesNormalBulletSprites, true);
+
+  const required = [
+    'muzzle-flash-pistol',
+    'muzzle-flash-rail',
+    'hit-spark-metal',
+    'hit-spark-flesh',
+    'shell-casing-brass',
+    'coin-pickup-pop',
+    'grenade-explosion-ring',
+    'death-dust-burst',
+    'gore-pixel-splatter',
+    'level-up-burst',
+  ];
+
+  for (const key of required) {
+    const asset = finalCombatVfxAssetByKey(key);
+    assert.ok(asset, `${key} exists`);
+    assert.equal(asset.animated, true, `${key} animated`);
+    assert.equal(asset.frames >= 4, true, `${key} frame count`);
+    assert.equal(asset.sheetWidth, asset.frameWidth * asset.frames, `${key} sheet width`);
+    assert.equal(existsSync(fileURLToPath(new URL(`../apps/portal/${asset.src.replace(/^\.\//, '')}`, import.meta.url))), true, `${asset.src} exists`);
+  }
+});
+
+
+test('combat VFX module exposes final spritesheet metadata for runtime/UI consumers', () => {
+  const explosion = getFinalCombatVfxAsset('grenade-explosion-ring');
+  assert.ok(explosion);
+  assert.equal(explosion.role, 'explosion');
+  assert.equal(explosion.animated, true);
+  assert.equal(getFinalCombatVfxAsset('normal-bullet-sprite'), null);
+});
 
 test('createMuzzleFlash produces one tiny static barrel flash instead of a particle spray', () => {
   const flashes = createMuzzleFlash(100, 200, 'east');

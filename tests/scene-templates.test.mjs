@@ -19,6 +19,7 @@ import {
 import { HMH_LEVEL_ONE_SKETCH_ASSET_WAVE } from '../apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.mjs';
 import { HMH_LEVEL_ONE_POLISH_ASSETS } from '../apps/portal/assets/generated/hmh-coherent-world/level1-polish/level1-polish-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS } from '../apps/portal/assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
+import { HMH_FINAL_WORLD_AMBIENT_ASSETS } from '../apps/portal/assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.mjs';
 
 const SEED = 1234;
 // A biome function that returns a fixed biome (so tests are deterministic and
@@ -192,6 +193,41 @@ test('Level 1 sketch asset wave ships original road, water, cliff, town, farm, a
   assert.equal(animatedWater.length >= 12, true, 'river/lake/pond animated frame sets are present');
   assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets.some((asset) => asset.key === 'sketch-level1/barn-red'), true);
   assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets.some((asset) => asset.key === 'sketch-level1/asphalt-road-crossroad'), true);
+});
+
+
+test('Level 1 final ambient world assets ship original animated detail loops across biomes', () => {
+  assert.equal(HMH_FINAL_WORLD_AMBIENT_ASSETS.id, 'hmh-level-one-final-ambient-world-v1');
+  assert.match(HMH_FINAL_WORLD_AMBIENT_ASSETS.sourcePolicy, /original repo-owned/i);
+  assert.equal(HMH_FINAL_WORLD_AMBIENT_ASSETS.assetCount >= 10, true);
+
+  const categories = new Set(HMH_FINAL_WORLD_AMBIENT_ASSETS.assets.map((asset) => asset.category));
+  for (const category of ['desert', 'forest', 'town', 'water', 'road', 'fx']) {
+    assert.equal(categories.has(category), true, `${category} ambient category exists`);
+  }
+
+  for (const asset of HMH_FINAL_WORLD_AMBIENT_ASSETS.assets) {
+    assert.match(asset.key, /^level-final-ambient\/[a-z0-9-]+$/);
+    assert.equal(asset.animated, true, `${asset.key} is animated`);
+    assert.equal(asset.frames >= 4, true, `${asset.key} has enough frames`);
+    assert.equal(asset.sheetWidth, asset.frameWidth * asset.frames, `${asset.key} sheet width`);
+    assert.equal(existsSync(fileURLToPath(new URL(`../apps/portal/${asset.src.replace(/^\.\//, '')}`, import.meta.url))), true, `${asset.src} exists`);
+  }
+});
+
+test('Level 1 templates consume final ambient world loops as non-solid dressing', () => {
+  const expectations = [
+    ['crypto_desert_outpost', 'level-final-ambient/desert-dust-devil'],
+    ['tree_grove', 'level-final-ambient/leaf-swirl'],
+    ['river_crossing', 'level-final-ambient/water-sparkle-line'],
+    ['street_block', 'level-final-ambient/neon-window-flicker'],
+    ['sketch_asphalt_road_spine', 'level-final-ambient/road-heat-haze'],
+  ];
+  for (const [templateId, assetKey] of expectations) {
+    const slot = SCENE_TEMPLATES[templateId]?.slots.find((candidate) => candidate.assetKey === assetKey);
+    assert.ok(slot, `${templateId} uses ${assetKey}`);
+    assert.equal(slot.solid, false, `${assetKey} is non-solid`);
+  }
 });
 
 test('Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops', () => {

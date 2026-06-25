@@ -24,6 +24,7 @@ import { HMH_LEVEL_ONE_ID, selectLevelOneGroundTile } from './src/hmh-level-one-
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
+import { HMH_FINAL_WORLD_AMBIENT_ASSETS, finalWorldAmbientAssetByKey } from './assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.mjs';
 import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
@@ -52,6 +53,10 @@ import { calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAtta
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
+
+function animatedSceneAssetByKey(key) {
+  return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key);
+}
 import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
 
 import {
@@ -8327,7 +8332,7 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
     coherentImage = coherentWorldImage(prop.sceneAssetKey);
     if (!imageReady(coherentImage)) return false;
     frameImage = coherentImage;
-    animatedSceneMeta = animatedPolishAssetByKey(prop.sceneAssetKey);
+    animatedSceneMeta = animatedSceneAssetByKey(prop.sceneAssetKey);
   } else {
     // Production art pass props (fallback for non-scene props)
     frameImage = productionSpriteFrame(prop, combat.frame + index * 9, prop?.fps ?? 8);
@@ -8473,7 +8478,7 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   // Warm Level 1 final-paint and CC0 fallback isometric base ground tiles. They
   // render under authored HMH props/templates, so they should decode before the
   // READY overlay appears.
-  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND, HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS]) {
+  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND, HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, HMH_FINAL_WORLD_AMBIENT_ASSETS]) {
     for (const asset of manifest.assets ?? []) {
       if (asset?.src) toWarm.add(asset.src);
     }

@@ -54,6 +54,7 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('street/park-bench', 'bench', { radius: 0.5 }), place: 'scatter', count: 1 },
       { ...A('street/fire-hydrant', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
       { ...A('street/trash-can', 'smallprop', { radius: 0.3 }), place: 'scatter', count: 1 },
+      { ...A('level-final-ambient/neon-window-flicker', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
     ],
   }),
   // --- INTERIOR (arcade room): cabinets in a row, soda machine, a TV that MUST
@@ -79,6 +80,7 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('nature/pine-tree', 'tree', { radius: 0.55 }), place: 'scatter', count: 2 },
       { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
       { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('level-final-ambient/leaf-swirl', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
     ],
   }),
   // --- DESERT / ROCKY: boulders + scrub, no lamps/TVs. ---
@@ -136,6 +138,7 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
       { ...A('nature/fallen-log', 'smallprop', { radius: 0.45 }), place: 'scatter', count: 1 },
       { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('level-final-ambient/water-sparkle-line', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 2 },
     ],
   }),
 
@@ -226,6 +229,7 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'scatter', count: 2 },
       { ...A('crypto/desert-cactus', 'tree', { radius: 0.55 }), place: 'scatter', count: 2 },
       { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('level-final-ambient/desert-dust-devil', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
     ],
   }),
 
@@ -842,6 +846,7 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('sketch-level1/dirt-asphalt-farm-driveway', 'ground-transition', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
       { ...A('level1-final-animated/roadside-sign-sway', 'sign', { radius: 0.28 }), place: 'scatter', count: 1 },
       { ...A('level1-polish/mailbox-rural', 'smallprop', { radius: 0.26 }), place: 'scatter', count: 1 },
+      { ...A('level-final-ambient/road-heat-haze', 'decor', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 3, count: 2 },
     ],
   }),
 

@@ -16,6 +16,8 @@
 const VFX_POOL_SIZE = 200; // max simultaneous VFX particles
 
 // VFX particle shape
+import { HMH_FINAL_COMBAT_VFX_PACK, finalCombatVfxAssetByKey } from '../assets/generated/hmh-final-combat-vfx/hmh-final-combat-vfx-manifest.mjs';
+
 function vfxParticle(id, type, x, y, vx, vy, life, color, size, gravity = 0) {
   return { id, type, x, y, vx, vy, life, maxLife: life, color, size, gravity };
 }
@@ -264,4 +266,15 @@ export function getDeathVfxName(enemyId) {
 // Get all registered death VFX enemy IDs
 export function getRegisteredDeathVfxIds() {
   return Object.freeze(Object.keys(DEATH_VFX_PRESETS));
+}
+
+
+// Final combat VFX spritesheet metadata for runtime/UI consumers. Normal bullets
+// remain coded projectile/tracer primitives; this pack is for readable large FX.
+export function getFinalCombatVfxAsset(key) {
+  return finalCombatVfxAssetByKey(key);
+}
+
+export function getFinalCombatVfxPack() {
+  return HMH_FINAL_COMBAT_VFX_PACK;
 }
