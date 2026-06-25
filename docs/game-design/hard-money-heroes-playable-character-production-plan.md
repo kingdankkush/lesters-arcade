@@ -4,10 +4,12 @@ _Last updated: 2026-06-24_
 
 This document narrows the art-production backlog to **playable characters only**. Enemies, minibosses, bosses, map tiles, and Level 1/Level 2 world assets are intentionally out of scope for this pass.
 
-Reference contact sheet generated from Justin's attached Lester/Lilly files:
+Reference and runtime QA sheets:
 
-- `docs/game-design/assets/hmh-playable-reference-contact-sheet.png`
-- `docs/game-design/assets/hmh-playable-reference-contact-sheet.json`
+- `docs/game-design/assets/hmh-playable-reference-contact-sheet.png` — Justin's attached Lester/Lilly reference stills cataloged.
+- `docs/game-design/assets/hmh-playable-reference-contact-sheet.json` — machine-readable source catalog.
+- `docs/game-design/assets/hmh-playable-runtime-full-coverage-contact-sheet.png` — live runtime roster coverage after the playable completion pass.
+- `docs/game-design/assets/hmh-canonical-actor-contact-sheet.png` — canonical Lester/Lilly identity frames used to rebuild the unlockable runtime rows.
 
 ## Current playable roster decision
 
@@ -30,12 +32,12 @@ Target directions for all gameplay states:
 
 `east`, `north-east`, `north`, `north-west`, `west`, `south-west`, `south`, `south-east`
 
-| Character | Runtime roster key | Current total frames | Current coverage | Missing before AAA lock |
-|---|---:|---:|---|---|
-| Lit Commando | `lit-commando` | 490 | `idle`, `walk`, `run`, `melee`, `throw` are 8-dir. `shoot` is 7-dir. `hurt` is 7-dir. | `shoot/south-east`, `hurt/north`, and full `death` in all 8 directions. |
-| Lit Valkyrie | `lit-valkyrie` | 441 | `idle`, `walk`, `run`, `shoot`, `melee`, `throw`, `hurt` are 8-dir. `death` is 7-dir. | `death/north-west`. |
-| Lester | `lester` roster used by `lester-original` | 149 | `idle` and `walk` are 8-dir. `run`, `shoot`, `melee`, `throw`, `hurt`, `death` exist but are only 1-dir. | Full 8-dir production pass for `run`, `shoot`, `melee`, `throw`, `hurt`, `death`; weapon-specific shoot states; QA against Justin's refs. |
-| Lilly | `lilly` | 476 | All required audit states are 8-dir in the runtime roster. | Runtime coverage is complete, but the sheet still needs AAA visual QA against Justin's attached Lilly refs before final lock. |
+| Character | Runtime roster key | Current runtime coverage | Completion status | Final-art caveat |
+|---|---:|---|---|---|
+| Lit Commando | `lit-commando` | All 8 required gameplay states now have all 8 directions. | Runtime-complete after generated gap fill for `shoot/south-east`, `hurt/north`, and 8-direction `death`. | Review/hand-polish generated hurt/death frames in Aseprite before final AAA lock. |
+| Lit Valkyrie | `lit-valkyrie` | All 8 required gameplay states now have all 8 directions. | Runtime-complete after generated `death/north-west` fill. | Review/hand-polish generated death direction before final AAA lock. |
+| Lester | `lester` roster used by `lester-original` | All 8 required gameplay states now have all 8 directions. | Runtime-complete via `scripts/build-hmh-playable-reference-runtime-pack.py`, rebuilt from the canonical blue-mask Lester frames. | Diagonal/back facings are deterministic transform-derived from canonical art, not yet hand-drawn final Aseprite frames. |
+| Lilly | `lilly` | All 8 required gameplay states now have all 8 directions. | Runtime-complete via `scripts/build-hmh-playable-reference-runtime-pack.py`, rebuilt from the canonical teal-haired Lilly frames. | Diagonal/back facings are deterministic transform-derived from canonical art, not yet hand-drawn final Aseprite frames. |
 
 ## Justin reference art now cataloged
 
@@ -138,17 +140,19 @@ Minimum gameplay-complete sheet:
    - Unlockables: `lester-original`, `lilly`.
    - Max Mempool removed from playable canon.
 
-2. **Finish starter gaps first**
-   - Lit Commando: add `death` all 8 directions, `shoot/south-east`, `hurt/north`.
-   - Lit Valkyrie: add `death/north-west`.
+2. **Finish starter gaps first — done for runtime coverage**
+   - Lit Commando: `death` all 8 directions, `shoot/south-east`, and `hurt/north` now exist in the runtime roster.
+   - Lit Valkyrie: `death/north-west` now exists in the runtime roster.
 
-3. **Build Lester full reference-first pack**
-   - Use Justin's front/side pistol, shotgun, grenade, machine gun, and knife refs as canonical identity anchors.
-   - Generate/design back and diagonal directions from those refs.
-   - Build full movement and combat animations across all 8 directions.
+3. **Build Lester full reference-first pack — done for runtime coverage**
+   - Uses canonical blue-mask Lester frames as the live runtime identity.
+   - `idle`, `walk`, `run`, `shoot`, `melee`, `throw`, `hurt`, and `death` all have all 8 directions.
+   - Back/diagonal directions are transform-derived and should receive future hand-polish.
 
-4. **QA/rebuild Lilly against refs**
-   - Lilly currently has complete runtime coverage, but it still needs a reference-first AAA QA pass so her final design matches Justin's attached teal-haired character, not just a generated approximation.
+4. **QA/rebuild Lilly against refs — done for runtime coverage**
+   - Uses canonical teal-haired Lilly frames as the live runtime identity.
+   - `idle`, `walk`, `run`, `shoot`, `melee`, `throw`, `hurt`, and `death` all have all 8 directions.
+   - Back/diagonal directions are transform-derived and should receive future hand-polish.
 
 5. **Only after playable characters are locked:** revisit enemies, minibosses, bosses, and world assets.
 

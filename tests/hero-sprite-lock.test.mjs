@@ -1,15 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
-import { HMH_COMPLETE_ANIMATIONS_READY } from '../apps/portal/assets/generated/hmh-complete-animations/hmh-complete-animations.mjs';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 // Regression guard for the "hero swaps between 3-4 designs mid-run" glitch.
 // Each playable hero must lock to EXACTLY ONE roster, so no animation state
-// ever falls through to a DIFFERENT character design. (Missing states inside a
-// roster are OK — the renderer falls back to other anims of the SAME design.)
+// ever falls through to a DIFFERENT character design.
 const HERO_LOCKED_ROSTER = {
   'lit-commando': 'lit-commando',
   'lit-valkyrie': 'lit-valkyrie',
@@ -17,35 +18,33 @@ const HERO_LOCKED_ROSTER = {
   lester: 'lester',
   lilly: 'lilly',
 };
-// Core states every hero roster must cover with REAL multi-direction art so
-// moment-to-moment gameplay (move + fight) never falls back awkwardly.
-// hurt/death/throw may lag behind while PixelLab kits finish generating —
-// in-roster fallback keeps the design coherent for those.
-const HERO_CORE_STATES = ['idle', 'walk', 'run', 'shoot', 'melee'];
-// Minimum direction coverage for the core states (8 = full kit; lester's
-// legacy kit carries walk/idle at 8-dir and the rest as south-only stills
-// that the renderer mirrors, so we gate per-roster below).
-const FULL_8DIR_ROSTERS = ['lit-valkyrie', 'lit-commando', 'lilly'];
 
-test('every hero locks to one roster that covers the core animation states', () => {
+const PLAYABLE_ROSTERS = ['lit-commando', 'lit-valkyrie', 'lester', 'lilly'];
+const HERO_REQUIRED_STATES = ['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death'];
+const HERO_DIRECTIONS = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west'];
+
+function resolveRuntimeAsset(src) {
+  return path.resolve(ROOT, 'apps/portal', String(src).replace(/^\.\//, ''));
+}
+
+test('every hero locks to one roster that exists', () => {
   for (const [hero, key] of Object.entries(HERO_LOCKED_ROSTER)) {
-    const roster = HMH_COMPLETE_ANIMATIONS_READY[key] ?? HMH_ANIMATED_ROSTER[key];
+    const roster = HMH_ANIMATED_ROSTER[key];
     assert.ok(roster, `roster ${key} exists for hero ${hero}`);
-    const anims = roster.animations ?? {};
-    for (const state of HERO_CORE_STATES) {
-      assert.ok(anims[state], `${hero} -> ${key} is missing the '${state}' animation (would cause design-swap fallback)`);
-    }
   }
 });
 
-test('new-hero rosters carry true 8-direction kits for the core states', () => {
-  for (const key of FULL_8DIR_ROSTERS) {
+test('all playable rosters carry full 8-direction required animation coverage with real PNG frames', () => {
+  for (const key of PLAYABLE_ROSTERS) {
     const anims = HMH_ANIMATED_ROSTER[key]?.animations ?? {};
-    for (const state of HERO_CORE_STATES) {
-      const dirs = Object.keys(anims[state] ?? {});
-      // shoot may be 7/8 while one direction re-queues; require >= 7 so a
-      // partial regen never silently ships a 1-direction kit again.
-      assert.ok(dirs.length >= 7, `${key}/${state} has only ${dirs.length} directions (expected >= 7 of 8)`);
+    for (const state of HERO_REQUIRED_STATES) {
+      for (const direction of HERO_DIRECTIONS) {
+        const frames = anims[state]?.[direction] ?? [];
+        assert.ok(frames.length > 0, `${key}/${state}/${direction} has no frames`);
+        const first = resolveRuntimeAsset(frames[0]);
+        assert.ok(existsSync(first), `${key}/${state}/${direction} first frame is missing on disk: ${frames[0]}`);
+        assert.ok(first.endsWith('.png'), `${key}/${state}/${direction} first frame should be a PNG: ${frames[0]}`);
+      }
     }
   }
 });
@@ -71,7 +70,7 @@ test('each enemy/boss roster with frames represents a single coherent design', (
   // stills for missing states. The invariant we assert: any present animation
   // has at least one direction with frames (no empty/broken animation entries).
   for (const [key, entry] of Object.entries(HMH_ANIMATED_ROSTER)) {
-    if (['lester', 'lilly', 'lit-commando', 'lit-valkyrie'].includes(key)) continue;
+    if (PLAYABLE_ROSTERS.includes(key)) continue;
     const anims = entry.animations ?? {};
     for (const [name, dirs] of Object.entries(anims)) {
       const dirKeys = Object.keys(dirs ?? {});
