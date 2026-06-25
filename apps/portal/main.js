@@ -9127,7 +9127,26 @@ function drawSceneLighting(ctx, width, height) {
 
 function drawCombatScene(timestamp = 0) {
   const canvas = dom.combatCanvas;
-  const ctx = canvas.getContext('2d');
+  // Heartbeat gate: when there is no active run and we are not on the game-over
+  // screen, the combat canvas is hidden behind menus (splash, cabinet grid,
+  // profile, scores, codex). Drawing the scene there burns CPU/battery for
+  // nothing. Keep the rAF heartbeat alive but skip all heavy work. pendingBegin
+  // runs with combat.active === true, so the READY overlay still draws.
+  if (!canvas || (!combat.active && !combat.gameOver)) {
+    // Reset the frame clock so the accumulator doesn't spike when a run starts.
+    combat.lastTimestamp = timestamp;
+    combat.accumulatorMs = 0;
+    requestAnimationFrame(drawCombatScene);
+    return;
+  }
+  // Cache the 2D context once per canvas element instead of calling
+  // getContext('2d') 60x/second. Re-fetch only if the canvas element identity
+  // changes (e.g. the combat mount rebuilds it).
+  if (drawCombatScene._canvas !== canvas) {
+    drawCombatScene._canvas = canvas;
+    drawCombatScene._ctx = canvas.getContext('2d');
+  }
+  const ctx = drawCombatScene._ctx;
   const width = canvas.width;
   const height = canvas.height;
   // Keep the isometric world centered on the player for whatever size the canvas
