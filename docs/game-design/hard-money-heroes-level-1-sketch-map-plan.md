@@ -263,3 +263,9 @@ This plan now has two implementation layers:
    - `apps/portal/src/district-generator.mjs` now biases Level 1 district preferences toward those sketch templates.
 
 The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch. It does not yet replace every ground tile with a fully hand-polished AAA tileset or add a map-editor viewport, but it is now real runtime data/art rather than a docs-only plan.
+
+## Downloaded asset-library audit
+
+Justin's downloaded terrain/tree/water/building/road/cliff packs were audited in `docs/game-design/hard-money-heroes-downloaded-environment-asset-audit.md`.
+
+Key decision: the Screaming Brain Studios isometric floor/autotile/water packs are the best direct-use candidates because they are true 2:1 isometric tiles and verified CC0. Tree/plant/building/source packs are mostly reference-first due license, camera, or style mismatch. CraftPix/top-down/vector/stock packs should be used as reference or secondary-prop inspiration, not as direct Level 1 base art.
