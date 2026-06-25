@@ -18,6 +18,8 @@ import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/wha
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
+import { HMH_LEVEL_ONE_ID, selectLevelOneGroundTile } from './src/hmh-level-one-ground.mjs';
+import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
@@ -7892,6 +7894,35 @@ function wave2TileImage(slug) {
   if (!wave2TileImages.has(slug)) wave2TileImages.set(slug, loadImageAsset(WAVE2_TILE_SRC[slug]));
   return wave2TileImages.get(slug);
 }
+
+const sbsGroundTileImages = new Map();
+function sbsGroundTileImage(asset) {
+  if (!asset?.src) return null;
+  if (!sbsGroundTileImages.has(asset.key)) sbsGroundTileImages.set(asset.key, loadImageAsset(asset.src));
+  return sbsGroundTileImages.get(asset.key);
+}
+
+function neighborBiomesForWorld(seed, worldX, worldY) {
+  return [
+    biomeAt(seed, Math.round(worldX + 1), Math.round(worldY)),
+    biomeAt(seed, Math.round(worldX - 1), Math.round(worldY)),
+    biomeAt(seed, Math.round(worldX), Math.round(worldY + 1)),
+    biomeAt(seed, Math.round(worldX), Math.round(worldY - 1)),
+  ];
+}
+
+function sbsLevelOneGroundTileForWorld(seed, worldX, worldY, biome, theme) {
+  const asset = selectLevelOneGroundTile({
+    levelId: combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID,
+    seed,
+    worldX,
+    worldY,
+    biome,
+    theme,
+    neighbors: neighborBiomesForWorld(seed, worldX, worldY),
+  });
+  return sbsGroundTileImage(asset);
+}
 function biomeGroundTileForWorld(worldX, worldY, biome) {
   const slugs = BIOME_GROUND_TILES[biome] ?? BIOME_GROUND_TILES.town;
   if (!slugs.length) return null;
@@ -8064,9 +8095,9 @@ function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   // interior, park, fenced yard, walled compound), use the floor tile that
   // matches that scene's theme so the ground reads as part of the area.
   const seed = combat.roguelikeRun?.seed ?? 0;
-  let tileImg = null;
   const theme = sceneGroundThemeAt(seed, worldX, worldY);
-  if (theme && THEME_GROUND_TILE[theme]) {
+  let tileImg = sbsLevelOneGroundTileForWorld(seed, worldX, worldY, palette.biome, theme);
+  if (!imageReady(tileImg) && theme && THEME_GROUND_TILE[theme]) {
     tileImg = wave2TileImage(THEME_GROUND_TILE[theme]);
   }
   if (!imageReady(tileImg)) tileImg = biomeGroundTileForWorld(worldX, worldY, palette.biome);
@@ -8335,6 +8366,11 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
       for (const p of propsForBiome(worldProps, b).slice(0, 6)) toWarm.add(p.src);
       if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, b, bgs.length)].src);
     }
+  }
+  // Warm Level 1 CC0 isometric base ground tiles. They render under authored HMH
+  // props/templates, so they should decode before the READY overlay appears.
+  for (const asset of HMH_LEVEL_ONE_SBS_GROUND.assets ?? []) {
+    if (asset?.src) toWarm.add(asset.src);
   }
   // Warm the one image asset the road network actually uses (water crossings).
   // Road surfaces themselves are tinted procedurally over the ground tiles, so

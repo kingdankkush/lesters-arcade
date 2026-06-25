@@ -1,0 +1,161 @@
+{
+  "id": "hmh-level-one-polish-assets-v1",
+  "sourcePolicy": "Original repo-owned HMH art generated from downloaded reference direction; no third-party pixels copied.",
+  "assetCount": 14,
+  "assets": [
+    {
+      "key": "level1-polish/forest-wall-pine-cluster",
+      "category": "flora",
+      "role": "tree",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/forest-wall-pine-cluster.png",
+      "width": 128,
+      "height": 140,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Dense pine wall for west/north boundaries."
+    },
+    {
+      "key": "level1-polish/forest-wall-oak-cluster",
+      "category": "flora",
+      "role": "tree",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/forest-wall-oak-cluster.png",
+      "width": 128,
+      "height": 140,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Broadleaf boundary cluster for living forest edges."
+    },
+    {
+      "key": "level1-polish/oasis-reeds-flower",
+      "category": "water",
+      "role": "water-strip",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/oasis-reeds-flower.png",
+      "width": 96,
+      "height": 76,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Reeds and flowers for lake/pond banks."
+    },
+    {
+      "key": "level1-polish/oasis-reeds-tall",
+      "category": "water",
+      "role": "water-strip",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/oasis-reeds-tall.png",
+      "width": 96,
+      "height": 76,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Tall reed strips for river and pond seams."
+    },
+    {
+      "key": "level1-polish/crop-patch-corn-dense",
+      "category": "farm",
+      "role": "decor",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/crop-patch-corn-dense.png",
+      "width": 128,
+      "height": 72,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Dense corn rows for southeast farm loops."
+    },
+    {
+      "key": "level1-polish/crop-patch-wheat-dense",
+      "category": "farm",
+      "role": "decor",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/crop-patch-wheat-dense.png",
+      "width": 128,
+      "height": 72,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Wheat/crop rows for farm district identity."
+    },
+    {
+      "key": "level1-polish/hay-bale-stack",
+      "category": "farm",
+      "role": "smallprop",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/hay-bale-stack.png",
+      "width": 104,
+      "height": 70,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Stacked hay bales for farm yards and road edges."
+    },
+    {
+      "key": "level1-polish/farmhouse-porch",
+      "category": "structure",
+      "role": "building",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/farmhouse-porch.png",
+      "width": 160,
+      "height": 132,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Original farmhouse with porch for farm hub."
+    },
+    {
+      "key": "level1-polish/barn-red-polished",
+      "category": "structure",
+      "role": "building",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/barn-red-polished.png",
+      "width": 160,
+      "height": 132,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Polished red barn landmark variant."
+    },
+    {
+      "key": "level1-polish/town-bank-front",
+      "category": "structure",
+      "role": "building",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/town-bank-front.png",
+      "width": 152,
+      "height": 126,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Western bank/town front for northeast town block."
+    },
+    {
+      "key": "level1-polish/roadside-farm-sign",
+      "category": "road",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/roadside-farm-sign.png",
+      "width": 72,
+      "height": 86,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Farm branch signpost for readable navigation."
+    },
+    {
+      "key": "level1-polish/roadside-town-sign",
+      "category": "road",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/roadside-town-sign.png",
+      "width": 72,
+      "height": 86,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Town branch signpost for route telegraphing."
+    },
+    {
+      "key": "level1-polish/mailbox-rural",
+      "category": "road",
+      "role": "smallprop",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/mailbox-rural.png",
+      "width": 64,
+      "height": 62,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Rural mailbox for lived-in farm/residential road."
+    },
+    {
+      "key": "level1-polish/cliff-switchback-detail",
+      "category": "terrain",
+      "role": "edge",
+      "src": "./assets/generated/hmh-coherent-world/level1-polish/cliff-switchback-detail.png",
+      "width": 150,
+      "height": 116,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned art generated from reference direction; no downloaded pixels copied.",
+      "notes": "Cliff/switchback detail for mesa and north boundary."
+    }
+  ]
+}

@@ -262,7 +262,20 @@ This plan now has two implementation layers:
    - `apps/portal/src/scene-templates.mjs` now exposes sketch-specific road, water, cliff, town, farm, and forest templates.
    - `apps/portal/src/district-generator.mjs` now biases Level 1 district preferences toward those sketch templates.
 
-The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch. It does not yet replace every ground tile with a fully hand-polished AAA tileset or add a map-editor viewport, but it is now real runtime data/art rather than a docs-only plan.
+3. **SBS CC0 base-ground ingestion — complete locally**
+   - `scripts/ingest-hmh-sbs-isometric-tiles.py`
+   - `apps/portal/assets/generated/hmh-level-one-ground/sbs-cc0/`
+   - `apps/portal/src/hmh-level-one-ground.mjs`
+   - `tests/hmh-level-one-ground.test.mjs`
+   - `apps/portal/main.js` now prefers the cleaned SBS Level 1 ground layer beneath authored props/templates.
+
+4. **Original Level 1 polish assets — complete locally**
+   - `scripts/generate-hmh-level-one-polish-assets.py`
+   - `apps/portal/assets/generated/hmh-coherent-world/level1-polish/`
+   - `docs/game-design/assets/hmh-level-1-polish-assets-contact-sheet.png`
+   - `apps/portal/src/scene-templates.mjs` now mixes polish assets into forest walls, oasis edges, farms, town fronts, roads, and cliffs.
+
+The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch, plus a CC0 isometric terrain foundation from the downloaded SBS packs. It does not yet replace every asset with hand-painted final marketing art or add a map-editor viewport, but the Level 1 world now has runtime ground tiles, roads, farms, towns, water edges, cliffs, forest boundaries, and lived-in prop detail wired into gameplay rendering.
 
 ## Downloaded asset-library audit
 

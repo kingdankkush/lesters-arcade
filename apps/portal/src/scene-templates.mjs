@@ -840,6 +840,8 @@ export const SCENE_TEMPLATES = Object.freeze({
       { ...A('sketch-level1/asphalt-road-straight-ew', 'road', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 5 },
       { ...A('sketch-level1/asphalt-road-curve', 'road', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
       { ...A('sketch-level1/dirt-asphalt-farm-driveway', 'ground-transition', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
+      { ...A('level1-polish/roadside-farm-sign', 'sign', { radius: 0.28 }), place: 'scatter', count: 1 },
+      { ...A('level1-polish/mailbox-rural', 'smallprop', { radius: 0.26 }), place: 'scatter', count: 1 },
     ],
   }),
 
@@ -870,7 +872,9 @@ export const SCENE_TEMPLATES = Object.freeze({
     slots: [
       { ...A('sketch-level1/lake-water-loop-00', 'shoreline', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 4 },
       { ...A('sketch-level1/pond-water-loop-00', 'pond', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
-      { ...A('sketch-level1/pine-tree-sway-00', 'tree', { radius: 0.58 }), place: 'scatter', count: 2 },
+      { ...A('level1-polish/oasis-reeds-flower', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('level1-polish/oasis-reeds-tall', 'water-strip', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('sketch-level1/pine-tree-sway-00', 'tree', { radius: 0.58 }), place: 'scatter', count: 1 },
     ],
   }),
 
@@ -880,6 +884,7 @@ export const SCENE_TEMPLATES = Object.freeze({
     slots: [
       { ...A('sketch-level1/cliff-face-north', 'wall', { radius: 0.82 }), place: 'pathEdge', spacing: 2, count: 4 },
       { ...A('sketch-level1/mesa-hill-plateau', 'wall', { radius: 0.76 }), place: 'anchor', count: 1 },
+      { ...A('level1-polish/cliff-switchback-detail', 'edge', { radius: 0.62 }), place: 'scatter', count: 1 },
       { ...A('sketch-level1/cliff-corner-shadow', 'wall', { radius: 0.72 }), place: 'scatter', count: 1 },
       { ...A('sketch-level1/cactus-cluster', 'tree', { radius: 0.45 }), place: 'scatter', count: 1 },
     ],
@@ -889,9 +894,10 @@ export const SCENE_TEMPLATES = Object.freeze({
     archetypeTags: ['city_core', 'suburban'],
     id: 'sketch_town_boundary_fronts', biomes: ['town', 'road', 'pavement'], groundTheme: 'pavement', weight: 0.46,
     slots: [
-      { ...A('sketch-level1/town-front-1', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('level1-polish/town-bank-front', 'building', { radius: 0.8 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/town-front-1', 'building', { radius: 0.78 }), place: 'pathEdge', spacing: 4, count: 1 },
       { ...A('sketch-level1/town-front-2', 'building', { radius: 0.74 }), place: 'pathEdge', spacing: 4, count: 2 },
-      { ...A('sketch-level1/town-front-3', 'building', { radius: 0.74 }), place: 'pathEdge', spacing: 4, count: 2 },
+      { ...A('level1-polish/roadside-town-sign', 'sign', { radius: 0.28 }), place: 'scatter', count: 1 },
       { ...A('sketch-level1/asphalt-road-straight-ew', 'road', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
     ],
   }),
@@ -900,10 +906,11 @@ export const SCENE_TEMPLATES = Object.freeze({
     archetypeTags: ['suburban', 'wilderness'],
     id: 'sketch_farmstead_crop_road', biomes: ['town', 'road', 'grass', 'desert'], groundTheme: 'grass', weight: 0.46,
     slots: [
-      { ...A('sketch-level1/barn-red', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
-      { ...A('sketch-level1/corn-row-loop-00', 'crop', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 4 },
-      { ...A('sketch-level1/farmhouse-cream', 'building', { radius: 0.7 }), place: 'scatter', count: 1 },
-      { ...A('sketch-level1/hay-bale', 'smallprop', { radius: 0.34 }), place: 'scatter', count: 2 },
+      { ...A('level1-polish/barn-red-polished', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('level1-polish/crop-patch-corn-dense', 'crop', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('level1-polish/farmhouse-porch', 'building', { radius: 0.7 }), place: 'scatter', count: 1 },
+      { ...A('level1-polish/hay-bale-stack', 'smallprop', { radius: 0.34 }), place: 'scatter', count: 2 },
+      { ...A('level1-polish/roadside-farm-sign', 'sign', { radius: 0.28 }), place: 'scatter', count: 1 },
     ],
   }),
 
@@ -913,8 +920,9 @@ export const SCENE_TEMPLATES = Object.freeze({
     slots: [
       { ...A('sketch-level1/silo-stone', 'building', { radius: 0.62 }), place: 'anchor', count: 1 },
       { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 1, count: 5 },
-      { ...A('sketch-level1/farmhouse-cream', 'building', { radius: 0.7 }), place: 'scatter', count: 1 },
-      { ...A('sketch-level1/corn-row-loop-00', 'crop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('level1-polish/farmhouse-porch', 'building', { radius: 0.7 }), place: 'scatter', count: 1 },
+      { ...A('level1-polish/crop-patch-wheat-dense', 'crop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+      { ...A('level1-polish/hay-bale-stack', 'smallprop', { radius: 0.34 }), place: 'scatter', count: 1 },
     ],
   }),
 
@@ -922,8 +930,9 @@ export const SCENE_TEMPLATES = Object.freeze({
     archetypeTags: ['wilderness', 'park'],
     id: 'sketch_forest_boundary_wall', biomes: ['forest', 'grass', 'town'], groundTheme: 'grass', weight: 0.4,
     slots: [
-      { ...A('sketch-level1/pine-tree-sway-00', 'tree', { radius: 0.58 }), place: 'pathEdge', spacing: 2, count: 4 },
-      { ...A('sketch-level1/oak-tree-sway-00', 'tree', { radius: 0.58 }), place: 'anchor', count: 1 },
+      { ...A('level1-polish/forest-wall-pine-cluster', 'tree', { radius: 0.72 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('level1-polish/forest-wall-oak-cluster', 'tree', { radius: 0.72 }), place: 'anchor', count: 1 },
+      { ...A('sketch-level1/pine-tree-sway-00', 'tree', { radius: 0.58 }), place: 'scatter', count: 1 },
       { ...A('nature/bush', 'smallprop', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
     ],
   }),
