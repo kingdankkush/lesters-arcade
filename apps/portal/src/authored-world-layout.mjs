@@ -264,6 +264,8 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
   outerBoulevard: Object.freeze({
     districtId: 'outer-boulevard',
     landmarks: Object.freeze([
+      placed('ob-landmark-ltc-monument', 'level2-final-city/ltc-monument-fountain', 'landmark', 8, 2, { solid: false, zHeight: 3 }),
+      placed('ob-landmark-ticker', 'level2-final-city/ticker-billboard-loop', 'billboard', 14, 5, { solid: true, zHeight: 4 }),
       placed('ob-landmark-shopfront', 'crypto/ghost-boarded-storefront', 'building', 8, 2, { solid: true, zHeight: 4 }),
       placed('ob-landmark-cornerstore', 'crypto/ghost-boarded-storefront', 'building', 14, 5, { solid: true, zHeight: 3 }),
     ]),
@@ -294,6 +296,9 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
   financialCore: Object.freeze({
     districtId: 'financial-core',
     landmarks: Object.freeze([
+      placed('fc-landmark-chrome-tower', 'level2-final-city/chrome-tower-facade', 'building', 28, 1, { solid: true, zHeight: 7 }),
+      placed('fc-landmark-elevator', 'level2-final-city/elevator-shaft-glow', 'edge', 32, 2, { solid: false, zHeight: 6 }),
+      placed('fc-landmark-server-racks', 'level2-final-city/server-rack-corridor', 'cover', 24, 4, { solid: true, zHeight: 3 }),
       placed('fc-landmark-tower', 'crypto/industrial-warehouse-facade', 'building', 28, 1, { solid: true, zHeight: 6 }),
       placed('fc-landmark-billboard', 'crypto/innercity-billboard-frame', 'billboard', 32, 2, { solid: true, zHeight: 5 }),
       placed('fc-landmark-warehouse', 'crypto/industrial-warehouse-facade', 'building', 24, 4, { solid: true, zHeight: 4 }),
@@ -308,6 +313,7 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
       cluster('fc-barricade', 26, 7, [
         { suffix: 'wall1', assetKey: 'construct/brick-wall-corner', role: 'wall', dx: 0, dy: 0 },
         { suffix: 'wall2', assetKey: 'construct/brick-wall-segment', role: 'wall', dx: 1, dy: 0 },
+        { suffix: 'rig', assetKey: 'level2-final-city/mining-rig-array', role: 'landmark', dx: 3, dy: -1 },
       ]),
     ]),
     edgeTreatment: Object.freeze({
@@ -325,6 +331,8 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
   luxuryNeighborhoods: Object.freeze({
     districtId: 'luxury-neighborhoods',
     landmarks: Object.freeze([
+      placed('ln-landmark-privacy-hedge', 'level2-final-city/privacy-hedge-wall', 'hedge', 44, 3, { solid: true, zHeight: 2 }),
+      placed('ln-landmark-greenhouse', 'level2-final-city/park-greenhouse-dome', 'landmark', 48, 2, { solid: true, zHeight: 4 }),
       placed('ln-landmark-hedge-maze', 'crypto/residential-hedge-run', 'hedge', 44, 3, { solid: true, zHeight: 2 }),
       placed('ln-landmark-mansion', 'crypto/ghost-saloon-front', 'building', 48, 2, { solid: true, zHeight: 4 }),
     ]),
@@ -335,6 +343,7 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
         { suffix: 'hedge3', assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 0, dy: 2 },
         { suffix: 'gate', assetKey: 'construct/fence-gate', role: 'gate', dx: 1, dy: 0 },
         { suffix: 'bench', assetKey: 'street/park-bench', role: 'bench', dx: 3, dy: 0 },
+        { suffix: 'kiln', assetKey: 'level2-final-city/artisan-kiln-glow', role: 'hazard', dx: 5, dy: 1 },
       ]),
       cluster('ln-pool', 46, 5, [
         { suffix: 'water', assetKey: 'construct/river-straight', role: 'water-strip', dx: 0, dy: 0, solid: false },
@@ -357,6 +366,8 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
   penthouseRim: Object.freeze({
     districtId: 'penthouse-rim',
     landmarks: Object.freeze([
+      placed('pr-landmark-helipad', 'level2-final-city/rooftop-helipad-lights', 'landmark', 62, 1, { solid: false, zHeight: 3 }),
+      placed('pr-landmark-ngmi-billboard', 'level2-final-city/storm-billboard-ngmi', 'billboard', 66, 2, { solid: true, zHeight: 5 }),
       placed('pr-landmark-billboard', 'crypto/innercity-billboard-frame', 'billboard', 62, 1, { solid: true, zHeight: 5 }),
       placed('pr-landmark-antenna', 'crypto/utility-pole', 'pole', 66, 2, { solid: false, zHeight: 4 }),
     ]),

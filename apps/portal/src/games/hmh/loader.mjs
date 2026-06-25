@@ -26,6 +26,7 @@ export async function loadHMHGame() {
     { HMH_ANIMATED_ROSTER },
     { HMH_COMPLETE_ANIMATIONS_READY },
     { HMH_FINAL_ANIMATION_COMPLETION_PACK },
+    { HMH_FINAL_BOSS_ANIMATION_PACK },
   ] = await Promise.all([
     import('../../../assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs'),
     import('../../../assets/generated/hmh-isometric-pixellab/hmh-isometric-pixellab-wave-1.mjs'),
@@ -37,6 +38,7 @@ export async function loadHMHGame() {
     import('../../../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs'),
     import('../../../assets/generated/hmh-complete-animations/hmh-complete-animations.mjs'),
     import('../../../assets/generated/hmh-final-animation-completion/hmh-final-animation-completion-manifest.mjs'),
+    import('../../../assets/generated/hmh-final-boss-animations/hmh-final-boss-animations-manifest.mjs'),
   ]);
 
   return Object.freeze({
@@ -50,5 +52,6 @@ export async function loadHMHGame() {
     HMH_ANIMATED_ROSTER,
     HMH_COMPLETE_ANIMATIONS_READY,
     HMH_FINAL_ANIMATION_COMPLETION_PACK,
+    HMH_FINAL_BOSS_ANIMATION_PACK,
   });
 }
