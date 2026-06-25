@@ -942,6 +942,73 @@ export const SCENE_TEMPLATES = Object.freeze({
     ],
   }),
 
+  level1_quality_forest_clearing: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'level1_quality_forest_clearing', biomes: ['forest', 'grass', 'town'], groundTheme: 'grass', weight: 0.82,
+    slots: [
+      { ...A('crypto/forest-tree-line', 'tree', { radius: 0.7 }), place: 'pathEdge', spacing: 2, count: 5 },
+      { ...A('level1-final-animated/forest-wall-oak-sway', 'tree', { radius: 0.72 }), place: 'anchor', count: 1 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.42 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('level-final-ambient/leaf-swirl', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  level1_quality_ghost_mainstreet_duel: Object.freeze({
+    archetypeTags: ['city_core', 'suburban'],
+    id: 'level1_quality_ghost_mainstreet_duel', biomes: ['town', 'road', 'pavement', 'desert'], groundTheme: 'pavement', weight: 0.86,
+    slots: [
+      { ...A('crypto/ghost-saloon-front', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('crypto/ghost-boarded-storefront', 'building', { radius: 0.72 }), place: 'pathEdge', spacing: 4, count: 2 },
+      { ...A('crypto/utility-pole', 'sign', { radius: 0.35 }), place: 'pathEdge', spacing: 3, count: 2 },
+      { ...A('street/park-bench', 'bench', { radius: 0.42 }), place: 'scatter', count: 1 },
+      { ...A('level-final-ambient/neon-window-flicker', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  level1_quality_desert_boulder_switchback: Object.freeze({
+    archetypeTags: ['wilderness', 'industrial'],
+    id: 'level1_quality_desert_boulder_switchback', biomes: ['desert', 'rocky', 'sand', 'road'], groundTheme: 'sand', weight: 0.84,
+    slots: [
+      { ...A('crypto/canyon-cliff-edge', 'wall', { radius: 0.72 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('crypto/desert-boulder', 'boulder', { radius: 0.6 }), place: 'anchor', count: 1 },
+      { ...A('crypto/desert-cactus', 'tree', { radius: 0.45 }), place: 'scatter', count: 1 },
+      { ...A('level-final-ambient/desert-dust-devil', 'decor', { solid: false, radius: 0 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  level1_quality_river_bridge_chain: Object.freeze({
+    archetypeTags: ['wilderness', 'park'],
+    id: 'level1_quality_river_bridge_chain', biomes: ['forest', 'water', 'grass', 'road'], groundTheme: 'grass', weight: 0.86,
+    slots: [
+      { ...A('construct/river-straight', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 1, count: 5 },
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('level-final-ambient/water-sparkle-line', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('nature/fallen-log', 'smallprop', { radius: 0.42 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
+  level1_quality_waterfront_beach_lake: Object.freeze({
+    archetypeTags: ['park', 'wilderness', 'suburban'],
+    id: 'level1_quality_waterfront_beach_lake', biomes: ['water', 'sand', 'forest', 'grass', 'town'], groundTheme: 'sand', weight: 0.82,
+    slots: [
+      { ...A('sketch-level1/lake-water-loop-00', 'shoreline', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('construct/wood-bridge', 'bridge', { solid: false, radius: 0 }), place: 'anchor', count: 1 },
+      { ...A('level-final-ambient/water-sparkle-line', 'water-strip', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 2 },
+      { ...A('level1-polish/oasis-reeds-tall', 'water-strip', { solid: false, radius: 0 }), place: 'scatter', count: 2 },
+    ],
+  }),
+
+  level1_quality_farm_town_spur: Object.freeze({
+    archetypeTags: ['suburban', 'wilderness'],
+    id: 'level1_quality_farm_town_spur', biomes: ['town', 'road', 'grass', 'desert'], groundTheme: 'grass', weight: 0.8,
+    slots: [
+      { ...A('level1-final-animated/barn-flag-wave', 'building', { radius: 0.78 }), place: 'anchor', count: 1 },
+      { ...A('level1-final-animated/corn-patch-wind', 'crop', { solid: false, radius: 0 }), place: 'pathEdge', spacing: 2, count: 4 },
+      { ...A('construct/fence-segment', 'fence', { radius: 0.32 }), place: 'pathEdge', spacing: 2, count: 3 },
+      { ...A('level1-final-animated/roadside-sign-sway', 'sign', { radius: 0.28 }), place: 'scatter', count: 1 },
+    ],
+  }),
+
 });
 
 // Templates available for a biome (with relative weights; default weight 1).

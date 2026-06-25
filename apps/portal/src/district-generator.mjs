@@ -15,6 +15,7 @@ import {
   authoredTemplatePoolIdsForContext,
   authoredZonePlansForContext,
 } from './hmh-authored-setpieces.mjs';
+import { levelOneQualityContextForDistrictCell } from './hmh-level-one-quality.mjs';
 
 // Default biomeAt function - overridden by tests or main.js
 let biomeAtImpl = biomeAt;
@@ -1132,11 +1133,20 @@ export function districtTemplateContextForCell(cellX, cellY, districtGrid, macro
     : null;
   const transitionBand = transitionBandAtLocalCell(districtCell, localSceneCellX, localSceneCellY);
   const setPieceTemplatePoolIds = activeSetPiece?.templatePoolIds ?? districtCell.templatePoolIds;
-  const preferredTemplateIds = preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY);
-  const authoredComposition = authoredCompositionForLocalCell(districtCell, localSceneCellX, localSceneCellY, activeSetPiece, transitionBand);
+  const qualityContext = levelOneQualityContextForDistrictCell(districtCell, localSceneCellX, localSceneCellY);
+  const qualityTemplatePoolIds = qualityContext?.templatePoolIds ?? [];
+  const preferredTemplateIds = [
+    ...(qualityContext?.preferredTemplateIds ?? []),
+    ...preferredTemplateIdsForLocalCell(districtCell, localSceneCellX, localSceneCellY),
+  ];
+  const authoredCompositionBase = authoredCompositionForLocalCell(districtCell, localSceneCellX, localSceneCellY, activeSetPiece, transitionBand);
+  const authoredComposition = qualityContext
+    ? Object.freeze({ ...authoredCompositionBase, ...qualityContext.compositionPatch })
+    : authoredCompositionBase;
+  const mergedTemplatePoolIds = mergeTemplatePools(setPieceTemplatePoolIds, qualityTemplatePoolIds);
   return {
     districtFamily: districtCell.districtFamily,
-    templatePoolIds: transitionBand ? mergeTemplatePools(setPieceTemplatePoolIds, transitionBand.templatePoolIds) : setPieceTemplatePoolIds,
+    templatePoolIds: transitionBand ? mergeTemplatePools(mergedTemplatePoolIds, transitionBand.templatePoolIds) : mergedTemplatePoolIds,
     preferredTemplateIds,
     archetype: districtCell.archetype,
     pathOrientation: districtCell.pathOrientation,
@@ -1144,6 +1154,8 @@ export function districtTemplateContextForCell(cellX, cellY, districtGrid, macro
     localSceneCellY,
     authoredComposition,
     sceneDensity: authoredComposition.sceneDensity,
+    qualityStyleId: qualityContext?.styleId ?? null,
+    levelOneQuality: qualityContext,
     branchLane: districtCell.branchLane,
     macroRole: districtCell.macroRole,
     poiId: districtCell.poiId,

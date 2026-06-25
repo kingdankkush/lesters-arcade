@@ -9,6 +9,7 @@ import {
   getHmhCampaignLevel,
 } from './hmh-campaign-levels.mjs';
 import { buildEncounterVisualPlan } from './hmh-encounter-visuals.mjs';
+import { buildLevelOneEncounterQualityProfile } from './hmh-level-one-quality.mjs';
 
 const DEFAULT_LAYOUT = 'level1-authored';
 const LEVEL_LAYOUTS = Object.freeze({
@@ -405,6 +406,9 @@ export function buildCampaignPoiEncounterProfile({ levelId, activePoi = null } =
   const previewEnemyIds = [...(base?.previewEnemyIds ?? supportEnemyIds.slice(0, 2))];
   const arenaLayout = base?.arenaLayout ?? 'generic-poi-arena';
   const visualPlan = buildEncounterVisualPlan({ poiId: activePoi.id, arenaLayout });
+  const encounterQuality = level.id === 'level-1-crypto-wasteland'
+    ? buildLevelOneEncounterQualityProfile({ poiId: activePoi.id, arenaLayout, districtId: activePoi.districtId })
+    : null;
   return Object.freeze({
     poiId: activePoi.id,
     title: activePoi.title ?? fallbackPoiTitle(activePoi.id),
@@ -418,6 +422,8 @@ export function buildCampaignPoiEncounterProfile({ levelId, activePoi = null } =
     worldY: activePoi.worldY ?? null,
     arenaLayout,
     visualPlan,
+    qualityStyleId: encounterQuality?.styleId ?? null,
+    encounterQuality,
     supportEnemyIds: Object.freeze(supportEnemyIds),
     previewEnemyIds: Object.freeze(previewEnemyIds),
     spawnSlots: Object.freeze([...(base?.spawnSlots ?? [])]),
