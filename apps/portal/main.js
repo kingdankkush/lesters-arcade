@@ -5928,6 +5928,22 @@ function updateCombatStep(stepMs) {
   combat.noDamageSeconds += dt;
   combat.invulnerableFrames = Math.max(0, combat.invulnerableFrames - 1);
 
+  const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
+  if (combat.roguelikeRun) {
+    // Isometric roguelite path. Twin-stick movement is handled inside
+    // updateRoguelikeCombatStep via updateRoguelikeMovement; the side-scroller
+    // physics below (crouch, scroll camera, gravity, double-jump) does not apply
+    // here and is intentionally NOT run — it was previously computed every step
+    // and discarded, wasting work and muddying which engine owns player motion.
+    updateRoguelikeCombatStep(dt, difficulty);
+    if (combat.frame % 30 === 0) {
+      renderCombatSandboxStatus();
+      syncCombatOverlay();
+    }
+    return;
+  }
+
+  // --- Legacy side-scroller physics (only runs in the non-roguelike engine) ---
   combat.crouching = combat.keys.has('control') || combat.keys.has('s') || combat.keys.has('arrowdown');
   combat.crouchFrames = combat.crouching ? combat.crouchFrames + 1 : 0;
   const playerSpeed = combat.crouching ? 1.65 : 3.1;
@@ -5940,15 +5956,6 @@ function updateCombatStep(stepMs) {
     combat.velocityY = 0;
   }
 
-  const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
-  if (combat.roguelikeRun) {
-    updateRoguelikeCombatStep(dt, difficulty);
-    if (combat.frame % 30 === 0) {
-      renderCombatSandboxStatus();
-      syncCombatOverlay();
-    }
-    return;
-  }
   updateStageDirector();
   updatePlatformingAndProps();
   updateBullets();
