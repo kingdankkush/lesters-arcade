@@ -2092,6 +2092,10 @@ button.menu-card.menu-option.interactive:active {
 #combatCanvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  /* Prevent browser pinch/double-tap zoom from hijacking gameplay touch input
+     on the canvas only. Site-wide pinch-zoom stays enabled for accessibility
+     (WCAG 1.4.4) — the global viewport meta no longer sets user-scalable=no. */
+  touch-action: none;
 }
 
 .arcade-music-player {
