@@ -30,7 +30,7 @@ Lester's Arcade is the *parent* dapp — a wallet-connected portal that hosts mu
 └─────────────────────────────────────────────┘
 ```
 
-The portal loads only its own shell at startup (~530 KB). Each cabinet's art/code is loaded lazily when the player selects it — so adding 10 more cabinets doesn't bloat the homepage.
+The portal loads only its own shell at startup. Each cabinet's art/code is loaded lazily when the player selects it — so adding 10 more cabinets doesn't bloat the homepage. (A minified production bundle is on the roadmap — see `docs/plans/2026-06-24-aaa-quality-roadmap.md`.)
 
 ### Third-party onboarding
 
@@ -54,7 +54,7 @@ See [`docs/THIRD_PARTY_GAME_ONBOARDING.md`](docs/THIRD_PARTY_GAME_ONBOARDING.md)
 
 ## 🔫 Hard Money Heroes
 
-A Metal-Slug-style crypto-satire side-scroller set in **Litecoin City After Dark**. 60fps Canvas, procedurally generated districts, full boss roster, roguelike upgrade trees.
+An isometric crypto-satire run-and-gun **roguelite** set in **Litecoin City After Dark**. 60fps Canvas, procedurally generated districts, roguelike upgrade trees, and on-chain ranked sessions. (As of 2026-06-07 the game pivoted from its original side-scroller form to the isometric roguelite that ships today — see `docs/game-design/hard-money-heroes-design-bible-v2.md`.)
 
 ### Gameplay systems
 
@@ -63,8 +63,8 @@ A Metal-Slug-style crypto-satire side-scroller set in **Litecoin City After Dark
 - **Procedural districts** — Downtown, Industrial, City Park, Suburban, and Wilderness biomes with theme-colored tile washes, landmark templates (observatories, lighthouses, data hubs, ruins) and gameplay hooks (toxic_cloud, reveal_minimap, disable_cameras, hidden_loot)
 - **Thematic enemy spawn bias** — per-district enemy role weighting (e.g. Industrial: armoredPressure 30%, coverShooter 60%, turret 10%)
 - **Weapon system** — 5 weapons × 3 branches × 3 tiers (rateOfFire, damage, reloadSpeed), with tier-3 specials (armor-piercing, extended-mag, drum-mag, homing coins, rail-piercing, etc.)
-- **Boss battles** — 10 canonical bosses across phase 1 → phase 2 → phase 3 progression, pattern-dispatched AI (lane-charge, summon-minions, floor-shockwave, lobbed-projectiles, homing-orb, safe-lane-sweep, ranged-burst) + super moves at phase 2+
-- **Combat physics** — Swept AABB bullet collision (no tunneling through enemies), circle-vs-circle contact melee, gravity-affected projectiles (grenades bounce, lobbed shots arc), per-hit knockback scaled by damage type
+- **Boss battles** — a 10-boss canonical roster with phase 1 → 2 → 3 progression and pattern-dispatched AI + super moves. **Status:** the full roster currently runs in the legacy side-scroller engine; porting these bosses into the isometric runtime (with iso-space telegraphed patterns) is the top roadmap item (`docs/plans/2026-06-24-aaa-quality-roadmap.md`, Phase 1.5). The shipped isometric mode currently features arena-lock wave encounters and elite minibosses.
+- **Combat physics** — swept AABB bullet collision (no tunneling), circle-vs-circle contact melee, per-hit knockback scaled by damage type; isometric movement respects buildings, props, and water
 - **Roguelike upgrade menu** — 60+ skill library across offensive/defensive/mobility/utility/economy/control/throwable/status categories, plus 3 weapon-tree branch cards per upgrade
 
 ### Art pipeline
@@ -94,7 +94,7 @@ See [`contracts/ARCHITECTURE.md`](contracts/ARCHITECTURE.md) for the full data f
 
 ### Fee split model
 
-Every ranked session pays a $0.25 entry fee (`250_000 microUSDC`). SessionLedger escrows the fee; PaymentRouter splits it per the game's registered fee split:
+On testnet, ranked play is **free** (`DEFAULT_ENTRY_FEE_MICRO_USDC = 0`) — players pay only the zkLTC gas to write their score on-chain. When a non-zero entry fee is configured, SessionLedger escrows it and PaymentRouter splits it per the game's registered fee split:
 
 | Share | BPS | % | Recipient |
 |---|---|---|---|
@@ -111,7 +111,7 @@ Every ranked session pays a $0.25 entry fee (`250_000 microUSDC`). SessionLedger
 git clone https://github.com/kingdankkush/lesters-arcade.git
 cd lesters-arcade
 npm install
-npm test              # 208 tests across 2 suites (all pass)
+npm test              # 456 tests across 8 suites (all pass)
 npm run check         # Syntax sweep of every .mjs/.js/.py
 npm run contracts:check
 npm run serve         # opens http://127.0.0.1:8791/apps/portal/
@@ -150,7 +150,7 @@ npx vercel --prod --yes --force   # push to Vercel production
 
 ```
 apps/portal/                  ← Main arcade portal
-├── main.js                   ← ~8,200 lines, the parent app
+├── main.js                   ← ~10,800 lines, the parent app (module split planned — see roadmap)
 ├── index.html                ← Portal shell
 ├── styles.css                ← Base styles
 ├── styles-arcade-polish.css  ← HMH cabinet polish
@@ -186,7 +186,7 @@ contracts/src/                ← Solidity (pragma 0.8.24)
 ├── PaymentRouter.sol
 └── interfaces/IERC20.sol
 
-tests/                        ← 208 tests, 100% passing
+tests/                        ← 456 tests, 100% passing
 scripts/                      ← Build + audit + pipeline scripts
 docs/
 ├── THIRD_PARTY_GAME_ONBOARDING.md
