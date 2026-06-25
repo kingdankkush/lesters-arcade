@@ -20,6 +20,7 @@ import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterColli
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, selectLevelOneGroundTile } from './src/hmh-level-one-ground.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
+import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
@@ -7911,7 +7912,7 @@ function neighborBiomesForWorld(seed, worldX, worldY) {
   ];
 }
 
-function sbsLevelOneGroundTileForWorld(seed, worldX, worldY, biome, theme) {
+function sbsGroundTileForWorld(seed, worldX, worldY, biome, theme) {
   const asset = selectLevelOneGroundTile({
     levelId: combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID,
     seed,
@@ -7921,7 +7922,31 @@ function sbsLevelOneGroundTileForWorld(seed, worldX, worldY, biome, theme) {
     theme,
     neighbors: neighborBiomesForWorld(seed, worldX, worldY),
   });
-  return sbsGroundTileImage(asset);
+  const image = sbsGroundTileImage(asset);
+  return asset ? { asset, image } : null;
+}
+
+function drawLevelOneGroundImage(ctx, ground, cx, cy, drawWidth, drawHeight) {
+  if (!ground?.asset || !imageReady(ground.image)) return false;
+  const { asset, image } = ground;
+  if (asset.animated && asset.frames > 1 && asset.frameWidth > 0 && asset.frameHeight > 0) {
+    const frameMs = asset.frameMs || 120;
+    const frame = Math.floor((performance.now() + ((Math.round(cx + cy) % 7) * frameMs)) / frameMs) % asset.frames;
+    ctx.drawImage(
+      image,
+      frame * asset.frameWidth,
+      0,
+      asset.frameWidth,
+      asset.frameHeight,
+      Math.round(cx - drawWidth / 2),
+      Math.round(cy - drawHeight / 2),
+      drawWidth,
+      drawHeight,
+    );
+    return true;
+  }
+  ctx.drawImage(image, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
+  return true;
 }
 function biomeGroundTileForWorld(worldX, worldY, biome) {
   const slugs = BIOME_GROUND_TILES[biome] ?? BIOME_GROUND_TILES.town;
@@ -8096,7 +8121,8 @@ function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   // matches that scene's theme so the ground reads as part of the area.
   const seed = combat.roguelikeRun?.seed ?? 0;
   const theme = sceneGroundThemeAt(seed, worldX, worldY);
-  let tileImg = sbsLevelOneGroundTileForWorld(seed, worldX, worldY, palette.biome, theme);
+  let ground = sbsGroundTileForWorld(seed, worldX, worldY, palette.biome, theme);
+  let tileImg = ground?.image ?? null;
   if (!imageReady(tileImg) && theme && THEME_GROUND_TILE[theme]) {
     tileImg = wave2TileImage(THEME_GROUND_TILE[theme]);
   }
@@ -8114,6 +8140,7 @@ function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   // imageSmoothingEnabled=false once for the whole pass.
   const drawWidth = ISO_TILE_WIDTH + 4;
   const drawHeight = ISO_TILE_HEIGHT * 2 + 6; // 56px source art is taller than the 32px diamond
+  if (ground?.image === tileImg && drawLevelOneGroundImage(ctx, ground, cx, cy, drawWidth, drawHeight)) return;
   ctx.drawImage(tileImg, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
 }
 
@@ -8367,10 +8394,13 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
       if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, b, bgs.length)].src);
     }
   }
-  // Warm Level 1 CC0 isometric base ground tiles. They render under authored HMH
-  // props/templates, so they should decode before the READY overlay appears.
-  for (const asset of HMH_LEVEL_ONE_SBS_GROUND.assets ?? []) {
-    if (asset?.src) toWarm.add(asset.src);
+  // Warm Level 1 final-paint and CC0 fallback isometric base ground tiles. They
+  // render under authored HMH props/templates, so they should decode before the
+  // READY overlay appears.
+  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND]) {
+    for (const asset of manifest.assets ?? []) {
+      if (asset?.src) toWarm.add(asset.src);
+    }
   }
   // Warm the one image asset the road network actually uses (water crossings).
   // Road surfaces themselves are tinted procedurally over the ground tiles, so

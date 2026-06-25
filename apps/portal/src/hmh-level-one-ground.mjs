@@ -1,4 +1,5 @@
 import { HMH_LEVEL_ONE_SBS_GROUND, sbsGroundAssetByKey } from '../assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
+import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND, finalPaintGroundAssetByKey } from '../assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 
 export const HMH_LEVEL_ONE_ID = 'level-1-crypto-wasteland';
 
@@ -29,13 +30,20 @@ function stableIndex(seed, worldX, worldY, count) {
   return Math.abs(h) % count;
 }
 
-function roleKeys(role) {
-  return HMH_LEVEL_ONE_SBS_GROUND.roles?.[role] ?? [];
+function roleKeysFrom(manifest, role) {
+  return manifest.roles?.[role] ?? [];
 }
 
-function preferredKey(role) {
-  const keys = roleKeys(role);
-  const preferred = keys.find((key) => sbsGroundAssetByKey(key)?.preferred);
+function finalPaintRoleKeys(role) {
+  return roleKeysFrom(HMH_LEVEL_ONE_FINAL_PAINT_GROUND, role);
+}
+
+function sbsRoleKeys(role) {
+  return roleKeysFrom(HMH_LEVEL_ONE_SBS_GROUND, role);
+}
+
+function preferredKey(keys, lookup) {
+  const preferred = keys.find((key) => lookup(key)?.preferred);
   return preferred ?? keys[0] ?? null;
 }
 
@@ -77,7 +85,10 @@ export function selectLevelOneGroundTile({
 } = {}) {
   if (levelId !== HMH_LEVEL_ONE_ID) return null;
   const role = levelOneGroundRoleForTile({ biome, theme, neighbors });
-  const keys = roleKeys(role);
+  const finalKeys = finalPaintRoleKeys(role);
+  const fallbackKeys = sbsRoleKeys(role);
+  const keys = finalKeys.length ? finalKeys : fallbackKeys;
+  const lookup = finalKeys.length ? finalPaintGroundAssetByKey : sbsGroundAssetByKey;
   if (!keys.length) return null;
 
   // Keep the preferred art dominant. Accent variants appear in broad patches so
@@ -85,9 +96,13 @@ export function selectLevelOneGroundTile({
   const patchX = Math.floor(worldX / 5);
   const patchY = Math.floor(worldY / 5);
   const accent = keys.length > 1 && stableIndex(seed, patchX, patchY, 100) < 18;
-  const key = accent ? keys[stableIndex(seed + 17, patchX, patchY, keys.length)] : preferredKey(role);
-  const asset = sbsGroundAssetByKey(key) ?? sbsGroundAssetByKey(preferredKey(role));
-  return asset ? Object.freeze({ ...asset, role }) : null;
+  const key = accent ? keys[stableIndex(seed + 17, patchX, patchY, keys.length)] : preferredKey(keys, lookup);
+  const asset = lookup(key) ?? lookup(preferredKey(keys, lookup));
+  if (asset) return Object.freeze({ ...asset, role, fallback: finalKeys.length ? 'sbs-cc0' : null });
+
+  const fallbackKey = preferredKey(fallbackKeys, sbsGroundAssetByKey);
+  const fallbackAsset = sbsGroundAssetByKey(fallbackKey);
+  return fallbackAsset ? Object.freeze({ ...fallbackAsset, role, fallback: null }) : null;
 }
 
 export function requiredLevelOneGroundRoles() {

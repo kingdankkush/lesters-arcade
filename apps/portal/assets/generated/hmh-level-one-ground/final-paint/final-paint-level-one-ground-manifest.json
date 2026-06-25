@@ -1,0 +1,340 @@
+{
+  "id": "hmh-level-one-final-paint-ground-v1",
+  "source": "Original HMH final-paint terrain generation pass",
+  "license": "Repo-owned / Lester Arcade project art",
+  "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied. SBS CC0 pack remains only geometry/fallback reference.",
+  "tileWidth": 128,
+  "tileHeights": [
+    64
+  ],
+  "assetCount": 21,
+  "roles": {
+    "grass": [
+      "final-paint/grass-handpaint-01",
+      "final-paint/grass-handpaint-02"
+    ],
+    "dirt": [
+      "final-paint/dirt-handpaint-01",
+      "final-paint/dirt-handpaint-02"
+    ],
+    "sand": [
+      "final-paint/sand-handpaint-01",
+      "final-paint/sand-handpaint-02"
+    ],
+    "rocky": [
+      "final-paint/rocky-handpaint-01",
+      "final-paint/rocky-handpaint-02"
+    ],
+    "road": [
+      "final-paint/road-asphalt-handpaint-01",
+      "final-paint/road-dirt-handpaint-01"
+    ],
+    "grass-to-dirt": [
+      "final-paint/grass-dirt-handpaint-01",
+      "final-paint/grass-dirt-handpaint-02"
+    ],
+    "dirt-to-sand": [
+      "final-paint/dirt-sand-handpaint-01",
+      "final-paint/dirt-sand-handpaint-02"
+    ],
+    "grass-to-sand": [
+      "final-paint/grass-sand-handpaint-01"
+    ],
+    "grass-to-water": [
+      "final-paint/grass-water-handpaint-01"
+    ],
+    "water": [
+      "final-paint/water-ripple-handpaint-01",
+      "final-paint/water-litecoin-glint-01"
+    ],
+    "shore": [
+      "final-paint/shore-grass-water-handpaint-01",
+      "final-paint/shore-dirt-water-handpaint-01",
+      "final-paint/shore-sand-water-handpaint-01"
+    ]
+  },
+  "assets": [
+    {
+      "key": "final-paint/grass-handpaint-01",
+      "role": "grass",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/grass-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "lush Crypto Wasteland grass with hand-painted blade clusters",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/grass-handpaint-02",
+      "role": "grass",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/grass-handpaint-02.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": false,
+      "description": "alternate grass patch for broad fields",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/dirt-handpaint-01",
+      "role": "dirt",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/dirt-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "warm dirt trail tile",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/dirt-handpaint-02",
+      "role": "dirt",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/dirt-handpaint-02.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": false,
+      "description": "pebbled dirt variation",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/sand-handpaint-01",
+      "role": "sand",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/sand-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "desert sand with wind streaks",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/sand-handpaint-02",
+      "role": "sand",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/sand-handpaint-02.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": false,
+      "description": "brighter dune sand variant",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/rocky-handpaint-01",
+      "role": "rocky",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/rocky-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "rocky mesa ground with chips",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/rocky-handpaint-02",
+      "role": "rocky",
+      "category": "terrain",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/rocky-handpaint-02.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": false,
+      "description": "darker cliff-foot rocky ground",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/road-asphalt-handpaint-01",
+      "role": "road",
+      "category": "road",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/road-asphalt-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "dark broken asphalt with Litecoin-yellow paint flecks",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/road-dirt-handpaint-01",
+      "role": "road",
+      "category": "road",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/road-dirt-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": false,
+      "description": "asphalt-to-dirt rural road blend",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/grass-dirt-handpaint-01",
+      "role": "grass-to-dirt",
+      "category": "transition",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/grass-dirt-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "soft grass-to-dirt transition",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/grass-dirt-handpaint-02",
+      "role": "grass-to-dirt",
+      "category": "transition",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/grass-dirt-handpaint-02.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": false,
+      "description": "alternate grass-to-dirt transition",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/dirt-sand-handpaint-01",
+      "role": "dirt-to-sand",
+      "category": "transition",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/dirt-sand-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "dusty dirt-to-desert blend",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/dirt-sand-handpaint-02",
+      "role": "dirt-to-sand",
+      "category": "transition",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/dirt-sand-handpaint-02.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": false,
+      "description": "alternate dirt-to-desert blend",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/grass-sand-handpaint-01",
+      "role": "grass-to-sand",
+      "category": "transition",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/grass-sand-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "grassland fading into desert",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
+    },
+    {
+      "key": "final-paint/grass-water-handpaint-01",
+      "role": "grass-to-water",
+      "category": "transition",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/grass-water-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": "",
+      "animated": true,
+      "description": "animated grass bank with water edge",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameMs": 120
+    },
+    {
+      "key": "final-paint/water-ripple-handpaint-01",
+      "role": "water",
+      "category": "water",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/water-ripple-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": true,
+      "description": "six-frame hand-painted water ripple",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameMs": 120
+    },
+    {
+      "key": "final-paint/water-litecoin-glint-01",
+      "role": "water",
+      "category": "water",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/water-litecoin-glint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": true,
+      "description": "six-frame water with subtle Litecoin glints",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameMs": 120
+    },
+    {
+      "key": "final-paint/shore-grass-water-handpaint-01",
+      "role": "shore",
+      "category": "shore",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/shore-grass-water-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": true,
+      "description": "animated grass shoreline foam",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameMs": 120
+    },
+    {
+      "key": "final-paint/shore-dirt-water-handpaint-01",
+      "role": "shore",
+      "category": "shore",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/shore-dirt-water-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": true,
+      "description": "animated dirt shoreline foam",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameMs": 120
+    },
+    {
+      "key": "final-paint/shore-sand-water-handpaint-01",
+      "role": "shore",
+      "category": "shore",
+      "src": "./assets/generated/hmh-level-one-ground/final-paint/shore-sand-water-handpaint-01.png",
+      "width": 128,
+      "height": 64,
+      "preferred": false,
+      "animated": true,
+      "description": "animated sand shoreline foam",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameMs": 120
+    }
+  ]
+}

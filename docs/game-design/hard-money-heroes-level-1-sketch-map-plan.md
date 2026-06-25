@@ -275,7 +275,14 @@ This plan now has two implementation layers:
    - `docs/game-design/assets/hmh-level-1-polish-assets-contact-sheet.png`
    - `apps/portal/src/scene-templates.mjs` now mixes polish assets into forest walls, oasis edges, farms, town fronts, roads, and cliffs.
 
-The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch, plus a CC0 isometric terrain foundation from the downloaded SBS packs. It does not yet replace every asset with hand-painted final marketing art or add a map-editor viewport, but the Level 1 world now has runtime ground tiles, roads, farms, towns, water edges, cliffs, forest boundaries, and lived-in prop detail wired into gameplay rendering.
+5. **Original final-paint terrain + animated water — complete locally**
+   - `scripts/generate-hmh-level-one-final-paint-ground.py`
+   - `apps/portal/assets/generated/hmh-level-one-ground/final-paint/`
+   - `docs/game-design/assets/hmh-level-1-final-paint-ground-contact-sheet.png`
+   - `apps/portal/src/hmh-level-one-ground.mjs` now prefers original `final-paint/*` tiles while preserving SBS CC0 fallback.
+   - `apps/portal/main.js` crops animated terrain spritesheets frame-by-frame for living water/shore motion.
+
+The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch, plus a CC0 isometric terrain foundation from the downloaded SBS packs and an original final-paint terrain/animated-water layer. It does not yet replace every building/tree/enemy animation with final hand-polished marketing art, but the Level 1 world now has runtime ground tiles, animated water/shore, roads, farms, towns, water edges, cliffs, forest boundaries, and lived-in prop detail wired into gameplay rendering.
 
 ## Downloaded asset-library audit
 
