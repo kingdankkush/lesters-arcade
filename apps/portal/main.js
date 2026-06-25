@@ -20,12 +20,14 @@ import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/wha
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
-import { HMH_LEVEL_ONE_ID, selectLevelOneGroundTile } from './src/hmh-level-one-ground.mjs';
+import { HMH_LEVEL_ONE_ID, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
 import { HMH_FINAL_WORLD_AMBIENT_ASSETS, finalWorldAmbientAssetByKey } from './assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.mjs';
 import { HMH_LEVEL_TWO_FINAL_CITY_ASSETS, levelTwoFinalCityAssetByKey } from './assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.mjs';
+import { HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, levelThreeFinalGetawayAssetByKey } from './assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.mjs';
+import { HMH_LEVEL_THREE_FINAL_GROUND } from './assets/generated/hmh-level-three-ground/final-getaway/level3-final-getaway-ground-manifest.mjs';
 import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
@@ -56,7 +58,7 @@ import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, r
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
 
 function animatedSceneAssetByKey(key) {
-  return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key);
+  return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key) ?? levelThreeFinalGetawayAssetByKey(key);
 }
 import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
 
@@ -7977,7 +7979,7 @@ function neighborBiomesForWorld(seed, worldX, worldY) {
 }
 
 function sbsGroundTileForWorld(seed, worldX, worldY, biome, theme) {
-  const asset = selectLevelOneGroundTile({
+  const asset = selectHmhGroundTile({
     levelId: combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID,
     seed,
     worldX,
@@ -8479,7 +8481,7 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   // Warm Level 1 final-paint and CC0 fallback isometric base ground tiles. They
   // render under authored HMH props/templates, so they should decode before the
   // READY overlay appears.
-  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND, HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, HMH_FINAL_WORLD_AMBIENT_ASSETS, HMH_LEVEL_TWO_FINAL_CITY_ASSETS]) {
+  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND, HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, HMH_FINAL_WORLD_AMBIENT_ASSETS, HMH_LEVEL_TWO_FINAL_CITY_ASSETS, HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, HMH_LEVEL_THREE_FINAL_GROUND]) {
     for (const asset of manifest.assets ?? []) {
       if (asset?.src) toWarm.add(asset.src);
     }
@@ -8572,9 +8574,11 @@ let _obstacleCache = [];
 // (desert_approach). We normalize and load all districts for the active level.
 const _authoredObstacleCache = new Map(); // districtKey -> [obstacle objects]
 function _buildAuthoredObstaclesForLevel(levelId) {
-  const allDistricts = levelId === 'level-2-litecoin-city'
-    ? Object.keys(LEVEL_2_AUTHORED_LAYOUT_KEYS)
-    : Object.keys(LEVEL_1_AUTHORED_LAYOUT_KEYS);
+  const allDistricts = levelId === 'level-3-the-getaway'
+    ? Object.keys(LEVEL_3_AUTHORED_LAYOUT_KEYS)
+    : levelId === 'level-2-litecoin-city'
+      ? Object.keys(LEVEL_2_AUTHORED_LAYOUT_KEYS)
+      : Object.keys(LEVEL_1_AUTHORED_LAYOUT_KEYS);
   const result = [];
   for (const districtKey of allDistricts) {
     const objects = getAllAuthoredSceneObjects(districtKey, levelId);
@@ -8613,6 +8617,12 @@ const LEVEL_2_AUTHORED_LAYOUT_KEYS = Object.freeze({
   'financial-core': true,
   'luxury-neighborhoods': true,
   'penthouse-rim': true,
+});
+const LEVEL_3_AUTHORED_LAYOUT_KEYS = Object.freeze({
+  'penthouse-launch-pad': true,
+  'skybridge-breakpoint': true,
+  'mainnet-express': true,
+  'finale-extraction': true,
 });
 let _authoredLevelCache = null;
 let _authoredLevelCacheId = null;

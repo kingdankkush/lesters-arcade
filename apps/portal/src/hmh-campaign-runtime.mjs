@@ -14,13 +14,13 @@ const DEFAULT_LAYOUT = 'level1-authored';
 const LEVEL_LAYOUTS = Object.freeze({
   'level-1-crypto-wasteland': 'level1-authored',
   'level-2-litecoin-city': 'level2-authored',
-  'level-3-the-getaway': 'level2-authored',
+  'level-3-the-getaway': 'level3-authored',
 });
 
 const EXTRACTION_FAMILY_PRIORITY = Object.freeze({
   'level-1-crypto-wasteland': Object.freeze(['inner_city', 'residential_edge', 'country_road']),
   'level-2-litecoin-city': Object.freeze(['penthouse_rim', 'luxury_neighborhood', 'financial_core', 'outer_boulevard']),
-  'level-3-the-getaway': Object.freeze(['penthouse_rim', 'financial_core', 'outer_boulevard']),
+  'level-3-the-getaway': Object.freeze(['finale_extraction', 'mainnet_express', 'skybridge_breakpoint', 'penthouse_launch_pad']),
 });
 
 const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({

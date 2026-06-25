@@ -397,6 +397,91 @@ export const LEVEL_2_AUTHORED_LAYOUT = Object.freeze({
   }),
 });
 
+
+// ============================================================================
+// LEVEL 3: THE GETAWAY — authored finale chain
+// Penthouse exit → skybridge fracture → Mainnet Express → extraction car.
+// ============================================================================
+
+export const LEVEL_3_AUTHORED_LAYOUT = Object.freeze({
+  penthouseLaunchPad: Object.freeze({
+    districtId: 'penthouse-launch-pad',
+    landmarks: Object.freeze([
+      placed('l3-pl-landmark-evac-lane', 'level3-final-getaway/penthouse-evac-lane', 'route', 4, 5, { solid: false, zHeight: 1 }),
+      placed('l3-pl-landmark-chopper', 'level3-final-getaway/helipad-evac-chopper', 'landmark', 10, 2, { solid: false, zHeight: 4 }),
+    ]),
+    propClusters: Object.freeze([
+      cluster('l3-pl-barricade', 6, 6, [
+        { suffix: 'bags', assetKey: 'level3-final-getaway/vip-luggage-barricade', role: 'cover', dx: 0, dy: 0 },
+        { suffix: 'garden', assetKey: 'level3-final-getaway/roof-garden-planter-row', role: 'cover', dx: 4, dy: -1 },
+        { suffix: 'banner', assetKey: 'level3-final-getaway/wind-torn-banner-line', role: 'sign', dx: 8, dy: -2, solid: false },
+        { suffix: 'stair', assetKey: 'level3-final-getaway/emergency-stair-glow', role: 'edge', dx: 11, dy: 1, solid: false, zHeight: 3 },
+      ]),
+    ]),
+    edgeTreatment: Object.freeze({ northBorder: 'storm-roofline', southBorder: 'helipad-drop', transitionTo: 'skybridge-breakpoint', transitionCue: 'evac lane narrows toward a fractured glass skybridge' }),
+    navigationCues: Object.freeze([
+      { id: 'l3-pl-sign-bridge', assetKey: 'level3-final-getaway/mainnet-exit-sign', role: 'sign', gridX: 14, gridY: 5, text: '→ SKYBRIDGE BREAK' },
+    ]),
+  }),
+  skybridgeBreakpoint: Object.freeze({
+    districtId: 'skybridge-breakpoint',
+    landmarks: Object.freeze([
+      placed('l3-sb-landmark-fracture', 'level3-final-getaway/skybridge-fracture-span', 'bridge', 22, 4, { solid: true, zHeight: 2 }),
+      placed('l3-sb-landmark-drop', 'level3-final-getaway/vertical-drop-parallax', 'backdrop', 26, 1, { solid: false, zHeight: 5 }),
+    ]),
+    propClusters: Object.freeze([
+      cluster('l3-sb-warning', 22, 6, [
+        { suffix: 'rail', assetKey: 'level3-final-getaway/warning-rail-blink', role: 'edge', dx: 0, dy: 0, solid: false },
+        { suffix: 'glass', assetKey: 'level3-final-getaway/glass-floor-crack-web', role: 'hazard', dx: 3, dy: -1, solid: false },
+        { suffix: 'ad', assetKey: 'level3-final-getaway/ad-panel-sparking', role: 'decor', dx: 6, dy: 0, solid: false },
+        { suffix: 'drone', assetKey: 'level3-final-getaway/overhead-pursuit-drone', role: 'decor', dx: 9, dy: -2, solid: false, zHeight: 4 },
+      ]),
+    ]),
+    edgeTreatment: Object.freeze({ northBorder: 'city-void', southBorder: 'glass-drop', transitionTo: 'mainnet-express', transitionCue: 'broken glass gives way to the train roof rush' }),
+    navigationCues: Object.freeze([
+      { id: 'l3-sb-sign-train', assetKey: 'level3-final-getaway/mainnet-exit-sign', role: 'sign', gridX: 31, gridY: 5, text: 'BOARD MAINNET EXPRESS →' },
+    ]),
+  }),
+  mainnetExpress: Object.freeze({
+    districtId: 'mainnet-express',
+    landmarks: Object.freeze([
+      placed('l3-me-landmark-roof-car', 'level3-final-getaway/mainnet-train-roof-car', 'train', 42, 4, { solid: true, zHeight: 2 }),
+      placed('l3-me-landmark-conductor', 'level3-final-getaway/armored-conductor-car', 'train', 50, 4, { solid: true, zHeight: 3 }),
+    ]),
+    propClusters: Object.freeze([
+      cluster('l3-me-speed-run', 42, 6, [
+        { suffix: 'doors', assetKey: 'level3-final-getaway/train-door-seam-lights', role: 'edge', dx: 0, dy: 0, solid: false },
+        { suffix: 'conduit', assetKey: 'level3-final-getaway/power-conduit-sparks', role: 'hazard', dx: 4, dy: -1, solid: false },
+        { suffix: 'billboard', assetKey: 'level3-final-getaway/speed-line-billboard', role: 'sign', dx: 8, dy: -2, solid: false },
+        { suffix: 'gap', assetKey: 'level3-final-getaway/coupler-gap-warning', role: 'hazard', dx: 11, dy: 1, solid: false },
+      ]),
+    ]),
+    edgeTreatment: Object.freeze({ northBorder: 'speed-line-sky', southBorder: 'rail-gap', transitionTo: 'finale-extraction', transitionCue: 'conductor car points toward the extraction beacon' }),
+    navigationCues: Object.freeze([
+      { id: 'l3-me-sign-final', assetKey: 'level3-final-getaway/mainnet-exit-sign', role: 'sign', gridX: 55, gridY: 5, text: 'FINAL CAR →' },
+    ]),
+  }),
+  finaleExtraction: Object.freeze({
+    districtId: 'finale-extraction',
+    landmarks: Object.freeze([
+      placed('l3-fe-landmark-beacon', 'level3-final-getaway/extraction-car-beacon', 'landmark', 64, 4, { solid: false, zHeight: 4 }),
+      placed('l3-fe-landmark-tunnel', 'level3-final-getaway/rail-tunnel-mouth', 'landmark', 70, 3, { solid: true, zHeight: 5 }),
+    ]),
+    propClusters: Object.freeze([
+      cluster('l3-fe-escape', 64, 6, [
+        { suffix: 'storm', assetKey: 'level3-final-getaway/finale-storm-clouds', role: 'backdrop', dx: 0, dy: -3, solid: false, zHeight: 5 },
+        { suffix: 'sign', assetKey: 'level3-final-getaway/mainnet-exit-sign', role: 'sign', dx: 4, dy: -1, solid: false },
+        { suffix: 'ladder', assetKey: 'level3-final-getaway/escape-ladder-drop', role: 'edge', dx: 7, dy: 0, solid: false, zHeight: 3 },
+        { suffix: 'cache', assetKey: 'level3-final-getaway/coin-cache-crate', role: 'pickup', dx: 10, dy: 1, solid: true },
+      ]),
+    ]),
+    edgeTreatment: Object.freeze({ northBorder: 'storm-wall', southBorder: 'rail-tunnel', transitionTo: null, transitionCue: 'final beacon and tunnel mouth end the getaway chain' }),
+    navigationCues: Object.freeze([
+      { id: 'l3-fe-sign-exit', assetKey: 'level3-final-getaway/mainnet-exit-sign', role: 'sign', gridX: 67, gridY: 5, text: 'MAINNET EXIT' },
+    ]),
+  }),
+});
+
 // ============================================================================
 // AUTHORED CRITICAL PATH: route nodes + encounter beats
 // These are not random decoration. They mark the intended traversal spine,
@@ -432,7 +517,17 @@ export const LEVEL_2_AUTHORED_ROUTE = Object.freeze([
   routeNode('vip-exit', 'penthouse-rim', 66, 2, 'VIP Exit Antenna', 'final rooftop extraction marker', { assetKey: 'crypto/utility-pole', beat: 'extract' }),
 ]);
 
+export const LEVEL_3_AUTHORED_ROUTE = Object.freeze([
+  routeNode('evac-lane', 'penthouse-launch-pad', 4, 5, 'Penthouse Evac Lane', 'escape the rooftop into the getaway chain', { assetKey: 'level3-final-getaway/penthouse-evac-lane', beat: 'spawn' }),
+  routeNode('helipad-crosswind', 'penthouse-launch-pad', 10, 3, 'Crosswind Helipad', 'read wind pressure and evac clutter before the bridge', { assetKey: 'level3-final-getaway/helipad-evac-chopper', beat: 'pressure' }),
+  routeNode('fracture-span', 'skybridge-breakpoint', 22, 5, 'Skybridge Fracture', 'commit through broken glass and warning rails', { assetKey: 'level3-final-getaway/skybridge-fracture-span', beat: 'chokepoint' }),
+  routeNode('train-board', 'mainnet-express', 42, 5, 'Mainnet Train Roof', 'board the armored train route under speed-line pressure', { assetKey: 'level3-final-getaway/mainnet-train-roof-car', beat: 'arena' }),
+  routeNode('conductor-car', 'mainnet-express', 50, 5, 'Conductor Car', 'push past armored seams and power conduits', { assetKey: 'level3-final-getaway/armored-conductor-car', beat: 'boss' }),
+  routeNode('mainnet-exit', 'finale-extraction', 66, 5, 'Mainnet Exit Beacon', 'reach the extraction car alive', { assetKey: 'level3-final-getaway/extraction-car-beacon', beat: 'extract' }),
+]);
+
 function routeForLevel(levelId = 'level-1-crypto-wasteland') {
+  if (levelId === 'level-3-the-getaway') return LEVEL_3_AUTHORED_ROUTE;
   return levelId === 'level-2-litecoin-city' ? LEVEL_2_AUTHORED_ROUTE : LEVEL_1_AUTHORED_ROUTE;
 }
 
@@ -514,6 +609,26 @@ export const LEVEL_2_FOREGROUND_STAGING = Object.freeze({
   ]),
 });
 
+
+export const LEVEL_3_FOREGROUND_STAGING = Object.freeze({
+  penthouseLaunchPad: Object.freeze([
+    foreground('fg-l3-pl-banner', 'level3-final-getaway/wind-torn-banner-line', 'sign', 7, 8, 'foreground banner whipping in storm wind', { drawOrderBias: 42, zHeight: 3 }),
+    foreground('fg-l3-pl-stair', 'level3-final-getaway/emergency-stair-glow', 'edge', 13, 8, 'emergency stair light pulse near camera', { drawOrderBias: 36, zHeight: 4 }),
+  ]),
+  skybridgeBreakpoint: Object.freeze([
+    foreground('fg-l3-sb-rail', 'level3-final-getaway/warning-rail-blink', 'edge', 22, 8, 'warning rail blink across glass foreground', { drawOrderBias: 36 }),
+    foreground('fg-l3-sb-drop', 'level3-final-getaway/vertical-drop-parallax', 'backdrop', 27, 8, 'city drop speed streaks behind cracked bridge', { drawOrderBias: 46, zHeight: 5 }),
+  ]),
+  mainnetExpress: Object.freeze([
+    foreground('fg-l3-me-speed', 'level3-final-getaway/speed-line-billboard', 'sign', 46, 8, 'speed-line ad parallax near train roof', { drawOrderBias: 44, zHeight: 4 }),
+    foreground('fg-l3-me-gap', 'level3-final-getaway/coupler-gap-warning', 'hazard', 53, 8, 'coupler warning flash at lower screen edge', { drawOrderBias: 34 }),
+  ]),
+  finaleExtraction: Object.freeze([
+    foreground('fg-l3-fe-storm', 'level3-final-getaway/finale-storm-clouds', 'backdrop', 63, 8, 'storm clouds and lightning over final car', { drawOrderBias: 48, zHeight: 5 }),
+    foreground('fg-l3-fe-beacon', 'level3-final-getaway/extraction-car-beacon', 'landmark', 67, 8, 'final beacon pulse near camera', { drawOrderBias: 42, zHeight: 4 }),
+  ]),
+});
+
 // ============================================================================
 // Helper: Get the authored layout for a district by ID
 // ============================================================================
@@ -533,7 +648,18 @@ const LEVEL_2_DISTRICT_MAP = Object.freeze({
   'penthouse-rim': 'penthouseRim',
 });
 
+const LEVEL_3_DISTRICT_MAP = Object.freeze({
+  'penthouse-launch-pad': 'penthouseLaunchPad',
+  'skybridge-breakpoint': 'skybridgeBreakpoint',
+  'mainnet-express': 'mainnetExpress',
+  'finale-extraction': 'finaleExtraction',
+});
+
 export function getAuthoredDistrictLayout(districtId, levelId = 'level-1-crypto-wasteland') {
+  if (levelId === 'level-3-the-getaway') {
+    const key = LEVEL_3_DISTRICT_MAP[districtId];
+    return key ? LEVEL_3_AUTHORED_LAYOUT[key] : null;
+  }
   if (levelId === 'level-2-litecoin-city') {
     const key = LEVEL_2_DISTRICT_MAP[districtId];
     return key ? LEVEL_2_AUTHORED_LAYOUT[key] : null;
@@ -586,9 +712,11 @@ export function getDistrictEdgeTreatment(districtId, levelId = 'level-1-crypto-w
 }
 
 export function getAuthoredForegroundSceneObjects(districtId, levelId = 'level-1-crypto-wasteland') {
-  const foregrounds = levelId === 'level-2-litecoin-city'
-    ? LEVEL_2_FOREGROUND_STAGING
-    : LEVEL_1_FOREGROUND_STAGING;
+  const foregrounds = levelId === 'level-3-the-getaway'
+    ? LEVEL_3_FOREGROUND_STAGING
+    : levelId === 'level-2-litecoin-city'
+      ? LEVEL_2_FOREGROUND_STAGING
+      : LEVEL_1_FOREGROUND_STAGING;
   const foregroundKey = Object.keys(foregrounds).find((k) =>
     k === districtId ||
     k.replace(/-/g, '').toLowerCase() === districtId.replace(/-/g, '').toLowerCase(),
@@ -936,12 +1064,21 @@ export const LEVEL_2_EXPANDED_PROPS = Object.freeze({
   ]),
 });
 
+export const LEVEL_3_EXPANDED_PROPS = Object.freeze({
+  penthouseLaunchPad: Object.freeze([]),
+  skybridgeBreakpoint: Object.freeze([]),
+  mainnetExpress: Object.freeze([]),
+  finaleExtraction: Object.freeze([]),
+});
+
 // Get ALL authored objects (base layout + expanded props) for a district
 export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto-wasteland') {
   const base = getAuthoredSceneObjects(districtId, levelId);
-  const expanded = levelId === 'level-2-litecoin-city'
-    ? LEVEL_2_EXPANDED_PROPS
-    : LEVEL_1_EXPANDED_PROPS;
+  const expanded = levelId === 'level-3-the-getaway'
+    ? LEVEL_3_EXPANDED_PROPS
+    : levelId === 'level-2-litecoin-city'
+      ? LEVEL_2_EXPANDED_PROPS
+      : LEVEL_1_EXPANDED_PROPS;
   // Normalize district ID: authored-layout uses camelCase keys, expanded uses
   // the hyphenated districtId. Match by trying both case-insensitive and hyphen-stripped.
   const expandedKey = Object.keys(expanded).find((k) =>

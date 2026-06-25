@@ -218,6 +218,14 @@ export const LEVEL_TWO_BELTS = Object.freeze([
   }),
 ]);
 
+
+export const LEVEL_THREE_BELTS = Object.freeze([
+  Object.freeze({ id: 'penthouse_launch_pad', familyId: 'penthouse_launch_pad', districtId: 'penthouse_launch_pad', archetype: 'industrial', landmarkTemplateId: 'walled_compound', landmarkComplementArchetype: 'city_core', landmarkInfluenceRadius: 2, templatePoolIds: Object.freeze(['walled_compound', 'street_block', 'downtown_district']), roadDensity: 0.62, routeShape: 'evac-lane-with-roof-edge-cover', landmarkRole: 'penthouse-evac-or-helipad', loopCount: 1, coverProfile: 'windy-rooftop-cover-and-evac-clutter', roadTypeKey: 'MAIN_STREET', pathOrientation: 'horizontal', ratioMax: 0.249 }),
+  Object.freeze({ id: 'skybridge_breakpoint', familyId: 'skybridge_breakpoint', districtId: 'skybridge_breakpoint', archetype: 'city_core', landmarkTemplateId: 'walled_compound', landmarkComplementArchetype: 'industrial', landmarkInfluenceRadius: 2, templatePoolIds: Object.freeze(['walled_compound', 'downtown_district', 'street_block']), roadDensity: 0.48, routeShape: 'narrow-fractured-skybridge-chokepoint', landmarkRole: 'fractured-glass-bridge-or-warning-rail', loopCount: 0, coverProfile: 'narrow-glass-and-dropoff-pressure', roadTypeKey: 'MAIN_STREET', pathOrientation: 'horizontal', ratioMax: 0.499 }),
+  Object.freeze({ id: 'mainnet_express', familyId: 'mainnet_express', districtId: 'mainnet_express', archetype: 'industrial', landmarkTemplateId: 'industrial_zone', landmarkComplementArchetype: 'city_core', landmarkInfluenceRadius: 2, templatePoolIds: Object.freeze(['industrial_zone', 'walled_compound', 'street_block']), roadDensity: 0.9, routeShape: 'train-roof-lanes-with-coupler-gaps', landmarkRole: 'train-roof-car-or-conductor-car', loopCount: 1, coverProfile: 'long-thin-roof-lanes-with-speed-pressure', roadTypeKey: 'HIGHWAY', pathOrientation: 'horizontal', ratioMax: 0.799 }),
+  Object.freeze({ id: 'finale_extraction', familyId: 'finale_extraction', districtId: 'finale_extraction', archetype: 'industrial', landmarkTemplateId: 'walled_compound', landmarkComplementArchetype: 'city_core', landmarkInfluenceRadius: 2, templatePoolIds: Object.freeze(['walled_compound', 'industrial_zone', 'downtown_district']), roadDensity: 0.72, routeShape: 'extraction-car-beacon-into-tunnel-mouth', landmarkRole: 'mainnet-exit-or-tunnel-mouth', loopCount: 0, coverProfile: 'final-beacon-and-storm-pressure', roadTypeKey: 'MAIN_STREET', pathOrientation: 'horizontal', ratioMax: 1 }),
+]);
+
 const LEVEL_ONE_POI_BLUEPRINTS = Object.freeze({
   old_hashrate_camp: Object.freeze({
     id: 'old_hashrate_camp',
@@ -426,12 +434,14 @@ function beltByMacroRatio(belts, dx, macroCellsX) {
 }
 
 function levelIdForAuthoredLayout(layout) {
+  if (layout === 'level3-authored') return 'level-3-the-getaway';
   if (layout === 'level2-authored') return 'level-2-litecoin-city';
   if (layout === 'level1-authored') return 'level-1-crypto-wasteland';
   return null;
 }
 
 function authoredBeltForMacroCell(layout, dx, macroCellsX) {
+  if (layout === 'level3-authored') return beltByMacroRatio(LEVEL_THREE_BELTS, dx, macroCellsX);
   if (layout === 'level2-authored') return beltByMacroRatio(LEVEL_TWO_BELTS, dx, macroCellsX);
   if (layout === 'level1-authored') return beltByMacroRatio(LEVEL_ONE_BELTS, dx, macroCellsX);
   return null;
@@ -463,6 +473,30 @@ function beltLandmarkAnchorCell(belt, dx, dy) {
 
 function beltSetPieceAnchors(belt, dx, dy) {
   const primaryAnchor = beltLandmarkAnchorCell(belt, dx, dy);
+  if (belt.familyId === 'penthouse_launch_pad') {
+    return [
+      { id: 'penthouse-evac-lane', role: belt.landmarkRole, templateId: 'walled_compound', localX: primaryAnchor.localX, localY: primaryAnchor.localY, influenceRadius: 2, complementArchetype: 'city_core', templatePoolIds: mergeTemplatePools(['walled_compound', 'street_block']) },
+      { id: 'helipad-evac-chopper', role: 'helipad-evac-or-roof-garden-cover', templateId: 'walled_compound', localX: dx % 2 === 0 ? 4 : 1, localY: 2, influenceRadius: 1, complementArchetype: 'industrial', templatePoolIds: mergeTemplatePools(['walled_compound', 'industrial_zone']) },
+    ];
+  }
+  if (belt.familyId === 'skybridge_breakpoint') {
+    return [
+      { id: 'skybridge-fracture-span', role: belt.landmarkRole, templateId: 'walled_compound', localX: primaryAnchor.localX, localY: primaryAnchor.localY, influenceRadius: 2, complementArchetype: 'city_core', templatePoolIds: mergeTemplatePools(['walled_compound', 'downtown_district']) },
+      { id: 'warning-rail-blink', role: 'warning-rail-or-glass-crack', templateId: 'walled_compound', localX: dx % 2 === 0 ? 4 : 0, localY: 2, influenceRadius: 1, complementArchetype: 'industrial', templatePoolIds: mergeTemplatePools(['walled_compound', 'street_block']) },
+    ];
+  }
+  if (belt.familyId === 'mainnet_express') {
+    return [
+      { id: 'mainnet-train-roof-car', role: belt.landmarkRole, templateId: 'industrial_zone', localX: primaryAnchor.localX, localY: primaryAnchor.localY, influenceRadius: 2, complementArchetype: 'industrial', templatePoolIds: mergeTemplatePools(['industrial_zone', 'walled_compound']) },
+      { id: 'armored-conductor-car', role: 'conductor-car-or-power-conduit', templateId: 'industrial_zone', localX: dx % 2 === 0 ? 4 : 1, localY: 2, influenceRadius: 1, complementArchetype: 'city_core', templatePoolIds: mergeTemplatePools(['industrial_zone', 'street_block']) },
+    ];
+  }
+  if (belt.familyId === 'finale_extraction') {
+    return [
+      { id: 'extraction-car-beacon', role: belt.landmarkRole, templateId: 'walled_compound', localX: primaryAnchor.localX, localY: primaryAnchor.localY, influenceRadius: 2, complementArchetype: 'city_core', templatePoolIds: mergeTemplatePools(['walled_compound', 'industrial_zone']) },
+      { id: 'rail-tunnel-mouth', role: 'rail-tunnel-or-mainnet-exit', templateId: 'walled_compound', localX: dx % 2 === 0 ? 4 : 1, localY: 2, influenceRadius: 1, complementArchetype: 'industrial', templatePoolIds: mergeTemplatePools(['walled_compound', 'industrial_zone']) },
+    ];
+  }
   if (belt.familyId === 'desert_approach') {
     return [
       {

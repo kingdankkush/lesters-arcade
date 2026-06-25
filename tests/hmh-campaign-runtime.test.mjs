@@ -14,7 +14,7 @@ import { generateDistrictGrid } from '../apps/portal/src/district-generator.mjs'
 test('getHmhCampaignLayout maps campaign levels to authored layouts', () => {
   assert.equal(getHmhCampaignLayout('level-1-crypto-wasteland'), 'level1-authored');
   assert.equal(getHmhCampaignLayout('level-2-litecoin-city'), 'level2-authored');
-  assert.equal(getHmhCampaignLayout('level-3-the-getaway'), 'level2-authored');
+  assert.equal(getHmhCampaignLayout('level-3-the-getaway'), 'level3-authored');
   assert.equal(getHmhCampaignLayout('unknown-level'), 'level1-authored');
 });
 
