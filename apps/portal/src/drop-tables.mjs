@@ -7,18 +7,10 @@
 //
 // All pure functions; no DOM; deterministic for the same seed + inputs.
 
-// Seeded PRNG (mulberry32) — deterministic across platforms, no float nondeterminism
-// in the pick logic itself (the seed drives everything).
-function mulberry32(seed) {
-  let a = seed >>> 0;
-  return function () {
-    a = (a + 0x6D2B79F5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+import { mulberry32 } from './seeded-rng.mjs';
+
+// Seeded PRNG (mulberry32) is imported from the canonical seeded-rng module so
+// there is one source of truth for determinism across the codebase.
 
 // Default drop weights by enemy tier. Higher tiers shift toward rarer/more valuable
 // drops. Each entry is { id, weight }. The caller can override per-biome.

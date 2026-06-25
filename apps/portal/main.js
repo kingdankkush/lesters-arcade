@@ -9,6 +9,7 @@ import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemy
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
+import { SeededRng, hashSeed } from './src/seeded-rng.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollDrop } from './src/drop-tables.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
@@ -5526,6 +5527,11 @@ async function startCombat(options = {}) {
     campaignLevelNumber: level.number,
     carryOver: carryOver?.roguelikeRun ?? null,
   });
+  // Dedicated seeded RNG stream for consuming gameplay rolls (crit chance) so a
+  // run is fully reproducible from roguelikeRun.seed. Derived via hashSeed from
+  // the run seed with a fixed salt so it is independent of the positional
+  // (seededIndex) streams used for spawns/upgrades and cannot entangle draw order.
+  combat.critRng = new SeededRng(hashSeed(combat.roguelikeRun.seed ^ 0x6c726974));
   preloadHeroRoster(combat.characterId); // decode hurt/death/melee frames up front (no first-hit art pop)
   preloadWorldPropImages(); // decode all world-prop art up front (no scroll-in pop-in)
   
@@ -6433,7 +6439,10 @@ function rollHitPresentation(baseDamage, source) {
     type,
     stats: { ...stats, damage: 1 }, // base already scaled by caller; only roll crit/type here
     enemyArmored: false,
-    rng: Math.random,
+    // Seeded crit RNG so crit outcomes (which feed damage -> kills -> score) are
+    // reproducible from the run seed. Falls back to Math.random only on the
+    // legacy non-roguelike path where no run-scoped stream exists.
+    rng: combat.critRng ? () => combat.critRng.float() : Math.random,
   });
   // Scale the caller's flat damage by crit/type multiplier ratio.
   const ratio = result.amount / Math.max(1, Math.round(DAMAGE_BASE_FOR(source)));
