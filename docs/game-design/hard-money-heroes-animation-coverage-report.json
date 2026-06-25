@@ -411,6 +411,26 @@
       "runtimeMissingStates": []
     }
   },
+  "completionPackSummary": {
+    "id": "hmh-final-animation-completion-v1",
+    "sourcePolicy": "Original repo-owned HMH final animation completion pixel art; no downloaded pixels copied.",
+    "actorCount": 20,
+    "assetCount": 92,
+    "heroPolishStates": [
+      "crouch",
+      "fall",
+      "victory"
+    ],
+    "enemyReadabilityStates": [
+      "attack-tell",
+      "melee-counter",
+      "hit",
+      "death",
+      "optional-gore-overlay"
+    ],
+    "heroActorCount": 4,
+    "enemyActorCount": 16
+  },
   "summary": {
     "missingHeroAnimatedStateCount": 16,
     "missingEnemyAnimatedStateCount": 25,

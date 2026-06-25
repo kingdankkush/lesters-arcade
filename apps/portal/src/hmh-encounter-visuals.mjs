@@ -90,46 +90,46 @@ export function buildEncounterSceneObjects({ poiId = null, arenaLayout = null, c
 
   if (key === 'dry-forest-cave' || layout === 'cave-mouth-funnel') {
     objects.push(
-      sceneObj('dry-cave-cliff-west', 'crypto/canyon-cliff-edge', 'wall', centerX - 3, centerY - 2, { radius: 0.8 }),
-      sceneObj('dry-cave-cliff-east', 'crypto/canyon-cliff-edge', 'wall', centerX + 3, centerY - 2, { radius: 0.8 }),
-      sceneObj('dry-cave-treeline', 'crypto/forest-tree-line', 'tree', centerX + 2, centerY - 4, { radius: 0.72 }),
-      sceneObj('dry-cave-lamp', 'street/street-lamp', 'lamp', centerX - 1, centerY + 2, { radius: 0.35 }),
+      sceneObj('dry-cave-cliff-west', 'level-final-setpiece/cave-mouth-rocks', 'wall', centerX - 3, centerY - 2, { radius: 0.8 }),
+      sceneObj('dry-cave-cliff-east', 'level-final-setpiece/cave-mouth-rocks', 'wall', centerX + 3, centerY - 2, { radius: 0.8 }),
+      sceneObj('dry-cave-treeline', 'level-final-setpiece/pine-wall-shadow', 'tree', centerX + 2, centerY - 4, { radius: 0.72 }),
+      sceneObj('dry-cave-lamp', 'level-final-setpiece/torch-pockets', 'lamp', centerX - 1, centerY + 2, { radius: 0.35 }),
       sceneObj('dry-cave-gate', 'construct/fence-gate', 'fence', centerX, centerY - 1, { radius: 0.32 }),
     );
   }
 
   if (key === 'oasis-lakeside' || layout === 'sandbar-ring') {
     objects.push(
-      sceneObj('oasis-waterline-0', 'construct/river-straight', 'water-strip', centerX - 2, centerY + 2, { solid: false, radius: 0 }),
-      sceneObj('oasis-waterline-1', 'construct/river-straight', 'water-strip', centerX, centerY + 2, { solid: false, radius: 0 }),
-      sceneObj('oasis-waterline-2', 'construct/river-straight', 'water-strip', centerX + 2, centerY + 2, { solid: false, radius: 0 }),
-      sceneObj('oasis-log', 'nature/fallen-log', 'smallprop', centerX + 3, centerY - 1, { solid: true, radius: 0.45 }),
-      sceneObj('oasis-bench', 'street/park-bench', 'bench', centerX - 3, centerY - 1, { solid: true, radius: 0.5 }),
-      sceneObj('oasis-reedline', 'crypto/forest-tree-line', 'tree', centerX + 1, centerY - 3, { solid: true, radius: 0.72 }),
+      sceneObj('oasis-waterline-0', 'level-final-setpiece/shoreline-ripple-line', 'water-strip', centerX - 2, centerY + 2, { solid: false, radius: 0 }),
+      sceneObj('oasis-waterline-1', 'level-final-setpiece/shoreline-ripple-line', 'water-strip', centerX, centerY + 2, { solid: false, radius: 0 }),
+      sceneObj('oasis-waterline-2', 'level-final-setpiece/shoreline-ripple-line', 'water-strip', centerX + 2, centerY + 2, { solid: false, radius: 0 }),
+      sceneObj('oasis-log', 'level-final-setpiece/driftwood-sandbar', 'smallprop', centerX + 3, centerY - 1, { solid: true, radius: 0.45 }),
+      sceneObj('oasis-reeds-west', 'level-final-setpiece/reed-bank-ring', 'water-strip', centerX - 3, centerY - 1, { solid: false, radius: 0 }),
+      sceneObj('oasis-reedline', 'level-final-setpiece/reed-bank-ring', 'water-strip', centerX + 1, centerY - 3, { solid: false, radius: 0 }),
     );
   }
 
   if (key === 'crossroads-trading-post' || layout === 'wagon-circle-crossfire') {
     objects.push(
-      sceneObj('crossroads-wagon-core', 'interior/stacked-boxes', 'crate', centerX, centerY, { radius: 0.4 }),
-      sceneObj('crossroads-signpost', 'street/bus-stop-sign', 'sign', centerX - 2, centerY - 2, { radius: 0.4 }),
-      sceneObj('crossroads-fence', 'construct/fence-segment', 'fence', centerX + 2, centerY, { radius: 0.32 }),
+      sceneObj('crossroads-wagon-core', 'level-final-setpiece/wagon-circle', 'crate', centerX, centerY, { radius: 0.4 }),
+      sceneObj('crossroads-signpost', 'level-final-setpiece/signpost-fork', 'sign', centerX - 2, centerY - 2, { radius: 0.4 }),
+      sceneObj('crossroads-lanterns', 'level-final-setpiece/lantern-string', 'lamp', centerX + 2, centerY, { radius: 0.32 }),
     );
   }
 
   if (key === 'mesa-overlook' || layout === 'switchback-sniper-lane') {
     objects.push(
-      sceneObj('mesa-cliff-switchback', 'crypto/canyon-cliff-edge', 'wall', centerX + 3, centerY - 3, { radius: 0.8 }),
-      sceneObj('mesa-rail', 'construct/fence-segment', 'fence', centerX - 1, centerY + 1, { radius: 0.32 }),
-      sceneObj('mesa-glint-post', 'crypto/utility-pole', 'sign', centerX + 1, centerY - 1, { radius: 0.35 }),
+      sceneObj('mesa-cliff-switchback', 'level-final-setpiece/cliff-switchback', 'wall', centerX + 3, centerY - 3, { radius: 0.8 }),
+      sceneObj('mesa-rail', 'level-final-setpiece/broken-guardrail', 'fence', centerX - 1, centerY + 1, { radius: 0.32 }),
+      sceneObj('mesa-glint-post', 'level-final-setpiece/ridge-glint-post', 'sign', centerX + 1, centerY - 1, { radius: 0.35 }),
     );
   }
 
   if (key === 'rugpull-gulch' || layout === 'false-front-wagon-ring') {
     objects.push(
-      sceneObj('rugpull-barricade', 'construct/brick-wall-corner', 'wall', centerX - 2, centerY - 1, { radius: 0.4 }),
-      sceneObj('rugpull-wagon', 'interior/stacked-boxes', 'crate', centerX + 2, centerY, { radius: 0.4 }),
-      sceneObj('rugpull-signage', 'street/bus-stop-sign', 'sign', centerX, centerY - 3, { radius: 0.4 }),
+      sceneObj('rugpull-barricade', 'level-final-setpiece/false-front-barricade', 'wall', centerX - 2, centerY - 1, { radius: 0.4 }),
+      sceneObj('rugpull-wagon', 'level-final-setpiece/wagon-ring', 'crate', centerX + 2, centerY, { radius: 0.4 }),
+      sceneObj('rugpull-signage', 'level-final-setpiece/vault-signage', 'sign', centerX, centerY - 3, { radius: 0.4 }),
     );
   }
 

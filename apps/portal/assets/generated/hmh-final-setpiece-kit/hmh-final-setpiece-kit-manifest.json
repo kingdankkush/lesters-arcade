@@ -1,0 +1,172 @@
+{
+  "id": "hmh-final-setpiece-kit-v1",
+  "sourcePolicy": "Original repo-owned final POI setpiece art for HMH Level 1; no downloaded pixels copied.",
+  "assetCount": 15,
+  "assets": [
+    {
+      "key": "level-final-setpiece/cave-mouth-rocks",
+      "category": "dry-forest-cave",
+      "role": "wall",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cave-mouth-rocks.png",
+      "width": 136,
+      "height": 104,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cave-mouth rock funnel and dark entrance."
+    },
+    {
+      "key": "level-final-setpiece/torch-pockets",
+      "category": "dry-forest-cave",
+      "role": "lamp",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/torch-pockets.png",
+      "width": 104,
+      "height": 82,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Torch pocket telegraphs cave ambush light."
+    },
+    {
+      "key": "level-final-setpiece/pine-wall-shadow",
+      "category": "dry-forest-cave",
+      "role": "tree",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/pine-wall-shadow.png",
+      "width": 144,
+      "height": 122,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Dense pine shadow boundary."
+    },
+    {
+      "key": "level-final-setpiece/reed-bank-ring",
+      "category": "oasis-lakeside",
+      "role": "water-strip",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/reed-bank-ring.png",
+      "width": 132,
+      "height": 76,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Oasis reed-bank ring soft boundary."
+    },
+    {
+      "key": "level-final-setpiece/driftwood-sandbar",
+      "category": "oasis-lakeside",
+      "role": "smallprop",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/driftwood-sandbar.png",
+      "width": 136,
+      "height": 72,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Driftwood sandbar lane split."
+    },
+    {
+      "key": "level-final-setpiece/shoreline-ripple-line",
+      "category": "oasis-lakeside",
+      "role": "water-strip",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/shoreline-ripple-line.png",
+      "width": 136,
+      "height": 72,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Shoreline ripple slow-water telegraph."
+    },
+    {
+      "key": "level-final-setpiece/wagon-circle",
+      "category": "crossroads-trading-post",
+      "role": "crate",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/wagon-circle.png",
+      "width": 144,
+      "height": 104,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Crossroads wagon circle cover."
+    },
+    {
+      "key": "level-final-setpiece/signpost-fork",
+      "category": "crossroads-trading-post",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/signpost-fork.png",
+      "width": 96,
+      "height": 88,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Multi-direction fork signpost."
+    },
+    {
+      "key": "level-final-setpiece/lantern-string",
+      "category": "crossroads-trading-post",
+      "role": "lamp",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/lantern-string.png",
+      "width": 160,
+      "height": 72,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Lantern string sightline guide."
+    },
+    {
+      "key": "level-final-setpiece/cliff-switchback",
+      "category": "mesa-overlook",
+      "role": "wall",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cliff-switchback.png",
+      "width": 144,
+      "height": 120,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Mesa switchback elevation cue."
+    },
+    {
+      "key": "level-final-setpiece/ridge-glint-post",
+      "category": "mesa-overlook",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/ridge-glint-post.png",
+      "width": 112,
+      "height": 96,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Ridge glint warning post."
+    },
+    {
+      "key": "level-final-setpiece/broken-guardrail",
+      "category": "mesa-overlook",
+      "role": "fence",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/broken-guardrail.png",
+      "width": 144,
+      "height": 76,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Broken guardrail partial cover."
+    },
+    {
+      "key": "level-final-setpiece/false-front-barricade",
+      "category": "rugpull-gulch",
+      "role": "wall",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/false-front-barricade.png",
+      "width": 156,
+      "height": 124,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "False-front barricade for Rugpull Gulch."
+    },
+    {
+      "key": "level-final-setpiece/wagon-ring",
+      "category": "rugpull-gulch",
+      "role": "crate",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/wagon-ring.png",
+      "width": 144,
+      "height": 112,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Wagon ring arena core."
+    },
+    {
+      "key": "level-final-setpiece/vault-signage",
+      "category": "rugpull-gulch",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/vault-signage.png",
+      "width": 156,
+      "height": 112,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Vault signage sniper-lane read."
+    }
+  ]
+}

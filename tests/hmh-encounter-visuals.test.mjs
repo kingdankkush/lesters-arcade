@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
+import { HMH_FINAL_SETPIECE_KIT, finalSetpieceAssetByKey } from '../apps/portal/assets/generated/hmh-final-setpiece-kit/hmh-final-setpiece-kit-manifest.mjs';
+
 import {
   BESPOKE_ENEMY_VISUAL_KITS,
   bespokeEnemyVisualKitFor,
@@ -13,6 +15,39 @@ import {
   buildEncounterVisualPlan,
   enemyProxyRenderProfile,
 } from '../apps/portal/src/hmh-encounter-visuals.mjs';
+
+
+test('final setpiece kit ships original POI level-design assets for every authored Level 1 arena', () => {
+  assert.equal(HMH_FINAL_SETPIECE_KIT.id, 'hmh-final-setpiece-kit-v1');
+  assert.match(HMH_FINAL_SETPIECE_KIT.sourcePolicy, /original repo-owned/i);
+  assert.equal(HMH_FINAL_SETPIECE_KIT.assetCount >= 15, true);
+
+  const required = [
+    'level-final-setpiece/cave-mouth-rocks',
+    'level-final-setpiece/torch-pockets',
+    'level-final-setpiece/pine-wall-shadow',
+    'level-final-setpiece/reed-bank-ring',
+    'level-final-setpiece/driftwood-sandbar',
+    'level-final-setpiece/shoreline-ripple-line',
+    'level-final-setpiece/wagon-circle',
+    'level-final-setpiece/signpost-fork',
+    'level-final-setpiece/lantern-string',
+    'level-final-setpiece/cliff-switchback',
+    'level-final-setpiece/ridge-glint-post',
+    'level-final-setpiece/broken-guardrail',
+    'level-final-setpiece/false-front-barricade',
+    'level-final-setpiece/wagon-ring',
+    'level-final-setpiece/vault-signage',
+  ];
+
+  for (const key of required) {
+    const asset = finalSetpieceAssetByKey(key);
+    assert.ok(asset, `${key} exists in manifest`);
+    assert.equal(asset.src.endsWith('.png'), true, `${key} png`);
+    assert.equal(existsSync(fileURLToPath(new URL(`../apps/portal/${asset.src.replace(/^\.\//, '')}`, import.meta.url))), true, `${asset.src} exists on disk`);
+    assert.equal(asset.width > 0 && asset.height > 0, true, `${key} has dimensions`);
+  }
+});
 
 test('enemyProxyRenderProfile gives authored animal and human POI enemies bespoke proxy-readability treatment', () => {
   const coyote = enemyProxyRenderProfile({ id: 'coyote-pack-runner', state: 'melee-tell' });
@@ -70,13 +105,13 @@ test('buildEncounterSceneObjects turns authored visual plans into stable in-scen
     centerY: 16,
   });
 
-  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'crypto/canyon-cliff-edge' && obj.sceneRole === 'wall'), true);
-  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'crypto/forest-tree-line' && obj.sceneRole === 'tree'), true);
-  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'street/street-lamp' && obj.sceneRole === 'lamp'), true);
+  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/cave-mouth-rocks' && obj.sceneRole === 'wall'), true);
+  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/pine-wall-shadow' && obj.sceneRole === 'tree'), true);
+  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/torch-pockets' && obj.sceneRole === 'lamp'), true);
 
-  assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'construct/river-straight' && obj.sceneRole === 'water-strip' && obj.solid === false), true);
-  assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'nature/fallen-log' && obj.sceneRole === 'smallprop'), true);
-  assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'street/park-bench' && obj.sceneRole === 'bench'), true);
+  assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/shoreline-ripple-line' && obj.sceneRole === 'water-strip' && obj.solid === false), true);
+  assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/driftwood-sandbar' && obj.sceneRole === 'smallprop'), true);
+  assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/reed-bank-ring' && obj.sceneRole === 'water-strip'), true);
 
   for (const obj of [...dryForest, ...oasis]) {
     assert.equal(typeof obj.worldX, 'number');
