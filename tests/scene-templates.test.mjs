@@ -18,6 +18,7 @@ import {
 } from '../apps/portal/src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_SKETCH_ASSET_WAVE } from '../apps/portal/assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.mjs';
 import { HMH_LEVEL_ONE_POLISH_ASSETS } from '../apps/portal/assets/generated/hmh-coherent-world/level1-polish/level1-polish-manifest.mjs';
+import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS } from '../apps/portal/assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
 
 const SEED = 1234;
 // A biome function that returns a fixed biome (so tests are deterministic and
@@ -193,6 +194,38 @@ test('Level 1 sketch asset wave ships original road, water, cliff, town, farm, a
   assert.equal(HMH_LEVEL_ONE_SKETCH_ASSET_WAVE.assets.some((asset) => asset.key === 'sketch-level1/asphalt-road-crossroad'), true);
 });
 
+test('Level 1 final animated polish assets ship living-world foliage, farm, water, and road loops', () => {
+  assert.equal(HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS.id, 'hmh-level-one-final-animated-polish-v1');
+  assert.match(HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS.sourcePolicy, /original repo-owned/i);
+  assert.equal(HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS.assetCount >= 8, true);
+
+  const categories = new Set(HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS.assets.map((asset) => asset.category));
+  for (const category of ['flora', 'water', 'farm', 'road']) {
+    assert.equal(categories.has(category), true, `${category} animated category exists`);
+  }
+
+  for (const asset of HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS.assets) {
+    assert.match(asset.key, /^level1-final-animated\/[a-z0-9-]+$/);
+    assert.equal(asset.animated, true, `${asset.key} is animated`);
+    assert.equal(asset.frames >= 4, true, `${asset.key} has frames`);
+    assert.equal(asset.sheetWidth, asset.frameWidth * asset.frames, `${asset.key} sheet width`);
+    assert.equal(existsSync(fileURLToPath(new URL(`../apps/portal/${asset.src.replace(/^\.\//, '')}`, import.meta.url))), true, `${asset.src} exists`);
+  }
+});
+
+test('Level 1 templates consume final animated polish props in high-visibility scenes', () => {
+  const expectations = [
+    ['sketch_forest_boundary_wall', 'level1-final-animated/forest-wall-pine-sway'],
+    ['sketch_lake_pond_edge', 'level1-final-animated/oasis-reeds-sway'],
+    ['sketch_farmstead_crop_road', 'level1-final-animated/corn-patch-wind'],
+    ['sketch_farm_silo_yard', 'level1-final-animated/wheat-patch-wind'],
+    ['sketch_asphalt_road_spine', 'level1-final-animated/roadside-sign-sway'],
+  ];
+  for (const [templateId, assetKey] of expectations) {
+    assert.equal(SCENE_TEMPLATES[templateId]?.slots.some((slot) => slot.assetKey === assetKey), true, `${templateId} uses ${assetKey}`);
+  }
+});
+
 test('Level 1 original polish assets ship forest, water, farm, road, town, and cliff props', () => {
   assert.equal(HMH_LEVEL_ONE_POLISH_ASSETS.id, 'hmh-level-one-polish-assets-v1');
   assert.equal(HMH_LEVEL_ONE_POLISH_ASSETS.assetCount, 14);
@@ -212,11 +245,11 @@ test('Level 1 original polish assets ship forest, water, farm, road, town, and c
 
 test('Level 1 sketch templates consume original polish assets for living-world detail', () => {
   const expectations = [
-    ['sketch_forest_boundary_wall', 'level1-polish/forest-wall-pine-cluster'],
-    ['sketch_lake_pond_edge', 'level1-polish/oasis-reeds-flower'],
-    ['sketch_farmstead_crop_road', 'level1-polish/barn-red-polished'],
-    ['sketch_farm_silo_yard', 'level1-polish/crop-patch-wheat-dense'],
-    ['sketch_town_boundary_fronts', 'level1-polish/town-bank-front'],
+    ['sketch_forest_boundary_wall', 'level1-final-animated/forest-wall-pine-sway'],
+    ['sketch_lake_pond_edge', 'level1-final-animated/oasis-reeds-sway'],
+    ['sketch_farmstead_crop_road', 'level1-final-animated/barn-flag-wave'],
+    ['sketch_farm_silo_yard', 'level1-final-animated/wheat-patch-wind'],
+    ['sketch_town_boundary_fronts', 'level1-final-animated/town-bank-flicker'],
     ['sketch_cliff_hill_boundary', 'level1-polish/cliff-switchback-detail'],
     ['sketch_asphalt_road_spine', 'level1-polish/mailbox-rural'],
   ];
@@ -254,8 +287,8 @@ test('Level 1 sketch scene templates turn the map sketch into usable runtime set
       authoredComposition: { role: 'landmark-anchor', skipAnchor: false, skipScatter: false },
     },
   });
-  assert.equal(farm.some((obj) => obj.assetKey === 'level1-polish/barn-red-polished'), true);
-  assert.equal(farm.some((obj) => obj.assetKey === 'level1-polish/crop-patch-corn-dense'), true);
+  assert.equal(farm.some((obj) => obj.assetKey === 'level1-final-animated/barn-flag-wave'), true);
+  assert.equal(farm.some((obj) => obj.assetKey === 'level1-final-animated/corn-patch-wind'), true);
 
   const bridge = buildScene(SEED, 16, 16, 'road', {
     reserveRadius: 0,

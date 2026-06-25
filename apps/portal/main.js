@@ -21,6 +21,7 @@ import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } fro
 import { HMH_LEVEL_ONE_ID, selectLevelOneGroundTile } from './src/hmh-level-one-ground.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
+import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
 import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
@@ -8263,11 +8264,13 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   // for fountain (water bob) and arcade-cabinet (screen flicker).
   let frameImage = null;
   let coherentImage = null;
+  let animatedSceneMeta = null;
 
   if (prop.sceneAssetKey) {
     coherentImage = coherentWorldImage(prop.sceneAssetKey);
     if (!imageReady(coherentImage)) return false;
     frameImage = coherentImage;
+    animatedSceneMeta = animatedPolishAssetByKey(prop.sceneAssetKey);
   } else {
     // Production art pass props (fallback for non-scene props)
     frameImage = productionSpriteFrame(prop, combat.frame + index * 9, prop?.fps ?? 8);
@@ -8275,8 +8278,8 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   }
 
   const activeFrame = prop?.frames?.length ? prop.frames[Math.floor((combat.frame + index * 9) / Math.max(1, Math.round(LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps / Math.max(1, prop.fps ?? 8)))) % prop.frames.length] : null;
-  const baseWidth = activeFrame?.width ?? prop.width ?? 80;
-  const baseHeight = activeFrame?.height ?? prop.height ?? 88;
+  const baseWidth = animatedSceneMeta?.frameWidth ?? activeFrame?.width ?? prop.width ?? 80;
+  const baseHeight = animatedSceneMeta?.frameHeight ?? activeFrame?.height ?? prop.height ?? 88;
   const scale = prop.role?.includes('pickup_container') ? 0.72 : prop.role?.includes('occluder') ? 1.05 : prop.role?.includes('vehicle') ? 0.78 : 0.86;
   const drawWidth = Math.round(baseWidth * scale);
   const drawHeight = Math.round(baseHeight * scale);
@@ -8298,7 +8301,23 @@ function drawProductionIsoProp(ctx, prop, x, y, index) {
   // Ground contact shadow is disabled here too; sprite artwork and lighting now
   // carry the grounding cue, so there is no hidden shadow pass to keep in sync.
 
-  ctx.drawImage(frameImage, Math.round(x - drawWidth / 2 + sway), Math.round(y - drawHeight + bob), drawWidth, drawHeight);
+  if (animatedSceneMeta?.animated && animatedSceneMeta.frames > 1) {
+    const frameMs = animatedSceneMeta.frameMs || 130;
+    const frame = Math.floor((performance.now() + index * 31) / frameMs) % animatedSceneMeta.frames;
+    ctx.drawImage(
+      frameImage,
+      frame * animatedSceneMeta.frameWidth,
+      0,
+      animatedSceneMeta.frameWidth,
+      animatedSceneMeta.frameHeight,
+      Math.round(x - drawWidth / 2 + sway),
+      Math.round(y - drawHeight + bob),
+      drawWidth,
+      drawHeight,
+    );
+  } else {
+    ctx.drawImage(frameImage, Math.round(x - drawWidth / 2 + sway), Math.round(y - drawHeight + bob), drawWidth, drawHeight);
+  }
   ctx.restore();
 
   // Reset filter after drawing if it was applied
@@ -8397,7 +8416,7 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   // Warm Level 1 final-paint and CC0 fallback isometric base ground tiles. They
   // render under authored HMH props/templates, so they should decode before the
   // READY overlay appears.
-  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND]) {
+  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND, HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS]) {
     for (const asset of manifest.assets ?? []) {
       if (asset?.src) toWarm.add(asset.src);
     }

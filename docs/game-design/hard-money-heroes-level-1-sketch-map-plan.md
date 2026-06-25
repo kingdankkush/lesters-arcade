@@ -282,7 +282,14 @@ This plan now has two implementation layers:
    - `apps/portal/src/hmh-level-one-ground.mjs` now prefers original `final-paint/*` tiles while preserving SBS CC0 fallback.
    - `apps/portal/main.js` crops animated terrain spritesheets frame-by-frame for living water/shore motion.
 
-The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch, plus a CC0 isometric terrain foundation from the downloaded SBS packs and an original final-paint terrain/animated-water layer. It does not yet replace every building/tree/enemy animation with final hand-polished marketing art, but the Level 1 world now has runtime ground tiles, animated water/shore, roads, farms, towns, water edges, cliffs, forest boundaries, and lived-in prop detail wired into gameplay rendering.
+6. **Original final animated environment props — complete locally**
+   - `scripts/generate-hmh-level-one-final-animated-props.py`
+   - `apps/portal/assets/generated/hmh-coherent-world/level1-final-animated/`
+   - `docs/game-design/assets/hmh-level-1-final-animated-props-contact-sheet.png`
+   - `apps/portal/src/scene-templates.mjs` now uses animated foliage, reeds, crops, sign, barn, and town-bank props in high-visibility Level 1 templates.
+   - `apps/portal/main.js` crops animated coherent-world prop spritesheets frame-by-frame.
+
+The current craft slice creates original repo-owned runtime art and setpiece templates for the sketch, plus a CC0 isometric terrain foundation from the downloaded SBS packs, an original final-paint terrain/animated-water layer, and final animated environment props. It does not yet replace every building/tree/enemy animation with final hand-polished marketing art, but the Level 1 world now has runtime ground tiles, animated water/shore, animated foliage/crops/signage/structure details, roads, farms, towns, cliffs, forest boundaries, and lived-in prop detail wired into gameplay rendering.
 
 ## Downloaded asset-library audit
 
