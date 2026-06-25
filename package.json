@@ -24,6 +24,8 @@
     "design:animation-prompts": "node scripts/write-hmh-animation-production-requests.mjs",
     "contracts:check": "node scripts/contract-structure-check.mjs",
     "contracts:deploy": "node scripts/deploy-contracts.mjs",
+    "build": "node build.mjs",
+    "build:meta": "node build.mjs --metafile",
     "assets:optimize": "python scripts/optimize-assets.py",
     "verify:full": "npm run assets:verify && npm test && npm run check && npm run contracts:check && npm run design:audit && npm run design:balance && npm run smoke:portal && npm run smoke:portal:interactions && npm run design:animation-prompts && npm run design:weekly",
     "vercel:build": "npm run assets:verify && npm test && npm run check && npm run contracts:check",
@@ -44,6 +46,7 @@
   "author": "Justin Pinter / Lester's Arcade concept",
   "license": "UNLICENSED",
   "devDependencies": {
+    "esbuild": "^0.28.1",
     "solc": "^0.8.35"
   },
   "overrides": {
