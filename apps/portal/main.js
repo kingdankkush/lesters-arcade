@@ -10,6 +10,7 @@ import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-dama
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { SeededRng, hashSeed } from './src/seeded-rng.mjs';
+import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollDrop } from './src/drop-tables.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
@@ -7418,7 +7419,14 @@ function updateRoguelikeEnemies(director, dt) {
   }
 
   const slowFactor = (combat.powerUpTimers.slowEnemies ?? 0) > 0 ? 0.4 : 1;
-  for (const enemy of combat.enemies) {
+  // Snapshot enemy positions once per step for separation steering, so the swarm
+  // spreads into a readable crescent instead of stacking on one pixel. Built once
+  // (not per-enemy) to keep the cost O(n * neighborsConsidered), not O(n^2) blind.
+  const enemyPositions = combat.enemies.map((e) => ({ x: e.mapX, y: e.mapY }));
+  const runSeed = combat.roguelikeRun?.seed ?? 0;
+  const obstacles = currentObstacles();
+  for (let ei = 0; ei < combat.enemies.length; ei += 1) {
+    const enemy = combat.enemies[ei];
     if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
     if ((enemy.goreFrames ?? 0) > 0) enemy.goreFrames -= 1;
     const encounterBehavior = combat.activePoiEncounterId
@@ -7444,6 +7452,13 @@ function updateRoguelikeEnemies(director, dt) {
       enemy.tellFrames = 0;
       enemy.postVolley = enemy.ranged;
     } else {
+      // Local separation push from nearby enemies, blended with the homing
+      // direction so the swarm advances but fans out laterally.
+      const sep = computeSeparation({ x: enemy.mapX, y: enemy.mapY }, enemyPositions, {
+        radius: 1.15,
+        selfIndex: ei,
+        maxNeighbors: 10,
+      });
       if (distance > desiredDistance) {
         const playerMoveSpeed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
         const speed = calculateEnemyChaseSpeed({
@@ -7454,11 +7469,30 @@ function updateRoguelikeEnemies(director, dt) {
           slowFactor,
           playerMoveSpeed,
         });
-        enemy.mapX += (dx / distance) * speed * dt;
-        enemy.mapY += (dy / distance) * speed * dt;
+        // Blend homing toward the player with separation from neighbors.
+        const dir = blendSteering({ x: dx / distance, y: dy / distance }, sep, 0.6);
+        const fromX = enemy.mapX;
+        const fromY = enemy.mapY;
+        const toX = fromX + dir.x * speed * dt;
+        const toY = fromY + dir.y * speed * dt;
+        // Enemies now respect the same obstacle + water collision the player does,
+        // so they stop clipping through buildings and walking onto water. They
+        // slide along blocking footprints instead of phasing through them.
+        const afterObstacles = resolvePlayerCollision(fromX, fromY, toX, toY, 0.4, obstacles);
+        const resolved = resolveWaterCollision(runSeed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt);
+        enemy.mapX = resolved.x;
+        enemy.mapY = resolved.y;
       } else if (enemy.ranged) {
-        enemy.mapX -= (dx / distance) * 0.55 * dt * slowFactor;
-        enemy.mapY -= (dy / distance) * 0.55 * dt * slowFactor;
+        // Back away to maintain range, still avoiding neighbors + terrain.
+        const dir = blendSteering({ x: -dx / distance, y: -dy / distance }, sep, 0.5);
+        const fromX = enemy.mapX;
+        const fromY = enemy.mapY;
+        const toX = fromX + dir.x * 0.55 * dt * slowFactor;
+        const toY = fromY + dir.y * 0.55 * dt * slowFactor;
+        const afterObstacles = resolvePlayerCollision(fromX, fromY, toX, toY, 0.4, obstacles);
+        const resolved = resolveWaterCollision(runSeed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt);
+        enemy.mapX = resolved.x;
+        enemy.mapY = resolved.y;
       }
       enemy.attackTimer -= 1;
       const telegraphFrames = 18 + (encounterBehavior.telegraphBonusFrames ?? 0);
@@ -7496,7 +7530,14 @@ function updateRoguelikeEnemies(director, dt) {
     enemy.y = projected.y + 38;
   }
 
-  for (const enemy of combat.enemies.filter((enemy) => enemy.hp <= 0)) {
+  // Single pass over the enemy list: handle the dead (XP/drops) and keep
+  // survivors, instead of two full .filter() allocations every frame.
+  const survivors = [];
+  for (const enemy of combat.enemies) {
+    if (enemy.hp > 0) {
+      survivors.push(enemy);
+      continue;
+    }
     killEnemy(enemy);
     // Per-enemy-type kill tracking (feeds the game-stats module + balanced XP).
     const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
@@ -7511,7 +7552,7 @@ function updateRoguelikeEnemies(director, dt) {
       dropRoguelikePowerUp(enemy.mapX, enemy.mapY);
     }
   }
-  combat.enemies = combat.enemies.filter((enemy) => enemy.hp > 0);
+  combat.enemies = survivors;
   updateCampaignPoiEncounter(director);
 }
 
