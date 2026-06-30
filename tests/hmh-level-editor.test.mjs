@@ -90,6 +90,20 @@ test('asset palette groups existing runtime art into Justin-friendly editor cate
   assert.equal(palette.assets.some((asset) => asset.groupId === 'bosses' && asset.markerType === 'boss'), true);
 });
 
+test('asset palette preserves generated PNG preview metadata for thumbnail placement', () => {
+  const palette = buildHmhEditorAssetPalette();
+  const previewAssets = palette.assets.filter((asset) => asset.src && asset.src.endsWith('.png'));
+  assert.ok(previewAssets.length >= 100, `expected many generated PNG assets, got ${previewAssets.length}`);
+  const ground = previewAssets.find((asset) => asset.assetKey === 'final-paint/grass-handpaint-01');
+  assert.equal(ground?.src, './assets/generated/hmh-level-one-ground/final-paint/grass-handpaint-01.png');
+  assert.equal(ground?.width, 128);
+  assert.equal(ground?.height, 64);
+  const animatedTree = previewAssets.find((asset) => asset.assetKey === 'level1-final-animated/forest-wall-pine-sway');
+  assert.equal(animatedTree?.animated, true);
+  assert.equal(animatedTree?.frameWidth, 136);
+  assert.equal(animatedTree?.frameHeight, 144);
+});
+
 test('marker tools include player spawns, enemies, mini bosses, bosses, barriers, and helicopter extraction', () => {
   const types = HMH_LEVEL_EDITOR_MARKER_TOOLS.map((tool) => tool.type);
   for (const required of ['player-spawn', 'player-spawn-candidate', 'enemy-spawn', 'mini-boss', 'boss', 'barrier-rect', 'extraction-helicopter', 'player-start']) {
@@ -172,8 +186,39 @@ test('local dev-only editor page exists and dynamically loads the editor app onl
   assert.equal(html.includes("import('./src/hmh-level-editor-app.mjs')"), true);
   assert.equal(html.includes('LOCAL_DEV_HOSTS'), true);
   assert.equal(html.includes('LOCAL DEV TOOL'), true);
+  assert.equal(html.includes('file:// cannot load the generated sprite asset library reliably'), true);
+  assert.equal(html.includes('http://127.0.0.1:8798/editor.html'), true);
+  assert.equal(html.includes("'::1'") && !html.includes("'::1', ''"), true);
   assert.equal(js.includes('localStorage'), true);
   assert.equal(js.includes('Export JSON'), true);
   assert.equal(js.includes('Hermes Handoff'), true);
   assert.equal(js.includes('downloadJsonFile'), true);
+  assert.equal(js.includes('Autosave unavailable — use Export JSON'), true);
+});
+
+test('editor app exposes thumbnail asset cards, search, selected preview, undo, and drag/drop placement handlers', () => {
+  const js = readFileSync(editorJsPath, 'utf8');
+  const html = readFileSync(editorHtmlPath, 'utf8');
+  assert.equal(html.includes('id="assetSearch"'), true);
+  assert.equal(html.includes('id="assetCount"'), true);
+  assert.equal(html.includes('id="selectedAssetPreview"'), true);
+  assert.equal(html.includes('id="undoBtn"'), true);
+  assert.equal(js.includes('asset-thumb'), true);
+  assert.equal(js.includes('renderSelectedAssetPreview'), true);
+  assert.equal(js.includes('filterAssetsForActiveGroup'), true);
+  assert.equal(js.includes('const pool = query ? palette.assets'), true);
+  assert.equal(js.includes('undoLastPlacement'), true);
+  assert.equal(js.includes('nextEditorId'), true);
+  assert.equal(js.includes('editorIdCounter += 1'), true);
+  assert.equal(js.includes("nextEditorId('placement')"), true);
+  assert.equal(js.includes('paintAtPointer'), true);
+  assert.equal(js.includes('lastPaintTileKey'), true);
+  assert.equal(js.includes('draggable = true'), true);
+  assert.equal(js.includes("addEventListener('dragstart'"), true);
+  assert.equal(js.includes("addEventListener('dragover'"), true);
+  assert.equal(js.includes("addEventListener('drop'"), true);
+  assert.equal(js.includes('drawPlacementImage'), true);
+  assert.equal(js.includes('new Image()'), true);
+  assert.equal(html.includes('Drag asset thumbnails onto the map'), true);
+  assert.equal(html.includes('Click-drag on the map to paint'), true);
 });

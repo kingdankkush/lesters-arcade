@@ -83,7 +83,14 @@ function classifyAsset(asset = {}, source = '') {
     src: asset.src ?? asset.path ?? null,
     source,
     role: asset.role ?? null,
-    animated: Boolean(asset.frames || asset.frameCount || asset.animation),
+    width: asset.width ?? asset.frameWidth ?? null,
+    height: asset.height ?? asset.frameHeight ?? null,
+    frames: asset.frames ?? asset.frameCount ?? null,
+    frameWidth: asset.frameWidth ?? asset.width ?? null,
+    frameHeight: asset.frameHeight ?? asset.height ?? null,
+    sheetWidth: asset.sheetWidth ?? null,
+    frameMs: asset.frameMs ?? null,
+    animated: Boolean(asset.animated || asset.frames || asset.frameCount || asset.animation),
   });
 }
 

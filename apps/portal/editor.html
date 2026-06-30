@@ -12,8 +12,8 @@
     button, select, input, textarea { font: inherit; }
     button { border:1px solid var(--line); background:#1f2937; color:var(--ink); border-radius:8px; padding:8px 10px; cursor:pointer; }
     button:hover, button.active { border-color:var(--accent); box-shadow:0 0 0 1px rgba(249,115,22,.35); }
-    .app { display:grid; grid-template-columns: 320px 1fr 360px; grid-template-rows: 56px 1fr; height:100vh; }
-    header { grid-column:1/4; display:flex; align-items:center; gap:16px; padding:10px 14px; background:#0f172a; border-bottom:1px solid var(--line); }
+    .app { display:grid; grid-template-columns: 380px 1fr 380px; grid-template-rows: 60px 1fr; height:100vh; }
+    header { grid-column:1/4; display:flex; align-items:center; gap:14px; padding:10px 14px; background:#0f172a; border-bottom:1px solid var(--line); }
     header h1 { font-size:18px; margin:0; letter-spacing:.05em; text-transform:uppercase; }
     .badge { background:#7c2d12; color:#fed7aa; border:1px solid #fb923c; border-radius:999px; padding:4px 8px; font-size:12px; font-weight:800; }
     .toolbar { margin-left:auto; display:flex; gap:8px; align-items:center; }
@@ -28,9 +28,23 @@
     .field input, .field select, .field textarea { background:#0b1220; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px; }
     .group-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
     .group-tabs button { font-size:11px; padding:5px 7px; }
-    .asset-list { display:grid; grid-template-columns:1fr; gap:6px; }
-    .asset { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px; border:1px solid var(--line); border-radius:8px; background:#0b1220; text-align:left; }
-    .asset small { color:var(--muted); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:215px; }
+    .palette-controls { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; margin-bottom:10px; }
+    .palette-controls input { width:100%; background:#0b1220; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px; }
+    .selected-preview { display:grid; grid-template-columns:72px 1fr; gap:10px; align-items:center; border:1px solid var(--line); background:#0b1220; border-radius:12px; padding:8px; min-height:88px; }
+    .selected-preview-thumb { width:72px; height:72px; display:grid; place-items:center; border-radius:10px; background:#172033; border:1px solid rgba(148,163,184,.35); overflow:hidden; }
+    .selected-preview-thumb img { max-width:100%; max-height:100%; object-fit:contain; image-rendering:pixelated; }
+    .selected-preview strong { display:block; font-size:12px; }
+    .selected-preview small { display:block; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:245px; }
+    .asset-list { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+    .asset { display:grid; grid-template-rows:92px auto auto; gap:6px; padding:7px; border:1px solid var(--line); border-radius:10px; background:#0b1220; text-align:left; min-width:0; }
+    .asset[draggable="true"] { cursor:grab; }
+    .asset[draggable="true"]:active { cursor:grabbing; }
+    .asset-thumb { width:100%; height:92px; display:grid; place-items:center; border:1px solid rgba(148,163,184,.28); border-radius:8px; background:radial-gradient(circle at center, rgba(51,65,85,.65), rgba(15,23,42,.85)); overflow:hidden; }
+    .asset-thumb img { max-width:100%; max-height:100%; object-fit:contain; image-rendering:pixelated; }
+    .asset-thumb.placeholder { color:#020617; font-weight:900; font-size:22px; }
+    .asset-label { display:flex; align-items:center; gap:6px; min-width:0; font-size:12px; font-weight:800; }
+    .asset-label span:last-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .asset small { color:var(--muted); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; font-size:10px; }
     .swatch { flex:0 0 12px; width:12px; height:12px; border-radius:3px; background:#64748b; }
     .marker-tools { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
     .stats { font-size:12px; color:var(--muted); line-height:1.55; }
@@ -50,6 +64,7 @@
       <span id="saveStatus" class="stats">Autosave ready</span>
       <div class="toolbar">
         <button id="newDraftBtn">New Draft</button>
+        <button id="undoBtn">Undo</button>
         <button id="validateBtn">Validate</button>
         <button id="exportBtn">Export JSON</button>
         <button id="handoffBtn">Hermes Handoff</button>
@@ -63,9 +78,11 @@
         <div class="field"><label>Level</label><select id="levelId"><option value="level-1-crypto-wasteland">Level 1 — Crypto Wasteland</option><option value="level-2-litecoin-city">Level 2 — Litecoin City</option><option value="level-3-the-getaway">Level 3 — The Getaway</option></select></div>
         <div class="field"><label>Title</label><input id="levelTitle" value="Level 1 Hand Layout" /></div>
         <div class="field"><label>Active Layer</label><select id="activeLayer"><option value="ground">Ground</option><option value="roads-paths">Roads / Paths</option><option value="water">Water</option><option value="props">Props</option><option value="barriers">Barriers</option><option value="enemies">Enemies</option><option value="objectives">Objectives</option></select></div>
+        <div id="selectedAssetPreview" class="selected-preview" aria-live="polite"></div>
       </div>
       <div class="section">
         <h2>Grouped Asset Palette</h2>
+        <div class="palette-controls"><input id="assetSearch" type="search" placeholder="Search sprites, roads, trees, bosses..." autocomplete="off" /><span id="assetCount" class="stats"></span></div>
         <div id="groupTabs" class="group-tabs"></div>
         <div id="assetList" class="asset-list"></div>
       </div>
@@ -74,7 +91,7 @@
     <main class="stage-wrap">
       <canvas id="editorCanvas" width="1400" height="900" aria-label="HMH isometric level editor canvas"></canvas>
       <div class="floating-help">
-        Click to place selected asset or marker. Mouse wheel zooms. Drag empty space to pan. Shift+click deletes nearest placement. Ground, roads, water, props, barriers, enemies, mini-bosses, bosses, and helicopter extraction all save to JSON.
+        Drag asset thumbnails onto the map, or click a thumbnail and then click the map. Click-drag on the map to paint selected assets repeatedly. Mouse wheel zooms. Drag empty space to pan. Shift+click deletes nearest placement. Export JSON saves the authored level; Hermes Handoff exports a scan report for polishing.
       </div>
     </main>
 
@@ -99,8 +116,9 @@
     </aside>
   </div>
   <script type="module">
-    const LOCAL_DEV_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '']);
-    if (!LOCAL_DEV_HOSTS.has(window.location.hostname)) {
+    const LOCAL_DEV_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
+    const isLocalHttp = LOCAL_DEV_HOSTS.has(window.location.hostname) && /^https?:$/.test(window.location.protocol);
+    if (!isLocalHttp) {
       const main = document.createElement('main');
       main.style.cssText = 'min-height:100vh;display:grid;place-items:center;background:#070b13;color:#f8fafc;font-family:system-ui';
       const section = document.createElement('section');
@@ -108,7 +126,7 @@
       const heading = document.createElement('h1');
       heading.textContent = 'Hard Money Heroes Level Builder';
       const copy = document.createElement('p');
-      copy.textContent = 'This is a local dev-only design tool. Open it from a local server, not production.';
+      copy.textContent = 'file:// cannot load the generated sprite asset library reliably. Start a local server from apps/portal and open http://127.0.0.1:8798/editor.html instead.';
       section.append(heading, copy);
       main.appendChild(section);
       document.body.replaceChildren(main);
