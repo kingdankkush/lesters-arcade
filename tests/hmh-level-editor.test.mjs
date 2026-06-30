@@ -155,6 +155,36 @@ test('asset palette includes the actual HMH runtime sprite folders, not only set
   assert.equal(palette.assets.some((asset) => asset.groupId === 'enemies' && asset.assetKey.includes('hmh-animated-roster/fud-goblin')), true);
 });
 
+test('asset palette categorizes high-end level environment sprites into usable map-building groups', () => {
+  const palette = buildHmhEditorAssetPalette();
+  const byKey = (key) => palette.assets.find((asset) => asset.assetKey.includes(key));
+  const expected = [
+    ['hmh-coherent-world/crypto/ghost-saloon-front', 'buildings'],
+    ['hmh-coherent-world/crypto/industrial-warehouse-facade', 'buildings'],
+    ['hmh-coherent-world/nature/oak-tree', 'trees'],
+    ['hmh-coherent-world/nature/bush', 'plants-bushes'],
+    ['hmh-coherent-world/crypto/shoreline-water-edge', 'water-tiles'],
+    ['hmh-coherent-world/crypto/ground-sand-dirt-edge', 'ground-tiles'],
+    ['hmh-environment-pixellab-wave-2/isometric_tile/ground-dirt', 'ground-tiles'],
+    ['hmh-environment-pixellab-wave-2/isometric_tile/asphalt-road', 'roads-paths'],
+    ['hmh-environment-pixellab-wave-2/animated_object_base/leafy-tree-wind', 'trees'],
+    ['hmh-environment-pixellab-wave-2/animated_object_base/cactus-heat-shimmer', 'plants-bushes'],
+    ['hmh-isometric-pixellab/map_object/cyber-palm-tree', 'trees'],
+    ['hmh-isometric-pixellab/map_object/streetlight', 'buildings'],
+  ];
+  for (const [key, groupId] of expected) {
+    const asset = byKey(key);
+    assert.ok(asset, `${key} missing from editor palette`);
+    assert.equal(asset.groupId, groupId, `${key} should be categorized as ${groupId}`);
+    assert.notEqual(asset.label, 'Downloads 001 Download.Bin', `${key} should have a semantic label`);
+  }
+  const countByGroup = Object.fromEntries(HMH_LEVEL_EDITOR_ASSET_GROUPS.map((group) => [group.id, palette.assets.filter((asset) => asset.groupId === group.id).length]));
+  assert.ok(countByGroup['ground-tiles'] >= 90, `expected many usable ground tiles, got ${countByGroup['ground-tiles']}`);
+  assert.ok(countByGroup['water-tiles'] >= 55, `expected many usable water tiles, got ${countByGroup['water-tiles']}`);
+  assert.ok(countByGroup.trees >= 30, `expected many usable trees, got ${countByGroup.trees}`);
+  assert.ok(countByGroup.buildings >= 40, `expected many usable buildings/structures, got ${countByGroup.buildings}`);
+});
+
 test('marker tools include player spawns, enemies, mini bosses, bosses, barriers, and helicopter extraction', () => {
   const types = HMH_LEVEL_EDITOR_MARKER_TOOLS.map((tool) => tool.type);
   for (const required of ['player-spawn', 'player-spawn-candidate', 'enemy-spawn', 'mini-boss', 'boss', 'barrier-rect', 'boundary-line', 'extraction-helicopter', 'player-start']) {

@@ -111,17 +111,22 @@ function classifyAsset(asset = {}, source = '') {
   const label = asset.label ?? asset.name ?? key.split('/').pop() ?? key;
   const role = String(asset.role ?? asset.category ?? asset.type ?? '').toLowerCase();
   const haystack = `${key} ${label} ${role} ${source}`.toLowerCase();
-  let groupId = 'plants-bushes';
-  let layer = 'props';
-  if (/vfx|muzzle|spark|explosion|impact|shell|blood|gore|fx|ambient|particle/.test(haystack)) { groupId = 'vfx-fx'; layer = 'props'; }
-  else if (/hero|lester|lilly|commando|valkyrie|character|calibration|player/.test(haystack)) { groupId = 'characters'; layer = 'props'; }
-  else if (/boss|baron|ngmi|miner|validator|exploiter|whale|obfuscator|51%|enemy|goblin|boar|rat|zealot|jumper|rattlesnake|coyote/.test(haystack)) { groupId = /boss|baron|ngmi|miner|validator|exploiter|whale|obfuscator|51%/.test(haystack) ? 'bosses' : 'enemies'; layer = 'enemies'; }
-  else if (/water|river|lake|shore|oasis|pond|runoff|harbor|canal/.test(haystack)) { groupId = 'water-tiles'; layer = 'water'; }
-  else if (/ground|sand|grass|pavement|road|path|asphalt|dirt|street|tile|rooftop|roof|rail|bridge|glass|train|grate/.test(haystack)) { groupId = /road|path|street|asphalt|dirt|rail|bridge/.test(haystack) ? 'roads-paths' : 'ground-tiles'; layer = groupId === 'ground-tiles' ? 'ground' : 'roads-paths'; }
-  else if (/tree|pine|oak|forest|trunk/.test(haystack)) groupId = 'trees';
-  else if (/bush|plant|reed|flower|cactus|crop|corn|wheat|flora/.test(haystack)) groupId = 'plants-bushes';
-  else if (/building|town|saloon|front|store|house|barn|silo|warehouse|bank|facade|city|fountain|billboard|container|crane|penthouse|launch|express|monument|streetlight/.test(haystack)) groupId = 'buildings';
-  else if (/wall|fence|barrier|cliff|boulder|rock|gate|edge|gap/.test(haystack)) groupId = 'barriers-collision';
+  let groupId = asset.groupId ?? null;
+  let layer = asset.layer ?? null;
+  if (!groupId) groupId = 'plants-bushes';
+  if (!layer) layer = 'props';
+  if (!asset.groupId) {
+    if (/vfx|muzzle|spark|explosion|impact|shell|blood|gore|fx|ambient|particle/.test(haystack)) { groupId = 'vfx-fx'; layer = 'props'; }
+    else if (/hero|lester|lilly|commando|valkyrie|character|calibration|player/.test(haystack)) { groupId = 'characters'; layer = 'props'; }
+    else if (/boss|baron|ngmi|miner|validator|exploiter|whale|obfuscator|51%|enemy|goblin|boar|rat|zealot|jumper|rattlesnake|coyote/.test(haystack)) { groupId = /boss|baron|ngmi|miner|validator|exploiter|whale|obfuscator|51%/.test(haystack) ? 'bosses' : 'enemies'; layer = 'enemies'; }
+    else if (/water|river|lake|shore|oasis|pond|runoff|harbor|canal|waterfall/.test(haystack)) { groupId = 'water-tiles'; layer = 'water'; }
+    else if (/building|town|saloon|front|store|house|farmhouse|barn|silo|warehouse|bank|facade|city|fountain|billboard|container|crane|helipad|chopper|penthouse|stair|elevator|vault|greenhouse|dome|monument|streetlight|lamp|sign|hydrant|mailbox|bench|trash|luggage|beacon|door|launch|express/.test(haystack)) { groupId = 'buildings'; layer = 'props'; }
+    else if (/tree|pine|oak|forest|trunk|palm/.test(haystack)) groupId = 'trees';
+    else if (/bush|plant|reed|flower|cactus|crop|corn|wheat|flora/.test(haystack)) groupId = 'plants-bushes';
+    else if (/road|path|asphalt|street|sidewalk|curb|alley|rail|bridge|crossroad|tjunction|plaza|ramp/.test(haystack)) { groupId = 'roads-paths'; layer = 'roads-paths'; }
+    else if (/ground|sand|grass|pavement|dirt|tile|rooftop|roof|glass|train|grate|floor|tar|gravel|rocky/.test(haystack)) { groupId = 'ground-tiles'; layer = 'ground'; }
+    else if (/wall|fence|barrier|cliff|boulder|rock|gate|edge|gap|cone/.test(haystack)) { groupId = 'barriers-collision'; layer = 'barriers'; }
+  }
   return Object.freeze({
     assetKey: key,
     label,
