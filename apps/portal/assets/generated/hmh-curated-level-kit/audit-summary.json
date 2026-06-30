@@ -1,0 +1,875 @@
+{
+  "id": "hmh-curated-level-kit-audit-v1",
+  "sourceRoot": "./assets/hmh-curated-level-kit",
+  "rawImages": 11833,
+  "manifestAssets": 1216,
+  "slicedGround": 1797,
+  "trimmedProps": 1022,
+  "scopes": {
+    "level-1-crypto-wasteland": {
+      "rawImages": 435,
+      "categories": {
+        "water": 137,
+        "tree": 111,
+        "set-dressing": 59,
+        "ruin": 35,
+        "rock": 31,
+        "landmark-building": 17,
+        "road": 15,
+        "interior-prop": 10,
+        "hazard-prop": 10,
+        "plant": 8,
+        "ground": 2
+      }
+    },
+    "Universal": {
+      "rawImages": 11398,
+      "categories": {
+        "enemy": 8338,
+        "hero": 2303,
+        "plant": 362,
+        "rock": 190,
+        "tree": 174,
+        "source-sheet": 21,
+        "water": 10
+      }
+    },
+    "level-2-litecoin-city": {
+      "rawImages": 0,
+      "categories": {}
+    },
+    "level-3-getaway": {
+      "rawImages": 0,
+      "categories": {}
+    }
+  },
+  "topDimensions": [
+    {
+      "width": 136,
+      "height": 136,
+      "count": 2961
+    },
+    {
+      "width": 172,
+      "height": 172,
+      "count": 1192
+    },
+    {
+      "width": 192,
+      "height": 192,
+      "count": 1072
+    },
+    {
+      "width": 184,
+      "height": 184,
+      "count": 754
+    },
+    {
+      "width": 160,
+      "height": 160,
+      "count": 612
+    },
+    {
+      "width": 180,
+      "height": 180,
+      "count": 536
+    },
+    {
+      "width": 188,
+      "height": 188,
+      "count": 523
+    },
+    {
+      "width": 100,
+      "height": 100,
+      "count": 482
+    },
+    {
+      "width": 204,
+      "height": 204,
+      "count": 424
+    },
+    {
+      "width": 232,
+      "height": 232,
+      "count": 408
+    },
+    {
+      "width": 112,
+      "height": 112,
+      "count": 407
+    },
+    {
+      "width": 176,
+      "height": 176,
+      "count": 368
+    },
+    {
+      "width": 244,
+      "height": 244,
+      "count": 352
+    },
+    {
+      "width": 228,
+      "height": 228,
+      "count": 308
+    },
+    {
+      "width": 128,
+      "height": 128,
+      "count": 299
+    },
+    {
+      "width": 92,
+      "height": 92,
+      "count": 245
+    },
+    {
+      "width": 64,
+      "height": 64,
+      "count": 210
+    },
+    {
+      "width": 256,
+      "height": 256,
+      "count": 178
+    },
+    {
+      "width": 32,
+      "height": 32,
+      "count": 145
+    },
+    {
+      "width": 384,
+      "height": 768,
+      "count": 85
+    }
+  ],
+  "sheetCandidates": [
+    {
+      "source": "level-1-crypto-wasteland/Buildings/exterior.png",
+      "width": 240,
+      "height": 800,
+      "category": "landmark-building"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Buildings/Interior.png",
+      "width": 192,
+      "height": 400,
+      "category": "interior-prop"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Ground_grass.png",
+      "width": 272,
+      "height": 496,
+      "category": "ground"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road1.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road1_grass.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road1_ground.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road2.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road2_grass.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road2_ground.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road3.png",
+      "width": 240,
+      "height": 480,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road3_grass.png",
+      "width": 240,
+      "height": 480,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road3_ground.png",
+      "width": 240,
+      "height": 480,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road4.png",
+      "width": 240,
+      "height": 480,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road4_grass.png",
+      "width": 240,
+      "height": 480,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road4_ground.png",
+      "width": 240,
+      "height": 480,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road5.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road5_grass.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Ground-tiles/Road5_ground.png",
+      "width": 240,
+      "height": 416,
+      "category": "road"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Trees-Plants/Trees_animation.png",
+      "width": 576,
+      "height": 1040,
+      "category": "tree"
+    },
+    {
+      "source": "level-1-crypto-wasteland/Trees-Plants/Trees_grass_alternative_fit.png",
+      "width": 272,
+      "height": 416,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Building-interiors-builder-set/16x16/Interiors_free_16x16.png",
+      "width": 256,
+      "height": 1424,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Building-interiors-builder-set/32x32/Interiors_free_32x32.png",
+      "width": 512,
+      "height": 2848,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Building-interiors-builder-set/32x32/Room_Builder_free_32x32.png",
+      "width": 544,
+      "height": 736,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Building-interiors-builder-set/48x48/Interiors_free_48x48.png",
+      "width": 768,
+      "height": 4272,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Building-interiors-builder-set/48x48/Room_Builder_free_48x48.png",
+      "width": 816,
+      "height": 1104,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_00.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_01.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_02.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_03.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_04.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_05.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_06.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_07.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_08.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_09.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_10.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_11.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_12.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_13.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_14.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_15.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_16.png",
+      "width": 512,
+      "height": 512,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-0.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-1.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-2.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-3.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-4.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-5.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-6.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-7.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-8.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-9.png",
+      "width": 384,
+      "height": 192,
+      "category": "plant"
+    },
+    {
+      "source": "Universal/Ground-textures/dirt_cliff_trans.png",
+      "width": 1024,
+      "height": 1024,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/dirt_tiles.png",
+      "width": 1024,
+      "height": 1536,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/dirt_tiles_w_trans.png",
+      "width": 1024,
+      "height": 2560,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/grass_cliff_trans.png",
+      "width": 1024,
+      "height": 1024,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/grass_tiles.png",
+      "width": 1024,
+      "height": 1536,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/grass_tiles_w_trans.png",
+      "width": 1024,
+      "height": 2560,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/grassland_1x1.png",
+      "width": 1536,
+      "height": 3844,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/grassland_2x2.png",
+      "width": 3072,
+      "height": 4608,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/ground_grasses.png",
+      "width": 1024,
+      "height": 768,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/rock_cliffs.png",
+      "width": 1536,
+      "height": 2048,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/sand_cliff_trans.png",
+      "width": 1024,
+      "height": 512,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/sand_tiles.png",
+      "width": 1024,
+      "height": 768,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/sand_tiles_w_trans.png",
+      "width": 1024,
+      "height": 1280,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/water_v01.png",
+      "width": 768,
+      "height": 384,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Ground-textures/water_v02.png",
+      "width": 768,
+      "height": 384,
+      "category": "source-sheet"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-0.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-1.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-10.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-11.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-12.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-13.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-14.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-15.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-16.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-17.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-18.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-19.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-2.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-20.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-21.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-22.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-23.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-24.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-25.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-26.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-27.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-28.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-29.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-3.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-30.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-31.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-32.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-33.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-34.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-35.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-36.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-37.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-38.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-39.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-4.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-40.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-41.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-42.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-43.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-44.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-45.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-46.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-47.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-48.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-49.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-5.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-50.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-51.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-52.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-53.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-54.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-55.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    },
+    {
+      "source": "Universal/Trees/trees_128x64_shaded-56.png",
+      "width": 384,
+      "height": 768,
+      "category": "tree"
+    }
+  ],
+  "levelDesignReadiness": {
+    "level-1-crypto-wasteland": "ready-for-authored-layout-after-slicing",
+    "level-2-litecoin-city": "empty-folder-deferred",
+    "level-3-getaway": "empty-folder-deferred"
+  }
+}
