@@ -187,7 +187,7 @@ test('local dev-only editor page exists and dynamically loads the editor app onl
   assert.equal(html.includes('LOCAL_DEV_HOSTS'), true);
   assert.equal(html.includes('LOCAL DEV TOOL'), true);
   assert.equal(html.includes('file:// cannot load the generated sprite asset library reliably'), true);
-  assert.equal(html.includes('http://127.0.0.1:8798/editor.html'), true);
+  assert.equal(html.includes('http://127.0.0.1:9944/editor.html'), true);
   assert.equal(html.includes("'::1'") && !html.includes("'::1', ''"), true);
   assert.equal(js.includes('localStorage'), true);
   assert.equal(js.includes('Export JSON'), true);
