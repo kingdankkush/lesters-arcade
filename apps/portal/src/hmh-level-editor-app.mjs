@@ -10,15 +10,17 @@ import { buildHmhEditorAssetPalette } from './hmh-level-editor-assets.mjs';
 
 const STORAGE_KEY = 'hmh-level-builder-draft-v1';
 const EDITOR_COMMAND_LABELS = Object.freeze(['Export JSON', 'Hermes Handoff']);
+const ASSET_PAGE_SIZE = 180;
 const palette = buildHmhEditorAssetPalette();
 const imageCache = new Map();
 let editorIdCounter = 0;
 const state = {
   draft: loadDraft(),
-  selectedGroupId: 'ground-tiles',
+  selectedGroupId: 'all-sprites',
   selectedAsset: null,
   selectedMarkerTool: null,
   paletteSearch: '',
+  paletteVisibleLimit: ASSET_PAGE_SIZE,
   camera: { x: 0, y: 0, zoom: 1 },
   dragging: false,
   painting: false,
@@ -33,6 +35,7 @@ const els = {
   groupTabs: document.getElementById('groupTabs'),
   assetSearch: document.getElementById('assetSearch'),
   assetCount: document.getElementById('assetCount'),
+  showMoreAssetsBtn: document.getElementById('showMoreAssetsBtn'),
   selectedAssetPreview: document.getElementById('selectedAssetPreview'),
   assetList: document.getElementById('assetList'),
   markerTools: document.getElementById('markerTools'),
@@ -128,9 +131,14 @@ function assetMatchesSearch(asset, query) {
   return query.split(/\s+/).filter(Boolean).every((term) => haystack.includes(term));
 }
 
+function groupAssetCount(groupId) {
+  if (groupId === 'all-sprites') return palette.assets.length;
+  return palette.assets.filter((asset) => asset.groupId === groupId).length;
+}
+
 function filterAssetsForActiveGroup() {
   const query = state.paletteSearch.trim().toLowerCase();
-  const pool = query ? palette.assets : palette.assets.filter((asset) => asset.groupId === state.selectedGroupId);
+  const pool = query ? palette.assets : (state.selectedGroupId === 'all-sprites' ? palette.assets : palette.assets.filter((asset) => asset.groupId === state.selectedGroupId));
   return pool.filter((asset) => assetMatchesSearch(asset, query));
 }
 
@@ -163,9 +171,9 @@ function renderSelectedAssetPreview() {
     hint.textContent = 'Click the map to place this marker.';
   } else {
     thumb.textContent = '＋';
-    title.textContent = 'Select an asset or marker';
-    meta.textContent = 'Generated sprites appear below as draggable cards.';
-    hint.textContent = 'Use search when the library gets long.';
+    title.textContent = 'Full HMH sprite library loaded';
+    meta.textContent = `${palette.assets.filter((asset) => asset.src && asset.src.endsWith('.png')).length.toLocaleString()} PNG sprites available`;
+    hint.textContent = 'Try: lester run, lilly, fud goblin, gas beast, environment runtime.';
   }
   details.append(title, meta, hint);
   els.selectedAssetPreview.replaceChildren(thumb, details);
@@ -331,15 +339,18 @@ function renderPalette() {
   els.groupTabs.innerHTML = '';
   for (const group of palette.groups) {
     const btn = document.createElement('button');
-    btn.textContent = group.label;
+    btn.textContent = `${group.label} (${groupAssetCount(group.id).toLocaleString()})`;
+    btn.title = group.id === 'all-sprites' ? 'Browse the full HMH sprite library' : `Browse ${group.label}`;
     btn.className = group.id === state.selectedGroupId ? 'active' : '';
-    btn.onclick = () => { state.selectedGroupId = group.id; state.selectedAsset = null; state.selectedMarkerTool = null; renderPalette(); renderSelectedAssetPreview(); };
+    btn.onclick = () => { state.selectedGroupId = group.id; state.selectedAsset = null; state.selectedMarkerTool = null; state.paletteVisibleLimit = ASSET_PAGE_SIZE; renderPalette(); renderSelectedAssetPreview(); };
     els.groupTabs.appendChild(btn);
   }
   els.assetList.innerHTML = '';
   const allGroupAssets = filterAssetsForActiveGroup();
-  const assets = allGroupAssets.slice(0, 180);
-  els.assetCount.textContent = `${assets.length}/${allGroupAssets.length}`;
+  const assets = allGroupAssets.slice(0, state.paletteVisibleLimit);
+  els.assetCount.textContent = `Showing ${assets.length.toLocaleString()} of ${allGroupAssets.length.toLocaleString()}`;
+  els.showMoreAssetsBtn.hidden = assets.length >= allGroupAssets.length;
+  els.showMoreAssetsBtn.textContent = `Show More Sprites (${Math.min(ASSET_PAGE_SIZE, allGroupAssets.length - assets.length).toLocaleString()} more)`;
   for (const asset of assets) {
     const btn = document.createElement('button');
     btn.className = `asset ${state.selectedAsset?.assetKey === asset.assetKey ? 'active' : ''}`;
@@ -670,8 +681,13 @@ els.levelId.addEventListener('change', saveDraft);
 els.levelTitle.addEventListener('input', saveDraft);
 els.assetSearch.addEventListener('input', () => {
   state.paletteSearch = els.assetSearch.value;
+  state.paletteVisibleLimit = ASSET_PAGE_SIZE;
   renderPalette();
 });
+els.showMoreAssetsBtn.onclick = () => {
+  state.paletteVisibleLimit += ASSET_PAGE_SIZE;
+  renderPalette();
+};
 els.newDraftBtn.onclick = () => {
   state.undoStack = [];
   state.draft = normalizeHmhLevelDraft(createBlankHmhLevelDraft({ levelId: els.levelId.value, title: els.levelTitle.value || 'HMH Authored Level Draft' }));

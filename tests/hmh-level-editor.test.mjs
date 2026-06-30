@@ -85,7 +85,9 @@ test('validateHmhLevelDraft requires player start, boss, and helicopter extracti
 test('asset palette groups existing runtime art into Justin-friendly editor categories', () => {
   const palette = buildHmhEditorAssetPalette();
   const groupIds = palette.groups.map((group) => group.id);
-  for (const groupId of ['ground-tiles', 'water-tiles', 'roads-paths', 'trees', 'plants-bushes', 'buildings', 'barriers-collision', 'player-spawns', 'enemies', 'mini-bosses', 'bosses', 'objectives-extraction']) {
+  assert.equal(groupIds[0], 'all-sprites');
+  assert.equal(HMH_LEVEL_EDITOR_ASSET_GROUPS.find((group) => group.id === 'all-sprites').label, 'All Sprites');
+  for (const groupId of ['all-sprites', 'ground-tiles', 'water-tiles', 'roads-paths', 'trees', 'plants-bushes', 'buildings', 'barriers-collision', 'player-spawns', 'enemies', 'mini-bosses', 'bosses', 'objectives-extraction']) {
     assert.equal(groupIds.includes(groupId), true, `${groupId} group missing`);
   }
   assert.equal(HMH_LEVEL_EDITOR_ASSET_GROUPS.find((group) => group.id === 'trees').label, 'Trees');
@@ -255,12 +257,20 @@ test('editor app exposes thumbnail asset cards, search, selected preview, undo, 
   const html = readFileSync(editorHtmlPath, 'utf8');
   assert.equal(html.includes('id="assetSearch"'), true);
   assert.equal(html.includes('id="assetCount"'), true);
+  assert.equal(html.includes('id="showMoreAssetsBtn"'), true);
+  assert.equal(html.includes('Full HMH sprite library'), true);
+  assert.equal(html.includes('Try: lester run, lilly, fud goblin'), true);
   assert.equal(html.includes('id="selectedAssetPreview"'), true);
   assert.equal(html.includes('id="undoBtn"'), true);
   assert.equal(html.includes('value="ground-overlays"'), true);
   assert.equal(js.includes('asset-thumb'), true);
   assert.equal(js.includes('renderSelectedAssetPreview'), true);
   assert.equal(js.includes('filterAssetsForActiveGroup'), true);
+  assert.equal(js.includes("selectedGroupId: 'all-sprites'"), true);
+  assert.equal(js.includes('paletteVisibleLimit'), true);
+  assert.equal(js.includes('showMoreAssetsBtn'), true);
+  assert.equal(js.includes("group.id === 'all-sprites'"), true);
+  assert.equal(js.includes('groupAssetCount'), true);
   assert.equal(js.includes('const pool = query ? palette.assets'), true);
   assert.equal(js.includes('query.split(/\\s+/).filter(Boolean).every'), true);
   assert.equal(js.includes('undoLastPlacement'), true);

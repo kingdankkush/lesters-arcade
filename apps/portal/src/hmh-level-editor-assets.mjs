@@ -2,6 +2,7 @@ import { HMH_LEVEL_EDITOR_GENERATED_MANIFESTS } from './hmh-level-editor-generat
 import { HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY } from './hmh-level-editor-runtime-sprite-library.mjs';
 
 export const HMH_LEVEL_EDITOR_ASSET_GROUPS = Object.freeze([
+  Object.freeze({ id: 'all-sprites', label: 'All Sprites', color: '#f97316' }),
   Object.freeze({ id: 'ground-tiles', label: 'Ground Tiles', color: '#8fd16a' }),
   Object.freeze({ id: 'water-tiles', label: 'Water Tiles', color: '#4cc9f0' }),
   Object.freeze({ id: 'roads-paths', label: 'Roads / Paths', color: '#d0a15d' }),

@@ -35,6 +35,9 @@
     .selected-preview-thumb img { max-width:100%; max-height:100%; object-fit:contain; image-rendering:pixelated; }
     .selected-preview strong { display:block; font-size:12px; }
     .selected-preview small { display:block; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:245px; }
+    .palette-hint { margin:0 0 8px; padding:8px; border:1px solid rgba(249,115,22,.35); background:rgba(124,45,18,.28); border-radius:10px; color:#fed7aa; }
+    .show-more-assets { width:100%; margin-top:8px; border-color:#fb923c; background:#7c2d12; font-weight:800; }
+    .show-more-assets[hidden] { display:none; }
     .asset-list { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
     .asset { display:grid; grid-template-rows:92px auto auto; gap:6px; padding:7px; border:1px solid var(--line); border-radius:10px; background:#0b1220; text-align:left; min-width:0; }
     .asset[draggable="true"] { cursor:grab; }
@@ -82,9 +85,11 @@
       </div>
       <div class="section">
         <h2>Grouped Asset Palette</h2>
+        <p class="stats palette-hint"><strong>Full HMH sprite library loaded.</strong> Start on All Sprites, click Characters / Heroes or Enemies, or search. Try: lester run, lilly, fud goblin, gas beast, environment runtime.</p>
         <div class="palette-controls"><input id="assetSearch" type="search" placeholder="Search sprites, roads, trees, bosses..." autocomplete="off" /><span id="assetCount" class="stats"></span></div>
         <div id="groupTabs" class="group-tabs"></div>
         <div id="assetList" class="asset-list"></div>
+        <button id="showMoreAssetsBtn" class="show-more-assets" type="button" hidden>Show More Sprites</button>
       </div>
     </aside>
 
