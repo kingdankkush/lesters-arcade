@@ -24,6 +24,7 @@ const state = {
   painting: false,
   lastPaintTileKey: null,
   undoStack: [],
+  activeBoundaryId: null,
   dragStart: null,
 };
 
@@ -110,7 +111,8 @@ function firstFrameMeta(item = {}) {
 }
 
 function activeLayerForAsset(asset) {
-  if (asset?.layer) return asset.layer;
+  if (asset?.groupId === 'ground-tiles' && els.activeLayer.value === 'ground-overlays') return 'ground-overlays';
+  if (asset?.layer && asset.layer !== 'ground') return asset.layer;
   if (asset?.groupId === 'ground-tiles') return 'ground';
   if (asset?.groupId === 'roads-paths') return 'roads-paths';
   if (asset?.groupId === 'water-tiles') return 'water';
@@ -229,11 +231,36 @@ function drawPlacementImage(item, asset) {
   return true;
 }
 
+function drawGroundTileImage(item, asset) {
+  const image = imageForAsset(item.src ? item : asset);
+  if (!image || !image.complete || !image.naturalWidth) return false;
+  const p = isoToScreen(item.x, item.y);
+  const tileW = 64 * state.camera.zoom;
+  const tileH = 32 * state.camera.zoom;
+  const alpha = item.layer === 'ground-overlays' ? 0.72 : 1;
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.globalAlpha = alpha;
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y - tileH / 2);
+  ctx.lineTo(p.x + tileW / 2, p.y);
+  ctx.lineTo(p.x, p.y + tileH / 2);
+  ctx.lineTo(p.x - tileW / 2, p.y);
+  ctx.closePath();
+  ctx.clip();
+  const { frameWidth, frameHeight } = firstFrameMeta(item.src ? item : asset);
+  ctx.drawImage(image, 0, 0, frameWidth, frameHeight, p.x - tileW / 2, p.y - tileH / 2, tileW, tileH);
+  ctx.restore();
+  return true;
+}
+
 function drawPlacement(item) {
   const asset = assetByKey(item.assetKey, item.groupId);
   const color = groupColor(item.groupId) || '#e2e8f0';
   drawDiamond(item.x, item.y, `${color}55`, true);
-  const drewImage = drawPlacementImage(item, asset);
+  const drewImage = item.layer === 'ground' || item.layer === 'ground-overlays'
+    ? drawGroundTileImage(item, asset)
+    : drawPlacementImage(item, asset);
   const p = isoToScreen(item.x, item.y);
   if (!drewImage) {
     ctx.fillStyle = '#fff';
@@ -261,10 +288,41 @@ function drawMarker(marker) {
   ctx.restore();
 }
 
+function drawBoundaryLine(boundary) {
+  if (!boundary.points?.length) return;
+  ctx.save();
+  ctx.strokeStyle = '#ff5c5c';
+  ctx.fillStyle = '#fecaca';
+  ctx.lineWidth = Math.max(2, 3 * state.camera.zoom);
+  ctx.setLineDash([8, 5]);
+  ctx.beginPath();
+  boundary.points.forEach((point, index) => {
+    const p = isoToScreen(point.x, point.y);
+    if (index === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  });
+  if (boundary.closed && boundary.points.length > 2) ctx.closePath();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  for (const point of boundary.points) {
+    const p = isoToScreen(point.x, point.y);
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, Math.max(4, 5 * state.camera.zoom), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function placementSortValue(item) {
+  const order = { ground: 0, water: 1, 'roads-paths': 2, 'ground-overlays': 3, props: 4, barriers: 5, enemies: 6, objectives: 7, notes: 8 };
+  return (order[item.layer] ?? 50) * 100000 + ((item.x ?? 0) + (item.y ?? 0));
+}
+
 function renderCanvas() {
   ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
   drawGrid();
-  for (const placement of state.draft.placements) drawPlacement(placement);
+  for (const placement of [...state.draft.placements].sort((a, b) => placementSortValue(a) - placementSortValue(b))) drawPlacement(placement);
+  for (const boundary of state.draft.boundaries ?? []) drawBoundaryLine(boundary);
   for (const marker of state.draft.markers) drawMarker(marker);
   requestAnimationFrame(renderCanvas);
 }
@@ -344,7 +402,15 @@ function renderMarkerTools() {
     const btn = document.createElement('button');
     btn.textContent = `${tool.icon} ${tool.label}`;
     btn.className = state.selectedMarkerTool?.type === tool.type ? 'active' : '';
-    btn.onclick = () => { state.selectedMarkerTool = tool; state.selectedAsset = null; els.activeLayer.value = tool.groupId === 'barriers-collision' ? 'barriers' : (tool.groupId === 'objectives-extraction' || tool.groupId === 'player-spawns' ? 'objectives' : 'enemies'); renderPalette(); renderMarkerTools(); renderSelectedAssetPreview(); };
+    btn.onclick = () => {
+      state.selectedMarkerTool = tool;
+      state.selectedAsset = null;
+      if (tool.type !== 'boundary-line') state.activeBoundaryId = null;
+      els.activeLayer.value = tool.groupId === 'barriers-collision' ? 'barriers' : (tool.groupId === 'objectives-extraction' || tool.groupId === 'player-spawns' ? 'objectives' : 'enemies');
+      renderPalette();
+      renderMarkerTools();
+      renderSelectedAssetPreview();
+    };
     els.markerTools.appendChild(btn);
   }
 }
@@ -353,9 +419,9 @@ function renderSidebars() {
   els.levelId.value = state.draft.levelId;
   els.levelTitle.value = state.draft.title;
   const report = validateHmhLevelDraft(state.draft);
-  els.placementStats.textContent = `Placements: ${state.draft.placements.length} | Markers: ${state.draft.markers.length} | Barriers: ${report.counts.barriers}`;
+  els.placementStats.textContent = `Placements: ${state.draft.placements.length} | Markers: ${state.draft.markers.length} | Boundaries: ${(state.draft.boundaries ?? []).length} | Barriers: ${report.counts.barriers}`;
   els.placementList.innerHTML = '';
-  [...state.draft.markers, ...state.draft.placements].slice(-24).reverse().forEach((item) => {
+  [...state.draft.markers, ...(state.draft.boundaries ?? []), ...state.draft.placements].slice(-24).reverse().forEach((item) => {
     const row = document.createElement('div');
     row.className = 'placement-row';
     const label = document.createElement('span');
@@ -380,6 +446,7 @@ function deleteById(id) {
   state.draft = normalizeHmhLevelDraft({
     ...state.draft,
     placements: state.draft.placements.filter((item) => item.id !== id),
+    boundaries: (state.draft.boundaries ?? []).filter((item) => item.id !== id),
     markers: state.draft.markers.filter((item) => item.id !== id),
   });
   saveDraft();
@@ -388,6 +455,16 @@ function deleteById(id) {
 function undoLastPlacement() {
   const lastAction = state.undoStack.pop();
   if (!lastAction) return;
+  if (lastAction.kind === 'boundary-point') {
+    const boundaries = (state.draft.boundaries ?? []).map((boundary) => boundary.id === lastAction.id
+      ? { ...boundary, points: boundary.points.slice(0, -1) }
+      : boundary).filter((boundary) => boundary.points.length);
+    state.draft = normalizeHmhLevelDraft({ ...state.draft, boundaries });
+    if (!boundaries.some((boundary) => boundary.id === state.activeBoundaryId)) state.activeBoundaryId = null;
+    saveDraft();
+    setValidationOutput();
+    return;
+  }
   state.draft = normalizeHmhLevelDraft({
     ...state.draft,
     markers: lastAction.kind === 'marker' ? state.draft.markers.filter((item) => item.id !== lastAction.id) : state.draft.markers,
@@ -407,7 +484,43 @@ function nearestId(tile) {
   return best?.id ?? null;
 }
 
+function endpointNear(tile) {
+  let best = null;
+  for (const boundary of state.draft.boundaries ?? []) {
+    for (const point of boundary.points ?? []) {
+      const d = Math.hypot(point.x - tile.x, point.y - tile.y);
+      if (d <= 1 && (!best || d < best.d)) best = { point, d };
+    }
+  }
+  return best?.point ? { x: best.point.x, y: best.point.y } : tile;
+}
+
+function addBoundaryPoint(tile) {
+  const point = endpointNear(tile);
+  let boundaries = [...(state.draft.boundaries ?? [])];
+  let boundary = boundaries.find((item) => item.id === state.activeBoundaryId);
+  if (!boundary) {
+    boundary = { id: nextEditorId('boundary'), type: 'boundary-line', label: 'Boundary Line', points: [], closed: false, solid: true };
+    boundaries.push(boundary);
+    state.activeBoundaryId = boundary.id;
+  }
+  const nextBoundary = { ...boundary, points: [...boundary.points, point] };
+  boundaries = boundaries.map((item) => item.id === nextBoundary.id ? nextBoundary : item);
+  state.undoStack.push({ kind: 'boundary-point', id: nextBoundary.id });
+  state.draft = normalizeHmhLevelDraft({ ...state.draft, boundaries });
+  saveDraft();
+}
+
+function replaceGroundTileAt(placement) {
+  const placements = state.draft.placements.filter((item) => !(item.layer === 'ground' && item.x === placement.x && item.y === placement.y));
+  state.draft = normalizeHmhLevelDraft({ ...state.draft, placements: [...placements, placement] });
+}
+
 function placeAt(tile) {
+  if (state.selectedMarkerTool?.type === 'boundary-line') {
+    addBoundaryPoint(tile);
+    return;
+  }
   if (state.selectedMarkerTool) {
     const tool = state.selectedMarkerTool;
     const marker = {
@@ -447,7 +560,8 @@ function placeAt(tile) {
       height: layer === 'barriers' ? 1 : null,
     };
     state.undoStack.push({ kind: 'placement', id: placement.id });
-    state.draft = normalizeHmhLevelDraft({ ...state.draft, placements: [...state.draft.placements, placement] });
+    if (layer === 'ground') replaceGroundTileAt(placement);
+    else state.draft = normalizeHmhLevelDraft({ ...state.draft, placements: [...state.draft.placements, placement] });
   }
   saveDraft();
 }
@@ -526,6 +640,18 @@ els.canvas.addEventListener('drop', (event) => {
   renderPalette();
   renderMarkerTools();
 });
+
+function handleKeyboardPan(event) {
+  const targetTag = String(event.target?.tagName ?? '').toLowerCase();
+  if (['input', 'textarea', 'select'].includes(targetTag)) return;
+  const step = event.shiftKey ? 96 : 36;
+  if (event.key === 'ArrowLeft') { state.camera.x += step; event.preventDefault(); }
+  else if (event.key === 'ArrowRight') { state.camera.x -= step; event.preventDefault(); }
+  else if (event.key === 'ArrowUp') { state.camera.y += step; event.preventDefault(); }
+  else if (event.key === 'ArrowDown') { state.camera.y -= step; event.preventDefault(); }
+  else if (event.key === 'Escape' || event.key === 'Enter') { state.activeBoundaryId = null; }
+}
+document.addEventListener('keydown', handleKeyboardPan);
 
 function downloadJsonFile(fileName, payload) {
   const blob = new Blob([`${JSON.stringify(payload, null, 2)}\n`], { type: 'application/json' });

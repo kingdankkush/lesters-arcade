@@ -26,6 +26,7 @@ export const HMH_LEVEL_EDITOR_DEFAULTS = Object.freeze({
 
 export const HMH_LEVEL_EDITOR_LAYERS = Object.freeze([
   Object.freeze({ id: 'ground', label: 'Ground Tiles', visible: true, locked: false }),
+  Object.freeze({ id: 'ground-overlays', label: 'Ground Texture Overlays', visible: true, locked: false }),
   Object.freeze({ id: 'roads-paths', label: 'Roads / Paths', visible: true, locked: false }),
   Object.freeze({ id: 'water', label: 'Water / Shoreline', visible: true, locked: false }),
   Object.freeze({ id: 'props', label: 'Level Assets / Props', visible: true, locked: false }),
@@ -115,6 +116,7 @@ export function createBlankHmhLevelDraft({
     camera: Object.freeze({ x: 0, y: 0, zoom: 1 }),
     layers: HMH_LEVEL_EDITOR_LAYERS.map((layer) => Object.freeze({ ...layer })),
     placements: Object.freeze([]),
+    boundaries: Object.freeze([]),
     markers: Object.freeze([]),
     notes: Object.freeze([]),
     objectives: Object.freeze({
@@ -182,6 +184,22 @@ function normalizeMarker(item = {}, index = 0) {
   };
 }
 
+function normalizeBoundary(item = {}, index = 0) {
+  const points = Array.isArray(item.points) ? item.points.map((point) => ({
+    x: cleanNumber(point.x),
+    y: cleanNumber(point.y),
+  })) : [];
+  return {
+    id: item.id || `boundary-${index + 1}`,
+    type: item.type || 'boundary-line',
+    label: item.label ?? `Boundary ${index + 1}`,
+    points,
+    closed: Boolean(item.closed),
+    solid: item.solid == null ? true : Boolean(item.solid),
+    notes: item.notes ?? '',
+  };
+}
+
 export function normalizeHmhLevelDraft(input = {}) {
   const base = createBlankHmhLevelDraft({
     levelId: input.levelId,
@@ -190,6 +208,7 @@ export function normalizeHmhLevelDraft(input = {}) {
     height: input.grid?.height,
   });
   const placements = Array.isArray(input.placements) ? input.placements.map(normalizePlacement) : [];
+  const boundaries = Array.isArray(input.boundaries) ? input.boundaries.map(normalizeBoundary) : [];
   const markers = Array.isArray(input.markers) ? input.markers.map(normalizeMarker) : [];
   return {
     ...clone(base),
@@ -199,6 +218,7 @@ export function normalizeHmhLevelDraft(input = {}) {
     grid: { ...clone(base.grid), ...(input.grid ?? {}) },
     layers: Array.isArray(input.layers) && input.layers.length ? input.layers : clone(base.layers),
     placements,
+    boundaries,
     markers,
     notes: Array.isArray(input.notes) ? input.notes : [],
     objectives: {
@@ -223,7 +243,7 @@ export function validateHmhLevelDraft(input = {}) {
   else if (!spawnMarkers.some((marker) => marker.primary)) errors.push('missing-primary-player-spawn');
   if (!hasMarker('boss')) errors.push('missing-boss-marker');
   if (!hasMarker('extraction-helicopter')) errors.push('missing-extraction-marker');
-  if (!draft.placements.some((item) => item.layer === 'barriers' || item.solid)) warnings.push('no-barriers-authored');
+  if (!draft.placements.some((item) => item.layer === 'barriers' || item.solid) && !draft.boundaries.length) warnings.push('no-barriers-authored');
   if (!draft.placements.some((item) => item.layer === 'ground' || item.groupId === 'ground-tiles')) warnings.push('no-ground-tiles-authored');
   if (!draft.markers.some((marker) => marker.type === 'enemy-spawn')) warnings.push('no-manual-enemy-spawns-authored-procedural-only');
   return Object.freeze({
@@ -233,7 +253,8 @@ export function validateHmhLevelDraft(input = {}) {
     counts: Object.freeze({
       placements: draft.placements.length,
       markers: draft.markers.length,
-      barriers: draft.placements.filter((item) => item.layer === 'barriers' || item.solid).length,
+      barriers: draft.placements.filter((item) => item.layer === 'barriers' || item.solid).length + draft.boundaries.length,
+      boundaries: draft.boundaries.length,
     }),
   });
 }
@@ -263,6 +284,9 @@ export function createHermesHandoffReport(input = {}) {
     }),
     blockers: Object.freeze({
       solidBarrierCount: draft.placements.filter((item) => item.layer === 'barriers' || item.solid).length,
+      vectorBoundaryCount: draft.boundaries.length,
+      boundaryPointCount: draft.boundaries.reduce((sum, boundary) => sum + boundary.points.length, 0),
+      boundaries: Object.freeze(draft.boundaries),
       missingCollisionWarnings: validation.warnings.filter((warning) => warning.includes('barrier')),
     }),
     objectives: Object.freeze({

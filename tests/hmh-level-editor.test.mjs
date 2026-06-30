@@ -18,6 +18,7 @@ import {
   HMH_LEVEL_EDITOR_MARKER_TOOLS,
   buildHmhEditorAssetPalette,
 } from '../apps/portal/src/hmh-level-editor-assets.mjs';
+import { HMH_LEVEL_EDITOR_GENERATED_MANIFESTS } from '../apps/portal/src/hmh-level-editor-generated-library.mjs';
 
 const editorHtmlPath = fileURLToPath(new URL('../apps/portal/editor.html', import.meta.url));
 const editorJsPath = fileURLToPath(new URL('../apps/portal/src/hmh-level-editor-app.mjs', import.meta.url));
@@ -46,8 +47,10 @@ test('createBlankHmhLevelDraft produces a hand-authorable map with required laye
   assert.equal(draft.title, 'Level 1 Hand Layout');
   assert.equal(draft.grid.type, 'isometric-2to1');
   assert.equal(draft.layers.some((layer) => layer.id === 'ground'), true);
+  assert.equal(draft.layers.some((layer) => layer.id === 'ground-overlays'), true);
   assert.equal(draft.layers.some((layer) => layer.id === 'barriers'), true);
   assert.equal(draft.layers.some((layer) => layer.id === 'enemies'), true);
+  assert.deepEqual(draft.boundaries, []);
   assert.equal(draft.objectives.boss.spawnAtSeconds, 360);
   assert.equal(draft.objectives.extraction.appearsAtSeconds, 480);
   assert.equal(draft.objectives.extraction.sequence.type, 'helicopter-cinematic');
@@ -104,9 +107,32 @@ test('asset palette preserves generated PNG preview metadata for thumbnail place
   assert.equal(animatedTree?.frameHeight, 144);
 });
 
+test('asset palette imports the entire generated pixel-art library for placement', () => {
+  assert.equal(HMH_LEVEL_EDITOR_GENERATED_MANIFESTS.length, 14);
+  const sources = HMH_LEVEL_EDITOR_GENERATED_MANIFESTS.map((entry) => entry.source).sort();
+  for (const requiredSource of [
+    'hmh-level-three-ground/final-getaway',
+    'hmh-coherent-world/level3-final-getaway',
+    'hmh-coherent-world/level2-final-city',
+    'hmh-final-animation-completion',
+    'hmh-final-combat-vfx',
+    'hmh-coherent-world/level-final-ambient',
+    'pixellab-calibration/lester-hero-6d6e53e2',
+  ]) {
+    assert.equal(sources.includes(requiredSource), true, `${requiredSource} missing from generated library`);
+  }
+  const palette = buildHmhEditorAssetPalette();
+  const previewAssets = palette.assets.filter((asset) => asset.src && asset.src.endsWith('.png'));
+  assert.ok(previewAssets.length >= 240, `expected full pixel-art library, got ${previewAssets.length} PNG assets`);
+  assert.equal(palette.assets.some((asset) => asset.source === 'hmh-coherent-world/level2-final-city' && asset.assetKey.includes('level2-final-city/')), true);
+  assert.equal(palette.assets.some((asset) => asset.source === 'hmh-coherent-world/level3-final-getaway' && asset.assetKey.includes('level3-final-getaway/')), true);
+  assert.equal(palette.assets.some((asset) => asset.source === 'hmh-final-combat-vfx' && asset.assetKey.includes('muzzle-flash')), true);
+  assert.equal(palette.assets.some((asset) => asset.source === 'pixellab-calibration/lester-hero-6d6e53e2' && asset.assetKey.includes('lester-calibration')), true);
+});
+
 test('marker tools include player spawns, enemies, mini bosses, bosses, barriers, and helicopter extraction', () => {
   const types = HMH_LEVEL_EDITOR_MARKER_TOOLS.map((tool) => tool.type);
-  for (const required of ['player-spawn', 'player-spawn-candidate', 'enemy-spawn', 'mini-boss', 'boss', 'barrier-rect', 'extraction-helicopter', 'player-start']) {
+  for (const required of ['player-spawn', 'player-spawn-candidate', 'enemy-spawn', 'mini-boss', 'boss', 'barrier-rect', 'boundary-line', 'extraction-helicopter', 'player-start']) {
     assert.equal(types.includes(required), true, `${required} tool missing`);
   }
   assert.equal(HMH_LEVEL_EDITOR_MARKER_TOOLS.some((tool) => tool.type === 'player-spawn' && tool.primary === true), true);
@@ -144,6 +170,9 @@ test('Hermes handoff report summarizes assets, blockers, and objective readiness
       { id: 'boss-1', type: 'boss', enemyId: 'rug-pull-baron', x: 50, y: 20 },
       { id: 'heli-1', type: 'extraction-helicopter', x: 60, y: 24 },
     ],
+    boundaries: [
+      { id: 'boundary-1', type: 'boundary-line', label: 'Outer map edge', points: [{ x: 0, y: 0 }, { x: 8, y: 0 }, { x: 8, y: 8 }], closed: false },
+    ],
     placements: [
       { id: 'tree-1', layer: 'props', assetKey: 'sketch-level1/oak-tree-sway-00', groupId: 'trees', x: 12, y: 8 },
       { id: 'barrier-1', layer: 'barriers', shape: 'rect', x: 8, y: 9, width: 4, height: 1, solid: true },
@@ -155,6 +184,8 @@ test('Hermes handoff report summarizes assets, blockers, and objective readiness
   assert.equal(report.assetUsage.totalPlacements, 2);
   assert.equal(report.assetUsage.groups.trees, 1);
   assert.equal(report.blockers.solidBarrierCount, 1);
+  assert.equal(report.blockers.vectorBoundaryCount, 1);
+  assert.equal(report.blockers.boundaryPointCount, 3);
   assert.equal(report.objectives.hasBoss, true);
   assert.equal(report.objectives.hasExtraction, true);
 });
@@ -203,6 +234,7 @@ test('editor app exposes thumbnail asset cards, search, selected preview, undo, 
   assert.equal(html.includes('id="assetCount"'), true);
   assert.equal(html.includes('id="selectedAssetPreview"'), true);
   assert.equal(html.includes('id="undoBtn"'), true);
+  assert.equal(html.includes('value="ground-overlays"'), true);
   assert.equal(js.includes('asset-thumb'), true);
   assert.equal(js.includes('renderSelectedAssetPreview'), true);
   assert.equal(js.includes('filterAssetsForActiveGroup'), true);
@@ -213,6 +245,12 @@ test('editor app exposes thumbnail asset cards, search, selected preview, undo, 
   assert.equal(js.includes("nextEditorId('placement')"), true);
   assert.equal(js.includes('paintAtPointer'), true);
   assert.equal(js.includes('lastPaintTileKey'), true);
+  assert.equal(js.includes('replaceGroundTileAt'), true);
+  assert.equal(js.includes('drawGroundTileImage'), true);
+  assert.equal(js.includes('drawBoundaryLine'), true);
+  assert.equal(js.includes('addBoundaryPoint'), true);
+  assert.equal(js.includes('handleKeyboardPan'), true);
+  assert.equal(js.includes("event.key === 'ArrowLeft'"), true);
   assert.equal(js.includes('draggable = true'), true);
   assert.equal(js.includes("addEventListener('dragstart'"), true);
   assert.equal(js.includes("addEventListener('dragover'"), true);
@@ -221,4 +259,5 @@ test('editor app exposes thumbnail asset cards, search, selected preview, undo, 
   assert.equal(js.includes('new Image()'), true);
   assert.equal(html.includes('Drag asset thumbnails onto the map'), true);
   assert.equal(html.includes('Click-drag on the map to paint'), true);
+  assert.equal(html.includes('Arrow keys pan'), true);
 });

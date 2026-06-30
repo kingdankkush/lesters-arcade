@@ -1,10 +1,4 @@
-import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from '../assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
-import { HMH_LEVEL_ONE_SBS_GROUND } from '../assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
-import { HMH_LEVEL_ONE_POLISH_ASSETS } from '../assets/generated/hmh-coherent-world/level1-polish/level1-polish-manifest.mjs';
-import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS } from '../assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
-import { HMH_LEVEL_ONE_SKETCH_ASSET_WAVE } from '../assets/generated/hmh-coherent-world/sketch-level1/sketch-level1-asset-manifest.mjs';
-import { HMH_FINAL_SETPIECE_KIT } from '../assets/generated/hmh-final-setpiece-kit/hmh-final-setpiece-kit-manifest.mjs';
-import { HMH_FINAL_BOSS_ANIMATION_PACK } from '../assets/generated/hmh-final-boss-animations/hmh-final-boss-animations-manifest.mjs';
+import { HMH_LEVEL_EDITOR_GENERATED_MANIFESTS } from './hmh-level-editor-generated-library.mjs';
 
 export const HMH_LEVEL_EDITOR_ASSET_GROUPS = Object.freeze([
   Object.freeze({ id: 'ground-tiles', label: 'Ground Tiles', color: '#8fd16a' }),
@@ -18,6 +12,8 @@ export const HMH_LEVEL_EDITOR_ASSET_GROUPS = Object.freeze([
   Object.freeze({ id: 'enemies', label: 'Enemies', color: '#ff8f3d' }),
   Object.freeze({ id: 'mini-bosses', label: 'Mini Bosses', color: '#ff3d81' }),
   Object.freeze({ id: 'bosses', label: 'Bosses', color: '#c77dff' }),
+  Object.freeze({ id: 'characters', label: 'Characters / Heroes', color: '#60a5fa' }),
+  Object.freeze({ id: 'vfx-fx', label: 'VFX / FX', color: '#facc15' }),
   Object.freeze({ id: 'objectives-extraction', label: 'Objectives / Extraction', color: '#ffd166' }),
 ]);
 
@@ -30,6 +26,7 @@ export const HMH_LEVEL_EDITOR_MARKER_TOOLS = Object.freeze([
   Object.freeze({ type: 'boss', label: 'Boss @ 6:00', groupId: 'bosses', icon: '☠', spawnAtSeconds: 360 }),
   Object.freeze({ type: 'extraction-helicopter', label: 'Helicopter Extraction @ 8:00', groupId: 'objectives-extraction', icon: '⌂', appearsAtSeconds: 480 }),
   Object.freeze({ type: 'barrier-rect', label: 'Draw Barrier Rect', groupId: 'barriers-collision', icon: '▭' }),
+  Object.freeze({ type: 'boundary-line', label: 'Boundary Line', groupId: 'barriers-collision', icon: '╱' }),
   Object.freeze({ type: 'note', label: 'Design Note', groupId: 'objectives-extraction', icon: '✎' }),
 ]);
 
@@ -56,10 +53,55 @@ const OBJECTIVE_ASSETS = Object.freeze([
   Object.freeze({ assetKey: 'collision/barrier-rect', label: 'Invisible Barrier', groupId: 'barriers-collision', markerType: 'barrier-rect' }),
 ]);
 
-function assetList(manifest) {
-  if (Array.isArray(manifest?.assets)) return manifest.assets;
-  if (Array.isArray(manifest?.actors)) return manifest.actors;
-  return [];
+function assetList(manifest, source = '') {
+  const out = [];
+  if (Array.isArray(manifest?.assets)) out.push(...manifest.assets);
+  if (Array.isArray(manifest?.actors)) {
+    for (const actor of manifest.actors) {
+      if (actor.src || actor.path) out.push(actor);
+    }
+  }
+  if (manifest?.contactSheet) {
+    out.push({
+      key: `${source}/lester-calibration-contact-sheet`,
+      label: manifest.label ?? 'PixelLab Lester calibration contact sheet',
+      role: 'hero calibration contact sheet',
+      src: manifest.contactSheet,
+      width: 512,
+      height: 512,
+    });
+  }
+  if (manifest?.rotations && typeof manifest.rotations === 'object') {
+    for (const [direction, src] of Object.entries(manifest.rotations)) {
+      out.push({
+        key: `${source}/lester-calibration-rotation-${direction}`,
+        label: `Lester calibration ${direction}`,
+        role: 'hero rotation',
+        src,
+        width: 96,
+        height: 96,
+      });
+    }
+  }
+  if (manifest?.animations && typeof manifest.animations === 'object') {
+    for (const [animationId, animation] of Object.entries(manifest.animations)) {
+      const firstFrame = Array.isArray(animation.frames) ? animation.frames[0] : null;
+      if (!firstFrame) continue;
+      out.push({
+        key: `${source}/lester-calibration-${animationId}-${animation.direction ?? 'east'}`,
+        label: `Lester ${animation.sourceName ?? animationId}`,
+        role: 'hero animation frame',
+        src: firstFrame,
+        animated: true,
+        frames: animation.frameCount,
+        width: 96,
+        height: 96,
+        frameWidth: 96,
+        frameHeight: 96,
+      });
+    }
+  }
+  return out;
 }
 
 function classifyAsset(asset = {}, source = '') {
@@ -69,12 +111,15 @@ function classifyAsset(asset = {}, source = '') {
   const haystack = `${key} ${label} ${role} ${source}`.toLowerCase();
   let groupId = 'plants-bushes';
   let layer = 'props';
-  if (/water|river|lake|shore|oasis|pond/.test(haystack)) { groupId = 'water-tiles'; layer = 'water'; }
-  else if (/ground|sand|grass|pavement|road|path|asphalt|dirt|street|tile/.test(haystack)) { groupId = /road|path|street|asphalt|dirt/.test(haystack) ? 'roads-paths' : 'ground-tiles'; layer = groupId === 'ground-tiles' ? 'ground' : 'roads-paths'; }
+  if (/vfx|muzzle|spark|explosion|impact|shell|blood|gore|fx|ambient|particle/.test(haystack)) { groupId = 'vfx-fx'; layer = 'props'; }
+  else if (/hero|lester|lilly|commando|valkyrie|character|calibration|player/.test(haystack)) { groupId = 'characters'; layer = 'props'; }
+  else if (/boss|baron|ngmi|miner|validator|exploiter|whale|obfuscator|51%|enemy|goblin|boar|rat|zealot|jumper|rattlesnake|coyote/.test(haystack)) { groupId = /boss|baron|ngmi|miner|validator|exploiter|whale|obfuscator|51%/.test(haystack) ? 'bosses' : 'enemies'; layer = 'enemies'; }
+  else if (/water|river|lake|shore|oasis|pond|runoff|harbor|canal/.test(haystack)) { groupId = 'water-tiles'; layer = 'water'; }
+  else if (/ground|sand|grass|pavement|road|path|asphalt|dirt|street|tile|rooftop|roof|rail|bridge|glass|train|grate/.test(haystack)) { groupId = /road|path|street|asphalt|dirt|rail|bridge/.test(haystack) ? 'roads-paths' : 'ground-tiles'; layer = groupId === 'ground-tiles' ? 'ground' : 'roads-paths'; }
   else if (/tree|pine|oak|forest|trunk/.test(haystack)) groupId = 'trees';
-  else if (/bush|plant|reed|flower|cactus|crop|corn|wheat/.test(haystack)) groupId = 'plants-bushes';
-  else if (/building|town|saloon|front|store|house|barn|silo|warehouse|bank|facade/.test(haystack)) groupId = 'buildings';
-  else if (/wall|fence|barrier|cliff|boulder|rock|gate/.test(haystack)) groupId = 'barriers-collision';
+  else if (/bush|plant|reed|flower|cactus|crop|corn|wheat|flora/.test(haystack)) groupId = 'plants-bushes';
+  else if (/building|town|saloon|front|store|house|barn|silo|warehouse|bank|facade|city|fountain|billboard|container|crane|penthouse|launch|express|monument|streetlight/.test(haystack)) groupId = 'buildings';
+  else if (/wall|fence|barrier|cliff|boulder|rock|gate|edge|gap/.test(haystack)) groupId = 'barriers-collision';
   return Object.freeze({
     assetKey: key,
     label,
@@ -95,7 +140,7 @@ function classifyAsset(asset = {}, source = '') {
 }
 
 function pushManifest(out, manifest, source) {
-  for (const asset of assetList(manifest)) {
+  for (const asset of assetList(manifest, source)) {
     const normalized = classifyAsset(asset, source);
     if (normalized.assetKey) out.push(normalized);
   }
@@ -103,26 +148,11 @@ function pushManifest(out, manifest, source) {
 
 export function buildHmhEditorAssetPalette() {
   const assets = [];
-  pushManifest(assets, HMH_LEVEL_ONE_FINAL_PAINT_GROUND, 'hmh-level-one-ground/final-paint');
-  pushManifest(assets, HMH_LEVEL_ONE_SBS_GROUND, 'hmh-level-one-ground/sbs-cc0');
-  pushManifest(assets, HMH_LEVEL_ONE_POLISH_ASSETS, 'hmh-coherent-world/level1-polish');
-  pushManifest(assets, HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, 'hmh-coherent-world/level1-final-animated');
-  pushManifest(assets, HMH_LEVEL_ONE_SKETCH_ASSET_WAVE, 'hmh-coherent-world/sketch-level1');
-  pushManifest(assets, HMH_FINAL_SETPIECE_KIT, 'hmh-final-setpiece-kit');
+  for (const entry of HMH_LEVEL_EDITOR_GENERATED_MANIFESTS) {
+    pushManifest(assets, entry.manifest, entry.source);
+  }
   for (const item of ENEMY_ASSETS) assets.push(item);
   for (const item of MINI_BOSS_ASSETS) assets.push(item);
-  for (const actor of assetList(HMH_FINAL_BOSS_ANIMATION_PACK)) {
-    const enemyId = actor.id ?? actor.key ?? 'boss';
-    assets.push(Object.freeze({
-      assetKey: `boss/${enemyId}`,
-      label: actor.label ?? actor.name ?? enemyId,
-      groupId: 'bosses',
-      markerType: 'boss',
-      enemyId,
-      layer: 'enemies',
-      source: 'hmh-final-boss-animations',
-    }));
-  }
   for (const item of OBJECTIVE_ASSETS) assets.push(item);
 
   const seen = new Set();
