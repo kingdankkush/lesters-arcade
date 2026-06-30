@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base href="/" />
+  <title>Hard Money Heroes Level Builder</title>
+  <style>
+    :root { color-scheme: dark; --panel:#111827; --panel2:#172033; --ink:#f8fafc; --muted:#94a3b8; --line:#334155; --accent:#f97316; --good:#22c55e; --bad:#ef4444; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#070b13; color:var(--ink); overflow:hidden; }
+    button, select, input, textarea { font: inherit; }
+    button { border:1px solid var(--line); background:#1f2937; color:var(--ink); border-radius:8px; padding:8px 10px; cursor:pointer; }
+    button:hover, button.active { border-color:var(--accent); box-shadow:0 0 0 1px rgba(249,115,22,.35); }
+    .app { display:grid; grid-template-columns: 320px 1fr 360px; grid-template-rows: 56px 1fr; height:100vh; }
+    header { grid-column:1/4; display:flex; align-items:center; gap:16px; padding:10px 14px; background:#0f172a; border-bottom:1px solid var(--line); }
+    header h1 { font-size:18px; margin:0; letter-spacing:.05em; text-transform:uppercase; }
+    .badge { background:#7c2d12; color:#fed7aa; border:1px solid #fb923c; border-radius:999px; padding:4px 8px; font-size:12px; font-weight:800; }
+    .toolbar { margin-left:auto; display:flex; gap:8px; align-items:center; }
+    .panel { overflow:auto; background:var(--panel); border-right:1px solid var(--line); padding:12px; }
+    .right { border-right:0; border-left:1px solid var(--line); }
+    .stage-wrap { position:relative; overflow:hidden; background:radial-gradient(circle at center, #172033, #070b13 70%); }
+    canvas { width:100%; height:100%; display:block; }
+    .section { margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+    .section h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:#cbd5e1; margin:0 0 8px; }
+    .field { display:grid; gap:5px; margin-bottom:8px; }
+    .field label { color:var(--muted); font-size:12px; }
+    .field input, .field select, .field textarea { background:#0b1220; color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px; }
+    .group-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+    .group-tabs button { font-size:11px; padding:5px 7px; }
+    .asset-list { display:grid; grid-template-columns:1fr; gap:6px; }
+    .asset { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px; border:1px solid var(--line); border-radius:8px; background:#0b1220; text-align:left; }
+    .asset small { color:var(--muted); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:215px; }
+    .swatch { flex:0 0 12px; width:12px; height:12px; border-radius:3px; background:#64748b; }
+    .marker-tools { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .stats { font-size:12px; color:var(--muted); line-height:1.55; }
+    .status.good { color:var(--good); }
+    .status.bad { color:var(--bad); }
+    .floating-help { position:absolute; left:14px; bottom:14px; max-width:480px; color:#cbd5e1; background:rgba(15,23,42,.86); border:1px solid var(--line); border-radius:12px; padding:10px 12px; font-size:12px; line-height:1.45; pointer-events:none; }
+    .placement-row { display:flex; justify-content:space-between; gap:6px; border:1px solid var(--line); background:#0b1220; padding:7px; border-radius:8px; font-size:12px; margin-bottom:6px; }
+    .placement-row button { padding:3px 6px; font-size:11px; }
+    textarea.output { min-height:220px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:11px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <span class="badge">LOCAL DEV TOOL</span>
+      <h1>Hard Money Heroes Level Builder</h1>
+      <span id="saveStatus" class="stats">Autosave ready</span>
+      <div class="toolbar">
+        <button id="newDraftBtn">New Draft</button>
+        <button id="validateBtn">Validate</button>
+        <button id="exportBtn">Export JSON</button>
+        <button id="handoffBtn">Hermes Handoff</button>
+        <label class="stats"><input id="importInput" type="file" accept="application/json" hidden /> <button id="importBtn" type="button">Import JSON</button></label>
+      </div>
+    </header>
+
+    <aside class="panel">
+      <div class="section">
+        <h2>Level Setup</h2>
+        <div class="field"><label>Level</label><select id="levelId"><option value="level-1-crypto-wasteland">Level 1 — Crypto Wasteland</option><option value="level-2-litecoin-city">Level 2 — Litecoin City</option><option value="level-3-the-getaway">Level 3 — The Getaway</option></select></div>
+        <div class="field"><label>Title</label><input id="levelTitle" value="Level 1 Hand Layout" /></div>
+        <div class="field"><label>Active Layer</label><select id="activeLayer"><option value="ground">Ground</option><option value="roads-paths">Roads / Paths</option><option value="water">Water</option><option value="props">Props</option><option value="barriers">Barriers</option><option value="enemies">Enemies</option><option value="objectives">Objectives</option></select></div>
+      </div>
+      <div class="section">
+        <h2>Grouped Asset Palette</h2>
+        <div id="groupTabs" class="group-tabs"></div>
+        <div id="assetList" class="asset-list"></div>
+      </div>
+    </aside>
+
+    <main class="stage-wrap">
+      <canvas id="editorCanvas" width="1400" height="900" aria-label="HMH isometric level editor canvas"></canvas>
+      <div class="floating-help">
+        Click to place selected asset or marker. Mouse wheel zooms. Drag empty space to pan. Shift+click deletes nearest placement. Ground, roads, water, props, barriers, enemies, mini-bosses, bosses, and helicopter extraction all save to JSON.
+      </div>
+    </main>
+
+    <aside class="panel right">
+      <div class="section">
+        <h2>Marker Tools</h2>
+        <div id="markerTools" class="marker-tools"></div>
+      </div>
+      <div class="section">
+        <h2>Validation</h2>
+        <div id="validationStatus" class="stats">No validation run yet.</div>
+      </div>
+      <div class="section">
+        <h2>Placed Objects</h2>
+        <div id="placementStats" class="stats"></div>
+        <div id="placementList"></div>
+      </div>
+      <div class="section">
+        <h2>Export / Hermes Handoff</h2>
+        <textarea id="jsonOutput" class="output" spellcheck="false" placeholder="Exported JSON or Hermes handoff report appears here"></textarea>
+      </div>
+    </aside>
+  </div>
+  <script type="module">
+    const LOCAL_DEV_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '']);
+    if (!LOCAL_DEV_HOSTS.has(window.location.hostname)) {
+      const main = document.createElement('main');
+      main.style.cssText = 'min-height:100vh;display:grid;place-items:center;background:#070b13;color:#f8fafc;font-family:system-ui';
+      const section = document.createElement('section');
+      section.style.cssText = 'max-width:560px;padding:32px;border:1px solid #334155;border-radius:16px;background:#111827';
+      const heading = document.createElement('h1');
+      heading.textContent = 'Hard Money Heroes Level Builder';
+      const copy = document.createElement('p');
+      copy.textContent = 'This is a local dev-only design tool. Open it from a local server, not production.';
+      section.append(heading, copy);
+      main.appendChild(section);
+      document.body.replaceChildren(main);
+    } else {
+      import('./src/hmh-level-editor-app.mjs');
+    }
+  </script>
+</body>
+</html>
