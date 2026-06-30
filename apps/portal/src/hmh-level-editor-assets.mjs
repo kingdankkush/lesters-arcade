@@ -1,4 +1,5 @@
 import { HMH_LEVEL_EDITOR_GENERATED_MANIFESTS } from './hmh-level-editor-generated-library.mjs';
+import { HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY } from './hmh-level-editor-runtime-sprite-library.mjs';
 
 export const HMH_LEVEL_EDITOR_ASSET_GROUPS = Object.freeze([
   Object.freeze({ id: 'ground-tiles', label: 'Ground Tiles', color: '#8fd16a' }),
@@ -150,6 +151,10 @@ export function buildHmhEditorAssetPalette() {
   const assets = [];
   for (const entry of HMH_LEVEL_EDITOR_GENERATED_MANIFESTS) {
     pushManifest(assets, entry.manifest, entry.source);
+  }
+  for (const asset of HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY) {
+    const normalized = classifyAsset(asset, asset.source ?? 'runtime-sprite-library');
+    if (normalized.assetKey) assets.push(normalized);
   }
   for (const item of ENEMY_ASSETS) assets.push(item);
   for (const item of MINI_BOSS_ASSETS) assets.push(item);

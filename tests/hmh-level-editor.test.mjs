@@ -19,6 +19,7 @@ import {
   buildHmhEditorAssetPalette,
 } from '../apps/portal/src/hmh-level-editor-assets.mjs';
 import { HMH_LEVEL_EDITOR_GENERATED_MANIFESTS } from '../apps/portal/src/hmh-level-editor-generated-library.mjs';
+import { HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY } from '../apps/portal/src/hmh-level-editor-runtime-sprite-library.mjs';
 
 const editorHtmlPath = fileURLToPath(new URL('../apps/portal/editor.html', import.meta.url));
 const editorJsPath = fileURLToPath(new URL('../apps/portal/src/hmh-level-editor-app.mjs', import.meta.url));
@@ -130,6 +131,28 @@ test('asset palette imports the entire generated pixel-art library for placement
   assert.equal(palette.assets.some((asset) => asset.source === 'pixellab-calibration/lester-hero-6d6e53e2' && asset.assetKey.includes('lester-calibration')), true);
 });
 
+test('asset palette includes the actual HMH runtime sprite folders, not only setpiece manifests', () => {
+  assert.ok(HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY.length >= 15000, `expected the generated runtime sprite index, got ${HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY.length}`);
+  const palette = buildHmhEditorAssetPalette();
+  const hasSource = (needle) => palette.assets.some((asset) => asset.source?.includes(needle) || asset.assetKey.includes(needle));
+  for (const required of [
+    'generated/hmh-animated-roster/lester',
+    'generated/hmh-animated-roster/lilly',
+    'generated/hmh-animated-roster/fud-goblin',
+    'generated/hmh-complete-animations/heroes',
+    'generated/hmh-production-art-pass/characters',
+    'hard-money-heroes/frames/lester',
+    'hard-money-heroes/stills/lilly',
+    'hard-money-heroes/environment/runtime',
+    'lester-production/frames',
+  ]) {
+    assert.equal(hasSource(required), true, `${required} missing from editor palette`);
+  }
+  assert.ok(palette.assets.length >= 17000, `expected full HMH runtime palette, got ${palette.assets.length}`);
+  assert.equal(palette.assets.some((asset) => asset.groupId === 'characters' && asset.assetKey.includes('hmh-animated-roster/lester')), true);
+  assert.equal(palette.assets.some((asset) => asset.groupId === 'enemies' && asset.assetKey.includes('hmh-animated-roster/fud-goblin')), true);
+});
+
 test('marker tools include player spawns, enemies, mini bosses, bosses, barriers, and helicopter extraction', () => {
   const types = HMH_LEVEL_EDITOR_MARKER_TOOLS.map((tool) => tool.type);
   for (const required of ['player-spawn', 'player-spawn-candidate', 'enemy-spawn', 'mini-boss', 'boss', 'barrier-rect', 'boundary-line', 'extraction-helicopter', 'player-start']) {
@@ -239,6 +262,7 @@ test('editor app exposes thumbnail asset cards, search, selected preview, undo, 
   assert.equal(js.includes('renderSelectedAssetPreview'), true);
   assert.equal(js.includes('filterAssetsForActiveGroup'), true);
   assert.equal(js.includes('const pool = query ? palette.assets'), true);
+  assert.equal(js.includes('query.split(/\\s+/).filter(Boolean).every'), true);
   assert.equal(js.includes('undoLastPlacement'), true);
   assert.equal(js.includes('nextEditorId'), true);
   assert.equal(js.includes('editorIdCounter += 1'), true);

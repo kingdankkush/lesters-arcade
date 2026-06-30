@@ -125,7 +125,7 @@ function activeLayerForAsset(asset) {
 function assetMatchesSearch(asset, query) {
   if (!query) return true;
   const haystack = [asset.label, asset.assetKey, asset.role, asset.source, asset.layer, asset.groupId].filter(Boolean).join(' ').toLowerCase();
-  return haystack.includes(query);
+  return query.split(/\s+/).filter(Boolean).every((term) => haystack.includes(term));
 }
 
 function filterAssetsForActiveGroup() {
