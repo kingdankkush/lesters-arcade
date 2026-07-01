@@ -496,6 +496,46 @@ test('ranked score is filed into all five cadence boards and returns a settlemen
   assert.equal(state.leaderboards['lester-blaster'][0].settlementTxHash, settlement.primaryTxHash);
 });
 
+test('applySettlement persists a suspicious integrity verdict onto the session and flaggedSessions', async () => {
+  const { applySettlement } = await import('../apps/portal/src/arcade-core.mjs');
+  const { buildSettlementPlan, settleRun } = await import('../apps/portal/src/settlement.mjs');
+  const state = createInitialArcadeState();
+  const wallet = '0x7777777777777777777777777777777777777777';
+  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  recordScore(state, session, 4000, { elapsedSeconds: 200, bossId: 'rug-pull-tank' });
+
+  const plan = buildSettlementPlan({ wallet, gameId: 'lester-blaster', sessionId: session.sessionId, score: 4000 });
+  const settlement = await settleRun(plan, { live: false });
+  // Attach a suspicious verdict the way settleRankedRun() does in main.js.
+  settlement.integrity = { verdict: 'suspicious', flags: [{ code: 'score-implausible', severity: 'suspect', detail: 'test' }] };
+  applySettlement(state, settlement);
+
+  assert.equal(state.sessions[session.sessionId].integrity.verdict, 'suspicious');
+  assert.equal(state.sessions[session.sessionId].integrity.flags[0].code, 'score-implausible');
+  assert.ok(Array.isArray(state.flaggedSessions));
+  assert.equal(state.flaggedSessions.length, 1);
+  assert.equal(state.flaggedSessions[0].sessionId, session.sessionId);
+  assert.equal(state.flaggedSessions[0].verdict, 'suspicious');
+  assert.equal(state.flaggedSessions[0].wallet, wallet);
+});
+
+test('applySettlement does not record an ok integrity verdict as a flag', async () => {
+  const { applySettlement } = await import('../apps/portal/src/arcade-core.mjs');
+  const { buildSettlementPlan, settleRun } = await import('../apps/portal/src/settlement.mjs');
+  const state = createInitialArcadeState();
+  const wallet = '0x8888888888888888888888888888888888888888';
+  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  recordScore(state, session, 1500, { elapsedSeconds: 90 });
+
+  const plan = buildSettlementPlan({ wallet, gameId: 'lester-blaster', sessionId: session.sessionId, score: 1500 });
+  const settlement = await settleRun(plan, { live: false });
+  settlement.integrity = { verdict: 'ok', flags: [] };
+  applySettlement(state, settlement);
+
+  assert.equal(state.sessions[session.sessionId].integrity, undefined);
+  assert.ok(!state.flaggedSessions || state.flaggedSessions.length === 0);
+});
+
 test('setArcadeUsername sets a unique display name shown on leaderboards', async () => {
   const { setArcadeUsername, getLeaderboard, resolveDisplayName } = await import('../apps/portal/src/arcade-core.mjs');
   const state = createInitialArcadeState();

@@ -2165,6 +2165,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         receipts: [{ contract: 'scoreSubmissionRegistry', method: 'submitSession', txHash }],
         primaryTxHash: txHash,
         settledAt: new Date().toISOString(),
+        integrity,
       };
       applySettlement(state, settlement);
       persistArcadeStateSoon();
@@ -2202,6 +2203,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
   try {
     const plan = buildSettlementPlan(settlementInput);
     const settlement = await settleRun(plan, { live: false });
+    settlement.integrity = integrity;
     applySettlement(state, settlement);
     persistArcadeStateSoon();
     lastSettlementSucceeded = true;

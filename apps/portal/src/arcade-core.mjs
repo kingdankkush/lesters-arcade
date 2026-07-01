@@ -4073,6 +4073,26 @@ export function applySettlement(state, settlement) {
   // stamp official session
   if (state.sessions?.[settlement.sessionId]) {
     state.sessions[settlement.sessionId].settlement = { mode: settlement.mode, primaryTxHash: txHash, settledAt: settlement.settledAt };
+    // Persist the run-integrity verdict (if the caller attached one) so a
+    // 'suspicious' ranked run is durably auditable in state instead of only
+    // being a transient console.warn. 'ok' verdicts are not stored (noise).
+    if (settlement.integrity && settlement.integrity.verdict && settlement.integrity.verdict !== 'ok') {
+      state.sessions[settlement.sessionId].integrity = {
+        verdict: settlement.integrity.verdict,
+        flags: [...(settlement.integrity.flags ?? [])],
+      };
+      state.flaggedSessions ??= [];
+      if (!state.flaggedSessions.some((f) => f.sessionId === settlement.sessionId)) {
+        state.flaggedSessions.push({
+          sessionId: settlement.sessionId,
+          gameId,
+          wallet: settlement.wallet ?? null,
+          verdict: settlement.integrity.verdict,
+          flags: [...(settlement.integrity.flags ?? [])],
+          flaggedAt: settlement.settledAt ?? nowIso(),
+        });
+      }
+    }
   }
   return settlement;
 }
