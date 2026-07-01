@@ -172,6 +172,7 @@ import {
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
+import { buildLevelOneBossDirective, computeBossVolleyVectors } from './src/hmh-level-one-boss.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
@@ -7857,17 +7858,49 @@ function updateRoguelikeEnemies(director, dt) {
       if (enemy.ranged && enemy.attackTimer <= 0) {
         const shotSpeed = 5.2 * director.projectileSpeedMultiplier;
         enemy.state = 'ranged-attack';
-        combat.enemyShots.push({
-          worldX: enemy.mapX,
-          worldY: enemy.mapY,
-          vx: (dx / distance) * shotSpeed,
-          vy: (dy / distance) * shotSpeed,
-          damage: NORMAL_HIT_DAMAGE,
-          ttl: 180,
-          firedBy: enemy.title ?? null,
-        });
-        enemy.attackTimer = encounterBehavior.attackResetFrames ?? Math.max(34, Math.round(92 - director.pressure * 38));
-        enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 16);
+        if (enemy.finalBossProxy) {
+          // Real 3-phase boss encounter (handoff §12.7): the volley shape,
+          // cadence, add-suppression, and telegraph all come from the phase
+          // controller keyed to the boss's live HP, not the generic single shot.
+          const directive = buildLevelOneBossDirective({
+            hp: enemy.hp,
+            maxHp: enemy.maxHp,
+            lastPhaseId: enemy.bossPhaseId ?? null,
+          });
+          const boss = directive.phase;
+          const vectors = computeBossVolleyVectors({
+            dirX: dx / distance,
+            dirY: dy / distance,
+            baseSpeed: shotSpeed,
+            phase: boss,
+          });
+          for (const v of vectors) {
+            combat.enemyShots.push({
+              worldX: enemy.mapX,
+              worldY: enemy.mapY,
+              vx: v.vx,
+              vy: v.vy,
+              damage: NORMAL_HIT_DAMAGE,
+              ttl: 180,
+              firedBy: enemy.title ?? null,
+            });
+          }
+          enemy.attackTimer = boss.attackResetFrames;
+          enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 20);
+          enemy.bossPhaseId = directive.nextLastPhaseId;
+        } else {
+          combat.enemyShots.push({
+            worldX: enemy.mapX,
+            worldY: enemy.mapY,
+            vx: (dx / distance) * shotSpeed,
+            vy: (dy / distance) * shotSpeed,
+            damage: NORMAL_HIT_DAMAGE,
+            ttl: 180,
+            firedBy: enemy.title ?? null,
+          });
+          enemy.attackTimer = encounterBehavior.attackResetFrames ?? Math.max(34, Math.round(92 - director.pressure * 38));
+          enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 16);
+        }
       }
     }
     const projected = isoToScreen(enemy.mapX, enemy.mapY);
@@ -8145,7 +8178,36 @@ function spawnLevelOneFinalBossProxy(director) {
 
 function updateLevelOneFinalBossProxy(director) {
   const level = currentCampaignLevel();
-  if (level.id !== DEFAULT_CAMPAIGN_LEVEL_ID || combat.scriptedBossTriggered || combat.bossDefeated) return;
+  if (level.id !== DEFAULT_CAMPAIGN_LEVEL_ID) return;
+  // Drive boss phase-entry FX (banner + one-time add wave) once per frame,
+  // independent of the firing cadence, so the escalation reads clearly even
+  // between volleys. Keyed off the live boss proxy's HP via the phase controller.
+  if (combat.scriptedBossTriggered && !combat.bossDefeated) {
+    const bossEnemy = combat.enemies.find((e) => e.finalBossProxy && e.hp > 0);
+    if (bossEnemy) {
+      const directive = buildLevelOneBossDirective({
+        hp: bossEnemy.hp,
+        maxHp: bossEnemy.maxHp,
+        lastPhaseId: bossEnemy.bossPhaseSeenId ?? null,
+      });
+      if (directive.phaseChanged) {
+        bossEnemy.bossPhaseSeenId = directive.nextLastPhaseId;
+        if (directive.banner) {
+          spawnText(directive.banner, ISO_CENTER_X - 120, ISO_CENTER_Y - 100, '#ff7b2f');
+        }
+        // One-time add wave on entering a non-suppressed phase.
+        for (let i = 0; i < directive.summonAdds; i += 1) {
+          spawnRoguelikeEnemy(director, {
+            poiId: bossEnemy.poiId ?? 'rugpull-gulch-boss-yard',
+            spawnSource: 'poi-boss-add',
+            angleRadians: (i / Math.max(1, directive.summonAdds)) * Math.PI * 2,
+            radiusTiles: ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES,
+          });
+        }
+      }
+    }
+  }
+  if (combat.scriptedBossTriggered || combat.bossDefeated) return;
   if (combat.elapsedGameSeconds < (level.timings?.bossSpawnSeconds ?? Infinity)) return;
   spawnLevelOneFinalBossProxy(director);
 }
