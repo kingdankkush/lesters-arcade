@@ -395,11 +395,12 @@ test('settlement plan routes the dev share to the dev wallet', async () => {
     paymentToken: 'zkLTC',
     devWalletAddress: '0x' + 'd'.repeat(40),
   });
-  const route = plan.calls.find((c) => c.method === 'routeRevenueSplit');
-  assert.ok(route, 'plan should include a revenue-routing call');
-  assert.equal(route.args.devWallet, '0x' + 'd'.repeat(40));
-  assert.equal(route.args.devAmountMicroUnits, 137_500);
+  const route = plan.calls.find((c) => c.method === 'startPaidSession');
+  assert.ok(route, 'plan should include a startPaidSession routing call');
+  // Deployed ArcadePaymentRouter.startPaidSession takes a SplitConfig struct.
+  assert.equal(route.args.split.devWallet, '0x' + 'd'.repeat(40));
   assert.equal(route.args.paymentToken, 'zkLTC');
+  assert.equal(route.args.amount, 250_000);
   assert.equal(plan.revenueSplit.dev, 137_500);
   assert.equal(plan.devWallet, '0x' + 'd'.repeat(40));
 });

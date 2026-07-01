@@ -4026,6 +4026,12 @@ export function recordScore(state, session, score, runStats = {}) {
       gameId: game.id,
       sessionId: session.sessionId,
       score,
+      // Run stats that ride inside the on-chain submitSession(...) call so the
+      // plan matches the deployed ScoreSubmissionRegistry ABI exactly.
+      kills: Math.max(0, Math.round(runStats.kills ?? 0)),
+      maxCombo: Math.max(0, Math.round(runStats.maxCombo ?? runStats.maxKillCombo ?? 0)),
+      survivalSeconds: Math.max(0, Math.round(runStats.elapsedSeconds ?? 0)),
+      bossId: runStats.bossId ?? null,
       cadenceKeys,
       unlockedAchievements,
       username: profile.usernameSet ? profile.handle : null,

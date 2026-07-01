@@ -87,6 +87,10 @@ export function buildSettlementPlan({
   gameId,
   sessionId,
   score,
+  kills = 0,
+  maxCombo = 0,
+  survivalSeconds = 0,
+  bossId = null,
   cadenceKeys = {},
   unlockedAchievements = [],
   username = null,
@@ -103,33 +107,47 @@ export function buildSettlementPlan({
 
   const calls = [];
 
+  // Profile write. The deployed PlayerProfileRegistry exposes an idempotent
+  // `setProfile(displayName, avatarUri)` (create-or-update) — this is what the
+  // live litvm-chain-client uses, and unlike `updateProfile` it does not revert
+  // when the wallet has no profile yet. The plan must name the method the
+  // contract actually has, or a live broadcast built from this plan would revert.
   if (profileChanged && username) {
     calls.push(Object.freeze({
       contract: 'playerProfileRegistry',
-      method: 'updateProfile',
-      args: { handle: username },
+      method: 'setProfile',
+      args: Object.freeze({ displayName: username, avatarUri: '' }),
       gas: ZKLTC_SETTLEMENT_GAS.profileUpdate,
     }));
   }
 
+  // Score + achievements are ONE call. The deployed ScoreSubmissionRegistry
+  // exposes `submitSession(sessionId, gameId, score, kills, maxCombo,
+  // survivalSeconds, bossId, achievements[])` and folds achievement unlocks
+  // into that same transaction. AchievementRegistry.unlockFor is `onlyLedger`,
+  // so a player wallet cannot call it directly — achievements MUST ride inside
+  // submitSession. Previous plan emitted a nonexistent `submitScore` plus
+  // impossible per-achievement `unlockAchievement` calls; both are removed.
+  const achievementIds = (unlockedAchievements ?? []).filter(Boolean);
   calls.push(Object.freeze({
     contract: 'scoreSubmissionRegistry',
-    method: 'submitScore',
-    args: { sessionId, player: wallet, gameId, score },
-    gas: ZKLTC_SETTLEMENT_GAS.scoreSubmit,
+    method: 'submitSession',
+    args: Object.freeze({
+      sessionId,
+      gameId,
+      score,
+      kills: Math.max(0, Math.round(Number(kills) || 0)),
+      maxCombo: Math.max(0, Math.round(Number(maxCombo) || 0)),
+      survivalSeconds: Math.max(0, Math.round(Number(survivalSeconds) || 0)),
+      bossId: bossId ?? null,
+      achievements: Object.freeze([...achievementIds]),
+    }),
+    gas: ZKLTC_SETTLEMENT_GAS.scoreSubmit
+      + ZKLTC_SETTLEMENT_GAS.achievementUnlock * BigInt(achievementIds.length),
   }));
 
-  for (const achievementId of unlockedAchievements) {
-    calls.push(Object.freeze({
-      contract: 'achievementRegistry',
-      method: 'unlockAchievement',
-      args: { player: wallet, achievementId, gameId },
-      gas: ZKLTC_SETTLEMENT_GAS.achievementUnlock,
-    }));
-  }
-
   const gas = estimateSettlementGas({
-    achievementCount: unlockedAchievements.length,
+    achievementCount: achievementIds.length,
     profileChanged: Boolean(profileChanged && username),
   });
 
@@ -137,24 +155,35 @@ export function buildSettlementPlan({
   // (biggest share + any unused settlement-gas remainder) goes to the dev wallet
   // and funds future game dev + community building. Tournament/community pools
   // get their slices. paymentToken is whatever the player paid in (LTC/zkLTC/ETH/USDC).
+  //
+  // The deployed ArcadePaymentRouter exposes `startPaidSession(sessionId,
+  // gameId, paymentToken, amount, settlementGasUsed, SplitConfig)` where
+  // SplitConfig carries the four treasury addresses + four bps values. The plan
+  // mirrors that struct exactly so a live broadcast maps 1:1 onto the ABI.
   let revenueSplit = null;
   let routeCall = null;
   if (Number.isInteger(entryFeeMicroUnits) && entryFeeMicroUnits > 0) {
     revenueSplit = calculateRevenueSplit(entryFeeMicroUnits, splitBps, { settlementGasMicroUnits });
     routeCall = Object.freeze({
       contract: 'arcadePaymentRouter',
-      method: 'routeRevenueSplit',
-      args: {
+      method: 'startPaidSession',
+      args: Object.freeze({
         sessionId,
         gameId,
         paymentToken,
-        amountMicroUnits: entryFeeMicroUnits,
-        devWallet: devWalletAddress,
-        devAmountMicroUnits: revenueSplit.dev,
-        settlementGasMicroUnits: revenueSplit.settlement,
-        tournamentMicroUnits: revenueSplit.tournament,
-        communityMicroUnits: revenueSplit.community,
-      },
+        amount: entryFeeMicroUnits,
+        settlementGasUsed: revenueSplit.settlement,
+        split: Object.freeze({
+          settlementTreasury: devWalletAddress,
+          devWallet: devWalletAddress,
+          tournamentTreasury: devWalletAddress,
+          communityTreasury: devWalletAddress,
+          settlementBps: splitBps.settlement,
+          devBps: splitBps.dev,
+          tournamentBps: splitBps.tournament,
+          communityBps: splitBps.community,
+        }),
+      }),
       gas: ZKLTC_SETTLEMENT_GAS.profileUpdate,
     });
     calls.push(routeCall);
@@ -228,7 +257,7 @@ export async function settleRun(plan, {
       score: plan.score,
       cadenceKeys: { ...plan.cadenceKeys },
       receipts,
-      primaryTxHash: receipts.find((r) => r.method === 'submitScore')?.txHash ?? receipts[0]?.txHash ?? null,
+      primaryTxHash: receipts.find((r) => r.method === 'submitSession')?.txHash ?? receipts[0]?.txHash ?? null,
       settledAt: new Date().toISOString(),
     };
   }
@@ -250,7 +279,7 @@ export async function settleRun(plan, {
     score: plan.score,
     cadenceKeys: { ...plan.cadenceKeys },
     receipts,
-    primaryTxHash: receipts.find((r) => r.method === 'submitScore')?.txHash ?? receipts[0]?.txHash ?? null,
+    primaryTxHash: receipts.find((r) => r.method === 'submitSession')?.txHash ?? receipts[0]?.txHash ?? null,
     settledAt: new Date().toISOString(),
     note: 'Simulated settlement. No on-chain transaction was sent. Enable SETTLEMENT_LIVE after contract deploy + approval.',
   };

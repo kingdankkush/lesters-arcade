@@ -28,29 +28,105 @@ test('estimateSettlementGas scales with achievements + profile change', () => {
   assert.equal(withExtras.estimatedFeeWei, expected * ZKLTC_SETTLEMENT_GAS.gasPriceWei);
 });
 
-test('buildSettlementPlan always includes a score submit call', () => {
+test('buildSettlementPlan always includes a submitSession call (deployed ABI)', () => {
   const plan = buildSettlementPlan({
     wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-1', score: 1234,
   });
   const methods = plan.calls.map((c) => c.method);
-  assert.ok(methods.includes('submitScore'));
+  // The deployed ScoreSubmissionRegistry exposes submitSession(...), NOT submitScore.
+  assert.ok(methods.includes('submitSession'));
+  assert.ok(!methods.includes('submitScore'), 'submitScore is not a real deployed method');
   assert.equal(plan.network.token, 'zkLTC');
   assert.equal(plan.network.chainId, 4441);
   assert.ok(plan.feePurpose.includes('settlement gas'));
   assert.ok(plan.feePurpose.includes('dev wallet'));
 });
 
-test('buildSettlementPlan adds an unlock call per achievement and a profile update', () => {
+test('submitSession call carries the full deployed ABI arg shape', () => {
+  const plan = buildSettlementPlan({
+    wallet: WALLET, gameId: 'hard-money-heroes', sessionId: 'sess-abi', score: 9000,
+    kills: 42, maxCombo: 13, survivalSeconds: 480, bossId: 'rug-pull-baron',
+    unlockedAchievements: ['clear-level-1', 'beat-rug-pull-baron'],
+  });
+  const submit = plan.calls.find((c) => c.method === 'submitSession');
+  assert.ok(submit, 'plan must contain a submitSession call');
+  assert.equal(submit.contract, 'scoreSubmissionRegistry');
+  // args must mirror submitSession(sessionId, gameId, score, kills, maxCombo,
+  // survivalSeconds, bossId, achievements[]).
+  const a = submit.args;
+  assert.equal(a.sessionId, 'sess-abi');
+  assert.equal(a.gameId, 'hard-money-heroes');
+  assert.equal(a.score, 9000);
+  assert.equal(a.kills, 42);
+  assert.equal(a.maxCombo, 13);
+  assert.equal(a.survivalSeconds, 480);
+  assert.equal(a.bossId, 'rug-pull-baron');
+  assert.deepEqual([...a.achievements], ['clear-level-1', 'beat-rug-pull-baron']);
+});
+
+test('achievements ride inside submitSession, not separate unlock calls', () => {
   const plan = buildSettlementPlan({
     wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-2', score: 50,
     unlockedAchievements: ['first-paid-run', 'first-blood'],
+  });
+  const methods = plan.calls.map((c) => c.method);
+  // AchievementRegistry.unlockFor is onlyLedger — a player wallet cannot call
+  // it, so there must be NO standalone achievement-unlock calls in the plan.
+  assert.ok(!methods.includes('unlockAchievement'));
+  assert.ok(!methods.includes('unlockFor'));
+  const submit = plan.calls.find((c) => c.method === 'submitSession');
+  assert.deepEqual([...submit.args.achievements], ['first-paid-run', 'first-blood']);
+});
+
+test('profile change uses the idempotent setProfile method', () => {
+  const plan = buildSettlementPlan({
+    wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-2b', score: 50,
     username: 'AcePilot', profileChanged: true,
   });
   const methods = plan.calls.map((c) => c.method);
-  assert.equal(methods.filter((m) => m === 'unlockAchievement').length, 2);
-  assert.ok(methods.includes('updateProfile'));
+  // PlayerProfileRegistry: use setProfile (create-or-update), never updateProfile
+  // (which reverts when the wallet has no profile yet).
+  assert.ok(methods.includes('setProfile'));
+  assert.ok(!methods.includes('updateProfile'));
+  const profileCall = plan.calls.find((c) => c.method === 'setProfile');
+  assert.equal(profileCall.contract, 'playerProfileRegistry');
+  assert.equal(profileCall.args.displayName, 'AcePilot');
+  assert.ok('avatarUri' in profileCall.args);
   // profile update should come before the score submit
-  assert.ok(methods.indexOf('updateProfile') < methods.indexOf('submitScore'));
+  assert.ok(methods.indexOf('setProfile') < methods.indexOf('submitSession'));
+});
+
+test('paid entry fee produces a startPaidSession router call matching the SplitConfig ABI', () => {
+  const plan = buildSettlementPlan({
+    wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-paid', score: 10,
+    entryFeeMicroUnits: 250_000, paymentToken: 'zkLTC',
+  });
+  const routeCall = plan.calls.find((c) => c.contract === 'arcadePaymentRouter');
+  assert.ok(routeCall, 'paid session must include a router call');
+  // Deployed ArcadePaymentRouter exposes startPaidSession(...), not routeRevenueSplit.
+  assert.equal(routeCall.method, 'startPaidSession');
+  assert.ok(!plan.calls.some((c) => c.method === 'routeRevenueSplit'));
+  const { args } = routeCall;
+  assert.equal(args.sessionId, 'sess-paid');
+  assert.equal(args.gameId, 'lester-blaster');
+  assert.equal(args.paymentToken, 'zkLTC');
+  assert.equal(args.amount, 250_000);
+  // SplitConfig struct: four treasury addresses + four bps values.
+  assert.ok(args.split);
+  for (const key of ['settlementTreasury', 'devWallet', 'tournamentTreasury', 'communityTreasury']) {
+    assert.ok(/^0x[0-9a-fA-F]{40}$/.test(args.split[key]), `${key} must be an address`);
+  }
+  const totalBps = args.split.settlementBps + args.split.devBps
+    + args.split.tournamentBps + args.split.communityBps;
+  assert.equal(totalBps, 10_000, 'SplitConfig bps must total 10000');
+});
+
+test('zero entry fee (free ranked testnet) emits no router call', () => {
+  const plan = buildSettlementPlan({
+    wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-free', score: 10,
+    entryFeeMicroUnits: 0,
+  });
+  assert.ok(!plan.calls.some((c) => c.contract === 'arcadePaymentRouter'));
 });
 
 test('buildSettlementPlan requires wallet/gameId/sessionId', () => {
@@ -69,6 +145,9 @@ test('settleRun (simulated) returns deterministic receipts and no live send', as
   assert.ok(r1.primaryTxHash.startsWith('0x'));
   assert.equal(r1.primaryTxHash, r2.primaryTxHash); // deterministic
   assert.ok(r1.receipts.every((rcpt) => rcpt.simulated === true));
+  // primaryTxHash resolves off the submitSession receipt.
+  const submitReceipt = r1.receipts.find((rcpt) => rcpt.method === 'submitSession');
+  assert.equal(r1.primaryTxHash, submitReceipt.txHash);
 });
 
 test('settleRun live path broadcasts via injected sendTransaction', async () => {
@@ -82,6 +161,7 @@ test('settleRun live path broadcasts via injected sendTransaction', async () => 
       scoreSubmissionRegistry: '0x' + 'c'.repeat(40),
       achievementRegistry: '0x' + 'd'.repeat(40),
       playerProfileRegistry: '0x' + 'e'.repeat(40),
+      arcadePaymentRouter: '0x' + 'f'.repeat(40),
     },
     sendTransaction: async (call) => {
       sent.push(call);
@@ -91,6 +171,9 @@ test('settleRun live path broadcasts via injected sendTransaction', async () => 
   assert.equal(result.mode, 'live');
   assert.equal(sent.length, plan.calls.length);
   assert.ok(result.primaryTxHash.startsWith('0xlive'));
+  // every broadcast call names a method that exists on the deployed contracts
+  const validMethods = new Set(['submitSession', 'setProfile', 'startPaidSession']);
+  assert.ok(sent.every((c) => validMethods.has(c.method)), 'only deployed methods may be broadcast');
 });
 
 test('settleRun live path is blocked when contract addresses are missing', async () => {
