@@ -98,6 +98,8 @@ import {
   buildLevelOneRunWorldDimensions,
   levelOneRoguelikeSpawnDirectorAt,
   levelOneRoguelikeDropChance,
+  levelOneRoguelikePickupAssistAt,
+  levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
 
   recordScore,
@@ -721,6 +723,36 @@ test('Level 1 temporarily assigns curated humanoid enemies as mini-boss and boss
   assert.ok(ids.every((id) => catalogIds.has(id)), `all proxy ids must exist in enemy catalog: ${ids.join(', ')}`);
   assert.ok(roster.every((entry) => entry.animatedCuratedAssetKey?.startsWith('universal/enemy/')));
   assert.ok(roster.every((entry) => entry.humanoid === true), 'temporary boss proxies should be humanoid-ish animated enemies');
+});
+
+test('Level 1 late-swarm budget keeps rewards collectible while capping visual spam', () => {
+  const openingAssist = levelOneRoguelikePickupAssistAt({ elapsedSeconds: 0, activeEnemies: 12 });
+  const wallAssist = levelOneRoguelikePickupAssistAt({ elapsedSeconds: 480, activeEnemies: 100 });
+  const openingBudget = levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds: 0, activeEnemies: 12, reduceMotion: false });
+  const wallBudget = levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds: 480, activeEnemies: 100, reduceMotion: false });
+  const reducedMotionBudget = levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds: 480, activeEnemies: 100, reduceMotion: true });
+
+  assert.ok(wallAssist.xpAttractRadiusMultiplier > openingAssist.xpAttractRadiusMultiplier, 'XP should pull harder during the 8-minute swarm wall');
+  assert.ok(wallAssist.xpAttractSpeedMultiplier > openingAssist.xpAttractSpeedMultiplier, 'late XP should drift toward the hero faster while kiting');
+  assert.ok(wallAssist.xpTtlFrames >= openingAssist.xpTtlFrames, 'late XP gems should not expire faster than opening gems');
+  assert.ok(wallAssist.maxLooseXpGems <= 180, `loose XP cap should prevent unbounded reward arrays, got ${wallAssist.maxLooseXpGems}`);
+  assert.ok(wallAssist.maxLoosePowerUps <= 42, `power-up cap should prevent reward spam, got ${wallAssist.maxLoosePowerUps}`);
+
+  assert.ok(wallBudget.maxParticles <= openingBudget.maxParticles, 'late swarm should cap particles at or below opening budget despite more enemies');
+  assert.ok(wallBudget.maxFloatingTexts < 100, `floating text cap should stay readable, got ${wallBudget.maxFloatingTexts}`);
+  assert.ok(wallBudget.hitSparkEveryNthHit >= openingBudget.hitSparkEveryNthHit, 'late swarm should sample hit sparks rather than emit every hit');
+  assert.ok(reducedMotionBudget.maxParticles < wallBudget.maxParticles, 'reduce-motion should further lower particle budget');
+});
+
+test('main.js routes all roguelike death paths through the final-boss extraction gate', () => {
+  const source = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const nukeBlock = source.slice(source.indexOf("case 'screenNuke'"), source.indexOf("case 'screenNuke'") + 1100);
+
+  assert.ok(source.includes('function resolveRoguelikeEnemyDeath('), 'runtime should centralize roguelike enemy death rewards and boss-gate side effects');
+  assert.ok(source.includes('enemy.finalBossProxy'), 'death resolver should detect the temporary final boss proxy');
+  assert.ok(source.includes('combat.bossDefeated = true'), 'final boss proxy death should unlock extraction progression');
+  assert.ok(nukeBlock.includes('resolveRoguelikeEnemyDeath(enemy'), 'screen nuke should use the same death resolver as normal combat kills');
+  assert.equal(nukeBlock.includes('combat.enemies = []'), false, 'screen nuke must not bypass final-boss death side effects by wiping the array directly');
 });
 
 test('combat accessibility settings model exposes motion flash color and aim toggles', () => {

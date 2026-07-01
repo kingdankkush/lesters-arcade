@@ -2065,6 +2065,31 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
     normalWallChance: 0.32,
     rareChance: 1,
   }),
+  pickupAssist: Object.freeze({
+    openingXpAttractRadiusMultiplier: 1,
+    wallXpAttractRadiusMultiplier: 2.2,
+    openingXpAttractSpeedMultiplier: 1,
+    wallXpAttractSpeedMultiplier: 2,
+    openingXpTtlFrames: 900,
+    wallXpTtlFrames: 1260,
+    openingPowerUpAttractRadiusMultiplier: 1,
+    wallPowerUpAttractRadiusMultiplier: 1.65,
+    openingPowerUpTtlFrames: 720,
+    wallPowerUpTtlFrames: 900,
+    maxLooseXpGems: 180,
+    maxLoosePowerUps: 42,
+  }),
+  performance: Object.freeze({
+    openingMaxParticles: 210,
+    wallMaxParticles: 150,
+    openingMaxFloatingTexts: 84,
+    wallMaxFloatingTexts: 64,
+    openingHitSparkEveryNthHit: 1,
+    wallHitSparkEveryNthHit: 3,
+    openingDeathBurstScale: 1,
+    wallDeathBurstScale: 0.62,
+    reduceMotionScale: 0.58,
+  }),
   xpPacing: Object.freeze({
     passiveRun: Object.freeze({ assumedKillsPerMinute: 8, targetLevelAtEightMinutes: 4 }),
     swarmFighterRun: Object.freeze({ assumedKillsPerMinute: 20, targetLevelAtEightMinutes: 7 }),
@@ -2110,6 +2135,40 @@ export function levelOneRoguelikeDropChance({ elapsedSeconds = 0, rare = false }
   const pressure = clampNumber((Number(elapsedSeconds) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
   const { normalOpeningChance, normalWallChance } = HMH_LEVEL_ONE_PLAYTEST_BALANCE.drops;
   return Number((normalOpeningChance + (normalWallChance - normalOpeningChance) * pressure).toFixed(3));
+}
+
+export function levelOneRoguelikePickupAssistAt({ elapsedSeconds = 0, activeEnemies = 0 } = {}) {
+  const pressure = clampNumber((Number(elapsedSeconds) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
+  const swarmPressure = clampNumber((Number(activeEnemies) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.wallMaxEnemies, 0, 1);
+  const assist = HMH_LEVEL_ONE_PLAYTEST_BALANCE.pickupAssist;
+  const blendedSwarm = clampNumber(pressure * 0.75 + swarmPressure * 0.25, 0, 1);
+  return Object.freeze({
+    pressure: Number(pressure.toFixed(3)),
+    swarmPressure: Number(swarmPressure.toFixed(3)),
+    xpAttractRadiusMultiplier: Number((assist.openingXpAttractRadiusMultiplier + (assist.wallXpAttractRadiusMultiplier - assist.openingXpAttractRadiusMultiplier) * blendedSwarm).toFixed(2)),
+    xpAttractSpeedMultiplier: Number((assist.openingXpAttractSpeedMultiplier + (assist.wallXpAttractSpeedMultiplier - assist.openingXpAttractSpeedMultiplier) * blendedSwarm).toFixed(2)),
+    xpTtlFrames: Math.round(assist.openingXpTtlFrames + (assist.wallXpTtlFrames - assist.openingXpTtlFrames) * pressure),
+    powerUpAttractRadiusMultiplier: Number((assist.openingPowerUpAttractRadiusMultiplier + (assist.wallPowerUpAttractRadiusMultiplier - assist.openingPowerUpAttractRadiusMultiplier) * blendedSwarm).toFixed(2)),
+    powerUpTtlFrames: Math.round(assist.openingPowerUpTtlFrames + (assist.wallPowerUpTtlFrames - assist.openingPowerUpTtlFrames) * pressure),
+    maxLooseXpGems: assist.maxLooseXpGems,
+    maxLoosePowerUps: assist.maxLoosePowerUps,
+  });
+}
+
+export function levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds = 0, activeEnemies = 0, reduceMotion = false } = {}) {
+  const pressure = clampNumber((Number(elapsedSeconds) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
+  const swarmPressure = clampNumber((Number(activeEnemies) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.wallMaxEnemies, 0, 1);
+  const blendedSwarm = clampNumber(pressure * 0.7 + swarmPressure * 0.3, 0, 1);
+  const perf = HMH_LEVEL_ONE_PLAYTEST_BALANCE.performance;
+  const motionScale = reduceMotion ? perf.reduceMotionScale : 1;
+  return Object.freeze({
+    pressure: Number(pressure.toFixed(3)),
+    swarmPressure: Number(swarmPressure.toFixed(3)),
+    maxParticles: Math.max(48, Math.round((perf.openingMaxParticles + (perf.wallMaxParticles - perf.openingMaxParticles) * blendedSwarm) * motionScale)),
+    maxFloatingTexts: Math.max(28, Math.round((perf.openingMaxFloatingTexts + (perf.wallMaxFloatingTexts - perf.openingMaxFloatingTexts) * blendedSwarm) * motionScale)),
+    hitSparkEveryNthHit: Math.max(1, Math.round(perf.openingHitSparkEveryNthHit + (perf.wallHitSparkEveryNthHit - perf.openingHitSparkEveryNthHit) * blendedSwarm)),
+    deathBurstScale: Number((perf.openingDeathBurstScale + (perf.wallDeathBurstScale - perf.openingDeathBurstScale) * blendedSwarm).toFixed(2)),
+  });
 }
 
 export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {

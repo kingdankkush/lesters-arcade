@@ -126,6 +126,8 @@ import {
   getRoguelikeSpawnDirectorAt,
   levelOneRoguelikeSpawnDirectorAt,
   levelOneRoguelikeDropChance,
+  levelOneRoguelikePickupAssistAt,
+  levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
   buildLevelOneRunWorldDimensions,
   calculateRoguelikeKillXp,
@@ -1719,6 +1721,42 @@ function currentRoguelikeNormalDropChance(elapsedSeconds = combat.elapsedGameSec
   return level.id === DEFAULT_CAMPAIGN_LEVEL_ID
     ? levelOneRoguelikeDropChance({ elapsedSeconds, rare: false })
     : 0.35;
+}
+
+function currentLevelOnePickupAssist() {
+  const level = currentCampaignLevel();
+  if (level.id !== DEFAULT_CAMPAIGN_LEVEL_ID) {
+    return {
+      xpAttractRadiusMultiplier: 1,
+      xpAttractSpeedMultiplier: 1,
+      xpTtlFrames: 900,
+      powerUpAttractRadiusMultiplier: 1,
+      powerUpTtlFrames: 720,
+      maxLooseXpGems: 220,
+      maxLoosePowerUps: 52,
+    };
+  }
+  return levelOneRoguelikePickupAssistAt({
+    elapsedSeconds: combat.elapsedGameSeconds,
+    activeEnemies: combat.enemies?.length ?? 0,
+  });
+}
+
+function currentLevelOnePerformanceBudget() {
+  const level = currentCampaignLevel();
+  if (level.id !== DEFAULT_CAMPAIGN_LEVEL_ID) {
+    return {
+      maxParticles: 240,
+      maxFloatingTexts: 96,
+      hitSparkEveryNthHit: 1,
+      deathBurstScale: 1,
+    };
+  }
+  return levelOneRoguelikePerformanceBudgetAt({
+    elapsedSeconds: combat.elapsedGameSeconds,
+    activeEnemies: combat.enemies?.length ?? 0,
+    reduceMotion: Boolean(gameSettings.reduceMotion),
+  });
 }
 
 function currentCampaignPoi() {
@@ -6446,6 +6484,10 @@ function updateParticles(dt) {
     particle.size *= 0.985;
   }
   combat.particles = combat.particles.filter((particle) => particle.life > 0 && particle.size > 0.5);
+  const budget = currentLevelOnePerformanceBudget();
+  if (combat.particles.length > budget.maxParticles) {
+    combat.particles.splice(0, combat.particles.length - budget.maxParticles);
+  }
 }
 
 function updateFloatingTexts() {
@@ -6454,6 +6496,10 @@ function updateFloatingTexts() {
     text.life -= 1;
   }
   combat.floatingTexts = combat.floatingTexts.filter((text) => text.life > 0);
+  const budget = currentLevelOnePerformanceBudget();
+  if (combat.floatingTexts.length > budget.maxFloatingTexts) {
+    combat.floatingTexts.splice(0, combat.floatingTexts.length - budget.maxFloatingTexts);
+  }
 }
 
 function currentDamageType() {
@@ -6509,7 +6555,9 @@ function damageEnemy(enemy, damage, source, opts = {}) {
     source === 'axe' ? '#c62828' :
     '#dc143c'; // crimson — the requested red spurt for bullet-on-enemy
   spawnBlood(enemy.x + 12, enemy.y - 30, bloodColor);
-  emitCombatVfxParticles(createHitSparks(enemy.x + 12, enemy.y - 32, source === 'hash-rail' ? 14 : 8));
+  const budget = currentLevelOnePerformanceBudget();
+  const shouldEmitHitSparks = ((combat.frame + combat.combo) % budget.hitSparkEveryNthHit) === 0;
+  if (shouldEmitHitSparks) emitCombatVfxParticles(createHitSparks(enemy.x + 12, enemy.y - 32, source === 'hash-rail' ? 14 : 8));
   if (source === 'hash-rail') {
     emitCombatVfxParticles(createBulletTrail(enemy.x - 22, enemy.y - 32, enemy.x + 22, enemy.y - 32, 'rail'));
   }
@@ -6586,7 +6634,15 @@ function killEnemy(enemy) {
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   spawnText(`+${enemy.score ?? 100}`, enemy.x, enemy.y - 70, '#ffe84d');
   spawnExplosion(enemy.x + 12, enemy.y - 28, enemy.miniBoss ? '#ff7b2f' : '#ff476f');
-  emitCombatVfxParticles(createDeathBurst(enemy.x + 12, enemy.y - 34, enemy.id ?? enemy.enemyKey ?? 'unknown-enemy'));
+  const budget = currentLevelOnePerformanceBudget();
+  const deathParticles = createDeathBurst(enemy.x + 12, enemy.y - 34, enemy.id ?? enemy.enemyKey ?? 'unknown-enemy')
+    .map((particle) => ({
+      ...particle,
+      size: Math.max(2, (particle.size ?? 8) * budget.deathBurstScale),
+      life: Math.max(0.16, (particle.life ?? 1) * budget.deathBurstScale),
+      maxLife: Math.max(0.16, (particle.maxLife ?? particle.life ?? 1) * budget.deathBurstScale),
+    }));
+  emitCombatVfxParticles(deathParticles);
   // Legacy side-scroller miniboss drop. In the isometric roguelike, power-up
   // drops are handled by dropRoguelikePowerUp() in updateRoguelikeEnemies()
   // (world-coordinate pickups), so skip the screen-space legacy drop there.
@@ -7439,6 +7495,43 @@ function updateRoguelikeBullets(dt) {
   combat.enemyShots = combat.enemyShots.filter((shot) => shot.ttl > 0);
 }
 
+function trimLooseRoguelikeRewards() {
+  const assist = currentLevelOnePickupAssist();
+  if (combat.xpGems.length > assist.maxLooseXpGems) {
+    combat.xpGems.splice(0, combat.xpGems.length - assist.maxLooseXpGems);
+  }
+  if (combat.powerUps.length > assist.maxLoosePowerUps) {
+    combat.powerUps.splice(0, combat.powerUps.length - assist.maxLoosePowerUps);
+  }
+}
+
+function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = null } = {}) {
+  killEnemy(enemy);
+  if (enemy.finalBossProxy) {
+    combat.bossKills += 1;
+    combat.bossDefeated = true;
+    combat.miniBossLock = false;
+    combat.scrollLockReason = null;
+    combat.completedCampaignPoiIds?.add(enemy.poiEncounterId ?? enemy.poiId ?? 'rugpull-gulch-boss-yard');
+    spawnText('BOSS CLEAR — EXTRACTION SOON', ISO_CENTER_X - 112, ISO_CENTER_Y - 78, '#45ff8a');
+  }
+  const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
+  combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
+  const assist = currentLevelOnePickupAssist();
+  const xpValue = forceXpValue ?? calculateRoguelikeKillXp(enemy);
+  combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: xpValue, ttl: assist.xpTtlFrames });
+  if (dropRewards) {
+    if (enemy.elite || enemy.miniBoss) {
+      dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { rare: true });
+    } else {
+      const normalDropChance = currentRoguelikeNormalDropChance(combat.elapsedGameSeconds);
+      const dropRoll = (((combat.frame * 31 + combat.kills * 17 + combat.enemies.length * 13) >>> 0) % 1000) / 1000;
+      if (dropRoll < normalDropChance) dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { dropChance: normalDropChance });
+    }
+  }
+  trimLooseRoguelikeRewards();
+}
+
 function updateRoguelikeEnemies(director, dt) {
   combat.roguelikeSpawnTimer -= dt;
   updateCampaignPoiEncounter(director);
@@ -7567,29 +7660,7 @@ function updateRoguelikeEnemies(director, dt) {
       survivors.push(enemy);
       continue;
     }
-    killEnemy(enemy);
-    if (enemy.finalBossProxy) {
-      combat.bossKills += 1;
-      combat.bossDefeated = true;
-      combat.miniBossLock = false;
-      combat.scrollLockReason = null;
-      combat.completedCampaignPoiIds?.add(enemy.poiEncounterId ?? enemy.poiId ?? 'rugpull-gulch-boss-yard');
-      spawnText('BOSS CLEAR — EXTRACTION SOON', ISO_CENTER_X - 112, ISO_CENTER_Y - 78, '#45ff8a');
-    }
-    // Per-enemy-type kill tracking (feeds the game-stats module + balanced XP).
-    const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
-    combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
-    const xpValue = calculateRoguelikeKillXp(enemy);
-    combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: xpValue, ttl: 900 });
-    // Power-up drops: elites/mini-bosses always drop a rare run-swinger; normal
-    // grunts have a small chance at a standard drop. Deterministic per frame/kill.
-    if (enemy.elite || enemy.miniBoss) {
-      dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { rare: true });
-    } else {
-      const normalDropChance = currentRoguelikeNormalDropChance(combat.elapsedGameSeconds);
-      const dropRoll = (((combat.frame * 31 + combat.kills * 17 + combat.enemies.length * 13) >>> 0) % 1000) / 1000;
-      if (dropRoll < normalDropChance) dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { dropChance: normalDropChance });
-    }
+    resolveRoguelikeEnemyDeath(enemy);
   }
   combat.enemies = survivors;
   updateCampaignPoiEncounter(director);
@@ -7626,7 +7697,10 @@ function updateRoguelikeGrenades() {
 }
 
 function updateRoguelikeXpGems() {
-  const pickupRadius = 1.4 * (combat.roguelikeRun?.stats.pickupRadius ?? 1);
+  const assist = currentLevelOnePickupAssist();
+  const pickupRadius = 1.4 * (combat.roguelikeRun?.stats.pickupRadius ?? 1) * assist.xpAttractRadiusMultiplier;
+  const attractRadius = pickupRadius * 4 * assist.xpAttractRadiusMultiplier;
+  const attractSpeed = 0.08 * assist.xpAttractSpeedMultiplier;
   for (const gem of combat.xpGems) {
     gem.ttl -= 1;
     const dx = combat.playerMapX - gem.worldX;
@@ -7637,12 +7711,13 @@ function updateRoguelikeXpGems() {
       gem.ttl = 0;
       spawnText(`XP +${gem.value}`, ISO_CENTER_X + 22, ISO_CENTER_Y - 46, '#19f7ff');
       if (combat.roguelikeRun.pausedForLevelUp) openLevelUpMenu();
-    } else if (distance < pickupRadius * 4) {
-      gem.worldX += (dx / distance) * 0.08;
-      gem.worldY += (dy / distance) * 0.08;
+    } else if (distance < attractRadius) {
+      gem.worldX += (dx / distance) * attractSpeed;
+      gem.worldY += (dy / distance) * attractSpeed;
     }
   }
   combat.xpGems = combat.xpGems.filter((gem) => gem.ttl > 0);
+  trimLooseRoguelikeRewards();
 }
 
 // --- Roguelike world power-ups -------------------------------------------------
@@ -7691,22 +7766,25 @@ function dropRoguelikePowerUp(worldX, worldY, { rare = false, dropChance = null 
 
 function spawnRoguelikePowerUp(def, worldX, worldY) {
   const projected = isoToScreen(worldX, worldY);
+  const assist = currentLevelOnePickupAssist();
   combat.powerUps.push({
     ...def,
     worldX,
     worldY,
     x: projected.x,
     y: projected.y,
-    ttl: 720,
+    ttl: assist.powerUpTtlFrames,
     bobSeed: (worldX * 17 + worldY * 31) % 360,
   });
+  trimLooseRoguelikeRewards();
 }
 
 function updateRoguelikePowerUps() {
+  const assist = currentLevelOnePickupAssist();
   const magnetActive = (combat.powerUpTimers.magnet ?? 0) > 0;
   const basePickup = 1.1 * (combat.roguelikeRun?.stats?.pickupRadius ?? 1);
   const pickupRadius = magnetActive ? basePickup * 3.2 : basePickup;
-  const attractRadius = magnetActive ? pickupRadius * 6 : pickupRadius * 2.4;
+  const attractRadius = (magnetActive ? pickupRadius * 6 : pickupRadius * 2.4) * assist.powerUpAttractRadiusMultiplier;
   const attractSpeed = magnetActive ? 0.26 : 0.07;
   for (const power of combat.powerUps) {
     power.ttl -= 1;
@@ -7727,6 +7805,7 @@ function updateRoguelikePowerUps() {
     power.y = projected.y;
   }
   combat.powerUps = combat.powerUps.filter((power) => power.ttl > 0);
+  trimLooseRoguelikeRewards();
 }
 
 function applyRoguelikePowerUp(power) {
@@ -7770,17 +7849,19 @@ function applyRoguelikePowerUp(power) {
       spawnFxImage('crit', px, py, 84, 0.55);
       break;
     case 'screenNuke': {
-      // Liquidation Nuke: clear every on-screen enemy and reward the kills.
+      // Liquidation Nuke: clear every on-screen enemy and reward the kills through
+      // the same resolver as normal combat. This is important for the temporary
+      // Level 1 final boss proxy: bypassing the resolver would leave extraction
+      // permanently locked if the nuke killed the boss.
       const doomed = [...combat.enemies];
       for (const enemy of doomed) {
         enemy.hp = 0;
-        spawnExplosion(enemy.x + 12, enemy.y - 28, '#ff476f');
-        const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
-        combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
-        killEnemy(enemy);
-        combat.xpGems.push({ worldX: enemy.mapX, worldY: enemy.mapY, value: 6, ttl: 900 });
+        resolveRoguelikeEnemyDeath(enemy, {
+          dropRewards: Boolean(enemy.elite || enemy.miniBoss || enemy.finalBossProxy),
+          forceXpValue: Math.max(6, Math.round(calculateRoguelikeKillXp(enemy) * 0.75)),
+        });
       }
-      combat.enemies = [];
+      combat.enemies = combat.enemies.filter((enemy) => enemy.hp > 0);
       spawnFxImage('shockwave', ISO_CENTER_X, ISO_CENTER_Y, 220, 0.7);
       spawnText('LIQUIDATED', px, py, '#ff476f');
       break;
