@@ -171,6 +171,7 @@ import {
   buildPlayerArcadeSnapshot,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
+import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
@@ -2101,6 +2102,36 @@ function retryPublishGameOver() {
 }
 
 async function settleRankedRun(settlementInput, runStats = {}) {
+  // Run integrity gate (handoff §17): before publishing a ranked run on-chain,
+  // sanity-check it against physically-achievable ceilings derived from the
+  // Level 1 balance constants. A tampered client can submit an impossible run
+  // (huge score in no time, boss cleared instantly, combo >> kills). A
+  // 'rejected' verdict is a hard impossibility — never broadcast it and never
+  // record it as official. A 'suspicious' verdict is logged for later review
+  // but still allowed (generous tolerances mean legit runs are never flagged).
+  const integrity = validateRunPlausibility({
+    score: settlementInput.score,
+    kills: runStats.kills ?? 0,
+    maxCombo: runStats.maxCombo ?? 0,
+    survivalSeconds: runStats.survivalSeconds ?? 0,
+    bossDefeated: Boolean(runStats.bossId),
+    level: settlementInput.campaignLevelNumber ?? 1,
+  });
+  if (!integrity.rankable) {
+    console.warn('[integrity] ranked run rejected as implausible:', integrity.flags);
+    lastSettlementError = 'This run could not be verified as a legitimate ranked result and was not published on-chain.';
+    lastSettlementSucceeded = false;
+    if (dom.combatStatus) {
+      dom.combatStatus.textContent = 'Run not published: it failed the ranked integrity check (implausible score/time). Free-mode practice is unaffected.';
+    }
+    renderGameOverSummary();
+    renderCombatMenuActionGrid();
+    return;
+  }
+  if (integrity.verdict === 'suspicious') {
+    console.warn('[integrity] ranked run flagged suspicious (published, marked for review):', integrity.flags);
+  }
+
   // LIVE player-signed path: if settlement is live AND the player connected a
   // real injected wallet (not the mock), submit the run on-chain from THEIR
   // wallet (one confirmation, they pay the zkLTC gas). Otherwise fall back to
