@@ -84,10 +84,12 @@ test('main runtime uses clean Level 1 loading art and authored opening ground ro
   assert.equal(source.includes('hmhLoadingBackgroundForLevel'), true, 'loading art should be selected through a level-aware helper');
   const loadingHelper = source.slice(source.indexOf('function hmhLoadingBackgroundForLevel'), source.indexOf('async function showHMHLoadingScreen'));
   assert.equal(loadingHelper.includes("level.id === HMH_LEVEL_ONE_ID"), true, 'Level 1 should get a dedicated clean loading branch');
-  assert.equal(loadingHelper.includes('HMH_KEY_ART_BG'), true, 'Level 1 loading should use clean HMH key art instead of bad goblin/zombie loading art');
+  assert.equal(loadingHelper.includes('return null'), true, 'Level 1 loading should avoid all static enemy-horde key art');
+  assert.equal(loadingHelper.includes('return HMH_KEY_ART_BG'), false, 'Level 1 loading must not use zombie/goblin key art');
 
   const loadingScreen = source.slice(source.indexOf('async function showHMHLoadingScreen'), source.indexOf('// Run the actual game setup while the keyart'));
   assert.equal(loadingScreen.includes('hmhLoadingBackgroundForLevel(level)'), true, 'loading screen should not randomly choose legacy loading key art for every level');
+  assert.equal(loadingScreen.includes('hmhNeutralLoadingBackground()'), true, 'Level 1 null art branch should render a neutral gradient backdrop');
   assert.equal(loadingScreen.includes('Math.random() * HMH_LOADING_KEYARTS.length'), false, 'random legacy loading-keyart selection must not be inline in showHMHLoadingScreen');
 
   const tileDraw = source.slice(source.indexOf('function drawProductionIsoTile'), source.indexOf('function productionPropForIndex'));

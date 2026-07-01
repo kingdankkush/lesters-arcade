@@ -4601,8 +4601,14 @@ function waitForPlayerReady() {
 
 function hmhLoadingBackgroundForLevel(levelMeta = currentCampaignLevel()) {
   const level = getHmhCampaignLevel(levelMeta?.id ?? levelMeta ?? DEFAULT_CAMPAIGN_LEVEL_ID);
-  if (level.id === HMH_LEVEL_ONE_ID) return HMH_KEY_ART_BG;
+  // Level 1 should not show legacy/key-art enemy hordes during load. The actual
+  // authored gameplay canvas appears immediately behind READY after generation.
+  if (level.id === HMH_LEVEL_ONE_ID) return null;
   return HMH_LOADING_KEYARTS[Math.floor(Math.random() * HMH_LOADING_KEYARTS.length)] ?? HMH_KEY_ART_BG;
+}
+
+function hmhNeutralLoadingBackground() {
+  return 'radial-gradient(circle at 50% 44%, rgba(33, 255, 184, 0.22), rgba(7, 12, 31, 0.18) 28%, rgba(4, 8, 24, 0.96) 72%), linear-gradient(135deg, #06081d 0%, #12113a 44%, #071a24 100%)';
 }
 
 async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel()) {
@@ -4613,7 +4619,7 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
   const overlay = document.createElement('div');
   overlay.id = 'hmhLoadingOverlay';
   overlay.className = 'hmh-loading-overlay';
-  overlay.style.backgroundImage = `url(${bgUrl})`;
+  overlay.style.backgroundImage = bgUrl ? `url(${bgUrl})` : hmhNeutralLoadingBackground();
 
 
   // Progress bar container
