@@ -2,6 +2,7 @@ import {
   HMH_CURATED_LEVEL_KIT,
   curatedLevelKitAssetByKey,
 } from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
+import { HMH_LEVEL_ONE_AAA_SLICE_PLAN } from './hmh-level-one-aaa-slices.mjs';
 
 const LEVEL_1_ID = 'level-1-crypto-wasteland';
 
@@ -289,6 +290,7 @@ export const HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT = Object.freeze({
   boundaries: HMH_LEVEL_ONE_CURATED_BOUNDARIES,
   criticalPath: HMH_LEVEL_ONE_CURATED_ROUTE,
   pointsOfInterest: HMH_LEVEL_ONE_CURATED_POIS,
+  aaaSlicePlan: HMH_LEVEL_ONE_AAA_SLICE_PLAN,
   assetRefs: Object.freeze(combinedAssetRefs),
   missingAssetRequests: HMH_LEVEL_ONE_CURATED_MISSING_ASSET_REQUESTS,
 });

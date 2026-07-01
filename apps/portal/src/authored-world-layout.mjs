@@ -13,6 +13,7 @@
 // - Navigation cues (signposts, lights, path markers that guide the player)
 
 import { SCENE_CELL } from './scene-templates.mjs';
+import { aaaLevelOneSceneObjectsForDistrict } from './hmh-level-one-aaa-slices.mjs';
 
 // World tile size in pixels (matches renderer's tile size)
 const TILE_SIZE = 30;
@@ -1100,5 +1101,8 @@ export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto
     objective: node.objective,
   }));
   const foregrounds = getAuthoredForegroundSceneObjects(districtId, levelId);
-  return Object.freeze([...base, ...extra, ...routeMarkers, ...foregrounds]);
+  const aaaInteractiveObjects = levelId === 'level-1-crypto-wasteland'
+    ? aaaLevelOneSceneObjectsForDistrict(districtId)
+    : [];
+  return Object.freeze([...base, ...extra, ...routeMarkers, ...foregrounds, ...aaaInteractiveObjects]);
 }

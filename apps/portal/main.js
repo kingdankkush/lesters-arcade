@@ -8748,6 +8748,9 @@ function _buildAuthoredObstaclesForLevel(levelId) {
         text: obj.text ?? null,
         foregroundBand: obj.foregroundBand ?? null,
         animationCue: obj.animationCue ?? null,
+        interactive: obj.interactive ?? null,
+        hp: obj.hp ?? null,
+        sourceZoneId: obj.interactive?.zoneId ?? null,
       });
     }
   }

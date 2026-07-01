@@ -80,6 +80,39 @@ def wagon_ring(d,s):
 def vault(d,s):
     shadow(d,78,100,48,8); d.rectangle((36,34,120,103),fill=(65,70,82,255),outline=P['outline']); d.rectangle((43,22,113,43),fill=P['gold'],outline=P['outline']); d.text((55,25),'VAULT',fill=(43,32,16,255)); d.ellipse((60,48,100,88),fill=(92,100,115,255),outline=P['outline']); d.ellipse((73,61,87,75),fill=P['gold'],outline=P['outline'])
 
+def cohesive_barrel(d,s):
+    shadow(d,58,85,38,7); d.ellipse((26,28,90,46),fill=P['wood2'],outline=P['outline']); d.rectangle((26,37,90,84),fill=P['wood'],outline=P['outline']); d.ellipse((26,73,90,94),fill=(88,45,28,255),outline=P['outline']);
+    for x in [36,58,80]: d.line((x,39,x,82),fill=(58,32,24,255),width=2)
+    d.arc((34,47,82,77),200,340,fill=P['gold'],width=3); d.text((45,52),'LTC',fill=P['gold'])
+def cohesive_ghost_sign(d,s):
+    shadow(d,54,82,34,5); d.rectangle((50,28,58,88),fill=P['wood'],outline=P['outline']); d.polygon([(20,34),(88,26),(98,50),(30,58)],fill=(139,74,41,255),outline=P['outline']); d.text((31,36),'RUGS?',fill=P['gold']); d.line((21,61,91,55),fill=(92,50,34,255),width=4)
+def cohesive_mushroom_ring(d,s):
+    shadow(d,72,76,54,8); d.ellipse((20,42,124,88),outline=(255,122,48,190),width=4); 
+    for i,x in enumerate([32,48,64,82,100,115]):
+        y=66+(i%2)*8; d.ellipse((x-8,y-12,x+8,y),fill=(255,112,43,255),outline=P['outline']); d.rectangle((x-2,y-1,x+2,y+10),fill=(214,178,116,255),outline=P['outline'])
+    d.ellipse((55,54,88,73),fill=(255,180,67,70))
+def cohesive_ford_planks(d,s):
+    shadow(d,70,62,52,5); d.ellipse((10,38,130,70),fill=P['water']);
+    for i,x in enumerate([25,43,61,79,97]):
+        d.polygon([(x,33+i%2*2),(x+20,39+i%2*2),(x+15,51+i%2*2),(x-6,46+i%2*2)],fill=P['wood2'],outline=P['outline'])
+    for x in [20,54,88]: d.arc((x,44,x+42,68),200,345,fill=(127,240,255,135),width=2)
+def cohesive_cache(d,s):
+    shadow(d,66,78,44,7); d.polygon([(25,42),(76,30),(113,48),(62,63)],fill=(193,120,55,255),outline=P['outline']); d.polygon([(25,42),(62,63),(62,91),(25,68)],fill=(117,69,38,255),outline=P['outline']); d.polygon([(113,48),(62,63),(62,91),(113,72)],fill=(151,84,42,255),outline=P['outline']); d.rectangle((51,48,77,63),fill=P['gold'],outline=P['outline']); d.text((55,50),'Ł',fill=(40,28,16,255))
+def cohesive_gas_pump(d,s):
+    shadow(d,58,91,34,6); d.rectangle((34,24,82,89),fill=(174,50,46,255),outline=P['outline']); d.rectangle((43,34,72,52),fill=(60,117,130,255),outline=P['outline']); d.text((45,57),'GAS',fill=P['gold']); d.line((82,48,104,60),fill=P['outline'],width=5); d.line((82,48,104,60),fill=(30,30,34,255),width=3); d.polygon([(105,52),(116,64),(103,70)],fill=P['fire'],outline=P['outline']); d.line((28,18,20,8),fill=P['cyan'],width=2); d.line((25,16,13,18),fill=P['cyan'],width=2)
+def cohesive_crates(d,s):
+    shadow(d,76,88,52,7)
+    for ox,oy,c in [(20,48,P['wood']),(62,38,P['wood2']),(78,62,(128,72,38,255))]:
+        d.rectangle((ox,oy,ox+42,oy+34),fill=c,outline=P['outline']); d.line((ox+4,oy+4,ox+38,oy+30),fill=(70,42,29,255),width=3); d.line((ox+38,oy+4,ox+4,oy+30),fill=(70,42,29,255),width=3)
+def cohesive_boss_gate(d,s):
+    shadow(d,85,120,66,9); d.rectangle((26,46,44,118),fill=(72,47,40,255),outline=P['outline']); d.rectangle((126,46,144,118),fill=(72,47,40,255),outline=P['outline']); d.polygon([(25,40),(85,16),(145,40),(139,55),(85,32),(31,55)],fill=(121,57,44,255),outline=P['outline']); d.text((61,37),'RUGPULL',fill=P['gold']);
+    for x in [54,75,96,117]: d.rectangle((x,55,x+10,116),fill=(96,62,46,255),outline=P['outline'])
+def cohesive_warning(d,s):
+    shadow(d,54,85,34,5); d.rectangle((50,30,58,88),fill=P['wood'],outline=P['outline']); d.polygon([(24,30),(92,30),(102,56),(16,56)],fill=(191,58,45,255),outline=P['outline']); d.text((30,36),'NO EXIT',fill=P['gold']); d.polygon([(54,62),(70,78),(38,78)],fill=P['gold'],outline=P['outline'])
+def cohesive_extraction(d,s):
+    shadow(d,84,74,62,6); d.polygon([(18,56),(84,34),(150,56),(84,78)],fill=(55,58,62,255),outline=P['outline']); d.polygon([(38,56),(84,43),(130,56),(84,69)],outline=P['cyan'],fill=(64,93,100,180)); d.text((68,52),'EXIT',fill=P['gold']);
+    for x in [32,136]: d.polygon([(x,43),(x+7,57),(x,70),(x-7,57)],fill=P['fire'],outline=P['outline']); d.ellipse((x-14,52,x+14,66),fill=(81,232,240,80))
+
 def main():
     save('cave-mouth-rocks','dry-forest-cave','wall',(136,104),cave_rocks,'Cave-mouth rock funnel and dark entrance.')
     save('torch-pockets','dry-forest-cave','lamp',(104,82),torch,'Torch pocket telegraphs cave ambush light.')
@@ -96,6 +129,16 @@ def main():
     save('false-front-barricade','rugpull-gulch','wall',(156,124),false_front,'False-front barricade for Rugpull Gulch.')
     save('wagon-ring','rugpull-gulch','crate',(144,112),wagon_ring,'Wagon ring arena core.')
     save('vault-signage','rugpull-gulch','sign',(156,112),vault,'Vault signage sniper-lane read.')
+    save('cohesive-saloon-cover-barrel','cohesive-level1','crate',(116,104),cohesive_barrel,'Cohesive palette replacement interactive destructible saloon cover barrel.')
+    save('cohesive-ghost-road-sign','cohesive-level1','sign',(116,98),cohesive_ghost_sign,'Cohesive palette replacement ghost-town route sign.')
+    save('cohesive-mushroom-spore-ring','cohesive-level1','hazard',(144,104),cohesive_mushroom_ring,'Cohesive palette interactive mushroom hazard replacement.')
+    save('cohesive-shoreline-ford-planks','cohesive-level1','bridge',(144,86),cohesive_ford_planks,'Cohesive palette shoreline ford bridge/readability replacement.')
+    save('cohesive-desert-cache-crate','cohesive-level1','crate',(136,104),cohesive_cache,'Cohesive palette interactive Litecoin reward-cache replacement.')
+    save('cohesive-gas-pump-explosive','cohesive-level1','barrel',(124,108),cohesive_gas_pump,'Cohesive palette interactive explosive gas-pump replacement.')
+    save('cohesive-warehouse-crate-stack','cohesive-level1','crate',(148,112),cohesive_crates,'Cohesive palette destructible warehouse crate replacement.')
+    save('cohesive-boss-yard-gate','cohesive-level1','gate',(170,132),cohesive_boss_gate,'Cohesive palette boss-yard gate replacement and final lock read.')
+    save('cohesive-rugpull-warning-sign','cohesive-level1','sign',(116,98),cohesive_warning,'Cohesive palette Rugpull warning sign replacement.')
+    save('cohesive-extraction-flare-road','cohesive-level1','sign',(168,92),cohesive_extraction,'Cohesive palette extraction flare road cue replacement.')
     manifest={'id':'hmh-final-setpiece-kit-v1','sourcePolicy':'Original repo-owned final POI setpiece art for HMH Level 1; no downloaded pixels copied.','assetCount':len(ASSETS),'assets':ASSETS}
     (MANIFEST_DIR/'hmh-final-setpiece-kit-manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf-8')
     mjs='// Generated by scripts/generate-hmh-final-setpiece-kit.py\nexport const HMH_FINAL_SETPIECE_KIT = Object.freeze('+json.dumps(manifest,indent=2)+');\n\nconst FINAL_SETPIECE_BY_KEY = new Map(HMH_FINAL_SETPIECE_KIT.assets.map((asset) => [asset.key, Object.freeze(asset)]));\nexport function finalSetpieceAssetByKey(key) { return FINAL_SETPIECE_BY_KEY.get(key) ?? null; }\n'

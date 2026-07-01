@@ -2,7 +2,7 @@
 export const HMH_FINAL_SETPIECE_KIT = Object.freeze({
   "id": "hmh-final-setpiece-kit-v1",
   "sourcePolicy": "Original repo-owned final POI setpiece art for HMH Level 1; no downloaded pixels copied.",
-  "assetCount": 15,
+  "assetCount": 25,
   "assets": [
     {
       "key": "level-final-setpiece/cave-mouth-rocks",
@@ -168,6 +168,116 @@ export const HMH_FINAL_SETPIECE_KIT = Object.freeze({
       "animated": false,
       "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
       "notes": "Vault signage sniper-lane read."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-saloon-cover-barrel",
+      "category": "cohesive-level1",
+      "role": "crate",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-saloon-cover-barrel.png",
+      "width": 116,
+      "height": 104,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette replacement interactive destructible saloon cover barrel."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-ghost-road-sign",
+      "category": "cohesive-level1",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-ghost-road-sign.png",
+      "width": 116,
+      "height": 98,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette replacement ghost-town route sign."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-mushroom-spore-ring",
+      "category": "cohesive-level1",
+      "role": "hazard",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-mushroom-spore-ring.png",
+      "width": 144,
+      "height": 104,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette interactive mushroom hazard replacement."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-shoreline-ford-planks",
+      "category": "cohesive-level1",
+      "role": "bridge",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-shoreline-ford-planks.png",
+      "width": 144,
+      "height": 86,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette shoreline ford bridge/readability replacement."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-desert-cache-crate",
+      "category": "cohesive-level1",
+      "role": "crate",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-desert-cache-crate.png",
+      "width": 136,
+      "height": 104,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette interactive Litecoin reward-cache replacement."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-gas-pump-explosive",
+      "category": "cohesive-level1",
+      "role": "barrel",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-gas-pump-explosive.png",
+      "width": 124,
+      "height": 108,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette interactive explosive gas-pump replacement."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-warehouse-crate-stack",
+      "category": "cohesive-level1",
+      "role": "crate",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-warehouse-crate-stack.png",
+      "width": 148,
+      "height": 112,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette destructible warehouse crate replacement."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-boss-yard-gate",
+      "category": "cohesive-level1",
+      "role": "gate",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-boss-yard-gate.png",
+      "width": 170,
+      "height": 132,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette boss-yard gate replacement and final lock read."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-rugpull-warning-sign",
+      "category": "cohesive-level1",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-rugpull-warning-sign.png",
+      "width": 116,
+      "height": 98,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette Rugpull warning sign replacement."
+    },
+    {
+      "key": "level-final-setpiece/cohesive-extraction-flare-road",
+      "category": "cohesive-level1",
+      "role": "sign",
+      "src": "./assets/generated/hmh-coherent-world/level-final-setpiece/cohesive-extraction-flare-road.png",
+      "width": 168,
+      "height": 92,
+      "animated": false,
+      "sourcePolicy": "Original repo-owned final POI setpiece art; no downloaded pixels copied.",
+      "notes": "Cohesive palette extraction flare road cue replacement."
     }
   ]
 });
