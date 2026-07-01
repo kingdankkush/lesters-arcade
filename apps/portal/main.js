@@ -64,6 +64,11 @@ import {
   buildLevelOneBossChoreographyPlan,
   buildLevelOneSpawnCompositionAt,
 } from './src/hmh-level-one-balance-pass.mjs';
+import {
+  buildLevelOneCuratedVisibleSceneObjects,
+  levelOneCuratedAssetSrc,
+  levelOneCuratedRuntimeArtPolicy,
+} from './src/hmh-level-one-visible-runtime.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
@@ -8978,6 +8983,21 @@ function coherentWorldImage(assetKey) {
   if (!coherentWorldImageCache.has(src)) coherentWorldImageCache.set(src, loadImageAsset(src));
   return coherentWorldImageCache.get(src);
 }
+const curatedLevelOneImageCache = new Map();
+function curatedLevelOneImage(assetKey) {
+  const src = levelOneCuratedAssetSrc(assetKey);
+  if (!src) return null;
+  if (!curatedLevelOneImageCache.has(src)) curatedLevelOneImageCache.set(src, loadImageAsset(src));
+  return curatedLevelOneImageCache.get(src);
+}
+function isLevelOneCuratedRuntime() {
+  const policy = levelOneCuratedRuntimeArtPolicy();
+  return Boolean(
+    combat.roguelikeRun
+    && policy.sceneObjectsNearAllowed === false
+    && (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === HMH_LEVEL_ONE_ID,
+  );
+}
 // Scene-template role -> PROP_ROLE_STYLE key (draw size + collision footprint).
 const SCENE_ROLE_TO_STYLE = Object.freeze({
   building: 'building', bigprop: 'bigprop', fountain: 'bigprop',
@@ -9009,10 +9029,17 @@ function currentObstacles() {
   // for zero pop-in; ±18 tiles in windowed mode.
   const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
   const sceneWindow = isFullscreen ? 45 : 18;
-  const scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, sceneWindow, biomeAt, {
-    reserveRadius: 6,
-    templateContextForCell: (cellX, cellY) => sceneTemplateContextAt(cellX, cellY),
-  });
+  const useCuratedLevelOneRuntime = isLevelOneCuratedRuntime();
+  let curatedVisibleObjects = [];
+  let scene = [];
+  if (isLevelOneCuratedRuntime()) {
+    curatedVisibleObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: combat.playerMapX, playerY: combat.playerMapY, window: sceneWindow });
+  } else {
+    scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, sceneWindow, biomeAt, {
+      reserveRadius: 6,
+      templateContextForCell: (cellX, cellY) => sceneTemplateContextAt(cellX, cellY),
+    });
+  }
   const sceneObstacles = scene.map((o) => ({
     id: o.id,
     worldX: o.worldX,
@@ -9024,6 +9051,22 @@ function currentObstacles() {
     sceneAssetKey: o.assetKey,
     sceneRole: o.role,
     drawOrderBias: o.drawOrderBias ?? 0,
+  }));
+  const curatedObstacles = curatedVisibleObjects.map((o) => ({
+    id: o.id,
+    worldX: o.gridX,
+    worldY: o.gridY,
+    radius: o.role === 'landmark' ? 1.65 : o.solid ? 0.72 : 0,
+    solid: o.solid,
+    kind: o.role === 'landmark' || o.sceneRole === 'wall' ? 'building' : 'doodad',
+    biome: null,
+    curatedAssetKey: o.assetKey,
+    sceneRole: o.sceneRole ?? o.role,
+    drawOrderBias: o.drawOrderBias ?? 0,
+    zHeight: o.zHeight ?? 0,
+    text: o.text ?? null,
+    curated: true,
+    sourceZoneId: o.sourceZoneId ?? null,
   }));
   const encounterSceneObjects = combat.activePoiEncounterVisualPlan
     ? buildEncounterSceneObjects({
@@ -9049,10 +9092,10 @@ function currentObstacles() {
   // readable landmarks (gas station, saloon, crossroads signpost, oasis,
   // billboard) instead of purely procedural scatter. These objects are placed
   // at fixed world coordinates that define each district's visual identity.
-  const authoredObjects = authoredObstaclesNear(combat.playerMapX, combat.playerMapY, sceneWindow)
+  const authoredObjects = (useCuratedLevelOneRuntime ? [] : authoredObstaclesNear(combat.playerMapX, combat.playerMapY, sceneWindow))
     .map((obstacle) => refreshLevelOneInteractiveObstacleState(obstacle))
     .filter((obstacle) => !obstacle.hidden);
-  _obstacleCache = [...sceneObstacles, ...encounterSceneObjects, ...authoredObjects];
+  _obstacleCache = [...curatedObstacles, ...sceneObstacles, ...encounterSceneObjects, ...authoredObjects];
 
   _obstacleCacheFrame = combat.frame;
   return _obstacleCache;
@@ -9089,6 +9132,16 @@ function placeableProps(worldProps) {
 // SAME art at the SAME size. "building" obstacles bias toward building/bigprop
 // art; "doodad" obstacles toward trees/small props, matched to the biome.
 function resolveObstacleProp(obstacle, worldProps) {
+  if (obstacle.curatedAssetKey) {
+    const img = curatedLevelOneImage(obstacle.curatedAssetKey);
+    const styleKey = obstacle.sceneRole === 'road' || obstacle.sceneRole === 'water-strip'
+      ? 'bigprop'
+      : obstacle.sceneRole === 'wall'
+        ? 'bigprop'
+        : SCENE_ROLE_TO_STYLE[obstacle.sceneRole] ?? 'smallprop';
+    const style = PROP_ROLE_STYLE[styleKey] ?? PROP_ROLE_STYLE.smallprop;
+    return { prop: { role: obstacle.sceneRole, src: obstacle.curatedAssetKey, curated: true }, img, style };
+  }
   // Coherent scene-template object: draw the exact art the template chose
   // (street lamp, arcade cabinet, TV-on-table, tree, fountain, etc.) at the
   // size dictated by its role. This is the coherent-placement path.
@@ -10373,13 +10426,14 @@ function drawSingleEnemy(ctx, enemy) {
 
     // Canonical actor art first, then animated roster, then biome stills.
     const animFrame = roguelikeEnemyAnimatedFrame(enemy);
-    const waveFrame = isMini ? null : roguelikeEnemyWaveArt(enemy);
+    const waveFrame = isLevelOneCuratedRuntime() ? null : (isMini ? null : roguelikeEnemyWaveArt(enemy));
     const pipelineFrame = pipelineActorFrame(enemy);
     const overlayFrame = pipelineActorOverlayFrame(enemy);
+    const legacyEnemyFrame = isLevelOneCuratedRuntime() ? null : enemyArtFor(enemy);
     const enemyFrame = (imageReady(pipelineFrame) ? pipelineFrame : null)
       ?? (imageReady(animFrame) ? animFrame : null)
       ?? (imageReady(waveFrame) ? waveFrame : null)
-      ?? enemyArtFor(enemy);
+      ?? legacyEnemyFrame;
     const drewBespokeKit = drawBespokeEnemyKit(ctx, enemy, intent, renderProfile);
     if (!drewBespokeKit && imageReady(enemyFrame)) {
       const isAnim = enemyFrame === animFrame;
@@ -10416,6 +10470,7 @@ function drawSingleEnemy(ctx, enemy) {
       }
       ctx.restore();
     } else if (!drewBespokeKit) {
+      if (isLevelOneCuratedRuntime()) return;
       ctx.fillStyle = renderProfile.fallbackColor ?? (isMini ? '#ff7b2f' : enemy.class?.includes('flying') ? '#6d3cff' : enemy.class === 'armored' ? '#aab6d3' : '#ff476f');
       ctx.fillRect(enemy.x, enemy.y - h, w, h);
       ctx.fillStyle = '#080616';
