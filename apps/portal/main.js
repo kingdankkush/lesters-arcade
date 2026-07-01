@@ -66,8 +66,9 @@ import {
 } from './src/hmh-level-one-balance-pass.mjs';
 import {
   buildLevelOneCuratedVisibleSceneObjects,
-  levelOneCuratedAssetSrc,
   levelOneCuratedRuntimeArtPolicy,
+  levelOneCuratedAssetSrc,
+  levelOneOpeningGroundRoleForTile,
 } from './src/hmh-level-one-visible-runtime.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
@@ -4598,9 +4599,15 @@ function waitForPlayerReady() {
 }
 
 
-async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel()) {
-  const bgUrl = HMH_LOADING_KEYARTS[Math.floor(Math.random() * HMH_LOADING_KEYARTS.length)];
+function hmhLoadingBackgroundForLevel(levelMeta = currentCampaignLevel()) {
   const level = getHmhCampaignLevel(levelMeta?.id ?? levelMeta ?? DEFAULT_CAMPAIGN_LEVEL_ID);
+  if (level.id === HMH_LEVEL_ONE_ID) return HMH_KEY_ART_BG;
+  return HMH_LOADING_KEYARTS[Math.floor(Math.random() * HMH_LOADING_KEYARTS.length)] ?? HMH_KEY_ART_BG;
+}
+
+async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel()) {
+  const level = getHmhCampaignLevel(levelMeta?.id ?? levelMeta ?? DEFAULT_CAMPAIGN_LEVEL_ID);
+  const bgUrl = hmhLoadingBackgroundForLevel(level);
   // Create loading overlay (fully opaque so nothing behind it is visible until
   // we're ready to reveal the freshly-initialized roguelike scene).
   const overlay = document.createElement('div');
@@ -8311,7 +8318,7 @@ function neighborBiomesForWorld(seed, worldX, worldY) {
   ];
 }
 
-function sbsGroundTileForWorld(seed, worldX, worldY, biome, theme) {
+function sbsGroundTileForWorld(seed, worldX, worldY, biome, theme, neighborsOverride = null) {
   const asset = selectHmhGroundTile({
     levelId: combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID,
     seed,
@@ -8319,7 +8326,7 @@ function sbsGroundTileForWorld(seed, worldX, worldY, biome, theme) {
     worldY,
     biome,
     theme,
-    neighbors: neighborBiomesForWorld(seed, worldX, worldY),
+    neighbors: Array.isArray(neighborsOverride) ? neighborsOverride : neighborBiomesForWorld(seed, worldX, worldY),
   });
   const image = sbsGroundTileImage(asset);
   return asset ? { asset, image } : null;
@@ -8519,8 +8526,18 @@ function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   // interior, park, fenced yard, walled compound), use the floor tile that
   // matches that scene's theme so the ground reads as part of the area.
   const seed = combat.roguelikeRun?.seed ?? 0;
-  const theme = sceneGroundThemeAt(seed, worldX, worldY);
-  let ground = sbsGroundTileForWorld(seed, worldX, worldY, palette.biome, theme);
+  const authoredGroundRole = isLevelOneCuratedRuntime()
+    ? levelOneOpeningGroundRoleForTile({ worldX, worldY })
+    : null;
+  const theme = authoredGroundRole ?? sceneGroundThemeAt(seed, worldX, worldY);
+  let ground = sbsGroundTileForWorld(
+    seed,
+    worldX,
+    worldY,
+    authoredGroundRole ?? palette.biome,
+    theme,
+    authoredGroundRole ? [] : null,
+  );
   let tileImg = ground?.image ?? null;
   if (!imageReady(tileImg) && theme && THEME_GROUND_TILE[theme]) {
     tileImg = wave2TileImage(THEME_GROUND_TILE[theme]);

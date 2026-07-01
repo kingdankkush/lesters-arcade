@@ -5,8 +5,10 @@ import { fileURLToPath } from 'node:url';
 
 import {
   buildLevelOneCuratedVisibleSceneObjects,
+  buildLevelOneOpeningComposition,
   levelOneCuratedRuntimeArtPolicy,
   levelOneCuratedAssetSrc,
+  levelOneOpeningGroundRoleForTile,
 } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 import { curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
 
@@ -18,10 +20,31 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 18 });
   assert.equal(objects.length >= 18, true, `expected a dense visible authored spawn slice, got ${objects.length}`);
   assert.equal(objects.some((object) => object.id.includes('spawn-broken-road')), true, 'spawn road beat should be visible immediately');
-  assert.equal(objects.some((object) => object.assetKey === 'level-1/road/road1-ground'), true, 'spawn should use the curated broken-road art');
+  assert.equal(objects.some((object) => object.assetKey === 'level-1/building/landmark-gas-station'), true, 'opening should have a strong curated landmark visible at spawn');
+  assert.equal(objects.some((object) => object.assetKey === 'level-1/building/ghost-boarded-storefront'), true, 'opening should telegraph the next authored town beat');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign'), true, 'spawn should include route signage from the curated folder');
   assert.equal(objects.every((object) => object.curated === true), true, 'all visible-runtime objects should be tagged as curated');
   assert.equal(objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'every object should resolve to Justin-curated manifest art');
+});
+
+test('Level 1 opening composition declares AAA-readable route, boundary, landmark, and negative-space layers', () => {
+  const composition = buildLevelOneOpeningComposition();
+  assert.equal(composition.id, 'level-one-opening-authored-aaa-v1');
+  assert.equal(composition.clearLane.widthTiles >= 7, true, 'opening needs a wide readable player lane');
+  assert.equal(composition.routeTiles.length >= 18, true, 'route ground must be authored as a broad road/plaza, not three prop tiles');
+  assert.equal(composition.landmarks.length >= 4, true, 'spawn view needs strong landmarks, not scatter');
+  assert.equal(composition.boundaries.length >= 8, true, 'route needs visible diegetic boundaries');
+  assert.equal(composition.setDressing.length <= 10, true, 'set dressing must stay capped to avoid prop soup');
+  assert.equal(composition.objects.every((object) => object.use !== 'terrain'), true, 'terrain must be ground-role metadata, not obstacle props');
+  assert.equal(composition.objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'all opening objects use approved curated art');
+});
+
+test('Level 1 opening ground roles replace noisy procedural sand/grass with authored road, shoulder, and boundary bands', () => {
+  assert.equal(levelOneOpeningGroundRoleForTile({ worldX: 0, worldY: 5 }), 'road', 'player spawn should sit on an authored road/plaza tile');
+  assert.equal(levelOneOpeningGroundRoleForTile({ worldX: 10, worldY: 5 }), 'road', 'forward route should stay clear road');
+  assert.equal(levelOneOpeningGroundRoleForTile({ worldX: 22, worldY: 3 }), 'rocky', 'north shoulder should read as a rocky boundary band');
+  assert.equal(levelOneOpeningGroundRoleForTile({ worldX: 18, worldY: 8 }), 'grass', 'south shoulder can carry authored vegetation contrast');
+  assert.equal(levelOneOpeningGroundRoleForTile({ worldX: 60, worldY: 40 }), null, 'override must not repaint the entire level');
 });
 
 test('Level 1 curated visible runtime maps approved asset keys to direct runtime image sources', () => {
@@ -54,6 +77,21 @@ test('main runtime consumes the curated visible runtime before generic sceneObje
   assert.equal(enemyDraw.includes('const waveFrame = isLevelOneCuratedRuntime() ? null :'), true, 'Level 1 should not use old HMH_ENEMIES_WAVE fallback art');
   assert.equal(enemyDraw.includes('const legacyEnemyFrame = isLevelOneCuratedRuntime() ? null : enemyArtFor(enemy)'), true, 'Level 1 should not fall back to old combatArt enemy sprites');
   assert.equal(enemyDraw.includes('if (isLevelOneCuratedRuntime()) return;'), true, 'Level 1 should suppress rectangle fallback enemies instead of showing bad placeholder art');
+});
+
+test('main runtime uses clean Level 1 loading art and authored opening ground roles', () => {
+  const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
+  assert.equal(source.includes('hmhLoadingBackgroundForLevel'), true, 'loading art should be selected through a level-aware helper');
+  const loadingHelper = source.slice(source.indexOf('function hmhLoadingBackgroundForLevel'), source.indexOf('async function showHMHLoadingScreen'));
+  assert.equal(loadingHelper.includes("level.id === HMH_LEVEL_ONE_ID"), true, 'Level 1 should get a dedicated clean loading branch');
+  assert.equal(loadingHelper.includes('HMH_KEY_ART_BG'), true, 'Level 1 loading should use clean HMH key art instead of bad goblin/zombie loading art');
+
+  const loadingScreen = source.slice(source.indexOf('async function showHMHLoadingScreen'), source.indexOf('// Run the actual game setup while the keyart'));
+  assert.equal(loadingScreen.includes('hmhLoadingBackgroundForLevel(level)'), true, 'loading screen should not randomly choose legacy loading key art for every level');
+  assert.equal(loadingScreen.includes('Math.random() * HMH_LOADING_KEYARTS.length'), false, 'random legacy loading-keyart selection must not be inline in showHMHLoadingScreen');
+
+  const tileDraw = source.slice(source.indexOf('function drawProductionIsoTile'), source.indexOf('function productionPropForIndex'));
+  assert.equal(tileDraw.includes('levelOneOpeningGroundRoleForTile'), true, 'floor renderer should consume the authored Level 1 opening ground override');
 });
 
 test('package check gate includes the visible runtime module and regression test', () => {
