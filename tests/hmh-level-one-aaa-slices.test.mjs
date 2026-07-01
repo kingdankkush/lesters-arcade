@@ -14,9 +14,11 @@ import {
   aaaLevelOneRouteActs,
   aaaLevelOnePoiInteractivesForZone,
   aaaLevelOneReplacementAssetForRole,
+  levelOneInteractiveDebrisStateForObstacle,
   levelOneInteractiveHitPlan,
   levelOneInteractiveHazardEffectAt,
   levelOneInteractiveRuntimeStateForObstacle,
+  levelOneInteractiveSfxCuePlan,
   validateLevelOneAaaSlicePlan,
 } from '../apps/portal/src/hmh-level-one-aaa-slices.mjs';
 
@@ -216,6 +218,108 @@ test('main runtime wires Level 1 interactive props into bullet, grenade, hazard,
   const obstacleBlock = source.slice(source.indexOf('function _buildAuthoredObstaclesForLevel'), source.indexOf('function buildObstacleRenderEntries'));
   assert.equal(obstacleBlock.includes('refreshLevelOneInteractiveObstacleState'), true, 'authored obstacles should refresh gate/flare state each frame');
   assert.equal(source.includes('interactiveState?.glow'), true, 'renderer should visually pulse unlocked extraction cues');
+});
+
+test('Level 1 destroyed interactives leave readable debris instead of disappearing instantly', () => {
+  const cache = {
+    id: 'aaa-desert-cache-crate-a',
+    worldX: 22,
+    worldY: 6,
+    radius: 0.42,
+    hp: 0,
+    destroyed: true,
+    sceneAssetKey: 'level-final-setpiece/cohesive-desert-cache-crate',
+    interactive: { kind: 'reward-cache', reward: 'litecoin-cache', zoneId: 'desert-bone-camp' },
+  };
+  const debris = levelOneInteractiveDebrisStateForObstacle(cache, { frame: 18 });
+  assert.equal(debris.visible, true);
+  assert.equal(debris.solid, false);
+  assert.equal(debris.drawMode, 'procedural-debris');
+  assert.equal(debris.fragmentCount >= 5, true);
+  assert.match(debris.label, /cache/i);
+  assert.equal(debris.palette.includes('#d9a441'), true, 'debris keeps the dusty/gold Level 1 palette');
+
+  const pump = {
+    id: 'aaa-gas-pump-explosive-a',
+    worldX: 48,
+    worldY: 7,
+    radius: 0.42,
+    hp: 0,
+    destroyed: true,
+    sceneAssetKey: 'level-final-setpiece/cohesive-gas-pump-explosive',
+    interactive: { kind: 'hazard', chainDetonation: true, zoneId: 'warehouse-gas-station-yard' },
+  };
+  const pumpDebris = levelOneInteractiveDebrisStateForObstacle(pump, { frame: 24 });
+  assert.equal(pumpDebris.visible, true);
+  assert.equal(pumpDebris.fragmentCount >= debris.fragmentCount, true, 'explosives leave larger readable debris');
+  assert.equal(pumpDebris.palette.includes('#ff7b2f'), true, 'explosive debris carries orange blast color');
+
+  const gate = { destroyed: true, interactive: { kind: 'gate' } };
+  assert.equal(levelOneInteractiveDebrisStateForObstacle(gate).visible, false, 'boss gate is stateful, not shot into debris');
+});
+
+test('Level 1 POI-specific SFX cue plan names cache, gas, mushroom, gate, and extraction events', () => {
+  const cache = { interactive: { kind: 'reward-cache', zoneId: 'desert-bone-camp' } };
+  assert.deepEqual(levelOneInteractiveSfxCuePlan({ obstacle: cache, event: 'destroyed' }).map((cue) => cue.id), ['level1-cache-open']);
+
+  const pump = { interactive: { kind: 'hazard', chainDetonation: true, zoneId: 'warehouse-gas-station-yard' } };
+  assert.deepEqual(levelOneInteractiveSfxCuePlan({ obstacle: pump, event: 'hit' }).map((cue) => cue.id), ['level1-gas-pump-warning']);
+  assert.deepEqual(levelOneInteractiveSfxCuePlan({ obstacle: pump, event: 'destroyed' }).map((cue) => cue.id), ['level1-gas-pump-detonate']);
+
+  const mushroom = { id: 'aaa-mushroom-spore-ring', interactive: { kind: 'hazard', zoneId: 'dead-forest-mushroom-grove' } };
+  assert.deepEqual(levelOneInteractiveSfxCuePlan({ obstacle: mushroom, event: 'hazard-pulse' }).map((cue) => cue.id), ['level1-mushroom-pulse']);
+
+  const gate = { interactive: { kind: 'gate', zoneId: 'rugpull-gulch-boss-yard' } };
+  assert.deepEqual(levelOneInteractiveSfxCuePlan({ obstacle: gate, event: 'gate-unlock' }).map((cue) => cue.id), ['level1-gate-unlock']);
+
+  const flare = { interactive: { kind: 'extraction-cue', zoneId: 'ltc-road-extraction' } };
+  assert.deepEqual(levelOneInteractiveSfxCuePlan({ obstacle: flare, event: 'extraction-ready' }).map((cue) => cue.id), ['level1-extraction-flare']);
+});
+
+test('Level 1 hit/runtime plans include debris and SFX metadata for live runtime consumers', () => {
+  const barrel = {
+    id: 'aaa-saloon-cover-barrel-a',
+    worldX: 15,
+    worldY: 7,
+    radius: 0.42,
+    hp: 10,
+    sceneAssetKey: 'level-final-setpiece/cohesive-saloon-cover-barrel',
+    interactive: { kind: 'destructible', zoneId: 'ghost-saloon-mainstreet' },
+  };
+  const plan = levelOneInteractiveHitPlan({ obstacle: barrel, damage: 99, obstacles: [barrel] });
+  assert.equal(plan.destroyed, true);
+  assert.equal(plan.debrisState.visible, true);
+  assert.equal(plan.debrisState.drawMode, 'procedural-debris');
+  assert.equal(plan.sfxCues.some((cue) => cue.id === 'level1-cover-break'), true);
+
+  const gateLocked = levelOneInteractiveRuntimeStateForObstacle({ solid: true, interactive: { kind: 'gate' } }, { bossDefeated: false });
+  assert.equal(gateLocked.sfxCue, null);
+  const gateUnlocked = levelOneInteractiveRuntimeStateForObstacle({ solid: true, interactive: { kind: 'gate' } }, { bossDefeated: true });
+  assert.equal(gateUnlocked.sfxCue, 'level1-gate-unlock');
+
+  const flareReady = levelOneInteractiveRuntimeStateForObstacle(
+    { solid: false, interactive: { kind: 'extraction-cue' } },
+    { bossDefeated: true, extractionPoint: { worldX: 97, worldY: 5 } },
+  );
+  assert.equal(flareReady.sfxCue, 'level1-extraction-flare');
+});
+
+test('main runtime wires interactive debris visuals and POI-specific SFX without hiding destroyed props', () => {
+  const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
+  assert.equal(source.includes('levelOneInteractiveDebrisStateForObstacle'), true, 'runtime should import debris state helper');
+  assert.equal(source.includes('levelOneInteractiveSfxCuePlan'), true, 'runtime should import POI SFX cue planner');
+  assert.equal(source.includes('function playLevelOneInteractiveSfxCues('), true, 'runtime should centralize POI SFX playback');
+  assert.equal(source.includes('function drawLevelOneInteractiveDebris('), true, 'renderer should draw broken/debris states');
+  const damageBlock = source.slice(source.indexOf('function damageLevelOneInteractiveObstacle'), source.indexOf('function updateLevelOneInteractiveHazards'));
+  assert.equal(damageBlock.includes('playLevelOneInteractiveSfxCues(plan.sfxCues'), true, 'hit resolver should play cache/gas/cover cues from hit plan');
+  assert.equal(damageBlock.includes('hitObstacle.debrisState = plan.debrisState'), true, 'destroyed props should persist debris state');
+  assert.equal(damageBlock.includes('hitObstacle.hidden = false'), true, 'destroyed props should not disappear instantly');
+  const hazardBlock = source.slice(source.indexOf('function updateLevelOneInteractiveHazards'), source.indexOf('function updateRoguelikeMovement'));
+  assert.equal(hazardBlock.includes("levelOneInteractiveSfxCuePlan({ obstacle, event: 'hazard-pulse' })"), true, 'mushroom pulse should emit POI SFX');
+  const stateBlock = source.slice(source.indexOf('function refreshLevelOneInteractiveObstacleState'), source.indexOf('function currentLevelOneInteractiveHazardPressure'));
+  assert.equal(stateBlock.includes('playLevelOneInteractiveSfxCues'), true, 'gate/extraction state transitions should emit POI SFX');
+  const renderBlock = source.slice(source.indexOf('function buildObstacleRenderEntries'), source.indexOf('function drawRoguelikeScene'));
+  assert.equal(renderBlock.includes('drawLevelOneInteractiveDebris'), true, 'render path should draw debris over/after destroyed interactives');
 });
 
 test('AAA slice plan is attached to curated world contract and covered by syntax check', () => {

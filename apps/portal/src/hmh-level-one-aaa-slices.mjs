@@ -193,6 +193,75 @@ function isMushroomSporeRing(obstacle) {
     || String(obstacle?.sceneAssetKey ?? obstacle?.assetKey ?? '').includes('cohesive-mushroom-spore-ring');
 }
 
+const EMPTY_DEBRIS_STATE = Object.freeze({
+  visible: false,
+  solid: false,
+  drawMode: 'none',
+  fragmentCount: 0,
+  palette: Object.freeze([]),
+  label: null,
+  seed: 0,
+});
+
+const EMPTY_CUE_LIST = Object.freeze([]);
+
+function stableHash(value = '') {
+  let hash = 2166136261;
+  const text = String(value);
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 16777619) >>> 0;
+  }
+  return hash >>> 0;
+}
+
+export function levelOneInteractiveDebrisStateForObstacle(obstacle = null, { frame = 0 } = {}) {
+  const kind = obstacle?.interactive?.kind ?? null;
+  if (!obstacle?.destroyed || kind === 'gate' || kind === 'extraction-cue' || !kind) return EMPTY_DEBRIS_STATE;
+  const isExplosive = Boolean(obstacle.interactive.chainDetonation);
+  const isCache = kind === 'reward-cache';
+  const isMushroom = isMushroomSporeRing(obstacle);
+  const palette = isExplosive
+    ? ['#ff7b2f', '#d9a441', '#46321f', '#19f7ff']
+    : isCache
+      ? ['#d9a441', '#f7e27c', '#4d3a25', '#19f7ff']
+      : isMushroom
+        ? ['#a855f7', '#19f7ff', '#2d1b45', '#ff7b2f']
+        : ['#d9a441', '#6b4f2a', '#2b2118', '#19f7ff'];
+  return Object.freeze({
+    visible: true,
+    solid: false,
+    drawMode: 'procedural-debris',
+    fragmentCount: isExplosive ? 9 : isCache ? 7 : 5,
+    palette: Object.freeze(palette),
+    label: isExplosive ? 'explosive debris' : isCache ? 'opened cache debris' : isMushroom ? 'spore husk debris' : 'broken cover debris',
+    seed: stableHash(`${obstacle.id ?? obstacle.sceneAssetKey ?? 'level-one-debris'}:${frame}`),
+  });
+}
+
+export function levelOneInteractiveSfxCuePlan({ obstacle = null, event = '' } = {}) {
+  const kind = obstacle?.interactive?.kind ?? null;
+  if (!kind) return EMPTY_CUE_LIST;
+  if (event === 'hit' && obstacle?.interactive?.chainDetonation) {
+    return Object.freeze([{ id: 'level1-gas-pump-warning', volume: 0.045, label: 'gas pump warning' }]);
+  }
+  if (event === 'destroyed') {
+    if (kind === 'reward-cache') return Object.freeze([{ id: 'level1-cache-open', volume: 0.07, label: 'Litecoin cache open' }]);
+    if (obstacle?.interactive?.chainDetonation) return Object.freeze([{ id: 'level1-gas-pump-detonate', volume: 0.1, label: 'gas pump detonation' }]);
+    if (kind === 'destructible') return Object.freeze([{ id: 'level1-cover-break', volume: 0.06, label: 'cover break' }]);
+  }
+  if (event === 'hazard-pulse' && isMushroomSporeRing(obstacle)) {
+    return Object.freeze([{ id: 'level1-mushroom-pulse', volume: 0.045, label: 'mushroom pulse' }]);
+  }
+  if (event === 'gate-unlock' && kind === 'gate') {
+    return Object.freeze([{ id: 'level1-gate-unlock', volume: 0.075, label: 'boss gate unlock' }]);
+  }
+  if (event === 'extraction-ready' && kind === 'extraction-cue') {
+    return Object.freeze([{ id: 'level1-extraction-flare', volume: 0.065, label: 'extraction flare' }]);
+  }
+  return EMPTY_CUE_LIST;
+}
+
 function noHitPlan(obstacle, damage = 0) {
   return Object.freeze({
     obstacleId: obstacle?.id ?? null,
@@ -205,6 +274,8 @@ function noHitPlan(obstacle, damage = 0) {
     scoreBonus: 0,
     chainDetonationIds: Object.freeze([]),
     blastZones: Object.freeze([]),
+    debrisState: EMPTY_DEBRIS_STATE,
+    sfxCues: EMPTY_CUE_LIST,
     text: '',
   });
 }
@@ -256,6 +327,7 @@ export function levelOneInteractiveHitPlan({ obstacle = null, damage = 0, obstac
     }
   }
 
+  const hitPlanObstacle = destroyed ? { ...obstacle, hp: nextHp, destroyed: true } : { ...obstacle, hp: nextHp };
   return Object.freeze({
     obstacleId: obstacle.id ?? null,
     damage,
@@ -267,6 +339,8 @@ export function levelOneInteractiveHitPlan({ obstacle = null, damage = 0, obstac
     scoreBonus,
     chainDetonationIds: Object.freeze(chainDetonationIds),
     blastZones: Object.freeze(blastZones),
+    debrisState: destroyed ? levelOneInteractiveDebrisStateForObstacle(hitPlanObstacle) : EMPTY_DEBRIS_STATE,
+    sfxCues: levelOneInteractiveSfxCuePlan({ obstacle, event: destroyed ? 'destroyed' : 'hit' }),
     text: destroyed
       ? (kind === 'reward-cache' ? 'CACHE OPEN' : obstacle.interactive.chainDetonation ? 'GAS PUMP DETONATED' : 'COVER BROKEN')
       : `PROP -${Math.max(0, Number(damage) || 0)}`,
@@ -295,8 +369,12 @@ export function levelOneInteractiveHazardEffectAt({ obstacle = null, playerX = 0
 export function levelOneInteractiveRuntimeStateForObstacle(obstacle = null, { bossDefeated = false, extractionPoint = null, frame = 0 } = {}) {
   const kind = obstacle?.interactive?.kind ?? null;
   const baseSolid = Boolean(obstacle?.solid);
-  if (!kind || obstacle?.destroyed) {
-    return Object.freeze({ solid: false, visible: !obstacle?.destroyed, locked: false, unlocked: false, glow: false, pulseActive: false });
+  if (obstacle?.destroyed) {
+    const debrisState = levelOneInteractiveDebrisStateForObstacle(obstacle, { frame });
+    return Object.freeze({ solid: false, visible: debrisState.visible, locked: false, unlocked: false, glow: false, pulseActive: false, sfxCue: null, debrisState });
+  }
+  if (!kind) {
+    return Object.freeze({ solid: false, visible: true, locked: false, unlocked: false, glow: false, pulseActive: false, sfxCue: null, debrisState: EMPTY_DEBRIS_STATE });
   }
   if (kind === 'gate') {
     const unlocked = Boolean(bossDefeated);
@@ -307,16 +385,18 @@ export function levelOneInteractiveRuntimeStateForObstacle(obstacle = null, { bo
       unlocked,
       glow: unlocked,
       pulseActive: !unlocked && (Math.round(Number(frame) || 0) % 90) < 45,
+      sfxCue: unlocked ? 'level1-gate-unlock' : null,
+      debrisState: EMPTY_DEBRIS_STATE,
     });
   }
   if (kind === 'extraction-cue') {
     const glow = Boolean(bossDefeated || extractionPoint);
-    return Object.freeze({ solid: false, visible: true, locked: false, unlocked: glow, glow, pulseActive: glow && (Math.round(Number(frame) || 0) % 80) < 50 });
+    return Object.freeze({ solid: false, visible: true, locked: false, unlocked: glow, glow, pulseActive: glow && (Math.round(Number(frame) || 0) % 80) < 50, sfxCue: glow ? 'level1-extraction-flare' : null, debrisState: EMPTY_DEBRIS_STATE });
   }
   if (kind === 'hazard' && isMushroomSporeRing(obstacle)) {
-    return Object.freeze({ solid: false, visible: true, locked: false, unlocked: false, glow: true, pulseActive: (Math.round(Number(frame) || 0) % 150) < 72 });
+    return Object.freeze({ solid: false, visible: true, locked: false, unlocked: false, glow: true, pulseActive: (Math.round(Number(frame) || 0) % 150) < 72, sfxCue: null, debrisState: EMPTY_DEBRIS_STATE });
   }
-  return Object.freeze({ solid: baseSolid, visible: true, locked: false, unlocked: false, glow: false, pulseActive: false });
+  return Object.freeze({ solid: baseSolid, visible: true, locked: false, unlocked: false, glow: false, pulseActive: false, sfxCue: null, debrisState: EMPTY_DEBRIS_STATE });
 }
 
 export function validateLevelOneAaaSlicePlan({ curatedWorldContract = null, finalSetpieceAssetByKey = null } = {}) {

@@ -53,9 +53,11 @@ import {
 } from './src/hmh-campaign-runtime.mjs';
 import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
 import {
+  levelOneInteractiveDebrisStateForObstacle,
   levelOneInteractiveHazardEffectAt,
   levelOneInteractiveHitPlan,
   levelOneInteractiveRuntimeStateForObstacle,
+  levelOneInteractiveSfxCuePlan,
 } from './src/hmh-level-one-aaa-slices.mjs';
 import { calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
@@ -1027,6 +1029,13 @@ function sfxToneFor(cue) {
     'enemy-hit': [220, 165],
     'player-hit': [90, 70],
     'boss-warning': [70, 140, 70],
+    'level1-cache-open': [659, 784, 988, 1319],
+    'level1-gas-pump-warning': [110, 82, 110],
+    'level1-gas-pump-detonate': [80, 55, 120, 220],
+    'level1-cover-break': [180, 120, 95],
+    'level1-mushroom-pulse': [247, 370, 494],
+    'level1-gate-unlock': [196, 392, 784],
+    'level1-extraction-flare': [523, 784, 1175],
     'game-over': [196, 146, 98],
   };
   return tones[cue] ?? [440];
@@ -7361,16 +7370,33 @@ function updateCampaignPoiEncounter(director) {
   }
 }
 
+function playLevelOneInteractiveSfxCues(cues = []) {
+  if (!Array.isArray(cues) || cues.length === 0) return false;
+  let played = false;
+  for (const cue of cues) {
+    if (!cue?.id) continue;
+    played = playSfxCue(cue.id, cue.volume ?? 0.055) || played;
+  }
+  return played;
+}
+
 function refreshLevelOneInteractiveObstacleState(obstacle) {
   if (!obstacle?.interactive) return obstacle;
+  const previousCueSignature = obstacle._lastLevelOneInteractiveSfxSignature ?? null;
   const state = levelOneInteractiveRuntimeStateForObstacle(obstacle, {
     bossDefeated: combat.bossDefeated,
     extractionPoint: combat.extractionPoint,
     frame: combat.frame,
   });
   obstacle.interactiveState = state;
+  obstacle.debrisState = state.debrisState ?? obstacle.debrisState ?? null;
   obstacle.solid = state.solid;
   obstacle.hidden = state.visible === false;
+  if (state.sfxCue && previousCueSignature !== state.sfxCue) {
+    const event = state.sfxCue === 'level1-gate-unlock' ? 'gate-unlock' : 'extraction-ready';
+    playLevelOneInteractiveSfxCues(levelOneInteractiveSfxCuePlan({ obstacle, event }));
+    obstacle._lastLevelOneInteractiveSfxSignature = state.sfxCue;
+  }
   return obstacle;
 }
 
@@ -7424,13 +7450,15 @@ function damageLevelOneInteractiveObstacle(hitObstacle, damage, source = 'bullet
   const plan = levelOneInteractiveHitPlan({ obstacle: hitObstacle, damage, obstacles });
   if (!plan.damageable) return false;
   hitObstacle.hp = plan.nextHp;
+  playLevelOneInteractiveSfxCues(plan.sfxCues);
   const hitScreen = isoToScreen(hitObstacle.worldX, hitObstacle.worldY);
   spawnText(plan.text || `PROP -${damage}`, hitScreen.x - 32, hitScreen.y - 32, plan.destroyed ? '#45ff8a' : '#ffe84d');
   if (!plan.destroyed) return true;
 
   hitObstacle.destroyed = true;
   hitObstacle.solid = false;
-  hitObstacle.hidden = true;
+  hitObstacle.hidden = false;
+  hitObstacle.debrisState = plan.debrisState;
   hitObstacle.destroyedBy = source;
   refreshLevelOneInteractiveObstacleState(hitObstacle);
 
@@ -7451,7 +7479,8 @@ function damageLevelOneInteractiveObstacle(hitObstacle, damage, source = 'bullet
     chained.hp = 0;
     chained.destroyed = true;
     chained.solid = false;
-    chained.hidden = true;
+    chained.hidden = false;
+    chained.debrisState = levelOneInteractiveDebrisStateForObstacle(chained, { frame: combat.frame });
     chained.destroyedBy = 'chain-explosion';
     refreshLevelOneInteractiveObstacleState(chained);
     const chainedScreen = isoToScreen(chained.worldX, chained.worldY);
@@ -7470,6 +7499,7 @@ function updateLevelOneInteractiveHazards(dt) {
     if (!effect.active || effect.damagePerPulse <= 0) continue;
     if (combat.frame % 45 !== 0) continue;
     damagePlayer(effect.damagePerPulse, 'environment-hazard', 'Mushroom spore ring');
+    playLevelOneInteractiveSfxCues(levelOneInteractiveSfxCuePlan({ obstacle, event: 'hazard-pulse' }));
     const hazardScreen = isoToScreen(obstacle.worldX, obstacle.worldY);
     spawnText('SPORE BURN', hazardScreen.x - 38, hazardScreen.y - 34, '#ff7b2f');
   }
@@ -9071,6 +9101,39 @@ function resolveObstacleProp(obstacle, worldProps) {
 // are occluded by) buildings and trees by screen Y. We also write the role-based
 // collision radius back onto the obstacle so movement/bullets use a footprint
 // that matches the art that is actually drawn.
+function drawLevelOneInteractiveDebris(ctx, obstacle, projected, width, drawHeight) {
+  const debris = obstacle.debrisState;
+  if (!debris?.visible || debris.drawMode !== 'procedural-debris') return false;
+  const palette = debris.palette?.length ? debris.palette : ['#d9a441', '#6b4f2a', '#2b2118'];
+  const seed = debris.seed || ((obstacle.propIndex ?? 1) * 2654435761);
+  const count = Math.max(3, debris.fragmentCount ?? 5);
+  const baseY = projected.y + Math.max(5, drawHeight * 0.08);
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  for (let i = 0; i < count; i += 1) {
+    const a = ((seed >>> ((i % 4) * 8)) & 255) / 255;
+    const b = ((seed >>> (((i + 1) % 4) * 8)) & 255) / 255;
+    const offsetX = (a - 0.5) * Math.max(18, width * 0.58);
+    const offsetY = (b - 0.5) * Math.max(8, drawHeight * 0.18);
+    const size = 3 + ((seed + i * 17) % 5);
+    ctx.globalAlpha = 0.82;
+    ctx.fillStyle = palette[i % palette.length];
+    ctx.fillRect(Math.round(projected.x + offsetX), Math.round(baseY + offsetY), size, Math.max(2, Math.round(size * 0.62)));
+    if (i % 3 === 0) {
+      ctx.globalAlpha = 0.32;
+      ctx.fillStyle = '#19f7ff';
+      ctx.fillRect(Math.round(projected.x + offsetX + size), Math.round(baseY + offsetY - 1), 2, 2);
+    }
+  }
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = '#000000';
+  ctx.beginPath();
+  ctx.ellipse(projected.x, baseY + 5, Math.max(10, width * 0.22), Math.max(3, drawHeight * 0.04), 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  return true;
+}
+
 function buildObstacleRenderEntries(ctx) {
   const worldProps = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
   if (!worldProps.length) return [];
@@ -9099,9 +9162,15 @@ function buildObstacleRenderEntries(ctx) {
             ctx.save();
             ctx.imageSmoothingEnabled = false;
             // Contact shadows are disabled; the sprite art itself provides the grounding cue.
+            if (o.debrisState?.visible) {
+              drawLevelOneInteractiveDebris(ctx, o, projected, w, drawH);
+              ctx.restore();
+              return;
+            }
             ctx.drawImage(img, baseX, baseY, w, drawH);
             if (o.interactiveState?.glow || o.interactiveState?.pulseActive) {
-              const pulse = 0.5 + 0.5 * Math.sin((combat.frame + index * 7) * 0.12);
+              const pulseSeed = o.propIndex ?? o.worldX ?? 0;
+              const pulse = 0.5 + 0.5 * Math.sin((combat.frame + pulseSeed * 7) * 0.12);
               const glowColor = o.interactive?.kind === 'extraction-cue'
                 ? '#19f7ff'
                 : o.interactive?.kind === 'gate'

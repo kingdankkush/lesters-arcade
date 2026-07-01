@@ -148,6 +148,24 @@ The first AAA slice placed the cohesive props and preserved `interactive` metada
 | Rugpull boss gate | Solid/locked until the Level 1 boss proxy is defeated, then unlocks and pulses gold. |
 | Extraction flare road | Non-solid cue that only glows/pulses after boss defeat or extraction spawn. |
 
+### Broken/debris states and POI-specific SFX
+
+Destroyed tactical props no longer vanish instantly. Reward caches, gas pumps, barrels, crates, and similar interactives persist as non-solid procedural debris piles using the same dusty/gold/cyan/orange Level 1 palette. The intact sprite is not drawn after destruction; the renderer draws deterministic fragment clusters so players can read that the object was used/broken without adding another asset pipeline yet.
+
+POI events now emit distinct procedural fallback SFX cues through the existing `playSfxCue(...)` system:
+
+| Event | Cue id |
+| --- | --- |
+| Cache opened | `level1-cache-open` |
+| Gas pump warning hit | `level1-gas-pump-warning` |
+| Gas pump detonation | `level1-gas-pump-detonate` |
+| Cover/barrel/crate break | `level1-cover-break` |
+| Mushroom spore pulse | `level1-mushroom-pulse` |
+| Boss gate unlock | `level1-gate-unlock` |
+| Extraction flare ready | `level1-extraction-flare` |
+
+These cue ids currently synthesize chiptune tones if no CC0 sample exists in the SFX manifest. Real sample files can be added later without changing gameplay code.
+
 Runtime seam:
 
 ```text
