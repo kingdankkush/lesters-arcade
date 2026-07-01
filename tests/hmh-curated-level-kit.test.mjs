@@ -77,7 +77,8 @@ test('curated kit pipeline slices high-priority terrain sheets and trims oversiz
 test('curated kit pipeline is wired into package scripts and syntax checks', () => {
   const packageJson = readJson(repoPath('package.json'));
   assert.equal(packageJson.scripts['assets:hmh:curated-level-kit'], 'python scripts/build-hmh-curated-level-kit.py');
-  assert.equal(packageJson.scripts.check.includes('scripts/build-hmh-curated-level-kit.py'), true);
-  assert.equal(packageJson.scripts.check.includes('apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs'), true);
-  assert.equal(packageJson.scripts.check.includes('tests/hmh-curated-level-kit.test.mjs'), true);
+  const syntaxCheckRunner = readFileSync(repoPath('scripts/syntax-check.mjs'), 'utf8');
+  assert.equal(syntaxCheckRunner.includes('scripts/build-hmh-curated-level-kit.py'), true);
+  assert.equal(syntaxCheckRunner.includes('apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs'), true);
+  assert.equal(syntaxCheckRunner.includes('tests/hmh-curated-level-kit.test.mjs'), true);
 });

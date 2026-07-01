@@ -97,7 +97,9 @@ test('main runtime uses clean Level 1 loading art and authored opening ground ro
 });
 
 test('package check gate includes the visible runtime module and regression test', () => {
-  const packageJson = readFileSync(repoPath('package.json'), 'utf8');
-  assert.equal(packageJson.includes('apps/portal/src/hmh-level-one-visible-runtime.mjs'), true);
-  assert.equal(packageJson.includes('tests/hmh-level-one-visible-runtime.test.mjs'), true);
+  // Syntax gate moved to scripts/syntax-check.mjs (inline `check` hit the
+  // Windows 8191-char command-line limit). Assert coverage there.
+  const syntaxCheckRunner = readFileSync(repoPath('scripts/syntax-check.mjs'), 'utf8');
+  assert.equal(syntaxCheckRunner.includes('apps/portal/src/hmh-level-one-visible-runtime.mjs'), true);
+  assert.equal(syntaxCheckRunner.includes('tests/hmh-level-one-visible-runtime.test.mjs'), true);
 });

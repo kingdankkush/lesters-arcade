@@ -121,8 +121,8 @@ test('curated Level 1 missing asset requests are specific tie-together gaps, not
 });
 
 test('curated Level 1 world contract is covered by syntax check gate and design doc', () => {
-  const packageJson = JSON.parse(readFileSync(repoPath('package.json'), 'utf8'));
-  assert.equal(packageJson.scripts.check.includes('apps/portal/src/hmh-level-one-curated-world-contract.mjs'), true);
-  assert.equal(packageJson.scripts.check.includes('tests/hmh-level-one-curated-world-contract.test.mjs'), true);
+  const syntaxCheckRunner = readFileSync(repoPath('scripts/syntax-check.mjs'), 'utf8');
+  assert.equal(syntaxCheckRunner.includes('apps/portal/src/hmh-level-one-curated-world-contract.mjs'), true);
+  assert.equal(syntaxCheckRunner.includes('tests/hmh-level-one-curated-world-contract.test.mjs'), true);
   assert.equal(existsSync(repoPath('docs/game-design/hard-money-heroes-level-1-curated-world-contract.md')), true);
 });

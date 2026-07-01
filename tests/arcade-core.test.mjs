@@ -1405,7 +1405,11 @@ test('Lester Arcade custom MP3 playlist manifest drives a global minimal music p
   const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'));
   assert.equal(packageJson.scripts['assets:playlist'], 'python scripts/ingest-arcade-playlist-music.py');
   assert.equal(packageJson.scripts['assets:verify'].includes('verify-generated-assets'), true);
-  assert.equal(packageJson.scripts.check.includes('scripts/ingest-arcade-playlist-music.py'), true);
+  // The syntax gate moved from the giant inline `check` string to a runner
+  // script (scripts/syntax-check.mjs) once the inline command hit the Windows
+  // 8191-char command-line limit. Assert the file is covered there.
+  const syntaxCheckRunner = readFileSync(fileURLToPath(new URL('../scripts/syntax-check.mjs', import.meta.url)), 'utf8');
+  assert.equal(syntaxCheckRunner.includes('scripts/ingest-arcade-playlist-music.py'), true);
 
   const manifestPath = fileURLToPath(new URL('../apps/portal/assets/audio/playlist/arcade-playlist-manifest.json', import.meta.url));
   const manifestModulePath = fileURLToPath(new URL('../apps/portal/src/arcade-playlist-manifest.mjs', import.meta.url));
@@ -2120,7 +2124,8 @@ test('animation production prompt generator writes per-character and per-enemy r
   const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../package.json', import.meta.url)), 'utf8'));
   assert.equal(packageJson.scripts['design:animation-prompts'], 'node scripts/write-hmh-animation-production-requests.mjs');
   assert.equal(packageJson.scripts['verify:full'].includes('npm run design:animation-prompts'), true);
-  assert.equal(packageJson.scripts.check.includes('scripts/write-hmh-animation-production-requests.mjs'), true);
+  const syntaxCheckRunnerAnim = readFileSync(fileURLToPath(new URL('../scripts/syntax-check.mjs', import.meta.url)), 'utf8');
+  assert.equal(syntaxCheckRunnerAnim.includes('scripts/write-hmh-animation-production-requests.mjs'), true);
 
   const promptScript = readFileSync(fileURLToPath(new URL('../scripts/write-hmh-animation-production-requests.mjs', import.meta.url)), 'utf8');
   assert.equal(promptScript.includes('buildHardMoneyHeroesAnimationProductionBriefs'), true);

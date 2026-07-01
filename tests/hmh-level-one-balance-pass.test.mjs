@@ -116,6 +116,7 @@ test('runtime and design scripts consume the Level 1 balance pass helpers', () =
   assert.equal(main.includes('buildLevelOneSpawnCompositionAt'), true, 'spawn runtime should consume authored act composition');
   assert.equal(main.includes('buildLevelOneBossChoreographyPlan'), true, 'boss runtime should consume choreography plan');
   assert.equal(snapshotScript.includes('buildLevelOneBalanceTelemetrySnapshot'), true, 'design:balance should emit balance telemetry');
-  assert.equal(packageJson.includes('apps/portal/src/hmh-level-one-balance-pass.mjs'), true, 'check script should syntax-check the new module');
-  assert.equal(packageJson.includes('tests/hmh-level-one-balance-pass.test.mjs'), true, 'check script should syntax-check the new test');
+  const syntaxCheckRunner = readFileSync(repoPath('scripts/syntax-check.mjs'), 'utf8');
+  assert.equal(syntaxCheckRunner.includes('apps/portal/src/hmh-level-one-balance-pass.mjs'), true, 'check runner should syntax-check the new module');
+  assert.equal(syntaxCheckRunner.includes('tests/hmh-level-one-balance-pass.test.mjs'), true, 'check runner should syntax-check the new test');
 });

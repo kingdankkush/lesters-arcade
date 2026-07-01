@@ -333,8 +333,8 @@ test('AAA slice plan is attached to curated world contract and covered by syntax
   assert.equal(HMH_LEVEL_ONE_POI_INTERACTIVES.length >= 9, true);
   assert.equal(HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT.aaaSlicePlan.id, 'level1-aaa-route-interactivity-art-v1');
 
-  const packageJson = JSON.parse(readFileSync(repoPath('package.json'), 'utf8'));
-  assert.equal(packageJson.scripts.check.includes('apps/portal/src/hmh-level-one-aaa-slices.mjs'), true);
-  assert.equal(packageJson.scripts.check.includes('tests/hmh-level-one-aaa-slices.test.mjs'), true);
+  const syntaxCheckRunner = readFileSync(repoPath('scripts/syntax-check.mjs'), 'utf8');
+  assert.equal(syntaxCheckRunner.includes('apps/portal/src/hmh-level-one-aaa-slices.mjs'), true);
+  assert.equal(syntaxCheckRunner.includes('tests/hmh-level-one-aaa-slices.test.mjs'), true);
   assert.equal(existsSync(repoPath('docs/game-design/hard-money-heroes-level-1-aaa-slices.md')), true);
 });
