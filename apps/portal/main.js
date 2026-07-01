@@ -52,6 +52,11 @@ import {
   isCampaignExtractionReached,
 } from './src/hmh-campaign-runtime.mjs';
 import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
+import {
+  levelOneInteractiveHazardEffectAt,
+  levelOneInteractiveHitPlan,
+  levelOneInteractiveRuntimeStateForObstacle,
+} from './src/hmh-level-one-aaa-slices.mjs';
 import { calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
@@ -2419,6 +2424,8 @@ function renderRoguelikeStatBar() {
   else activeFx.push(objective.label.toUpperCase());
   if (activeEncounterVisualPlan?.banner) activeFx.push(`ARENA ${activeEncounterVisualPlan.banner}`);
   if (terrainPressure?.label) activeFx.push(`TERRAIN ${terrainPressure.label}`);
+  const levelOneInteractivePressure = currentLevelOneInteractiveHazardPressure();
+  if (levelOneInteractivePressure?.label) activeFx.push(`HAZARD ${levelOneInteractivePressure.label.toUpperCase()}`);
   activeFx.push(`WEATHER ${environmentState.weather.label.toUpperCase()}`);
   activeFx.push(`TOD ${environmentState.timeOfDay.phase.toUpperCase()}`);
   if (ambientZone?.poiTensionCue) activeFx.push(`ZONE ${ambientZone.poiTensionCue.toUpperCase()}`);
@@ -7354,6 +7361,120 @@ function updateCampaignPoiEncounter(director) {
   }
 }
 
+function refreshLevelOneInteractiveObstacleState(obstacle) {
+  if (!obstacle?.interactive) return obstacle;
+  const state = levelOneInteractiveRuntimeStateForObstacle(obstacle, {
+    bossDefeated: combat.bossDefeated,
+    extractionPoint: combat.extractionPoint,
+    frame: combat.frame,
+  });
+  obstacle.interactiveState = state;
+  obstacle.solid = state.solid;
+  obstacle.hidden = state.visible === false;
+  return obstacle;
+}
+
+function currentLevelOneInteractiveHazardPressure() {
+  if ((combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) {
+    return { moveSpeedMul: 1, label: null, activeHazards: [] };
+  }
+  const activeHazards = [];
+  let moveSpeedMul = 1;
+  for (const obstacle of currentObstacles()) {
+    if (!obstacle?.interactive || obstacle.destroyed) continue;
+    const effect = levelOneInteractiveHazardEffectAt({
+      obstacle,
+      playerX: combat.playerMapX,
+      playerY: combat.playerMapY,
+      frame: combat.frame,
+    });
+    if (!effect.inRange) continue;
+    moveSpeedMul = Math.min(moveSpeedMul, effect.moveSpeedMultiplier ?? 1);
+    activeHazards.push({ obstacle, effect });
+  }
+  return {
+    moveSpeedMul,
+    label: activeHazards.some((entry) => entry.effect.active) ? 'spore pulse' : activeHazards.length ? 'spore ring' : null,
+    activeHazards,
+  };
+}
+
+function applyLevelOneInteractiveBlastZone(zone) {
+  const center = isoToScreen(zone.worldX, zone.worldY);
+  spawnExplosion(center.x, center.y, '#ff7b2f');
+  emitCombatVfxParticles(createExplosion(center.x, center.y, zone.radiusTiles * 18));
+  for (const enemy of combat.enemies) {
+    if (enemy.hp <= 0) continue;
+    if (Math.hypot(enemy.mapX - zone.worldX, enemy.mapY - zone.worldY) <= zone.radiusTiles) {
+      damageEnemy(enemy, zone.damage, zone.source ?? 'level-one-interactive-explosion');
+    }
+  }
+  if (combat.boss && combat.boss.hp > 0) {
+    const bossX = combat.boss.mapX ?? zone.worldX;
+    const bossY = combat.boss.mapY ?? zone.worldY;
+    if (Math.hypot(bossX - zone.worldX, bossY - zone.worldY) <= zone.radiusTiles + 1) {
+      damageBoss(Math.max(18, Math.round(zone.damage * 0.65)), zone.source ?? 'level-one-interactive-explosion');
+    }
+  }
+}
+
+function damageLevelOneInteractiveObstacle(hitObstacle, damage, source = 'bullet') {
+  if (!hitObstacle?.interactive || hitObstacle.destroyed) return false;
+  const obstacles = currentObstacles();
+  const plan = levelOneInteractiveHitPlan({ obstacle: hitObstacle, damage, obstacles });
+  if (!plan.damageable) return false;
+  hitObstacle.hp = plan.nextHp;
+  const hitScreen = isoToScreen(hitObstacle.worldX, hitObstacle.worldY);
+  spawnText(plan.text || `PROP -${damage}`, hitScreen.x - 32, hitScreen.y - 32, plan.destroyed ? '#45ff8a' : '#ffe84d');
+  if (!plan.destroyed) return true;
+
+  hitObstacle.destroyed = true;
+  hitObstacle.solid = false;
+  hitObstacle.hidden = true;
+  hitObstacle.destroyedBy = source;
+  refreshLevelOneInteractiveObstacleState(hitObstacle);
+
+  for (const drop of plan.xpDrops) {
+    const assist = currentLevelOnePickupAssist();
+    combat.xpGems.push({ worldX: drop.worldX, worldY: drop.worldY, value: drop.value, ttl: assist.xpTtlFrames });
+  }
+  for (const powerId of plan.powerUps) {
+    const def = powerUpById(powerId);
+    if (def) spawnRoguelikePowerUp(def, hitObstacle.worldX, hitObstacle.worldY);
+  }
+  if (plan.scoreBonus) combat.score += plan.scoreBonus;
+  for (const zone of plan.blastZones) applyLevelOneInteractiveBlastZone(zone);
+
+  for (const chainedId of plan.chainDetonationIds) {
+    const chained = obstacles.find((candidate) => candidate.id === chainedId);
+    if (!chained || chained.destroyed) continue;
+    chained.hp = 0;
+    chained.destroyed = true;
+    chained.solid = false;
+    chained.hidden = true;
+    chained.destroyedBy = 'chain-explosion';
+    refreshLevelOneInteractiveObstacleState(chained);
+    const chainedScreen = isoToScreen(chained.worldX, chained.worldY);
+    spawnExplosion(chainedScreen.x, chainedScreen.y, '#ff7b2f');
+    spawnText('CHAIN BREAK', chainedScreen.x - 32, chainedScreen.y - 28, '#ff7b2f');
+  }
+
+  trimLooseRoguelikeRewards();
+  return true;
+}
+
+function updateLevelOneInteractiveHazards(dt) {
+  const pressure = currentLevelOneInteractiveHazardPressure();
+  if (!pressure.activeHazards.length) return;
+  for (const { obstacle, effect } of pressure.activeHazards) {
+    if (!effect.active || effect.damagePerPulse <= 0) continue;
+    if (combat.frame % 45 !== 0) continue;
+    damagePlayer(effect.damagePerPulse, 'environment-hazard', 'Mushroom spore ring');
+    const hazardScreen = isoToScreen(obstacle.worldX, obstacle.worldY);
+    spawnText('SPORE BURN', hazardScreen.x - 38, hazardScreen.y - 34, '#ff7b2f');
+  }
+}
+
 function updateRoguelikeMovement(dt) {
   // Twin-stick-lite auto-movement: the hero walks toward the pointer/touch
   // target and faces (and fires) that way. WASD/arrows still work as an optional
@@ -7388,7 +7509,11 @@ function updateRoguelikeMovement(dt) {
         playerY: combat.playerMapY,
       })
     : { moveSpeedMul: 1, hazardId: null, label: null };
-  const speed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1) * (encounterTerrainPressure.moveSpeedMul ?? 1);
+  const levelOneInteractivePressure = currentLevelOneInteractiveHazardPressure();
+  const speed = 4.15
+    * (combat.roguelikeRun?.stats.movementSpeed ?? 1)
+    * (encounterTerrainPressure.moveSpeedMul ?? 1)
+    * (levelOneInteractivePressure.moveSpeedMul ?? 1);
   if (mx !== 0 || my !== 0) {
     const fromX = combat.playerMapX;
     const fromY = combat.playerMapY;
@@ -7458,7 +7583,9 @@ function updateRoguelikeBullets(dt) {
     bullet.y = projected.y;
     // Solid obstacles block bullets (inanimate objects take no damage, but they
     // stop shots — you have to shoot around buildings/trees, not through them).
-    if (obstacleHitAt(bullet.worldX, bullet.worldY, obstacles)) {
+    const hitObstacle = obstacleHitAt(bullet.worldX, bullet.worldY, obstacles);
+    if (hitObstacle) {
+      damageLevelOneInteractiveObstacle(hitObstacle, bullet.damage, bullet.weaponId ?? 'bullet');
       emitCombatVfxParticles(createHitSparks(projected.x, projected.y + 18, 6));
       for (let i = 0; i < 3; i += 1) {
         combat.particles.push({ type: 'impact-sparks', x: projected.x, y: projected.y + 18, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2, color: i % 2 ? '#f9f7ff' : '#9aa7c7', size: 12 + Math.random() * 8, life: 0.3, maxLife: 0.3 });
@@ -7687,6 +7814,12 @@ function updateRoguelikeGrenades() {
     if (combat.boss && combat.boss.hp > 0) {
       const d = Math.hypot((combat.boss.mapX ?? g.x) - g.x, (combat.boss.mapY ?? g.y) - g.y);
       if (d <= g.radius + 1) damageBoss(40, 'grenade');
+    }
+    for (const obstacle of currentObstacles()) {
+      if (!obstacle?.interactive || obstacle.destroyed) continue;
+      if (Math.hypot(obstacle.worldX - g.x, obstacle.worldY - g.y) <= g.radius + Math.max(0.25, obstacle.radius ?? 0.4)) {
+        damageLevelOneInteractiveObstacle(obstacle, g.damage, 'grenade');
+      }
     }
     const burst = isoToScreen(g.x, g.y);
     spawnGrenadeExplosion(burst.x, burst.y);
@@ -7963,6 +8096,7 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   combat.roguelikeRun.spawnDirector = director;
   updateLevelOneFinalBossProxy(director);
   updateRoguelikeMovement(dt);
+  updateLevelOneInteractiveHazards(dt);
   updateRoguelikePowerUpTimers(dt);
   updateAutoFire(dt);
   updateRoguelikeEnemies(director, dt);
@@ -8750,6 +8884,7 @@ function _buildAuthoredObstaclesForLevel(levelId) {
         animationCue: obj.animationCue ?? null,
         interactive: obj.interactive ?? null,
         hp: obj.hp ?? null,
+        maxHp: obj.hp ?? null,
         sourceZoneId: obj.interactive?.zoneId ?? null,
       });
     }
@@ -8868,7 +9003,9 @@ function currentObstacles() {
   // readable landmarks (gas station, saloon, crossroads signpost, oasis,
   // billboard) instead of purely procedural scatter. These objects are placed
   // at fixed world coordinates that define each district's visual identity.
-  const authoredObjects = authoredObstaclesNear(combat.playerMapX, combat.playerMapY, sceneWindow);
+  const authoredObjects = authoredObstaclesNear(combat.playerMapX, combat.playerMapY, sceneWindow)
+    .map((obstacle) => refreshLevelOneInteractiveObstacleState(obstacle))
+    .filter((obstacle) => !obstacle.hidden);
   _obstacleCache = [...sceneObstacles, ...encounterSceneObjects, ...authoredObjects];
 
   _obstacleCacheFrame = combat.frame;
@@ -8963,6 +9100,30 @@ function buildObstacleRenderEntries(ctx) {
             ctx.imageSmoothingEnabled = false;
             // Contact shadows are disabled; the sprite art itself provides the grounding cue.
             ctx.drawImage(img, baseX, baseY, w, drawH);
+            if (o.interactiveState?.glow || o.interactiveState?.pulseActive) {
+              const pulse = 0.5 + 0.5 * Math.sin((combat.frame + index * 7) * 0.12);
+              const glowColor = o.interactive?.kind === 'extraction-cue'
+                ? '#19f7ff'
+                : o.interactive?.kind === 'gate'
+                  ? '#ffe84d'
+                  : '#ff7b2f';
+              ctx.globalAlpha = (o.interactiveState?.glow ? 0.22 : 0.12) + pulse * 0.16;
+              const glow = ctx.createRadialGradient(
+                Math.round(projected.x),
+                Math.round(projected.y + 10),
+                0,
+                Math.round(projected.x),
+                Math.round(projected.y + 10),
+                Math.max(22, w * 0.42),
+              );
+              glow.addColorStop(0, glowColor);
+              glow.addColorStop(1, 'rgba(0,0,0,0)');
+              ctx.fillStyle = glow;
+              ctx.beginPath();
+              ctx.arc(projected.x, projected.y + 10, Math.max(22, w * 0.42), 0, Math.PI * 2);
+              ctx.fill();
+              ctx.globalAlpha = 1;
+            }
             ctx.restore();
           },
         });

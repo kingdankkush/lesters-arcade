@@ -14,6 +14,9 @@ import {
   aaaLevelOneRouteActs,
   aaaLevelOnePoiInteractivesForZone,
   aaaLevelOneReplacementAssetForRole,
+  levelOneInteractiveHitPlan,
+  levelOneInteractiveHazardEffectAt,
+  levelOneInteractiveRuntimeStateForObstacle,
   validateLevelOneAaaSlicePlan,
 } from '../apps/portal/src/hmh-level-one-aaa-slices.mjs';
 
@@ -114,6 +117,105 @@ test('main runtime preserves authored interactive metadata when converting scene
   assert.equal(mapper.includes('interactive: obj.interactive'), true, 'authored obstacle mapper should preserve interactive metadata');
   assert.equal(mapper.includes('hp: obj.hp'), true, 'authored obstacle mapper should preserve destructible/reward-cache hp metadata');
   assert.equal(mapper.includes('sourceZoneId: obj.interactive?.zoneId'), true, 'authored obstacles should carry source POI zone ids for future runtime hooks');
+});
+
+test('Level 1 interactive hit plans turn cache, gas pump, and gate props into gameplay events', () => {
+  const cache = {
+    id: 'aaa-desert-cache-crate-a',
+    worldX: 22,
+    worldY: 6,
+    radius: 0.42,
+    hp: 18,
+    interactive: { kind: 'reward-cache', reward: 'litecoin-cache', zoneId: 'desert-bone-camp' },
+  };
+  const cachePlan = levelOneInteractiveHitPlan({ obstacle: cache, damage: 20, obstacles: [cache] });
+  assert.equal(cachePlan.damageable, true);
+  assert.equal(cachePlan.destroyed, true);
+  assert.equal(cachePlan.nextHp, 0);
+  assert.deepEqual(cachePlan.powerUps, ['ltc-cache']);
+  assert.deepEqual(cachePlan.xpDrops.map((drop) => drop.value), [65, 35]);
+  assert.equal(cachePlan.scoreBonus >= 250, true);
+
+  const pump = {
+    id: 'aaa-gas-pump-explosive-a',
+    worldX: 48,
+    worldY: 7,
+    radius: 0.42,
+    hp: 16,
+    interactive: { kind: 'hazard', chainDetonation: true, zoneId: 'warehouse-gas-station-yard' },
+  };
+  const nearbyCrate = {
+    id: 'aaa-warehouse-crate-stack-a',
+    worldX: 50,
+    worldY: 5,
+    radius: 0.42,
+    hp: 30,
+    interactive: { kind: 'destructible', zoneId: 'warehouse-gas-station-yard' },
+  };
+  const farPump = {
+    id: 'far-gas-pump',
+    worldX: 75,
+    worldY: 5,
+    radius: 0.42,
+    hp: 16,
+    interactive: { kind: 'hazard', chainDetonation: true },
+  };
+  const pumpPlan = levelOneInteractiveHitPlan({ obstacle: pump, damage: 99, obstacles: [pump, nearbyCrate, farPump] });
+  assert.equal(pumpPlan.destroyed, true);
+  assert.equal(pumpPlan.blastZones.length >= 1, true);
+  assert.equal(pumpPlan.blastZones[0].damage >= 45, true);
+  assert.equal(pumpPlan.chainDetonationIds.includes('aaa-warehouse-crate-stack-a'), true);
+  assert.equal(pumpPlan.chainDetonationIds.includes('far-gas-pump'), false);
+
+  const gate = { id: 'aaa-boss-yard-gate', hp: 64, interactive: { kind: 'gate' } };
+  const gatePlan = levelOneInteractiveHitPlan({ obstacle: gate, damage: 999, obstacles: [gate] });
+  assert.equal(gatePlan.damageable, false, 'boss gate should unlock from boss defeat, not by shooting it open');
+});
+
+test('Level 1 interactive runtime states drive mushroom hazard, boss gate unlock, and extraction flare cues', () => {
+  const mushroom = {
+    id: 'aaa-mushroom-spore-ring',
+    worldX: 57,
+    worldY: 5,
+    radius: 0.9,
+    interactive: { kind: 'hazard', zoneId: 'dead-forest-mushroom-grove' },
+  };
+  const activeHazard = levelOneInteractiveHazardEffectAt({ obstacle: mushroom, playerX: 57.2, playerY: 5.1, frame: 30 });
+  assert.equal(activeHazard.inRange, true);
+  assert.equal(activeHazard.active, true);
+  assert.equal(activeHazard.moveSpeedMultiplier < 1, true);
+  assert.equal(activeHazard.damagePerPulse > 0, true);
+  assert.match(activeHazard.label, /spore/i);
+
+  const inactiveHazard = levelOneInteractiveHazardEffectAt({ obstacle: mushroom, playerX: 57.2, playerY: 5.1, frame: 120 });
+  assert.equal(inactiveHazard.inRange, true);
+  assert.equal(inactiveHazard.active, false, 'hazard should visibly pulse instead of dealing constant unavoidable damage');
+  assert.equal(inactiveHazard.moveSpeedMultiplier < 1, true, 'ring remains a slow terrain read even between damage pulses');
+
+  const gate = { solid: true, interactive: { kind: 'gate' } };
+  assert.equal(levelOneInteractiveRuntimeStateForObstacle(gate, { bossDefeated: false }).solid, true);
+  assert.equal(levelOneInteractiveRuntimeStateForObstacle(gate, { bossDefeated: false }).locked, true);
+  assert.equal(levelOneInteractiveRuntimeStateForObstacle(gate, { bossDefeated: true }).solid, false);
+  assert.equal(levelOneInteractiveRuntimeStateForObstacle(gate, { bossDefeated: true }).unlocked, true);
+
+  const flare = { solid: false, interactive: { kind: 'extraction-cue' } };
+  assert.equal(levelOneInteractiveRuntimeStateForObstacle(flare, { bossDefeated: false, extractionPoint: null }).glow, false);
+  assert.equal(levelOneInteractiveRuntimeStateForObstacle(flare, { bossDefeated: true, extractionPoint: { worldX: 97, worldY: 5 } }).glow, true);
+});
+
+test('main runtime wires Level 1 interactive props into bullet, grenade, hazard, and visual state paths', () => {
+  const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
+  assert.equal(source.includes('levelOneInteractiveHitPlan'), true, 'runtime should import the pure hit planner');
+  assert.equal(source.includes('function damageLevelOneInteractiveObstacle('), true, 'runtime should have a shared obstacle damage resolver');
+  const bulletBlock = source.slice(source.indexOf('function updateRoguelikeBullets'), source.indexOf('function trimLooseRoguelikeRewards'));
+  assert.equal(bulletBlock.includes('damageLevelOneInteractiveObstacle(hitObstacle'), true, 'player bullets should damage interactive authored obstacles before disappearing');
+  const grenadeBlock = source.slice(source.indexOf('function updateRoguelikeGrenades'), source.indexOf('function updateRoguelikeXpGems'));
+  assert.equal(grenadeBlock.includes('damageLevelOneInteractiveObstacle(obstacle'), true, 'grenade blasts should damage interactive authored obstacles');
+  const movementBlock = source.slice(source.indexOf('function updateRoguelikeMovement'), source.indexOf('function updateRoguelikeBullets'));
+  assert.equal(movementBlock.includes('currentLevelOneInteractiveHazardPressure()'), true, 'movement should consume mushroom spore hazard pressure');
+  const obstacleBlock = source.slice(source.indexOf('function _buildAuthoredObstaclesForLevel'), source.indexOf('function buildObstacleRenderEntries'));
+  assert.equal(obstacleBlock.includes('refreshLevelOneInteractiveObstacleState'), true, 'authored obstacles should refresh gate/flare state each frame');
+  assert.equal(source.includes('interactiveState?.glow'), true, 'renderer should visually pulse unlocked extraction cues');
 });
 
 test('AAA slice plan is attached to curated world contract and covered by syntax check', () => {

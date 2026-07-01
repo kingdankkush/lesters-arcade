@@ -135,12 +135,56 @@ aaaLevelOneSceneObjectsForDistrict(districtId)
 
 This means the objects travel through the existing authored scene-object runtime path instead of living as docs-only design.
 
+## Runtime gameplay hooks added after initial slice
+
+The first AAA slice placed the cohesive props and preserved `interactive` metadata. The follow-up tactical interactivity pass now makes those objects affect gameplay:
+
+| Object | Live behavior |
+| --- | --- |
+| Desert cache crate | Bullets/grenades can open it. It drops two XP gems, spawns an `ltc-cache` pickup, and gives a small score bonus. |
+| Gas pump explosive | Bullets/grenades can detonate it. It creates a world-space blast that damages enemies/bosses and breaks nearby destructible/cache objects. |
+| Warehouse crate / saloon barrel | Bullets/grenades can break them, clearing their collision. |
+| Mushroom spore ring | Non-solid hazard ring. It slows movement while inside and deals small pulse damage only during visible pulse windows. |
+| Rugpull boss gate | Solid/locked until the Level 1 boss proxy is defeated, then unlocks and pulses gold. |
+| Extraction flare road | Non-solid cue that only glows/pulses after boss defeat or extraction spawn. |
+
+Runtime seam:
+
+```text
+apps/portal/main.js
+```
+
+New runtime helpers:
+
+```js
+refreshLevelOneInteractiveObstacleState(...)
+currentLevelOneInteractiveHazardPressure(...)
+damageLevelOneInteractiveObstacle(...)
+updateLevelOneInteractiveHazards(...)
+```
+
+Pure helper seam:
+
+```text
+apps/portal/src/hmh-level-one-aaa-slices.mjs
+```
+
+New pure helpers:
+
+```js
+levelOneInteractiveHitPlan(...)
+levelOneInteractiveHazardEffectAt(...)
+levelOneInteractiveRuntimeStateForObstacle(...)
+```
+
+The live bullet path and grenade path now both call the shared interactive obstacle damage resolver. The authored obstacle mapper still owns placement and metadata; this pass does not create a parallel placement/render path.
+
 ## Next follow-up work
 
-This slice intentionally creates the contract and first replacement assets. The next deeper passes should:
+This slice now creates the contract, first replacement assets, and first gameplay hooks. The next deeper passes should:
 
-1. Make reward caches open into real Litecoin/XP drops in `main.js`.
-2. Make gas pumps call the existing `computeChainDetonation(...)` in the isometric prop path.
-3. Add mushroom ring hazard timing and player/enemy slow logic.
-4. Upgrade the final boss gate into an actual boss-arena lock visual with animated warning lights.
+1. Add bespoke hit/death animation frames for broken versions of destructible props instead of instantly hiding them.
+2. Add enemy AI awareness for mushroom rings and gas-pump blast baiting.
+3. Upgrade the final boss gate into a fuller arena-lock sequence with lights, warning klaxon, and camera emphasis.
+4. Add small POI-specific SFX cues for cache open, gas pump warning, mushroom pulse, gate unlock, and extraction flare.
 5. Replace more generic district props with final cohesive versions only where they improve readability.

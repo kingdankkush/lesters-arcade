@@ -183,6 +183,142 @@ export function aaaLevelOneSceneObjectsForDistrict(districtId) {
     })));
 }
 
+function distanceBetween(a, b) {
+  return Math.hypot((a?.worldX ?? 0) - (b?.worldX ?? 0), (a?.worldY ?? 0) - (b?.worldY ?? 0));
+}
+
+function isMushroomSporeRing(obstacle) {
+  return obstacle?.interactive?.id === 'mushroom-spore-ring'
+    || obstacle?.id === 'aaa-mushroom-spore-ring'
+    || String(obstacle?.sceneAssetKey ?? obstacle?.assetKey ?? '').includes('cohesive-mushroom-spore-ring');
+}
+
+function noHitPlan(obstacle, damage = 0) {
+  return Object.freeze({
+    obstacleId: obstacle?.id ?? null,
+    damage,
+    damageable: false,
+    destroyed: false,
+    nextHp: obstacle?.hp ?? null,
+    powerUps: Object.freeze([]),
+    xpDrops: Object.freeze([]),
+    scoreBonus: 0,
+    chainDetonationIds: Object.freeze([]),
+    blastZones: Object.freeze([]),
+    text: '',
+  });
+}
+
+export function levelOneInteractiveHitPlan({ obstacle = null, damage = 0, obstacles = [] } = {}) {
+  if (!obstacle?.interactive || obstacle.destroyed) return noHitPlan(obstacle, damage);
+  const kind = obstacle.interactive.kind;
+  const damageable = kind === 'destructible'
+    || kind === 'reward-cache'
+    || Boolean(obstacle.interactive.chainDetonation);
+  if (!damageable) return noHitPlan(obstacle, damage);
+  const hp = Math.max(0, Number(obstacle.hp ?? 1));
+  const nextHp = Math.max(0, hp - Math.max(0, Number(damage) || 0));
+  const destroyed = nextHp <= 0;
+  const xpDrops = [];
+  const powerUps = [];
+  let scoreBonus = 0;
+  const chainDetonationIds = [];
+  const blastZones = [];
+
+  if (destroyed && kind === 'reward-cache') {
+    xpDrops.push(
+      Object.freeze({ worldX: obstacle.worldX ?? 0, worldY: obstacle.worldY ?? 0, value: 65 }),
+      Object.freeze({ worldX: (obstacle.worldX ?? 0) + 0.35, worldY: (obstacle.worldY ?? 0) - 0.2, value: 35 }),
+    );
+    powerUps.push('ltc-cache');
+    scoreBonus += 275;
+  }
+
+  if (destroyed && obstacle.interactive.chainDetonation) {
+    const radiusTiles = 3.4;
+    blastZones.push(Object.freeze({
+      id: obstacle.id ?? 'level-one-interactive-blast',
+      worldX: obstacle.worldX ?? 0,
+      worldY: obstacle.worldY ?? 0,
+      radiusTiles,
+      damage: 55,
+      source: 'level-one-interactive-explosion',
+    }));
+    for (const candidate of obstacles) {
+      if (!candidate || candidate.id === obstacle.id || candidate.destroyed) continue;
+      if (!candidate.interactive) continue;
+      const candidateKind = candidate.interactive.kind;
+      const canChain = candidate.interactive.chainDetonation || candidateKind === 'destructible' || candidateKind === 'reward-cache';
+      if (!canChain) continue;
+      if (distanceBetween(obstacle, candidate) <= radiusTiles + Math.max(0, candidate.radius ?? 0)) {
+        chainDetonationIds.push(candidate.id);
+      }
+    }
+  }
+
+  return Object.freeze({
+    obstacleId: obstacle.id ?? null,
+    damage,
+    damageable: true,
+    destroyed,
+    nextHp,
+    powerUps: Object.freeze(powerUps),
+    xpDrops: Object.freeze(xpDrops),
+    scoreBonus,
+    chainDetonationIds: Object.freeze(chainDetonationIds),
+    blastZones: Object.freeze(blastZones),
+    text: destroyed
+      ? (kind === 'reward-cache' ? 'CACHE OPEN' : obstacle.interactive.chainDetonation ? 'GAS PUMP DETONATED' : 'COVER BROKEN')
+      : `PROP -${Math.max(0, Number(damage) || 0)}`,
+  });
+}
+
+export function levelOneInteractiveHazardEffectAt({ obstacle = null, playerX = 0, playerY = 0, frame = 0 } = {}) {
+  if (!obstacle?.interactive || !isMushroomSporeRing(obstacle) || obstacle.destroyed) {
+    return Object.freeze({ active: false, inRange: false, moveSpeedMultiplier: 1, damagePerPulse: 0, label: null });
+  }
+  const radius = Math.max(0.8, Number(obstacle.radius ?? 0.9) + 0.55);
+  const distance = Math.hypot((Number(playerX) || 0) - (obstacle.worldX ?? 0), (Number(playerY) || 0) - (obstacle.worldY ?? 0));
+  const inRange = distance <= radius;
+  const pulseFrame = ((Math.round(Number(frame) || 0) % 150) + 150) % 150;
+  const active = inRange && pulseFrame < 72;
+  return Object.freeze({
+    active,
+    inRange,
+    moveSpeedMultiplier: inRange ? 0.72 : 1,
+    damagePerPulse: active ? 3 : 0,
+    label: inRange ? 'spore ring' : null,
+    pulseFrame,
+  });
+}
+
+export function levelOneInteractiveRuntimeStateForObstacle(obstacle = null, { bossDefeated = false, extractionPoint = null, frame = 0 } = {}) {
+  const kind = obstacle?.interactive?.kind ?? null;
+  const baseSolid = Boolean(obstacle?.solid);
+  if (!kind || obstacle?.destroyed) {
+    return Object.freeze({ solid: false, visible: !obstacle?.destroyed, locked: false, unlocked: false, glow: false, pulseActive: false });
+  }
+  if (kind === 'gate') {
+    const unlocked = Boolean(bossDefeated);
+    return Object.freeze({
+      solid: !unlocked,
+      visible: true,
+      locked: !unlocked,
+      unlocked,
+      glow: unlocked,
+      pulseActive: !unlocked && (Math.round(Number(frame) || 0) % 90) < 45,
+    });
+  }
+  if (kind === 'extraction-cue') {
+    const glow = Boolean(bossDefeated || extractionPoint);
+    return Object.freeze({ solid: false, visible: true, locked: false, unlocked: glow, glow, pulseActive: glow && (Math.round(Number(frame) || 0) % 80) < 50 });
+  }
+  if (kind === 'hazard' && isMushroomSporeRing(obstacle)) {
+    return Object.freeze({ solid: false, visible: true, locked: false, unlocked: false, glow: true, pulseActive: (Math.round(Number(frame) || 0) % 150) < 72 });
+  }
+  return Object.freeze({ solid: baseSolid, visible: true, locked: false, unlocked: false, glow: false, pulseActive: false });
+}
+
 export function validateLevelOneAaaSlicePlan({ curatedWorldContract = null, finalSetpieceAssetByKey = null } = {}) {
   const routeZones = new Set(curatedWorldContract?.criticalPath?.map((zone) => zone.id) ?? []);
   const missingRouteZones = uniq(HMH_LEVEL_ONE_AAA_ROUTE_ACTS
