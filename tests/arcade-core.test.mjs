@@ -93,6 +93,12 @@ import {
   calculateExtractionScore,
   getHmhLevelTarget,
   HMH_LEVEL_TARGETS,
+  HMH_LEVEL_ONE_PLAYTEST_BALANCE,
+  buildLevelOnePlaytestBalanceModel,
+  buildLevelOneRunWorldDimensions,
+  levelOneRoguelikeSpawnDirectorAt,
+  levelOneRoguelikeDropChance,
+  levelOneRoguelikeBossProxyRoster,
 
   recordScore,
   resolveAchievementUnlocksForRun,
@@ -659,28 +665,62 @@ test('roguelike XP pacing prevents one enemy pack from chaining multiple level-u
   const afterPack = grantRoguelikeXp(run, packXp);
   const afterHugeBurst = grantRoguelikeXp(run, roguelikeXpCostForLevel(1) + roguelikeXpCostForLevel(2) + 500);
 
-  assert.ok(roguelikeXpCostForLevel(1) >= 150);
+  assert.ok(roguelikeXpCostForLevel(1) >= 100);
   assert.ok(roguelikeXpCostForLevel(3) > roguelikeXpCostForLevel(2));
-  assert.ok(gruntXp <= 8, `grunt XP should stay modest, got ${gruntXp}`);
-  assert.ok(eliteXp <= 14, `elite XP should stay capped, got ${eliteXp}`);
-  assert.ok(miniBossXp <= 45, `mini-boss XP should stay capped, got ${miniBossXp}`);
+  assert.ok(gruntXp <= 12, `grunt XP should stay modest, got ${gruntXp}`);
+  assert.ok(eliteXp <= 24, `elite XP should stay capped, got ${eliteXp}`);
+  assert.ok(miniBossXp <= 80, `mini-boss XP should stay capped, got ${miniBossXp}`);
   assert.equal(afterPack.level <= 2, true, `one pack should not jump several levels, got level ${afterPack.level}`);
   assert.equal(afterHugeBurst.level, 2, 'grantRoguelikeXp should pause after one level-up even with overflow XP');
   assert.equal(afterHugeBurst.pausedForLevelUp, true);
 });
 
-test('roguelike spawn director escalates enemy pressure toward a twenty minute survival wall', () => {
-  const opening = getRoguelikeSpawnDirectorAt(30);
-  const mid = getRoguelikeSpawnDirectorAt(10 * 60);
-  const endgame = getRoguelikeSpawnDirectorAt(20 * 60);
+test('Level 1 playtest balance reaches an 8 minute pressure wall and rewards fighting swarms', () => {
+  const balance = buildLevelOnePlaytestBalanceModel();
+  const opening = levelOneRoguelikeSpawnDirectorAt(0);
+  const mid = levelOneRoguelikeSpawnDirectorAt(4 * 60);
+  const wall = levelOneRoguelikeSpawnDirectorAt(8 * 60);
 
-  assert.equal(opening.elapsedMinutes < mid.elapsedMinutes, true);
-  assert.equal(mid.spawnIntervalSeconds < opening.spawnIntervalSeconds, true);
-  assert.equal(endgame.spawnIntervalSeconds < mid.spawnIntervalSeconds, true);
-  assert.equal(endgame.maxEnemiesOnMap > mid.maxEnemiesOnMap, true);
-  assert.equal(endgame.rangedEnemyShare > opening.rangedEnemyShare, true);
-  assert.equal(endgame.eliteEnemyShare > mid.eliteEnemyShare, true);
-  assert.equal(endgame.difficultyLabel, 'survival-wall');
+  assert.equal(balance.targetSessionSeconds, 480);
+  assert.equal(balance.targetPressureSeconds, 480);
+  assert.equal(opening.difficultyLabel, 'opening');
+  assert.equal(mid.difficultyLabel, 'market-crash');
+  assert.equal(wall.difficultyLabel, 'survival-wall');
+  assert.ok(wall.pressure >= 1, `8 minute wall should reach full pressure, got ${wall.pressure}`);
+  assert.ok(wall.maxEnemiesOnMap >= 92, `wall needs dense chase swarms, got ${wall.maxEnemiesOnMap}`);
+  assert.ok(wall.spawnIntervalSeconds <= 0.62, `late spawn cadence should be frantic, got ${wall.spawnIntervalSeconds}`);
+  assert.ok(wall.chaseEnemyShare >= opening.chaseEnemyShare, 'late game should lean into enemies chasing the player');
+  assert.ok(wall.rangedEnemyShare <= 0.34, 'late ranged share should not turn the screen into unavoidable bullet spam');
+  assert.ok(levelOneRoguelikeDropChance({ elapsedSeconds: 0, rare: false }) < levelOneRoguelikeDropChance({ elapsedSeconds: 480, rare: false }));
+
+  const passive = balance.xpPacing.passiveRun;
+  const active = balance.xpPacing.swarmFighterRun;
+  assert.ok(active.targetLevelAtEightMinutes >= passive.targetLevelAtEightMinutes + 3, 'swarm fighting must clearly out-level passive running');
+  assert.ok(active.targetLevelAtEightMinutes >= 7, 'active fighters should have enough augments for the 8 minute wall');
+});
+
+test('Level 1 world dimensions target 50-65% unique traversal within an 8 minute run', () => {
+  const world = buildLevelOneRunWorldDimensions();
+
+  assert.equal(world.width, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width);
+  assert.equal(world.height, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height);
+  assert.ok(world.traversalTargetPct >= 0.5 && world.traversalTargetPct <= 0.65);
+  assert.ok(world.expectedUniqueTraversalPct >= 0.5, `expected at least half-map traversal, got ${world.expectedUniqueTraversalPct}`);
+  assert.ok(world.expectedUniqueTraversalPct <= 0.65, `expected no more than 65% map traversal, got ${world.expectedUniqueTraversalPct}`);
+  assert.ok(world.width < 2000 && world.height < 2000, 'playtest found the old 2000x2000 world too large for Level 1 learning');
+});
+
+test('Level 1 temporarily assigns curated humanoid enemies as mini-boss and boss proxies', () => {
+  const roster = levelOneRoguelikeBossProxyRoster();
+  const ids = roster.map((entry) => entry.enemyId);
+  const catalogIds = new Set(LESTER_BLASTER_ENEMY_CATALOG.map((enemy) => enemy.id));
+
+  assert.equal(roster.filter((entry) => entry.role === 'mini-boss').length >= 3, true);
+  assert.equal(roster.filter((entry) => entry.role === 'boss').length, 1);
+  assert.equal(new Set(ids).size, ids.length);
+  assert.ok(ids.every((id) => catalogIds.has(id)), `all proxy ids must exist in enemy catalog: ${ids.join(', ')}`);
+  assert.ok(roster.every((entry) => entry.animatedCuratedAssetKey?.startsWith('universal/enemy/')));
+  assert.ok(roster.every((entry) => entry.humanoid === true), 'temporary boss proxies should be humanoid-ish animated enemies');
 });
 
 test('combat accessibility settings model exposes motion flash color and aim toggles', () => {

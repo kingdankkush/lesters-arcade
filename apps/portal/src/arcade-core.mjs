@@ -2021,18 +2021,123 @@ function roguelikeStartingStatsFor(characterId) {
 export function roguelikeXpCostForLevel(level = 1) {
   const safeLevel = Math.max(1, Math.floor(Number(level) || 1));
   const completedLevels = safeLevel - 1;
-  return 150 + completedLevels * 70 + completedLevels * completedLevels * 8;
+  return 100 + completedLevels * 55 + completedLevels * completedLevels * 7;
 }
 
 export function calculateRoguelikeKillXp(enemy = {}) {
   const score = Math.max(0, Number(enemy.score) || 80);
   const tier = enemy.tier ?? null;
-  let value = 5 + Math.round(Math.min(score, 180) / 55);
-  if (tier === 'heavy') value += 2;
-  if (enemy.elite) value += 5;
-  if (enemy.miniBoss) value = Math.max(value, 34);
-  if (enemy.boss) value = Math.max(value, 60);
-  return Math.max(4, Math.min(enemy.miniBoss ? 45 : enemy.boss ? 75 : 18, value));
+  let value = 8 + Math.round(Math.min(score, 260) / 48);
+  if (tier === 'heavy') value += 3;
+  if (enemy.elite) value += 8;
+  if (enemy.miniBoss) value = Math.max(value, 62);
+  if (enemy.boss) value = Math.max(value, 115);
+  return Math.max(6, Math.min(enemy.miniBoss ? 80 : enemy.boss ? 140 : 26, value));
+}
+
+export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
+  targetSessionSeconds: 480,
+  targetPressureSeconds: 480,
+  world: Object.freeze({
+    width: 1050,
+    height: 900,
+    traversalTargetPct: 0.58,
+    traversalEfficiency: 0.32,
+  }),
+  player: Object.freeze({
+    baseMoveSpeedTilesPerSecond: 4.15,
+    expectedCircleKiteEfficiency: 0.32,
+  }),
+  director: Object.freeze({
+    openingSpawnIntervalSeconds: 2.45,
+    wallSpawnIntervalSeconds: 0.56,
+    openingMaxEnemies: 14,
+    wallMaxEnemies: 100,
+    openingChaseShare: 0.62,
+    wallChaseShare: 0.74,
+    openingRangedShare: 0.18,
+    wallRangedShare: 0.31,
+    openingEliteShare: 0.02,
+    wallEliteShare: 0.24,
+  }),
+  drops: Object.freeze({
+    normalOpeningChance: 0.16,
+    normalWallChance: 0.32,
+    rareChance: 1,
+  }),
+  xpPacing: Object.freeze({
+    passiveRun: Object.freeze({ assumedKillsPerMinute: 8, targetLevelAtEightMinutes: 4 }),
+    swarmFighterRun: Object.freeze({ assumedKillsPerMinute: 20, targetLevelAtEightMinutes: 7 }),
+  }),
+});
+
+export const HMH_LEVEL_ONE_BOSS_PROXY_ROSTER = Object.freeze([
+  Object.freeze({ role: 'mini-boss', zoneId: 'ghost-saloon-mainstreet', enemyId: 'claim-jumper-sheriff', title: 'Claim-Jumper Sheriff', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/claim-jumper', read: 'rifle humanoid commander for the first saloon lock' }),
+  Object.freeze({ role: 'mini-boss', zoneId: 'dead-forest-mushroom-grove', enemyId: 'scam-cult-zealot', title: 'Scam Cult Zealot Alpha', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/scam-cult-zealot', read: 'fully animated humanoid zealot used as forest-loop pressure until bespoke mini-boss art exists' }),
+  Object.freeze({ role: 'mini-boss', zoneId: 'warehouse-gas-station-yard', enemyId: 'gas-beast', title: 'Gas Beast Tank', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/gas-beast-tank', read: 'large humanoid tank for warehouse/gas-station pressure' }),
+  Object.freeze({ role: 'boss', zoneId: 'rugpull-gulch-boss-yard', enemyId: 'bandit-captain', title: 'Bandit Captain', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/evil-banker-ranged', read: 'ranged humanoid captain scaled as the temporary Level 1 boss proxy' }),
+]);
+
+export function levelOneRoguelikeBossProxyRoster() {
+  return HMH_LEVEL_ONE_BOSS_PROXY_ROSTER;
+}
+
+export function buildLevelOneRunWorldDimensions({
+  width = HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width,
+  height = HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height,
+  targetSessionSeconds = HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetSessionSeconds,
+  moveSpeedTilesPerSecond = HMH_LEVEL_ONE_PLAYTEST_BALANCE.player.baseMoveSpeedTilesPerSecond,
+  traversalEfficiency = HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.traversalEfficiency,
+} = {}) {
+  const safeWidth = Math.max(1, Math.round(Number(width) || HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width));
+  const safeHeight = Math.max(1, Math.round(Number(height) || HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height));
+  const uniqueTiles = Math.max(0, Number(moveSpeedTilesPerSecond) || 0) * Math.max(0, Number(targetSessionSeconds) || 0) * Math.max(0, Number(traversalEfficiency) || 0);
+  const baselineAxis = Math.max(safeWidth, safeHeight);
+  return Object.freeze({
+    width: safeWidth,
+    height: safeHeight,
+    targetSessionSeconds,
+    moveSpeedTilesPerSecond,
+    traversalEfficiency,
+    traversalTargetPct: HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.traversalTargetPct,
+    expectedUniqueTraversalTiles: Number(uniqueTiles.toFixed(1)),
+    expectedUniqueTraversalPct: Number(clampNumber(uniqueTiles / baselineAxis, 0, 1).toFixed(3)),
+  });
+}
+
+export function levelOneRoguelikeDropChance({ elapsedSeconds = 0, rare = false } = {}) {
+  if (rare) return HMH_LEVEL_ONE_PLAYTEST_BALANCE.drops.rareChance;
+  const pressure = clampNumber((Number(elapsedSeconds) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
+  const { normalOpeningChance, normalWallChance } = HMH_LEVEL_ONE_PLAYTEST_BALANCE.drops;
+  return Number((normalOpeningChance + (normalWallChance - normalOpeningChance) * pressure).toFixed(3));
+}
+
+export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {
+  const seconds = Math.max(0, Number(elapsedSeconds) || 0);
+  const minutes = seconds / 60;
+  const pressure = clampNumber(seconds / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
+  const d = HMH_LEVEL_ONE_PLAYTEST_BALANCE.director;
+  return Object.freeze({
+    elapsedMinutes: Number(minutes.toFixed(2)),
+    pressure: Number(pressure.toFixed(3)),
+    spawnIntervalSeconds: Number((d.openingSpawnIntervalSeconds + (d.wallSpawnIntervalSeconds - d.openingSpawnIntervalSeconds) * pressure).toFixed(2)),
+    maxEnemiesOnMap: Math.round(d.openingMaxEnemies + (d.wallMaxEnemies - d.openingMaxEnemies) * pressure),
+    chaseEnemyShare: Number((d.openingChaseShare + (d.wallChaseShare - d.openingChaseShare) * pressure).toFixed(2)),
+    rangedEnemyShare: Number((d.openingRangedShare + (d.wallRangedShare - d.openingRangedShare) * pressure).toFixed(2)),
+    eliteEnemyShare: Number((d.openingEliteShare + (d.wallEliteShare - d.openingEliteShare) * pressure).toFixed(2)),
+    projectileSpeedMultiplier: Number((1 + pressure * 0.72).toFixed(2)),
+    healthMultiplier: Number((1 + pressure * 1.95).toFixed(2)),
+    difficultyLabel: pressure >= 1 ? 'survival-wall' : pressure >= 0.75 ? 'panic' : pressure >= 0.5 ? 'market-crash' : pressure >= 0.25 ? 'volatile' : 'opening',
+  });
+}
+
+export function buildLevelOnePlaytestBalanceModel() {
+  return Object.freeze({
+    ...HMH_LEVEL_ONE_PLAYTEST_BALANCE,
+    world: buildLevelOneRunWorldDimensions(),
+    bossProxyRoster: HMH_LEVEL_ONE_BOSS_PROXY_ROSTER,
+    checkpoints: Object.freeze([0, 120, 240, 360, 480].map((seconds) => levelOneRoguelikeSpawnDirectorAt(seconds))),
+  });
 }
 
 function seededIndex(seed, salt, length) {

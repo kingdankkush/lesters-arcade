@@ -124,6 +124,10 @@ import {
   ARCADE_GAMES,
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
+  levelOneRoguelikeSpawnDirectorAt,
+  levelOneRoguelikeDropChance,
+  levelOneRoguelikeBossProxyRoster,
+  buildLevelOneRunWorldDimensions,
   calculateRoguelikeKillXp,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
@@ -1703,6 +1707,20 @@ function currentCampaignLevel() {
   return getHmhCampaignLevel(combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID);
 }
 
+function currentRoguelikeSpawnDirector(elapsedSeconds = combat.elapsedGameSeconds) {
+  const level = currentCampaignLevel();
+  return level.id === DEFAULT_CAMPAIGN_LEVEL_ID
+    ? levelOneRoguelikeSpawnDirectorAt(elapsedSeconds)
+    : getRoguelikeSpawnDirectorAt(elapsedSeconds);
+}
+
+function currentRoguelikeNormalDropChance(elapsedSeconds = combat.elapsedGameSeconds) {
+  const level = currentCampaignLevel();
+  return level.id === DEFAULT_CAMPAIGN_LEVEL_ID
+    ? levelOneRoguelikeDropChance({ elapsedSeconds, rare: false })
+    : 0.35;
+}
+
 function currentCampaignPoi() {
   if (!combat.roguelikeRun || !Array.isArray(combat.districtGrid) || !combat.districtGrid.length || !combat.macroCellsX) return null;
   return buildCampaignPoiDirective({
@@ -2248,7 +2266,7 @@ function combatHudStatus() {
   if (combat.gameOver) return combat.clearedCampaignLevelId ? 'LEVEL CLEAR' : (combat.bossDefeated ? 'LEVEL CLEAR' : 'GAME OVER');
   if (combat.levelUpPaused) return `LEVEL ${combat.roguelikeRun?.level ?? 1} UP // PICK ONE AUGMENT // REROLLS ${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
   if (combat.roguelikeRun) {
-    const director = combat.roguelikeRun.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+    const director = combat.roguelikeRun.spawnDirector ?? currentRoguelikeSpawnDirector(combat.elapsedGameSeconds);
     const level = currentCampaignLevel();
     const objective = currentCampaignObjective();
     return `${level.gameplayTitle.toUpperCase()} // ${director.difficultyLabel.toUpperCase()} // ${objective.shortLabel}`;
@@ -2315,7 +2333,7 @@ function renderRoguelikeStatBar() {
     bar.replaceChildren();
     return;
   }
-  const director = run.spawnDirector ?? getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+  const director = run.spawnDirector ?? currentRoguelikeSpawnDirector(combat.elapsedGameSeconds);
   const augments = Object.values(run.skills).reduce((sum, level) => sum + level, 0);
   const weapon = weaponById(combat.weaponId);
   const xpToNext = Math.max(0, Math.round(run.xpToNextLevel - run.xp));
@@ -5560,8 +5578,9 @@ async function startCombat(options = {}) {
   if (safePlayerStart.adjusted) {
     debugRuntimeLog('[spawn] moved player start off water', safePlayerStart);
   }
-  const worldWidth = 2000;  // Large world for exploration
-  const worldHeight = 2000;
+  const world = buildLevelOneRunWorldDimensions();
+  const worldWidth = level.id === DEFAULT_CAMPAIGN_LEVEL_ID ? world.width : 2000;
+  const worldHeight = level.id === DEFAULT_CAMPAIGN_LEVEL_ID ? world.height : 2000;
   const campaignWorld = buildCampaignWorldSetup({
     levelId: level.id,
     seed,
@@ -5654,7 +5673,7 @@ async function startCombat(options = {}) {
 
   combat.status = startPendingBegin
     ? 'Level ready: press Space or click the READY overlay to begin.'
-    : 'Isometric roguelike run live: survive 20 minutes, kite enemy swarms, collect XP, and pause only for level-up augments.';
+    : `Level ${level.number} run live: survive ${Math.round((level.scoring?.targetSeconds ?? 480) / 60)} minutes, fight swarms for XP, clear mini-boss locks, and extract.`;
   if (!startPendingBegin) {
     playSfxCue('level-start');
     await startArcadeMusicForGame('hard-money-heroes');
@@ -7110,7 +7129,7 @@ function currentPlayerDistrictContext() {
   return sceneTemplateContextAt(cellX, cellY);
 }
 
-function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds), options = {}) {
+function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.elapsedGameSeconds), options = {}) {
   const districtContext = currentPlayerDistrictContext();
   const activePoi = currentCampaignPoi();
   const activeEncounterVisualPlan = combat.activePoiEncounterVisualPlan ?? null;
@@ -7168,7 +7187,7 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
   } else {
     sizeScale = 0.55 + Math.random() * 0.75;
   }
-  const durabilityScale = miniBoss ? 2.45 : elite ? 1.55 : 0.82;
+  const durabilityScale = options.boss ? 4.2 : miniBoss ? 2.45 : elite ? 1.55 : 0.82;
   const enemy = {
     ...spawn.enemy,
     title: options.title ?? spawn.enemy.title,
@@ -7178,8 +7197,10 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
     maxHp: Math.max(8, Math.round(spawn.scaledHealth * durabilityScale)),
     speed: (spawn.enemy.speed ?? 1) * (miniBoss ? 0.94 : elite ? 1.08 : 0.9),
     ranged,
-    elite: elite || miniBoss,
+    elite: elite || miniBoss || Boolean(options.boss),
     miniBoss,
+    boss: Boolean(options.boss || spawn.enemy.boss),
+    finalBossProxy: Boolean(options.finalBossProxy),
     sizeScale,
     districtFamily: options.districtFamily ?? districtContext?.districtFamily ?? null,
     poiId,
@@ -7190,7 +7211,7 @@ function spawnRoguelikeEnemy(director = getRoguelikeSpawnDirectorAt(combat.elaps
     tellFrames: 0,
     recoveryFrames: miniBoss ? Math.max(spawn.ai?.recoveryFrames ?? 20, 28) : (spawn.ai?.recoveryFrames ?? 20),
     recoveryFramesRemaining: 0,
-    score: spawn.enemy.score + (miniBoss ? 220 : elite ? 80 : 0),
+    score: spawn.enemy.score + (options.boss ? 900 : miniBoss ? 220 : elite ? 80 : 0),
     state: ranged ? 'ranged-fire' : 'chase-player',
   };
   const projected = isoToScreen(enemy.mapX, enemy.mapY);
@@ -7547,6 +7568,14 @@ function updateRoguelikeEnemies(director, dt) {
       continue;
     }
     killEnemy(enemy);
+    if (enemy.finalBossProxy) {
+      combat.bossKills += 1;
+      combat.bossDefeated = true;
+      combat.miniBossLock = false;
+      combat.scrollLockReason = null;
+      combat.completedCampaignPoiIds?.add(enemy.poiEncounterId ?? enemy.poiId ?? 'rugpull-gulch-boss-yard');
+      spawnText('BOSS CLEAR — EXTRACTION SOON', ISO_CENTER_X - 112, ISO_CENTER_Y - 78, '#45ff8a');
+    }
     // Per-enemy-type kill tracking (feeds the game-stats module + balanced XP).
     const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
     combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
@@ -7556,8 +7585,10 @@ function updateRoguelikeEnemies(director, dt) {
     // grunts have a small chance at a standard drop. Deterministic per frame/kill.
     if (enemy.elite || enemy.miniBoss) {
       dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { rare: true });
-    } else if ((combat.frame + combat.kills) % 12 === 0) {
-      dropRoguelikePowerUp(enemy.mapX, enemy.mapY);
+    } else {
+      const normalDropChance = currentRoguelikeNormalDropChance(combat.elapsedGameSeconds);
+      const dropRoll = (((combat.frame * 31 + combat.kills * 17 + combat.enemies.length * 13) >>> 0) % 1000) / 1000;
+      if (dropRoll < normalDropChance) dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { dropChance: normalDropChance });
     }
   }
   combat.enemies = survivors;
@@ -7633,7 +7664,7 @@ function powerUpById(id) {
   return LESTER_BLASTER_POWER_UPS.find((p) => p.id === normalizedId) ?? null;
 }
 
-function dropRoguelikePowerUp(worldX, worldY, { rare = false } = {}) {
+function dropRoguelikePowerUp(worldX, worldY, { rare = false, dropChance = null } = {}) {
   // Level Design Bible §6.5: use the parameterized drop-table model for the drop
   // decision. rollDrop is seeded (deterministic per frame+kill) and parameterized
   // by tier × luck. The result is mapped to the existing power-up pool so the
@@ -7641,7 +7672,7 @@ function dropRoguelikePowerUp(worldX, worldY, { rare = false } = {}) {
   const tier = rare ? 'elite' : 'grunt';
   const luck = combat.roguelikeRun?.stats?.luck ?? 1;
   const seed = (combat.frame * 31 + combat.kills * 17 + combat.powerUps.length) >>> 0;
-  const dropId = rollDrop({ seed, tier, luck, dropChance: rare ? 1.0 : 0.35 });
+  const dropId = rollDrop({ seed, tier, luck, dropChance: dropChance ?? (rare ? 1.0 : currentRoguelikeNormalDropChance(combat.elapsedGameSeconds)) });
   if (!dropId) return;
   // Map drop-table ids to the existing power-up pool. The table already uses the
   // same ids (heal-pack, shield-cache, ammo-cache, magnet-surge, etc.) so most
@@ -7774,9 +7805,44 @@ function updateRoguelikePowerUpTimers(dt) {
   }
 }
 
+function spawnLevelOneFinalBossProxy(director) {
+  const bossProxy = levelOneRoguelikeBossProxyRoster().find((entry) => entry.role === 'boss');
+  if (!bossProxy) return null;
+  combat.scriptedBossTriggered = true;
+  combat.miniBossLock = true;
+  combat.scrollLockReason = `BOSS LOCK // ${bossProxy.title}`;
+  lastBossId = bossProxy.enemyId;
+  spawnText(`BOSS: ${bossProxy.title.toUpperCase()}`, ISO_CENTER_X - 98, ISO_CENTER_Y - 112, '#ffe84d');
+  spawnText('CLEAR HIM TO REVEAL EXTRACTION', ISO_CENTER_X - 118, ISO_CENTER_Y - 84, '#ff7b2f');
+  return spawnRoguelikeEnemy(director, {
+    forceEnemyId: bossProxy.enemyId,
+    title: bossProxy.title,
+    spawnSource: 'level-1-final-boss-proxy',
+    poiId: bossProxy.zoneId,
+    poiEncounterId: bossProxy.zoneId,
+    elite: true,
+    miniBoss: true,
+    boss: true,
+    finalBossProxy: true,
+    ranged: true,
+    angleRadians: Math.PI * 0.15,
+    radiusTiles: ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES + 4,
+    minDistanceTiles: ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES,
+    attackTimer: 150,
+  });
+}
+
+function updateLevelOneFinalBossProxy(director) {
+  const level = currentCampaignLevel();
+  if (level.id !== DEFAULT_CAMPAIGN_LEVEL_ID || combat.scriptedBossTriggered || combat.bossDefeated) return;
+  if (combat.elapsedGameSeconds < (level.timings?.bossSpawnSeconds ?? Infinity)) return;
+  spawnLevelOneFinalBossProxy(director);
+}
+
 function syncCampaignProgression() {
   const level = currentCampaignLevel();
-  if (!combat.extractionPoint && Array.isArray(combat.districtGrid) && combat.districtGrid.length && combat.elapsedGameSeconds >= (level.timings?.extractionSpawnSeconds ?? Infinity)) {
+  const levelOneBossGateSatisfied = level.id !== DEFAULT_CAMPAIGN_LEVEL_ID || combat.bossDefeated;
+  if (!combat.extractionPoint && levelOneBossGateSatisfied && Array.isArray(combat.districtGrid) && combat.districtGrid.length && combat.elapsedGameSeconds >= (level.timings?.extractionSpawnSeconds ?? Infinity)) {
     combat.extractionPoint = buildCampaignExtractionPoint({
       levelId: level.id,
       districtGrid: combat.districtGrid,
@@ -7812,8 +7878,9 @@ function syncCampaignProgression() {
 
 function updateRoguelikeCombatStep(dt, difficulty) {
   if (combat.levelUpPaused) return;
-  const director = getRoguelikeSpawnDirectorAt(combat.elapsedGameSeconds);
+  const director = currentRoguelikeSpawnDirector(combat.elapsedGameSeconds);
   combat.roguelikeRun.spawnDirector = director;
+  updateLevelOneFinalBossProxy(director);
   updateRoguelikeMovement(dt);
   updateRoguelikePowerUpTimers(dt);
   updateAutoFire(dt);
