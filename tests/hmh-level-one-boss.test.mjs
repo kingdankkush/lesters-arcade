@@ -6,6 +6,8 @@ import {
   buildLevelOneBossDirective,
   computeBossVolleyVectors,
   LEVEL_ONE_BOSS_PHASE_COMBAT,
+  resolveLevelOneMiniBossPhase,
+  buildLevelOneMiniBossDirective,
 } from '../apps/portal/src/hmh-level-one-boss.mjs';
 import { buildLevelOneBossChoreographyPlan } from '../apps/portal/src/hmh-level-one-balance-pass.mjs';
 
@@ -150,5 +152,49 @@ test('main.js imports and wires the boss phase controller into the enemy loop', 
   assert.ok(mainJs.includes('computeBossVolleyVectors('), 'main.js must fire phase-driven volleys');
   // the phase-driven volley must be gated behind the finalBossProxy flag
   assert.ok(/finalBossProxy[\s\S]{0,900}computeBossVolleyVectors/.test(mainJs), 'volley must be gated behind finalBossProxy');
+  assert.ok(mainJs.includes('buildLevelOneMiniBossDirective('), 'main.js must drive mini-boss phases');
 });
+
+// --- mini-boss 2-phase enrage ----------------------------------------------
+
+test('resolveLevelOneMiniBossPhase returns base above 50% HP for a known POI', () => {
+  const poiId = buildLevelOneBossChoreographyPlan().miniBosses[0].poiId;
+  const phase = resolveLevelOneMiniBossPhase(poiId, 0.8);
+  assert.ok(phase, 'a known mini-boss POI must resolve a phase');
+  assert.equal(phase.id, 'base');
+  assert.equal(phase.enraged, false);
+  assert.equal(phase.phaseNumber, 1);
+});
+
+test('resolveLevelOneMiniBossPhase enrages at or below 50% HP', () => {
+  const poiId = buildLevelOneBossChoreographyPlan().miniBosses[0].poiId;
+  const phase = resolveLevelOneMiniBossPhase(poiId, 0.4);
+  assert.equal(phase.id, 'enraged');
+  assert.equal(phase.enraged, true);
+  assert.ok(phase.attackResetMul < 1, 'enraged cadence is tighter');
+  assert.ok(phase.fanShots >= 3, 'enraged ranged mini-boss gains a fan');
+});
+
+test('resolveLevelOneMiniBossPhase returns null for a POI with no mini-boss plan', () => {
+  assert.equal(resolveLevelOneMiniBossPhase('not-a-real-poi', 0.4), null);
+  assert.equal(resolveLevelOneMiniBossPhase(null, 0.4), null);
+});
+
+test('buildLevelOneMiniBossDirective emits an ENRAGED banner on entry only', () => {
+  const poiId = buildLevelOneBossChoreographyPlan().miniBosses[0].poiId;
+  // drop from base (80%) to enraged (40%)
+  const d = buildLevelOneMiniBossDirective({ poiId, hp: 40, maxHp: 100, lastPhaseId: 'base' });
+  assert.equal(d.phase.enraged, true);
+  assert.equal(d.phaseChanged, true);
+  assert.ok(d.banner && /ENRAGED/.test(d.banner));
+  // staying enraged does not re-emit the banner
+  const d2 = buildLevelOneMiniBossDirective({ poiId, hp: 30, maxHp: 100, lastPhaseId: 'enraged' });
+  assert.equal(d2.phaseChanged, false);
+  assert.equal(d2.banner, null);
+});
+
+test('buildLevelOneMiniBossDirective returns null for non-mini-boss POIs', () => {
+  assert.equal(buildLevelOneMiniBossDirective({ poiId: 'nope', hp: 10, maxHp: 100 }), null);
+});
+
 

@@ -172,7 +172,7 @@ import {
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
-import { buildLevelOneBossDirective, computeBossVolleyVectors } from './src/hmh-level-one-boss.mjs';
+import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
@@ -7841,6 +7841,26 @@ function updateRoguelikeEnemies(director, dt) {
         enemy.mapY = resolved.y;
       }
       enemy.attackTimer -= 1;
+      // Mini-boss 2-phase enrage (handoff §12.7): POI mini-bosses tighten their
+      // attack cadence + gain a small fan (ranged) below 50% HP, with a one-time
+      // ENRAGED banner. Returns null for non-mini-boss enemies so they keep the
+      // generic AI untouched. finalBossProxy is handled by its own controller.
+      let miniBossDirective = null;
+      if (enemy.miniBoss && !enemy.finalBossProxy) {
+        miniBossDirective = buildLevelOneMiniBossDirective({
+          poiId: enemy.poiEncounterId ?? enemy.poiId,
+          hp: enemy.hp,
+          maxHp: enemy.maxHp,
+          lastPhaseId: enemy.miniBossPhaseId ?? null,
+        });
+        if (miniBossDirective) {
+          if (miniBossDirective.phaseChanged && miniBossDirective.banner) {
+            spawnText(miniBossDirective.banner, enemy.x - 60, enemy.y - 96, '#ff476f');
+          }
+          enemy.miniBossPhaseId = miniBossDirective.nextLastPhaseId;
+        }
+      }
+      const miniBossResetMul = miniBossDirective?.phase?.attackResetMul ?? 1;
       const telegraphFrames = 18 + (encounterBehavior.telegraphBonusFrames ?? 0);
       enemy.tellFrames = enemy.attackTimer < telegraphFrames ? telegraphFrames - enemy.attackTimer : 0;
       if (enemy.tellFrames > 0) {
@@ -7852,7 +7872,7 @@ function updateRoguelikeEnemies(director, dt) {
         enemy.lunging = enemy.id === 'coyote-pack-runner' || enemy.id === 'scorpion-ambusher';
         enemy.state = 'attack';
         damagePlayer(calculateEnemyMeleeDamage({ normalHitDamage: NORMAL_HIT_DAMAGE, elite: enemy.elite }), 'enemy-melee', enemy.elite ? `Elite ${enemy.title ?? 'enemy'}` : enemy.title);
-        enemy.attackTimer = calculateMeleeAttackResetFrames({ preferredResetFrames: encounterBehavior.attackResetFrames ?? 46 });
+        enemy.attackTimer = Math.round(calculateMeleeAttackResetFrames({ preferredResetFrames: encounterBehavior.attackResetFrames ?? 46 }) * miniBossResetMul);
         enemy.recoveryFramesRemaining = enemy.recoveryFrames ?? 20;
       }
       if (enemy.ranged && enemy.attackTimer <= 0) {
@@ -7888,6 +7908,28 @@ function updateRoguelikeEnemies(director, dt) {
           enemy.attackTimer = boss.attackResetFrames;
           enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 20);
           enemy.bossPhaseId = directive.nextLastPhaseId;
+        } else if (miniBossDirective?.phase?.enraged) {
+          // Enraged ranged mini-boss: small fan volley + tightened cadence.
+          const vectors = computeBossVolleyVectors({
+            dirX: dx / distance,
+            dirY: dy / distance,
+            baseSpeed: shotSpeed,
+            phase: miniBossDirective.phase,
+          });
+          for (const v of vectors) {
+            combat.enemyShots.push({
+              worldX: enemy.mapX,
+              worldY: enemy.mapY,
+              vx: v.vx,
+              vy: v.vy,
+              damage: NORMAL_HIT_DAMAGE,
+              ttl: 180,
+              firedBy: enemy.title ?? null,
+            });
+          }
+          const baseReset = encounterBehavior.attackResetFrames ?? Math.max(34, Math.round(92 - director.pressure * 38));
+          enemy.attackTimer = Math.round(baseReset * miniBossResetMul);
+          enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 16);
         } else {
           combat.enemyShots.push({
             worldX: enemy.mapX,
@@ -7898,7 +7940,8 @@ function updateRoguelikeEnemies(director, dt) {
             ttl: 180,
             firedBy: enemy.title ?? null,
           });
-          enemy.attackTimer = encounterBehavior.attackResetFrames ?? Math.max(34, Math.round(92 - director.pressure * 38));
+          const baseReset = encounterBehavior.attackResetFrames ?? Math.max(34, Math.round(92 - director.pressure * 38));
+          enemy.attackTimer = Math.round(baseReset * miniBossResetMul);
           enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 16);
         }
       }

@@ -129,3 +129,61 @@ export function computeBossVolleyVectors({ dirX, dirY, baseSpeed, phase } = {}) 
   }
   return vectors;
 }
+
+// --- Mini-bosses ------------------------------------------------------------
+// The three Level 1 mini-bosses (Claim-Jumper Sheriff, Scam Cult Zealot Alpha,
+// Gas Beast Tank) each declare a 2-phase encounter in the choreography plan
+// (`miniBosses[]`, keyed by POI id). Like the final boss before this pass, they
+// otherwise run the generic enemy loop. A mini-boss is a shorter fight and may
+// be melee OR ranged, so its phases are simpler than the final boss: phase 1 is
+// baseline, phase 2 (below `enrageHpPct`) is an ENRAGE — tighter attack cadence,
+// a telegraph banner, and (for ranged mini-bosses) a small 3-shot fan.
+export const MINI_BOSS_ENRAGE_HP_PCT = 50;
+
+export const MINI_BOSS_PHASE_COMBAT = Object.freeze({
+  base: Object.freeze({ attackResetMul: 1.0, fanShots: 1, fanSpreadRad: 0, shotSpeedMul: 1.0 }),
+  enraged: Object.freeze({ attackResetMul: 0.62, fanShots: 3, fanSpreadRad: 0.5, shotSpeedMul: 1.12 }),
+});
+
+// Look up the mini-boss choreography entry for a POI id, or null if none.
+export function miniBossPlanForPoi(poiId, { plan = null } = {}) {
+  if (!poiId) return null;
+  const choreography = plan ?? buildLevelOneBossChoreographyPlan();
+  return choreography.miniBosses.find((m) => m.poiId === poiId) ?? null;
+}
+
+// Resolve a mini-boss's phase from its live HP fraction. Returns null when the
+// POI has no mini-boss plan (so the runtime cleanly falls back to generic AI).
+export function resolveLevelOneMiniBossPhase(poiId, hpFraction, { plan = null } = {}) {
+  const miniPlan = miniBossPlanForPoi(poiId, { plan });
+  if (!miniPlan) return null;
+  const enraged = clamp01(hpFraction) * 100 <= MINI_BOSS_ENRAGE_HP_PCT;
+  const combat = enraged ? MINI_BOSS_PHASE_COMBAT.enraged : MINI_BOSS_PHASE_COMBAT.base;
+  return Object.freeze({
+    id: enraged ? 'enraged' : 'base',
+    phaseNumber: enraged ? 2 : 1,
+    phaseCount: miniPlan.phaseCount ?? 2,
+    title: miniPlan.title,
+    telegraphFrames: miniPlan.telegraphFrames,
+    enraged,
+    ...combat,
+  });
+}
+
+// Build a per-frame mini-boss directive: current phase + whether it just entered
+// the enrage phase (for a one-time banner). `lastPhaseId` is the phase id stored
+// on the mini-boss enemy from the previous frame.
+export function buildLevelOneMiniBossDirective({ poiId, hp, maxHp, lastPhaseId = null, plan = null } = {}) {
+  const safeMax = Math.max(1, Number(maxHp) || 1);
+  const fraction = clamp01((Number(hp) || 0) / safeMax);
+  const phase = resolveLevelOneMiniBossPhase(poiId, fraction, { plan });
+  if (!phase) return null;
+  const changed = lastPhaseId !== phase.id;
+  return Object.freeze({
+    phase,
+    hpFraction: Number(fraction.toFixed(3)),
+    phaseChanged: changed,
+    banner: changed && phase.enraged ? `${phase.title} ENRAGED`.toUpperCase() : null,
+    nextLastPhaseId: phase.id,
+  });
+}
