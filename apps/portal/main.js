@@ -59,7 +59,11 @@ import {
   levelOneInteractiveRuntimeStateForObstacle,
   levelOneInteractiveSfxCuePlan,
 } from './src/hmh-level-one-aaa-slices.mjs';
-import { calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
+import { calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculatePlayerDamageRecovery, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
+import {
+  buildLevelOneBossChoreographyPlan,
+  buildLevelOneSpawnCompositionAt,
+} from './src/hmh-level-one-balance-pass.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
@@ -6611,15 +6615,22 @@ const DAMAGE_SOURCE_LABELS = Object.freeze({
 function damagePlayer(damage, source = 'hit', attackerTitle = null) {
   if (combat.invulnerableFrames > 0 || damage <= 0 || combat.gameOver) return false;
   const armorScale = combat.roguelikeRun ? Math.max(1, combat.roguelikeRun.stats.armor ?? 1) : 1;
-  const applied = Math.max(1, Math.round((Number(damage) || NORMAL_HIT_DAMAGE) / armorScale));
+  const recovery = calculatePlayerDamageRecovery({
+    damage,
+    source,
+    armor: armorScale,
+    invulnerability: combat.roguelikeRun?.stats?.invulnerability ?? 1,
+    baseInvulnerableFrames: LESTER_BLASTER_TACTICAL_COMBAT_V2.health.invulnerabilityAfterHitFrames,
+  });
+  const applied = recovery.appliedDamage;
   combat.health = clamp(combat.health - applied, 0, PLAYER_MAX_HEALTH);
   combat.combo = 0;
   combat.damageCombo = 0;
   combat.noDamageSeconds = 0;
   // Death-recap: remember what landed the last hit so the game-over screen can
   // show "Killed By" (Isaac/Hades-style learning loop).
-  combat.lastHitBy = attackerTitle || DAMAGE_SOURCE_LABELS[source] || 'Combat damage';
-  combat.invulnerableFrames = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.invulnerabilityAfterHitFrames;
+  combat.lastHitBy = attackerTitle || recovery.recapLabel || DAMAGE_SOURCE_LABELS[source] || 'Combat damage';
+  combat.invulnerableFrames = recovery.invulnerableFrames;
   playSfxCue('player-hit', 0.06);
   spawnText(`-${applied}% HP`, combat.playerX, combat.playerY - 80, '#ff476f');
   spawnBlood(combat.playerX + 12, combat.playerY - 40, '#ff476f');
@@ -7205,6 +7216,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
   const districtContext = currentPlayerDistrictContext();
   const activePoi = currentCampaignPoi();
   const activeEncounterVisualPlan = combat.activePoiEncounterVisualPlan ?? null;
+  const actComposition = buildLevelOneSpawnCompositionAt(combat.elapsedGameSeconds);
   const poiId = options.poiId ?? activePoi?.id ?? districtContext?.poiId ?? districtContext?.poiApproachId ?? null;
   const spawn = chooseEnemySpawn({
     elapsedSeconds: combat.elapsedGameSeconds,
@@ -7214,13 +7226,14 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     forceEnemyId: options.forceEnemyId ?? null,
   });
   const angle = options.angleRadians ?? ((((combat.frame * 37) + combat.enemies.length * 71) % 360) * Math.PI / 180);
-  const radius = options.radiusTiles ?? (10 + (combat.frame % 5));
+  const radius = options.radiusTiles ?? Math.max(actComposition.minSpawnDistanceTiles, 10 + (combat.frame % 5));
   const rangedRoll = ((combat.frame + combat.enemies.length) % 100) / 100;
+  const rangedShare = Math.min(director.rangedEnemyShare, actComposition.rangedEnemyShare ?? director.rangedEnemyShare);
   const ranged = options.ranged ?? (spawn.enemy.preferredRangeMode === 'ranged'
     ? true
     : spawn.enemy.preferredRangeMode === 'melee'
       ? false
-      : rangedRoll < director.rangedEnemyShare);
+      : rangedRoll < rangedShare);
   const elite = options.elite ?? ((((combat.frame + combat.kills) % 100) / 100) < director.eliteEnemyShare);
   const miniBoss = Boolean(options.miniBoss);
   const desiredMapX = options.mapX ?? (combat.playerMapX + Math.cos(angle) * radius);
@@ -7233,7 +7246,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
         ? ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES
         : isPoiSpawn
           ? ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES
-          : ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES);
+          : Math.max(ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES, actComposition.minSpawnDistanceTiles ?? ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES));
   const safeSpawn = resolveDistantSpawnPosition({
     seed: combat.roguelikeRun?.seed ?? 0,
     playerX: combat.playerMapX,
@@ -7692,7 +7705,9 @@ function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = 
 function updateRoguelikeEnemies(director, dt) {
   combat.roguelikeSpawnTimer -= dt;
   updateCampaignPoiEncounter(director);
-  while (!combat.activePoiEncounterId && combat.roguelikeSpawnTimer <= 0 && combat.enemies.length < director.maxEnemiesOnMap) {
+  const actComposition = buildLevelOneSpawnCompositionAt(combat.elapsedGameSeconds);
+  const genericSpawnsSuppressed = actComposition.genericSpawnSuppression && !combat.activePoiEncounterId && !combat.scriptedBossTriggered;
+  while (!genericSpawnsSuppressed && !combat.activePoiEncounterId && combat.roguelikeSpawnTimer <= 0 && combat.enemies.length < director.maxEnemiesOnMap) {
     spawnRoguelikeEnemy(director);
     combat.roguelikeSpawnTimer += director.spawnIntervalSeconds;
   }
@@ -8050,6 +8065,7 @@ function updateRoguelikePowerUpTimers(dt) {
 }
 
 function spawnLevelOneFinalBossProxy(director) {
+  const choreography = buildLevelOneBossChoreographyPlan();
   const bossProxy = levelOneRoguelikeBossProxyRoster().find((entry) => entry.role === 'boss');
   if (!bossProxy) return null;
   combat.scriptedBossTriggered = true;
@@ -8057,7 +8073,7 @@ function spawnLevelOneFinalBossProxy(director) {
   combat.scrollLockReason = `BOSS LOCK // ${bossProxy.title}`;
   lastBossId = bossProxy.enemyId;
   spawnText(`BOSS: ${bossProxy.title.toUpperCase()}`, ISO_CENTER_X - 98, ISO_CENTER_Y - 112, '#ffe84d');
-  spawnText('CLEAR HIM TO REVEAL EXTRACTION', ISO_CENTER_X - 118, ISO_CENTER_Y - 84, '#ff7b2f');
+  spawnText(choreography.finalBoss.phases[0]?.pattern?.toUpperCase() ?? 'CLEAR HIM TO REVEAL EXTRACTION', ISO_CENTER_X - 138, ISO_CENTER_Y - 84, '#ff7b2f');
   return spawnRoguelikeEnemy(director, {
     forceEnemyId: bossProxy.enemyId,
     title: bossProxy.title,
@@ -8072,7 +8088,7 @@ function spawnLevelOneFinalBossProxy(director) {
     angleRadians: Math.PI * 0.15,
     radiusTiles: ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES + 4,
     minDistanceTiles: ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES,
-    attackTimer: 150,
+    attackTimer: choreography.finalBoss.phases[0]?.telegraphFrames ? Math.max(150, choreography.finalBoss.phases[0].telegraphFrames * 3) : 150,
   });
 }
 

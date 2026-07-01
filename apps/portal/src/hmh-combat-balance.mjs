@@ -62,3 +62,36 @@ export function calculateMeleeAttackResetFrames({ preferredResetFrames = null } 
   if (!Number.isFinite(preferred)) return 72;
   return Math.max(72, Math.round(preferred));
 }
+
+const DAMAGE_RECAP_LABELS = Object.freeze({
+  'enemy-melee': 'Enemy melee hit',
+  'mini-boss-melee': 'Mini-boss melee hit',
+  'boss-contact': 'Boss contact hit',
+  'enemy-shot': 'Enemy gunfire',
+  'environment-hazard': 'Environmental hazard',
+  gap: 'Gap hazard',
+});
+
+export function calculatePlayerDamageRecovery({
+  damage = 5,
+  source = 'hit',
+  armor = 1,
+  invulnerability = 1,
+  baseInvulnerableFrames = 72,
+} = {}) {
+  const armorScale = Math.max(1, Number(armor) || 1);
+  const appliedDamage = Math.max(1, Math.round((Number(damage) || 5) / armorScale));
+  const sourceText = String(source ?? 'hit');
+  const melee = sourceText.includes('melee') || sourceText.includes('boss-contact');
+  const projectile = sourceText.includes('shot') || sourceText.includes('gun');
+  const hazard = sourceText.includes('hazard') || sourceText === 'gap';
+  const iFrameMul = Math.max(0.8, Math.min(1.45, Number(invulnerability) || 1));
+  const sourceBonus = melee ? 10 : projectile ? 6 : hazard ? 4 : 0;
+  return Object.freeze({
+    appliedDamage,
+    invulnerableFrames: Math.max(48, Math.round((baseInvulnerableFrames + sourceBonus) * iFrameMul)),
+    knockbackTiles: Number((melee ? 0.72 : projectile ? 0.36 : hazard ? 0.22 : 0.3).toFixed(2)),
+    recapLabel: DAMAGE_RECAP_LABELS[sourceText] ?? 'Combat damage',
+    readableSource: melee ? 'melee' : projectile ? 'gunfire' : hazard ? 'hazard' : 'combat',
+  });
+}
