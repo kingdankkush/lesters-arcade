@@ -11,7 +11,7 @@ import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow,
 import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
-import { rollDrop } from './src/drop-tables.mjs';
+import { rollLevelOnePowerUpDrop } from './src/hmh-drop-economy.mjs';
 import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow, resolveGrenadeTypeForRun } from './src/hmh-grenade-economy.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
@@ -145,7 +145,6 @@ import {
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
   levelOneRoguelikeSpawnDirectorAt,
-  levelOneRoguelikeDropChance,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
@@ -1745,13 +1744,6 @@ function currentRoguelikeSpawnDirector(elapsedSeconds = combat.elapsedGameSecond
   return level.id === DEFAULT_CAMPAIGN_LEVEL_ID
     ? levelOneRoguelikeSpawnDirectorAt(elapsedSeconds)
     : getRoguelikeSpawnDirectorAt(elapsedSeconds);
-}
-
-function currentRoguelikeNormalDropChance(elapsedSeconds = combat.elapsedGameSeconds) {
-  const level = currentCampaignLevel();
-  return level.id === DEFAULT_CAMPAIGN_LEVEL_ID
-    ? levelOneRoguelikeDropChance({ elapsedSeconds, rare: false })
-    : 0.35;
 }
 
 function currentLevelOnePickupAssist() {
@@ -7772,9 +7764,7 @@ function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = 
     if (enemy.elite || enemy.miniBoss) {
       dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { rare: true });
     } else {
-      const normalDropChance = currentRoguelikeNormalDropChance(combat.elapsedGameSeconds);
-      const dropRoll = (((combat.frame * 31 + combat.kills * 17 + combat.enemies.length * 13) >>> 0) % 1000) / 1000;
-      if (dropRoll < normalDropChance) dropRoguelikePowerUp(enemy.mapX, enemy.mapY, { dropChance: normalDropChance });
+      dropRoguelikePowerUp(enemy.mapX, enemy.mapY);
     }
   }
   trimLooseRoguelikeRewards();
@@ -8141,19 +8131,23 @@ function powerUpById(id) {
 }
 
 function dropRoguelikePowerUp(worldX, worldY, { rare = false, dropChance = null } = {}) {
-  // Level Design Bible §6.5: use the parameterized drop-table model for the drop
-  // decision. rollDrop is seeded (deterministic per frame+kill) and parameterized
-  // by tier × luck. The result is mapped to the existing power-up pool so the
-  // runtime spawn behavior is unchanged.
+  // WO-29: route every Level 1 power-up decision through the authoritative
+  // seeded economy helper. The helper returns an inspectable replay decision
+  // (seed, tier, category, rarity score, and active scarcity band) so future
+  // settlement/replay verifiers can re-sim the same drop log.
   const tier = rare ? 'elite' : 'grunt';
   const luck = combat.roguelikeRun?.stats?.luck ?? 1;
   const seed = roguelikeRngStream('drops')?.int(0, 1_000_000_000)
     ?? ((combat.frame * 31 + combat.kills * 17 + combat.powerUps.length) >>> 0);
-  const dropId = rollDrop({ seed, tier, luck, dropChance: dropChance ?? (rare ? 1.0 : currentRoguelikeNormalDropChance(combat.elapsedGameSeconds)) });
-  if (!dropId) return;
-  // Map drop-table ids to the existing power-up pool. The table already uses the
-  // same ids (heal-pack, shield-cache, ammo-cache, magnet-surge, etc.) so most
-  // map directly; rare-only ids fall back to the rare pool.
+  const decision = rollLevelOnePowerUpDrop({
+    seed,
+    elapsedSeconds: combat.elapsedGameSeconds,
+    tier,
+    luck,
+    dropChance: dropChance ?? (rare ? 1.0 : null),
+  });
+  if (!decision.didDrop || !decision.dropId) return;
+  const dropId = decision.dropId;
   const def = powerUpById(dropId);
   if (!def) {
     // Fall back to the pool pick if the table returned an unmapped id.
