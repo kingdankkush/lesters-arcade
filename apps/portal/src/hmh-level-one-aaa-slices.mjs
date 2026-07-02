@@ -472,6 +472,105 @@ export function levelOneInteractiveRuntimeStateForObstacle(obstacle = null, { bo
   return Object.freeze({ solid: baseSolid, visible: true, locked: false, unlocked: false, glow: false, pulseActive: false, sfxCue: null, debrisState: EMPTY_DEBRIS_STATE });
 }
 
+const EMPTY_INTERACTIVE_PROMPT = Object.freeze({
+  active: false,
+  obstacleId: null,
+  action: null,
+  actionable: false,
+  label: null,
+  kind: null,
+  distance: Infinity,
+});
+
+function interactivePromptForObstacle(obstacle, { distance = 0, bossDefeated = false, extractionPoint = null } = {}) {
+  const kind = obstacle?.interactive?.kind ?? null;
+  if (!kind || obstacle.destroyed || obstacle.hidden) return null;
+  if (kind === 'reward-cache') {
+    return Object.freeze({ active: true, obstacleId: obstacle.id ?? null, action: 'open-cache', actionable: true, label: 'PRESS E — OPEN CACHE', kind, distance });
+  }
+  if (kind === 'destructible') {
+    return Object.freeze({ active: true, obstacleId: obstacle.id ?? null, action: 'break-cover', actionable: true, label: 'PRESS E — BREAK COVER', kind, distance });
+  }
+  if (kind === 'gate') {
+    return Object.freeze({
+      active: true,
+      obstacleId: obstacle.id ?? null,
+      action: bossDefeated ? 'gate-open' : 'locked-gate',
+      actionable: false,
+      label: bossDefeated ? 'GATE OPEN — PUSH THROUGH' : 'BOSS GATE LOCKED',
+      kind,
+      distance,
+    });
+  }
+  if (kind === 'extraction-cue') {
+    const ready = Boolean(bossDefeated || extractionPoint);
+    return Object.freeze({ active: true, obstacleId: obstacle.id ?? null, action: ready ? 'follow-extraction' : 'extraction-dormant', actionable: false, label: ready ? 'FOLLOW FLARES' : 'EXTRACTION DARK', kind, distance });
+  }
+  if (kind === 'hazard') {
+    return Object.freeze({ active: true, obstacleId: obstacle.id ?? null, action: 'hazard-read', actionable: false, label: 'SPORE RING — KEEP MOVING', kind, distance });
+  }
+  return null;
+}
+
+export function nearestLevelOneInteractivePrompt({
+  playerX = 0,
+  playerY = 0,
+  obstacles = [],
+  rangeTiles = 1.65,
+  bossDefeated = false,
+  extractionPoint = null,
+} = {}) {
+  const px = Number(playerX) || 0;
+  const py = Number(playerY) || 0;
+  const range = Math.max(0.4, Number(rangeTiles) || 1.65);
+  let best = null;
+  for (const obstacle of Array.isArray(obstacles) ? obstacles : []) {
+    if (!obstacle?.interactive || obstacle.destroyed || obstacle.hidden) continue;
+    const distance = Math.hypot(px - (obstacle.worldX ?? 0), py - (obstacle.worldY ?? 0)) - Math.max(0, Number(obstacle.radius) || 0);
+    if (distance > range) continue;
+    const prompt = interactivePromptForObstacle(obstacle, { distance: Number(Math.max(0, distance).toFixed(3)), bossDefeated, extractionPoint });
+    if (!prompt) continue;
+    if (!best || (prompt.actionable && !best.actionable) || (prompt.actionable === best.actionable && prompt.distance < best.distance)) {
+      best = prompt;
+    }
+  }
+  return best ?? EMPTY_INTERACTIVE_PROMPT;
+}
+
+export function levelOnePlayerAnimationPlan({
+  frame = 0,
+  gameOver = false,
+  invulnerableFrames = 0,
+  lastInteractFrame = -999,
+  lastGrenadeFrame = -999,
+  lastMeleeFrame = -999,
+  lastShotFrame = -999,
+  fireFlash = 0,
+  moving = false,
+  boundaryClamped = false,
+  hazardLabel = null,
+} = {}) {
+  const now = Math.max(0, Number(frame) || 0);
+  const age = (mark) => now - (Number.isFinite(mark) ? mark : -999);
+  let animationStates;
+  if (gameOver) animationStates = ['death', 'hurt', 'idle'];
+  else if ((Number(invulnerableFrames) || 0) > 14) animationStates = ['hurt', 'idle'];
+  else if (age(lastGrenadeFrame) >= 0 && age(lastGrenadeFrame) < 18) animationStates = ['throw', 'shoot', 'idle'];
+  else if (age(lastInteractFrame) >= 0 && age(lastInteractFrame) < 16) animationStates = ['melee', 'throw', 'idle'];
+  else if (age(lastMeleeFrame) >= 0 && age(lastMeleeFrame) < 14) animationStates = ['melee', 'shoot', 'idle'];
+  else if ((Number(fireFlash) || 0) > 0 || (age(lastShotFrame) >= 0 && age(lastShotFrame) < 10)) animationStates = ['shoot', 'idle'];
+  else if (moving) animationStates = ['run', 'walk', 'idle'];
+  else animationStates = ['idle', 'run'];
+
+  return Object.freeze({
+    animationStates: Object.freeze(animationStates),
+    locomotion: moving ? 'moving' : 'idle',
+    boundaryClamped: Boolean(boundaryClamped),
+    hazardLabel: hazardLabel ?? null,
+    promptTone: hazardLabel ? 'hazard' : boundaryClamped ? 'edge' : 'neutral',
+  });
+}
+
 export function validateLevelOneAaaSlicePlan({ curatedWorldContract = null, finalSetpieceAssetByKey = null } = {}) {
   const routeZones = new Set(curatedWorldContract?.criticalPath?.map((zone) => zone.id) ?? []);
   const missingRouteZones = uniq(HMH_LEVEL_ONE_AAA_ROUTE_ACTS

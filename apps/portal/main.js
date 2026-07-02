@@ -60,6 +60,8 @@ import {
   levelOneInteractiveHitPlan,
   levelOneInteractiveRuntimeStateForObstacle,
   levelOneInteractiveSfxCuePlan,
+  levelOnePlayerAnimationPlan,
+  nearestLevelOneInteractivePrompt,
 } from './src/hmh-level-one-aaa-slices.mjs';
 import { buildEnemyBalanceCard, calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculatePlayerDamageRecovery, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
 import {
@@ -1494,6 +1496,9 @@ const combat = {
   nextCampaignLevelId: null,
   levelClearTitle: '',
   lastFacing: 'south', // Track last movement direction for smooth animation blending
+  lastInteractFrame: -999,
+  lastGrenadeFrame: -999,
+  interactionPrompt: null,
   shots: 0,
   fireFlash: 0,
   meleeSwings: 0,
@@ -2489,6 +2494,8 @@ function renderRoguelikeStatBar() {
   if (terrainPressure?.label) activeFx.push(`TERRAIN ${terrainPressure.label}`);
   const levelOneInteractivePressure = currentLevelOneInteractiveHazardPressure();
   if (levelOneInteractivePressure?.label) activeFx.push(`HAZARD ${levelOneInteractivePressure.label.toUpperCase()}`);
+  const interactionPrompt = currentLevelOneInteractionPrompt();
+  if (interactionPrompt?.label) activeFx.push(interactionPrompt.label.toUpperCase());
   activeFx.push(`WEATHER ${environmentState.weather.label.toUpperCase()}`);
   activeFx.push(`TOD ${environmentState.timeOfDay.phase.toUpperCase()}`);
   if (ambientZone?.poiTensionCue) activeFx.push(`ZONE ${ambientZone.poiTensionCue.toUpperCase()}`);
@@ -5750,6 +5757,9 @@ async function startCombat(options = {}) {
   combat.shots = 0;
   combat.meleeSwings = 0;
   combat.lastMeleeFrame = -999;
+  combat.lastInteractFrame = -999;
+  combat.lastGrenadeFrame = -999;
+  combat.interactionPrompt = null;
   combat.boss = null;
   combat.bossDefeated = false;
   combat.miniBossLock = false;
@@ -5897,6 +5907,7 @@ function grenade() {
       return;
     }
     combat.grenades = throwPlan.remaining;
+    combat.lastGrenadeFrame = combat.frame;
     combat.activeGrenades = combat.activeGrenades ?? [];
     combat.activeGrenades.push({
       typeId: throwPlan.typeId,
@@ -7593,6 +7604,43 @@ function damageLevelOneInteractiveObstacle(hitObstacle, damage, source = 'bullet
   return true;
 }
 
+function currentLevelOneInteractionPrompt() {
+  if (!combat.roguelikeRun || (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) {
+    combat.interactionPrompt = null;
+    return null;
+  }
+  const prompt = nearestLevelOneInteractivePrompt({
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    obstacles: currentObstacles(),
+    bossDefeated: combat.bossDefeated,
+    extractionPoint: combat.extractionPoint,
+  });
+  combat.interactionPrompt = prompt.active ? prompt : null;
+  return combat.interactionPrompt;
+}
+
+function triggerLevelOneInteraction() {
+  const prompt = currentLevelOneInteractionPrompt();
+  if (!prompt?.active) return false;
+  const labelX = combat.playerX + 20;
+  const labelY = combat.playerY - 88;
+  if (!prompt.actionable) {
+    spawnText(prompt.label ?? 'NOT READY', labelX, labelY, prompt.action === 'locked-gate' ? '#ff476f' : '#19f7ff');
+    playSfxCue('menu-click', 0.025);
+    return false;
+  }
+  const obstacle = currentObstacles().find((candidate) => candidate.id === prompt.obstacleId);
+  if (!obstacle || obstacle.destroyed) return false;
+  const damage = prompt.action === 'open-cache' ? Math.max(999, obstacle.hp ?? 1) : Math.max(32, obstacle.hp ?? 1);
+  const didInteract = damageLevelOneInteractiveObstacle(obstacle, damage, 'player-interact');
+  if (didInteract) {
+    combat.lastInteractFrame = combat.frame;
+    spawnText(prompt.action === 'open-cache' ? 'CACHE OPENED' : 'COVER BROKEN', labelX, labelY, '#45ff8a');
+  }
+  return didInteract;
+}
+
 function updateLevelOneInteractiveHazards(dt) {
   const pressure = currentLevelOneInteractiveHazardPressure();
   if (!pressure.activeHazards.length) return;
@@ -7705,6 +7753,7 @@ function updateRoguelikeMovement(dt) {
   }
   combat.roguelikeRun.player.x = combat.playerMapX;
   combat.roguelikeRun.player.y = combat.playerMapY;
+  currentLevelOneInteractionPrompt();
   syncProjectedPlayerPosition();
 }
 
@@ -10720,14 +10769,21 @@ function roguelikeEnemyAnimatedFrame(enemy) {
 
 // Hero (Lester) animation state -> roster animation name priority.
 function heroAnimState() {
-  if (combat.gameOver) return ['death', 'hurt', 'idle'];
-  if (combat.invulnerableFrames > 14) return ['hurt', 'idle'];
-  const recentlyFired = (combat.fireFlash ?? 0) > 0 || (combat.frame - (combat.lastShotFrame ?? -999)) < 10;
-  if ((combat.frame - (combat.lastMeleeFrame ?? -999)) < 14) return ['melee', 'shoot', 'idle'];
-  if (recentlyFired) return ['shoot', 'idle'];
-  const moving = combat._heroMoving;
-  if (moving) return ['run', 'walk', 'idle'];
-  return ['idle', 'run'];
+  const plan = levelOnePlayerAnimationPlan({
+    frame: combat.frame,
+    gameOver: combat.gameOver,
+    invulnerableFrames: combat.invulnerableFrames,
+    lastInteractFrame: combat.lastInteractFrame,
+    lastGrenadeFrame: combat.lastGrenadeFrame,
+    lastMeleeFrame: combat.lastMeleeFrame,
+    lastShotFrame: combat.lastShotFrame,
+    fireFlash: combat.fireFlash,
+    moving: combat._heroMoving,
+    boundaryClamped: combat.worldBoundaryClamped,
+    hazardLabel: currentLevelOneInteractiveHazardPressure().label,
+  });
+  combat.playerAnimationPlan = plan;
+  return plan.animationStates;
 }
 
 // Resolve the selected hero's characterId to the richest available animated
@@ -11638,6 +11694,10 @@ document.addEventListener('keydown', (event) => {
     else jump();
   }
   if (key === 'f') grenade();
+  if (key === 'e') {
+    event.preventDefault();
+    triggerLevelOneInteraction();
+  }
   if (key === 'r') reload();
   if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) {
     event.preventDefault();
