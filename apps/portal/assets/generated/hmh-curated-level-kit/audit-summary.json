@@ -1,7 +1,7 @@
 {
   "id": "hmh-curated-level-kit-audit-v1",
-  "sourceRoot": "./assets/hmh-curated-level-kit",
-  "rawImages": 11833,
+  "sourceRoot": "./assets/generated/hmh-curated-level-kit/source",
+  "rawImages": 1216,
   "manifestAssets": 1216,
   "slicedGround": 1797,
   "trimmedProps": 1022,
@@ -23,15 +23,15 @@
       }
     },
     "Universal": {
-      "rawImages": 11398,
+      "rawImages": 781,
       "categories": {
-        "enemy": 8338,
-        "hero": 2303,
         "plant": 362,
         "rock": 190,
         "tree": 174,
+        "enemy": 22,
         "source-sheet": 21,
-        "water": 10
+        "water": 10,
+        "hero": 2
       }
     },
     "level-2-litecoin-city": {
@@ -45,84 +45,9 @@
   },
   "topDimensions": [
     {
-      "width": 136,
-      "height": 136,
-      "count": 2961
-    },
-    {
-      "width": 172,
-      "height": 172,
-      "count": 1192
-    },
-    {
-      "width": 192,
-      "height": 192,
-      "count": 1072
-    },
-    {
-      "width": 184,
-      "height": 184,
-      "count": 754
-    },
-    {
-      "width": 160,
-      "height": 160,
-      "count": 612
-    },
-    {
-      "width": 180,
-      "height": 180,
-      "count": 536
-    },
-    {
-      "width": 188,
-      "height": 188,
-      "count": 523
-    },
-    {
-      "width": 100,
-      "height": 100,
-      "count": 482
-    },
-    {
-      "width": 204,
-      "height": 204,
-      "count": 424
-    },
-    {
-      "width": 232,
-      "height": 232,
-      "count": 408
-    },
-    {
-      "width": 112,
-      "height": 112,
-      "count": 407
-    },
-    {
-      "width": 176,
-      "height": 176,
-      "count": 368
-    },
-    {
-      "width": 244,
-      "height": 244,
-      "count": 352
-    },
-    {
-      "width": 228,
-      "height": 228,
-      "count": 308
-    },
-    {
       "width": 128,
       "height": 128,
       "count": 299
-    },
-    {
-      "width": 92,
-      "height": 92,
-      "count": 245
     },
     {
       "width": 64,
@@ -143,6 +68,81 @@
       "width": 384,
       "height": 768,
       "count": 85
+    },
+    {
+      "width": 192,
+      "height": 384,
+      "count": 85
+    },
+    {
+      "width": 16,
+      "height": 16,
+      "count": 57
+    },
+    {
+      "width": 512,
+      "height": 512,
+      "count": 17
+    },
+    {
+      "width": 384,
+      "height": 192,
+      "count": 10
+    },
+    {
+      "width": 192,
+      "height": 96,
+      "count": 10
+    },
+    {
+      "width": 240,
+      "height": 416,
+      "count": 9
+    },
+    {
+      "width": 48,
+      "height": 48,
+      "count": 9
+    },
+    {
+      "width": 240,
+      "height": 480,
+      "count": 6
+    },
+    {
+      "width": 80,
+      "height": 80,
+      "count": 5
+    },
+    {
+      "width": 112,
+      "height": 112,
+      "count": 4
+    },
+    {
+      "width": 136,
+      "height": 136,
+      "count": 4
+    },
+    {
+      "width": 192,
+      "height": 192,
+      "count": 3
+    },
+    {
+      "width": 256,
+      "height": 224,
+      "count": 2
+    },
+    {
+      "width": 280,
+      "height": 224,
+      "count": 2
+    },
+    {
+      "width": 48,
+      "height": 80,
+      "count": 2
     }
   ],
   "sheetCandidates": [

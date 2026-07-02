@@ -71,9 +71,9 @@ test('Level 1 opening ground roles replace noisy procedural sand/grass with auth
 
 test('Level 1 curated visible runtime maps approved asset keys to direct runtime image sources', () => {
   const saloon = levelOneCuratedAssetSrc('level-1/building/ghost-saloon-front');
-  assert.equal(saloon, './assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png');
+  assert.equal(saloon, './assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png');
   const road = levelOneCuratedAssetSrc('level-1/road/road1-ground');
-  assert.match(road, /hmh-curated-level-kit\/level-1-crypto-wasteland\//);
+  assert.match(road, /hmh-curated-level-kit\/source\/level-1-crypto-wasteland\//);
 });
 
 test('Level 1 art policy disables old enemy-wave/combatArt fallbacks and generic procedural scatter', () => {

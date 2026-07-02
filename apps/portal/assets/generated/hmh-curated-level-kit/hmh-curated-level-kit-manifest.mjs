@@ -3,7 +3,7 @@
 
 export const HMH_CURATED_LEVEL_KIT = Object.freeze({
   "id": "hmh-curated-level-kit-v1",
-  "sourceRoot": "./assets/hmh-curated-level-kit",
+  "sourceRoot": "./assets/generated/hmh-curated-level-kit/source",
   "generatedRoot": "./assets/generated/hmh-curated-level-kit",
   "sourcePolicy": "Justin-curated approved assets only; old editor/runtime sprite library is intentionally ignored.",
   "tileSize": {
@@ -58,8 +58,8 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
   },
   "summary": {
     "id": "hmh-curated-level-kit-audit-v1",
-    "sourceRoot": "./assets/hmh-curated-level-kit",
-    "rawImages": 11833,
+    "sourceRoot": "./assets/generated/hmh-curated-level-kit/source",
+    "rawImages": 1216,
     "manifestAssets": 1216,
     "slicedGround": 1797,
     "trimmedProps": 1022,
@@ -81,15 +81,15 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
         }
       },
       "Universal": {
-        "rawImages": 11398,
+        "rawImages": 781,
         "categories": {
-          "enemy": 8338,
-          "hero": 2303,
           "plant": 362,
           "rock": 190,
           "tree": 174,
+          "enemy": 22,
           "source-sheet": 21,
-          "water": 10
+          "water": 10,
+          "hero": 2
         }
       },
       "level-2-litecoin-city": {
@@ -103,84 +103,9 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     },
     "topDimensions": [
       {
-        "width": 136,
-        "height": 136,
-        "count": 2961
-      },
-      {
-        "width": 172,
-        "height": 172,
-        "count": 1192
-      },
-      {
-        "width": 192,
-        "height": 192,
-        "count": 1072
-      },
-      {
-        "width": 184,
-        "height": 184,
-        "count": 754
-      },
-      {
-        "width": 160,
-        "height": 160,
-        "count": 612
-      },
-      {
-        "width": 180,
-        "height": 180,
-        "count": 536
-      },
-      {
-        "width": 188,
-        "height": 188,
-        "count": 523
-      },
-      {
-        "width": 100,
-        "height": 100,
-        "count": 482
-      },
-      {
-        "width": 204,
-        "height": 204,
-        "count": 424
-      },
-      {
-        "width": 232,
-        "height": 232,
-        "count": 408
-      },
-      {
-        "width": 112,
-        "height": 112,
-        "count": 407
-      },
-      {
-        "width": 176,
-        "height": 176,
-        "count": 368
-      },
-      {
-        "width": 244,
-        "height": 244,
-        "count": 352
-      },
-      {
-        "width": 228,
-        "height": 228,
-        "count": 308
-      },
-      {
         "width": 128,
         "height": 128,
         "count": 299
-      },
-      {
-        "width": 92,
-        "height": 92,
-        "count": 245
       },
       {
         "width": 64,
@@ -201,6 +126,81 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
         "width": 384,
         "height": 768,
         "count": 85
+      },
+      {
+        "width": 192,
+        "height": 384,
+        "count": 85
+      },
+      {
+        "width": 16,
+        "height": 16,
+        "count": 57
+      },
+      {
+        "width": 512,
+        "height": 512,
+        "count": 17
+      },
+      {
+        "width": 384,
+        "height": 192,
+        "count": 10
+      },
+      {
+        "width": 192,
+        "height": 96,
+        "count": 10
+      },
+      {
+        "width": 240,
+        "height": 416,
+        "count": 9
+      },
+      {
+        "width": 48,
+        "height": 48,
+        "count": 9
+      },
+      {
+        "width": 240,
+        "height": 480,
+        "count": 6
+      },
+      {
+        "width": 80,
+        "height": 80,
+        "count": 5
+      },
+      {
+        "width": 112,
+        "height": 112,
+        "count": 4
+      },
+      {
+        "width": 136,
+        "height": 136,
+        "count": 4
+      },
+      {
+        "width": 192,
+        "height": 192,
+        "count": 3
+      },
+      {
+        "width": 256,
+        "height": 224,
+        "count": 2
+      },
+      {
+        "width": 280,
+        "height": 224,
+        "count": 2
+      },
+      {
+        "width": 48,
+        "height": 80,
+        "count": 2
       }
     ],
     "sheetCandidates": [
@@ -940,7 +940,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/exterior.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/exterior.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/exterior.png",
       "width": 240,
       "height": 800,
       "needsSlicing": true
@@ -953,7 +953,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/ghost-boarded-storefront.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/ghost-boarded-storefront.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-boarded-storefront.png",
       "width": 256,
       "height": 224,
       "needsSlicing": false
@@ -966,7 +966,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/ghost-saloon-front.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png",
       "width": 256,
       "height": 224,
       "needsSlicing": false
@@ -979,7 +979,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/house_details.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/house_details.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/house_details.png",
       "width": 160,
       "height": 272,
       "needsSlicing": false
@@ -992,7 +992,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/hunter-0.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/hunter-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/hunter-0.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1005,7 +1005,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/hunter-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/hunter-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/hunter-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1018,7 +1018,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/industrial-warehouse-facade.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/industrial-warehouse-facade.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/industrial-warehouse-facade.png",
       "width": 280,
       "height": 224,
       "needsSlicing": false
@@ -1031,7 +1031,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/innercity-billboard-frame.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/innercity-billboard-frame.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/innercity-billboard-frame.png",
       "width": 256,
       "height": 192,
       "needsSlicing": false
@@ -1044,7 +1044,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/Interior.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/Interior.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/Interior.png",
       "width": 192,
       "height": 400,
       "needsSlicing": true
@@ -1057,7 +1057,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/arcade-cabinet.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/arcade-cabinet.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/arcade-cabinet.png",
       "width": 48,
       "height": 80,
       "needsSlicing": false
@@ -1070,7 +1070,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/soda-machine.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/soda-machine.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/soda-machine.png",
       "width": 48,
       "height": 80,
       "needsSlicing": false
@@ -1083,7 +1083,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/table-plain.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/table-plain.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/table-plain.png",
       "width": 48,
       "height": 40,
       "needsSlicing": false
@@ -1096,7 +1096,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/town-00.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/town-00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/town-00.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1109,7 +1109,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/town-09.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/town-09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/town-09.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1122,7 +1122,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/town-10.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/town-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/town-10.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1135,7 +1135,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/town-16.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/town-16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/town-16.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1148,7 +1148,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/tv-on-table.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/tv-on-table.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/tv-on-table.png",
       "width": 56,
       "height": 64,
       "needsSlicing": false
@@ -1161,7 +1161,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 interior prop",
       "source": "level-1-crypto-wasteland/Buildings/interiors/wooden-crate.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/interiors/wooden-crate.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/interiors/wooden-crate.png",
       "width": 40,
       "height": 40,
       "needsSlicing": false
@@ -1174,7 +1174,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/landmark-gas-station.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/landmark-gas-station.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/landmark-gas-station.png",
       "width": 280,
       "height": 224,
       "needsSlicing": false
@@ -1187,7 +1187,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/lumberjack-0.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/lumberjack-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/lumberjack-0.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1200,7 +1200,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/lumberjack-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/lumberjack-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/lumberjack-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1213,7 +1213,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/lumberjack-03.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/lumberjack-03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/lumberjack-03.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1226,7 +1226,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/pavilion-0.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/pavilion-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/pavilion-0.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1239,7 +1239,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/pavilion-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/pavilion-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/pavilion-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1252,7 +1252,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/storefront-0.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/storefront-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/storefront-0.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1265,7 +1265,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/storefront-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/storefront-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/storefront-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1278,7 +1278,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 landmark/building",
       "source": "level-1-crypto-wasteland/Buildings/walls_floor.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/walls_floor.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/walls_floor.png",
       "width": 144,
       "height": 176,
       "needsSlicing": false
@@ -1291,7 +1291,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored ground tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Ground_grass.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Ground_grass.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Ground_grass.png",
       "width": 272,
       "height": 496,
       "needsSlicing": true
@@ -1304,7 +1304,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored ground tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/ground_grass_details.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/ground_grass_details.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/ground_grass_details.png",
       "width": 336,
       "height": 288,
       "needsSlicing": false
@@ -1317,7 +1317,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road1.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1330,7 +1330,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road1_grass.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road1_grass.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road1_grass.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1343,7 +1343,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road1_ground.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road1_ground.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road1_ground.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1356,7 +1356,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road2.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1369,7 +1369,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road2_grass.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road2_grass.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road2_grass.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1382,7 +1382,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road2_ground.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road2_ground.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road2_ground.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1395,7 +1395,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road3.png",
       "width": 240,
       "height": 480,
       "needsSlicing": true
@@ -1408,7 +1408,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road3_grass.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road3_grass.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road3_grass.png",
       "width": 240,
       "height": 480,
       "needsSlicing": true
@@ -1421,7 +1421,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road3_ground.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road3_ground.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road3_ground.png",
       "width": 240,
       "height": 480,
       "needsSlicing": true
@@ -1434,7 +1434,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road4.png",
       "width": 240,
       "height": 480,
       "needsSlicing": true
@@ -1447,7 +1447,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road4_grass.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road4_grass.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road4_grass.png",
       "width": 240,
       "height": 480,
       "needsSlicing": true
@@ -1460,7 +1460,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road4_ground.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road4_ground.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road4_ground.png",
       "width": 240,
       "height": 480,
       "needsSlicing": true
@@ -1473,7 +1473,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road5.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1486,7 +1486,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road5_grass.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road5_grass.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road5_grass.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1499,7 +1499,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 authored road tile/source",
       "source": "level-1-crypto-wasteland/Ground-tiles/Road5_ground.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Ground-tiles/Road5_ground.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Ground-tiles/Road5_ground.png",
       "width": 240,
       "height": 416,
       "needsSlicing": true
@@ -1512,7 +1512,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Black_mushrooms1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Black_mushrooms1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Black_mushrooms1_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1525,7 +1525,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Black_mushrooms1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Black_mushrooms1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Black_mushrooms1_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1538,7 +1538,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Black_mushrooms2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Black_mushrooms2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Black_mushrooms2_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1551,7 +1551,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Black_mushrooms2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Black_mushrooms2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Black_mushrooms2_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1564,7 +1564,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins1.png",
       "width": 112,
       "height": 128,
       "needsSlicing": false
@@ -1577,7 +1577,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins2.png",
       "width": 80,
       "height": 80,
       "needsSlicing": false
@@ -1590,7 +1590,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins3.png",
       "width": 48,
       "height": 64,
       "needsSlicing": false
@@ -1603,7 +1603,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins4.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -1616,7 +1616,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Blue-gray_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -1629,7 +1629,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins1.png",
       "width": 112,
       "height": 112,
       "needsSlicing": false
@@ -1642,7 +1642,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins2.png",
       "width": 80,
       "height": 80,
       "needsSlicing": false
@@ -1655,7 +1655,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1668,7 +1668,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins4.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -1681,7 +1681,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown-gray_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -1694,7 +1694,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown_ruins1.png",
       "width": 112,
       "height": 112,
       "needsSlicing": false
@@ -1707,7 +1707,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown_ruins2.png",
       "width": 80,
       "height": 80,
       "needsSlicing": false
@@ -1720,7 +1720,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown_ruins3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1733,7 +1733,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown_ruins4.png",
       "width": 48,
       "height": 49,
       "needsSlicing": false
@@ -1746,7 +1746,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Brown_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Brown_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Brown_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -1759,7 +1759,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/bus-stop-sign.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/bus-stop-sign.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/bus-stop-sign.png",
       "width": 40,
       "height": 72,
       "needsSlicing": false
@@ -1772,7 +1772,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_pearl1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_pearl1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_pearl1_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1785,7 +1785,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_pearl1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_pearl1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_pearl1_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1798,7 +1798,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_pearl2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_pearl2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_pearl2_grass_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -1811,7 +1811,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_pearl2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_pearl2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_pearl2_ground_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -1824,7 +1824,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_white1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_white1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_white1_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1837,7 +1837,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_white1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_white1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_white1_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1850,7 +1850,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_white2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_white2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_white2_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1863,7 +1863,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Caury_white2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Caury_white2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Caury_white2_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1876,7 +1876,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Cave_entrance1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Cave_entrance1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Cave_entrance1_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1889,7 +1889,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Cave_entrance1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Cave_entrance1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Cave_entrance1_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1902,7 +1902,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Cave_entrance2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Cave_entrance2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Cave_entrance2_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1915,7 +1915,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Cave_entrance2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Cave_entrance2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Cave_entrance2_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1928,7 +1928,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Cave_entrance3_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Cave_entrance3_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Cave_entrance3_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1941,7 +1941,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Cave_entrance3_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Cave_entrance3_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Cave_entrance3_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -1954,7 +1954,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/desert-03.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/desert-03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-03.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1967,7 +1967,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/desert-04.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/desert-04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-04.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1980,7 +1980,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/desert-08.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/desert-08.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-08.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -1993,7 +1993,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/desert-09.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/desert-09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-09.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2006,7 +2006,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/desert-10.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/desert-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-10.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2019,7 +2019,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/desert-13.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/desert-13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-13.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2032,7 +2032,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/desert-14.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/desert-14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-14.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2045,7 +2045,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_body_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_body_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_body_grass_shadow.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2058,7 +2058,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_body_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_body_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_body_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2071,7 +2071,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_full_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_full_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_full_grass_shadow.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2084,7 +2084,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_full_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_full_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_full_ground_shadow.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2097,7 +2097,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_tail_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_tail_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_tail_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2110,7 +2110,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_tail_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_tail_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_tail_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2123,7 +2123,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing1_grass_shadow.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2136,7 +2136,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing1_ground_shadow.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2149,7 +2149,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing2_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2162,7 +2162,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 set dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Dragon_bones_wing2_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2175,7 +2175,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Fern_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Fern_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Fern_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2188,7 +2188,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Fern_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Fern_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Fern_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2201,7 +2201,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Fern_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Fern_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Fern_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2214,7 +2214,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/fire-hydrant.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/fire-hydrant.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/fire-hydrant.png",
       "width": 40,
       "height": 48,
       "needsSlicing": false
@@ -2227,7 +2227,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/forest-17.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/forest-17.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/forest-17.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2240,7 +2240,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/fountain.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/fountain.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/fountain.png",
       "width": 72,
       "height": 72,
       "needsSlicing": false
@@ -2253,7 +2253,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/mailbox.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/mailbox.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/mailbox.png",
       "width": 40,
       "height": 56,
       "needsSlicing": false
@@ -2266,7 +2266,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Orange_mushrooms1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms1_grass_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2279,7 +2279,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Orange_mushrooms1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms1_ground_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2292,7 +2292,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Orange_mushrooms2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms2_grass_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2305,7 +2305,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Orange_mushrooms2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Orange_mushrooms2_ground_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2318,7 +2318,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2331,7 +2331,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2344,7 +2344,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_leaf_tree3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2357,7 +2357,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock1_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2370,7 +2370,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock1_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2383,7 +2383,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock2_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2396,7 +2396,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock2_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2409,7 +2409,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock3_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock3_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock3_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2422,7 +2422,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock3_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock3_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock3_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2435,7 +2435,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock4_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock4_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock4_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2448,7 +2448,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock4_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock4_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock4_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2461,7 +2461,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock5_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock5_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock5_grass_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2474,7 +2474,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Oval_rock5_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Oval_rock5_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Oval_rock5_ground_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2487,7 +2487,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/park-bench.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/park-bench.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/park-bench.png",
       "width": 64,
       "height": 48,
       "needsSlicing": false
@@ -2500,7 +2500,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/prop-44bda2f4284a.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/prop-44bda2f4284a.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/prop-44bda2f4284a.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2513,7 +2513,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/prop-6e0f5a33ed07.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/prop-6e0f5a33ed07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/prop-6e0f5a33ed07.png",
       "width": 256,
       "height": 229,
       "needsSlicing": false
@@ -2526,7 +2526,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/prop-d9089443bba9.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/prop-d9089443bba9.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/prop-d9089443bba9.png",
       "width": 256,
       "height": 227,
       "needsSlicing": false
@@ -2539,7 +2539,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/road-01.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/road-01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/road-01.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2552,7 +2552,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/road-03.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/road-03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/road-03.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2565,7 +2565,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/road-04.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/road-04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/road-04.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2578,7 +2578,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_deer_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_deer_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_deer_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2591,7 +2591,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_deer_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_deer_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_deer_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2604,7 +2604,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_fox_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_fox_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_fox_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2617,7 +2617,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_fox_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_fox_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_fox_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2630,7 +2630,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_head_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_head_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_head_grass_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2643,7 +2643,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_head_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_head_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_head_ground_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2656,7 +2656,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_mother_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_mother_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_mother_grass_shadow.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2669,7 +2669,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_mother_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_mother_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_mother_ground_shadow.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -2682,7 +2682,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_old_man_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_old_man_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_old_man_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2695,7 +2695,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Rock_statue_old_man_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Rock_statue_old_man_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Rock_statue_old_man_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2708,7 +2708,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-00.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-00.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2721,7 +2721,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-01.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-01.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2734,7 +2734,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2747,7 +2747,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-03.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-03.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2760,7 +2760,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-04.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-04.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2773,7 +2773,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-05.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-05.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-05.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2786,7 +2786,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-06.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-06.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-06.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2799,7 +2799,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-07.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-07.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2812,7 +2812,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-09.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-09.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2825,7 +2825,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-10.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-10.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2838,7 +2838,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/rocky-11.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/rocky-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/rocky-11.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -2851,7 +2851,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Sand_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Sand_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Sand_ruins1.png",
       "width": 96,
       "height": 96,
       "needsSlicing": false
@@ -2864,7 +2864,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Sand_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Sand_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Sand_ruins2.png",
       "width": 80,
       "height": 64,
       "needsSlicing": false
@@ -2877,7 +2877,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Sand_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Sand_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Sand_ruins3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2890,7 +2890,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Sand_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Sand_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Sand_ruins4.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -2903,7 +2903,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Sand_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Sand_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Sand_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2916,7 +2916,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Snow_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Snow_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Snow_ruins1.png",
       "width": 112,
       "height": 96,
       "needsSlicing": false
@@ -2929,7 +2929,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Snow_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Snow_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Snow_ruins2.png",
       "width": 80,
       "height": 80,
       "needsSlicing": false
@@ -2942,7 +2942,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Snow_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Snow_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Snow_ruins3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -2955,7 +2955,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Snow_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Snow_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Snow_ruins4.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -2968,7 +2968,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Snow_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Snow_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Snow_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2981,7 +2981,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Stone_pyramid1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Stone_pyramid1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Stone_pyramid1_grass_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -2994,7 +2994,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Stone_pyramid1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Stone_pyramid1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Stone_pyramid1_ground_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3007,7 +3007,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Stone_pyramid2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Stone_pyramid2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Stone_pyramid2_grass_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3020,7 +3020,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Stone_pyramid2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Stone_pyramid2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Stone_pyramid2_ground_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3033,7 +3033,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Stone_pyramid3_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Stone_pyramid3_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Stone_pyramid3_grass_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3046,7 +3046,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Stone_pyramid3_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Stone_pyramid3_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Stone_pyramid3_ground_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3059,7 +3059,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/street-lamp.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/street-lamp.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/street-lamp.png",
       "width": 48,
       "height": 96,
       "needsSlicing": false
@@ -3072,7 +3072,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-01.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-01.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3085,7 +3085,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3098,7 +3098,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-03.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-03.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3111,7 +3111,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-04.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-04.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3124,7 +3124,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-05.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-05.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-05.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3137,7 +3137,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-06.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-06.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-06.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3150,7 +3150,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-07.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-07.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3163,7 +3163,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-08.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-08.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-08.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3176,7 +3176,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-11.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-11.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3189,7 +3189,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-12.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-12.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3202,7 +3202,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-13.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-13.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3215,7 +3215,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-14.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-14.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3228,7 +3228,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-15.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-15.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3241,7 +3241,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/town-17.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/town-17.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/town-17.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3254,7 +3254,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/traffic-cone.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/traffic-cone.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/traffic-cone.png",
       "width": 32,
       "height": 40,
       "needsSlicing": false
@@ -3267,7 +3267,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/trash-can.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/trash-can.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/trash-can.png",
       "width": 40,
       "height": 48,
       "needsSlicing": false
@@ -3280,7 +3280,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Water_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Water_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Water_ruins1.png",
       "width": 80,
       "height": 96,
       "needsSlicing": false
@@ -3293,7 +3293,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Water_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Water_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Water_ruins2.png",
       "width": 64,
       "height": 80,
       "needsSlicing": false
@@ -3306,7 +3306,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Water_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Water_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Water_ruins3.png",
       "width": 48,
       "height": 64,
       "needsSlicing": false
@@ -3319,7 +3319,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Water_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Water_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Water_ruins4.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -3332,7 +3332,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Random-Assets/Water_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Water_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Water_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3345,7 +3345,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/White_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/White_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/White_ruins1.png",
       "width": 96,
       "height": 96,
       "needsSlicing": false
@@ -3358,7 +3358,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/White_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/White_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/White_ruins2.png",
       "width": 80,
       "height": 64,
       "needsSlicing": false
@@ -3371,7 +3371,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/White_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/White_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/White_ruins3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3384,7 +3384,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/White_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/White_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/White_ruins4.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -3397,7 +3397,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/White_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/White_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/White_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3410,7 +3410,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yellow_ruins1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yellow_ruins1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yellow_ruins1.png",
       "width": 80,
       "height": 80,
       "needsSlicing": false
@@ -3423,7 +3423,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yellow_ruins2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yellow_ruins2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yellow_ruins2.png",
       "width": 112,
       "height": 112,
       "needsSlicing": false
@@ -3436,7 +3436,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yellow_ruins3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yellow_ruins3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yellow_ruins3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3449,7 +3449,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yellow_ruins4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yellow_ruins4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yellow_ruins4.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -3462,7 +3462,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 blocker/dressing prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yellow_ruins5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yellow_ruins5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yellow_ruins5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3475,7 +3475,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yurt1_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yurt1_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yurt1_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3488,7 +3488,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yurt1_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yurt1_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yurt1_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3501,7 +3501,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yurt2_grass_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yurt2_grass_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yurt2_grass_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3514,7 +3514,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "curated Level 1 prop",
       "source": "level-1-crypto-wasteland/Random-Assets/Yurt2_ground_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Random-Assets/Yurt2_ground_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Yurt2_ground_shadow.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3527,7 +3527,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Autumn_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Autumn_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Autumn_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3540,7 +3540,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Autumn_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Autumn_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Autumn_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3553,7 +3553,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Autumn_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Autumn_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Autumn_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3566,7 +3566,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3579,7 +3579,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3592,7 +3592,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Beige_green_mushroom3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3605,7 +3605,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3618,7 +3618,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3631,7 +3631,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Blue-green_balls_tree3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3644,7 +3644,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/boulder.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/boulder.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/boulder.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -3657,7 +3657,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Broken_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Broken_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Broken_tree1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3670,7 +3670,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Broken_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Broken_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Broken_tree2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3683,7 +3683,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Broken_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Broken_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Broken_tree3.png",
       "width": 48,
       "height": 48,
       "needsSlicing": false
@@ -3696,7 +3696,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Broken_tree4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Broken_tree4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Broken_tree4.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3709,7 +3709,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Broken_tree5.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Broken_tree5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Broken_tree5.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3722,7 +3722,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Broken_tree6.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Broken_tree6.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Broken_tree6.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -3735,7 +3735,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Broken_tree7.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Broken_tree7.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Broken_tree7.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3748,7 +3748,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Burned_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Burned_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Burned_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3761,7 +3761,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Burned_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Burned_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Burned_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3774,7 +3774,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Burned_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Burned_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Burned_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3787,7 +3787,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/bush.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/bush.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/bush.png",
       "width": 40,
       "height": 40,
       "needsSlicing": false
@@ -3800,7 +3800,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Chanterelles1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Chanterelles1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Chanterelles1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3813,7 +3813,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Chanterelles2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Chanterelles2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Chanterelles2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3826,7 +3826,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Chanterelles3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Chanterelles3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Chanterelles3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3839,7 +3839,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Christmas_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Christmas_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Christmas_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3852,7 +3852,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Christmas_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Christmas_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Christmas_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3865,7 +3865,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Christmas_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Christmas_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Christmas_tree3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -3878,7 +3878,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Curved_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Curved_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Curved_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3891,7 +3891,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Curved_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Curved_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Curved_tree2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3904,7 +3904,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Curved_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Curved_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Curved_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -3917,7 +3917,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/desert-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/desert-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/desert-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3930,7 +3930,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/desert-07.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/desert-07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/desert-07.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3943,7 +3943,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/desert-12.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/desert-12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/desert-12.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3956,7 +3956,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Ent_man.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Ent_man.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Ent_man.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3969,7 +3969,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Ent_woman.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Ent_woman.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Ent_woman.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -3982,7 +3982,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/fallen-log.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/fallen-log.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/fallen-log.png",
       "width": 56,
       "height": 36,
       "needsSlicing": false
@@ -3995,7 +3995,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Flower_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Flower_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Flower_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4008,7 +4008,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Flower_tree2-1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Flower_tree2-1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Flower_tree2-1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4021,7 +4021,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Flower_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Flower_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Flower_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4034,7 +4034,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-00.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-00.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4047,7 +4047,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4060,7 +4060,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-04.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-04.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4073,7 +4073,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-05.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-05.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-05.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4086,7 +4086,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-06.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-06.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-06.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4099,7 +4099,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-07.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-07.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4112,7 +4112,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-08.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-08.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-08.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4125,7 +4125,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-09.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-09.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4138,7 +4138,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-10.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-10.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4151,7 +4151,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-11.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-11.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4164,7 +4164,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-12.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-12.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4177,7 +4177,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-13.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-13.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4190,7 +4190,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-15.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-15.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4203,7 +4203,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/forest-16.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/forest-16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/forest-16.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4216,7 +4216,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Fruit_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Fruit_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Fruit_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4229,7 +4229,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Fruit_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Fruit_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Fruit_tree2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4242,7 +4242,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Fruit_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Fruit_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Fruit_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4255,7 +4255,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Light_balls_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Light_balls_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Light_balls_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4268,7 +4268,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Light_balls_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Light_balls_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Light_balls_tree2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4281,7 +4281,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Light_balls_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Light_balls_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Light_balls_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4294,7 +4294,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Living gazebo1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Living gazebo1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Living gazebo1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4307,7 +4307,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Living gazebo2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Living gazebo2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Living gazebo2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4320,7 +4320,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Luminous_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Luminous_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Luminous_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4333,7 +4333,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Luminous_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Luminous_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Luminous_tree2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4346,7 +4346,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Luminous_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Luminous_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Luminous_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4359,7 +4359,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Luminous_tree4.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Luminous_tree4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Luminous_tree4.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4372,7 +4372,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Mega_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Mega_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Mega_tree1.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -4385,7 +4385,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Mega_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Mega_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Mega_tree2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4398,7 +4398,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Moss_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Moss_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Moss_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4411,7 +4411,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Moss_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Moss_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Moss_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4424,7 +4424,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Moss_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Moss_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Moss_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4437,7 +4437,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/oak-tree.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/oak-tree.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/oak-tree.png",
       "width": 64,
       "height": 88,
       "needsSlicing": false
@@ -4450,7 +4450,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Palm_tree1_1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Palm_tree1_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Palm_tree1_1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4463,7 +4463,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Palm_tree1_2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Palm_tree1_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Palm_tree1_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4476,7 +4476,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Palm_tree1_3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Palm_tree1_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Palm_tree1_3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4489,7 +4489,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Palm_tree2_1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Palm_tree2_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Palm_tree2_1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4502,7 +4502,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Palm_tree2_2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Palm_tree2_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Palm_tree2_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4515,7 +4515,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Palm_tree2_3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Palm_tree2_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Palm_tree2_3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4528,7 +4528,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/pine-tree.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/pine-tree.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/pine-tree.png",
       "width": 56,
       "height": 96,
       "needsSlicing": false
@@ -4541,7 +4541,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4554,7 +4554,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4567,7 +4567,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Snow_christmass_tree3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -4580,7 +4580,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Snow_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Snow_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Snow_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4593,7 +4593,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Snow_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Snow_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Snow_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4606,7 +4606,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Snow_tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Snow_tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Snow_tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4619,7 +4619,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Swirling tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Swirling tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Swirling tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4632,7 +4632,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Swirling tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Swirling tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Swirling tree2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4645,7 +4645,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Swirling tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Swirling tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Swirling tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4658,7 +4658,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4671,7 +4671,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4684,7 +4684,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Tree3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Tree3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Tree3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4697,7 +4697,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Tree_idol_deer.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Tree_idol_deer.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Tree_idol_deer.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4710,7 +4710,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Tree_idol_dragon.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Tree_idol_dragon.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Tree_idol_dragon.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -4723,7 +4723,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Tree_idol_human.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Tree_idol_human.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Tree_idol_human.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4736,7 +4736,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Tree_idol_wolf.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Tree_idol_wolf.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Tree_idol_wolf.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4749,7 +4749,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Trees_animation.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Trees_animation.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Trees_animation.png",
       "width": 576,
       "height": 1040,
       "needsSlicing": true
@@ -4762,7 +4762,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Trees_grass_alternative_fit.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Trees_grass_alternative_fit.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Trees_grass_alternative_fit.png",
       "width": 272,
       "height": 416,
       "needsSlicing": true
@@ -4775,7 +4775,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/White-red_mushroom1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/White-red_mushroom1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/White-red_mushroom1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4788,7 +4788,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/White-red_mushroom2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/White-red_mushroom2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/White-red_mushroom2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4801,7 +4801,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/White-red_mushroom3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/White-red_mushroom3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/White-red_mushroom3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4814,7 +4814,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/White_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/White_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/White_tree1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4827,7 +4827,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/White_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/White_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/White_tree2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4840,7 +4840,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Willow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Willow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Willow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4853,7 +4853,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Willow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Willow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Willow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4866,7 +4866,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 flora dressing",
       "source": "level-1-crypto-wasteland/Trees-Plants/Willow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Trees-Plants/Willow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Trees-Plants/Willow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -4879,7 +4879,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-00.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-00.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4892,7 +4892,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-01.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-01.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4905,7 +4905,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-02.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-02.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4918,7 +4918,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-03.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-03.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4931,7 +4931,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-04.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-04.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4944,7 +4944,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-05.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-05.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-05.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4957,7 +4957,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-06.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-06.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-06.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4970,7 +4970,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-07.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-07.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4983,7 +4983,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-08.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-08.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-08.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -4996,7 +4996,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-09.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-09.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5009,7 +5009,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-10.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-10.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5022,7 +5022,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-assets/water-11.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-assets/water-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-assets/water-11.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5035,7 +5035,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Anchor_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Anchor_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Anchor_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5048,7 +5048,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Anchor_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Anchor_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Anchor_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5061,7 +5061,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Anchor_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Anchor_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Anchor_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5074,7 +5074,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5087,7 +5087,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5100,7 +5100,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral1_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5113,7 +5113,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5126,7 +5126,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5139,7 +5139,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Beige-violet_coral2_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5152,7 +5152,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5165,7 +5165,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5178,7 +5178,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral1_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5191,7 +5191,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5204,7 +5204,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5217,7 +5217,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral2_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5230,7 +5230,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5243,7 +5243,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5256,7 +5256,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue-beige_coral3_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5269,7 +5269,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5282,7 +5282,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5295,7 +5295,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral1_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5308,7 +5308,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5321,7 +5321,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5334,7 +5334,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral2_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5347,7 +5347,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5360,7 +5360,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5373,7 +5373,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Blue_coral3_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5386,7 +5386,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5399,7 +5399,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5412,7 +5412,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Brown-white_shell1_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5425,7 +5425,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5438,7 +5438,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5451,7 +5451,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Brown-white_shell2_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5464,7 +5464,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Crab_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Crab_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Crab_shadow1.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -5477,7 +5477,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Crab_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Crab_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Crab_shadow2.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -5490,7 +5490,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Crab_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Crab_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Crab_shadow3.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -5503,7 +5503,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow1.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -5516,7 +5516,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow2.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -5529,7 +5529,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Dragon_bones_shadow3.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -5542,7 +5542,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5555,7 +5555,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5568,7 +5568,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral1_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5581,7 +5581,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5594,7 +5594,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5607,7 +5607,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral2_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5620,7 +5620,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5633,7 +5633,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5646,7 +5646,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Gray-red_coral3_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5659,7 +5659,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5672,7 +5672,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5685,7 +5685,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Mermaid_house_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5698,7 +5698,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5711,7 +5711,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5724,7 +5724,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Monster_fish_bones_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5737,7 +5737,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5750,7 +5750,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5763,7 +5763,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell1_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5776,7 +5776,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5789,7 +5789,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5802,7 +5802,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Pearl_sea_shell2_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -5815,7 +5815,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff1_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5828,7 +5828,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff1_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5841,7 +5841,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff1_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5854,7 +5854,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff2_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5867,7 +5867,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff2_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5880,7 +5880,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff2_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5893,7 +5893,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff3_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff3_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff3_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5906,7 +5906,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff3_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff3_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff3_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5919,7 +5919,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff3_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff3_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff3_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -5932,7 +5932,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff4_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff4_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff4_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5945,7 +5945,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff4_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff4_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff4_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5958,7 +5958,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Riff4_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Riff4_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Riff4_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5971,7 +5971,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5984,7 +5984,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -5997,7 +5997,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_insect_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6010,7 +6010,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6023,7 +6023,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6036,7 +6036,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_urchin1_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6049,7 +6049,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6062,7 +6062,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6075,7 +6075,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Sea_urchin2_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6088,7 +6088,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Ship1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Ship1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Ship1_shadow1.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6101,7 +6101,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Ship1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Ship1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Ship1_shadow2.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6114,7 +6114,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Ship1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Ship1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Ship1_shadow3.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6127,7 +6127,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Ship2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Ship2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Ship2_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6140,7 +6140,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Ship2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Ship2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Ship2_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6153,7 +6153,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Ship2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Ship2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Ship2_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6166,7 +6166,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Starfish1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Starfish1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Starfish1_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6179,7 +6179,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Starfish1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Starfish1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Starfish1_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6192,7 +6192,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Starfish1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Starfish1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Starfish1_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6205,7 +6205,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Starfish2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Starfish2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Starfish2_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6218,7 +6218,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Starfish2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Starfish2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Starfish2_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6231,7 +6231,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Starfish2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Starfish2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Starfish2_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6244,7 +6244,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Statue1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Statue1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Statue1_shadow1.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6257,7 +6257,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Statue1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Statue1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Statue1_shadow2.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6270,7 +6270,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Statue1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Statue1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Statue1_shadow3.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6283,7 +6283,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Statue2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Statue2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Statue2_shadow1.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6296,7 +6296,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Statue2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Statue2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Statue2_shadow2.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6309,7 +6309,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Statue2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Statue2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Statue2_shadow3.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6322,7 +6322,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6335,7 +6335,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6348,7 +6348,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Steering_wheel_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6361,7 +6361,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6374,7 +6374,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6387,7 +6387,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Turtle_shell_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6400,7 +6400,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6413,7 +6413,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6426,7 +6426,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral1_shadow3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -6439,7 +6439,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6452,7 +6452,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6465,7 +6465,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral2_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6478,7 +6478,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6491,7 +6491,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6504,7 +6504,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Violet-pink_coral3_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6517,7 +6517,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6530,7 +6530,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6543,7 +6543,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell1_shadow3.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6556,7 +6556,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -6569,7 +6569,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -6582,7 +6582,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "level-1-crypto-wasteland",
       "role": "Level 1 water/shoreline dressing",
       "source": "level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Water-seabed/Yellow-white-gray_shell2_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -6595,7 +6595,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Building-interiors-builder-set/16x16/Interiors_free_16x16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Building-interiors-builder-set/16x16/Interiors_free_16x16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Building-interiors-builder-set/16x16/Interiors_free_16x16.png",
       "width": 256,
       "height": 1424,
       "needsSlicing": true
@@ -6608,7 +6608,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Building-interiors-builder-set/16x16/Room_Builder_free_16x16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Building-interiors-builder-set/16x16/Room_Builder_free_16x16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Building-interiors-builder-set/16x16/Room_Builder_free_16x16.png",
       "width": 272,
       "height": 368,
       "needsSlicing": false
@@ -6621,7 +6621,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Building-interiors-builder-set/32x32/Interiors_free_32x32.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Building-interiors-builder-set/32x32/Interiors_free_32x32.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Building-interiors-builder-set/32x32/Interiors_free_32x32.png",
       "width": 512,
       "height": 2848,
       "needsSlicing": true
@@ -6634,7 +6634,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Building-interiors-builder-set/32x32/Room_Builder_free_32x32.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Building-interiors-builder-set/32x32/Room_Builder_free_32x32.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Building-interiors-builder-set/32x32/Room_Builder_free_32x32.png",
       "width": 544,
       "height": 736,
       "needsSlicing": true
@@ -6647,7 +6647,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Building-interiors-builder-set/48x48/Interiors_free_48x48.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Building-interiors-builder-set/48x48/Interiors_free_48x48.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Building-interiors-builder-set/48x48/Interiors_free_48x48.png",
       "width": 768,
       "height": 4272,
       "needsSlicing": true
@@ -6660,7 +6660,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Building-interiors-builder-set/48x48/Room_Builder_free_48x48.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Building-interiors-builder-set/48x48/Room_Builder_free_48x48.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Building-interiors-builder-set/48x48/Room_Builder_free_48x48.png",
       "width": 816,
       "height": 1104,
       "needsSlicing": true
@@ -6673,7 +6673,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Autumn_bush1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Autumn_bush1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Autumn_bush1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -6686,7 +6686,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Autumn_bush2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Autumn_bush2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Autumn_bush2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -6699,7 +6699,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Autumn_bush3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Autumn_bush3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Autumn_bush3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -6712,7 +6712,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_00.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6725,7 +6725,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_01.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_01.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6738,7 +6738,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_02.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_02.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6751,7 +6751,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_03.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_03.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6764,7 +6764,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_04.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_04.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6777,7 +6777,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_05.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_05.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_05.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6790,7 +6790,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_06.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_06.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_06.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6803,7 +6803,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_07.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_07.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6816,7 +6816,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_08.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_08.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_08.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6829,7 +6829,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_09.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_09.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6842,7 +6842,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_10.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_10.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6855,7 +6855,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_11.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_11.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6868,7 +6868,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_12.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_12.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6881,7 +6881,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_13.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_13.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6894,7 +6894,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_14.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_14.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6907,7 +6907,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_15.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_15.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6920,7 +6920,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_128x64_shaded/bamboo_4x4_128x64_shaded_16.png",
       "width": 512,
       "height": 512,
       "needsSlicing": true
@@ -6933,7 +6933,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_00.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6946,7 +6946,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_01.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_01.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6959,7 +6959,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_02.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_02.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6972,7 +6972,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_03.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_03.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6985,7 +6985,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_04.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_04.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -6998,7 +6998,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_05.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_05.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_05.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7011,7 +7011,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_06.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_06.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_06.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7024,7 +7024,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_07.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_07.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7037,7 +7037,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_08.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_08.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_08.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7050,7 +7050,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_09.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_09.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7063,7 +7063,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_10.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_10.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7076,7 +7076,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_11.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_11.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7089,7 +7089,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_12.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_12.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7102,7 +7102,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_13.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_13.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7115,7 +7115,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_14.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_14.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7128,7 +7128,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_15.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_15.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7141,7 +7141,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/bamboo_4x4_64x32_shaded/bamboo_4x4_64x32_shaded_16.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7154,7 +7154,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Broken_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Broken_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Broken_tree1.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7167,7 +7167,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Broken_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Broken_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Broken_tree2.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7180,7 +7180,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Burned_tree1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Burned_tree1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Burned_tree1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7193,7 +7193,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Burned_tree2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Burned_tree2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Burned_tree2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7206,7 +7206,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_blue_flowers1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_blue_flowers1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_blue_flowers1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -7219,7 +7219,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_blue_flowers2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_blue_flowers2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_blue_flowers2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7232,7 +7232,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_blue_flowers3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_blue_flowers3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_blue_flowers3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7245,7 +7245,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_orange_flowers1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_orange_flowers1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_orange_flowers1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -7258,7 +7258,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_orange_flowers2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_orange_flowers2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_orange_flowers2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7271,7 +7271,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_orange_flowers3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_orange_flowers3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_orange_flowers3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7284,7 +7284,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_pink_flowers1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_pink_flowers1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_pink_flowers1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -7297,7 +7297,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_pink_flowers2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_pink_flowers2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_pink_flowers2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7310,7 +7310,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_pink_flowers3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_pink_flowers3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_pink_flowers3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7323,7 +7323,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_red_flowers1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_red_flowers1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_red_flowers1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -7336,7 +7336,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_red_flowers2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_red_flowers2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_red_flowers2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7349,7 +7349,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_red_flowers3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_red_flowers3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_red_flowers3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7362,7 +7362,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_simple1_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_simple1_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_simple1_1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7375,7 +7375,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_simple1_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_simple1_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_simple1_2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7388,7 +7388,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_simple1_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_simple1_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_simple1_3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7401,7 +7401,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_simple2_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_simple2_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_simple2_1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7414,7 +7414,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_simple2_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_simple2_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_simple2_2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7427,7 +7427,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Bush_simple2_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Bush_simple2_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Bush_simple2_3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7440,7 +7440,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Cactus1_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Cactus1_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Cactus1_1.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7453,7 +7453,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Cactus1_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Cactus1_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Cactus1_2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7466,7 +7466,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Cactus1_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Cactus1_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Cactus1_3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7479,7 +7479,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Cactus2_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Cactus2_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Cactus2_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -7492,7 +7492,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Cactus2_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Cactus2_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Cactus2_2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7505,7 +7505,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Cactus2_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Cactus2_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Cactus2_3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7518,7 +7518,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-0.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-0.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7531,7 +7531,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-1.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7544,7 +7544,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-2.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7557,7 +7557,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-3.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7570,7 +7570,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-4.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7583,7 +7583,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-5.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7596,7 +7596,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-6.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-6.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-6.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7609,7 +7609,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-7.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-7.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-7.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7622,7 +7622,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-8.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-8.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-8.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7635,7 +7635,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-9.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-9.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_128_64_shaded/exotic_plant_3x3_128x64_shaded-9.png",
       "width": 384,
       "height": 192,
       "needsSlicing": true
@@ -7648,7 +7648,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_00.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7661,7 +7661,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_01.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_01.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7674,7 +7674,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_02.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_02.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7687,7 +7687,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_03.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_03.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_03.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7700,7 +7700,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_04.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_04.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_04.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7713,7 +7713,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_05.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_05.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_05.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7726,7 +7726,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_06.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_06.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_06.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7739,7 +7739,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_07.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_07.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_07.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7752,7 +7752,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_08.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_08.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_08.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7765,7 +7765,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_09.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_09.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/exotic_plant_3x3_64_32_shaded/exotic_plant_3x3_64x32_shaded_09.png",
       "width": 192,
       "height": 96,
       "needsSlicing": false
@@ -7778,7 +7778,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Fern1_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Fern1_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Fern1_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -7791,7 +7791,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Fern1_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Fern1_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Fern1_2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7804,7 +7804,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Fern1_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Fern1_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Fern1_3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7817,7 +7817,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Fern2_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Fern2_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Fern2_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -7830,7 +7830,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Fern2_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Fern2_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Fern2_2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -7843,7 +7843,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Fern2_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Fern2_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Fern2_3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -7856,7 +7856,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-0.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-0.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7869,7 +7869,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-1.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7882,7 +7882,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-10.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-10.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7895,7 +7895,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-100.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-100.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-100.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7908,7 +7908,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-101.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-101.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-101.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7921,7 +7921,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-102.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-102.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-102.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7934,7 +7934,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-103.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-103.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-103.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7947,7 +7947,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-104.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-104.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-104.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7960,7 +7960,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-105.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-105.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-105.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7973,7 +7973,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-106.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-106.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-106.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7986,7 +7986,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-107.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-107.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-107.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -7999,7 +7999,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-108.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-108.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-108.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8012,7 +8012,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-109.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-109.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-109.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8025,7 +8025,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-11.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-11.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8038,7 +8038,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-110.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-110.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-110.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8051,7 +8051,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-111.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-111.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-111.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8064,7 +8064,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-112.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-112.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-112.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8077,7 +8077,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-113.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-113.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-113.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8090,7 +8090,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-114.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-114.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-114.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8103,7 +8103,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-115.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-115.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-115.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8116,7 +8116,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-116.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-116.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-116.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8129,7 +8129,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-117.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-117.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-117.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8142,7 +8142,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-118.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-118.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-118.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8155,7 +8155,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-119.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-119.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-119.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8168,7 +8168,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-12.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-12.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8181,7 +8181,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-120.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-120.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-120.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8194,7 +8194,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-121.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-121.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-121.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8207,7 +8207,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-122.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-122.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-122.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8220,7 +8220,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-123.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-123.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-123.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8233,7 +8233,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-124.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-124.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-124.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8246,7 +8246,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-125.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-125.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-125.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8259,7 +8259,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-126.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-126.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-126.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8272,7 +8272,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-127.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-127.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-127.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8285,7 +8285,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-128.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-128.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-128.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8298,7 +8298,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-129.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-129.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-129.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8311,7 +8311,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-13.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-13.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8324,7 +8324,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-130.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-130.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-130.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8337,7 +8337,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-131.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-131.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-131.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8350,7 +8350,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-132.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-132.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-132.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8363,7 +8363,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-133.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-133.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-133.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8376,7 +8376,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-134.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-134.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-134.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8389,7 +8389,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-135.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-135.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-135.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8402,7 +8402,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-14.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-14.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8415,7 +8415,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-15.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-15.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8428,7 +8428,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-16.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8441,7 +8441,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-17.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-17.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-17.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8454,7 +8454,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-18.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-18.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-18.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8467,7 +8467,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-19.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-19.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-19.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8480,7 +8480,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-2.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8493,7 +8493,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-20.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-20.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-20.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8506,7 +8506,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-21.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-21.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-21.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8519,7 +8519,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-22.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-22.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-22.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8532,7 +8532,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-23.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-23.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-23.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8545,7 +8545,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-24.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-24.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-24.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8558,7 +8558,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-25.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-25.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-25.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8571,7 +8571,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-26.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-26.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-26.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8584,7 +8584,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-27.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-27.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-27.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8597,7 +8597,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-28.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-28.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-28.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8610,7 +8610,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-29.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-29.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-29.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8623,7 +8623,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-3.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8636,7 +8636,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-30.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-30.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-30.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8649,7 +8649,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-31.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-31.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-31.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8662,7 +8662,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-32.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-32.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-32.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8675,7 +8675,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-33.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-33.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-33.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8688,7 +8688,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-34.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-34.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-34.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8701,7 +8701,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-35.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-35.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-35.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8714,7 +8714,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-36.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-36.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-36.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8727,7 +8727,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-37.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-37.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-37.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8740,7 +8740,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-38.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-38.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-38.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8753,7 +8753,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-39.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-39.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-39.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8766,7 +8766,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-4.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8779,7 +8779,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-40.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-40.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-40.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8792,7 +8792,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-41.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-41.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-41.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8805,7 +8805,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-42.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-42.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-42.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8818,7 +8818,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-43.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-43.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-43.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8831,7 +8831,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-44.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-44.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-44.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8844,7 +8844,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-45.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-45.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-45.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8857,7 +8857,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-46.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-46.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-46.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8870,7 +8870,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-47.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-47.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-47.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8883,7 +8883,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-48.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-48.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-48.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8896,7 +8896,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-49.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-49.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-49.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8909,7 +8909,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-5.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8922,7 +8922,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-50.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-50.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-50.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8935,7 +8935,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-51.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-51.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-51.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8948,7 +8948,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-52.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-52.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-52.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8961,7 +8961,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-53.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-53.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-53.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8974,7 +8974,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-54.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-54.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-54.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -8987,7 +8987,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-55.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-55.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-55.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9000,7 +9000,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-56.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-56.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-56.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9013,7 +9013,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-57.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-57.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-57.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9026,7 +9026,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-58.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-58.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-58.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9039,7 +9039,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-59.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-59.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-59.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9052,7 +9052,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-6.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-6.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-6.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9065,7 +9065,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-60.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-60.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-60.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9078,7 +9078,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-61.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-61.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-61.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9091,7 +9091,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-62.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-62.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-62.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9104,7 +9104,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-63.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-63.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-63.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9117,7 +9117,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-64.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-64.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-64.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9130,7 +9130,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-65.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-65.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-65.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9143,7 +9143,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-66.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-66.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-66.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9156,7 +9156,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-67.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-67.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-67.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9169,7 +9169,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-68.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-68.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-68.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9182,7 +9182,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-69.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-69.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-69.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9195,7 +9195,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-7.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-7.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-7.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9208,7 +9208,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-70.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-70.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-70.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9221,7 +9221,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-71.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-71.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-71.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9234,7 +9234,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-72.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-72.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-72.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9247,7 +9247,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-73.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-73.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-73.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9260,7 +9260,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-74.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-74.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-74.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9273,7 +9273,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-75.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-75.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-75.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9286,7 +9286,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-76.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-76.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-76.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9299,7 +9299,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-77.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-77.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-77.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9312,7 +9312,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-78.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-78.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-78.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9325,7 +9325,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-79.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-79.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-79.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9338,7 +9338,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-8.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-8.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-8.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9351,7 +9351,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-80.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-80.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-80.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9364,7 +9364,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-81.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-81.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-81.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9377,7 +9377,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-82.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-82.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-82.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9390,7 +9390,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-83.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-83.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-83.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9403,7 +9403,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-84.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-84.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-84.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9416,7 +9416,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-85.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-85.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-85.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9429,7 +9429,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-86.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-86.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-86.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9442,7 +9442,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-87.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-87.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-87.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9455,7 +9455,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-88.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-88.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-88.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9468,7 +9468,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-89.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-89.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-89.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9481,7 +9481,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-9.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-9.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-9.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9494,7 +9494,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-90.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-90.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-90.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9507,7 +9507,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-91.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-91.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-91.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9520,7 +9520,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-92.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-92.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-92.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9533,7 +9533,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-93.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-93.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-93.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9546,7 +9546,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-94.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-94.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-94.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9559,7 +9559,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-95.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-95.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-95.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9572,7 +9572,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-96.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-96.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-96.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9585,7 +9585,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-97.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-97.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-97.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9598,7 +9598,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-98.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-98.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-98.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9611,7 +9611,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-99.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-99.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_128x64_shaded/plants_2x2_128x64_shaded-99.png",
       "width": 256,
       "height": 256,
       "needsSlicing": false
@@ -9624,7 +9624,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-0.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-0.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9637,7 +9637,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-1.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9650,7 +9650,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-10.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-10.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9663,7 +9663,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-100.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-100.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-100.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9676,7 +9676,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-101.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-101.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-101.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9689,7 +9689,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-102.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-102.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-102.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9702,7 +9702,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-103.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-103.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-103.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9715,7 +9715,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-104.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-104.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-104.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9728,7 +9728,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-105.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-105.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-105.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9741,7 +9741,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-106.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-106.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-106.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9754,7 +9754,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-107.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-107.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-107.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9767,7 +9767,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-108.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-108.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-108.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9780,7 +9780,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-109.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-109.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-109.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9793,7 +9793,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-11.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-11.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9806,7 +9806,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-110.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-110.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-110.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9819,7 +9819,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-111.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-111.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-111.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9832,7 +9832,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-112.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-112.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-112.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9845,7 +9845,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-113.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-113.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-113.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9858,7 +9858,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-114.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-114.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-114.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9871,7 +9871,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-115.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-115.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-115.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9884,7 +9884,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-116.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-116.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-116.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9897,7 +9897,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-117.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-117.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-117.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9910,7 +9910,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-118.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-118.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-118.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9923,7 +9923,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-119.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-119.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-119.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9936,7 +9936,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-12.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-12.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9949,7 +9949,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-120.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-120.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-120.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9962,7 +9962,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-121.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-121.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-121.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9975,7 +9975,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-122.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-122.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-122.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -9988,7 +9988,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-123.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-123.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-123.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10001,7 +10001,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-124.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-124.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-124.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10014,7 +10014,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-125.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-125.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-125.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10027,7 +10027,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-126.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-126.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-126.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10040,7 +10040,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-127.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-127.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-127.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10053,7 +10053,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-128.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-128.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-128.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10066,7 +10066,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-129.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-129.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-129.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10079,7 +10079,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-13.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-13.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10092,7 +10092,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-130.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-130.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-130.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10105,7 +10105,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-131.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-131.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-131.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10118,7 +10118,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-132.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-132.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-132.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10131,7 +10131,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-133.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-133.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-133.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10144,7 +10144,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-134.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-134.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-134.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10157,7 +10157,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-135.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-135.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-135.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10170,7 +10170,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-14.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-14.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10183,7 +10183,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-15.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-15.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10196,7 +10196,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-16.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10209,7 +10209,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-17.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-17.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-17.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10222,7 +10222,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-18.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-18.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-18.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10235,7 +10235,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-19.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-19.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-19.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10248,7 +10248,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-2.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10261,7 +10261,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-20.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-20.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-20.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10274,7 +10274,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-21.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-21.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-21.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10287,7 +10287,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-22.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-22.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-22.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10300,7 +10300,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-23.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-23.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-23.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10313,7 +10313,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-24.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-24.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-24.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10326,7 +10326,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-25.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-25.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-25.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10339,7 +10339,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-26.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-26.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-26.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10352,7 +10352,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-27.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-27.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-27.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10365,7 +10365,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-28.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-28.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-28.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10378,7 +10378,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-29.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-29.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-29.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10391,7 +10391,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-3.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10404,7 +10404,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-30.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-30.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-30.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10417,7 +10417,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-31.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-31.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-31.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10430,7 +10430,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-32.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-32.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-32.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10443,7 +10443,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-33.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-33.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-33.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10456,7 +10456,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-34.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-34.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-34.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10469,7 +10469,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-35.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-35.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-35.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10482,7 +10482,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-36.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-36.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-36.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10495,7 +10495,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-37.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-37.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-37.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10508,7 +10508,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-38.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-38.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-38.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10521,7 +10521,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-39.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-39.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-39.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10534,7 +10534,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-4.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10547,7 +10547,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-40.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-40.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-40.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10560,7 +10560,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-41.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-41.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-41.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10573,7 +10573,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-42.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-42.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-42.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10586,7 +10586,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-43.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-43.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-43.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10599,7 +10599,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-44.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-44.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-44.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10612,7 +10612,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-45.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-45.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-45.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10625,7 +10625,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-46.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-46.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-46.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10638,7 +10638,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-47.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-47.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-47.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10651,7 +10651,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-48.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-48.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-48.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10664,7 +10664,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-49.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-49.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-49.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10677,7 +10677,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-5.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10690,7 +10690,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-50.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-50.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-50.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10703,7 +10703,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-51.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-51.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-51.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10716,7 +10716,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-52.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-52.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-52.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10729,7 +10729,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-53.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-53.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-53.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10742,7 +10742,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-54.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-54.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-54.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10755,7 +10755,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-55.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-55.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-55.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10768,7 +10768,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-56.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-56.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-56.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10781,7 +10781,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-57.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-57.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-57.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10794,7 +10794,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-58.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-58.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-58.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10807,7 +10807,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-59.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-59.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-59.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10820,7 +10820,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-6.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-6.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-6.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10833,7 +10833,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-60.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-60.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-60.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10846,7 +10846,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-61.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-61.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-61.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10859,7 +10859,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-62.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-62.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-62.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10872,7 +10872,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-63.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-63.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-63.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10885,7 +10885,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-64.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-64.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-64.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10898,7 +10898,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-65.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-65.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-65.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10911,7 +10911,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-66.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-66.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-66.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10924,7 +10924,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-67.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-67.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-67.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10937,7 +10937,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-68.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-68.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-68.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10950,7 +10950,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-69.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-69.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-69.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10963,7 +10963,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-7.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-7.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-7.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10976,7 +10976,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-70.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-70.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-70.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -10989,7 +10989,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-71.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-71.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-71.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11002,7 +11002,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-72.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-72.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-72.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11015,7 +11015,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-73.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-73.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-73.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11028,7 +11028,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-74.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-74.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-74.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11041,7 +11041,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-75.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-75.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-75.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11054,7 +11054,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-76.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-76.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-76.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11067,7 +11067,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-77.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-77.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-77.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11080,7 +11080,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-78.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-78.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-78.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11093,7 +11093,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-79.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-79.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-79.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11106,7 +11106,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-8.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-8.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-8.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11119,7 +11119,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-80.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-80.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-80.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11132,7 +11132,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-81.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-81.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-81.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11145,7 +11145,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-82.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-82.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-82.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11158,7 +11158,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-83.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-83.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-83.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11171,7 +11171,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-84.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-84.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-84.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11184,7 +11184,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-85.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-85.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-85.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11197,7 +11197,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-86.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-86.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-86.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11210,7 +11210,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-87.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-87.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-87.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11223,7 +11223,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-88.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-88.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-88.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11236,7 +11236,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-89.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-89.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-89.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11249,7 +11249,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-9.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-9.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-9.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11262,7 +11262,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-90.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-90.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-90.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11275,7 +11275,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-91.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-91.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-91.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11288,7 +11288,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-92.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-92.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-92.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11301,7 +11301,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-93.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-93.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-93.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11314,7 +11314,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-94.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-94.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-94.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11327,7 +11327,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-95.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-95.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-95.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11340,7 +11340,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-96.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-96.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-96.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11353,7 +11353,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-97.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-97.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-97.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11366,7 +11366,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-98.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-98.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-98.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11379,7 +11379,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-99.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-99.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/plants_2x2_64x32_shaded/plants_2x2_64x32_shaded-99.png",
       "width": 128,
       "height": 128,
       "needsSlicing": false
@@ -11392,7 +11392,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Snow_bush1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Snow_bush1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Snow_bush1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -11405,7 +11405,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Snow_bush2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Snow_bush2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Snow_bush2.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -11418,7 +11418,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Bushes/Snow_bush3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Bushes/Snow_bush3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Bushes/Snow_bush3.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -11431,7 +11431,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/bitcoin-maximalist-riot-cop/anim0/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/bitcoin-maximalist-riot-cop/anim0/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/bitcoin-maximalist-riot-cop/anim0/east/00.png",
       "width": 192,
       "height": 192,
       "needsSlicing": false
@@ -11444,7 +11444,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/bridge-exploiter/anim0/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/bridge-exploiter/anim0/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/bridge-exploiter/anim0/east/00.png",
       "width": 244,
       "height": 244,
       "needsSlicing": false
@@ -11457,7 +11457,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/chain-reaper-boss/attack-slam/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/chain-reaper-boss/attack-slam/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/chain-reaper-boss/attack-slam/east/00.png",
       "width": 180,
       "height": 180,
       "needsSlicing": false
@@ -11470,7 +11470,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/claim-jumper/anim0/south-west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/claim-jumper/anim0/south-west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/claim-jumper/anim0/south-west/00.png",
       "width": 188,
       "height": 188,
       "needsSlicing": false
@@ -11483,7 +11483,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/coyote-pack-runner/attack-tell/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/coyote-pack-runner/attack-tell/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/coyote-pack-runner/attack-tell/east/00.png",
       "width": 172,
       "height": 172,
       "needsSlicing": false
@@ -11496,7 +11496,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/crypto-bro-rusher/anim0/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/crypto-bro-rusher/anim0/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/crypto-bro-rusher/anim0/east/00.png",
       "width": 136,
       "height": 136,
       "needsSlicing": false
@@ -11509,7 +11509,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/evil-banker-ranged/anim0/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/evil-banker-ranged/anim0/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/evil-banker-ranged/anim0/east/00.png",
       "width": 136,
       "height": 136,
       "needsSlicing": false
@@ -11522,7 +11522,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/gas-beast-tank/anim0/north-west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/gas-beast-tank/anim0/north-west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/gas-beast-tank/anim0/north-west/00.png",
       "width": 160,
       "height": 160,
       "needsSlicing": false
@@ -11535,7 +11535,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/honeypot-turret/anim0/north-east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/honeypot-turret/anim0/north-east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/honeypot-turret/anim0/north-east/00.png",
       "width": 184,
       "height": 184,
       "needsSlicing": false
@@ -11548,7 +11548,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/kol-influencer-girl/death/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/kol-influencer-girl/death/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/kol-influencer-girl/death/east/00.png",
       "width": 100,
       "height": 100,
       "needsSlicing": false
@@ -11561,7 +11561,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/kol-influencer/anim0/south-west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/kol-influencer/anim0/south-west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/kol-influencer/anim0/south-west/00.png",
       "width": 112,
       "height": 112,
       "needsSlicing": false
@@ -11574,7 +11574,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/mev-reaper/anim0/north-east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/mev-reaper/anim0/north-east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/mev-reaper/anim0/north-east/00.png",
       "width": 180,
       "height": 180,
       "needsSlicing": false
@@ -11587,7 +11587,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/paper-hand/anim0/north-west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/paper-hand/anim0/north-west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/paper-hand/anim0/north-west/00.png",
       "width": 172,
       "height": 172,
       "needsSlicing": false
@@ -11600,7 +11600,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/phishing-angler/anim0/south-east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/phishing-angler/anim0/south-east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/phishing-angler/anim0/south-east/00.png",
       "width": 176,
       "height": 176,
       "needsSlicing": false
@@ -11613,7 +11613,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/plaza-warden/anim0/north/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/plaza-warden/anim0/north/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/plaza-warden/anim0/north/00.png",
       "width": 232,
       "height": 232,
       "needsSlicing": false
@@ -11626,7 +11626,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/scam-cult-zealot/anim0/north-west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/scam-cult-zealot/anim0/north-west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/scam-cult-zealot/anim0/north-west/00.png",
       "width": 192,
       "height": 192,
       "needsSlicing": false
@@ -11639,7 +11639,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/slippage-skater/anim0/south/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/slippage-skater/anim0/south/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/slippage-skater/anim0/south/00.png",
       "width": 192,
       "height": 192,
       "needsSlicing": false
@@ -11652,7 +11652,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/sybil-drone/anim0/west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/sybil-drone/anim0/west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/sybil-drone/anim0/west/00.png",
       "width": 188,
       "height": 188,
       "needsSlicing": false
@@ -11665,7 +11665,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/the-obfuscator/anim0/south-west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/the-obfuscator/anim0/south-west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/the-obfuscator/anim0/south-west/00.png",
       "width": 228,
       "height": 228,
       "needsSlicing": false
@@ -11678,7 +11678,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/trench-degen/anim0/north-east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/trench-degen/anim0/north-east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/trench-degen/anim0/north-east/00.png",
       "width": 92,
       "height": 92,
       "needsSlicing": false
@@ -11691,7 +11691,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/whale-dumper-boss/anim0/north-west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/whale-dumper-boss/anim0/north-west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/whale-dumper-boss/anim0/north-west/00.png",
       "width": 160,
       "height": 160,
       "needsSlicing": false
@@ -11704,7 +11704,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal enemy animation source",
       "source": "Universal/Enemies/wild-boar/attack-tell/east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Enemies/wild-boar/attack-tell/east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/wild-boar/attack-tell/east/00.png",
       "width": 204,
       "height": 204,
       "needsSlicing": false
@@ -11717,7 +11717,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/dirt_cliff_trans.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/dirt_cliff_trans.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/dirt_cliff_trans.png",
       "width": 1024,
       "height": 1024,
       "needsSlicing": true
@@ -11730,7 +11730,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/dirt_tiles.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/dirt_tiles.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/dirt_tiles.png",
       "width": 1024,
       "height": 1536,
       "needsSlicing": true
@@ -11743,7 +11743,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/dirt_tiles_w_trans.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/dirt_tiles_w_trans.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/dirt_tiles_w_trans.png",
       "width": 1024,
       "height": 2560,
       "needsSlicing": true
@@ -11756,7 +11756,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/grass_cliff_trans.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/grass_cliff_trans.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/grass_cliff_trans.png",
       "width": 1024,
       "height": 1024,
       "needsSlicing": true
@@ -11769,7 +11769,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/grass_tiles.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/grass_tiles.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/grass_tiles.png",
       "width": 1024,
       "height": 1536,
       "needsSlicing": true
@@ -11782,7 +11782,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/grass_tiles_w_trans.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/grass_tiles_w_trans.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/grass_tiles_w_trans.png",
       "width": 1024,
       "height": 2560,
       "needsSlicing": true
@@ -11795,7 +11795,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/grassland_1x1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/grassland_1x1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/grassland_1x1.png",
       "width": 1536,
       "height": 3844,
       "needsSlicing": true
@@ -11808,7 +11808,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/grassland_2x2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/grassland_2x2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/grassland_2x2.png",
       "width": 3072,
       "height": 4608,
       "needsSlicing": true
@@ -11821,7 +11821,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/ground_grasses.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/ground_grasses.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/ground_grasses.png",
       "width": 1024,
       "height": 768,
       "needsSlicing": true
@@ -11834,7 +11834,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/rock_cliffs.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/rock_cliffs.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/rock_cliffs.png",
       "width": 1536,
       "height": 2048,
       "needsSlicing": true
@@ -11847,7 +11847,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/sand_cliff_trans.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/sand_cliff_trans.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/sand_cliff_trans.png",
       "width": 1024,
       "height": 512,
       "needsSlicing": true
@@ -11860,7 +11860,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/sand_tiles.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/sand_tiles.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/sand_tiles.png",
       "width": 1024,
       "height": 768,
       "needsSlicing": true
@@ -11873,7 +11873,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/sand_tiles_w_trans.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/sand_tiles_w_trans.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/sand_tiles_w_trans.png",
       "width": 1024,
       "height": 1280,
       "needsSlicing": true
@@ -11886,7 +11886,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/water_v01.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/water_v01.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/water_v01.png",
       "width": 768,
       "height": 384,
       "needsSlicing": true
@@ -11899,7 +11899,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "curated sheet requiring slicing",
       "source": "Universal/Ground-textures/water_v02.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Ground-textures/water_v02.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Ground-textures/water_v02.png",
       "width": 768,
       "height": 384,
       "needsSlicing": true
@@ -11912,7 +11912,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal playable-character animation source",
       "source": "Universal/Heroes-Playable-Characters/lit-commando/anim0/north-east/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Heroes-Playable-Characters/lit-commando/anim0/north-east/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Heroes-Playable-Characters/lit-commando/anim0/north-east/00.png",
       "width": 136,
       "height": 136,
       "needsSlicing": false
@@ -11925,7 +11925,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Universal playable-character animation source",
       "source": "Universal/Heroes-Playable-Characters/lit-valkyrie/anim0/west/00.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Heroes-Playable-Characters/lit-valkyrie/anim0/west/00.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Heroes-Playable-Characters/lit-valkyrie/anim0/west/00.png",
       "width": 136,
       "height": 136,
       "needsSlicing": false
@@ -11938,7 +11938,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Black_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Black_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Black_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -11951,7 +11951,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Black_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Black_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Black_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -11964,7 +11964,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Black_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Black_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Black_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -11977,7 +11977,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Black_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Black_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Black_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -11990,7 +11990,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Blue_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Blue_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Blue_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12003,7 +12003,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Blue_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Blue_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Blue_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12016,7 +12016,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Blue_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Blue_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Blue_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12029,7 +12029,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Blue_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Blue_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Blue_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12042,7 +12042,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Dark_red_ crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Dark_red_ crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Dark_red_ crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12055,7 +12055,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Dark_red_ crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Dark_red_ crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Dark_red_ crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12068,7 +12068,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Dark_red_ crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Dark_red_ crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Dark_red_ crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12081,7 +12081,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Dark_red_ crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Dark_red_ crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Dark_red_ crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12094,7 +12094,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Green_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Green_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Green_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12107,7 +12107,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Green_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Green_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Green_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12120,7 +12120,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Green_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Green_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Green_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12133,7 +12133,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Green_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Green_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Green_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12146,7 +12146,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Pink_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Pink_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Pink_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12159,7 +12159,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Pink_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Pink_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Pink_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12172,7 +12172,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Pink_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Pink_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Pink_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12185,7 +12185,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Pink_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Pink_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Pink_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12198,7 +12198,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Red_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Red_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Red_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12211,7 +12211,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Red_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Red_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Red_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12224,7 +12224,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Red_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Red_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Red_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12237,7 +12237,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Red_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Red_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Red_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12250,7 +12250,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12263,7 +12263,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12276,7 +12276,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12289,7 +12289,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12302,7 +12302,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12315,7 +12315,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12328,7 +12328,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12341,7 +12341,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12354,7 +12354,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12367,7 +12367,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12380,7 +12380,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12393,7 +12393,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12406,7 +12406,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12419,7 +12419,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12432,7 +12432,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12445,7 +12445,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12458,7 +12458,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12471,7 +12471,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12484,7 +12484,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12497,7 +12497,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock1_grass_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock1_grass_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock1_grass_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12510,7 +12510,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12523,7 +12523,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12536,7 +12536,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12549,7 +12549,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12562,7 +12562,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12575,7 +12575,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12588,7 +12588,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12601,7 +12601,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12614,7 +12614,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12627,7 +12627,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12640,7 +12640,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12653,7 +12653,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12666,7 +12666,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12679,7 +12679,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12692,7 +12692,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12705,7 +12705,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12718,7 +12718,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12731,7 +12731,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12744,7 +12744,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12757,7 +12757,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock2_grass_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock2_grass_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock2_grass_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12770,7 +12770,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12783,7 +12783,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12796,7 +12796,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12809,7 +12809,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12822,7 +12822,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12835,7 +12835,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12848,7 +12848,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12861,7 +12861,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12874,7 +12874,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12887,7 +12887,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock3_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock3_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock3_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -12900,7 +12900,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12913,7 +12913,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12926,7 +12926,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12939,7 +12939,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -12952,7 +12952,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12965,7 +12965,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12978,7 +12978,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -12991,7 +12991,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13004,7 +13004,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13017,7 +13017,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13030,7 +13030,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13043,7 +13043,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13056,7 +13056,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13069,7 +13069,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13082,7 +13082,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13095,7 +13095,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13108,7 +13108,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13121,7 +13121,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13134,7 +13134,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13147,7 +13147,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock4_grass_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock4_grass_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock4_grass_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13160,7 +13160,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13173,7 +13173,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13186,7 +13186,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13199,7 +13199,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13212,7 +13212,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13225,7 +13225,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13238,7 +13238,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13251,7 +13251,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13264,7 +13264,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13277,7 +13277,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13290,7 +13290,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13303,7 +13303,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13316,7 +13316,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13329,7 +13329,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13342,7 +13342,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13355,7 +13355,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13368,7 +13368,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13381,7 +13381,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13394,7 +13394,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13407,7 +13407,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock5_grass_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock5_grass_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock5_grass_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13420,7 +13420,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13433,7 +13433,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13446,7 +13446,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13459,7 +13459,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13472,7 +13472,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13485,7 +13485,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13498,7 +13498,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13511,7 +13511,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13524,7 +13524,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13537,7 +13537,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13550,7 +13550,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13563,7 +13563,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13576,7 +13576,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13589,7 +13589,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13602,7 +13602,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13615,7 +13615,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13628,7 +13628,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13641,7 +13641,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13654,7 +13654,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13667,7 +13667,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock6_grass_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock6_grass_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock6_grass_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13680,7 +13680,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13693,7 +13693,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13706,7 +13706,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13719,7 +13719,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13732,7 +13732,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13745,7 +13745,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13758,7 +13758,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13771,7 +13771,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13784,7 +13784,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13797,7 +13797,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock7_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13810,7 +13810,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13823,7 +13823,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13836,7 +13836,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13849,7 +13849,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13862,7 +13862,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13875,7 +13875,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13888,7 +13888,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13901,7 +13901,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13914,7 +13914,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -13927,7 +13927,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 water/shoreline dressing",
       "source": "Universal/Rocks/Rock7_water_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock7_water_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock7_water_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -13940,7 +13940,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13953,7 +13953,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_1_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_1_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_1_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13966,7 +13966,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13979,7 +13979,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_2_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_2_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_2_no_shadow.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -13992,7 +13992,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14005,7 +14005,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_3_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_3_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_3_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14018,7 +14018,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14031,7 +14031,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_4_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_4_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_4_no_shadow.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14044,7 +14044,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14057,7 +14057,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_5_no_shadow.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_5_no_shadow.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_5_no_shadow.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14070,7 +14070,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14083,7 +14083,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14096,7 +14096,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14109,7 +14109,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14122,7 +14122,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14135,7 +14135,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14148,7 +14148,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14161,7 +14161,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14174,7 +14174,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14187,7 +14187,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rock8_ground_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rock8_ground_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rock8_ground_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14200,7 +14200,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14213,7 +14213,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14226,7 +14226,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14239,7 +14239,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14252,7 +14252,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14265,7 +14265,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow_dark1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow_dark1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow_dark1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14278,7 +14278,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow_dark2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow_dark2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow_dark2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14291,7 +14291,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow_dark3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow_dark3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow_dark3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14304,7 +14304,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow_dark4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow_dark4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow_dark4.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14317,7 +14317,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Rokc3_snow_shadow_dark5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Rokc3_snow_shadow_dark5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Rokc3_snow_shadow_dark5.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14330,7 +14330,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Violet_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Violet_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Violet_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14343,7 +14343,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Violet_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Violet_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Violet_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14356,7 +14356,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Violet_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Violet_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Violet_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14369,7 +14369,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Violet_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Violet_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Violet_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14382,7 +14382,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/White_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/White_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/White_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14395,7 +14395,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/White_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/White_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/White_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14408,7 +14408,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/White_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/White_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/White_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14421,7 +14421,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/White_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/White_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/White_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14434,7 +14434,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow-green_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow-green_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow-green_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14447,7 +14447,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow-green_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow-green_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow-green_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14460,7 +14460,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow-green_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow-green_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow-green_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14473,7 +14473,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow-green_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow-green_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow-green_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14486,7 +14486,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow_crystal1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow_crystal1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow_crystal1.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14499,7 +14499,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow_crystal2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow_crystal2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow_crystal2.png",
       "width": 64,
       "height": 64,
       "needsSlicing": false
@@ -14512,7 +14512,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow_crystal3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow_crystal3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow_crystal3.png",
       "width": 32,
       "height": 32,
       "needsSlicing": false
@@ -14525,7 +14525,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 blocker/dressing prop",
       "source": "Universal/Rocks/Yellow_crystal4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Rocks/Yellow_crystal4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Rocks/Yellow_crystal4.png",
       "width": 16,
       "height": 16,
       "needsSlicing": false
@@ -14538,7 +14538,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-0.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-0.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14551,7 +14551,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-1.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14564,7 +14564,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-10.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-10.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14577,7 +14577,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-11.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-11.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14590,7 +14590,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-12.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-12.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14603,7 +14603,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-13.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-13.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14616,7 +14616,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-14.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-14.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14629,7 +14629,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-15.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-15.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14642,7 +14642,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-16.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14655,7 +14655,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-17.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-17.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-17.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14668,7 +14668,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-18.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-18.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-18.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14681,7 +14681,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-19.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-19.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-19.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14694,7 +14694,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-2.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14707,7 +14707,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-20.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-20.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-20.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14720,7 +14720,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-21.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-21.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-21.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14733,7 +14733,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-22.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-22.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-22.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14746,7 +14746,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-23.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-23.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-23.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14759,7 +14759,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-24.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-24.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-24.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14772,7 +14772,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-25.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-25.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-25.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14785,7 +14785,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-26.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-26.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-26.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14798,7 +14798,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-27.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-27.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-27.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14811,7 +14811,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-28.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-28.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-28.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14824,7 +14824,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-29.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-29.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-29.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14837,7 +14837,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-3.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14850,7 +14850,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-30.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-30.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-30.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14863,7 +14863,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-31.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-31.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-31.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14876,7 +14876,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-32.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-32.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-32.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14889,7 +14889,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-33.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-33.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-33.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14902,7 +14902,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-34.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-34.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-34.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14915,7 +14915,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-35.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-35.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-35.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14928,7 +14928,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-36.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-36.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-36.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14941,7 +14941,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-37.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-37.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-37.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14954,7 +14954,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-38.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-38.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-38.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14967,7 +14967,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-39.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-39.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-39.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14980,7 +14980,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-4.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -14993,7 +14993,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-40.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-40.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-40.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15006,7 +15006,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-41.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-41.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-41.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15019,7 +15019,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-42.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-42.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-42.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15032,7 +15032,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-43.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-43.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-43.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15045,7 +15045,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-44.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-44.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-44.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15058,7 +15058,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-45.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-45.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-45.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15071,7 +15071,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-46.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-46.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-46.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15084,7 +15084,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-47.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-47.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-47.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15097,7 +15097,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-48.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-48.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-48.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15110,7 +15110,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-49.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-49.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-49.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15123,7 +15123,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-5.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15136,7 +15136,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-50.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-50.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-50.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15149,7 +15149,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-51.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-51.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-51.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15162,7 +15162,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-52.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-52.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-52.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15175,7 +15175,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-53.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-53.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-53.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15188,7 +15188,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-54.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-54.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-54.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15201,7 +15201,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-55.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-55.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-55.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15214,7 +15214,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-56.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-56.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-56.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15227,7 +15227,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-57.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-57.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-57.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15240,7 +15240,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-58.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-58.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-58.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15253,7 +15253,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-59.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-59.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-59.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15266,7 +15266,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-6.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-6.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-6.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15279,7 +15279,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-60.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-60.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-60.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15292,7 +15292,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-61.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-61.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-61.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15305,7 +15305,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-62.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-62.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-62.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15318,7 +15318,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-63.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-63.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-63.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15331,7 +15331,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-64.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-64.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-64.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15344,7 +15344,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-65.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-65.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-65.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15357,7 +15357,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-66.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-66.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-66.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15370,7 +15370,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-67.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-67.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-67.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15383,7 +15383,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-68.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-68.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-68.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15396,7 +15396,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-69.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-69.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-69.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15409,7 +15409,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-7.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-7.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-7.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15422,7 +15422,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-70.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-70.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-70.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15435,7 +15435,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-71.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-71.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-71.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15448,7 +15448,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-72.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-72.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-72.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15461,7 +15461,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-73.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-73.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-73.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15474,7 +15474,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-74.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-74.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-74.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15487,7 +15487,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-75.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-75.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-75.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15500,7 +15500,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-76.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-76.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-76.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15513,7 +15513,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-77.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-77.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-77.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15526,7 +15526,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-78.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-78.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-78.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15539,7 +15539,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-79.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-79.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-79.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15552,7 +15552,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-8.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-8.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-8.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15565,7 +15565,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-80.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-80.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-80.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15578,7 +15578,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-81.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-81.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-81.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15591,7 +15591,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-82.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-82.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-82.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15604,7 +15604,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-83.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-83.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-83.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15617,7 +15617,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-84.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-84.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-84.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15630,7 +15630,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_128x64_shaded-9.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_128x64_shaded-9.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_128x64_shaded-9.png",
       "width": 384,
       "height": 768,
       "needsSlicing": true
@@ -15643,7 +15643,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-0.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-0.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-0.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15656,7 +15656,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-1.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-1.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-1.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15669,7 +15669,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-10.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-10.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-10.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15682,7 +15682,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-11.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-11.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-11.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15695,7 +15695,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-12.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-12.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-12.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15708,7 +15708,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-13.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-13.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-13.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15721,7 +15721,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-14.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-14.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-14.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15734,7 +15734,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-15.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-15.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-15.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15747,7 +15747,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-16.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-16.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-16.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15760,7 +15760,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-17.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-17.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-17.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15773,7 +15773,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-18.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-18.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-18.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15786,7 +15786,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-19.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-19.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-19.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15799,7 +15799,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-2.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-2.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-2.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15812,7 +15812,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-20.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-20.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-20.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15825,7 +15825,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-21.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-21.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-21.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15838,7 +15838,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-22.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-22.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-22.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15851,7 +15851,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-23.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-23.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-23.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15864,7 +15864,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-24.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-24.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-24.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15877,7 +15877,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-25.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-25.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-25.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15890,7 +15890,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-26.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-26.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-26.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15903,7 +15903,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-27.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-27.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-27.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15916,7 +15916,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-28.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-28.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-28.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15929,7 +15929,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-29.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-29.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-29.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15942,7 +15942,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-3.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-3.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-3.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15955,7 +15955,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-30.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-30.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-30.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15968,7 +15968,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-31.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-31.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-31.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15981,7 +15981,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-32.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-32.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-32.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -15994,7 +15994,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-33.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-33.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-33.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16007,7 +16007,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-34.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-34.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-34.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16020,7 +16020,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-35.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-35.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-35.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16033,7 +16033,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-36.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-36.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-36.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16046,7 +16046,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-37.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-37.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-37.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16059,7 +16059,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-38.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-38.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-38.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16072,7 +16072,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-39.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-39.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-39.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16085,7 +16085,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-4.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-4.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-4.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16098,7 +16098,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-40.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-40.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-40.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16111,7 +16111,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-41.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-41.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-41.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16124,7 +16124,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-42.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-42.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-42.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16137,7 +16137,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-43.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-43.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-43.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16150,7 +16150,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-44.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-44.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-44.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16163,7 +16163,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-45.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-45.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-45.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16176,7 +16176,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-46.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-46.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-46.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16189,7 +16189,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-47.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-47.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-47.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16202,7 +16202,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-48.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-48.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-48.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16215,7 +16215,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-49.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-49.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-49.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16228,7 +16228,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-5.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-5.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-5.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16241,7 +16241,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-50.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-50.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-50.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16254,7 +16254,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-51.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-51.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-51.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16267,7 +16267,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-52.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-52.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-52.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16280,7 +16280,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-53.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-53.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-53.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16293,7 +16293,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-54.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-54.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-54.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16306,7 +16306,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-55.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-55.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-55.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16319,7 +16319,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-56.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-56.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-56.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16332,7 +16332,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-57.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-57.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-57.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16345,7 +16345,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-58.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-58.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-58.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16358,7 +16358,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-59.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-59.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-59.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16371,7 +16371,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-6.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-6.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-6.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16384,7 +16384,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-60.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-60.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-60.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16397,7 +16397,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-61.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-61.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-61.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16410,7 +16410,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-62.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-62.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-62.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16423,7 +16423,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-63.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-63.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-63.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16436,7 +16436,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-64.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-64.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-64.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16449,7 +16449,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-65.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-65.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-65.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16462,7 +16462,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-66.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-66.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-66.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16475,7 +16475,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-67.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-67.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-67.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16488,7 +16488,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-68.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-68.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-68.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16501,7 +16501,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-69.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-69.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-69.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16514,7 +16514,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-7.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-7.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-7.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16527,7 +16527,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-70.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-70.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-70.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16540,7 +16540,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-71.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-71.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-71.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16553,7 +16553,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-72.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-72.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-72.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16566,7 +16566,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-73.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-73.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-73.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16579,7 +16579,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-74.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-74.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-74.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16592,7 +16592,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-75.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-75.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-75.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16605,7 +16605,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-76.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-76.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-76.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16618,7 +16618,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-77.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-77.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-77.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16631,7 +16631,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-78.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-78.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-78.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16644,7 +16644,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-79.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-79.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-79.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16657,7 +16657,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-8.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-8.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-8.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16670,7 +16670,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-80.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-80.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-80.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16683,7 +16683,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-81.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-81.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-81.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16696,7 +16696,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-82.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-82.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-82.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16709,7 +16709,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-83.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-83.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-83.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16722,7 +16722,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-84.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-84.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-84.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true
@@ -16735,7 +16735,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "scope": "Universal",
       "role": "Level 1 flora dressing",
       "source": "Universal/Trees/trees_64x32_shaded-9.png",
-      "src": "./assets/hmh-curated-level-kit/Universal/Trees/trees_64x32_shaded-9.png",
+      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Trees/trees_64x32_shaded-9.png",
       "width": 192,
       "height": 384,
       "needsSlicing": true

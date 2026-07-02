@@ -4,13 +4,13 @@ Date: 2026-06-30
 
 ## Scope
 
-Justin curated an approved asset kit for the new Level 1-first workflow. The kit is now synced into the active repo at:
+Justin curated an approved asset kit for the new Level 1-first workflow. The repo now keeps the manifest-referenced canonical subset at:
 
 ```text
-apps/portal/assets/hmh-curated-level-kit
+apps/portal/assets/generated/hmh-curated-level-kit/source
 ```
 
-The old noisy level-editor/all-sprite library is intentionally not the source of truth for authored Level 1 work. Only this curated kit should drive the next Level 1 worldbuilding pass.
+The full raw drop is preserved in `~/lesters-arcade-vault/superseded-art/hmh-curated-level-kit-full-source/`. The old noisy level-editor/all-sprite library is intentionally not the source of truth for authored Level 1 work. Only this curated subset and its generated manifest should drive the next Level 1 worldbuilding pass.
 
 ## Pipeline outputs
 
@@ -34,7 +34,8 @@ apps/portal/assets/generated/hmh-curated-level-kit/contact-sheets/
 ## Inventory
 
 ```text
-Raw curated PNGs: 11,833
+Canonical source PNGs in repo: 1,216
+Full raw curated PNGs in vault: 11,833
 Manifest asset entries: 1,216
 Sliced ground/water/runtime terrain cells: 1,797
 Trimmed runtime prop candidates: 1,022
@@ -43,7 +44,7 @@ Trimmed runtime prop candidates: 1,022
 By scope:
 
 ```text
-Universal: 11,398 raw PNGs
+Universal: 781 canonical PNGs
 level-1-crypto-wasteland: 435 raw PNGs
 level-2-litecoin-city: 0 raw PNGs
 level-3-getaway: 0 raw PNGs

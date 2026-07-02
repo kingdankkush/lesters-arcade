@@ -19,6 +19,7 @@ Current folders:
 
 - `~/lesters-arcade-vault/reference/hmh/` — full former `apps/portal/assets/hard-money-heroes/reference/` tree. Copied and verified before removal.
 - `~/lesters-arcade-vault/pixellab-raw/repo-droppings-zip-txt-root-docs/VAULT-MANIFEST.json` — SHA-256 manifest for removed tracked `*.zip`, `*.txt`, root PDF, and root PDF generator.
+- `~/lesters-arcade-vault/superseded-art/hmh-curated-level-kit-full-source/` — full former `apps/portal/assets/hmh-curated-level-kit/` tree, 11,833 files, copied and `diff -rq` verified before the repo was reduced to the 1,216-file manifest-referenced subset at `apps/portal/assets/generated/hmh-curated-level-kit/source/`.
 
 ## Sync command
 

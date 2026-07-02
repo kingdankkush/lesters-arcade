@@ -13,11 +13,11 @@ function readJson(path) {
 }
 
 test('curated HMH level kit is synced into the active repo with Level 1 and Universal assets', () => {
-  const sourceRoot = repoPath('apps/portal/assets/hmh-curated-level-kit');
+  const sourceRoot = repoPath('apps/portal/assets/generated/hmh-curated-level-kit/source');
   assert.equal(existsSync(sourceRoot), true, 'curated kit root exists in active clone');
-  assert.equal(existsSync(repoPath('apps/portal/assets/hmh-curated-level-kit/Universal/Enemies/paper-hand')), true);
-  assert.equal(existsSync(repoPath('apps/portal/assets/hmh-curated-level-kit/Universal/Heroes-Playable-Characters/lit-commando')), true);
-  assert.equal(existsSync(repoPath('apps/portal/assets/hmh-curated-level-kit/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png')), true);
+  assert.equal(existsSync(repoPath('apps/portal/assets/generated/hmh-curated-level-kit/source/Universal/Enemies/paper-hand')), true);
+  assert.equal(existsSync(repoPath('apps/portal/assets/generated/hmh-curated-level-kit/source/Universal/Heroes-Playable-Characters/lit-commando')), true);
+  assert.equal(existsSync(repoPath('apps/portal/assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png')), true);
 });
 
 test('curated kit pipeline emits a manifest, audit summary, and browser-loadable module', () => {
@@ -28,9 +28,9 @@ test('curated kit pipeline emits a manifest, audit summary, and browser-loadable
   const summary = readJson(summaryPath);
 
   assert.equal(manifest.id, 'hmh-curated-level-kit-v1');
-  assert.equal(manifest.sourceRoot, './assets/hmh-curated-level-kit');
-  assert.ok(summary.rawImages >= 11833, `expected full curated image count, got ${summary.rawImages}`);
-  assert.equal(summary.scopes.Universal.rawImages >= 11000, true);
+  assert.equal(manifest.sourceRoot, './assets/generated/hmh-curated-level-kit/source');
+  assert.ok(summary.rawImages >= 1216, `expected manifest-referenced curated source subset, got ${summary.rawImages}`);
+  assert.equal(summary.scopes.Universal.rawImages >= 700, true);
   assert.equal(summary.scopes['level-1-crypto-wasteland'].rawImages >= 400, true);
   assert.equal(summary.scopes['level-2-litecoin-city'].rawImages, 0);
   assert.equal(summary.scopes['level-3-getaway'].rawImages, 0);

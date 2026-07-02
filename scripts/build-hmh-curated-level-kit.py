@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 """Build the Hard Money Heroes curated Level 1 kit manifest and derived assets.
 
-The curated kit is Justin-approved source art. This script does not pull from the
-old noisy 17k editor index. It inventories only apps/portal/assets/hmh-curated-level-kit,
+The curated kit is Justin-approved source art. The full raw source drop lives in
+the asset vault; the repo keeps only the manifest-referenced source subset under
+apps/portal/assets/generated/hmh-curated-level-kit/source. This script does not
+pull from the old noisy 17k editor index. It inventories that canonical subset,
 slices high-priority terrain/water sheets into runtime 128x64 isometric cells,
 auto-trims oversized transparent props, and emits JSON/MJS manifests plus contact
 sheets for visual review.
@@ -23,13 +25,14 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTAL = ROOT / "apps/portal"
-KIT = PORTAL / "assets/hmh-curated-level-kit"
 OUT = PORTAL / "assets/generated/hmh-curated-level-kit"
+KIT = OUT / "source"
 SLICED = OUT / "sliced-ground"
 TRIMMED = OUT / "trimmed-props"
 CONTACTS = OUT / "contact-sheets"
 TILE_W = 128
 TILE_H = 64
+SOURCE_ROOT_REF = "./assets/generated/hmh-curated-level-kit/source"
 
 SLICE_SHEETS = {
     "Universal/Ground-textures/dirt_tiles.png": "dirt",
@@ -352,7 +355,7 @@ def write_outputs(raw: list[dict], summary_data: dict, sliced: list[dict], trimm
         }
     summary = {
         "id": "hmh-curated-level-kit-audit-v1",
-        "sourceRoot": "./assets/hmh-curated-level-kit",
+        "sourceRoot": SOURCE_ROOT_REF,
         "rawImages": summary_data["rawImages"],
         "manifestAssets": len(raw),
         "slicedGround": len(sliced),
@@ -371,7 +374,7 @@ def write_outputs(raw: list[dict], summary_data: dict, sliced: list[dict], trimm
     }
     manifest = {
         "id": "hmh-curated-level-kit-v1",
-        "sourceRoot": "./assets/hmh-curated-level-kit",
+        "sourceRoot": SOURCE_ROOT_REF,
         "generatedRoot": "./assets/generated/hmh-curated-level-kit",
         "sourcePolicy": "Justin-curated approved assets only; old editor/runtime sprite library is intentionally ignored.",
         "tileSize": {"width": TILE_W, "height": TILE_H, "projection": "isometric-2to1"},
