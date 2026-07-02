@@ -10,6 +10,7 @@ import {
   LEVEL_1_PIXELLAB_SURFACE_ZONES,
   levelOnePixellabSurfaceAssetByKey,
   levelOnePixellabSurfaceAssetForTile,
+  levelOneGroundEdgeBreakupForTile,
   levelOneGroundRoleForTile,
   requiredLevelOneGroundRoles,
   selectLevelOneGroundTile,
@@ -126,6 +127,20 @@ test('levelOneGroundRoleForTile selects water, shore, transitions, and base role
   assert.equal(levelOneGroundRoleForTile({ biome: 'road', neighbors: ['desert'] }), 'dirt-to-sand');
   assert.equal(levelOneGroundRoleForTile({ biome: 'rocky' }), 'rocky');
   assert.equal(levelOneGroundRoleForTile({ biome: 'town', theme: 'grass' }), 'grass');
+});
+
+test('levelOneGroundEdgeBreakupForTile returns deterministic edge-wear overlays to fight square tile seams', () => {
+  const road = levelOneGroundEdgeBreakupForTile({ seed: 123, worldX: 40, worldY: 6, role: 'road' });
+  assert.equal(road.enabled, true);
+  assert.equal(road.edgeWear.length >= 2, true, 'roads need multiple worn edge strokes');
+  assert.equal(road.ruts.length >= 1, true, 'roads should get tire/footpath ruts');
+  assert.match(road.palette.edge, /rgba\(/);
+
+  const water = levelOneGroundEdgeBreakupForTile({ seed: 123, worldX: 62, worldY: 7, role: 'water' });
+  assert.equal(water.foam.length >= 2, true, 'water/shore roles need foam/ripple breakups');
+
+  const again = levelOneGroundEdgeBreakupForTile({ seed: 123, worldX: 40, worldY: 6, role: 'road' });
+  assert.deepEqual(road, again, 'edge breakup must be deterministic for replay stability');
 });
 
 test('selectLevelOneGroundTile returns stable Level 1 assets with role metadata', () => {

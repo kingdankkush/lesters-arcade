@@ -6,9 +6,11 @@ import { fileURLToPath } from 'node:url';
 import {
   buildLevelOneCuratedVisibleSceneObjects,
   buildLevelOneOpeningComposition,
+  LEVEL_ONE_WORLD_DRESSING_CHUNKS,
   levelOneCuratedRuntimeArtPolicy,
   levelOneCuratedAssetSrc,
   levelOneOpeningGroundRoleForTile,
+  levelOneWorldDressingChunkForCell,
 } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 import { curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
 
@@ -37,6 +39,26 @@ test('Level 1 opening composition declares AAA-readable route, boundary, landmar
   assert.equal(composition.setDressing.length <= 10, true, 'set dressing must stay capped to avoid prop soup');
   assert.equal(composition.objects.every((object) => object.use !== 'terrain'), true, 'terrain must be ground-role metadata, not obstacle props');
   assert.equal(composition.objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'all opening objects use approved curated art');
+});
+
+test('Level 1 far-field world dressing keeps traversal authored instead of blank ground tiles', () => {
+  assert.equal(LEVEL_ONE_WORLD_DRESSING_CHUNKS.length >= 8, true, 'world dressing needs enough chunk grammar to cover town, farm, forest, water, desert, and boss-yard reads');
+
+  const chunk = levelOneWorldDressingChunkForCell({ cellX: 12, cellY: 3 });
+  assert.ok(chunk, 'far-field cells should resolve to an authored chunk');
+  assert.equal(Array.isArray(chunk.objects), true);
+  assert.equal(chunk.objects.length >= 5, true, 'each chunk should place multiple readable objects, not one token prop');
+  assert.equal(chunk.objects.some((object) => object.use === 'landmark'), true, 'chunks need at least one landmark/read anchor');
+  assert.equal(chunk.objects.some((object) => object.use === 'boundary'), true, 'chunks need diegetic boundary objects to avoid empty infinite floor');
+  assert.equal(chunk.objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'far-field chunks must use approved curated art');
+
+  const farObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 160, playerY: 42, window: 18 });
+  assert.equal(farObjects.length >= 22, true, `expected dense authored far-field objects around traversal, got ${farObjects.length}`);
+  assert.equal(farObjects.some((object) => object.sourceZoneId?.startsWith('world-dressing-')), true, 'far-field visible objects should be tagged as world dressing');
+  assert.equal(farObjects.some((object) => object.sceneRole === 'landmark'), true, 'far-field traversal needs landmark silhouettes');
+  assert.equal(farObjects.some((object) => object.sceneRole === 'wall' || object.sceneRole === 'tree'), true, 'far-field traversal needs visible boundaries');
+  assert.equal(farObjects.every((object) => object.use !== 'terrain'), true, 'far-field terrain must not be drawn as obstacle props');
+  assert.equal(farObjects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'all far-field objects should resolve to curated art');
 });
 
 test('Level 1 opening ground roles replace noisy procedural sand/grass with authored road, shoulder, and boundary bands', () => {
@@ -94,6 +116,9 @@ test('main runtime uses clean Level 1 loading art and authored opening ground ro
 
   const tileDraw = source.slice(source.indexOf('function drawProductionIsoTile'), source.indexOf('function productionPropForIndex'));
   assert.equal(tileDraw.includes('levelOneOpeningGroundRoleForTile'), true, 'floor renderer should consume the authored Level 1 opening ground override');
+  assert.equal(tileDraw.includes('drawLevelOneGroundEdgeBreakup'), true, 'floor renderer should break up square tile seams with authored edge wear overlays');
+  const enemyDraw = source.slice(source.indexOf('function drawSingleEnemy'), source.indexOf('function bossArtFor'));
+  assert.equal(enemyDraw.includes('drawLevelOneEnemyReadabilityAura'), true, 'enemy renderer should add Level 1 readable outlines/glows instead of relying on weak raw sprites only');
 });
 
 test('package check gate includes the visible runtime module and regression test', () => {

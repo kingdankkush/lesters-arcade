@@ -20,7 +20,7 @@ import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/wha
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
-import { HMH_LEVEL_ONE_ID, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
+import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
@@ -8501,6 +8501,75 @@ function drawLevelOneGroundImage(ctx, ground, cx, cy, drawWidth, drawHeight) {
   ctx.drawImage(image, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
   return true;
 }
+
+function lerpPoint(ax, ay, bx, by, t) {
+  return { x: ax + (bx - ax) * t, y: ay + (by - ay) * t };
+}
+
+function drawLevelOneGroundEdgeBreakup(ctx, cx, cy, breakup) {
+  if (!breakup?.enabled || !isLevelOneCuratedRuntime()) return;
+  const hw = ISO_TILE_WIDTH / 2;
+  const hh = ISO_TILE_HEIGHT / 2;
+  const points = {
+    top: { x: cx, y: cy - hh },
+    right: { x: cx + hw, y: cy },
+    bottom: { x: cx, y: cy + hh },
+    left: { x: cx - hw, y: cy },
+  };
+  const sideEndpoints = {
+    'north-west': [points.left, points.top],
+    'north-east': [points.top, points.right],
+    'south-east': [points.right, points.bottom],
+    'south-west': [points.bottom, points.left],
+    'north-edge': [points.left, points.top],
+    'south-edge': [points.right, points.bottom],
+  };
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.globalAlpha = 0.9;
+  for (const edge of breakup.edgeWear ?? []) {
+    const endpoints = sideEndpoints[edge.side] ?? sideEndpoints['north-west'];
+    const a = lerpPoint(endpoints[0].x, endpoints[0].y, endpoints[1].x, endpoints[1].y, 0.15 + edge.a * 0.25);
+    const b = lerpPoint(endpoints[0].x, endpoints[0].y, endpoints[1].x, endpoints[1].y, 0.68 + edge.b * 0.22);
+    ctx.strokeStyle = breakup.palette.edge;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo((a.x + b.x) / 2 + (edge.b - 0.5) * 8, (a.y + b.y) / 2 + (edge.a - 0.5) * 4);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+  for (const rut of breakup.ruts ?? []) {
+    ctx.strokeStyle = breakup.palette.rut;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - hw * 0.42, cy + (rut.a - 0.5) * 8);
+    ctx.lineTo(cx + hw * 0.42, cy + (rut.b - 0.5) * 8);
+    ctx.stroke();
+  }
+  for (const foam of breakup.foam ?? []) {
+    const endpoints = sideEndpoints[foam.side] ?? sideEndpoints['north-edge'];
+    const a = lerpPoint(endpoints[0].x, endpoints[0].y, endpoints[1].x, endpoints[1].y, 0.18);
+    const b = lerpPoint(endpoints[0].x, endpoints[0].y, endpoints[1].x, endpoints[1].y, 0.78);
+    ctx.strokeStyle = breakup.palette.edge;
+    ctx.lineWidth = 1.3;
+    ctx.setLineDash([3, 5]);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.quadraticCurveTo(cx + (foam.a - 0.5) * 12, cy + (foam.b - 0.5) * 6, b.x, b.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.fillStyle = breakup.palette.fleck;
+  const flecks = 1 + (breakup.fleckSeed % 3);
+  for (let i = 0; i < flecks; i += 1) {
+    const fx = cx + (((breakup.fleckSeed + i * 17) % 100) / 100 - 0.5) * hw * 1.2;
+    const fy = cy + (((breakup.fleckSeed + i * 31) % 100) / 100 - 0.5) * hh * 1.1;
+    ctx.fillRect(Math.round(fx), Math.round(fy), 2, 1);
+  }
+  ctx.restore();
+}
 function biomeGroundTileForWorld(worldX, worldY, biome) {
   const slugs = BIOME_GROUND_TILES[biome] ?? BIOME_GROUND_TILES.town;
   if (!slugs.length) return null;
@@ -8703,8 +8772,18 @@ function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   // imageSmoothingEnabled=false once for the whole pass.
   const drawWidth = ISO_TILE_WIDTH + 4;
   const drawHeight = ISO_TILE_HEIGHT * 2 + 6; // 56px source art is taller than the 32px diamond
-  if (ground?.image === tileImg && drawLevelOneGroundImage(ctx, ground, cx, cy, drawWidth, drawHeight)) return;
-  ctx.drawImage(tileImg, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
+  const drewGround = ground?.image === tileImg
+    ? drawLevelOneGroundImage(ctx, ground, cx, cy, drawWidth, drawHeight)
+    : false;
+  if (!drewGround) {
+    ctx.drawImage(tileImg, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
+  }
+  drawLevelOneGroundEdgeBreakup(ctx, cx, cy, levelOneGroundEdgeBreakupForTile({
+    seed,
+    worldX,
+    worldY,
+    role: ground?.asset?.role ?? authoredGroundRole ?? theme ?? palette.biome,
+  }));
 }
 
 function productionPropForIndex(index) {
@@ -10583,6 +10662,56 @@ function drawEnemyProxyTelegraph(ctx, enemy, renderProfile, drawSize) {
   ctx.restore();
 }
 
+function drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderProfile = {}, phase = 'behind') {
+  if (!isLevelOneCuratedRuntime()) return;
+  const centerX = ex + drawSize / 2;
+  const footY = ey + drawSize * 0.86;
+  const elite = enemy.elite || enemy.miniBoss || enemy.enraged;
+  const hpRatio = enemy.maxHp > 0 ? Math.max(0, Math.min(1, enemy.hp / enemy.maxHp)) : 1;
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  if (phase === 'behind') {
+    const radius = drawSize * (elite ? 0.42 : 0.34);
+    const grad = ctx.createRadialGradient(centerX, footY, 0, centerX, footY, radius);
+    const auraColor = elite ? 'rgba(255, 56, 196, ' : 'rgba(45, 255, 151, ';
+    grad.addColorStop(0, `${auraColor}0.22)`);
+    grad.addColorStop(0.58, `${auraColor}0.11)`);
+    grad.addColorStop(1, `${auraColor}0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(centerX, footY, radius, radius * 0.34, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = elite ? 'rgba(255, 56, 196, 0.52)' : 'rgba(45, 255, 151, 0.36)';
+    ctx.lineWidth = elite ? 3 : 2;
+    ctx.stroke();
+    if (enemy.hp <= 0) {
+      ctx.globalAlpha = 0.55;
+      ctx.fillStyle = 'rgba(69, 16, 22, 0.50)';
+      ctx.beginPath();
+      ctx.ellipse(centerX, footY + 4, drawSize * 0.34, drawSize * 0.12, -0.12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  } else if (phase === 'front') {
+    const danger = (enemy.attackTimer < 18) || enemy.telegraphFrames > 0 || enemy.windupFrames > 0;
+    if (danger) {
+      ctx.globalAlpha = 0.82;
+      ctx.strokeStyle = renderProfile.telegraphColor ?? '#ffe84d';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(centerX - drawSize * 0.22, ey + drawSize * 0.1);
+      ctx.lineTo(centerX, ey - drawSize * 0.02);
+      ctx.lineTo(centerX + drawSize * 0.22, ey + drawSize * 0.1);
+      ctx.stroke();
+    }
+    if (hpRatio < 0.35 && enemy.hp > 0) {
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(Math.round(ex + drawSize * 0.22), Math.round(ey + drawSize * 0.16), Math.max(2, drawSize * 0.08), 2);
+    }
+  }
+  ctx.restore();
+}
+
 function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
@@ -10617,7 +10746,9 @@ function drawSingleEnemy(ctx, enemy) {
       ctx.imageSmoothingEnabled = false;
       const ex = Math.round(enemy.x + w / 2 - drawSize / 2);
       const ey = Math.round(enemy.y - drawSize + 12 + (renderProfile.anchorBiasY ?? 0));
+      drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderProfile, 'behind');
       drawSpriteImage(ctx, enemyFrame, ex, ey, drawSize, Boolean(enemyFrame._flip));
+      drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderProfile, 'front');
       if (intent.telegraphing) drawEnemyProxyTelegraph(ctx, enemy, renderProfile, drawSize);
       const overlayAlpha = enemy.hp <= 0
         ? 0.62

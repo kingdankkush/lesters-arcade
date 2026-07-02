@@ -87,6 +87,45 @@ function stableIndex(seed, worldX, worldY, count) {
   return Math.abs(h) % count;
 }
 
+function smallOverlay(seed, worldX, worldY, offset) {
+  const a = stableIndex(seed + offset, worldX, worldY, 1000) / 999;
+  const b = stableIndex(seed + offset * 17, worldY, worldX, 1000) / 999;
+  return Object.freeze({ a: Number(a.toFixed(3)), b: Number(b.toFixed(3)) });
+}
+
+const EDGE_BREAKUP_PALETTES = Object.freeze({
+  road: Object.freeze({ edge: 'rgba(43, 32, 22, 0.30)', rut: 'rgba(245, 210, 128, 0.22)', fleck: 'rgba(20, 16, 12, 0.20)' }),
+  bridge: Object.freeze({ edge: 'rgba(41, 28, 18, 0.34)', rut: 'rgba(238, 200, 118, 0.18)', fleck: 'rgba(19, 14, 10, 0.22)' }),
+  sand: Object.freeze({ edge: 'rgba(84, 62, 36, 0.22)', rut: 'rgba(255, 219, 139, 0.18)', fleck: 'rgba(119, 86, 46, 0.16)' }),
+  grass: Object.freeze({ edge: 'rgba(28, 47, 24, 0.26)', rut: 'rgba(218, 176, 92, 0.15)', fleck: 'rgba(20, 61, 26, 0.18)' }),
+  rocky: Object.freeze({ edge: 'rgba(20, 18, 16, 0.30)', rut: 'rgba(189, 169, 132, 0.15)', fleck: 'rgba(68, 61, 54, 0.22)' }),
+  shore: Object.freeze({ edge: 'rgba(225, 236, 206, 0.26)', rut: 'rgba(91, 76, 48, 0.15)', fleck: 'rgba(31, 46, 46, 0.18)' }),
+  water: Object.freeze({ edge: 'rgba(206, 255, 255, 0.22)', rut: 'rgba(104, 205, 220, 0.18)', fleck: 'rgba(23, 101, 128, 0.18)' }),
+});
+
+export function levelOneGroundEdgeBreakupForTile({ seed = 0, worldX = 0, worldY = 0, role = 'dirt' } = {}) {
+  const normalizedRole = String(role || 'dirt').includes('water') ? 'water'
+    : String(role || 'dirt').includes('shore') ? 'shore'
+      : String(role || 'dirt').includes('road') ? 'road'
+        : EDGE_BREAKUP_PALETTES[role] ? role : 'sand';
+  const palette = EDGE_BREAKUP_PALETTES[normalizedRole] ?? EDGE_BREAKUP_PALETTES.sand;
+  const h = stableIndex(seed, worldX, worldY, 100);
+  const edgeWear = Object.freeze([
+    Object.freeze({ side: h % 2 === 0 ? 'north-west' : 'north-east', ...smallOverlay(seed, worldX, worldY, 3) }),
+    Object.freeze({ side: h % 3 === 0 ? 'south-west' : 'south-east', ...smallOverlay(seed, worldX, worldY, 7) }),
+  ]);
+  const ruts = normalizedRole === 'water'
+    ? Object.freeze([])
+    : Object.freeze([Object.freeze({ side: 'centerline', ...smallOverlay(seed, worldX, worldY, 11) })]);
+  const foam = (normalizedRole === 'water' || normalizedRole === 'shore')
+    ? Object.freeze([
+        Object.freeze({ side: 'north-edge', ...smallOverlay(seed, worldX, worldY, 13) }),
+        Object.freeze({ side: 'south-edge', ...smallOverlay(seed, worldX, worldY, 19) }),
+      ])
+    : Object.freeze([]);
+  return Object.freeze({ enabled: true, role: normalizedRole, palette, edgeWear, ruts, foam, fleckSeed: h });
+}
+
 function roleKeysFrom(manifest, role) {
   return manifest.roles?.[role] ?? [];
 }

@@ -93,3 +93,26 @@ A Level 1 asset candidate is not ready for runtime integration until it passes:
 - path/arena center stays quiet enough for bullets, pickups, and enemies
 - works in a contact sheet against neighboring materials
 - has a clear atlas key and intended collision/render role
+
+## 7. Claude Fable review response slice — 2026-07-01
+
+Justin's playtest called out the real P0 issue: the previous Level 1 slices proved wiring but still looked like square ground tiles with sparse props after spawn. The active Fable master todo therefore drives the next art/runtime work in this order:
+
+1. **World sprint first:** terrain seam breakup, road/path grammar, authored far-field dressing, natural boundaries.
+2. **Readability before claims:** enemy glows/tells/corpse decals are an interim readability layer only, not a replacement for the full sprite matrix.
+3. **No "AAA" language unless visible on screen:** every slice must add something the player can notice during traversal or combat.
+
+The current corrective slice adds:
+
+- `LEVEL_ONE_WORLD_DRESSING_CHUNKS`: reusable authored chunks for desert salvage, ghost town frontage, forest rings, shoreline banks, farmstead pockets, inner-city barricades, ruined camp bones, and roadside arcade caches.
+- deterministic world-dressing placement around the player beyond spawn so traversal has landmarks and diegetic boundaries instead of only floor tiles.
+- `levelOneGroundEdgeBreakupForTile(...)`: deterministic road wear, ruts, shore foam, edge strokes, and flecks to reduce square tile seams while the real 47-blob autotile set is still open.
+- `drawLevelOneEnemyReadabilityAura(...)`: immediate enemy readability aura/telegraph/death-decal pass while full hero/enemy sprite completion remains P0.
+
+Still P0 after this slice, per Fable:
+
+- real 47-blob terrain autotile atlas and transition masks
+- full Level 1 road kit, bridge/water kit, and natural arena boundary kit
+- generated + QA-passed hero/enemy animation matrices
+- sprite QA gate for alpha, palette, silhouette, pivots, muzzle anchors, and telegraph frame coverage
+- proper lighting, shadows, VFX, and corpse/particle pooling
