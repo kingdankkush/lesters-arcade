@@ -100,18 +100,33 @@ The final AAA target is full animation coverage for all combat actors. Productio
 
 ---
 
-## 7. Level identity rules
+## 7. Reference style targets
+
+All third-party/reference files are **reference-only**. They guide composition, density, readability, and material handling; they are not runtime art sources.
+
+For Hard Money Heroes Level 1, the active target is documented in `docs/art/HMH_LEVEL_1_REFERENCE_STYLE_TARGET.md` and encoded in `apps/portal/src/hmh-level-one-quality.mjs`:
+
+- **Age of Empires II: DE references:** dense authored isometric worldbuilding, clear roads/bridges/walls/farms/water edges, repeated-but-varied town modules.
+- **Hades / Hades II references:** combat-readable hand-painted diorama contrast, color-keyed telegraphs, bold silhouettes, ornate edges with quiet fight centers.
+- **Deep Rock Survivor references:** swarm readability, chunky blockers, resource glows, enemy-mass separation, visible escape lanes under pressure.
+- **Provided level video:** soft grass/cobble transitions, timber/stone town density, bridges, docks, ruins, lamp posts, layered roofs, lived-in environmental props.
+
+The HMH translation remains original: Crypto Wasteland / hard-money arcade noir, not medieval fantasy or direct homage. Use the references to define **quality bar and layout grammar**, then generate original assets in the Litecoin/fiat-corruption visual language.
+
+---
+
+## 8. Level identity rules
 
 Global identity stays consistent, but each level should get a local weather/color-grade/terrain kit.
 
-- **Level 1, Crypto Wasteland:** dusty ghost-town highway, farms, river/lake edge, desert boulder roads, teal/Litecoin accents against tan/ochre ground. Use the detailed execution plan in `docs/plans/2026-07-01-level-1-artistic-world-and-asset-plan.md`.
+- **Level 1, Crypto Wasteland:** dusty ghost-town highway, farms, river/lake edge, desert boulder roads, teal/Litecoin accents against tan/ochre ground. Use the detailed execution plan in `docs/plans/2026-07-01-level-1-artistic-world-and-asset-plan.md` and the reference-style target in `docs/art/HMH_LEVEL_1_REFERENCE_STYLE_TARGET.md`.
 - **Level 2, Litecoin City:** neon financial district, wet asphalt, Art Deco banks, harbor, high-rise silhouettes, denser blue/silver city light, more rain/fog.
 - **Level 3, The Getaway:** rooftop/train/skybridge motion language, storm runoff, speed lines, glass bridges, extraction lights.
 - **Future cabinets:** should inherit hard-money vs fiat-corruption color logic, outline discipline, cabinet/pixel-art readability, and metadata requirements even if their genre differs.
 
 ---
 
-## 8. Asset acceptance gate
+## 9. Asset acceptance gate
 
 An asset is runtime-ready only when all are true:
 
@@ -125,7 +140,7 @@ An asset is runtime-ready only when all are true:
 
 ---
 
-## 9. Prompt language for generated art
+## 10. Prompt language for generated art
 
 Every PixelLab or equivalent prompt for runtime art should include the lock phrase:
 
@@ -133,10 +148,13 @@ Every PixelLab or equivalent prompt for runtime art should include the lock phra
 
 Add level-specific words after the lock phrase, not instead of it.
 
+For Level 1 environment assets, generate prompts through or mirror `buildLevelOneEnvironmentAssetPromptBrief(...)` so PixelLab receives the Age-of-Empires-style world-density target, Hades-style combat-readability target, and Deep-Rock-style swarm-readability target while preserving original HMH silhouettes and palette.
+
 ---
 
-## 10. Cross-references
+## 11. Cross-references
 
+- Level 1 reference target: `docs/art/HMH_LEVEL_1_REFERENCE_STYLE_TARGET.md`
 - Level 1 execution: `docs/plans/2026-07-01-level-1-artistic-world-and-asset-plan.md`
 - AAA roguelike handoff: `docs/plans/2026-07-01-hard-money-heroes-aaa-roguelike-high-end-llm-handoff.md`
 - PixelLab production queue: `docs/PIXELLAB_2500_IMAGE_PLAN.md`

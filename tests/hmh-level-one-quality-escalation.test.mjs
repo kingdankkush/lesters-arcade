@@ -4,8 +4,11 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import {
+  HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN,
   HMH_LEVEL_ONE_QUALITY_STYLE,
   HMH_LEVEL_ONE_REFERENCE_MAP_ANCHORS,
+  HMH_LEVEL_ONE_REFERENCE_STYLE_TARGETS,
+  buildLevelOneEnvironmentAssetPromptBrief,
   levelOneQualityContextForDistrictCell,
 } from '../apps/portal/src/hmh-level-one-quality.mjs';
 import {
@@ -38,6 +41,9 @@ function oneCell(overrides = {}) {
 test('Level 1 quality style contract locks future work to unified isometric Metal Slug-inspired polish', () => {
   assert.equal(HMH_LEVEL_ONE_QUALITY_STYLE.id, 'level1-isometric-metal-slug-quality-v1');
   assert.match(HMH_LEVEL_ONE_QUALITY_STYLE.artDirection, /Metal Slug/i);
+  assert.match(HMH_LEVEL_ONE_QUALITY_STYLE.artDirection, /Age of Empires II/i);
+  assert.match(HMH_LEVEL_ONE_QUALITY_STYLE.artDirection, /Hades/i);
+  assert.match(HMH_LEVEL_ONE_QUALITY_STYLE.artDirection, /Deep Rock/i);
   assert.equal(HMH_LEVEL_ONE_QUALITY_STYLE.camera, '2:1 isometric');
   assert.equal(HMH_LEVEL_ONE_QUALITY_STYLE.referencePolicy.includes('reference-only'), true);
   assert.deepEqual(HMH_LEVEL_ONE_QUALITY_STYLE.prioritySystems, [
@@ -49,6 +55,43 @@ test('Level 1 quality style contract locks future work to unified isometric Meta
     'xp-balance',
     'high-quality-sprites-and-vfx',
   ]);
+});
+
+test('Level 1 external references are codified as style targets, not source assets', () => {
+  const ids = HMH_LEVEL_ONE_REFERENCE_STYLE_TARGETS.map((target) => target.id);
+  for (const required of ['aoe2-de-world-density', 'hades-combat-readability', 'deep-rock-survivor-swarm-readability', 'level-video-handpainted-town']) {
+    assert.equal(ids.includes(required), true, `${required} style target missing`);
+  }
+
+  const aoe = HMH_LEVEL_ONE_REFERENCE_STYLE_TARGETS.find((target) => target.id === 'aoe2-de-world-density');
+  assert.match(aoe.translateIntoAssets.join(' '), /cobblestone|water|walls|farm/i);
+  assert.equal(aoe.copyPolicy, 'reference-only: extract composition/material rules, never copy silhouettes, emblems, buildings, or map layouts');
+
+  const hades = HMH_LEVEL_ONE_REFERENCE_STYLE_TARGETS.find((target) => target.id === 'hades-combat-readability');
+  assert.match(hades.translateIntoAssets.join(' '), /telegraph|lighting|outline/i);
+
+  const survivor = HMH_LEVEL_ONE_REFERENCE_STYLE_TARGETS.find((target) => target.id === 'deep-rock-survivor-swarm-readability');
+  assert.match(survivor.translateIntoAssets.join(' '), /crystal|enemy|resource/i);
+});
+
+test('Level 1 environment asset generation plan prioritizes terrain/path/building/nature kits with PixelLab plus post-process', () => {
+  const categories = HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN.map((item) => item.category);
+  for (const required of ['ground-textures', 'roads-and-paths', 'water-and-shorelines', 'buildings-and-walls', 'trees-rocks-and-natural-blockers', 'combat-readable-props']) {
+    assert.equal(categories.includes(required), true, `${required} generation category missing`);
+  }
+  assert.equal(HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN.every((item) => item.toolchain.includes('PixelLab')), true);
+  assert.equal(HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN.every((item) => item.toolchain.includes('palette-quantize')), true);
+  assert.equal(HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN.every((item) => item.acceptance.includes('original silhouettes only')), true);
+});
+
+test('Level 1 prompt brief turns reference style into asset-specific PixelLab guidance', () => {
+  const brief = buildLevelOneEnvironmentAssetPromptBrief({ category: 'roads-and-paths', districtFamily: 'ghost_town', assetRole: 'main-street cobblestone lane' });
+  assert.equal(brief.styleId, 'level1-isometric-metal-slug-quality-v1');
+  assert.match(brief.prompt, /Age of Empires II-inspired authored world density/i);
+  assert.match(brief.prompt, /Hades-inspired combat readability/i);
+  assert.match(brief.prompt, /transparent background/i);
+  assert.match(brief.prompt, /main-street cobblestone lane/i);
+  assert.deepEqual(brief.postProcess, ['palette-quantize', 'selective-outline-normalize', 'alpha-clean', 'atlas-pack', 'contact-sheet-qc']);
 });
 
 test('Level 1 reference-map anchors preserve the forest/town/river/desert/waterfront quality targets', () => {
@@ -86,6 +129,8 @@ test('districtTemplateContextForCell injects Level 1 quality style and preferred
   assert.equal(context.templatePoolIds.includes('level1_quality_ghost_mainstreet_duel'), true);
   assert.equal(context.preferredTemplateIds[0], 'level1_quality_ghost_mainstreet_duel');
   assert.equal(context.authoredComposition.materialReadability, 'bold silhouettes, clean lane edges, animated dust/smoke accents');
+  assert.equal(context.levelOneQuality.referenceStyleTargets.includes('aoe2-de-world-density'), true);
+  assert.equal(context.levelOneQuality.assetGenerationCategories.includes('roads-and-paths'), true);
 });
 
 test('generated Level 1 districts carry quality context across forest, ghost town, desert, and town/farm bands', () => {
