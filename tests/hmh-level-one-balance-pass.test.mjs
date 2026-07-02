@@ -36,17 +36,17 @@ test('Level 1 balance pass covers telemetry, XP, spawn composition, bosses, upgr
   assert.equal(validation.valid, true, validation.errors.join('; '));
 });
 
-test('Level 1 telemetry snapshot samples the full 8 minute run with measurable balance targets', () => {
-  const snapshot = buildLevelOneBalanceTelemetrySnapshot({ sampleSeconds: [0, 60, 120, 240, 360, 480] });
-  assert.equal(snapshot.targetSessionSeconds, 480);
+test('Level 1 telemetry snapshot samples open-ended elite-band survival targets', () => {
+  const snapshot = buildLevelOneBalanceTelemetrySnapshot({ sampleSeconds: [0, 300, 600, 900, 1200, 1500] });
+  assert.equal(snapshot.mode, 'open-ended-survival');
   assert.equal(snapshot.checkpoints.length, 6);
   assert.equal(snapshot.checkpoints[0].actId, 'safe-road-controls');
   assert.equal(snapshot.checkpoints.at(-1).actId, 'rugpull-boss-yard-extraction');
-  assert.ok(snapshot.checkpoints.at(-1).director.maxEnemiesOnMap >= 92);
-  assert.ok(snapshot.killsModel.swarmFighter.killsAtEightMinutes >= 150);
-  assert.ok(snapshot.xpPacing.swarmFighter.targetLevelAtEightMinutes >= 7);
+  assert.ok(snapshot.checkpoints.at(-1).director.maxEnemiesOnMap >= 125);
+  assert.ok(snapshot.killsModel.swarmFighter.killsAtEliteBand >= 400);
+  assert.ok(snapshot.xpPacing.swarmFighter.targetLevelAtEliteBand >= 18);
   assert.ok(snapshot.xpPacing.firstUpgradeExpectedSeconds >= 45 && snapshot.xpPacing.firstUpgradeExpectedSeconds <= 75);
-  assert.ok(snapshot.rewardModel.normalDropChanceAtEightMinutes > snapshot.rewardModel.normalDropChanceAtStart);
+  assert.ok(snapshot.rewardModel.normalDropChanceAtEliteBand > snapshot.rewardModel.normalDropChanceAtStart);
 });
 
 test('Level 1 spawn composition changes by authored act and avoids unfair ambush ranges', () => {

@@ -148,6 +148,7 @@ import {
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
+  HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
   buildLevelOneRunWorldDimensions,
   calculateRoguelikeKillXp,
   grantRoguelikeXp,
@@ -1497,6 +1498,7 @@ const combat = {
   boss: null,
   bossDefeated: false,
   miniBossLock: false,
+  triggeredBossBeatIds: new Set(),
   activePoiEncounterId: null,
   activePoiEncounterTitle: '',
   scrollLockReason: null,
@@ -1947,8 +1949,8 @@ function currentGameOverSummaryModel() {
     baseScore: combat.score || lastRunScore,
     elapsedSeconds: combat.elapsedGameSeconds || lastRunElapsedSeconds,
     level: level.number,
-    targetSeconds: level.scoring?.targetSeconds,
-    masterySeconds: level.scoring?.masterySeconds,
+    targetSeconds: level.id === DEFAULT_CAMPAIGN_LEVEL_ID ? null : level.scoring?.targetSeconds,
+    masterySeconds: level.id === DEFAULT_CAMPAIGN_LEVEL_ID ? null : level.scoring?.masterySeconds,
     cleared,
     noDamageSeconds: combat.noDamageSeconds,
     maxCombo: combat.maxCombo,
@@ -2458,7 +2460,6 @@ function renderRoguelikeStatBar() {
         playerY: combat.playerMapY,
       })
     : { moveSpeedMul: 1, hazardId: null, label: null };
-  const surviveWallSeconds = level.scoring?.targetSeconds ?? (LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60);
   const routeWorldState = level.id === DEFAULT_CAMPAIGN_LEVEL_ID
     ? levelOneAaaRouteWorldStateAt({
         elapsedSeconds: combat.elapsedGameSeconds,
@@ -2466,10 +2467,9 @@ function renderRoguelikeStatBar() {
         extractionPoint: combat.extractionPoint,
       })
     : null;
-  const surviveRatio = combat.elapsedGameSeconds / Math.max(1, surviveWallSeconds);
-  const surviveTone = surviveRatio >= 0.95 ? 'red' : surviveRatio >= 0.8 ? 'orange' : 'cyan';
+  const threatTone = director.pressure >= 0.8 ? 'red' : director.pressure >= 0.6 ? 'orange' : 'cyan';
   const stats = [
-    { id: 'survive', label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} / ${formatSeconds(surviveWallSeconds)}`, tone: surviveTone },
+    { id: 'survived', label: 'SURVIVED', value: formatSeconds(combat.elapsedGameSeconds), tone: threatTone },
     { id: 'level', label: 'LEVEL', value: `${level.number} · ${director.difficultyLabel.toUpperCase()}`, tone: 'cyan' },
     { id: 'obj', label: 'OBJECTIVE', value: routeWorldState?.statusLabel ?? objective.shortLabel, tone: guidance ? 'orange' : (routeWorldState?.tone ?? 'cyan') },
     { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}`, tone: 'red' },
@@ -5621,10 +5621,8 @@ async function startCombat(options = {}) {
   combat.gameOverReason = '';
   combat.lastHitBy = null;
   combat.killedBy = null;
-  combat.survivalWallAnnounced = false;
-  combat.extractionSnapshotScore = null;
-  combat.extractionSnapshotAt = null;
   combat.startedAt = performance.now();
+
   combat.frame = 0;
   _obstacleCacheFrame = -1;
   _obstacleCache = [];
@@ -5736,6 +5734,7 @@ async function startCombat(options = {}) {
   combat.axes = 0;
   combat.completedCampaignPoiIds = new Set();
   combat.triggeredCampaignPoiIds = new Set();
+  combat.triggeredBossBeatIds = new Set();
   combat.activePoiEncounterId = null;
   combat.activePoiEncounterTitle = '';
   combat.activePoiEncounterVisualPlan = null;
@@ -5795,7 +5794,7 @@ async function startCombat(options = {}) {
 
   combat.status = startPendingBegin
     ? 'Level ready: press Space or click the READY overlay to begin.'
-    : `Level ${level.number} run live: survive ${Math.round((level.scoring?.targetSeconds ?? 480) / 60)} minutes, fight swarms for XP, clear mini-boss locks, and extract.`;
+    : `Level ${level.number} run live: survive as long as you can, fight swarms for XP, clear boss beats, and chase a high survival score.`;
   if (!startPendingBegin) {
     playSfxCue('level-start');
     await startArcadeMusicForGame('hard-money-heroes');
@@ -7753,7 +7752,7 @@ function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = 
     combat.miniBossLock = false;
     combat.scrollLockReason = null;
     combat.completedCampaignPoiIds?.add(enemy.poiEncounterId ?? enemy.poiId ?? 'rugpull-gulch-boss-yard');
-    spawnText('BOSS CLEAR — EXTRACTION SOON', ISO_CENTER_X - 112, ISO_CENTER_Y - 78, '#45ff8a');
+    spawnText('BOSS CLEAR — KEEP SURVIVING', ISO_CENTER_X - 112, ISO_CENTER_Y - 78, '#45ff8a');
   }
   const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
   combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
@@ -7772,9 +7771,69 @@ function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = 
   trimLooseRoguelikeRewards();
 }
 
+function spawnLevelOneBossBeat(beat, director) {
+  if (!beat || combat.triggeredBossBeatIds?.has(beat.id)) return false;
+  if (combat.activePoiEncounterId || combat.boss || combat.enemies.some((enemy) => enemy.miniBoss || enemy.finalBossProxy)) return false;
+  const roster = levelOneRoguelikeBossProxyRoster();
+  const miniBosses = roster.filter((entry) => entry.role === 'mini-boss');
+  const majorBoss = roster.find((entry) => entry.role === 'boss');
+  combat.triggeredBossBeatIds ??= new Set();
+  combat.triggeredBossBeatIds.add(beat.id);
+  if (beat.type === 'mini-boss-pair') {
+    for (let i = 0; i < 2; i += 1) {
+      const entry = miniBosses[(beat.rosterOffset + i) % miniBosses.length];
+      spawnRoguelikeEnemy(director, {
+        forceEnemyId: entry.enemyId,
+        title: `${entry.title} · T${beat.pressureTier}`,
+        elite: true,
+        miniBoss: true,
+        spawnSource: 'boss-beat-mini-boss',
+        poiEncounterId: beat.id,
+        radiusTiles: ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES + 1 + i * 2,
+        angleRadians: ((combat.frame * 17 + i * 180) % 360) * Math.PI / 180,
+        attackTimer: 150,
+      });
+    }
+    spawnText(`BOSS BEAT // MINI-BOSS PAIR T${beat.pressureTier}`, ISO_CENTER_X - 142, ISO_CENTER_Y - 82, '#ffe84d');
+    return true;
+  }
+  if (beat.type === 'major-boss' && majorBoss) {
+    combat.scriptedBossTriggered = true;
+    const enemy = spawnRoguelikeEnemy(director, {
+      forceEnemyId: majorBoss.enemyId,
+      title: `${majorBoss.title} · T${beat.pressureTier}`,
+      elite: true,
+      miniBoss: true,
+      boss: true,
+      finalBossProxy: true,
+      spawnSource: 'boss-beat-major-boss',
+      poiEncounterId: beat.id,
+      radiusTiles: ROGUELIKE_MIN_BOSS_SPAWN_DISTANCE_TILES,
+      attackTimer: 180,
+    });
+    if (enemy) {
+      enemy.hp = Math.round(enemy.hp * (1 + beat.pressureTier * 0.22));
+      enemy.maxHp = enemy.hp;
+    }
+    spawnText(`MAJOR BOSS // ${majorBoss.title.toUpperCase()} T${beat.pressureTier}`, ISO_CENTER_X - 154, ISO_CENTER_Y - 88, '#ff476f');
+    return true;
+  }
+  return false;
+}
+
+function updateLevelOneBossBeatSchedule(director) {
+  if ((combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) return;
+  for (const beat of HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE) {
+    if (combat.elapsedGameSeconds >= beat.startSeconds && !combat.triggeredBossBeatIds?.has(beat.id)) {
+      if (!spawnLevelOneBossBeat(beat, director)) return;
+    }
+  }
+}
+
 function updateRoguelikeEnemies(director, dt) {
   combat.roguelikeSpawnTimer -= dt;
   updateCampaignPoiEncounter(director);
+  updateLevelOneBossBeatSchedule(director);
   const actComposition = buildLevelOneSpawnCompositionAt(combat.elapsedGameSeconds);
   const genericSpawnsSuppressed = actComposition.genericSpawnSuppression && !combat.activePoiEncounterId && !combat.scriptedBossTriggered;
   while (!genericSpawnsSuppressed && !combat.activePoiEncounterId && combat.roguelikeSpawnTimer <= 0 && combat.enemies.length < director.maxEnemiesOnMap) {
@@ -8346,21 +8405,9 @@ function updateRoguelikeCombatStep(dt, difficulty) {
     gameAdapter.emitStatUpdate({ score: combat.score, kills: combat.kills, survived: combat.elapsedGameSeconds });
   }
   syncCampaignProgression();
-  // 20:00 survival wall. Announce once (the old code spawned this floating
-  // text EVERY STEP — 60/sec — flooding the text array), and snapshot the
-  // extraction board score per build-risk review v2.1: "Main Extraction board
-  // snapshots at 20:00; Overtime uses a separate Endless board."
-  if (combat.elapsedGameSeconds >= LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60 && !combat.gameOver) {
-    if (!combat.survivalWallAnnounced) {
-      combat.survivalWallAnnounced = true;
-      combat.extractionSnapshotScore = combat.score;
-      combat.extractionSnapshotAt = combat.elapsedGameSeconds;
-      spawnText('SURVIVAL WALL — EXTRACTION SNAPSHOT', ISO_CENTER_X - 110, ISO_CENTER_Y - 92, '#ff476f');
-      spawnText('OVERTIME: ENDLESS BOARD', ISO_CENTER_X - 84, ISO_CENTER_Y - 68, '#ffe84d');
-    }
-  }
 }
 
+// Per-biome floor palette
 // Per-biome floor palette: { top-left lit face, bottom-right shaded face, seam }.
 // Replaces the old universal "blue checker" that looked broken in every biome.
 const BIOME_FLOOR_PALETTE = {

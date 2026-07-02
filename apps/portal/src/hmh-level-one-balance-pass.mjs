@@ -91,7 +91,7 @@ function clamp(value, min, max) {
 }
 
 function actForSeconds(elapsedSeconds = 0) {
-  const seconds = clamp(elapsedSeconds, 0, HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetSessionSeconds);
+  const seconds = Math.max(0, Number(elapsedSeconds) || 0);
   return ACT_WINDOWS.find((act) => seconds >= act.start && seconds < act.end) ?? ACT_WINDOWS.at(-1);
 }
 
@@ -126,22 +126,23 @@ export function buildLevelOneSpawnCompositionAt(elapsedSeconds = 0) {
   });
 }
 
-export function levelOneXpPacingPlan({ killsPerMinute = 20, cacheOpens = 2, miniBossKills = 2 } = {}) {
+export function levelOneXpPacingPlan({ killsPerMinute = 20, cacheOpens = 2, miniBossKills = 6 } = {}) {
   const kpm = Math.max(0, Number(killsPerMinute) || 0);
-  const killXpAtEight = kpm * 8 * 11.5;
+  const eliteBandMinutes = 22.5;
+  const killXpAtEliteBand = kpm * eliteBandMinutes * 11.5;
   const cacheXp = Math.max(0, Number(cacheOpens) || 0) * 85;
   const bossXp = Math.max(0, Number(miniBossKills) || 0) * 62;
-  const totalXp = killXpAtEight + cacheXp + bossXp;
+  const totalXp = killXpAtEliteBand + cacheXp + bossXp;
   return Object.freeze({
     firstUpgradeTargetWindowSeconds: Object.freeze([45, 75]),
     firstUpgradeExpectedSeconds: 58,
-    targetLevelAtEightMinutes: Math.max(7, targetLevelForXp(totalXp)),
-    totalExpectedXpAtEightMinutes: Math.round(totalXp),
-    killXpAtEightMinutes: Math.round(killXpAtEight),
-    cacheXpAtEightMinutes: Math.round(cacheXp),
-    miniBossXpAtEightMinutes: Math.round(bossXp),
+    targetLevelAtEliteBand: Math.max(18, targetLevelForXp(totalXp)),
+    totalExpectedXpAtEliteBand: Math.round(totalXp),
+    killXpAtEliteBand: Math.round(killXpAtEliteBand),
+    cacheXpAtEliteBand: Math.round(cacheXp),
+    bossXpAtEliteBand: Math.round(bossXp),
     guardrails: Object.freeze([
-      'first upgrade should arrive after the player understands movement but before the first POI lock',
+      'first upgrade should arrive after the player understands movement but before the first boss beat',
       'cache XP should feel valuable without chaining multiple level-ups by itself',
       'one enemy pack must still pause after one level-up through grantRoguelikeXp',
     ]),
@@ -184,7 +185,7 @@ export function buildLevelOneUpgradeVarietyPlan() {
   });
 }
 
-export function buildLevelOneBalanceTelemetrySnapshot({ sampleSeconds = [0, 60, 120, 240, 360, 480] } = {}) {
+export function buildLevelOneBalanceTelemetrySnapshot({ sampleSeconds = [0, 300, 600, 900, 1200, 1500, 1800] } = {}) {
   const checkpoints = Object.freeze(sampleSeconds.map((seconds) => Object.freeze({
     seconds,
     actId: actForSeconds(seconds).id,
@@ -198,18 +199,19 @@ export function buildLevelOneBalanceTelemetrySnapshot({ sampleSeconds = [0, 60, 
     firstUpgradeExpectedSeconds: 58,
   });
   return Object.freeze({
-    targetSessionSeconds: HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetSessionSeconds,
+    mode: HMH_LEVEL_ONE_PLAYTEST_BALANCE.mode,
+    eliteBandSeconds: HMH_LEVEL_ONE_PLAYTEST_BALANCE.eliteBandSeconds,
     generatedBy: 'hmh-level-one-balance-pass',
     areas: LEVEL_ONE_BALANCE_RECOMMENDATION_AREAS,
     checkpoints,
     killsModel: Object.freeze({
-      passiveRun: Object.freeze({ killsPerMinute: 8, killsAtEightMinutes: 64 }),
-      swarmFighter: Object.freeze({ killsPerMinute: 20, killsAtEightMinutes: 160 }),
+      passiveRun: Object.freeze({ killsPerMinute: 8, killsAtEliteBand: 8 * 22.5 }),
+      swarmFighter: Object.freeze({ killsPerMinute: 20, killsAtEliteBand: 20 * 22.5 }),
     }),
     xpPacing,
     rewardModel: Object.freeze({
       normalDropChanceAtStart: levelOneRoguelikeDropChance({ elapsedSeconds: 0, rare: false }),
-      normalDropChanceAtEightMinutes: levelOneRoguelikeDropChance({ elapsedSeconds: 480, rare: false }),
+      normalDropChanceAtEliteBand: levelOneRoguelikeDropChance({ elapsedSeconds: 22.5 * 60, rare: false }),
       rareDropPolicy: 'elite, mini-boss, boss, and authored cache rewards remain deliberate rather than random spam',
     }),
     spawnModel: Object.freeze({
@@ -227,9 +229,9 @@ export function validateLevelOneBalancePass() {
   const errors = [];
   const snapshot = buildLevelOneBalanceTelemetrySnapshot();
   if (snapshot.areas.length !== 6) errors.push('all six recommendation areas must be represented');
-  if (snapshot.targetSessionSeconds !== 480) errors.push('Level 1 target session must remain 8 minutes');
-  if (snapshot.checkpoints.at(-1).director.maxEnemiesOnMap < 92) errors.push('8-minute wall needs dense pressure');
-  if (snapshot.xpPacing.swarmFighter.targetLevelAtEightMinutes < 7) errors.push('swarm fighter should reach level 7+');
+  if (snapshot.mode !== 'open-ended-survival') errors.push('Level 1 must be open-ended survival');
+  if (snapshot.checkpoints.at(-1).director.maxEnemiesOnMap < 125) errors.push('elite-band pressure needs dense but continuous swarms');
+  if (snapshot.xpPacing.swarmFighter.targetLevelAtEliteBand < 18) errors.push('swarm fighter should keep progressing into the elite band');
   if (!snapshot.bossChoreography.finalBoss.onDefeat.unlocksGate) errors.push('final boss must unlock the authored gate');
   if (!snapshot.upgradeVariety.mechanicCards.some((card) => card.id === 'gas-chain-refund')) errors.push('gas chain upgrade card missing');
   return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors) });

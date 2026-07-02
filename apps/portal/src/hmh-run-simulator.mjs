@@ -9,7 +9,7 @@ const DEFAULT_ELITE_KILL_SCORE = 220;
 const DEFAULT_MINIBOSS_XP = 72;
 const DEFAULT_BOSS_XP = 140;
 const DEFAULT_MINIBOSS_INTERVAL_SECONDS = 180;
-const DEFAULT_BOSS_SECONDS = 480;
+const DEFAULT_BOSS_SECONDS = 510;
 
 function clampNumber(value, min, max) {
   const n = Number(value);

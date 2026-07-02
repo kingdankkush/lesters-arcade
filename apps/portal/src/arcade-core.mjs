@@ -760,9 +760,10 @@ export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
     reusable2dProps: Object.freeze(['buildings', 'trees', 'garbage-cans', 'street-props', 'signs', 'cars', 'crates']),
   }),
   runPacing: Object.freeze({
-    targetSurvivalMinutes: 20,
+    mode: 'open-ended-survival',
+    eliteBandMinutes: Object.freeze([20, 25]),
     pressureFantasy: 'Vampire-Survivors-style escalating enemy density with Hard Money Heroes guns, bosses, and wallet-safe score runs.',
-    targetPressureCurveMinutes: Object.freeze([0, 3, 5, 10, 15, 20]),
+    pressureCurveMinutes: Object.freeze([0, 5, 10, 15, 20, 25, 30]),
   }),
   xp: Object.freeze({
     source: 'enemy-kills-drop-xp-gems',
@@ -2043,73 +2044,102 @@ export function calculateRoguelikeKillXp(enemy = {}) {
 }
 
 export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
-  targetSessionSeconds: 480,
-  targetPressureSeconds: 480,
+  mode: 'open-ended-survival',
+  eliteBandSeconds: Object.freeze({ start: 20 * 60, end: 25 * 60 }),
   world: Object.freeze({
     width: 1050,
     height: 900,
     traversalTargetPct: 0.58,
     traversalEfficiency: 0.32,
+    traversalBudgetSeconds: 8 * 60,
   }),
   player: Object.freeze({
     baseMoveSpeedTilesPerSecond: 4.15,
     expectedCircleKiteEfficiency: 0.32,
   }),
+  pressure: Object.freeze({
+    combinedTauSeconds: 540,
+  }),
   director: Object.freeze({
-    openingSpawnIntervalSeconds: 2.45,
-    wallSpawnIntervalSeconds: 0.56,
-    openingMaxEnemies: 14,
-    wallMaxEnemies: 100,
-    openingChaseShare: 0.62,
-    wallChaseShare: 0.74,
-    openingRangedShare: 0.18,
-    wallRangedShare: 0.31,
-    openingEliteShare: 0.02,
-    wallEliteShare: 0.24,
+    spawnIntervalStartSeconds: 2.45,
+    spawnIntervalFloorSeconds: 0.34,
+    spawnIntervalTauSeconds: 420,
+    maxEnemiesStart: 14,
+    maxEnemiesCap: 140,
+    maxEnemiesTauSeconds: 480,
+    chaseShareStart: 0.62,
+    chaseShareCap: 0.78,
+    chaseShareTauSeconds: 520,
+    rangedShareStart: 0.18,
+    rangedShareCap: 0.31,
+    rangedShareTauSeconds: 560,
+    eliteShareStart: 0.02,
+    eliteShareCap: 0.38,
+    eliteShareTauSeconds: 540,
+    projectileSpeedStart: 1,
+    projectileSpeedCap: 1.72,
+    projectileSpeedTauSeconds: 600,
+    healthMultiplierStart: 1,
+    healthMultiplierCap: 4.3,
+    healthMultiplierTauSeconds: 560,
+    damageMultiplierStart: 1,
+    damageMultiplierCap: 1.35,
+    damageMultiplierTauSeconds: 600,
   }),
   drops: Object.freeze({
-    normalOpeningChance: 0.16,
-    normalWallChance: 0.32,
+    normalStartChance: 0.16,
+    normalCapChance: 0.36,
+    normalTauSeconds: 520,
     rareChance: 1,
   }),
   pickupAssist: Object.freeze({
-    openingXpAttractRadiusMultiplier: 1,
-    wallXpAttractRadiusMultiplier: 2.2,
-    openingXpAttractSpeedMultiplier: 1,
-    wallXpAttractSpeedMultiplier: 2,
-    openingXpTtlFrames: 900,
-    wallXpTtlFrames: 1260,
-    openingPowerUpAttractRadiusMultiplier: 1,
-    wallPowerUpAttractRadiusMultiplier: 1.65,
-    openingPowerUpTtlFrames: 720,
-    wallPowerUpTtlFrames: 900,
+    xpAttractRadiusStartMultiplier: 1,
+    xpAttractRadiusCapMultiplier: 2.35,
+    xpAttractSpeedStartMultiplier: 1,
+    xpAttractSpeedCapMultiplier: 2.1,
+    xpTtlStartFrames: 900,
+    xpTtlCapFrames: 1320,
+    powerUpAttractRadiusStartMultiplier: 1,
+    powerUpAttractRadiusCapMultiplier: 1.75,
+    powerUpTtlStartFrames: 720,
+    powerUpTtlCapFrames: 960,
     maxLooseXpGems: 180,
     maxLoosePowerUps: 42,
   }),
   performance: Object.freeze({
-    openingMaxParticles: 210,
-    wallMaxParticles: 150,
-    openingMaxFloatingTexts: 84,
-    wallMaxFloatingTexts: 64,
-    openingHitSparkEveryNthHit: 1,
-    wallHitSparkEveryNthHit: 3,
-    openingDeathBurstScale: 1,
-    wallDeathBurstScale: 0.62,
+    maxParticlesStart: 210,
+    maxParticlesCap: 150,
+    maxFloatingTextsStart: 84,
+    maxFloatingTextsCap: 64,
+    hitSparkEveryNthHitStart: 1,
+    hitSparkEveryNthHitCap: 3,
+    deathBurstStartScale: 1,
+    deathBurstCapScale: 0.62,
     reduceMotionScale: 0.58,
   }),
   xpPacing: Object.freeze({
-    passiveRun: Object.freeze({ assumedKillsPerMinute: 8, targetLevelAtEightMinutes: 4 }),
-    swarmFighterRun: Object.freeze({ assumedKillsPerMinute: 20, targetLevelAtEightMinutes: 7 }),
+    passiveRun: Object.freeze({ assumedKillsPerMinute: 8, targetLevelAtEliteBand: 24 }),
+    swarmFighterRun: Object.freeze({ assumedKillsPerMinute: 20, targetLevelAtEliteBand: 50 }),
   }),
 });
 
+export const HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE = Object.freeze([
+  Object.freeze({ id: 'beat-001-mini-pair', type: 'mini-boss-pair', startSeconds: 210, pressureTier: 1, rosterOffset: 0 }),
+  Object.freeze({ id: 'beat-002-major-boss', type: 'major-boss', startSeconds: 510, pressureTier: 1, rosterOffset: 0 }),
+  Object.freeze({ id: 'beat-003-mini-pair', type: 'mini-boss-pair', startSeconds: 690, pressureTier: 2, rosterOffset: 1 }),
+  Object.freeze({ id: 'beat-004-major-rematch', type: 'major-boss', startSeconds: 870, pressureTier: 2, rosterOffset: 0 }),
+  Object.freeze({ id: 'beat-005-mini-pair', type: 'mini-boss-pair', startSeconds: 1050, pressureTier: 3, rosterOffset: 2 }),
+  Object.freeze({ id: 'beat-006-major-rematch', type: 'major-boss', startSeconds: 1230, pressureTier: 3, rosterOffset: 0 }),
+  Object.freeze({ id: 'beat-007-mini-pair', type: 'mini-boss-pair', startSeconds: 1410, pressureTier: 4, rosterOffset: 0 }),
+  Object.freeze({ id: 'beat-008-major-rematch', type: 'major-boss', startSeconds: 1590, pressureTier: 4, rosterOffset: 0 }),
+]);
+
 export const HMH_LEVEL_ONE_SHIP_FOCUS = Object.freeze({
-  mode: 'endless-survival-first',
-  runEndsAtTargetSeconds: false,
-  pressureCapSeconds: HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds,
+  mode: 'open-ended-survival',
+  runEndsOnlyOnDeath: true,
   levelOneOnlyUntilPolished: true,
   targetLevelId: 'level-1-crypto-wasteland',
-  deferredSystems: Object.freeze(['extraction-helicopter', 'level-2-litecoin-city', 'level-3-the-getaway']),
+  deferredSystems: Object.freeze(['level-2-litecoin-city', 'level-3-the-getaway']),
   polishPriorities: Object.freeze([
     'ground/path/water tiles',
     'biome-authored towns/forests/waterfronts',
@@ -2119,7 +2149,7 @@ export const HMH_LEVEL_ONE_SHIP_FOCUS = Object.freeze({
     '100%-scale enemy hit detection',
     'combat physics/VFX/audio feel',
   ]),
-  note: 'Treat 8:00 as the point where Level 1 reaches full pressure, not as the required end of the shipped survival loop. Later extraction/Level 2/Level 3 content can reattach after Level 1 feels shippable.',
+  note: 'Level 1 has no 8-minute target or milestone. Pressure climbs smoothly from 0:00, elite play should reach the 20-25 minute band, and runs end on death.',
 });
 
 export const HMH_LEVEL_ONE_BOSS_PROXY_ROSTER = Object.freeze([
@@ -2136,7 +2166,7 @@ export function levelOneRoguelikeBossProxyRoster() {
 export function buildLevelOneRunWorldDimensions({
   width = HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width,
   height = HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height,
-  targetSessionSeconds = HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetSessionSeconds,
+  targetSessionSeconds = HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.traversalBudgetSeconds,
   moveSpeedTilesPerSecond = HMH_LEVEL_ONE_PLAYTEST_BALANCE.player.baseMoveSpeedTilesPerSecond,
   traversalEfficiency = HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.traversalEfficiency,
 } = {}) {
@@ -2156,63 +2186,85 @@ export function buildLevelOneRunWorldDimensions({
   });
 }
 
+function smoothPressureAt(seconds = 0, tauSeconds = 540) {
+  const safeSeconds = Math.max(0, Number(seconds) || 0);
+  const safeTau = Math.max(1, Number(tauSeconds) || 1);
+  return 1 - Math.exp(-safeSeconds / safeTau);
+}
+
+function smoothKnobAt(seconds, start, cap, tauSeconds, precision = 3) {
+  const p = smoothPressureAt(seconds, tauSeconds);
+  return Number((start + (cap - start) * p).toFixed(precision));
+}
+
 export function levelOneRoguelikeDropChance({ elapsedSeconds = 0, rare = false } = {}) {
   if (rare) return HMH_LEVEL_ONE_PLAYTEST_BALANCE.drops.rareChance;
-  const pressure = clampNumber((Number(elapsedSeconds) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
-  const { normalOpeningChance, normalWallChance } = HMH_LEVEL_ONE_PLAYTEST_BALANCE.drops;
-  return Number((normalOpeningChance + (normalWallChance - normalOpeningChance) * pressure).toFixed(3));
+  const d = HMH_LEVEL_ONE_PLAYTEST_BALANCE.drops;
+  return smoothKnobAt(elapsedSeconds, d.normalStartChance, d.normalCapChance, d.normalTauSeconds, 3);
 }
 
 export function levelOneRoguelikePickupAssistAt({ elapsedSeconds = 0, activeEnemies = 0 } = {}) {
-  const pressure = clampNumber((Number(elapsedSeconds) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
-  const swarmPressure = clampNumber((Number(activeEnemies) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.wallMaxEnemies, 0, 1);
+  const pressure = smoothPressureAt(elapsedSeconds, HMH_LEVEL_ONE_PLAYTEST_BALANCE.pressure.combinedTauSeconds);
+  const swarmPressure = clampNumber((Number(activeEnemies) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.maxEnemiesCap, 0, 1);
   const assist = HMH_LEVEL_ONE_PLAYTEST_BALANCE.pickupAssist;
   const blendedSwarm = clampNumber(pressure * 0.75 + swarmPressure * 0.25, 0, 1);
   return Object.freeze({
     pressure: Number(pressure.toFixed(3)),
     swarmPressure: Number(swarmPressure.toFixed(3)),
-    xpAttractRadiusMultiplier: Number((assist.openingXpAttractRadiusMultiplier + (assist.wallXpAttractRadiusMultiplier - assist.openingXpAttractRadiusMultiplier) * blendedSwarm).toFixed(2)),
-    xpAttractSpeedMultiplier: Number((assist.openingXpAttractSpeedMultiplier + (assist.wallXpAttractSpeedMultiplier - assist.openingXpAttractSpeedMultiplier) * blendedSwarm).toFixed(2)),
-    xpTtlFrames: Math.round(assist.openingXpTtlFrames + (assist.wallXpTtlFrames - assist.openingXpTtlFrames) * pressure),
-    powerUpAttractRadiusMultiplier: Number((assist.openingPowerUpAttractRadiusMultiplier + (assist.wallPowerUpAttractRadiusMultiplier - assist.openingPowerUpAttractRadiusMultiplier) * blendedSwarm).toFixed(2)),
-    powerUpTtlFrames: Math.round(assist.openingPowerUpTtlFrames + (assist.wallPowerUpTtlFrames - assist.openingPowerUpTtlFrames) * pressure),
+    xpAttractRadiusMultiplier: Number((assist.xpAttractRadiusStartMultiplier + (assist.xpAttractRadiusCapMultiplier - assist.xpAttractRadiusStartMultiplier) * blendedSwarm).toFixed(2)),
+    xpAttractSpeedMultiplier: Number((assist.xpAttractSpeedStartMultiplier + (assist.xpAttractSpeedCapMultiplier - assist.xpAttractSpeedStartMultiplier) * blendedSwarm).toFixed(2)),
+    xpTtlFrames: Math.round(assist.xpTtlStartFrames + (assist.xpTtlCapFrames - assist.xpTtlStartFrames) * pressure),
+    powerUpAttractRadiusMultiplier: Number((assist.powerUpAttractRadiusStartMultiplier + (assist.powerUpAttractRadiusCapMultiplier - assist.powerUpAttractRadiusStartMultiplier) * blendedSwarm).toFixed(2)),
+    powerUpTtlFrames: Math.round(assist.powerUpTtlStartFrames + (assist.powerUpTtlCapFrames - assist.powerUpTtlStartFrames) * pressure),
     maxLooseXpGems: assist.maxLooseXpGems,
     maxLoosePowerUps: assist.maxLoosePowerUps,
   });
 }
 
 export function levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds = 0, activeEnemies = 0, reduceMotion = false } = {}) {
-  const pressure = clampNumber((Number(elapsedSeconds) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
-  const swarmPressure = clampNumber((Number(activeEnemies) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.wallMaxEnemies, 0, 1);
+  const pressure = smoothPressureAt(elapsedSeconds, HMH_LEVEL_ONE_PLAYTEST_BALANCE.pressure.combinedTauSeconds);
+  const swarmPressure = clampNumber((Number(activeEnemies) || 0) / HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.maxEnemiesCap, 0, 1);
   const blendedSwarm = clampNumber(pressure * 0.7 + swarmPressure * 0.3, 0, 1);
   const perf = HMH_LEVEL_ONE_PLAYTEST_BALANCE.performance;
   const motionScale = reduceMotion ? perf.reduceMotionScale : 1;
   return Object.freeze({
     pressure: Number(pressure.toFixed(3)),
     swarmPressure: Number(swarmPressure.toFixed(3)),
-    maxParticles: Math.max(48, Math.round((perf.openingMaxParticles + (perf.wallMaxParticles - perf.openingMaxParticles) * blendedSwarm) * motionScale)),
-    maxFloatingTexts: Math.max(28, Math.round((perf.openingMaxFloatingTexts + (perf.wallMaxFloatingTexts - perf.openingMaxFloatingTexts) * blendedSwarm) * motionScale)),
-    hitSparkEveryNthHit: Math.max(1, Math.round(perf.openingHitSparkEveryNthHit + (perf.wallHitSparkEveryNthHit - perf.openingHitSparkEveryNthHit) * blendedSwarm)),
-    deathBurstScale: Number((perf.openingDeathBurstScale + (perf.wallDeathBurstScale - perf.openingDeathBurstScale) * blendedSwarm).toFixed(2)),
+    maxParticles: Math.max(48, Math.round((perf.maxParticlesStart + (perf.maxParticlesCap - perf.maxParticlesStart) * blendedSwarm) * motionScale)),
+    maxFloatingTexts: Math.max(28, Math.round((perf.maxFloatingTextsStart + (perf.maxFloatingTextsCap - perf.maxFloatingTextsStart) * blendedSwarm) * motionScale)),
+    hitSparkEveryNthHit: Math.max(1, Math.round(perf.hitSparkEveryNthHitStart + (perf.hitSparkEveryNthHitCap - perf.hitSparkEveryNthHitStart) * blendedSwarm)),
+    deathBurstScale: Number((perf.deathBurstStartScale + (perf.deathBurstCapScale - perf.deathBurstStartScale) * blendedSwarm).toFixed(2)),
   });
 }
 
 export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {
   const seconds = Math.max(0, Number(elapsedSeconds) || 0);
   const minutes = seconds / 60;
-  const pressure = clampNumber(seconds / HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds, 0, 1);
+  const pressure = smoothPressureAt(seconds, HMH_LEVEL_ONE_PLAYTEST_BALANCE.pressure.combinedTauSeconds);
   const d = HMH_LEVEL_ONE_PLAYTEST_BALANCE.director;
+  const difficultyLabel = pressure >= 0.9
+    ? 'record-chase'
+    : pressure >= 0.8
+      ? 'elite-band'
+      : pressure >= 0.65
+        ? 'pincer-pressure'
+        : pressure >= 0.5
+          ? 'market-crash'
+          : pressure >= 0.25
+            ? 'volatile'
+            : 'opening';
   return Object.freeze({
     elapsedMinutes: Number(minutes.toFixed(2)),
     pressure: Number(pressure.toFixed(3)),
-    spawnIntervalSeconds: Number((d.openingSpawnIntervalSeconds + (d.wallSpawnIntervalSeconds - d.openingSpawnIntervalSeconds) * pressure).toFixed(2)),
-    maxEnemiesOnMap: Math.round(d.openingMaxEnemies + (d.wallMaxEnemies - d.openingMaxEnemies) * pressure),
-    chaseEnemyShare: Number((d.openingChaseShare + (d.wallChaseShare - d.openingChaseShare) * pressure).toFixed(2)),
-    rangedEnemyShare: Number((d.openingRangedShare + (d.wallRangedShare - d.openingRangedShare) * pressure).toFixed(2)),
-    eliteEnemyShare: Number((d.openingEliteShare + (d.wallEliteShare - d.openingEliteShare) * pressure).toFixed(2)),
-    projectileSpeedMultiplier: Number((1 + pressure * 0.72).toFixed(2)),
-    healthMultiplier: Number((1 + pressure * 1.95).toFixed(2)),
-    difficultyLabel: pressure >= 1 ? 'survival-wall' : pressure >= 0.75 ? 'panic' : pressure >= 0.5 ? 'market-crash' : pressure >= 0.25 ? 'volatile' : 'opening',
+    spawnIntervalSeconds: smoothKnobAt(seconds, d.spawnIntervalStartSeconds, d.spawnIntervalFloorSeconds, d.spawnIntervalTauSeconds, 3),
+    maxEnemiesOnMap: Math.round(smoothKnobAt(seconds, d.maxEnemiesStart, d.maxEnemiesCap, d.maxEnemiesTauSeconds, 3)),
+    chaseEnemyShare: smoothKnobAt(seconds, d.chaseShareStart, d.chaseShareCap, d.chaseShareTauSeconds, 3),
+    rangedEnemyShare: smoothKnobAt(seconds, d.rangedShareStart, d.rangedShareCap, d.rangedShareTauSeconds, 3),
+    eliteEnemyShare: smoothKnobAt(seconds, d.eliteShareStart, d.eliteShareCap, d.eliteShareTauSeconds, 3),
+    projectileSpeedMultiplier: smoothKnobAt(seconds, d.projectileSpeedStart, d.projectileSpeedCap, d.projectileSpeedTauSeconds, 3),
+    healthMultiplier: smoothKnobAt(seconds, d.healthMultiplierStart, d.healthMultiplierCap, d.healthMultiplierTauSeconds, 3),
+    damageMultiplier: smoothKnobAt(seconds, d.damageMultiplierStart, d.damageMultiplierCap, d.damageMultiplierTauSeconds, 3),
+    difficultyLabel,
   });
 }
 
@@ -2222,7 +2274,8 @@ export function buildLevelOnePlaytestBalanceModel() {
     shipFocus: HMH_LEVEL_ONE_SHIP_FOCUS,
     world: buildLevelOneRunWorldDimensions(),
     bossProxyRoster: HMH_LEVEL_ONE_BOSS_PROXY_ROSTER,
-    checkpoints: Object.freeze([0, 120, 240, 360, 480].map((seconds) => levelOneRoguelikeSpawnDirectorAt(seconds))),
+    bossBeatSchedule: HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
+    checkpoints: Object.freeze([0, 300, 600, 900, 1200, 1500, 1800].map((seconds) => levelOneRoguelikeSpawnDirectorAt(seconds))),
   });
 }
 
@@ -2269,8 +2322,9 @@ export function buildIsometricRoguelikeRunConfig({ seed = 1, mapRadiusTiles = 42
       baseStats: Object.freeze({ damage: 1, rateOfFire: 1, reloadSpeed: 1, movementSpeed: 1, maxHealth: 100 }),
     }),
     spawnDirector: Object.freeze({
-      targetPressureCurveMinutes: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetPressureCurveMinutes,
-      targetSurvivalMinutes: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes,
+      mode: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.mode,
+      pressureCurveMinutes: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.pressureCurveMinutes,
+      eliteBandMinutes: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.eliteBandMinutes,
       enemyBehaviors: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.combat.enemyBehaviors,
     }),
     levelUp: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp,
@@ -2358,22 +2412,7 @@ export function applyRoguelikeSkillUpgrade(run, skillId) {
 }
 
 export function getRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {
-  const seconds = Math.max(0, Number(elapsedSeconds) || 0);
-  const minutes = seconds / 60;
-  const target = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes;
-  const pressure = clampNumber(minutes / target, 0, 1);
-  return Object.freeze({
-    elapsedMinutes: Number(minutes.toFixed(2)),
-    pressure: Number(pressure.toFixed(3)),
-    spawnIntervalSeconds: Number((3.2 - pressure * 2.78).toFixed(2)),
-    maxEnemiesOnMap: Math.round(12 + pressure * 100),
-    chaseEnemyShare: Number((0.68 - pressure * 0.18).toFixed(2)),
-    rangedEnemyShare: Number((0.22 + pressure * 0.35).toFixed(2)),
-    eliteEnemyShare: Number((0.01 + pressure * 0.31).toFixed(2)),
-    projectileSpeedMultiplier: Number((1 + pressure * 0.85).toFixed(2)),
-    healthMultiplier: Number((1 + pressure * 2.1).toFixed(2)),
-    difficultyLabel: pressure >= 1 ? 'survival-wall' : pressure >= 0.75 ? 'panic' : pressure >= 0.5 ? 'market-crash' : pressure >= 0.25 ? 'volatile' : 'opening',
-  });
+  return levelOneRoguelikeSpawnDirectorAt(elapsedSeconds);
 }
 
 export function buildFullscreenViewportModel({

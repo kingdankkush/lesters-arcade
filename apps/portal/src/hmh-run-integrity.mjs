@@ -62,18 +62,18 @@ export function deriveRunCeilings({ survivalSeconds = 0, level = 1 } = {}) {
   const seconds = Math.max(0, num(survivalSeconds));
   const balance = HMH_LEVEL_ONE_PLAYTEST_BALANCE;
 
-  // Max concurrent enemies the director allows late-game.
-  const wallMaxEnemies = balance.director.wallMaxEnemies; // 100 for L1
-  // Designed swarm-fighter kill rate (kills/min) at full pressure.
-  const swarmKillsPerMinute = balance.xpPacing.swarmFighterRun.assumedKillsPerMinute; // 20
+  // Max concurrent enemies the director allows in the elite band.
+  const maxConcurrentEnemies = balance.director.maxEnemiesCap;
+  // Designed swarm-fighter kill rate (kills/min) under sustained pressure.
+  const swarmKillsPerMinute = balance.xpPacing.swarmFighterRun.assumedKillsPerMinute;
   // A skilled player clears faster than the *assumed* rate; allow up to the
   // spawn cap being cleared roughly every 20s at peak, whichever is higher.
-  const killRatePerSecond = Math.max(swarmKillsPerMinute / 60, wallMaxEnemies / 20);
+  const killRatePerSecond = Math.max(swarmKillsPerMinute / 60, maxConcurrentEnemies / 20);
 
   const minutes = seconds / 60;
   // Baseline kill ceiling: sustained peak kill rate over the whole run, plus
   // the standing spawn cap that can be alive at the final instant.
-  const maxKills = Math.ceil(killRatePerSecond * seconds + wallMaxEnemies);
+  const maxKills = Math.ceil(killRatePerSecond * seconds + maxConcurrentEnemies);
 
   // Score ceiling: every kill worth the boss-tier per-kill score (absurdly
   // generous) plus passive drip. This is intentionally loose.

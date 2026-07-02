@@ -90,10 +90,10 @@ test('level 1 enemy roster covers new wasteland archetypes with readable telegra
   });
 });
 
-test('level 1 objective phases progress from survive to optional detour to boss to extraction to clear', () => {
+test('level 1 objective phases progress from survive to optional detour to boss beat to clear without extraction timer', () => {
   const preBoss = buildHmhCampaignObjectiveState({ levelId: 'level-1-crypto-wasteland', elapsedSeconds: 120 });
   assert.equal(preBoss.phase, 'survive');
-  assert.match(preBoss.detail, /road network/i);
+  assert.match(preBoss.detail, /no extraction timer/i);
 
   const detour = buildHmhCampaignObjectiveState({
     levelId: 'level-1-crypto-wasteland',
@@ -111,10 +111,11 @@ test('level 1 objective phases progress from survive to optional detour to boss 
   const boss = buildHmhCampaignObjectiveState({ levelId: 'level-1-crypto-wasteland', elapsedSeconds: 320, bossTriggered: true });
   assert.equal(boss.phase, 'boss');
   assert.match(boss.label, /Rug Pull Baron/i);
+  assert.equal(boss.shortLabel, 'BOSS BEAT');
 
-  const extract = buildHmhCampaignObjectiveState({ levelId: 'level-1-crypto-wasteland', elapsedSeconds: 500, extractionSpawned: true });
-  assert.equal(extract.phase, 'extract');
-  assert.equal(extract.shortLabel, 'EXTRACT');
+  const ignoredExtraction = buildHmhCampaignObjectiveState({ levelId: 'level-1-crypto-wasteland', elapsedSeconds: 500, extractionSpawned: true });
+  assert.equal(ignoredExtraction.phase, 'survive');
+  assert.equal(ignoredExtraction.shortLabel, 'SURVIVE');
 
   const clear = buildHmhCampaignObjectiveState({ levelId: 'level-1-crypto-wasteland', cleared: true, nextLevelId: 'level-2-litecoin-city' });
   assert.equal(clear.phase, 'cleared');

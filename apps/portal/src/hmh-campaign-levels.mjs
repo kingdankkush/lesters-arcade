@@ -272,12 +272,13 @@ export const HMH_CAMPAIGN_LEVELS = Object.freeze([
       codeWatchlist: Object.freeze(['district-generator.mjs level1 belts', 'arcade-core Level 1 display copy', 'achievement copy using legacy slums/foundry names', 'scene templates carrying slums/foundry comments or IDs']),
     }),
     timings: Object.freeze({
-      bossSpawnSeconds: 300,
-      extractionSpawnSeconds: 480,
+      firstMiniBossBeatSeconds: 210,
+      firstMajorBossBeatSeconds: 510,
+      repeatBeatIntervalSeconds: 180,
     }),
     scoring: Object.freeze({
-      targetSeconds: 480,
-      masterySeconds: 420,
+      headlineMetric: 'survivalSeconds',
+      scoreGoal: 'open-ended survival score chase',
     }),
     hybridModel: HMH_LEVEL_ONE_WASTELAND_MACRO_LAYOUT.model,
     macroLayout: HMH_LEVEL_ONE_WASTELAND_MACRO_LAYOUT,
@@ -453,14 +454,6 @@ export function buildHmhCampaignObjectiveState({
   }
 
   if (level.id === LEVEL_1_ID) {
-    if (extractionSpawned || safeElapsed >= level.timings.extractionSpawnSeconds) {
-      return Object.freeze({
-        phase: 'extract',
-        label: 'Extraction Point Live',
-        shortLabel: 'EXTRACT',
-        detail: 'Follow the guidance beacon to the safehouse and leave the wasteland alive.',
-      });
-    }
     if (activePoi?.title) {
       return Object.freeze({
         phase: 'detour',
@@ -469,19 +462,19 @@ export function buildHmhCampaignObjectiveState({
         detail: `Risk/reward route live: ${activePoi.telegraph ?? activePoi.title}. Reward focus: ${activePoi.rewardType ?? 'power-up cache'}.`,
       });
     }
-    if (bossTriggered || safeElapsed >= level.timings.bossSpawnSeconds) {
+    if (bossTriggered) {
       return Object.freeze({
         phase: 'boss',
         label: `${level.bossTitle} Active`,
-        shortLabel: 'BOSS PRESSURE',
-        detail: 'The district boss is on the field. Stay alive until the extraction window opens.',
+        shortLabel: 'BOSS BEAT',
+        detail: 'A boss beat is live. Clear it, grab the reward, and keep surviving.',
       });
     }
     return Object.freeze({
       phase: 'survive',
-      label: `Survive to ${formatSeconds(level.timings.bossSpawnSeconds)}`,
+      label: 'Open-ended survival',
       shortLabel: 'SURVIVE',
-      detail: 'Hold the road network and clear the authored districts until the boss arrives.',
+      detail: 'Score, survival time, and build choices are the run. There is no extraction timer.',
     });
   }
 

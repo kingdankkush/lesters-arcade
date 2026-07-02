@@ -664,7 +664,7 @@ test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike 
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.genre, 'isometric-run-and-gun-roguelike');
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.camera.projection, 'isometric');
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.movement.directions.length, 8);
-  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes, 20);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.mode, 'open-ended-survival');
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.mapGeneration.procedural, true);
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.pausesGame, true);
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 2);
@@ -672,7 +672,7 @@ test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike 
   assert.equal(config.seed, 42);
   assert.equal(config.map.tilesetPerspective, 'isometric');
   assert.equal(config.player.startWorld.x, 0);
-  assert.equal(config.spawnDirector.targetPressureCurveMinutes.at(-1), 20);
+  assert.equal(config.spawnDirector.pressureCurveMinutes.at(-1), 30);
 });
 
 test('roguelike skill library exposes Level 1 plus Level 2 upgrade pools with deterministic two-choice offers', () => {
@@ -719,36 +719,35 @@ test('roguelike XP pacing prevents one enemy pack from chaining multiple level-u
   assert.equal(afterHugeBurst.pausedForLevelUp, true);
 });
 
-test('Level 1 playtest balance reaches an 8 minute pressure wall and rewards fighting swarms', () => {
+test('Level 1 open-ended survival pressure climbs continuously into the elite band', () => {
   const balance = buildLevelOnePlaytestBalanceModel();
   const opening = levelOneRoguelikeSpawnDirectorAt(0);
-  const mid = levelOneRoguelikeSpawnDirectorAt(4 * 60);
-  const wall = levelOneRoguelikeSpawnDirectorAt(8 * 60);
+  const oldWall = levelOneRoguelikeSpawnDirectorAt(8 * 60);
+  const eliteBand = levelOneRoguelikeSpawnDirectorAt(25 * 60);
 
-  assert.equal(balance.targetSessionSeconds, 480);
-  assert.equal(balance.targetPressureSeconds, 480);
+  assert.equal(balance.mode, 'open-ended-survival');
+  assert.equal(Object.hasOwn(balance, 'targetPressureSeconds'), false);
   assert.equal(opening.difficultyLabel, 'opening');
-  assert.equal(mid.difficultyLabel, 'market-crash');
-  assert.equal(wall.difficultyLabel, 'survival-wall');
-  assert.ok(wall.pressure >= 1, `8 minute wall should reach full pressure, got ${wall.pressure}`);
-  assert.ok(wall.maxEnemiesOnMap >= 92, `wall needs dense chase swarms, got ${wall.maxEnemiesOnMap}`);
-  assert.ok(wall.spawnIntervalSeconds <= 0.62, `late spawn cadence should be frantic, got ${wall.spawnIntervalSeconds}`);
-  assert.ok(wall.chaseEnemyShare >= opening.chaseEnemyShare, 'late game should lean into enemies chasing the player');
-  assert.ok(wall.rangedEnemyShare <= 0.34, 'late ranged share should not turn the screen into unavoidable bullet spam');
-  assert.ok(levelOneRoguelikeDropChance({ elapsedSeconds: 0, rare: false }) < levelOneRoguelikeDropChance({ elapsedSeconds: 480, rare: false }));
+  assert.ok(oldWall.pressure < 0.75, `8 minutes should not be full pressure, got ${oldWall.pressure}`);
+  assert.notEqual(oldWall.difficultyLabel, 'survival-wall');
+  assert.ok(eliteBand.pressure > oldWall.pressure, 'pressure should keep climbing after the old 8-minute mark');
+  assert.ok(eliteBand.maxEnemiesOnMap >= 125, `elite band needs dense swarms, got ${eliteBand.maxEnemiesOnMap}`);
+  assert.ok(eliteBand.spawnIntervalSeconds <= 0.45, `elite spawn cadence should overwhelm weak builds, got ${eliteBand.spawnIntervalSeconds}`);
+  assert.ok(eliteBand.chaseEnemyShare >= opening.chaseEnemyShare, 'late game should lean into enemies chasing the player');
+  assert.ok(eliteBand.rangedEnemyShare <= 0.31, 'late ranged share should not turn the screen into unavoidable bullet spam');
+  assert.ok(levelOneRoguelikeDropChance({ elapsedSeconds: 0, rare: false }) < levelOneRoguelikeDropChance({ elapsedSeconds: 25 * 60, rare: false }));
 
   const passive = balance.xpPacing.passiveRun;
   const active = balance.xpPacing.swarmFighterRun;
-  assert.ok(active.targetLevelAtEightMinutes >= passive.targetLevelAtEightMinutes + 3, 'swarm fighting must clearly out-level passive running');
-  assert.ok(active.targetLevelAtEightMinutes >= 7, 'active fighters should have enough augments for the 8 minute wall');
+  assert.ok(active.targetLevelAtEliteBand >= passive.targetLevelAtEliteBand + 3, 'swarm fighting must clearly out-level passive running');
 });
 
-test('Level 1 ship focus is endless survival first, with 8 minutes kept as pressure-cap rather than run-ending extraction', () => {
-  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.mode, 'endless-survival-first');
-  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.runEndsAtTargetSeconds, false);
-  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.pressureCapSeconds, HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds);
+test('Level 1 ship focus is open-ended survival with no timer extraction target', () => {
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.mode, 'open-ended-survival');
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.runEndsOnlyOnDeath, true);
+  assert.equal(Object.hasOwn(HMH_LEVEL_ONE_SHIP_FOCUS, 'pressureCapSeconds'), false);
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.levelOneOnlyUntilPolished, true);
-  assert.deepEqual(HMH_LEVEL_ONE_SHIP_FOCUS.deferredSystems, ['extraction-helicopter', 'level-2-litecoin-city', 'level-3-the-getaway']);
+  assert.deepEqual(HMH_LEVEL_ONE_SHIP_FOCUS.deferredSystems, ['level-2-litecoin-city', 'level-3-the-getaway']);
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('ground/path/water tiles'), true);
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('100%-scale enemy hit detection'), true);
 });

@@ -13,10 +13,10 @@ import { HMH_LEVEL_ONE_PLAYTEST_BALANCE } from '../apps/portal/src/arcade-core.m
 
 test('deriveRunCeilings scales kills with survival time and spawn cap', () => {
   const short = deriveRunCeilings({ survivalSeconds: 60 });
-  const full = deriveRunCeilings({ survivalSeconds: 480 });
+  const full = deriveRunCeilings({ survivalSeconds: 25 * 60 });
   assert.ok(full.maxKills > short.maxKills, 'longer run allows more kills');
   // the standing spawn cap is included as a floor
-  assert.ok(short.maxKills >= HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.wallMaxEnemies);
+  assert.ok(short.maxKills >= HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.maxEnemiesCap);
 });
 
 test('deriveRunCeilings with zero time still returns finite non-negative bounds', () => {
