@@ -87,6 +87,7 @@ import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst
 import { buildUpgradeMenuPresentation } from './src/hmh-upgrade-menu-ui.mjs';
 import { buildCombatFeedbackPlan } from './src/hmh-combat-feedback.mjs';
 import { HMH_COPY_SHEET } from './src/hmh-copy-sheet.mjs';
+import { hmhSfxToneFor, resolveHmhSfxCuePlan } from './src/hmh-audio-system.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -1040,30 +1041,7 @@ function toggleArcadeMusicShuffle() {
 }
 
 function sfxToneFor(cue) {
-  const tones = {
-    'wallet-connect': [523, 659, 784],
-    'menu-click': [392, 523],
-    'hero-select': [523, 659, 784, 1047],
-    'level-start': [330, 494, 660],
-    jump: [420, 630],
-    land: [120],
-    'weapon-fire': [180, 900],
-    melee: [760, 420],
-    grenade: [110, 220],
-    pickup: [660, 880, 990],
-    'enemy-hit': [220, 165],
-    'player-hit': [90, 70],
-    'boss-warning': [70, 140, 70],
-    'level1-cache-open': [659, 784, 988, 1319],
-    'level1-gas-pump-warning': [110, 82, 110],
-    'level1-gas-pump-detonate': [80, 55, 120, 220],
-    'level1-cover-break': [180, 120, 95],
-    'level1-mushroom-pulse': [247, 370, 494],
-    'level1-gate-unlock': [196, 392, 784],
-    'level1-extraction-flare': [523, 784, 1175],
-    'game-over': [196, 146, 98],
-  };
-  return tones[cue] ?? [440];
+  return hmhSfxToneFor(cue);
 }
 
 function ensureAudioContext() {
@@ -1147,9 +1125,16 @@ function playSfxSynth(cue, volume) {
 }
 
 function playSfxCue(cue, volume = 0.05) {
-  if (!combatAudio.sfxEnabled || typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') return false;
   const now = performance.now();
-  if ((now - (combatAudio.lastSfxAt.get(cue) ?? 0)) < 55) return false;
+  const plan = resolveHmhSfxCuePlan(cue, {
+    requestedVolume: volume,
+    now,
+    lastPlayedAt: combatAudio.lastSfxAt.get(cue) ?? -Infinity,
+    sfxEnabled: combatAudio.sfxEnabled,
+    reduceMotion: gameSettings.reduceMotion,
+  });
+  if (!plan.allowed) return false;
   combatAudio.lastSfxAt.set(cue, now);
   const ctx = ensureAudioContext();
   if (!ctx) return false;
@@ -1157,9 +1142,9 @@ function playSfxCue(cue, volume = 0.05) {
   preloadSfxSamples();
   // Prefer the real CC0 sample; fall back to the synth tone until it decodes
   // (or permanently, if the sample failed to load).
-  if (playSfxSample(cue, volume)) return true;
+  if (plan.samplePreferred && playSfxSample(cue, plan.volume)) return true;
   loadSfxSample(cue);
-  return playSfxSynth(cue, volume);
+  return playSfxSynth(cue, plan.volume);
 }
 
 const combatArt = {

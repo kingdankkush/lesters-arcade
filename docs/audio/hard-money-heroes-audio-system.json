@@ -1,0 +1,351 @@
+{
+  "version": "wo-41-audio-system-v1",
+  "validation": {
+    "ok": true,
+    "gaps": [],
+    "cueCount": 25
+  },
+  "mix": {
+    "version": "wo-41-audio-system-v1",
+    "familyCaps": {
+      "ui": 4,
+      "movement": 5,
+      "weapon": 16,
+      "impact": 14,
+      "damage": 4,
+      "reward": 12,
+      "boss": 4,
+      "state": 3,
+      "level1-interactive": 8
+    },
+    "accessibility": {
+      "reduceMotionVolumeMul": 0.82,
+      "maxSynthVolume": 0.16,
+      "minAudibleVolume": 0.008
+    }
+  },
+  "manifestCueCount": 13,
+  "feedbackCueCount": 8,
+  "registry": {
+    "wallet-connect": {
+      "family": "ui",
+      "priority": 3,
+      "cooldownMs": 110,
+      "tone": [
+        523,
+        659,
+        784
+      ],
+      "synth": "triangle",
+      "gainMul": 1,
+      "samplePreferred": true
+    },
+    "menu-click": {
+      "family": "ui",
+      "priority": 1,
+      "cooldownMs": 70,
+      "tone": [
+        392,
+        523
+      ],
+      "synth": "triangle",
+      "gainMul": 0.75,
+      "samplePreferred": true
+    },
+    "hero-select": {
+      "family": "ui",
+      "priority": 3,
+      "cooldownMs": 160,
+      "tone": [
+        523,
+        659,
+        784,
+        1047
+      ],
+      "synth": "triangle",
+      "gainMul": 1.1,
+      "samplePreferred": false
+    },
+    "level-start": {
+      "family": "state",
+      "priority": 4,
+      "cooldownMs": 260,
+      "tone": [
+        330,
+        494,
+        660
+      ],
+      "synth": "triangle",
+      "gainMul": 1.05,
+      "samplePreferred": true
+    },
+    "jump": {
+      "family": "movement",
+      "priority": 2,
+      "cooldownMs": 90,
+      "tone": [
+        420,
+        630
+      ],
+      "synth": "triangle",
+      "gainMul": 0.78,
+      "samplePreferred": true
+    },
+    "land": {
+      "family": "movement",
+      "priority": 2,
+      "cooldownMs": 120,
+      "tone": [
+        120
+      ],
+      "synth": "sine",
+      "gainMul": 0.7,
+      "samplePreferred": true
+    },
+    "weapon-fire": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 42,
+      "tone": [
+        180,
+        900
+      ],
+      "synth": "square",
+      "gainMul": 0.68,
+      "samplePreferred": true
+    },
+    "melee": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 85,
+      "tone": [
+        760,
+        420
+      ],
+      "synth": "square",
+      "gainMul": 0.82,
+      "samplePreferred": true
+    },
+    "grenade": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 180,
+      "tone": [
+        110,
+        220
+      ],
+      "synth": "square",
+      "gainMul": 1,
+      "samplePreferred": true
+    },
+    "grenade-boom": {
+      "family": "impact",
+      "priority": 5,
+      "cooldownMs": 260,
+      "tone": [
+        72,
+        110,
+        220,
+        82
+      ],
+      "synth": "square",
+      "gainMul": 1.25,
+      "samplePreferred": false
+    },
+    "pickup": {
+      "family": "reward",
+      "priority": 3,
+      "cooldownMs": 95,
+      "tone": [
+        660,
+        880,
+        990
+      ],
+      "synth": "triangle",
+      "gainMul": 0.95,
+      "samplePreferred": true
+    },
+    "xp-pickup": {
+      "family": "reward",
+      "priority": 1,
+      "cooldownMs": 38,
+      "tone": [
+        880,
+        1175
+      ],
+      "synth": "triangle",
+      "gainMul": 0.46,
+      "samplePreferred": false
+    },
+    "level-up": {
+      "family": "reward",
+      "priority": 5,
+      "cooldownMs": 420,
+      "tone": [
+        523,
+        784,
+        1047,
+        1568
+      ],
+      "synth": "triangle",
+      "gainMul": 1.25,
+      "samplePreferred": false
+    },
+    "enemy-hit": {
+      "family": "impact",
+      "priority": 2,
+      "cooldownMs": 38,
+      "tone": [
+        220,
+        165
+      ],
+      "synth": "square",
+      "gainMul": 0.7,
+      "samplePreferred": true
+    },
+    "enemy-death": {
+      "family": "impact",
+      "priority": 3,
+      "cooldownMs": 90,
+      "tone": [
+        196,
+        146,
+        98
+      ],
+      "synth": "square",
+      "gainMul": 0.9,
+      "samplePreferred": false
+    },
+    "player-hit": {
+      "family": "damage",
+      "priority": 5,
+      "cooldownMs": 260,
+      "tone": [
+        90,
+        70
+      ],
+      "synth": "square",
+      "gainMul": 1.2,
+      "samplePreferred": true
+    },
+    "boss-warning": {
+      "family": "boss",
+      "priority": 5,
+      "cooldownMs": 360,
+      "tone": [
+        70,
+        140,
+        70
+      ],
+      "synth": "square",
+      "gainMul": 1.25,
+      "samplePreferred": true
+    },
+    "game-over": {
+      "family": "state",
+      "priority": 5,
+      "cooldownMs": 800,
+      "tone": [
+        196,
+        146,
+        98
+      ],
+      "synth": "triangle",
+      "gainMul": 1.1,
+      "samplePreferred": true
+    },
+    "level1-cache-open": {
+      "family": "level1-interactive",
+      "priority": 3,
+      "cooldownMs": 180,
+      "tone": [
+        659,
+        784,
+        988,
+        1319
+      ],
+      "synth": "triangle",
+      "gainMul": 1,
+      "samplePreferred": false
+    },
+    "level1-gas-pump-warning": {
+      "family": "level1-interactive",
+      "priority": 4,
+      "cooldownMs": 360,
+      "tone": [
+        110,
+        82,
+        110
+      ],
+      "synth": "square",
+      "gainMul": 1,
+      "samplePreferred": false
+    },
+    "level1-gas-pump-detonate": {
+      "family": "level1-interactive",
+      "priority": 5,
+      "cooldownMs": 300,
+      "tone": [
+        80,
+        55,
+        120,
+        220
+      ],
+      "synth": "square",
+      "gainMul": 1.25,
+      "samplePreferred": false
+    },
+    "level1-cover-break": {
+      "family": "level1-interactive",
+      "priority": 3,
+      "cooldownMs": 110,
+      "tone": [
+        180,
+        120,
+        95
+      ],
+      "synth": "square",
+      "gainMul": 0.95,
+      "samplePreferred": false
+    },
+    "level1-mushroom-pulse": {
+      "family": "level1-interactive",
+      "priority": 2,
+      "cooldownMs": 220,
+      "tone": [
+        247,
+        370,
+        494
+      ],
+      "synth": "triangle",
+      "gainMul": 0.68,
+      "samplePreferred": false
+    },
+    "level1-gate-unlock": {
+      "family": "level1-interactive",
+      "priority": 4,
+      "cooldownMs": 420,
+      "tone": [
+        196,
+        392,
+        784
+      ],
+      "synth": "triangle",
+      "gainMul": 1.05,
+      "samplePreferred": false
+    },
+    "level1-extraction-flare": {
+      "family": "level1-interactive",
+      "priority": 4,
+      "cooldownMs": 420,
+      "tone": [
+        523,
+        784,
+        1175
+      ],
+      "synth": "triangle",
+      "gainMul": 1.05,
+      "samplePreferred": false
+    }
+  }
+}
