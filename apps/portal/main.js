@@ -8415,7 +8415,7 @@ function drawShadedIsoTile(ctx, cx, cy, palette, shimmer = 0) {
   ctx.stroke();
 }
 
-function drawIsoTile(ctx, cx, cy, color, stroke = 'rgba(25,247,255,.12)') {
+function drawIsoTile(ctx, cx, cy, color) {
   ctx.beginPath();
   ctx.moveTo(cx, cy - ISO_TILE_HEIGHT / 2);
   ctx.lineTo(cx + ISO_TILE_WIDTH / 2, cy);
@@ -8424,8 +8424,6 @@ function drawIsoTile(ctx, cx, cy, color, stroke = 'rgba(25,247,255,.12)') {
   ctx.closePath();
   ctx.fillStyle = color;
   ctx.fill();
-  ctx.strokeStyle = stroke;
-  ctx.stroke();
 }
 
 function currentProductionLevel() {
