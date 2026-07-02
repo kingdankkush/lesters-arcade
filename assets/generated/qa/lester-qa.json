@@ -1,0 +1,1191 @@
+{
+  "actorKey": "lester",
+  "role": "hero",
+  "summary": {
+    "status": "fail",
+    "sampledFrameCount": 16
+  },
+  "checks": [
+    {
+      "id": "transparency",
+      "status": "fail"
+    },
+    {
+      "id": "palette",
+      "status": "fail"
+    },
+    {
+      "id": "completeness",
+      "status": "fail"
+    },
+    {
+      "id": "dimensions",
+      "status": "warn",
+      "canvases": {
+        "50x96": 8,
+        "52x96": 8
+      }
+    },
+    {
+      "id": "pivot-stability",
+      "status": "fail",
+      "maxDelta": 5
+    },
+    {
+      "id": "tell-duration",
+      "status": "pass"
+    }
+  ],
+  "completeness": {
+    "status": "fail",
+    "missingStates": [
+      "dash",
+      "victory"
+    ],
+    "partialDirections": {},
+    "tooShortStates": {}
+  },
+  "tellDuration": {
+    "status": "skip",
+    "reason": "no-contract",
+    "coverageFrames": {}
+  },
+  "frameChecks": [
+    {
+      "state": "idle",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/south/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 679,
+        "offPaletteRatio": 0.208,
+        "offendingHexes": [
+          {
+            "hex": "#1a49cf",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 59.8
+          },
+          {
+            "hex": "#1845d3",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 65.39
+          },
+          {
+            "hex": "#1947d8",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 68.51
+          },
+          {
+            "hex": "#1947d5",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 65.95
+          },
+          {
+            "hex": "#1d49d4",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 62.88
+          },
+          {
+            "hex": "#1d46cc",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 57.16
+          },
+          {
+            "hex": "#1849d6",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 66.58
+          },
+          {
+            "hex": "#204cd1",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 58.25
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/south/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3389,
+        "offPaletteCount": 542,
+        "offPaletteRatio": 0.1599,
+        "offendingHexes": [
+          {
+            "hex": "#285dd0",
+            "count": 70,
+            "nearest": "#345d9d",
+            "distance": 52.39
+          },
+          {
+            "hex": "#235cd0",
+            "count": 66,
+            "nearest": "#345d9d",
+            "distance": 53.77
+          },
+          {
+            "hex": "#225ad5",
+            "count": 59,
+            "nearest": "#345d9d",
+            "distance": 58.9
+          },
+          {
+            "hex": "#235bcc",
+            "count": 54,
+            "nearest": "#345d9d",
+            "distance": 50.02
+          },
+          {
+            "hex": "#2a62d9",
+            "count": 39,
+            "nearest": "#4e82d8",
+            "distance": 48.18
+          },
+          {
+            "hex": "#235cd6",
+            "count": 38,
+            "nearest": "#4e82d8",
+            "distance": 57.42
+          },
+          {
+            "hex": "#275fce",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 50.73
+          },
+          {
+            "hex": "#2259d1",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 55.17
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/south-east/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 679,
+        "offPaletteRatio": 0.208,
+        "offendingHexes": [
+          {
+            "hex": "#1a49cf",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 59.8
+          },
+          {
+            "hex": "#1845d3",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 65.39
+          },
+          {
+            "hex": "#1947d8",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 68.51
+          },
+          {
+            "hex": "#1947d5",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 65.95
+          },
+          {
+            "hex": "#1d49d4",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 62.88
+          },
+          {
+            "hex": "#1d46cc",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 57.16
+          },
+          {
+            "hex": "#1849d6",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 66.58
+          },
+          {
+            "hex": "#204cd1",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 58.25
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/south-east/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3389,
+        "offPaletteCount": 542,
+        "offPaletteRatio": 0.1599,
+        "offendingHexes": [
+          {
+            "hex": "#285dd0",
+            "count": 70,
+            "nearest": "#345d9d",
+            "distance": 52.39
+          },
+          {
+            "hex": "#235cd0",
+            "count": 66,
+            "nearest": "#345d9d",
+            "distance": 53.77
+          },
+          {
+            "hex": "#225ad5",
+            "count": 59,
+            "nearest": "#345d9d",
+            "distance": 58.9
+          },
+          {
+            "hex": "#235bcc",
+            "count": 54,
+            "nearest": "#345d9d",
+            "distance": 50.02
+          },
+          {
+            "hex": "#2a62d9",
+            "count": 39,
+            "nearest": "#4e82d8",
+            "distance": 48.18
+          },
+          {
+            "hex": "#235cd6",
+            "count": 38,
+            "nearest": "#4e82d8",
+            "distance": 57.42
+          },
+          {
+            "hex": "#275fce",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 50.73
+          },
+          {
+            "hex": "#2259d1",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 55.17
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/east/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 641,
+        "offPaletteRatio": 0.1964,
+        "offendingHexes": [
+          {
+            "hex": "#1a48cb",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 56.86
+          },
+          {
+            "hex": "#1844cf",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 62.52
+          },
+          {
+            "hex": "#1946d4",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 65.44
+          },
+          {
+            "hex": "#1946d1",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 62.94
+          },
+          {
+            "hex": "#1d48d0",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 59.76
+          },
+          {
+            "hex": "#1d45c8",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 54.35
+          },
+          {
+            "hex": "#1848d2",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 63.51
+          },
+          {
+            "hex": "#204bcd",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 55.03
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/east/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3389,
+        "offPaletteCount": 537,
+        "offPaletteRatio": 0.1585,
+        "offendingHexes": [
+          {
+            "hex": "#285ccc",
+            "count": 70,
+            "nearest": "#345d9d",
+            "distance": 48.52
+          },
+          {
+            "hex": "#235bcc",
+            "count": 66,
+            "nearest": "#345d9d",
+            "distance": 50.02
+          },
+          {
+            "hex": "#2259d1",
+            "count": 59,
+            "nearest": "#345d9d",
+            "distance": 55.17
+          },
+          {
+            "hex": "#235ac8",
+            "count": 54,
+            "nearest": "#345d9d",
+            "distance": 46.34
+          },
+          {
+            "hex": "#2a61d5",
+            "count": 39,
+            "nearest": "#4e82d8",
+            "distance": 48.93
+          },
+          {
+            "hex": "#235bd2",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 55.7
+          },
+          {
+            "hex": "#275eca",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 46.85
+          },
+          {
+            "hex": "#2258cd",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 51.51
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/north-east/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 580,
+        "offPaletteRatio": 0.1777,
+        "offendingHexes": [
+          {
+            "hex": "#1742ba",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 49.1
+          },
+          {
+            "hex": "#163ebe",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 54.31
+          },
+          {
+            "hex": "#1740c3",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 55.91
+          },
+          {
+            "hex": "#1740c0",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 53.92
+          },
+          {
+            "hex": "#1a42bf",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 50.61
+          },
+          {
+            "hex": "#1a3fb8",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 48.01
+          },
+          {
+            "hex": "#1642c1",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 54.08
+          },
+          {
+            "hex": "#1843c3",
+            "count": 26,
+            "nearest": "#345d9d",
+            "distance": 53.89
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/north-east/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 3389,
+        "offPaletteCount": 63,
+        "offPaletteRatio": 0.0186,
+        "offendingHexes": [
+          {
+            "hex": "#6c84b4",
+            "count": 11,
+            "nearest": "#4e82d8",
+            "distance": 46.9
+          },
+          {
+            "hex": "#999895",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 56.73
+          },
+          {
+            "hex": "#8a8a8a",
+            "count": 8,
+            "nearest": "#5c6b80",
+            "distance": 56.36
+          },
+          {
+            "hex": "#65673d",
+            "count": 8,
+            "nearest": "#8c6724",
+            "distance": 46.32
+          },
+          {
+            "hex": "#8497bc",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 46.91
+          },
+          {
+            "hex": "#6b6e44",
+            "count": 7,
+            "nearest": "#8c6724",
+            "distance": 46.5
+          },
+          {
+            "hex": "#73754a",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 47.59
+          },
+          {
+            "hex": "#7e6f52",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 48.74
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/north/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 580,
+        "offPaletteRatio": 0.1777,
+        "offendingHexes": [
+          {
+            "hex": "#1742ba",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 49.1
+          },
+          {
+            "hex": "#163ebe",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 54.31
+          },
+          {
+            "hex": "#1740c3",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 55.91
+          },
+          {
+            "hex": "#1740c0",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 53.92
+          },
+          {
+            "hex": "#1a42bf",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 50.61
+          },
+          {
+            "hex": "#1a3fb8",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 48.01
+          },
+          {
+            "hex": "#1642c1",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 54.08
+          },
+          {
+            "hex": "#1843c3",
+            "count": 26,
+            "nearest": "#345d9d",
+            "distance": 53.89
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/north/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 3389,
+        "offPaletteCount": 63,
+        "offPaletteRatio": 0.0186,
+        "offendingHexes": [
+          {
+            "hex": "#6c84b4",
+            "count": 11,
+            "nearest": "#4e82d8",
+            "distance": 46.9
+          },
+          {
+            "hex": "#999895",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 56.73
+          },
+          {
+            "hex": "#8a8a8a",
+            "count": 8,
+            "nearest": "#5c6b80",
+            "distance": 56.36
+          },
+          {
+            "hex": "#65673d",
+            "count": 8,
+            "nearest": "#8c6724",
+            "distance": 46.32
+          },
+          {
+            "hex": "#8497bc",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 46.91
+          },
+          {
+            "hex": "#6b6e44",
+            "count": 7,
+            "nearest": "#8c6724",
+            "distance": 46.5
+          },
+          {
+            "hex": "#73754a",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 47.59
+          },
+          {
+            "hex": "#7e6f52",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 48.74
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/north-west/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 580,
+        "offPaletteRatio": 0.1777,
+        "offendingHexes": [
+          {
+            "hex": "#1742ba",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 49.1
+          },
+          {
+            "hex": "#163ebe",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 54.31
+          },
+          {
+            "hex": "#1740c3",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 55.91
+          },
+          {
+            "hex": "#1740c0",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 53.92
+          },
+          {
+            "hex": "#1a42bf",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 50.61
+          },
+          {
+            "hex": "#1a3fb8",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 48.01
+          },
+          {
+            "hex": "#1642c1",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 54.08
+          },
+          {
+            "hex": "#1843c3",
+            "count": 26,
+            "nearest": "#345d9d",
+            "distance": 53.89
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/north-west/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 3389,
+        "offPaletteCount": 63,
+        "offPaletteRatio": 0.0186,
+        "offendingHexes": [
+          {
+            "hex": "#6c84b4",
+            "count": 11,
+            "nearest": "#4e82d8",
+            "distance": 46.9
+          },
+          {
+            "hex": "#999895",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 56.73
+          },
+          {
+            "hex": "#8a8a8a",
+            "count": 8,
+            "nearest": "#5c6b80",
+            "distance": 56.36
+          },
+          {
+            "hex": "#65673d",
+            "count": 8,
+            "nearest": "#8c6724",
+            "distance": 46.32
+          },
+          {
+            "hex": "#8497bc",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 46.91
+          },
+          {
+            "hex": "#6b6e44",
+            "count": 7,
+            "nearest": "#8c6724",
+            "distance": 46.5
+          },
+          {
+            "hex": "#73754a",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 47.59
+          },
+          {
+            "hex": "#7e6f52",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 48.74
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/west/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 641,
+        "offPaletteRatio": 0.1964,
+        "offendingHexes": [
+          {
+            "hex": "#1a48cb",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 56.86
+          },
+          {
+            "hex": "#1844cf",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 62.52
+          },
+          {
+            "hex": "#1946d4",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 65.44
+          },
+          {
+            "hex": "#1946d1",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 62.94
+          },
+          {
+            "hex": "#1d48d0",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 59.76
+          },
+          {
+            "hex": "#1d45c8",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 54.35
+          },
+          {
+            "hex": "#1848d2",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 63.51
+          },
+          {
+            "hex": "#204bcd",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 55.03
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/west/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3389,
+        "offPaletteCount": 537,
+        "offPaletteRatio": 0.1585,
+        "offendingHexes": [
+          {
+            "hex": "#285ccc",
+            "count": 70,
+            "nearest": "#345d9d",
+            "distance": 48.52
+          },
+          {
+            "hex": "#235bcc",
+            "count": 66,
+            "nearest": "#345d9d",
+            "distance": 50.02
+          },
+          {
+            "hex": "#2259d1",
+            "count": 59,
+            "nearest": "#345d9d",
+            "distance": 55.17
+          },
+          {
+            "hex": "#235ac8",
+            "count": 54,
+            "nearest": "#345d9d",
+            "distance": 46.34
+          },
+          {
+            "hex": "#2a61d5",
+            "count": 39,
+            "nearest": "#4e82d8",
+            "distance": 48.93
+          },
+          {
+            "hex": "#235bd2",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 55.7
+          },
+          {
+            "hex": "#275eca",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 46.85
+          },
+          {
+            "hex": "#2258cd",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 51.51
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/south-west/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 94,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3264,
+        "offPaletteCount": 679,
+        "offPaletteRatio": 0.208,
+        "offendingHexes": [
+          {
+            "hex": "#1a49cf",
+            "count": 91,
+            "nearest": "#345d9d",
+            "distance": 59.8
+          },
+          {
+            "hex": "#1845d3",
+            "count": 76,
+            "nearest": "#345d9d",
+            "distance": 65.39
+          },
+          {
+            "hex": "#1947d8",
+            "count": 71,
+            "nearest": "#345d9d",
+            "distance": 68.51
+          },
+          {
+            "hex": "#1947d5",
+            "count": 42,
+            "nearest": "#345d9d",
+            "distance": 65.95
+          },
+          {
+            "hex": "#1d49d4",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 62.88
+          },
+          {
+            "hex": "#1d46cc",
+            "count": 38,
+            "nearest": "#345d9d",
+            "distance": 57.16
+          },
+          {
+            "hex": "#1849d6",
+            "count": 37,
+            "nearest": "#345d9d",
+            "distance": 66.58
+          },
+          {
+            "hex": "#204cd1",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 58.25
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lester/idle/south-west/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 74,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 3389,
+        "offPaletteCount": 542,
+        "offPaletteRatio": 0.1599,
+        "offendingHexes": [
+          {
+            "hex": "#285dd0",
+            "count": 70,
+            "nearest": "#345d9d",
+            "distance": 52.39
+          },
+          {
+            "hex": "#235cd0",
+            "count": 66,
+            "nearest": "#345d9d",
+            "distance": 53.77
+          },
+          {
+            "hex": "#225ad5",
+            "count": 59,
+            "nearest": "#345d9d",
+            "distance": 58.9
+          },
+          {
+            "hex": "#235bcc",
+            "count": 54,
+            "nearest": "#345d9d",
+            "distance": 50.02
+          },
+          {
+            "hex": "#2a62d9",
+            "count": 39,
+            "nearest": "#4e82d8",
+            "distance": 48.18
+          },
+          {
+            "hex": "#235cd6",
+            "count": 38,
+            "nearest": "#4e82d8",
+            "distance": 57.42
+          },
+          {
+            "hex": "#275fce",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 50.73
+          },
+          {
+            "hex": "#2259d1",
+            "count": 32,
+            "nearest": "#345d9d",
+            "distance": 55.17
+          }
+        ]
+      }
+    }
+  ]
+}

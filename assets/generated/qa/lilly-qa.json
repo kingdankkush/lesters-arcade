@@ -1,0 +1,1191 @@
+{
+  "actorKey": "lilly",
+  "role": "hero",
+  "summary": {
+    "status": "fail",
+    "sampledFrameCount": 16
+  },
+  "checks": [
+    {
+      "id": "transparency",
+      "status": "fail"
+    },
+    {
+      "id": "palette",
+      "status": "fail"
+    },
+    {
+      "id": "completeness",
+      "status": "fail"
+    },
+    {
+      "id": "dimensions",
+      "status": "warn",
+      "canvases": {
+        "45x96": 8,
+        "44x96": 8
+      }
+    },
+    {
+      "id": "pivot-stability",
+      "status": "fail",
+      "maxDelta": 3
+    },
+    {
+      "id": "tell-duration",
+      "status": "pass"
+    }
+  ],
+  "completeness": {
+    "status": "fail",
+    "missingStates": [
+      "dash",
+      "victory"
+    ],
+    "partialDirections": {},
+    "tooShortStates": {}
+  },
+  "tellDuration": {
+    "status": "skip",
+    "reason": "no-contract",
+    "coverageFrames": {}
+  },
+  "frameChecks": [
+    {
+      "state": "idle",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2674,
+        "offPaletteCount": 262,
+        "offPaletteRatio": 0.098,
+        "offendingHexes": [
+          {
+            "hex": "#137260",
+            "count": 25,
+            "nearest": "#1f5c2e",
+            "distance": 55.93
+          },
+          {
+            "hex": "#1e927b",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 66.7
+          },
+          {
+            "hex": "#167967",
+            "count": 16,
+            "nearest": "#173b72",
+            "distance": 62.98
+          },
+          {
+            "hex": "#136d5c",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 50.49
+          },
+          {
+            "hex": "#187e6b",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 66.13
+          },
+          {
+            "hex": "#1a8773",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 64.84
+          },
+          {
+            "hex": "#1f9980",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 69.87
+          },
+          {
+            "hex": "#1d8c77",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.67
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 333,
+        "offPaletteRatio": 0.1222,
+        "offendingHexes": [
+          {
+            "hex": "#0e6958",
+            "count": 36,
+            "nearest": "#1f5c2e",
+            "distance": 47.14
+          },
+          {
+            "hex": "#106e5d",
+            "count": 33,
+            "nearest": "#1f5c2e",
+            "distance": 52.52
+          },
+          {
+            "hex": "#1c947f",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 67.09
+          },
+          {
+            "hex": "#137766",
+            "count": 24,
+            "nearest": "#173b72",
+            "distance": 61.32
+          },
+          {
+            "hex": "#1b8976",
+            "count": 18,
+            "nearest": "#345d9d",
+            "distance": 63.89
+          },
+          {
+            "hex": "#187d6b",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 65.64
+          },
+          {
+            "hex": "#127261",
+            "count": 12,
+            "nearest": "#1f5c2e",
+            "distance": 57.04
+          },
+          {
+            "hex": "#209c84",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 70.67
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-east/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2674,
+        "offPaletteCount": 262,
+        "offPaletteRatio": 0.098,
+        "offendingHexes": [
+          {
+            "hex": "#137260",
+            "count": 25,
+            "nearest": "#1f5c2e",
+            "distance": 55.93
+          },
+          {
+            "hex": "#1e927b",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 66.7
+          },
+          {
+            "hex": "#167967",
+            "count": 16,
+            "nearest": "#173b72",
+            "distance": 62.98
+          },
+          {
+            "hex": "#136d5c",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 50.49
+          },
+          {
+            "hex": "#187e6b",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 66.13
+          },
+          {
+            "hex": "#1a8773",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 64.84
+          },
+          {
+            "hex": "#1f9980",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 69.87
+          },
+          {
+            "hex": "#1d8c77",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.67
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-east/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 333,
+        "offPaletteRatio": 0.1222,
+        "offendingHexes": [
+          {
+            "hex": "#0e6958",
+            "count": 36,
+            "nearest": "#1f5c2e",
+            "distance": 47.14
+          },
+          {
+            "hex": "#106e5d",
+            "count": 33,
+            "nearest": "#1f5c2e",
+            "distance": 52.52
+          },
+          {
+            "hex": "#1c947f",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 67.09
+          },
+          {
+            "hex": "#137766",
+            "count": 24,
+            "nearest": "#173b72",
+            "distance": 61.32
+          },
+          {
+            "hex": "#1b8976",
+            "count": 18,
+            "nearest": "#345d9d",
+            "distance": 63.89
+          },
+          {
+            "hex": "#187d6b",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 65.64
+          },
+          {
+            "hex": "#127261",
+            "count": 12,
+            "nearest": "#1f5c2e",
+            "distance": 57.04
+          },
+          {
+            "hex": "#209c84",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 70.67
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/east/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2674,
+        "offPaletteCount": 247,
+        "offPaletteRatio": 0.0924,
+        "offendingHexes": [
+          {
+            "hex": "#13705f",
+            "count": 25,
+            "nearest": "#1f5c2e",
+            "distance": 54.27
+          },
+          {
+            "hex": "#1e9079",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 66.19
+          },
+          {
+            "hex": "#167765",
+            "count": 16,
+            "nearest": "#173b72",
+            "distance": 61.4
+          },
+          {
+            "hex": "#136b5b",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 48.93
+          },
+          {
+            "hex": "#187c69",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 65.12
+          },
+          {
+            "hex": "#1a8571",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 64.9
+          },
+          {
+            "hex": "#1f967e",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 68.2
+          },
+          {
+            "hex": "#1d8a75",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.45
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/east/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 272,
+        "offPaletteRatio": 0.0999,
+        "offendingHexes": [
+          {
+            "hex": "#106c5c",
+            "count": 33,
+            "nearest": "#1f5c2e",
+            "distance": 50.96
+          },
+          {
+            "hex": "#1c927d",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 66.4
+          },
+          {
+            "hex": "#137564",
+            "count": 24,
+            "nearest": "#173b72",
+            "distance": 59.8
+          },
+          {
+            "hex": "#1b8774",
+            "count": 18,
+            "nearest": "#345d9d",
+            "distance": 63.8
+          },
+          {
+            "hex": "#187b69",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 64.3
+          },
+          {
+            "hex": "#127060",
+            "count": 12,
+            "nearest": "#1f5c2e",
+            "distance": 55.4
+          },
+          {
+            "hex": "#209982",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 68.77
+          },
+          {
+            "hex": "#1c816e",
+            "count": 11,
+            "nearest": "#345d9d",
+            "distance": 63.88
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-east/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2674,
+        "offPaletteCount": 185,
+        "offPaletteRatio": 0.0692,
+        "offendingHexes": [
+          {
+            "hex": "#1b846f",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 65.28
+          },
+          {
+            "hex": "#146d5c",
+            "count": 16,
+            "nearest": "#1f5c2e",
+            "distance": 50.26
+          },
+          {
+            "hex": "#167260",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 55.36
+          },
+          {
+            "hex": "#177a67",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 63.64
+          },
+          {
+            "hex": "#1c8a73",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 66.07
+          },
+          {
+            "hex": "#1a7e6b",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 65.31
+          },
+          {
+            "hex": "#26977f",
+            "count": 10,
+            "nearest": "#345d9d",
+            "distance": 66.78
+          },
+          {
+            "hex": "#209079",
+            "count": 9,
+            "nearest": "#345d9d",
+            "distance": 65.55
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-east/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 231,
+        "offPaletteRatio": 0.0848,
+        "offendingHexes": [
+          {
+            "hex": "#198673",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 64.61
+          },
+          {
+            "hex": "#116b5c",
+            "count": 24,
+            "nearest": "#1f5c2e",
+            "distance": 50.37
+          },
+          {
+            "hex": "#187c6a",
+            "count": 18,
+            "nearest": "#3a465c",
+            "distance": 65.33
+          },
+          {
+            "hex": "#167160",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 54.97
+          },
+          {
+            "hex": "#1d8c77",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.67
+          },
+          {
+            "hex": "#197665",
+            "count": 11,
+            "nearest": "#3a465c",
+            "distance": 58.94
+          },
+          {
+            "hex": "#20927c",
+            "count": 11,
+            "nearest": "#345d9d",
+            "distance": 65.56
+          },
+          {
+            "hex": "#2fa18a",
+            "count": 10,
+            "nearest": "#345d9d",
+            "distance": 70.78
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2674,
+        "offPaletteCount": 185,
+        "offPaletteRatio": 0.0692,
+        "offendingHexes": [
+          {
+            "hex": "#1b846f",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 65.28
+          },
+          {
+            "hex": "#146d5c",
+            "count": 16,
+            "nearest": "#1f5c2e",
+            "distance": 50.26
+          },
+          {
+            "hex": "#167260",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 55.36
+          },
+          {
+            "hex": "#177a67",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 63.64
+          },
+          {
+            "hex": "#1c8a73",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 66.07
+          },
+          {
+            "hex": "#1a7e6b",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 65.31
+          },
+          {
+            "hex": "#26977f",
+            "count": 10,
+            "nearest": "#345d9d",
+            "distance": 66.78
+          },
+          {
+            "hex": "#209079",
+            "count": 9,
+            "nearest": "#345d9d",
+            "distance": 65.55
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 231,
+        "offPaletteRatio": 0.0848,
+        "offendingHexes": [
+          {
+            "hex": "#198673",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 64.61
+          },
+          {
+            "hex": "#116b5c",
+            "count": 24,
+            "nearest": "#1f5c2e",
+            "distance": 50.37
+          },
+          {
+            "hex": "#187c6a",
+            "count": 18,
+            "nearest": "#3a465c",
+            "distance": 65.33
+          },
+          {
+            "hex": "#167160",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 54.97
+          },
+          {
+            "hex": "#1d8c77",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.67
+          },
+          {
+            "hex": "#197665",
+            "count": 11,
+            "nearest": "#3a465c",
+            "distance": 58.94
+          },
+          {
+            "hex": "#20927c",
+            "count": 11,
+            "nearest": "#345d9d",
+            "distance": 65.56
+          },
+          {
+            "hex": "#2fa18a",
+            "count": 10,
+            "nearest": "#345d9d",
+            "distance": 70.78
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-west/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2674,
+        "offPaletteCount": 185,
+        "offPaletteRatio": 0.0692,
+        "offendingHexes": [
+          {
+            "hex": "#1b846f",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 65.28
+          },
+          {
+            "hex": "#146d5c",
+            "count": 16,
+            "nearest": "#1f5c2e",
+            "distance": 50.26
+          },
+          {
+            "hex": "#167260",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 55.36
+          },
+          {
+            "hex": "#177a67",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 63.64
+          },
+          {
+            "hex": "#1c8a73",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 66.07
+          },
+          {
+            "hex": "#1a7e6b",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 65.31
+          },
+          {
+            "hex": "#26977f",
+            "count": 10,
+            "nearest": "#345d9d",
+            "distance": 66.78
+          },
+          {
+            "hex": "#209079",
+            "count": 9,
+            "nearest": "#345d9d",
+            "distance": 65.55
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-west/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 231,
+        "offPaletteRatio": 0.0848,
+        "offendingHexes": [
+          {
+            "hex": "#116b5c",
+            "count": 24,
+            "nearest": "#1f5c2e",
+            "distance": 50.37
+          },
+          {
+            "hex": "#198673",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 64.61
+          },
+          {
+            "hex": "#187c6a",
+            "count": 18,
+            "nearest": "#3a465c",
+            "distance": 65.33
+          },
+          {
+            "hex": "#167160",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 54.97
+          },
+          {
+            "hex": "#1d8c77",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.67
+          },
+          {
+            "hex": "#197665",
+            "count": 11,
+            "nearest": "#3a465c",
+            "distance": 58.94
+          },
+          {
+            "hex": "#20927c",
+            "count": 11,
+            "nearest": "#345d9d",
+            "distance": 65.56
+          },
+          {
+            "hex": "#2fa18a",
+            "count": 10,
+            "nearest": "#345d9d",
+            "distance": 70.78
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/west/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2674,
+        "offPaletteCount": 247,
+        "offPaletteRatio": 0.0924,
+        "offendingHexes": [
+          {
+            "hex": "#13705f",
+            "count": 25,
+            "nearest": "#1f5c2e",
+            "distance": 54.27
+          },
+          {
+            "hex": "#1e9079",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 66.19
+          },
+          {
+            "hex": "#167765",
+            "count": 16,
+            "nearest": "#173b72",
+            "distance": 61.4
+          },
+          {
+            "hex": "#136b5b",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 48.93
+          },
+          {
+            "hex": "#187c69",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 65.12
+          },
+          {
+            "hex": "#1a8571",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 64.9
+          },
+          {
+            "hex": "#1f967e",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 68.2
+          },
+          {
+            "hex": "#1d8a75",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.45
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/west/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 272,
+        "offPaletteRatio": 0.0999,
+        "offendingHexes": [
+          {
+            "hex": "#106c5c",
+            "count": 33,
+            "nearest": "#1f5c2e",
+            "distance": 50.96
+          },
+          {
+            "hex": "#137564",
+            "count": 24,
+            "nearest": "#173b72",
+            "distance": 59.8
+          },
+          {
+            "hex": "#1c927d",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 66.4
+          },
+          {
+            "hex": "#1b8774",
+            "count": 18,
+            "nearest": "#345d9d",
+            "distance": 63.8
+          },
+          {
+            "hex": "#187b69",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 64.3
+          },
+          {
+            "hex": "#127060",
+            "count": 12,
+            "nearest": "#1f5c2e",
+            "distance": 55.4
+          },
+          {
+            "hex": "#209982",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 68.77
+          },
+          {
+            "hex": "#1c816e",
+            "count": 11,
+            "nearest": "#345d9d",
+            "distance": 63.88
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-west/00.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 108,
+        "strayIslandCount": 0,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2674,
+        "offPaletteCount": 262,
+        "offPaletteRatio": 0.098,
+        "offendingHexes": [
+          {
+            "hex": "#137260",
+            "count": 25,
+            "nearest": "#1f5c2e",
+            "distance": 55.93
+          },
+          {
+            "hex": "#1e927b",
+            "count": 19,
+            "nearest": "#345d9d",
+            "distance": 66.7
+          },
+          {
+            "hex": "#167967",
+            "count": 16,
+            "nearest": "#173b72",
+            "distance": 62.98
+          },
+          {
+            "hex": "#136d5c",
+            "count": 15,
+            "nearest": "#1f5c2e",
+            "distance": 50.49
+          },
+          {
+            "hex": "#187e6b",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 66.13
+          },
+          {
+            "hex": "#1a8773",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 64.84
+          },
+          {
+            "hex": "#1f9980",
+            "count": 14,
+            "nearest": "#345d9d",
+            "distance": 69.87
+          },
+          {
+            "hex": "#1d8c77",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 64.67
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-west/07.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 83,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2724,
+        "offPaletteCount": 333,
+        "offPaletteRatio": 0.1222,
+        "offendingHexes": [
+          {
+            "hex": "#0e6958",
+            "count": 36,
+            "nearest": "#1f5c2e",
+            "distance": 47.14
+          },
+          {
+            "hex": "#106e5d",
+            "count": 33,
+            "nearest": "#1f5c2e",
+            "distance": 52.52
+          },
+          {
+            "hex": "#137766",
+            "count": 24,
+            "nearest": "#173b72",
+            "distance": 61.32
+          },
+          {
+            "hex": "#1c947f",
+            "count": 24,
+            "nearest": "#345d9d",
+            "distance": 67.09
+          },
+          {
+            "hex": "#1b8976",
+            "count": 18,
+            "nearest": "#345d9d",
+            "distance": 63.89
+          },
+          {
+            "hex": "#187d6b",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 65.64
+          },
+          {
+            "hex": "#127261",
+            "count": 12,
+            "nearest": "#1f5c2e",
+            "distance": 57.04
+          },
+          {
+            "hex": "#209c84",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 70.67
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,1031 @@
+{
+  "actorKey": "lit-commando",
+  "role": "hero",
+  "summary": {
+    "status": "fail",
+    "sampledFrameCount": 16
+  },
+  "checks": [
+    {
+      "id": "transparency",
+      "status": "fail"
+    },
+    {
+      "id": "palette",
+      "status": "fail"
+    },
+    {
+      "id": "completeness",
+      "status": "fail"
+    },
+    {
+      "id": "dimensions",
+      "status": "pass",
+      "canvases": {
+        "136x136": 16
+      }
+    },
+    {
+      "id": "pivot-stability",
+      "status": "fail",
+      "maxDelta": 4.714
+    },
+    {
+      "id": "tell-duration",
+      "status": "pass"
+    }
+  ],
+  "completeness": {
+    "status": "fail",
+    "missingStates": [
+      "dash"
+    ],
+    "partialDirections": {},
+    "tooShortStates": {}
+  },
+  "tellDuration": {
+    "status": "skip",
+    "reason": "no-contract",
+    "coverageFrames": {}
+  },
+  "frameChecks": [
+    {
+      "state": "hurt",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2444,
+        "offPaletteCount": 133,
+        "offPaletteRatio": 0.0544,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 57,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 48,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#157ab4",
+            "count": 21,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#16a1dd",
+            "count": 1,
+            "nearest": "#4e82d8",
+            "distance": 64.2
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south/06.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "stray-islands"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 3,
+        "componentCount": 4
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2390,
+        "offPaletteCount": 190,
+        "offPaletteRatio": 0.0795,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 58,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 41,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#fc0403",
+            "count": 21,
+            "nearest": "#b07a3d",
+            "distance": 151.87
+          },
+          {
+            "hex": "#157ab4",
+            "count": 11,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#ef0d06",
+            "count": 9,
+            "nearest": "#8c6724",
+            "distance": 137.12
+          },
+          {
+            "hex": "#0678a5",
+            "count": 7,
+            "nearest": "#345d9d",
+            "distance": 53.94
+          },
+          {
+            "hex": "#fb0b03",
+            "count": 6,
+            "nearest": "#b07a3d",
+            "distance": 145.98
+          },
+          {
+            "hex": "#f10408",
+            "count": 5,
+            "nearest": "#8c6724",
+            "distance": 144.17
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2375,
+        "offPaletteCount": 94,
+        "offPaletteRatio": 0.0396,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 47,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 20,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#157ab4",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 9,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#16a1dd",
+            "count": 4,
+            "nearest": "#4e82d8",
+            "distance": 64.2
+          },
+          {
+            "hex": "#5cc6ea",
+            "count": 2,
+            "nearest": "#8cb7ff",
+            "distance": 54.5
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south-east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2446,
+        "offPaletteCount": 86,
+        "offPaletteRatio": 0.0352,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 31,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 30,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#0683c2",
+            "count": 5,
+            "nearest": "#345d9d",
+            "distance": 70.21
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 4,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#16a1dd",
+            "count": 4,
+            "nearest": "#4e82d8",
+            "distance": 64.2
+          },
+          {
+            "hex": "#26b6e3",
+            "count": 3,
+            "nearest": "#4e82d8",
+            "distance": 66.52
+          },
+          {
+            "hex": "#0178a4",
+            "count": 2,
+            "nearest": "#345d9d",
+            "distance": 58.13
+          },
+          {
+            "hex": "#1d9ccc",
+            "count": 2,
+            "nearest": "#4e82d8",
+            "distance": 56.75
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 1908,
+        "offPaletteCount": 100,
+        "offPaletteRatio": 0.0524,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 39,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 38,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 11,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#157ab4",
+            "count": 9,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#16a1dd",
+            "count": 2,
+            "nearest": "#4e82d8",
+            "distance": 64.2
+          },
+          {
+            "hex": "#5cc6ea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 54.5
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 1966,
+        "offPaletteCount": 72,
+        "offPaletteRatio": 0.0366,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 30,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 22,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#0488c1",
+            "count": 8,
+            "nearest": "#345d9d",
+            "distance": 73.82
+          },
+          {
+            "hex": "#157ab4",
+            "count": 5,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#067ac8",
+            "count": 3,
+            "nearest": "#345d9d",
+            "distance": 69.33
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 2,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#0079a0",
+            "count": 1,
+            "nearest": "#345d9d",
+            "distance": 59.14
+          },
+          {
+            "hex": "#8a9981",
+            "count": 1,
+            "nearest": "#5c6b80",
+            "distance": 65.06
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2325,
+        "offPaletteCount": 91,
+        "offPaletteRatio": 0.0391,
+        "offendingHexes": [
+          {
+            "hex": "#85888b",
+            "count": 53,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#989a9d",
+            "count": 26,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#16a1dd",
+            "count": 7,
+            "nearest": "#4e82d8",
+            "distance": 64.2
+          },
+          {
+            "hex": "#157ab4",
+            "count": 4,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 1,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north-east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2417,
+        "offPaletteCount": 105,
+        "offPaletteRatio": 0.0434,
+        "offendingHexes": [
+          {
+            "hex": "#85888b",
+            "count": 62,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#989a9d",
+            "count": 30,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#898e9e",
+            "count": 4,
+            "nearest": "#a8b4c4",
+            "distance": 62.04
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 4,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#157ab4",
+            "count": 3,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#047094",
+            "count": 2,
+            "nearest": "#345d9d",
+            "distance": 52.4
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2211,
+        "offPaletteCount": 128,
+        "offPaletteRatio": 0.0579,
+        "offendingHexes": [
+          {
+            "hex": "#85888b",
+            "count": 65,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#989a9d",
+            "count": 54,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#157ab4",
+            "count": 7,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 1,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#5cc6ea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 54.5
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north-west/06.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "stray-islands"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 3,
+        "componentCount": 4
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2378,
+        "offPaletteCount": 74,
+        "offPaletteRatio": 0.0311,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 26,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 20,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#64fdfa",
+            "count": 7,
+            "nearest": "#8cb7ff",
+            "distance": 80.78
+          },
+          {
+            "hex": "#59fef6",
+            "count": 4,
+            "nearest": "#8cb7ff",
+            "distance": 87.88
+          },
+          {
+            "hex": "#2fe5ea",
+            "count": 3,
+            "nearest": "#4e82d8",
+            "distance": 105.29
+          },
+          {
+            "hex": "#3efaf7",
+            "count": 2,
+            "nearest": "#8cb7ff",
+            "distance": 103.14
+          },
+          {
+            "hex": "#9bf1f5",
+            "count": 1,
+            "nearest": "#c9d2de",
+            "distance": 60.05
+          },
+          {
+            "hex": "#5cdfe2",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 68.88
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 1852,
+        "offPaletteCount": 127,
+        "offPaletteRatio": 0.0686,
+        "offendingHexes": [
+          {
+            "hex": "#85888b",
+            "count": 63,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#989a9d",
+            "count": 46,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#157ab4",
+            "count": 15,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 2,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#5cc6ea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 54.5
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/west/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 1882,
+        "offPaletteCount": 145,
+        "offPaletteRatio": 0.077,
+        "offendingHexes": [
+          {
+            "hex": "#85888b",
+            "count": 67,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#989a9d",
+            "count": 54,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#849892",
+            "count": 7,
+            "nearest": "#5c6b80",
+            "distance": 62.84
+          },
+          {
+            "hex": "#0484be",
+            "count": 5,
+            "nearest": "#345d9d",
+            "distance": 70.1
+          },
+          {
+            "hex": "#157ab4",
+            "count": 5,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 4,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#9aa48c",
+            "count": 1,
+            "nearest": "#a8b4c4",
+            "distance": 59.9
+          },
+          {
+            "hex": "#78d9e6",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 46.7
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2383,
+        "offPaletteCount": 106,
+        "offPaletteRatio": 0.0445,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 46,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 31,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#157ab4",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 48.28
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 9,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#5cc6ea",
+            "count": 6,
+            "nearest": "#8cb7ff",
+            "distance": 54.5
+          },
+          {
+            "hex": "#16a1dd",
+            "count": 2,
+            "nearest": "#4e82d8",
+            "distance": 64.2
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south-west/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2528,
+        "offPaletteCount": 114,
+        "offPaletteRatio": 0.0451,
+        "offendingHexes": [
+          {
+            "hex": "#989a9d",
+            "count": 48,
+            "nearest": "#a8b4c4",
+            "distance": 49.53
+          },
+          {
+            "hex": "#85888b",
+            "count": 30,
+            "nearest": "#5c6b80",
+            "distance": 51.41
+          },
+          {
+            "hex": "#1a8cc9",
+            "count": 10,
+            "nearest": "#4e82d8",
+            "distance": 55.04
+          },
+          {
+            "hex": "#078db5",
+            "count": 5,
+            "nearest": "#345d9d",
+            "distance": 70.04
+          },
+          {
+            "hex": "#988c8c",
+            "count": 4,
+            "nearest": "#5c6b80",
+            "distance": 69.52
+          },
+          {
+            "hex": "#289cd3",
+            "count": 3,
+            "nearest": "#4e82d8",
+            "distance": 46.31
+          },
+          {
+            "hex": "#34b2e4",
+            "count": 2,
+            "nearest": "#4e82d8",
+            "distance": 55.89
+          },
+          {
+            "hex": "#0486c4",
+            "count": 2,
+            "nearest": "#345d9d",
+            "distance": 74.2
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2468,
+        "offPaletteCount": 634,
+        "offPaletteRatio": 0.2569,
+        "offendingHexes": [
+          {
+            "hex": "#ab898b",
+            "count": 226,
+            "nearest": "#a8b4c4",
+            "distance": 71.46
+          },
+          {
+            "hex": "#8f6d6f",
+            "count": 122,
+            "nearest": "#5c6b80",
+            "distance": 53.8
+          },
+          {
+            "hex": "#846265",
+            "count": 116,
+            "nearest": "#5c6b80",
+            "distance": 49.09
+          },
+          {
+            "hex": "#bb9a9c",
+            "count": 88,
+            "nearest": "#a8b4c4",
+            "distance": 51.35
+          },
+          {
+            "hex": "#725152",
+            "count": 49,
+            "nearest": "#6a3d22",
+            "distance": 52.61
+          },
+          {
+            "hex": "#9b7a7c",
+            "count": 33,
+            "nearest": "#5c6b80",
+            "distance": 64.88
+          }
+        ]
+      }
+    },
+    {
+      "state": "hurt",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north/06.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "stray-islands"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 2,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2250,
+        "offPaletteCount": 635,
+        "offPaletteRatio": 0.2822,
+        "offendingHexes": [
+          {
+            "hex": "#ab898b",
+            "count": 243,
+            "nearest": "#a8b4c4",
+            "distance": 71.46
+          },
+          {
+            "hex": "#8f6d6f",
+            "count": 121,
+            "nearest": "#5c6b80",
+            "distance": 53.8
+          },
+          {
+            "hex": "#846265",
+            "count": 104,
+            "nearest": "#5c6b80",
+            "distance": 49.09
+          },
+          {
+            "hex": "#725152",
+            "count": 28,
+            "nearest": "#6a3d22",
+            "distance": 52.61
+          },
+          {
+            "hex": "#bb9a9c",
+            "count": 19,
+            "nearest": "#a8b4c4",
+            "distance": 51.35
+          },
+          {
+            "hex": "#2f2adb",
+            "count": 12,
+            "nearest": "#345d9d",
+            "distance": 80.44
+          },
+          {
+            "hex": "#2f31da",
+            "count": 11,
+            "nearest": "#345d9d",
+            "distance": 75.38
+          },
+          {
+            "hex": "#7b5a5a",
+            "count": 11,
+            "nearest": "#5c6b80",
+            "distance": 51.9
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "actorKey": "gas-beast-tank",
+  "role": "enemy",
+  "summary": {
+    "status": "fail",
+    "sampledFrameCount": 0
+  },
+  "checks": [
+    {
+      "id": "transparency",
+      "status": "pass"
+    },
+    {
+      "id": "palette",
+      "status": "pass"
+    },
+    {
+      "id": "completeness",
+      "status": "fail"
+    },
+    {
+      "id": "dimensions",
+      "status": "pass",
+      "canvases": {}
+    },
+    {
+      "id": "pivot-stability",
+      "status": "warn",
+      "maxDelta": 0
+    },
+    {
+      "id": "tell-duration",
+      "status": "fail"
+    }
+  ],
+  "completeness": {
+    "status": "fail",
+    "missingStates": [
+      "idle",
+      "walk",
+      "run",
+      "attack-tell",
+      "attack",
+      "hit",
+      "death",
+      "spawn-in"
+    ],
+    "partialDirections": {},
+    "tooShortStates": {}
+  },
+  "tellDuration": {
+    "status": "fail",
+    "reason": "missing-attack-tell",
+    "tellFrames": 42,
+    "coverageFrames": {}
+  },
+  "frameChecks": []
+}

@@ -1,0 +1,1158 @@
+{
+  "actorKey": "lit-valkyrie",
+  "role": "hero",
+  "summary": {
+    "status": "fail",
+    "sampledFrameCount": 16
+  },
+  "checks": [
+    {
+      "id": "transparency",
+      "status": "pass"
+    },
+    {
+      "id": "palette",
+      "status": "fail"
+    },
+    {
+      "id": "completeness",
+      "status": "fail"
+    },
+    {
+      "id": "dimensions",
+      "status": "pass",
+      "canvases": {
+        "136x136": 16
+      }
+    },
+    {
+      "id": "pivot-stability",
+      "status": "fail",
+      "maxDelta": 21.068
+    },
+    {
+      "id": "tell-duration",
+      "status": "pass"
+    }
+  ],
+  "completeness": {
+    "status": "fail",
+    "missingStates": [
+      "dash",
+      "victory"
+    ],
+    "partialDirections": {},
+    "tooShortStates": {}
+  },
+  "tellDuration": {
+    "status": "skip",
+    "reason": "no-contract",
+    "coverageFrames": {}
+  },
+  "frameChecks": [
+    {
+      "state": "death",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2842,
+        "offPaletteCount": 1258,
+        "offPaletteRatio": 0.4426,
+        "offendingHexes": [
+          {
+            "hex": "#52bed8",
+            "count": 339,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 195,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#03695d",
+            "count": 183,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#066b8f",
+            "count": 126,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 125,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#046c64",
+            "count": 116,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#66c2d6",
+            "count": 38,
+            "nearest": "#8cb7ff",
+            "distance": 56.97
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 36,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1925,
+        "offPaletteCount": 790,
+        "offPaletteRatio": 0.4104,
+        "offendingHexes": [
+          {
+            "hex": "#edc6b5",
+            "count": 152,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#03695d",
+            "count": 145,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#046c64",
+            "count": 87,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 50,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#52bed8",
+            "count": 44,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 22,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          },
+          {
+            "hex": "#066b8f",
+            "count": 17,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#40b3b4",
+            "count": 16,
+            "nearest": "#4e82d8",
+            "distance": 62.39
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2658,
+        "offPaletteCount": 1354,
+        "offPaletteRatio": 0.5094,
+        "offendingHexes": [
+          {
+            "hex": "#52bed8",
+            "count": 316,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#03695d",
+            "count": 277,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#046c64",
+            "count": 238,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 148,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#066b8f",
+            "count": 121,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 113,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 45,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          },
+          {
+            "hex": "#66c2d6",
+            "count": 20,
+            "nearest": "#8cb7ff",
+            "distance": 56.97
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south-east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2599,
+        "offPaletteCount": 1257,
+        "offPaletteRatio": 0.4836,
+        "offendingHexes": [
+          {
+            "hex": "#046c64",
+            "count": 351,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 301,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#066b8f",
+            "count": 150,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 142,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#03695d",
+            "count": 92,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 58,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 21,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 19,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2108,
+        "offPaletteCount": 1241,
+        "offPaletteRatio": 0.5887,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 349,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#046c64",
+            "count": 267,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 154,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 108,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#066b8f",
+            "count": 107,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 105,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#66c2d6",
+            "count": 38,
+            "nearest": "#8cb7ff",
+            "distance": 56.97
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 33,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2105,
+        "offPaletteCount": 1047,
+        "offPaletteRatio": 0.4974,
+        "offendingHexes": [
+          {
+            "hex": "#046c64",
+            "count": 390,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 184,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#03695d",
+            "count": 138,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#066b8f",
+            "count": 92,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 48,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 30,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 28,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          },
+          {
+            "hex": "#1495b9",
+            "count": 16,
+            "nearest": "#4e82d8",
+            "distance": 68.45
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2696,
+        "offPaletteCount": 1118,
+        "offPaletteRatio": 0.4147,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 304,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#066b8f",
+            "count": 243,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#046c64",
+            "count": 198,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 136,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 81,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 56,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#66c2d6",
+            "count": 26,
+            "nearest": "#8cb7ff",
+            "distance": 56.97
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 14,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2105,
+        "offPaletteCount": 887,
+        "offPaletteRatio": 0.4214,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 328,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#52bed8",
+            "count": 169,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 85,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#046c64",
+            "count": 65,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#066b8f",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 24,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#006776",
+            "count": 19,
+            "nearest": "#173b72",
+            "distance": 49.81
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 18,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2850,
+        "offPaletteCount": 1408,
+        "offPaletteRatio": 0.494,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 467,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#046c64",
+            "count": 422,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 318,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 107,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#066b8f",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#66c2d6",
+            "count": 16,
+            "nearest": "#8cb7ff",
+            "distance": 56.97
+          },
+          {
+            "hex": "#35a3c1",
+            "count": 14,
+            "nearest": "#4e82d8",
+            "distance": 47.36
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 11,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1832,
+        "offPaletteCount": 1002,
+        "offPaletteRatio": 0.5469,
+        "offendingHexes": [
+          {
+            "hex": "#046c64",
+            "count": 471,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#03695d",
+            "count": 350,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 43,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#52bed8",
+            "count": 41,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 22,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          },
+          {
+            "hex": "#066b8f",
+            "count": 10,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#24b2ad",
+            "count": 7,
+            "nearest": "#4e82d8",
+            "distance": 76.92
+          },
+          {
+            "hex": "#01677b",
+            "count": 6,
+            "nearest": "#173b72",
+            "distance": 50.01
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2042,
+        "offPaletteCount": 1165,
+        "offPaletteRatio": 0.5705,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 288,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#046c64",
+            "count": 287,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 199,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 84,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#066b8f",
+            "count": 80,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 79,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 36,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 27,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/west/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1977,
+        "offPaletteCount": 984,
+        "offPaletteRatio": 0.4977,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 420,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#52bed8",
+            "count": 131,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#046c64",
+            "count": 122,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 63,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#066b8f",
+            "count": 33,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#4bacbe",
+            "count": 19,
+            "nearest": "#4e82d8",
+            "distance": 49.49
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 18,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          },
+          {
+            "hex": "#017c6a",
+            "count": 15,
+            "nearest": "#173b72",
+            "distance": 69.09
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2702,
+        "offPaletteCount": 1364,
+        "offPaletteRatio": 0.5048,
+        "offendingHexes": [
+          {
+            "hex": "#52bed8",
+            "count": 282,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#046c64",
+            "count": 240,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#03695d",
+            "count": 223,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 160,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#066b8f",
+            "count": 150,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 133,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 44,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 29,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south-west/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2232,
+        "offPaletteCount": 1084,
+        "offPaletteRatio": 0.4857,
+        "offendingHexes": [
+          {
+            "hex": "#046c64",
+            "count": 352,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#03695d",
+            "count": 221,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#52bed8",
+            "count": 188,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#066b8f",
+            "count": 79,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 46,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 37,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 28,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#24b2ad",
+            "count": 13,
+            "nearest": "#4e82d8",
+            "distance": 76.92
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2696,
+        "offPaletteCount": 1118,
+        "offPaletteRatio": 0.4147,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 304,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#066b8f",
+            "count": 243,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#046c64",
+            "count": 198,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 136,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 81,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 56,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#66c2d6",
+            "count": 26,
+            "nearest": "#8cb7ff",
+            "distance": 56.97
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 14,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-west/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2105,
+        "offPaletteCount": 887,
+        "offPaletteRatio": 0.4214,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 328,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#52bed8",
+            "count": 169,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 85,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#046c64",
+            "count": 65,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#066b8f",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 24,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#006776",
+            "count": 19,
+            "nearest": "#173b72",
+            "distance": 49.81
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 18,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          }
+        ]
+      }
+    }
+  ]
+}

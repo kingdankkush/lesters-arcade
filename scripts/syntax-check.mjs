@@ -94,6 +94,7 @@ const NODE_CHECK_FILES = [
   "scripts/contract-structure-check.mjs",
   "scripts/compile-contracts.mjs",
   "scripts/verify-generated-assets.mjs",
+  "scripts/sprite-qa.mjs",
   "scripts/report-hmh-animation-coverage.mjs",
   "scripts/roster-coverage-report.mjs",
   "scripts/write-hmh-balance-snapshot.mjs",
@@ -146,6 +147,7 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-level-one-boss.mjs",
   "tests/hmh-level-one-boss.test.mjs",
   "tests/roster-coverage-report.test.mjs",
+  "tests/sprite-qa.test.mjs",
   "scripts/syntax-check.mjs"
 ];
 
