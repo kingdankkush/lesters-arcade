@@ -84,6 +84,7 @@ function animatedSceneAssetByKey(key) {
   return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key) ?? levelThreeFinalGetawayAssetByKey(key);
 }
 import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
+import { buildUpgradeMenuPresentation } from './src/hmh-upgrade-menu-ui.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -1477,6 +1478,7 @@ const combat = {
   bossKills: 0,
   longestSurvivalThisRun: 0,
   levelUpChoices: [],
+  levelUpLockedPreviews: [],
   levelUpPaused: false,
   roguelikeRun: null,
   roguelikeSpawnTimer: 0,
@@ -2272,57 +2274,72 @@ function renderLevelUpActionGrid() {
   if (levelUpContainer) applyLevelUpOverlayLayout(levelUpContainer);
   const targetGrid = levelUpContainer || dom.combatMenuActionGrid;
   const choices = combat.levelUpChoices ?? [];
-  const signature = `level-up:${choices.map((choice) => `${choice.id}:${choice.nextLevel}`).join('|')}:rerolls-${combat.roguelikeRun?.rerollsRemaining ?? 0}`;
+  const presentation = buildUpgradeMenuPresentation({
+    choices,
+    rerollsRemaining: combat.roguelikeRun?.rerollsRemaining ?? 0,
+    colorblindTags: gameSettings.colorblindTags,
+    lockedPreviews: combat.levelUpLockedPreviews ?? [],
+    level: combat.roguelikeRun?.level ?? null,
+  });
+  const signature = `level-up:${presentation.cards.map((card) => `${card.id}:${card.rankLabel}`).join('|')}:rerolls-${presentation.reroll.remaining}:cb-${gameSettings.colorblindTags ? 1 : 0}`;
   if (targetGrid.dataset.signature === signature) return true;
   targetGrid.dataset.signature = signature;
   targetGrid.replaceChildren();
-  // Category → icon + tone for the upgrade card badge so each augment reads at a glance.
-  const CAT_STYLE = {
-    offense: { icon: '⚔', tone: 'red', label: 'Offense' },
-    defense: { icon: '🛡', tone: 'cyan', label: 'Defense' },
-    mobility: { icon: '🥾', tone: 'green', label: 'Mobility' },
-    utility: { icon: '✦', tone: 'gold', label: 'Utility' },
-    economy: { icon: '💎', tone: 'gold', label: 'Economy' },
-    control: { icon: '🌀', tone: 'cyan', label: 'Control' },
-    throwable: { icon: '💣', tone: 'orange', label: 'Throwable' },
-    status: { icon: '🔥', tone: 'orange', label: 'Status' },
-    // Weapon-tree branch (per-weapon upgrade tree, pulled from WEAPON_UPGRADE_TREES).
-    weapon: { icon: '🔫', tone: 'weapon', label: 'Weapon Branch' },
-  };
-  for (const choice of choices) {
-    const cat = CAT_STYLE[choice.category] ?? { icon: '▲', tone: 'cyan', label: 'Augment' };
-    const button = el('button', { className: 'combat-menu-action level-up-upgrade-card', type: 'button', dataset: { skill: choice.id, tone: cat.tone } });
-    // Header row: category icon badge + title + per-rank gain chip.
+
+  const shell = el('div', { className: 'level-up-shell' });
+  const shellHead = el('div', { className: 'level-up-shell-head' });
+  appendText(shellHead, 'span', `LEVEL ${combat.roguelikeRun?.level ?? 1} DRAFT`, 'level-up-kicker');
+  appendText(shellHead, 'strong', presentation.title, 'level-up-title');
+  appendText(shellHead, 'p', presentation.shell.accessibility, 'level-up-subtitle');
+  shell.append(shellHead);
+
+  const cardStack = el('div', { className: 'level-up-card-stack' });
+  for (const card of presentation.cards) {
+    const button = el('button', { className: 'combat-menu-action level-up-upgrade-card', type: 'button', dataset: card.dataset });
     const head = el('div', { className: 'upgrade-card-head' });
-    const badge = el('span', { className: 'upgrade-card-badge', textContent: cat.icon });
+    const badge = el('span', { className: 'upgrade-card-badge', textContent: card.icon });
     badge.setAttribute('aria-hidden', 'true');
     const titleWrap = el('div', { className: 'upgrade-card-titlewrap' });
-    appendText(titleWrap, 'span', cat.label.toUpperCase(), 'upgrade-card-cat');
-    if (gameSettings.colorblindTags) appendText(titleWrap, 'span', `TONE ${String(cat.tone).toUpperCase()}`, 'upgrade-card-tone-tag');
-    appendText(titleWrap, 'strong', choice.title, 'upgrade-card-title');
+    appendText(titleWrap, 'span', card.branchLabel.toUpperCase(), 'upgrade-card-cat');
+    if (card.category.colorblindTag) appendText(titleWrap, 'span', card.category.colorblindTag, 'upgrade-card-tone-tag');
+    appendText(titleWrap, 'strong', card.title, 'upgrade-card-title');
     head.append(badge, titleWrap);
-    appendText(head, 'span', `+${choice.perLevelPercent}%`, 'upgrade-card-gain');
+    appendText(head, 'span', card.gainLabel, 'upgrade-card-gain');
     button.append(head);
-    // Rank progression pips: filled up to currentLevel, the next rank highlighted.
-    const ranks = el('div', { className: 'upgrade-card-ranks' });
-    const maxLevel = choice.maxLevel ?? 5;
-    for (let r = 1; r <= maxLevel; r += 1) {
-      const pip = el('span', { className: `upgrade-rank-pip${r <= choice.currentLevel ? ' is-filled' : ''}${r === choice.nextLevel ? ' is-next' : ''}` });
-      ranks.append(pip);
+
+    const meta = el('div', { className: 'upgrade-card-meta' });
+    appendText(meta, 'span', card.completionLabel, 'upgrade-card-completion');
+    appendText(meta, 'span', card.rankLabel, 'upgrade-card-ranklabel');
+    button.append(meta);
+
+    const ranks = el('div', { className: 'upgrade-card-ranks upgrade-card-meter' });
+    for (const pip of card.rankPips) {
+      const pipEl = el('span', { className: `upgrade-rank-pip is-${pip.state}`, title: pip.label });
+      ranks.append(pipEl);
     }
-    const rankLabel = el('span', { className: 'upgrade-card-ranklabel', textContent: `Rank ${choice.currentLevel} → ${choice.nextLevel}` });
-    button.append(ranks, rankLabel);
-    // Description (contained, wraps within the card).
-    appendText(button, 'p', choice.description, 'upgrade-card-desc');
-    button.setAttribute('title', `${choice.title} · ${cat.label} · ${choice.description}`);
-    button.addEventListener('click', () => selectLevelUpUpgrade(choice.id));
-    targetGrid.append(button);
+    button.append(ranks);
+    appendText(button, 'p', card.description, 'upgrade-card-desc');
+    button.setAttribute('title', card.ariaLabel);
+    button.addEventListener('click', () => selectLevelUpUpgrade(card.id));
+    cardStack.append(button);
   }
+  shell.append(cardStack);
+
+  if (presentation.lockedPreviewRail.length) {
+    const lockedRail = el('div', { className: 'upgrade-locked-preview-rail' });
+    for (const preview of presentation.lockedPreviewRail) {
+      const chip = el('span', { className: 'upgrade-locked-preview', textContent: `${preview.title} // ${preview.gateHint}` });
+      lockedRail.append(chip);
+    }
+    shell.append(lockedRail);
+  }
+
   const reroll = el('button', { className: 'combat-menu-action upgrade-reroll-button', type: 'button', dataset: { action: 'level-up-reroll' } });
-  reroll.disabled = (combat.roguelikeRun?.rerollsRemaining ?? 0) <= 0;
-  reroll.append(renderArcadeIcon('↻', 'Reroll upgrade choices'), document.createTextNode(`Reroll (${combat.roguelikeRun?.rerollsRemaining ?? 0})`));
+  reroll.disabled = !presentation.reroll.enabled;
+  reroll.append(renderArcadeIcon('↻', 'Reroll upgrade choices'), document.createTextNode(presentation.reroll.label));
   reroll.addEventListener('click', rerollLevelUpChoices);
-  targetGrid.append(reroll);
+  shell.append(reroll);
+  targetGrid.append(shell);
   return true;
 }
 
@@ -5671,6 +5688,7 @@ async function startCombat(options = {}) {
 
   combat.xpGems = [];
   combat.levelUpChoices = [];
+  combat.levelUpLockedPreviews = [];
   combat.levelUpPaused = false;
   combat.roguelikeRun = createRoguelikeRunState({
     seed: Date.now(),
@@ -7134,11 +7152,12 @@ function shootRoguelike() {
 function openLevelUpMenu() {
   if (!combat.roguelikeRun?.pausedForLevelUp) return;
   const draftRng = roguelikeRngStream('draft');
-  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills });
+  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills, includeLockedPreviews: true });
   // 3 choices total: if the weapon tree has available branches this level, we
   // pair two roguelike-skill cards with one weapon-branch card; otherwise all
   // three slots come from the WO-27 ranked upgrade tree.
   combat.levelUpChoices = buildLevelUpPair(offer.options);
+  combat.levelUpLockedPreviews = offer.lockedPreviews ?? [];
   combat.levelUpPaused = true;
   combat.paused = true;
   combat.status = 'LEVEL UP: choose one upgrade. The roguelike run is paused until you pick.';
@@ -7150,8 +7169,9 @@ function rerollLevelUpChoices() {
   if (!combat.levelUpPaused || !combat.roguelikeRun || combat.roguelikeRun.rerollsRemaining <= 0) return;
   combat.roguelikeRun = { ...combat.roguelikeRun, rerollsRemaining: combat.roguelikeRun.rerollsRemaining - 1 };
   const draftRng = roguelikeRngStream('draft');
-  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills + 999, reroll: true });
+  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills + 999, reroll: true, includeLockedPreviews: true });
   combat.levelUpChoices = buildLevelUpPair(offer.options);
+  combat.levelUpLockedPreviews = offer.lockedPreviews ?? [];
   syncCombatOverlay();
 }
 
@@ -7250,6 +7270,7 @@ function selectLevelUpUpgrade(skillId) {
     combat.weaponUpgrades[weaponId] = Object.freeze(perWeapon);
     combat.weaponUpgrades = Object.freeze(combat.weaponUpgrades);
     combat.levelUpChoices = [];
+    combat.levelUpLockedPreviews = [];
     combat.levelUpPaused = false;
     combat.paused = false;
     combat.status = `Weapon branch upgraded: ${titleOfWeapon(weaponId)} ${branchLabel(branchKey)} tier ${perWeapon[branchKey]}/3.`;
@@ -7263,6 +7284,7 @@ function selectLevelUpUpgrade(skillId) {
 
   combat.roguelikeRun = applyRoguelikeSkillUpgrade(combat.roguelikeRun, skillId);
   combat.levelUpChoices = [];
+  combat.levelUpLockedPreviews = [];
   combat.levelUpPaused = false;
   combat.paused = false;
   combat.status = `${skill?.title ?? 'Upgrade'} applied. Survive the 20-minute wall.`;
