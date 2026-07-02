@@ -61,6 +61,79 @@ export const HMH_LEVEL_ONE_AAA_ROUTE_ACTS = freeze([
   }),
 ]);
 
+function clamp01(value) {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(1, value));
+}
+
+function routeActTone(act, { bossDefeated = false, extractionPoint = null } = {}) {
+  if (!act) return 'cyan';
+  if (act.lockPolicy === 'boss-yard-lock') {
+    if (bossDefeated || extractionPoint) return 'cyan';
+    return 'red';
+  }
+  if (act.lockPolicy === 'mini-boss-yard-lock' || act.lockPolicy === 'soft-mini-boss-lock') return 'orange';
+  if (act.lockPolicy === 'optional-loop-pressure') return 'gold';
+  return 'cyan';
+}
+
+function routeActStatus(act, { bossDefeated = false, extractionPoint = null } = {}) {
+  if (!act) return Object.freeze({ statusLabel: 'LEVEL 1 ROUTE', ctaLabel: 'SURVIVE THE WALL' });
+  if (act.lockPolicy === 'boss-yard-lock') {
+    if (bossDefeated || extractionPoint) {
+      return Object.freeze({ statusLabel: 'EXTRACTION ROUTE LIT', ctaLabel: 'FOLLOW CYAN/GOLD FLARES' });
+    }
+    return Object.freeze({ statusLabel: 'BOSS GATE LOCKED', ctaLabel: 'BREAK THE RUGPULL BOSS' });
+  }
+  if (act.lockPolicy === 'mini-boss-yard-lock') return Object.freeze({ statusLabel: 'GAS YARD PRESSURE', ctaLabel: 'USE PUMPS AND CACHE COVER' });
+  if (act.lockPolicy === 'soft-mini-boss-lock') return Object.freeze({ statusLabel: 'DUEL STREET', ctaLabel: 'CLEAR SALOON COVER' });
+  if (act.lockPolicy === 'optional-loop-pressure') return Object.freeze({ statusLabel: 'OPTIONAL LOOP', ctaLabel: 'ROUTE AROUND SPORES' });
+  return Object.freeze({ statusLabel: 'SAFE ROAD', ctaLabel: 'READ THE LANE' });
+}
+
+export function levelOneAaaRouteActAt({ elapsedSeconds = 0 } = {}) {
+  const elapsed = Math.max(0, Number(elapsedSeconds) || 0);
+  const index = HMH_LEVEL_ONE_AAA_ROUTE_ACTS.findIndex((act, i) => {
+    const [start, end] = act.timeWindowSeconds;
+    const isLast = i === HMH_LEVEL_ONE_AAA_ROUTE_ACTS.length - 1;
+    return elapsed >= start && (elapsed < end || isLast);
+  });
+  const safeIndex = index >= 0 ? index : HMH_LEVEL_ONE_AAA_ROUTE_ACTS.length - 1;
+  const act = HMH_LEVEL_ONE_AAA_ROUTE_ACTS[safeIndex];
+  const [start, end] = act.timeWindowSeconds;
+  const duration = Math.max(1, end - start);
+  const progress = elapsed >= end && safeIndex === HMH_LEVEL_ONE_AAA_ROUTE_ACTS.length - 1
+    ? 1
+    : clamp01((elapsed - start) / duration);
+  const nextAct = HMH_LEVEL_ONE_AAA_ROUTE_ACTS[safeIndex + 1] ?? null;
+  return Object.freeze({
+    ...act,
+    index: safeIndex,
+    progress: Number(progress.toFixed(3)),
+    remainingSeconds: Math.max(0, Math.ceil(end - elapsed)),
+    nextActId: nextAct?.id ?? null,
+  });
+}
+
+export function levelOneAaaRouteWorldStateAt({ elapsedSeconds = 0, bossDefeated = false, extractionPoint = null } = {}) {
+  const act = levelOneAaaRouteActAt({ elapsedSeconds });
+  const status = routeActStatus(act, { bossDefeated, extractionPoint });
+  return Object.freeze({
+    actId: act.id,
+    actTitle: act.title,
+    actIndex: act.index,
+    progress: act.progress,
+    remainingSeconds: act.remainingSeconds,
+    nextActId: act.nextActId,
+    lockPolicy: act.lockPolicy,
+    routeZoneIds: act.routeZoneIds,
+    statusLabel: status.statusLabel,
+    ctaLabel: status.ctaLabel,
+    hudChip: `ACT ${act.title.toUpperCase()}`,
+    tone: routeActTone(act, { bossDefeated, extractionPoint }),
+  });
+}
+
 function interactive(id, zoneId, assetKey, interactionKind, runtimeHook, data = {}) {
   return Object.freeze({
     id,

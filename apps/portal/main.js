@@ -54,6 +54,7 @@ import {
 import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
 import {
   levelOneInteractiveDebrisStateForObstacle,
+  levelOneAaaRouteWorldStateAt,
   levelOneInteractiveHazardEffectAt,
   levelOneInteractiveHitPlan,
   levelOneInteractiveRuntimeStateForObstacle,
@@ -2456,12 +2457,19 @@ function renderRoguelikeStatBar() {
       })
     : { moveSpeedMul: 1, hazardId: null, label: null };
   const surviveWallSeconds = level.scoring?.targetSeconds ?? (LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.targetSurvivalMinutes * 60);
+  const routeWorldState = level.id === DEFAULT_CAMPAIGN_LEVEL_ID
+    ? levelOneAaaRouteWorldStateAt({
+        elapsedSeconds: combat.elapsedGameSeconds,
+        bossDefeated: combat.bossDefeated,
+        extractionPoint: combat.extractionPoint,
+      })
+    : null;
   const surviveRatio = combat.elapsedGameSeconds / Math.max(1, surviveWallSeconds);
   const surviveTone = surviveRatio >= 0.95 ? 'red' : surviveRatio >= 0.8 ? 'orange' : 'cyan';
   const stats = [
     { id: 'survive', label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} / ${formatSeconds(surviveWallSeconds)}`, tone: surviveTone },
     { id: 'level', label: 'LEVEL', value: `${level.number} · ${director.difficultyLabel.toUpperCase()}`, tone: 'cyan' },
-    { id: 'obj', label: 'OBJECTIVE', value: objective.shortLabel, tone: guidance ? 'orange' : 'cyan' },
+    { id: 'obj', label: 'OBJECTIVE', value: routeWorldState?.statusLabel ?? objective.shortLabel, tone: guidance ? 'orange' : (routeWorldState?.tone ?? 'cyan') },
     { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}`, tone: 'red' },
     { id: 'score', label: 'SCORE', value: Math.round(combat.score).toLocaleString(), tone: 'gold' },
     { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
@@ -2475,6 +2483,8 @@ function renderRoguelikeStatBar() {
   if (guidance) activeFx.push(`GUIDE ${guidance.label}`);
   else if (activePoi) activeFx.push(`POI ${activePoi.label}`);
   else activeFx.push(objective.label.toUpperCase());
+  if (routeWorldState?.hudChip) activeFx.push(routeWorldState.hudChip);
+  if (routeWorldState?.ctaLabel) activeFx.push(routeWorldState.ctaLabel);
   if (activeEncounterVisualPlan?.banner) activeFx.push(`ARENA ${activeEncounterVisualPlan.banner}`);
   if (terrainPressure?.label) activeFx.push(`TERRAIN ${terrainPressure.label}`);
   const levelOneInteractivePressure = currentLevelOneInteractiveHazardPressure();

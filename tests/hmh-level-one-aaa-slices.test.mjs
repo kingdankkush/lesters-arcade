@@ -12,6 +12,8 @@ import {
   HMH_LEVEL_ONE_POI_INTERACTIVES,
   HMH_LEVEL_ONE_REPLACEMENT_ASSET_KEYS,
   aaaLevelOneRouteActs,
+  levelOneAaaRouteActAt,
+  levelOneAaaRouteWorldStateAt,
   aaaLevelOnePoiInteractivesForZone,
   aaaLevelOneReplacementAssetForRole,
   levelOneInteractiveDebrisStateForObstacle,
@@ -46,6 +48,34 @@ test('Level 1 AAA route acts turn the 8-minute survival run into authored campai
   assert.equal(acts.every((act) => act.cameraGoal.length > 0 && act.playerPromise.length > 0), true);
   assert.equal(acts.some((act) => act.lockPolicy === 'boss-yard-lock'), true);
   assert.equal(acts.flatMap((act) => act.routeZoneIds).includes('rugpull-gulch-boss-yard'), true);
+});
+
+test('Level 1 route-world state exposes the active authored act and boss/extraction cue', () => {
+  const safeRoad = levelOneAaaRouteActAt({ elapsedSeconds: 12 });
+  assert.equal(safeRoad.id, 'act-00-safe-road');
+  assert.equal(safeRoad.progress >= 0 && safeRoad.progress <= 1, true);
+  assert.equal(safeRoad.nextActId, 'act-01-saloon-duel');
+
+  const saloon = levelOneAaaRouteWorldStateAt({ elapsedSeconds: 110, bossDefeated: false });
+  assert.equal(saloon.actId, 'act-01-saloon-duel');
+  assert.equal(saloon.hudChip, 'ACT GHOST SALOON MAIN STREET DUEL');
+  assert.match(saloon.statusLabel, /duel/i);
+  assert.equal(saloon.tone, 'orange');
+
+  const bossLocked = levelOneAaaRouteWorldStateAt({ elapsedSeconds: 455, bossDefeated: false });
+  assert.equal(bossLocked.actId, 'act-04-rugpull-boss-extract');
+  assert.equal(bossLocked.statusLabel, 'BOSS GATE LOCKED');
+  assert.equal(bossLocked.tone, 'red');
+  assert.equal(bossLocked.routeZoneIds.includes('ltc-road-extraction'), true);
+
+  const extractionReady = levelOneAaaRouteWorldStateAt({ elapsedSeconds: 455, bossDefeated: true, extractionPoint: { worldX: 97, worldY: 5 } });
+  assert.equal(extractionReady.statusLabel, 'EXTRACTION ROUTE LIT');
+  assert.equal(extractionReady.tone, 'cyan');
+  assert.equal(extractionReady.ctaLabel, 'FOLLOW CYAN/GOLD FLARES');
+
+  const afterWall = levelOneAaaRouteActAt({ elapsedSeconds: 999 });
+  assert.equal(afterWall.id, 'act-04-rugpull-boss-extract', 'post-wall time should stay on the final Level 1 act');
+  assert.equal(afterWall.progress, 1);
 });
 
 test('Level 1 POI interactives give every high-visibility beat a tactical object and reward hook', () => {
@@ -208,6 +238,7 @@ test('Level 1 interactive runtime states drive mushroom hazard, boss gate unlock
 test('main runtime wires Level 1 interactive props into bullet, grenade, hazard, and visual state paths', () => {
   const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
   assert.equal(source.includes('levelOneInteractiveHitPlan'), true, 'runtime should import the pure hit planner');
+  assert.equal(source.includes('levelOneAaaRouteWorldStateAt'), true, 'runtime should import the Level 1 authored route-world HUD state helper');
   assert.equal(source.includes('function damageLevelOneInteractiveObstacle('), true, 'runtime should have a shared obstacle damage resolver');
   const bulletBlock = source.slice(source.indexOf('function updateRoguelikeBullets'), source.indexOf('function trimLooseRoguelikeRewards'));
   assert.equal(bulletBlock.includes('damageLevelOneInteractiveObstacle(hitObstacle'), true, 'player bullets should damage interactive authored obstacles before disappearing');
@@ -320,6 +351,9 @@ test('main runtime wires interactive debris visuals and POI-specific SFX without
   assert.equal(stateBlock.includes('playLevelOneInteractiveSfxCues'), true, 'gate/extraction state transitions should emit POI SFX');
   const renderBlock = source.slice(source.indexOf('function buildObstacleRenderEntries'), source.indexOf('function drawRoguelikeScene'));
   assert.equal(renderBlock.includes('drawLevelOneInteractiveDebris'), true, 'render path should draw debris over/after destroyed interactives');
+  const hudBlock = source.slice(source.indexOf('function renderRoguelikeStatBar'), source.indexOf('function renderTacticalBalanceDebugOverlay'));
+  assert.equal(hudBlock.includes('routeWorldState?.statusLabel'), true, 'stat bar objective should consume authored route-world status labels');
+  assert.equal(hudBlock.includes('routeWorldState.hudChip'), true, 'stat bar FX chips should show the active authored route act');
 });
 
 test('AAA slice plan is attached to curated world contract and covered by syntax check', () => {

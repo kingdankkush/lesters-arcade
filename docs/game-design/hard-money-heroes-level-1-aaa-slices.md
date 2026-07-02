@@ -130,6 +130,8 @@ HMH_LEVEL_ONE_AAA_ROUTE_ACTS
 HMH_LEVEL_ONE_POI_INTERACTIVES
 HMH_LEVEL_ONE_REPLACEMENT_ASSET_KEYS
 aaaLevelOneRouteActs()
+levelOneAaaRouteActAt({ elapsedSeconds })
+levelOneAaaRouteWorldStateAt({ elapsedSeconds, bossDefeated, extractionPoint })
 aaaLevelOnePoiInteractivesForZone(zoneId)
 aaaLevelOneReplacementAssetForRole(zoneId, role)
 aaaLevelOneSceneObjectsForDistrict(districtId)
@@ -149,6 +151,16 @@ aaaLevelOneSceneObjectsForDistrict(districtId)
 ```
 
 This means the objects travel through the existing authored scene-object runtime path instead of living as docs-only design.
+
+### Authored act HUD/world-state layer
+
+The runtime now derives the active Level 1 authored act from elapsed survival time with `levelOneAaaRouteWorldStateAt(...)`. The roguelike stat bar consumes that helper so the live HUD no longer reads as a flat timer-only survival mode:
+
+- `OBJECTIVE` changes from generic copy to act-specific world state such as `DUEL STREET`, `GAS YARD PRESSURE`, `BOSS GATE LOCKED`, or `EXTRACTION ROUTE LIT`.
+- FX chips show the active authored act, e.g. `ACT GHOST SALOON MAIN STREET DUEL`.
+- The final boss/extraction beat flips from red gate-lock guidance to cyan/gold extraction guidance once `bossDefeated` or `extractionPoint` is active.
+
+This is a gameworld/readability layer. It makes the five-act Level 1 design visible to players before the final AAA art pass is complete.
 
 ## Runtime gameplay hooks added after initial slice
 
