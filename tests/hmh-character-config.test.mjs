@@ -94,6 +94,7 @@ test('playable character visual kit metadata exposes repo-local manifests and di
     assert.equal(existsSync(assetPath), true, `${id} manifest path exists`);
   }
 
-  assert.equal(HMH_PLAYABLE_CHARACTER_VISUAL_KITS['lester-original'].productionStatus.includes('reference locked'), true);
+  assert.equal(HMH_PLAYABLE_CHARACTER_VISUAL_KITS['lester-original'].source, 'animated-roster');
+  assert.equal(HMH_PLAYABLE_CHARACTER_VISUAL_KITS['lester-original'].manifestPath, './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs');
   assert.equal(HMH_PLAYABLE_CHARACTER_VISUAL_KITS.lilly.productionStatus.includes('Justin reference sprites'), true);
 });

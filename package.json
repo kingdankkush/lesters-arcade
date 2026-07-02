@@ -19,6 +19,7 @@
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
     "design:audit": "node scripts/report-hmh-animation-coverage.mjs",
+    "design:roster": "node scripts/roster-coverage-report.mjs",
     "design:balance": "node scripts/write-hmh-balance-snapshot.mjs",
     "design:weekly": "node scripts/write-hmh-weekly-design-review.mjs",
     "design:animation-prompts": "node scripts/write-hmh-animation-production-requests.mjs",

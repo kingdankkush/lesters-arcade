@@ -54,11 +54,11 @@ export const HMH_PLAYABLE_CHARACTER_VISUAL_KITS = Object.freeze({
   }),
   'lester-original': Object.freeze({
     id: 'lester-original',
-    source: 'lester-production-manifest + user reference stills',
-    manifestPath: './assets/lester-production/lester-production-sprite-manifest.json',
+    source: 'animated-roster',
+    manifestPath: './assets/generated/hmh-animated-roster/hmh-animated-roster.mjs',
     directionMode: '8-direction-backbone',
     states: Object.freeze(['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 'hurt', 'death']),
-    productionStatus: 'reference locked; needs full 8-direction production pass for every combat state',
+    productionStatus: 'canonical roster source; reference-locked identity still needs Wave 3 dash/victory QA before AAA lock',
   }),
   lilly: Object.freeze({
     id: 'lilly',

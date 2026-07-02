@@ -33,6 +33,7 @@ _Last updated: 2026-07-02_
   - `scripts/hooks/pre-commit`
   - local `git config core.hooksPath scripts/hooks`
 - Converted `apps/portal/src/hmh-level-editor-runtime-sprite-library.mjs` from a 6.5 MB data module into a small lazy loader backed by `apps/portal/assets/hmh-level-editor/runtime-sprite-library.json`.
+- Wave 3 Slice 1: vaulted 39 tracked Lester PixelLab splinter/raw-fragment dirs (`anim0`–`anim23`, `idle-2`–`idle-8`, `walk-2`–`walk-8`, `victory-2`) to `~/lesters-arcade-vault/pixellab-raw/wave3-lester-splinter-dirs-20260702-085052/` after checksum verification; the canonical animated-roster manifest referenced none of them.
 
 ## Measurements
 
