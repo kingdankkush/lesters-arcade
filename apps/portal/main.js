@@ -9043,6 +9043,17 @@ function preloadWorldPropImages() {
   for (const t of Object.values(SCENE_TEMPLATES)) {
     for (const s of t.slots) coherentWorldImage(s.assetKey);
   }
+  for (const [levelId, districtMap] of [
+    [HMH_LEVEL_ONE_ID, LEVEL_1_AUTHORED_LAYOUT_KEYS],
+    ['level-2-litecoin-city', LEVEL_2_AUTHORED_LAYOUT_KEYS],
+    ['level-3-the-getaway', LEVEL_3_AUTHORED_LAYOUT_KEYS],
+  ]) {
+    for (const districtId of Object.keys(districtMap)) {
+      for (const obj of getAllAuthoredSceneObjects(districtId, levelId)) {
+        if (obj?.assetKey) coherentWorldImage(obj.assetKey);
+      }
+    }
+  }
 }
 // --- Persistent collidable world obstacles --------------------------------
 // Obstacles are derived from (seed, world cell) so a patch of world ALWAYS has
@@ -9164,10 +9175,9 @@ const SCENE_ROLE_TO_STYLE = Object.freeze({
   fence: 'smallprop', wall: 'smallprop', bridge: 'smallprop', 'water-strip': 'smallprop',
   // Authored layout landmark roles
   landmark: 'building', billboard: 'building', hedge: 'bigprop',
-  cactus: 'tree', pole: 'smallprop', rock: 'bigprop', post: 'smallprop',
-  gate: 'smallprop', water: 'smallprop', log: 'smallprop', bench: 'smallprop',
-  sign: 'tree', lamp: 'tree', edge: 'smallprop', 'water-strip': 'smallprop',
-  road: 'smallprop', bush: 'smallprop',
+  cactus: 'tree', pole: 'smallprop', post: 'smallprop',
+  gate: 'smallprop', water: 'smallprop', log: 'smallprop',
+  edge: 'smallprop', road: 'smallprop', bush: 'smallprop', barn: 'building', crop: 'smallprop',
 });
 
 function currentObstacles() {

@@ -1,7 +1,7 @@
 {
   "id": "hmh-level-one-pixellab-reference-style-candidates-v2",
   "generatedBy": "PixelLab create_tiles_pro + create_map_object via Level 1 candidate queues",
-  "status": "candidate-contact-sheet-qc",
+  "status": "candidate-runtime-subset-integrated",
   "count": 39,
   "contactSheets": [
     "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-p0-terrain-contact-sheet.png",
@@ -26,7 +26,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "inner-city-threshold",
+      "runtimeRole": "gate",
+      "runtimeRouteBeat": "boss"
     },
     {
       "key": "buildings-and-walls/buildings-and-walls__farm-barn-silo",
@@ -42,7 +46,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "residential-edge",
+      "runtimeRole": "barn",
+      "runtimeRouteBeat": "loop"
     },
     {
       "key": "buildings-and-walls/buildings-and-walls__gas-station-canopy",
@@ -58,7 +66,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "landmark",
+      "runtimeRouteBeat": "arena"
     },
     {
       "key": "buildings-and-walls/buildings-and-walls__litecoin-extraction-arch",
@@ -74,7 +86,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "inner-city-threshold",
+      "runtimeRole": "landmark",
+      "runtimeRouteBeat": "extract"
     },
     {
       "key": "buildings-and-walls/buildings-and-walls__saloon-false-front",
@@ -90,7 +106,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "ghost-town",
+      "runtimeRole": "landmark",
+      "runtimeRouteBeat": "arena"
     },
     {
       "key": "buildings-and-walls/buildings-and-walls__stone-brick-wall-segments",
@@ -106,7 +126,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "ghost-town",
+      "runtimeRole": "wall",
+      "runtimeRouteBeat": "arena"
     },
     {
       "key": "combat-readable-props/combat-readable-props__boss-gate-markers",
@@ -122,7 +146,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "inner-city-threshold",
+      "runtimeRole": "gate",
+      "runtimeRouteBeat": "boss"
     },
     {
       "key": "combat-readable-props/combat-readable-props__cache-crate",
@@ -138,7 +166,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "crate",
+      "runtimeRouteBeat": "pressure"
     },
     {
       "key": "combat-readable-props/combat-readable-props__destructible-barrel",
@@ -154,7 +186,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "combat-readable-props/combat-readable-props__gas-pump-explosive",
@@ -170,7 +203,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "ghost-town",
+      "runtimeRole": "crate",
+      "runtimeRouteBeat": "pressure"
     },
     {
       "key": "combat-readable-props/combat-readable-props__pickup-resource-glow-decals",
@@ -186,7 +223,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "inner-city-threshold",
+      "runtimeRole": "sign",
+      "runtimeRouteBeat": "extract"
     },
     {
       "key": "combat-readable-props/combat-readable-props__warning-sign",
@@ -202,7 +243,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "ground-textures/ground-textures__boss-yard-scorched-ground",
@@ -218,7 +260,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "ground-textures/ground-textures__cracked-asphalt",
@@ -234,7 +277,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "ground-textures/ground-textures__dusty-sand",
@@ -250,7 +294,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "ground-textures/ground-textures__mossy-cobble",
@@ -266,7 +311,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "ground-textures/ground-textures__packed-dirt",
@@ -282,7 +328,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "ground-textures/ground-textures__worn-grass",
@@ -298,7 +345,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "regenerated-terrain/boss-yard-scorched-clean-regenerated",
@@ -314,7 +362,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "regenerated-terrain/bridge-planks-regenerated",
@@ -330,7 +379,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "country-road",
+      "runtimeRole": "bridge",
+      "runtimeRouteBeat": "chokepoint"
     },
     {
       "key": "regenerated-terrain/dock-support-clean-regenerated",
@@ -346,7 +399,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "residential-edge",
+      "runtimeRole": "bridge",
+      "runtimeRouteBeat": "chokepoint"
     },
     {
       "key": "regenerated-terrain/extraction-flare-road-regenerated",
@@ -362,7 +419,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "inner-city-threshold",
+      "runtimeRole": "road",
+      "runtimeRouteBeat": "extract"
     },
     {
       "key": "regenerated-terrain/worn-grass-clean-regenerated",
@@ -378,7 +439,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "residential-edge",
+      "runtimeRole": "road",
+      "runtimeRouteBeat": "loop"
     },
     {
       "key": "roads-and-paths/roads-and-paths__broken-highway-lane",
@@ -394,7 +459,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "road",
+      "runtimeRouteBeat": "spawn"
     },
     {
       "key": "roads-and-paths/roads-and-paths__farm-road-spur",
@@ -410,7 +479,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "residential-edge",
+      "runtimeRole": "road",
+      "runtimeRouteBeat": "loop"
     },
     {
       "key": "roads-and-paths/roads-and-paths__gas-station-forecourt-concrete",
@@ -426,7 +499,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "road",
+      "runtimeRouteBeat": "arena"
     },
     {
       "key": "roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend",
@@ -442,7 +519,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "ghost-town",
+      "runtimeRole": "road",
+      "runtimeRouteBeat": "arena"
     },
     {
       "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__cactus-walls",
@@ -458,7 +539,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "cactus",
+      "runtimeRouteBeat": "pressure"
     },
     {
       "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__crystal-ore-like-litecoin-blockers",
@@ -474,7 +559,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__dead-trees",
@@ -490,7 +576,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__mesa-boulders",
@@ -506,7 +593,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "rock",
+      "runtimeRouteBeat": "pressure"
     },
     {
       "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__pine-oak-clusters",
@@ -522,7 +613,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "country-road",
+      "runtimeRole": "tree",
+      "runtimeRouteBeat": "loop"
     },
     {
       "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__river-rocks",
@@ -538,7 +633,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "country-road",
+      "runtimeRole": "rock",
+      "runtimeRouteBeat": "chokepoint"
     },
     {
       "key": "water-and-shorelines/water-and-shorelines__animated-river-strip",
@@ -554,7 +653,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "country-road",
+      "runtimeRole": "water-strip",
+      "runtimeRouteBeat": "chokepoint"
     },
     {
       "key": "water-and-shorelines/water-and-shorelines__dock-bridge-support",
@@ -570,7 +673,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "water-and-shorelines/water-and-shorelines__lake-beach-edge",
@@ -586,7 +690,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "water-and-shorelines/water-and-shorelines__rocky-bank",
@@ -602,7 +707,11 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate-runtime-integrated",
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "country-road",
+      "runtimeRole": "edge",
+      "runtimeRouteBeat": "chokepoint"
     },
     {
       "key": "water-and-shorelines/water-and-shorelines__shore-reeds",
@@ -618,7 +727,8 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     },
     {
       "key": "water-and-shorelines/water-and-shorelines__wash-crossing-water",
@@ -634,7 +744,21 @@
         0
       ],
       "alphaClean": true,
-      "status": "candidate"
+      "status": "candidate",
+      "runtimeIntegrated": false
     }
-  ]
+  ],
+  "runtimeIntegrationStatus": {
+    "integratedVia": "apps/portal/src/authored-world-layout.mjs:getAllAuthoredSceneObjects",
+    "rendererPath": "apps/portal/main.js:coherentWorldImage existing scene-object path",
+    "candidateRuntimeAssetCount": 24,
+    "districts": [
+      "desert-approach",
+      "ghost-town",
+      "country-road",
+      "residential-edge",
+      "inner-city-threshold"
+    ],
+    "policy": "candidate runtime art only; final atlas/collision cleanup still required before final-art approval"
+  }
 }

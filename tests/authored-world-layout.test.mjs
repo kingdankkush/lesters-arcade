@@ -1,11 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 import {
   LEVEL_1_AUTHORED_LAYOUT,
   LEVEL_2_AUTHORED_LAYOUT,
   LEVEL_1_EXPANDED_PROPS,
   LEVEL_2_EXPANDED_PROPS,
+  LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS,
+  LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES,
   getAuthoredRouteNodes,
   getAuthoredDistrictRouteNodes,
   getAuthoredEncounterBeats,
@@ -15,6 +19,10 @@ import {
   getAllAuthoredSceneObjects,
   getDistrictEdgeTreatment,
 } from '../apps/portal/src/authored-world-layout.mjs';
+
+function repoPath(relativePath) {
+  return fileURLToPath(new URL(`../${relativePath}`, import.meta.url));
+}
 
 test('LEVEL_1_AUTHORED_LAYOUT has all 5 Level 1 districts with landmarks and prop clusters', () => {
   const districts = Object.keys(LEVEL_1_AUTHORED_LAYOUT);
@@ -154,6 +162,46 @@ test('getAllAuthoredSceneObjects returns base + expanded objects', () => {
   // Verify no duplicate IDs
   const ids = new Set(all.map((o) => o.id));
   assert.equal(ids.size, all.length, 'No duplicate IDs in combined objects');
+});
+
+test('Level 1 PixelLab candidate upgrades replace generic route reads in the authored map contract', () => {
+  const assetKeys = Object.values(LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS);
+  const manifest = JSON.parse(readFileSync(repoPath('apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-pixellab-candidates.manifest.json'), 'utf8'));
+  const manifestEntries = new Map(manifest.entries.map((entry) => [entry.key, entry]));
+  assert.equal(manifest.runtimeIntegrationStatus.candidateRuntimeAssetCount, assetKeys.length);
+  assert.equal(manifest.runtimeIntegrationStatus.integratedVia.includes('getAllAuthoredSceneObjects'), true);
+  assert.ok(assetKeys.length >= 16, 'expected a curated runtime set of PixelLab candidates');
+  for (const key of assetKeys) {
+    assert.equal(key.startsWith('level1-reference-style/candidates/'), true, `${key} should stay inside the PixelLab candidate folder`);
+    assert.equal(existsSync(repoPath(`apps/portal/assets/generated/hmh-coherent-world/${key}.png`)), true, `${key}.png should exist`);
+    const manifestKey = key.replace('level1-reference-style/candidates/', '');
+    assert.equal(manifestEntries.get(manifestKey)?.status, 'candidate-runtime-integrated', `${manifestKey} should be flagged as runtime-integrated in the manifest`);
+  }
+
+  const districtUpgrades = Object.entries(LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES);
+  assert.equal(districtUpgrades.length, 5, 'each Level 1 district should get a PixelLab map-art upgrade set');
+  assert.equal(districtUpgrades.every(([, objects]) => objects.length >= 3), true, 'each district should receive multiple route-readable art upgrades');
+
+  const desert = getAllAuthoredSceneObjects('desert-approach', 'level-1-crypto-wasteland');
+  assert.equal(desert.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.gasStationCanopy && obj.pixelLabRuntimeUpgrade), true);
+  assert.equal(desert.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.brokenHighwayLane && obj.role === 'road'), true);
+  assert.equal(desert.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.mesaBoulders && obj.role === 'rock'), true);
+
+  const ghostTown = getAllAuthoredSceneObjects('ghost-town', 'level-1-crypto-wasteland');
+  assert.equal(ghostTown.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.saloonFalseFront && obj.role === 'landmark'), true);
+  assert.equal(ghostTown.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.gasPumpExplosive && obj.role === 'crate'), true);
+
+  const countryRoad = getAllAuthoredSceneObjects('country-road', 'level-1-crypto-wasteland');
+  assert.equal(countryRoad.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.bridgePlanksRegenerated && obj.role === 'bridge'), true);
+  assert.equal(countryRoad.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.animatedRiverStrip && obj.solid === false), true);
+
+  const residential = getAllAuthoredSceneObjects('residential-edge', 'level-1-crypto-wasteland');
+  assert.equal(residential.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.farmBarnSilo && obj.role === 'barn'), true);
+  assert.equal(residential.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.wornGrassClean && obj.role === 'road'), true);
+
+  const innerCity = getAllAuthoredSceneObjects('inner-city-threshold', 'level-1-crypto-wasteland');
+  assert.equal(innerCity.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.bossGateMarkers && obj.role === 'gate'), true);
+  assert.equal(innerCity.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.extractionFlareRoadRegenerated && obj.routeBeat === 'extract'), true);
 });
 
 test('expanded props include road segments for navigation', () => {

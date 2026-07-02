@@ -41,6 +41,85 @@ function cluster(id, centerGridX, centerGridY, props) {
   });
 }
 
+const PIXELLAB_LEVEL1_CANDIDATE_PREFIX = 'level1-reference-style/candidates';
+
+export const LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS = Object.freeze({
+  brokenHighwayLane: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/roads-and-paths/roads-and-paths__broken-highway-lane`,
+  gasStationForecourtConcrete: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/roads-and-paths/roads-and-paths__gas-station-forecourt-concrete`,
+  ghostTownCobbleDirt: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend`,
+  farmRoadSpur: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/roads-and-paths/roads-and-paths__farm-road-spur`,
+  bridgePlanksRegenerated: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/regenerated-terrain/bridge-planks-regenerated`,
+  extractionFlareRoadRegenerated: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/regenerated-terrain/extraction-flare-road-regenerated`,
+  wornGrassClean: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/regenerated-terrain/worn-grass-clean-regenerated`,
+  dockSupportClean: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/regenerated-terrain/dock-support-clean-regenerated`,
+  animatedRiverStrip: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/water-and-shorelines/water-and-shorelines__animated-river-strip`,
+  rockyBank: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/water-and-shorelines/water-and-shorelines__rocky-bank`,
+  gasStationCanopy: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/buildings-and-walls/buildings-and-walls__gas-station-canopy`,
+  saloonFalseFront: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/buildings-and-walls/buildings-and-walls__saloon-false-front`,
+  farmBarnSilo: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/buildings-and-walls/buildings-and-walls__farm-barn-silo`,
+  stoneBrickWallSegments: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/buildings-and-walls/buildings-and-walls__stone-brick-wall-segments`,
+  bossYardGate: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/buildings-and-walls/buildings-and-walls__boss-yard-gate`,
+  litecoinExtractionArch: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/buildings-and-walls/buildings-and-walls__litecoin-extraction-arch`,
+  cactusWalls: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__cactus-walls`,
+  mesaBoulders: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__mesa-boulders`,
+  pineOakClusters: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__pine-oak-clusters`,
+  riverRocks: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__river-rocks`,
+  cacheCrate: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/combat-readable-props/combat-readable-props__cache-crate`,
+  gasPumpExplosive: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/combat-readable-props/combat-readable-props__gas-pump-explosive`,
+  bossGateMarkers: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/combat-readable-props/combat-readable-props__boss-gate-markers`,
+  pickupResourceGlowDecals: `${PIXELLAB_LEVEL1_CANDIDATE_PREFIX}/combat-readable-props/combat-readable-props__pickup-resource-glow-decals`,
+});
+
+function pixellabUpgrade(id, assetKey, role, gridX, gridY, data = {}) {
+  return placed(id, assetKey, role, gridX, gridY, {
+    solid: data.solid ?? true,
+    zHeight: data.zHeight ?? 1,
+    variant: data.variant ?? 0,
+    pixelLabRuntimeUpgrade: true,
+    source: 'hmh-level-one-pixellab-reference-style-candidates-v2',
+    routeBeat: data.routeBeat ?? null,
+    mapRole: data.mapRole ?? role,
+    notes: data.notes ?? 'PixelLab candidate integrated through authored scene-object path; still subject to final atlas/collision cleanup.',
+  });
+}
+
+export const LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES = Object.freeze({
+  desertApproach: Object.freeze([
+    pixellabUpgrade('pxl-da-broken-highway-lane', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.brokenHighwayLane, 'road', 4, 5, { solid: false, routeBeat: 'spawn', zHeight: 0 }),
+    pixellabUpgrade('pxl-da-gas-station-forecourt', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.gasStationForecourtConcrete, 'road', 10, 5, { solid: false, routeBeat: 'arena', zHeight: 0 }),
+    pixellabUpgrade('pxl-da-gas-station-canopy', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.gasStationCanopy, 'landmark', 9, 3, { routeBeat: 'arena', zHeight: 4 }),
+    pixellabUpgrade('pxl-da-mesa-boulders', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.mesaBoulders, 'rock', 24, 5, { routeBeat: 'pressure', zHeight: 2 }),
+    pixellabUpgrade('pxl-da-cactus-wall', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.cactusWalls, 'cactus', 20, 3, { routeBeat: 'pressure', zHeight: 2 }),
+    pixellabUpgrade('pxl-da-cache-crate', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.cacheCrate, 'crate', 22, 6, { routeBeat: 'pressure', zHeight: 1 }),
+  ]),
+  ghostTown: Object.freeze([
+    pixellabUpgrade('pxl-gt-mainstreet-cobble', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.ghostTownCobbleDirt, 'road', 40, 6, { solid: false, routeBeat: 'arena', zHeight: 0 }),
+    pixellabUpgrade('pxl-gt-saloon-false-front', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.saloonFalseFront, 'landmark', 40, 2, { routeBeat: 'arena', zHeight: 4 }),
+    pixellabUpgrade('pxl-gt-stone-wall-segments', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.stoneBrickWallSegments, 'wall', 38, 6, { routeBeat: 'arena', zHeight: 2 }),
+    pixellabUpgrade('pxl-gt-gas-pump-explosive', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.gasPumpExplosive, 'crate', 48, 7, { routeBeat: 'pressure', zHeight: 1 }),
+  ]),
+  countryRoad: Object.freeze([
+    pixellabUpgrade('pxl-cr-bridge-planks', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.bridgePlanksRegenerated, 'bridge', 62, 6, { solid: false, routeBeat: 'chokepoint', zHeight: 0 }),
+    pixellabUpgrade('pxl-cr-animated-river-strip', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.animatedRiverStrip, 'water-strip', 62, 7, { solid: false, routeBeat: 'chokepoint', zHeight: 0 }),
+    pixellabUpgrade('pxl-cr-rocky-bank', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.rockyBank, 'edge', 61, 5, { solid: false, routeBeat: 'chokepoint', zHeight: 0 }),
+    pixellabUpgrade('pxl-cr-pine-oak-clusters', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.pineOakClusters, 'tree', 57, 2, { routeBeat: 'loop', zHeight: 3 }),
+    pixellabUpgrade('pxl-cr-river-rocks', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.riverRocks, 'rock', 64, 5, { routeBeat: 'chokepoint', zHeight: 1 }),
+  ]),
+  residentialEdge: Object.freeze([
+    pixellabUpgrade('pxl-re-farm-road-spur', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.farmRoadSpur, 'road', 78, 6, { solid: false, routeBeat: 'loop', zHeight: 0 }),
+    pixellabUpgrade('pxl-re-worn-grass-clean', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.wornGrassClean, 'road', 81, 6, { solid: false, routeBeat: 'loop', zHeight: 0 }),
+    pixellabUpgrade('pxl-re-farm-barn-silo', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.farmBarnSilo, 'barn', 83, 4, { routeBeat: 'loop', zHeight: 4 }),
+    pixellabUpgrade('pxl-re-dock-support-clean', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.dockSupportClean, 'bridge', 84, 7, { solid: false, routeBeat: 'chokepoint', zHeight: 0 }),
+  ]),
+  innerCityThreshold: Object.freeze([
+    pixellabUpgrade('pxl-ic-boss-yard-gate', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.bossYardGate, 'gate', 92, 6, { routeBeat: 'boss', zHeight: 3 }),
+    pixellabUpgrade('pxl-ic-boss-gate-markers', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.bossGateMarkers, 'gate', 90, 6, { routeBeat: 'boss', zHeight: 2 }),
+    pixellabUpgrade('pxl-ic-extraction-flare-road', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.extractionFlareRoadRegenerated, 'road', 97, 5, { solid: false, routeBeat: 'extract', zHeight: 0 }),
+    pixellabUpgrade('pxl-ic-litecoin-extraction-arch', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.litecoinExtractionArch, 'landmark', 99, 4, { routeBeat: 'extract', zHeight: 4 }),
+    pixellabUpgrade('pxl-ic-pickup-glow-decals', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.pickupResourceGlowDecals, 'sign', 96, 6, { solid: false, routeBeat: 'extract', zHeight: 0 }),
+  ]),
+});
+
 // ============================================================================
 // LEVEL 1: CRYPTO WASTELAND — Authored District Layouts
 // Each district is a ~35-tile-wide band along the main spine.
@@ -739,6 +818,14 @@ export function getAuthoredForegroundSceneObjects(districtId, levelId = 'level-1
   return Object.freeze(foregroundKey ? foregrounds[foregroundKey] : []);
 }
 
+export function getLevelOnePixellabRuntimeSceneObjects(districtId) {
+  const upgradeKey = Object.keys(LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES).find((k) =>
+    k === districtId ||
+    k.replace(/-/g, '').toLowerCase() === districtId.replace(/-/g, '').toLowerCase(),
+  );
+  return Object.freeze(upgradeKey ? LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES[upgradeKey] : []);
+}
+
 // ============================================================================
 // EXPANDED LAYOUT: Richer prop clusters, road segments, environmental
 // storytelling, and POI arena staging. These give each district the density
@@ -1115,8 +1202,11 @@ export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto
     objective: node.objective,
   }));
   const foregrounds = getAuthoredForegroundSceneObjects(districtId, levelId);
+  const pixellabRuntimeObjects = levelId === 'level-1-crypto-wasteland'
+    ? getLevelOnePixellabRuntimeSceneObjects(districtId)
+    : [];
   const aaaInteractiveObjects = levelId === 'level-1-crypto-wasteland'
     ? aaaLevelOneSceneObjectsForDistrict(districtId)
     : [];
-  return Object.freeze([...base, ...extra, ...routeMarkers, ...foregrounds, ...aaaInteractiveObjects]);
+  return Object.freeze([...base, ...extra, ...routeMarkers, ...foregrounds, ...pixellabRuntimeObjects, ...aaaInteractiveObjects]);
 }

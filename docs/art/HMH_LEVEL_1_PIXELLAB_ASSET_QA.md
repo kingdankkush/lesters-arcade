@@ -77,13 +77,21 @@ Needs regeneration or decomposition:
 - `crystal-ore-like-litecoin-blockers` is too small/unclear as a blocker; regenerate as larger standalone crystal/ore chunks.
 - `destructible-barrel` and `gas-pump-explosive` read as small setpieces rather than isolated interactable objects; regenerate as single-object sprites for collision/health metadata.
 
-## Integration rule
+## Runtime integration status
 
-These assets are **not final integrated runtime art** yet. Treat them as candidate source material. Before runtime integration:
+A vetted subset is now wired into the Level 1 authored map through the existing `getAllAuthoredSceneObjects(...)` path, not a parallel renderer. The slice adds PixelLab candidate route reads for:
 
-1. split scene-like images into atomic objects when needed
+- Broken Highway / Gas Station Forecourt: highway lane, concrete pad, gas-station canopy, cactus wall, mesa boulders, cache crate
+- Ghost Town: cobble/dirt main street, saloon false front, stone wall segments, gas-pump hazard
+- River/Wash: bridge planks, animated river strip, rocky bank, river rocks, pine/oak boundary
+- Farmstead loop: farm road spur, worn grass, barn/silo, dock-support bridge read
+- Extraction yard: boss gate, gate markers, regenerated extraction flare road, Litecoin extraction arch, pickup glow decals
+
+These assets are still **candidate runtime art**, not final atlas-approved art. Before final approval:
+
+1. split scene-like images into atomic objects where collision precision matters
 2. clean alpha and remove text-like markings
 3. normalize outlines/palette
-4. assign render role + collision radius + anchor point
+4. assign final render role + collision radius + anchor point
 5. atlas-pack and update tests
-6. smoke-test in the Level 1 canvas
+6. browser-smoke the Level 1 canvas at the active route beats
