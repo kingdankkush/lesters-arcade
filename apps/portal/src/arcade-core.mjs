@@ -2181,15 +2181,104 @@ export function buildLevelOneRunWorldDimensions({
   const safeHeight = Math.max(1, Math.round(Number(height) || HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height));
   const uniqueTiles = Math.max(0, Number(moveSpeedTilesPerSecond) || 0) * Math.max(0, Number(targetSessionSeconds) || 0) * Math.max(0, Number(traversalEfficiency) || 0);
   const baselineAxis = Math.max(safeWidth, safeHeight);
+  const minX = -safeWidth / 2;
+  const maxX = safeWidth / 2;
+  const minY = -safeHeight / 2;
+  const maxY = safeHeight / 2;
   return Object.freeze({
+    finite: true,
+    origin: 'center',
     width: safeWidth,
     height: safeHeight,
+    minX,
+    maxX,
+    minY,
+    maxY,
+    boundaryInsetTiles: 4,
     targetSessionSeconds,
     moveSpeedTilesPerSecond,
     traversalEfficiency,
     traversalTargetPct: HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.traversalTargetPct,
     expectedUniqueTraversalTiles: Number(uniqueTiles.toFixed(1)),
     expectedUniqueTraversalPct: Number(clampNumber(uniqueTiles / baselineAxis, 0, 1).toFixed(3)),
+  });
+}
+
+export function clampLevelOneWorldPoint({ x = 0, y = 0, world = buildLevelOneRunWorldDimensions() } = {}) {
+  const safeWorld = world ?? buildLevelOneRunWorldDimensions();
+  const minX = Number.isFinite(safeWorld.minX) ? safeWorld.minX : -((safeWorld.width ?? 1) / 2);
+  const maxX = Number.isFinite(safeWorld.maxX) ? safeWorld.maxX : ((safeWorld.width ?? 1) / 2);
+  const minY = Number.isFinite(safeWorld.minY) ? safeWorld.minY : -((safeWorld.height ?? 1) / 2);
+  const maxY = Number.isFinite(safeWorld.maxY) ? safeWorld.maxY : ((safeWorld.height ?? 1) / 2);
+  const rawX = Number(x) || 0;
+  const rawY = Number(y) || 0;
+  const clampedX = clampNumber(rawX, minX, maxX);
+  const clampedY = clampNumber(rawY, minY, maxY);
+  return Object.freeze({ x: Number(clampedX.toFixed(3)), y: Number(clampedY.toFixed(3)), clamped: clampedX !== rawX || clampedY !== rawY });
+}
+
+export function pointWithinLevelOneBounds({ x = 0, y = 0, world = buildLevelOneRunWorldDimensions() } = {}) {
+  return !clampLevelOneWorldPoint({ x, y, world }).clamped;
+}
+
+function levelOneMinimapMarker({ x = 0, y = 0, world = buildLevelOneRunWorldDimensions(), id = null, label = null, tone = 'cyan' } = {}) {
+  const clamped = clampLevelOneWorldPoint({ x, y, world });
+  const width = Math.max(1, world.width ?? (world.maxX - world.minX) ?? 1);
+  const height = Math.max(1, world.height ?? (world.maxY - world.minY) ?? 1);
+  const minX = Number.isFinite(world.minX) ? world.minX : -width / 2;
+  const minY = Number.isFinite(world.minY) ? world.minY : -height / 2;
+  return Object.freeze({
+    id,
+    label,
+    tone,
+    x: Number(clampNumber((clamped.x - minX) / width, 0, 1).toFixed(3)),
+    y: Number(clampNumber((clamped.y - minY) / height, 0, 1).toFixed(3)),
+    edgeClamped: clamped.clamped,
+  });
+}
+
+export function buildLevelOneMinimapModel({
+  world = buildLevelOneRunWorldDimensions(),
+  player = { x: 0, y: 0 },
+  enemies = [],
+  pois = [],
+  extractionPoint = null,
+} = {}) {
+  const safeWorld = world ?? buildLevelOneRunWorldDimensions();
+  return Object.freeze({
+    version: 'wo-21-finite-level-one-minimap-v1',
+    bounds: Object.freeze({
+      width: safeWorld.width,
+      height: safeWorld.height,
+      minX: safeWorld.minX,
+      maxX: safeWorld.maxX,
+      minY: safeWorld.minY,
+      maxY: safeWorld.maxY,
+    }),
+    player: levelOneMinimapMarker({ x: player.x, y: player.y, world: safeWorld, id: 'player', tone: 'green' }),
+    enemies: Object.freeze((Array.isArray(enemies) ? enemies : []).slice(0, 24).map((enemy, index) => levelOneMinimapMarker({
+      x: enemy.mapX ?? enemy.x ?? 0,
+      y: enemy.mapY ?? enemy.y ?? 0,
+      world: safeWorld,
+      id: enemy.id ?? `enemy-${index}`,
+      tone: enemy.finalBossProxy || enemy.boss ? 'red' : enemy.elite || enemy.miniBoss ? 'orange' : 'magenta',
+    }))),
+    pois: Object.freeze((Array.isArray(pois) ? pois : []).slice(0, 12).map((poi, index) => levelOneMinimapMarker({
+      x: poi.worldX ?? poi.x ?? 0,
+      y: poi.worldY ?? poi.y ?? 0,
+      world: safeWorld,
+      id: poi.id ?? `poi-${index}`,
+      label: poi.label ?? poi.title ?? null,
+      tone: 'cyan',
+    }))),
+    extraction: extractionPoint ? levelOneMinimapMarker({
+      x: extractionPoint.worldX ?? extractionPoint.x ?? 0,
+      y: extractionPoint.worldY ?? extractionPoint.y ?? 0,
+      world: safeWorld,
+      id: 'extraction',
+      label: extractionPoint.label ?? 'EXIT',
+      tone: 'gold',
+    }) : null,
   });
 }
 

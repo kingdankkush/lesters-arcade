@@ -149,7 +149,9 @@ import {
   levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
+  buildLevelOneMinimapModel,
   buildLevelOneRunWorldDimensions,
+  clampLevelOneWorldPoint,
   calculateRoguelikeKillXp,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
@@ -7668,6 +7670,13 @@ function updateRoguelikeMovement(dt) {
       combat.playerMapX += forced.vx - vx;
       combat.playerMapY += forced.vy - vy;
     }
+    if ((combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID) {
+      const bounds = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
+      const clamped = clampLevelOneWorldPoint({ x: combat.playerMapX, y: combat.playerMapY, world: bounds });
+      combat.playerMapX = clamped.x;
+      combat.playerMapY = clamped.y;
+      combat.worldBoundaryClamped = clamped.clamped;
+    }
     combat._heroMoving = true;
   } else {
     combat._heroMoving = false;
@@ -9663,6 +9672,55 @@ function buildObstacleRenderEntries(ctx) {
 }
 
 
+function drawRoguelikeMinimap(ctx, width, height) {
+  if (!combat.roguelikeRun || (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) return;
+  const world = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
+  const activePoi = currentCampaignPoi();
+  const model = buildLevelOneMinimapModel({
+    world,
+    player: { x: combat.playerMapX, y: combat.playerMapY },
+    enemies: combat.enemies,
+    pois: activePoi ? [activePoi] : [],
+    extractionPoint: combat.extractionPoint,
+  });
+  const w = Math.min(190, Math.max(144, width * 0.16));
+  const h = Math.round(w * (model.bounds.height / Math.max(1, model.bounds.width)));
+  const x = width - w - 18;
+  const y = 18;
+  ctx.save();
+  ctx.globalAlpha = 0.92;
+  ctx.fillStyle = 'rgba(3,7,17,0.82)';
+  ctx.strokeStyle = combat.worldBoundaryClamped ? '#ff476f' : 'rgba(25,247,255,0.72)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect?.(x, y, w, h, 10);
+  if (!ctx.roundRect) ctx.rect(x, y, w, h);
+  ctx.fill();
+  ctx.stroke();
+  const plot = (marker, radius = 3) => {
+    if (!marker) return;
+    const px = x + marker.x * w;
+    const py = y + marker.y * h;
+    const colors = { green: '#45ff8a', cyan: '#19f7ff', orange: '#ffb347', red: '#ff476f', gold: '#ffe84d', magenta: '#ff3df2' };
+    ctx.fillStyle = colors[marker.tone] ?? '#f9f7ff';
+    ctx.beginPath();
+    ctx.arc(px, py, marker.edgeClamped ? radius + 1 : radius, 0, Math.PI * 2);
+    ctx.fill();
+  };
+  for (const poi of model.pois) plot(poi, 3.5);
+  if (model.extraction) plot(model.extraction, 4);
+  for (const enemy of model.enemies) plot(enemy, enemy.tone === 'red' ? 3.4 : 2.1);
+  plot(model.player, 4.5);
+  ctx.fillStyle = '#9aa7c7';
+  ctx.font = '10px monospace';
+  ctx.fillText(`MAP ${model.bounds.width}×${model.bounds.height}`, x + 8, y + h - 8);
+  if (combat.worldBoundaryClamped) {
+    ctx.fillStyle = '#ff476f';
+    ctx.fillText('EDGE', x + w - 38, y + h - 8);
+  }
+  ctx.restore();
+}
+
 function drawRoguelikeScene(ctx, width, height) {
   const palette = ['#06142e', '#12072d', '#030711'];
   const gradient = ctx.createLinearGradient(0, 0, 0, height);
@@ -9903,6 +9961,7 @@ function drawRoguelikeScene(ctx, width, height) {
   drawParticles(ctx);
   drawFloatingTexts(ctx);
   drawHud(ctx);
+  drawRoguelikeMinimap(ctx, width, height);
 
   if (combat.levelUpPaused) {
     ctx.fillStyle = 'rgba(0,0,0,.48)';
