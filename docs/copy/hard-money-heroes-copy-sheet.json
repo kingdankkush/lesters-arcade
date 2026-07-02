@@ -1,0 +1,381 @@
+{
+  "sheet": {
+    "version": "wo-30-copy-v1",
+    "voice": {
+      "pillars": [
+        "short arcade verbs",
+        "clear testnet cost language",
+        "Crypto Wasteland nouns over generic roguelike jargon",
+        "tell the player what to do next"
+      ],
+      "avoid": [
+        "real-money framing on testnet",
+        "implementation-status language",
+        "em dashes",
+        "long lore paragraphs in buttons"
+      ]
+    },
+    "modeSelect": {
+      "free": {
+        "label": "Free Mode",
+        "eyebrow": "Practice Run",
+        "copy": "Practice locally. No leaderboard write, no achievement write, no wallet transaction.",
+        "cta": "Start Free Run"
+      },
+      "ranked": {
+        "label": "Play Ranked",
+        "eyebrow": "Official Testnet Run",
+        "copy": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet.",
+        "cta": "Start Ranked Run"
+      }
+    },
+    "levelIntro": {
+      "title": "Level 1 // Crypto Wasteland",
+      "controlsSummary": "Move: WASD or arrows · Aim: mouse · Fire: left click · Grenade: right click or F",
+      "goalCopy": "Survive the open route, harvest XP, break boss beats, and submit an official score only after game over."
+    },
+    "readyOverlay": {
+      "title": "READY",
+      "hint": "PRESS SPACE OR CLICK TO START THE RUN"
+    },
+    "combatStatus": {
+      "levelReady": "Level ready. Press Space or click READY to start the run.",
+      "runLive": "Run live. Survive the Crypto Wasteland, harvest XP, break boss beats, and chase a higher score.",
+      "paused": "Paused. Resume the run or exit to the arcade to abandon it.",
+      "resumed": "Run resumed."
+    },
+    "hud": {
+      "survived": "SURVIVED",
+      "objective": "OBJECTIVE",
+      "combo": "COMBO",
+      "bossBeat": "BOSS BEAT"
+    },
+    "glossary": [
+      {
+        "id": "free-mode",
+        "term": "Free Mode",
+        "approved": "Local practice. No official write."
+      },
+      {
+        "id": "ranked",
+        "term": "Play Ranked",
+        "approved": "Official testnet run with a LitVM score write."
+      },
+      {
+        "id": "gas",
+        "term": "zkLTC gas",
+        "approved": "Testnet gas from the faucet, not real funds."
+      },
+      {
+        "id": "level-one",
+        "term": "Crypto Wasteland",
+        "approved": "Open survival route with boss beats."
+      },
+      {
+        "id": "boss-beat",
+        "term": "Boss beat",
+        "approved": "Scheduled mini-boss or major boss pressure spike."
+      }
+    ],
+    "surfaces": [
+      {
+        "id": "mode-free",
+        "file": "apps/portal/src/arcade-core.mjs",
+        "surface": "Mode select card",
+        "text": "Practice locally. No leaderboard write, no achievement write, no wallet transaction."
+      },
+      {
+        "id": "mode-ranked",
+        "file": "apps/portal/src/arcade-core.mjs",
+        "surface": "Mode select card",
+        "text": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet."
+      },
+      {
+        "id": "level-intro-goal",
+        "file": "apps/portal/src/arcade-core.mjs",
+        "surface": "Level intro",
+        "text": "Survive the open route, harvest XP, break boss beats, and submit an official score only after game over."
+      },
+      {
+        "id": "ready-hint",
+        "file": "apps/portal/main.js",
+        "surface": "READY overlay",
+        "text": "PRESS SPACE OR CLICK TO START THE RUN"
+      },
+      {
+        "id": "combat-live-status",
+        "file": "apps/portal/main.js",
+        "surface": "Combat status",
+        "text": "Run live. Survive the Crypto Wasteland, harvest XP, break boss beats, and chase a higher score."
+      }
+    ]
+  },
+  "validation": {
+    "ok": true,
+    "gaps": [],
+    "textCount": 65,
+    "surfaceCount": 5
+  },
+  "texts": [
+    {
+      "path": "version",
+      "text": "wo-30-copy-v1"
+    },
+    {
+      "path": "voice.pillars.0",
+      "text": "short arcade verbs"
+    },
+    {
+      "path": "voice.pillars.1",
+      "text": "clear testnet cost language"
+    },
+    {
+      "path": "voice.pillars.2",
+      "text": "Crypto Wasteland nouns over generic roguelike jargon"
+    },
+    {
+      "path": "voice.pillars.3",
+      "text": "tell the player what to do next"
+    },
+    {
+      "path": "voice.avoid.0",
+      "text": "real-money framing on testnet"
+    },
+    {
+      "path": "voice.avoid.1",
+      "text": "implementation-status language"
+    },
+    {
+      "path": "voice.avoid.2",
+      "text": "em dashes"
+    },
+    {
+      "path": "voice.avoid.3",
+      "text": "long lore paragraphs in buttons"
+    },
+    {
+      "path": "modeSelect.free.label",
+      "text": "Free Mode"
+    },
+    {
+      "path": "modeSelect.free.eyebrow",
+      "text": "Practice Run"
+    },
+    {
+      "path": "modeSelect.free.copy",
+      "text": "Practice locally. No leaderboard write, no achievement write, no wallet transaction."
+    },
+    {
+      "path": "modeSelect.free.cta",
+      "text": "Start Free Run"
+    },
+    {
+      "path": "modeSelect.ranked.label",
+      "text": "Play Ranked"
+    },
+    {
+      "path": "modeSelect.ranked.eyebrow",
+      "text": "Official Testnet Run"
+    },
+    {
+      "path": "modeSelect.ranked.copy",
+      "text": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet."
+    },
+    {
+      "path": "modeSelect.ranked.cta",
+      "text": "Start Ranked Run"
+    },
+    {
+      "path": "levelIntro.title",
+      "text": "Level 1 // Crypto Wasteland"
+    },
+    {
+      "path": "levelIntro.controlsSummary",
+      "text": "Move: WASD or arrows · Aim: mouse · Fire: left click · Grenade: right click or F"
+    },
+    {
+      "path": "levelIntro.goalCopy",
+      "text": "Survive the open route, harvest XP, break boss beats, and submit an official score only after game over."
+    },
+    {
+      "path": "readyOverlay.title",
+      "text": "READY"
+    },
+    {
+      "path": "readyOverlay.hint",
+      "text": "PRESS SPACE OR CLICK TO START THE RUN"
+    },
+    {
+      "path": "combatStatus.levelReady",
+      "text": "Level ready. Press Space or click READY to start the run."
+    },
+    {
+      "path": "combatStatus.runLive",
+      "text": "Run live. Survive the Crypto Wasteland, harvest XP, break boss beats, and chase a higher score."
+    },
+    {
+      "path": "combatStatus.paused",
+      "text": "Paused. Resume the run or exit to the arcade to abandon it."
+    },
+    {
+      "path": "combatStatus.resumed",
+      "text": "Run resumed."
+    },
+    {
+      "path": "hud.survived",
+      "text": "SURVIVED"
+    },
+    {
+      "path": "hud.objective",
+      "text": "OBJECTIVE"
+    },
+    {
+      "path": "hud.combo",
+      "text": "COMBO"
+    },
+    {
+      "path": "hud.bossBeat",
+      "text": "BOSS BEAT"
+    },
+    {
+      "path": "glossary.0.id",
+      "text": "free-mode"
+    },
+    {
+      "path": "glossary.0.term",
+      "text": "Free Mode"
+    },
+    {
+      "path": "glossary.0.approved",
+      "text": "Local practice. No official write."
+    },
+    {
+      "path": "glossary.1.id",
+      "text": "ranked"
+    },
+    {
+      "path": "glossary.1.term",
+      "text": "Play Ranked"
+    },
+    {
+      "path": "glossary.1.approved",
+      "text": "Official testnet run with a LitVM score write."
+    },
+    {
+      "path": "glossary.2.id",
+      "text": "gas"
+    },
+    {
+      "path": "glossary.2.term",
+      "text": "zkLTC gas"
+    },
+    {
+      "path": "glossary.2.approved",
+      "text": "Testnet gas from the faucet, not real funds."
+    },
+    {
+      "path": "glossary.3.id",
+      "text": "level-one"
+    },
+    {
+      "path": "glossary.3.term",
+      "text": "Crypto Wasteland"
+    },
+    {
+      "path": "glossary.3.approved",
+      "text": "Open survival route with boss beats."
+    },
+    {
+      "path": "glossary.4.id",
+      "text": "boss-beat"
+    },
+    {
+      "path": "glossary.4.term",
+      "text": "Boss beat"
+    },
+    {
+      "path": "glossary.4.approved",
+      "text": "Scheduled mini-boss or major boss pressure spike."
+    },
+    {
+      "path": "surfaces.0.id",
+      "text": "mode-free"
+    },
+    {
+      "path": "surfaces.0.file",
+      "text": "apps/portal/src/arcade-core.mjs"
+    },
+    {
+      "path": "surfaces.0.surface",
+      "text": "Mode select card"
+    },
+    {
+      "path": "surfaces.0.text",
+      "text": "Practice locally. No leaderboard write, no achievement write, no wallet transaction."
+    },
+    {
+      "path": "surfaces.1.id",
+      "text": "mode-ranked"
+    },
+    {
+      "path": "surfaces.1.file",
+      "text": "apps/portal/src/arcade-core.mjs"
+    },
+    {
+      "path": "surfaces.1.surface",
+      "text": "Mode select card"
+    },
+    {
+      "path": "surfaces.1.text",
+      "text": "Publish your score, achievements, and name to LitVM LiteForge. Free on testnet; you only need zkLTC gas from the faucet."
+    },
+    {
+      "path": "surfaces.2.id",
+      "text": "level-intro-goal"
+    },
+    {
+      "path": "surfaces.2.file",
+      "text": "apps/portal/src/arcade-core.mjs"
+    },
+    {
+      "path": "surfaces.2.surface",
+      "text": "Level intro"
+    },
+    {
+      "path": "surfaces.2.text",
+      "text": "Survive the open route, harvest XP, break boss beats, and submit an official score only after game over."
+    },
+    {
+      "path": "surfaces.3.id",
+      "text": "ready-hint"
+    },
+    {
+      "path": "surfaces.3.file",
+      "text": "apps/portal/main.js"
+    },
+    {
+      "path": "surfaces.3.surface",
+      "text": "READY overlay"
+    },
+    {
+      "path": "surfaces.3.text",
+      "text": "PRESS SPACE OR CLICK TO START THE RUN"
+    },
+    {
+      "path": "surfaces.4.id",
+      "text": "combat-live-status"
+    },
+    {
+      "path": "surfaces.4.file",
+      "text": "apps/portal/main.js"
+    },
+    {
+      "path": "surfaces.4.surface",
+      "text": "Combat status"
+    },
+    {
+      "path": "surfaces.4.text",
+      "text": "Run live. Survive the Crypto Wasteland, harvest XP, break boss beats, and chase a higher score."
+    }
+  ]
+}

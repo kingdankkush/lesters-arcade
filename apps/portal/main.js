@@ -86,6 +86,7 @@ function animatedSceneAssetByKey(key) {
 import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
 import { buildUpgradeMenuPresentation } from './src/hmh-upgrade-menu-ui.mjs';
 import { buildCombatFeedbackPlan } from './src/hmh-combat-feedback.mjs';
+import { HMH_COPY_SHEET } from './src/hmh-copy-sheet.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -2956,10 +2957,10 @@ function returnToOfficialGameMenu() {
     if (!combat.paused) {
       combat.paused = true;
       combat.keys.clear();
-      combat.status = 'Paused. Your run is preserved — resume, or Exit to Arcade to abandon it.';
+      combat.status = HMH_COPY_SHEET.combatStatus.paused;
     } else {
       combat.paused = false;
-      combat.status = 'Run resumed.';
+      combat.status = HMH_COPY_SHEET.combatStatus.resumed;
     }
     syncCombatOverlay();
     return;
@@ -4635,11 +4636,11 @@ function waitForPlayerReady() {
 
     const title = document.createElement('div');
     title.style.cssText = 'font-family:monospace;font-size:42px;font-weight:900;color:#ffe84d;letter-spacing:6px;text-shadow:0 0 28px rgba(255,232,77,0.65), 3px 3px 0 #000;text-align:center;';
-    title.textContent = 'READY';
+    title.textContent = HMH_COPY_SHEET.readyOverlay.title;
 
     const hint = document.createElement('div');
     hint.style.cssText = 'font-family:monospace;font-size:14px;font-weight:700;color:#cfefff;letter-spacing:3px;margin-top:18px;text-shadow:0 0 8px rgba(25,247,255,0.5);';
-    hint.textContent = 'PRESS SPACE OR CLICK TO BEGIN';
+    hint.textContent = HMH_COPY_SHEET.readyOverlay.hint;
 
     overlay.append(title, hint);
     // Position relative to the combat mount so it sits over the canvas.
@@ -5825,8 +5826,8 @@ async function startCombat(options = {}) {
   }
 
   combat.status = startPendingBegin
-    ? 'Level ready: press Space or click the READY overlay to begin.'
-    : `Level ${level.number} run live: survive as long as you can, fight swarms for XP, clear boss beats, and chase a high survival score.`;
+    ? HMH_COPY_SHEET.combatStatus.levelReady
+    : HMH_COPY_SHEET.combatStatus.runLive;
   if (!startPendingBegin) {
     playSfxCue('level-start');
     await startArcadeMusicForGame('hard-money-heroes');

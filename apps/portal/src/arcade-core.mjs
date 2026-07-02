@@ -25,6 +25,7 @@ import {
   validateWeaponUpgrades,
 } from './weapon-upgrades.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, syncConfiguredCharacterUnlocks, resolveSelectedCharacterId } from './hmh-character-config.mjs';
+import { HMH_COPY_SHEET } from './hmh-copy-sheet.mjs';
 import { createSeededSubstreams } from './seeded-rng.mjs';
 
 export {
@@ -292,10 +293,10 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
   quickStart: Object.freeze([
     Object.freeze({ id: 'connect', title: 'Connect Wallet', copy: 'Create the parent arcade account. MetaMask/Rabby is preferred; mock wallet remains an offline QA fallback.', icon: 'wallet' }),
     Object.freeze({ id: 'choose-cabinet', title: 'Choose Cabinet', copy: 'Pick Hard Money Heroes from the cabinet row or SNES cartridge shelf.', icon: 'cabinet' }),
-    Object.freeze({ id: 'choose-mode', title: 'Pick Free or Paid', copy: 'Free is practice-only with no parent tracking; paid is the simulated official leaderboard path.', icon: 'coin' }),
+    Object.freeze({ id: 'choose-mode', title: 'Pick Free or Ranked', copy: 'Free is local practice. Ranked is an official testnet score write that waits for game over submission.', icon: 'coin' }),
     Object.freeze({ id: 'start-combat', title: 'Start Combat', copy: 'Launch the 60fps Canvas test and practice movement, shooting, Litecoin Blade attacks, throwables, and pickups.', icon: 'weapon' }),
     Object.freeze({ id: 'survive-score', title: 'Survive + Score', copy: 'Survival time, kills, combos, bosses, power-ups, and rare weapons all feed score.', icon: 'trophy' }),
-    Object.freeze({ id: 'sync-results', title: 'Sync Run', copy: 'Complete a prototype run to update parent progress, achievements, transactions, and official scores.', icon: 'trophy' }),
+    Object.freeze({ id: 'sync-results', title: 'Sync Run', copy: 'Finish a run summary, then write progress back to the parent account model when the player submits.', icon: 'trophy' }),
   ]),
   instructions: Object.freeze([
     Object.freeze({ title: 'Survive as long as possible', body: 'Level 1 and 2 introduce mechanics; Level 3 becomes an infinite escalation run.' }),
@@ -525,8 +526,8 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
     Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but its actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
   ]),
   modeSelect: Object.freeze({
-    free: Object.freeze({ label: 'Free Mode', official: false, copy: 'Practice locally with no official leaderboard, achievement, progress, or transaction writes. The parent Lester’s Arcade wallet profile is already active.' }),
-    ranked: Object.freeze({ label: 'Play Ranked', official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: 'Ranked publishes your score, achievements, and name on-chain to LitVM as a permanent run record. Free on testnet — only the zkLTC gas to write it (free from the faucet, no real value). Wallet required.' }),
+    free: Object.freeze({ label: HMH_COPY_SHEET.modeSelect.free.label, official: false, copy: HMH_COPY_SHEET.modeSelect.free.copy }),
+    ranked: Object.freeze({ label: HMH_COPY_SHEET.modeSelect.ranked.label, official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: HMH_COPY_SHEET.modeSelect.ranked.copy }),
   }),
   gameIntro: Object.freeze({
     id: 'hard-money-heroes-intro-splash',
@@ -537,11 +538,11 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   }),
   levelIntro: Object.freeze({
     levelId: 'level-1-underchain',
-    title: 'Level 1 // Crypto Wasteland',
+    title: HMH_COPY_SHEET.levelIntro.title,
     durationSeconds: 8,
     hasBeginButton: true,
-    controlsSummary: 'WASD/arrows move · Mouse aims (gun auto-fires) · Left click fire · Right click/F grenade',
-    goalCopy: 'Survive as long as possible, clear staged enemy sections, chain kills and damage without getting hit, then submit official scores only at game over.',
+    controlsSummary: HMH_COPY_SHEET.levelIntro.controlsSummary,
+    goalCopy: HMH_COPY_SHEET.levelIntro.goalCopy,
   }),
   profileRules: Object.freeze({
     walletIsPrimaryKey: true,
