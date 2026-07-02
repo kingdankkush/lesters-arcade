@@ -66,6 +66,14 @@ Use the global palette as the first quantization target for all generated or ing
 | Bosses | 160x160 to 256x256 canvas | Phase variants + telegraph anchors required |
 | UI icons / power-ups | 32x32 or 64x64 | Strong outer shape, high contrast, no tiny details |
 
+### WO-7 pixel-density law
+
+- 1 world tile = 64×32 screen pixels at zoom 1, matching the runtime isometric diamond footprint.
+- Canonical texel density: 1 art pixel = 1 screen pixel at zoom 1.
+- Calibration baseline: Lester's runtime frame is 80px for a roughly 1.4-tile-tall character, so actors, props, buildings, decals, and setpieces should render at density 1.0 unless a documented art-direction exception exists.
+- Runtime tolerance: ±25%. Assets outside density 0.75–1.25 must get a footprint override, an offline nearest-neighbor rescale, or be removed from the placeable pool.
+- Source of truth for code: `apps/portal/src/hmh-world-scale.mjs` exports `WORLD_SCALE = { tileW: 64, tileH: 32, texelDensity: 1.0, tolerance: 0.25 }`.
+
 ---
 
 ## 5. Shape language
