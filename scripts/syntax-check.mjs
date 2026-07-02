@@ -62,6 +62,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-level-one-sketch-layout.test.mjs",
   "tests/hmh-level-one-ground.test.mjs",
   "tests/hmh-ground-plan.test.mjs",
+  "tests/hmh-ground-rendering.test.mjs",
   "tests/hmh-level-one-curated-world-contract.test.mjs",
   "apps/portal/src/hmh-level-one-curated-world-contract.mjs",
   "tests/hmh-level-one-quality-escalation.test.mjs",

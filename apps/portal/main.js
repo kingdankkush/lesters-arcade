@@ -20,6 +20,7 @@ import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model
 import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
+import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
@@ -8746,56 +8747,85 @@ function collectAnimatedProps(ctx) {
   return out;
 }
 
+const groundPlanPatternFrames = new Map();
+
+function getCombatGroundPlan() {
+  const levelId = combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID;
+  const seed = combat.roguelikeRun?.seed ?? 0;
+  if (!combat.groundPlan || combat.groundPlan.levelId !== levelId || combat.groundPlan.seed !== seed) {
+    combat.groundPlan = buildGroundPlan({ levelId: combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID, seed });
+  }
+  return combat.groundPlan;
+}
+
+function groundPlanPatternSource(asset, image) {
+  if (!asset?.animated || !(asset.frames > 1) || !(asset.frameWidth > 0) || !(asset.frameHeight > 0) || typeof document === 'undefined') return image;
+  const frameDuration = asset.frameDuration ?? 8;
+  const frameIndex = Math.floor((combat.frame / frameDuration) % asset.frames);
+  const key = `${asset.key}:${frameIndex}`;
+  let canvas = groundPlanPatternFrames.get(key);
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.width = asset.frameWidth;
+    canvas.height = asset.frameHeight;
+    const frameCtx = canvas.getContext('2d');
+    frameCtx.imageSmoothingEnabled = false;
+    frameCtx.drawImage(image, frameIndex * asset.frameWidth, 0, asset.frameWidth, asset.frameHeight, 0, 0, asset.frameWidth, asset.frameHeight);
+    groundPlanPatternFrames.set(key, canvas);
+  }
+  return canvas;
+}
+
+function drawGroundPlanPatternTiles(ctx, visibleTiles) {
+  const plan = getCombatGroundPlan();
+  const textureGroups = new Map();
+  const fallbackTiles = [];
+  const worldOrigin = isoToScreen(0, 0);
+  const cameraWorldOffsetX = worldOrigin.x;
+  const cameraWorldOffsetY = worldOrigin.y + 64;
+
+  for (const tile of visibleTiles) {
+    const zone = plan.zoneAt(tile.worldX, tile.worldY);
+    const asset = plan.textureForKey(zone.textureKey);
+    const image = sbsGroundTileImage(asset);
+    if (!imageReady(image)) {
+      fallbackTiles.push(tile);
+      continue;
+    }
+    let group = textureGroups.get(zone.textureKey);
+    if (!group) {
+      group = { asset, image, path: new Path2D() };
+      textureGroups.set(zone.textureKey, group);
+    }
+    group.path.moveTo(tile.cx, tile.cy - ISO_TILE_HEIGHT / 2);
+    group.path.lineTo(tile.cx + ISO_TILE_WIDTH / 2, tile.cy);
+    group.path.lineTo(tile.cx, tile.cy + ISO_TILE_HEIGHT / 2);
+    group.path.lineTo(tile.cx - ISO_TILE_WIDTH / 2, tile.cy);
+    group.path.closePath();
+  }
+
+  for (const group of textureGroups.values()) {
+    const source = groundPlanPatternSource(group.asset, group.image);
+    const pattern = ctx.createPattern(source, 'repeat');
+    if (!pattern) continue;
+    if (typeof DOMMatrix !== 'undefined' && typeof pattern.setTransform === 'function') {
+      pattern.setTransform(new DOMMatrix().translate(-cameraWorldOffsetX, -cameraWorldOffsetY));
+    }
+    ctx.fillStyle = pattern;
+    ctx.fill(group.path);
+  }
+
+  for (const tile of fallbackTiles) {
+    drawProductionIsoTile(ctx, tile.cx, tile.cy, tile.worldX, tile.worldY);
+  }
+}
+
 function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {
   const palette = biomeFloorPalette(worldX, worldY);
-  // Prefer the real textured biome ground tile; fall back to the shaded gradient
-  // until the image loads (or if a biome has no tile art).
-  // Scene-theme override: if this cell belongs to a coherent scene (arcade
-  // interior, park, fenced yard, walled compound), use the floor tile that
-  // matches that scene's theme so the ground reads as part of the area.
-  const seed = combat.roguelikeRun?.seed ?? 0;
-  const authoredGroundRole = isLevelOneCuratedRuntime()
-    ? levelOneOpeningGroundRoleForTile({ worldX, worldY })
-    : null;
-  const theme = authoredGroundRole ?? sceneGroundThemeAt(seed, worldX, worldY);
-  let ground = sbsGroundTileForWorld(
-    seed,
-    worldX,
-    worldY,
-    authoredGroundRole ?? palette.biome,
-    theme,
-    authoredGroundRole ? [] : null,
-  );
-  let tileImg = ground?.image ?? null;
-  if (!imageReady(tileImg) && theme && THEME_GROUND_TILE[theme]) {
-    tileImg = wave2TileImage(THEME_GROUND_TILE[theme]);
-  }
-  if (!imageReady(tileImg)) tileImg = biomeGroundTileForWorld(worldX, worldY, palette.biome);
-  if (!imageReady(tileImg)) {
-    const shimmer = palette.biome === 'water'
-      ? (combat.frame * 0.06) + (worldX * 0.7 + worldY * 1.3)
-      : 0;
-    drawShadedIsoTile(ctx, cx, cy, palette, shimmer);
-    return;
-  }
-  // Draw the diamond tile slightly oversized so neighbors overlap with no seams.
-  // NOTE: no ctx.save()/restore() here — this runs for THOUSANDS of tiles per
-  // frame; the caller (tile pass in drawRoguelikeScene) sets
-  // imageSmoothingEnabled=false once for the whole pass.
-  const drawWidth = ISO_TILE_WIDTH + 4;
-  const drawHeight = ISO_TILE_HEIGHT * 2 + 6; // 56px source art is taller than the 32px diamond
-  const drewGround = ground?.image === tileImg
-    ? drawLevelOneGroundImage(ctx, ground, cx, cy, drawWidth, drawHeight)
-    : false;
-  if (!drewGround) {
-    ctx.drawImage(tileImg, Math.round(cx - drawWidth / 2), Math.round(cy - drawHeight / 2), drawWidth, drawHeight);
-  }
-  drawLevelOneGroundEdgeBreakup(ctx, cx, cy, levelOneGroundEdgeBreakupForTile({
-    seed,
-    worldX,
-    worldY,
-    role: ground?.asset?.role ?? authoredGroundRole ?? theme ?? palette.biome,
-  }));
+  const shimmer = palette.biome === 'water'
+    ? (combat.frame * 0.06) + (worldX * 0.7 + worldY * 1.3)
+    : 0;
+  drawShadedIsoTile(ctx, cx, cy, palette, shimmer);
 }
 
 function productionPropForIndex(index) {
@@ -9578,6 +9608,7 @@ function drawRoguelikeScene(ctx, width, height) {
   const cullHeight = isFullscreen ? renderHeight : height;
   const prevSmoothing = ctx.imageSmoothingEnabled;
   ctx.imageSmoothingEnabled = false;
+  const visibleTiles = [];
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
       const projected = isoToScreen(worldX, worldY);
@@ -9585,9 +9616,10 @@ function drawRoguelikeScene(ctx, width, height) {
       // In fullscreen, renderWidth/renderHeight may exceed actual canvas size.
       if (projected.x < -ISO_TILE_WIDTH || projected.x > cullWidth + ISO_TILE_WIDTH) continue;
       if (projected.y < -ISO_TILE_HEIGHT - 80 || projected.y > cullHeight + ISO_TILE_HEIGHT + 80) continue;
-      drawProductionIsoTile(ctx, projected.x, projected.y + 64, worldX, worldY);
+      visibleTiles.push({ worldX, worldY, cx: projected.x, cy: projected.y + 64 });
     }
   }
+  drawGroundPlanPatternTiles(ctx, visibleTiles);
   ctx.imageSmoothingEnabled = prevSmoothing;
 
   // Render roads and transition zones (under obstacles, over ground tiles)

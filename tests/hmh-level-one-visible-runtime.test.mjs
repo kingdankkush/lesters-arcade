@@ -114,9 +114,10 @@ test('main runtime uses clean Level 1 loading art and authored opening ground ro
   assert.equal(loadingScreen.includes('hmhNeutralLoadingBackground()'), true, 'Level 1 null art branch should render a neutral gradient backdrop');
   assert.equal(loadingScreen.includes('Math.random() * HMH_LOADING_KEYARTS.length'), false, 'random legacy loading-keyart selection must not be inline in showHMHLoadingScreen');
 
-  const tileDraw = source.slice(source.indexOf('function drawProductionIsoTile'), source.indexOf('function productionPropForIndex'));
-  assert.equal(tileDraw.includes('levelOneOpeningGroundRoleForTile'), true, 'floor renderer should consume the authored Level 1 opening ground override');
-  assert.equal(tileDraw.includes('drawLevelOneGroundEdgeBreakup'), true, 'floor renderer should break up square tile seams with authored edge wear overlays');
+  const tileDraw = source.slice(source.indexOf('function drawGroundPlanPatternTiles'), source.indexOf('function productionPropForIndex'));
+  assert.equal(tileDraw.includes('plan.zoneAt'), true, 'floor renderer should consume the authored Level 1 ground plan instead of per-tile texture rolls');
+  assert.equal(tileDraw.includes("createPattern(source, 'repeat')"), true, 'floor renderer should fill batched zones with world-anchored texture patterns');
+  assert.equal(tileDraw.includes('drawLevelOneGroundEdgeBreakup'), false, 'WO-3 disables seam-breakup overlays until real border transitions land');
   const enemyDraw = source.slice(source.indexOf('function drawSingleEnemy'), source.indexOf('function bossArtFor'));
   assert.equal(enemyDraw.includes('drawLevelOneEnemyReadabilityAura'), true, 'enemy renderer should add Level 1 readable outlines/glows instead of relying on weak raw sprites only');
 });
