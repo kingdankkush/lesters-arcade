@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_LEVEL_ONE_SBS_GROUND, sbsGroundAssetByKey } from '../apps/portal/assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND, finalPaintGroundAssetByKey } from '../apps/portal/assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import {
   HMH_LEVEL_ONE_ID,
+  LEVEL_1_PIXELLAB_SURFACE_ZONES,
+  levelOnePixellabSurfaceAssetByKey,
+  levelOnePixellabSurfaceAssetForTile,
   levelOneGroundRoleForTile,
   requiredLevelOneGroundRoles,
   selectLevelOneGroundTile,
@@ -14,6 +17,10 @@ import {
 
 function assetPath(asset) {
   return fileURLToPath(new URL(`../apps/portal/${asset.src.replace(/^\.\//, '')}`, import.meta.url));
+}
+
+function repoPath(relativePath) {
+  return fileURLToPath(new URL(`../${relativePath}`, import.meta.url));
 }
 
 test('final-paint Level 1 ground manifest ships marketing-quality originals with animated water/shore', () => {
@@ -56,6 +63,38 @@ test('selectLevelOneGroundTile prefers final-paint assets while preserving SBS f
   assert.equal(water.role, 'water');
 
   assert.equal(selectLevelOneGroundTile({ levelId: 'level-2-litecoin-city', biome: 'water' }), null);
+});
+
+test('Level 1 PixelLab surface zones turn candidate terrain into authored route ground', () => {
+  const manifest = JSON.parse(readFileSync(repoPath('apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-pixellab-candidates.manifest.json'), 'utf8'));
+  const manifestEntries = new Map(manifest.entries.map((entry) => [entry.key, entry]));
+
+  assert.equal(LEVEL_1_PIXELLAB_SURFACE_ZONES.length >= 8, true, 'expected authored PixelLab surface zones across the Level 1 route');
+  assert.equal(LEVEL_1_PIXELLAB_SURFACE_ZONES.some((zone) => zone.routeBeat === 'boss'), true, 'boss yard should have a surface zone');
+  assert.equal(LEVEL_1_PIXELLAB_SURFACE_ZONES.some((zone) => zone.routeBeat === 'extract'), true, 'extraction road should have a surface zone');
+
+  for (const zone of LEVEL_1_PIXELLAB_SURFACE_ZONES) {
+    const asset = levelOnePixellabSurfaceAssetByKey(zone.assetKey);
+    assert.ok(asset, `${zone.assetKey} resolves to a surface asset`);
+    assert.equal(asset.src.startsWith('./assets/generated/hmh-coherent-world/level1-reference-style/candidates/'), true);
+    assert.equal(existsSync(assetPath(asset)), true, `${asset.src} exists`);
+    assert.equal(manifestEntries.get(asset.manifestKey)?.runtimeSurfaceIntegrated, true, `${asset.manifestKey} should be manifest-marked as surface-integrated`);
+  }
+
+  const brokenHighway = levelOnePixellabSurfaceAssetForTile({ worldX: 4, worldY: 5 });
+  assert.equal(brokenHighway?.key, 'pixellab-surface/broken-highway-lane');
+  assert.equal(brokenHighway?.routeBeat, 'spawn');
+
+  const river = levelOnePixellabSurfaceAssetForTile({ worldX: 62, worldY: 7 });
+  assert.equal(river?.key, 'pixellab-surface/animated-river-strip');
+  assert.equal(river?.role, 'water');
+
+  const bossRoad = selectLevelOneGroundTile({ levelId: HMH_LEVEL_ONE_ID, seed: 11, worldX: 92, worldY: 6, biome: 'rocky' });
+  assert.equal(bossRoad?.key, 'pixellab-surface/boss-yard-scorched-ground');
+  assert.equal(bossRoad?.source, 'pixellab-candidate-runtime-surface');
+
+  const offRoute = levelOnePixellabSurfaceAssetForTile({ worldX: 140, worldY: 30 });
+  assert.equal(offRoute, null);
 });
 
 test('SBS Level 1 ground manifest preserves CC0 source metadata and required roles', () => {

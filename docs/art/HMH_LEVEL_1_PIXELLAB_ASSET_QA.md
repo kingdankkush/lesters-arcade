@@ -87,6 +87,15 @@ A vetted subset is now wired into the Level 1 authored map through the existing 
 - Farmstead loop: farm road spur, worn grass, barn/silo, dock-support bridge read
 - Extraction yard: boss gate, gate markers, regenerated extraction flare road, Litecoin extraction arch, pickup glow decals
 
+The next slice also wires a smaller **surface-zone subset** into `selectLevelOneGroundTile(...)` so terrain/path candidates become authored route ground rather than only obstacle-like scene overlays:
+
+- Spawn road: broken highway lane
+- Gas-station yard: forecourt concrete
+- Ghost town: cobble/dirt main street
+- River/wash crossing: bridge planks, animated river strip, and rocky bank
+- Farmstead loop: farm road spur and worn grass shoulder
+- Boss/extraction: boss-yard scorched pad and regenerated extraction flare road
+
 These assets are still **candidate runtime art**, not final atlas-approved art. Before final approval:
 
 1. split scene-like images into atomic objects where collision precision matters
