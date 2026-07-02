@@ -18,6 +18,7 @@ export const DROP_TABLES = Object.freeze({
   grunt: Object.freeze([
     { id: 'xp-gem', weight: 60 },
     { id: 'ltc-cache', weight: 20 },
+    { id: 'grenade-crate', weight: 14 },
     { id: 'ammo-cache', weight: 12 },
     { id: 'heal-pack', weight: 5 },
     { id: 'shield-cache', weight: 3 },
@@ -25,6 +26,7 @@ export const DROP_TABLES = Object.freeze({
   elite: Object.freeze([
     { id: 'xp-gem', weight: 30 },
     { id: 'ltc-cache', weight: 20 },
+    { id: 'grenade-crate', weight: 14 },
     { id: 'ammo-cache', weight: 12 },
     { id: 'block-breaker-shells', weight: 8 },
     { id: 'hashstorm-drum', weight: 8 },
@@ -36,6 +38,7 @@ export const DROP_TABLES = Object.freeze({
   boss: Object.freeze([
     { id: 'xp-gem', weight: 12 },
     { id: 'ltc-cache', weight: 16 },
+    { id: 'grenade-crate', weight: 14 },
     { id: 'block-breaker-shells', weight: 12 },
     { id: 'hashstorm-drum', weight: 12 },
     { id: 'nuke-liquidation', weight: 14 },

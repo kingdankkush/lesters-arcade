@@ -12,6 +12,7 @@ import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollDrop } from './src/drop-tables.mjs';
+import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow, resolveGrenadeTypeForRun } from './src/hmh-grenade-economy.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
@@ -2468,6 +2469,7 @@ function renderRoguelikeStatBar() {
       })
     : null;
   const threatTone = director.pressure >= 0.8 ? 'red' : director.pressure >= 0.6 ? 'orange' : 'cyan';
+  const grenadeType = resolveGrenadeTypeForRun(run);
   const stats = [
     { id: 'survived', label: 'SURVIVED', value: formatSeconds(combat.elapsedGameSeconds), tone: threatTone },
     { id: 'level', label: 'LEVEL', value: `${level.number} · ${director.difficultyLabel.toUpperCase()}`, tone: 'cyan' },
@@ -2479,7 +2481,7 @@ function renderRoguelikeStatBar() {
     { id: 'seed', label: 'SEED', value: `${run.seed}`, tone: 'cyan' },
     { id: 'wpn', label: 'WEAPON', value: (weapon.displayName ?? weapon.title).toUpperCase(), tone: 'green' },
     { id: 'ammo', label: 'AMMO', value: ammoValue, tone: combat.reloading ? 'orange' : 'green' },
-    { id: 'thrown', label: 'NADES', value: `💣${combat.grenades}`, tone: 'orange' },
+    { id: 'thrown', label: 'NADES', value: `💣${combat.grenades}/${grenadeCapacityForRun(run)} ${grenadeType.title.toUpperCase()}`, tone: 'orange' },
     { id: 'aug', label: 'AUG', value: `${augments} · ⟳${run.rerollsRemaining}`, tone: 'orange' },
   ];
   const activeFx = [];
@@ -5879,39 +5881,45 @@ function grenade() {
     spawnText('NO GRENADES', combat.playerX + 20, combat.playerY - 80, '#ff476f');
     return;
   }
-  combat.grenades -= 1;
   playSfxCue('grenade', 0.075);
 
   if (combat.roguelikeRun) {
-    // Real fused throw (Level Design Bible §6.3): plan the landing point along the
-    // aim vector in map space, then arm a fused grenade that shows a landing-shadow
-    // blast-radius telegraph while the fuse counts down. The plan is deterministic
-    // (pure helper, no RNG) so a replay re-sims the same blast. Detonation damage is
-    // applied in updateRoguelikeGrenades() via the shared grenadeBlastDamageAt().
-    const plan = planGrenadeThrow({
+    // Real fused throw (Level Design Bible §6.3): WO-28 routes the single
+    // throwable button through the unlocked grenade economy. The plan is still
+    // pure/deterministic, but stats can now switch the role between Crypto Bombs,
+    // Launcher Rig, Homing Cluster, and Block Buster.
+    const throwPlan = planLevelOneGrenadeThrow({
+      run: combat.roguelikeRun,
+      currentGrenades: combat.grenades,
       originX: combat.playerMapX,
       originY: combat.playerMapY,
       aimX: combat.aimMapX,
       aimY: combat.aimMapY,
-      reach: 1.4,
-      maxRange: 6.0,
-      blastRadius: 2.0,
-      fuseFrames: 42,
+      damageMultiplier: combat.roguelikeRun?.stats.grenadeDamage ?? 1,
     });
-    const dmg = 34 * (combat.roguelikeRun?.stats.grenadeDamage ?? 1);
+    if (!throwPlan.throwAllowed) {
+      spawnText(`${throwPlan.type.title.toUpperCase()} NEEDS ${throwPlan.cost}`, combat.playerX + 20, combat.playerY - 80, '#ff476f');
+      return;
+    }
+    combat.grenades = throwPlan.remaining;
     combat.activeGrenades = combat.activeGrenades ?? [];
     combat.activeGrenades.push({
-      x: plan.landX,
-      y: plan.landY,
-      radius: plan.blastRadius,
-      fuse: plan.fuseFrames,
-      maxFuse: plan.fuseFrames,
-      damage: dmg,
+      typeId: throwPlan.typeId,
+      x: throwPlan.plan.landX,
+      y: throwPlan.plan.landY,
+      radius: throwPlan.plan.blastRadius,
+      fuse: throwPlan.plan.fuseFrames,
+      maxFuse: throwPlan.plan.fuseFrames,
+      damage: throwPlan.damage,
+      homing: Boolean(throwPlan.type.homing),
+      clusterCount: throwPlan.type.clusterCount ?? 1,
     });
+    spawnText(throwPlan.label, combat.playerX + 20, combat.playerY - 80, '#ffb347');
     return;
   }
 
   // Legacy side-scroller fallback.
+  combat.grenades -= 1;
   const blastBox = { x: combat.playerX + 52, y: GROUND_Y - 154, w: 304, h: 166 };
   for (const enemy of combat.enemies) {
     if (rectsOverlap(blastBox, enemyHitbox(enemy))) damageEnemy(enemy, 18, 'grenade');
@@ -8055,6 +8063,16 @@ function updateRoguelikeGrenades() {
     g.fuse -= 1;
     if (g.fuse > 0) continue;
     g.detonated = true;
+    if (g.homing && !g.homingLocked) {
+      const target = combat.enemies
+        .filter((enemy) => enemy.hp > 0)
+        .sort((a, b) => Math.hypot(a.mapX - g.x, a.mapY - g.y) - Math.hypot(b.mapX - g.x, b.mapY - g.y))[0];
+      if (target && Math.hypot(target.mapX - g.x, target.mapY - g.y) <= 5.5) {
+        g.x = target.mapX;
+        g.y = target.mapY;
+      }
+      g.homingLocked = true;
+    }
     for (const enemy of combat.enemies) {
       if (enemy.hp <= 0) continue;
       const d = Math.hypot(enemy.mapX - g.x, enemy.mapY - g.y);
@@ -8111,7 +8129,7 @@ function updateRoguelikeXpGems() {
 // applyRoguelikePowerUp so the weapon pickups and timed utility/offense buffs get
 // real gameplay behavior, not just an icon.
 const ROGUELIKE_POWERUP_POOL = Object.freeze([
-  'health-pack', 'shield-cache', 'ammo-cache', 'block-breaker-shells', 'hashstorm-drum', 'magnet-surge',
+  'health-pack', 'shield-cache', 'grenade-crate', 'ammo-cache', 'block-breaker-shells', 'hashstorm-drum', 'magnet-surge',
   'time-dilation', 'berserk-candle', 'ltc-cache',
 ]);
 // Rarer, run-swinging drops reserved for elites / mini-bosses.
@@ -8207,6 +8225,12 @@ function applyRoguelikePowerUp(power) {
       combat.reloading = false;
       combat.reloadRemaining = 0;
       break;
+    case 'grenades': {
+      const refill = grenadeRefillForPickup({ current: combat.grenades, run: combat.roguelikeRun, amount: power.amount ?? 2 });
+      combat.grenades = refill.after;
+      spawnText(refill.gained > 0 ? `+${refill.gained} NADES` : 'NADES FULL', px, py, '#ffb347');
+      break;
+    }
     case 'weapon': {
       const weapon = equipRoguelikeWeapon(power.weaponId, power.durationSeconds ?? 16);
       spawnText(`${(weapon.displayName ?? weapon.title).toUpperCase()} READY`, px, py - 18, '#8cf7ff');
