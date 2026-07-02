@@ -18,7 +18,7 @@ import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-g
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
-import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition } from './src/world-obstacles.mjs';
+import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
@@ -7872,6 +7872,9 @@ function updateRoguelikeEnemies(director, dt) {
   const enemyPositions = combat.enemies.map((e) => ({ x: e.mapX, y: e.mapY }));
   const runSeed = combat.roguelikeRun?.seed ?? 0;
   const obstacles = currentObstacles();
+  const enemyWorldBounds = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
+    ? buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight })
+    : null;
   for (let ei = 0; ei < combat.enemies.length; ei += 1) {
     const enemy = combat.enemies[ei];
     if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
@@ -7922,13 +7925,20 @@ function updateRoguelikeEnemies(director, dt) {
         const fromY = enemy.mapY;
         const toX = fromX + dir.x * speed * dt;
         const toY = fromY + dir.y * speed * dt;
-        // Enemies now respect the same obstacle + water collision the player does,
-        // so they stop clipping through buildings and walking onto water. They
-        // slide along blocking footprints instead of phasing through them.
-        const afterObstacles = resolvePlayerCollision(fromX, fromY, toX, toY, 0.4, obstacles);
-        const resolved = resolveWaterCollision(runSeed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt);
-        enemy.mapX = resolved.x;
-        enemy.mapY = resolved.y;
+        const boundedMove = resolveBoundedAiMove({
+          seed: runSeed,
+          fromX,
+          fromY,
+          toX,
+          toY,
+          radius: 0.4,
+          obstacles,
+          biomeAt,
+          worldBounds: enemyWorldBounds,
+        });
+        enemy.mapX = boundedMove.x;
+        enemy.mapY = boundedMove.y;
+        enemy.worldBoundsAdjusted = Boolean(boundedMove.boundsAdjusted);
       } else if (enemy.ranged) {
         // Back away to maintain range, still avoiding neighbors + terrain.
         const dir = blendSteering({ x: -dx / distance, y: -dy / distance }, sep, 0.5);
@@ -7936,10 +7946,20 @@ function updateRoguelikeEnemies(director, dt) {
         const fromY = enemy.mapY;
         const toX = fromX + dir.x * 0.55 * dt * slowFactor;
         const toY = fromY + dir.y * 0.55 * dt * slowFactor;
-        const afterObstacles = resolvePlayerCollision(fromX, fromY, toX, toY, 0.4, obstacles);
-        const resolved = resolveWaterCollision(runSeed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt);
-        enemy.mapX = resolved.x;
-        enemy.mapY = resolved.y;
+        const boundedMove = resolveBoundedAiMove({
+          seed: runSeed,
+          fromX,
+          fromY,
+          toX,
+          toY,
+          radius: 0.4,
+          obstacles,
+          biomeAt,
+          worldBounds: enemyWorldBounds,
+        });
+        enemy.mapX = boundedMove.x;
+        enemy.mapY = boundedMove.y;
+        enemy.worldBoundsAdjusted = Boolean(boundedMove.boundsAdjusted);
       }
       enemy.attackTimer -= 1;
       // Mini-boss 2-phase enrage (handoff §12.7): POI mini-bosses tighten their

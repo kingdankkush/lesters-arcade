@@ -161,6 +161,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-level-one-map-bounds.test.mjs",
   "tests/hmh-level-one-boundary-edges.test.mjs",
   "tests/hmh-finite-map-spawn.test.mjs",
+  "tests/hmh-bounded-world-ai.test.mjs",
   "apps/portal/src/boss-phase-controller.mjs",
   "tests/boss-phase-controller.test.mjs",
   "apps/portal/src/hmh-level-one-boss.mjs",

@@ -292,3 +292,34 @@ export function resolveWaterCollision(seed, fromX, fromY, toX, toY, biomeAt) {
   return { x: fromX, y: fromY };
 }
 
+export function resolveBoundedAiMove({
+  seed = 0,
+  fromX = 0,
+  fromY = 0,
+  toX = 0,
+  toY = 0,
+  radius = 0.4,
+  obstacles = [],
+  biomeAt,
+  worldBounds = null,
+} = {}) {
+  const startX = finiteOr(fromX, 0);
+  const startY = finiteOr(fromY, 0);
+  const desiredX = finiteOr(toX, startX);
+  const desiredY = finiteOr(toY, startY);
+  const bounds = normalizeWorldBounds(worldBounds);
+  const afterObstacles = resolvePlayerCollision(startX, startY, desiredX, desiredY, Math.max(0.1, finiteOr(radius, 0.4)), Array.isArray(obstacles) ? obstacles : []);
+  const terrain = resolveWaterCollision(seed, startX, startY, afterObstacles.x, afterObstacles.y, biomeAt);
+  const bounded = clampToWorldBounds(terrain.x, terrain.y, bounds);
+  const obstacleAdjusted = afterObstacles.x !== desiredX || afterObstacles.y !== desiredY;
+  const terrainAdjusted = terrain.x !== afterObstacles.x || terrain.y !== afterObstacles.y;
+  return {
+    x: Number(bounded.x.toFixed(3)),
+    y: Number(bounded.y.toFixed(3)),
+    obstacleAdjusted,
+    terrainAdjusted,
+    boundsAdjusted: bounded.boundsAdjusted,
+    adjusted: obstacleAdjusted || terrainAdjusted || bounded.boundsAdjusted,
+  };
+}
+
