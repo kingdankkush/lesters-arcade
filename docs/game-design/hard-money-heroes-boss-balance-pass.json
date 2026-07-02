@@ -1,0 +1,96 @@
+{
+  "version": "wo-33-boss-balance-v1",
+  "overallScore": 100,
+  "summary": {
+    "cardCount": 4,
+    "miniBossCount": 3,
+    "majorBossCount": 1,
+    "firstMiniBossSeconds": 210,
+    "firstMajorBossSeconds": 510,
+    "scheduleSpacingOk": true,
+    "minScheduleGapSeconds": 180
+  },
+  "cards": [
+    {
+      "role": "mini-boss",
+      "enemyId": "claim-jumper-sheriff",
+      "title": "Claim-Jumper Sheriff",
+      "zoneId": "ghost-saloon-mainstreet",
+      "firstSeenSeconds": 210,
+      "beatId": "beat-001-mini-pair",
+      "phaseCount": 2,
+      "enrageHpPct": 50,
+      "enrageAttackResetMul": 0.62,
+      "enragedFanShots": 3,
+      "telegraphFrames": 48,
+      "chaseSpeedCapRatio": 0.92,
+      "spawnSpeed": 1.1,
+      "chaseSpeed": 0
+    },
+    {
+      "role": "mini-boss",
+      "enemyId": "scam-cult-zealot",
+      "title": "Scam Cult Zealot Alpha",
+      "zoneId": "dead-forest-mushroom-grove",
+      "firstSeenSeconds": 690,
+      "beatId": "beat-003-mini-pair",
+      "phaseCount": 2,
+      "enrageHpPct": 50,
+      "enrageAttackResetMul": 0.62,
+      "enragedFanShots": 3,
+      "telegraphFrames": 54,
+      "chaseSpeedCapRatio": 0.92,
+      "spawnSpeed": 1.376,
+      "chaseSpeed": 0
+    },
+    {
+      "role": "mini-boss",
+      "enemyId": "gas-beast",
+      "title": "Gas Beast Tank",
+      "zoneId": "warehouse-gas-station-yard",
+      "firstSeenSeconds": 1050,
+      "beatId": "beat-005-mini-pair",
+      "phaseCount": 2,
+      "enrageHpPct": 50,
+      "enrageAttackResetMul": 0.62,
+      "enragedFanShots": 3,
+      "telegraphFrames": 50,
+      "chaseSpeedCapRatio": 0.92,
+      "spawnSpeed": 0.849,
+      "chaseSpeed": 0.849
+    },
+    {
+      "role": "boss",
+      "enemyId": "bandit-captain",
+      "title": "Bandit Captain",
+      "zoneId": "rugpull-gulch-boss-yard",
+      "firstSeenSeconds": 510,
+      "beatId": "beat-002-major-boss",
+      "phaseCount": 3,
+      "fanShotsByPhase": [
+        3,
+        5,
+        7
+      ],
+      "fanSpreadRadByPhase": [
+        0.42,
+        0.72,
+        1.02
+      ],
+      "attackResetFramesByPhase": [
+        78,
+        60,
+        92
+      ],
+      "addSuppressionPhases": [
+        "gate-warning",
+        "extraction-break"
+      ],
+      "maxHealthMultiplier": 1.88
+    }
+  ],
+  "validation": {
+    "ok": true,
+    "gaps": []
+  }
+}

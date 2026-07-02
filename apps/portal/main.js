@@ -184,6 +184,7 @@ import {
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
+import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
@@ -7970,7 +7971,7 @@ function spawnLevelOneBossBeat(beat, director) {
       attackTimer: 180,
     });
     if (enemy) {
-      enemy.hp = Math.round(enemy.hp * (1 + beat.pressureTier * 0.22));
+      enemy.hp = Math.round(enemy.hp * bossBeatHealthMultiplier(beat.pressureTier));
       enemy.maxHp = enemy.hp;
     }
     spawnText(`MAJOR BOSS // ${majorBoss.title.toUpperCase()} T${beat.pressureTier}`, ISO_CENTER_X - 154, ISO_CENTER_Y - 88, '#ff476f');
