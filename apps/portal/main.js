@@ -7327,6 +7327,9 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
         : isPoiSpawn
           ? ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES
           : Math.max(ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES, actComposition.minSpawnDistanceTiles ?? ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES));
+  const spawnWorldBounds = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
+    ? buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight })
+    : null;
   const safeSpawn = resolveDistantSpawnPosition({
     seed: combat.roguelikeRun?.seed ?? 0,
     playerX: combat.playerMapX,
@@ -7337,8 +7340,9 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     fallbackAngleRadians: angle,
     fallbackRadiusTiles: Math.max(radius, minSpawnDistance),
     biomeAt,
+    worldBounds: spawnWorldBounds,
   });
-  if (safeSpawn.adjusted) {
+  if (safeSpawn.adjusted || safeSpawn.boundsAdjusted) {
     debugRuntimeLog('[spawn] adjusted enemy spawn away from player/water', {
       enemyId: spawn.enemy.id,
       miniBoss,
@@ -7372,6 +7376,8 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     poiEncounterId: options.poiEncounterId ?? null,
     macroRole: districtContext?.macroRole ?? null,
     spawnSource: options.spawnSource ?? (spawn.spawnContext?.source ?? 'timeline'),
+    spawnBoundsAdjusted: Boolean(safeSpawn.boundsAdjusted),
+    spawnResolverFound: Boolean(safeSpawn.found),
     balanceCard,
     speedLaw: balanceCard.speedLaw,
     attackTimer: Math.max(options.attackTimer ?? (ranged ? 110 + (combat.frame % 50) : 90), ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES),

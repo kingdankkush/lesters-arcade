@@ -169,6 +169,29 @@ function finiteOr(value, fallback) {
   return Number.isFinite(value) ? value : fallback;
 }
 
+function normalizeWorldBounds(worldBounds = null) {
+  if (!worldBounds) return null;
+  const width = finiteOr(worldBounds.width, null);
+  const height = finiteOr(worldBounds.height, null);
+  const minX = finiteOr(worldBounds.minX, Number.isFinite(width) ? -width / 2 : -Infinity);
+  const maxX = finiteOr(worldBounds.maxX, Number.isFinite(width) ? width / 2 : Infinity);
+  const minY = finiteOr(worldBounds.minY, Number.isFinite(height) ? -height / 2 : -Infinity);
+  const maxY = finiteOr(worldBounds.maxY, Number.isFinite(height) ? height / 2 : Infinity);
+  return { minX, maxX, minY, maxY };
+}
+
+function insideWorldBounds(x, y, bounds) {
+  if (!bounds) return true;
+  return x >= bounds.minX && x <= bounds.maxX && y >= bounds.minY && y <= bounds.maxY;
+}
+
+function clampToWorldBounds(x, y, bounds) {
+  if (!bounds) return { x, y, boundsAdjusted: false };
+  const bx = Math.max(bounds.minX, Math.min(x, bounds.maxX));
+  const by = Math.max(bounds.minY, Math.min(y, bounds.maxY));
+  return { x: bx, y: by, boundsAdjusted: bx !== x || by !== y };
+}
+
 // Find the closest dry tile for initial player placement. The runtime can no
 // longer assume world origin is land: some seeded campaign layouts put (0,0) in
 // water, and water collision intentionally keeps the player stuck if their
@@ -213,16 +236,18 @@ export function resolveDistantSpawnPosition({
   fallbackAngleRadians = 0,
   fallbackRadiusTiles = 10,
   biomeAt,
+  worldBounds = null,
   maxAttempts = 48,
 } = {}) {
   const px = finiteOr(playerX, 0);
   const py = finiteOr(playerY, 0);
   const dx = finiteOr(desiredX, px);
   const dy = finiteOr(desiredY, py);
+  const bounds = normalizeWorldBounds(worldBounds);
   const min = Math.max(0, finiteOr(minDistance, 8));
   const desiredDistance = Math.hypot(dx - px, dy - py);
-  if (desiredDistance >= min && isDryAt(seed, dx, dy, biomeAt)) {
-    return { x: dx, y: dy, distance: desiredDistance, adjusted: false, found: true };
+  if (desiredDistance >= min && insideWorldBounds(dx, dy, bounds) && isDryAt(seed, dx, dy, biomeAt)) {
+    return { x: dx, y: dy, distance: desiredDistance, adjusted: false, boundsAdjusted: false, found: true };
   }
 
   const baseAngle = Number.isFinite(fallbackAngleRadians)
@@ -231,21 +256,29 @@ export function resolveDistantSpawnPosition({
   const baseRadius = Math.max(min, finiteOr(fallbackRadiusTiles, min), desiredDistance);
   const attempts = Math.max(1, Math.round(finiteOr(maxAttempts, 48)));
   const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const desiredBoundsAdjusted = bounds ? !insideWorldBounds(dx, dy, bounds) : false;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const ring = Math.floor(attempt / 16);
     const radius = baseRadius + ring * 2;
     const angle = attempt === 0 ? baseAngle : baseAngle + attempt * goldenAngle;
     const x = px + Math.cos(angle) * radius;
     const y = py + Math.sin(angle) * radius;
+    if (!insideWorldBounds(x, y, bounds)) continue;
     const distance = Math.hypot(x - px, y - py);
     if (distance >= min && isDryAt(seed, x, y, biomeAt)) {
-      return { x, y, distance, adjusted: true, found: true };
+      return { x, y, distance, adjusted: true, boundsAdjusted: desiredBoundsAdjusted, found: true };
     }
   }
 
-  const x = px + Math.cos(baseAngle) * min;
-  const y = py + Math.sin(baseAngle) * min;
-  return { x, y, distance: min, adjusted: true, found: false };
+  const fallback = clampToWorldBounds(px + Math.cos(baseAngle) * min, py + Math.sin(baseAngle) * min, bounds);
+  return {
+    x: fallback.x,
+    y: fallback.y,
+    distance: Math.hypot(fallback.x - px, fallback.y - py),
+    adjusted: true,
+    boundsAdjusted: desiredBoundsAdjusted || fallback.boundsAdjusted,
+    found: false,
+  };
 }
 
 // Resolve a desired move against water: if the destination tile is water, keep
