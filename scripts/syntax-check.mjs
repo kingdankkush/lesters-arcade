@@ -132,6 +132,8 @@ const NODE_CHECK_FILES = [
   "tests/contract-abi-alignment.test.mjs",
   "apps/portal/src/hmh-run-integrity.mjs",
   "tests/hmh-run-integrity.test.mjs",
+  "apps/portal/src/boss-phase-controller.mjs",
+  "tests/boss-phase-controller.test.mjs",
   "apps/portal/src/hmh-level-one-boss.mjs",
   "tests/hmh-level-one-boss.test.mjs",
   "scripts/syntax-check.mjs"

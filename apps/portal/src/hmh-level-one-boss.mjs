@@ -23,12 +23,12 @@
 // truth; this module only derives runtime numbers from it.
 
 import { buildLevelOneBossChoreographyPlan } from './hmh-level-one-balance-pass.mjs';
-
-function clamp01(v) {
-  const n = Number(v);
-  if (!Number.isFinite(n)) return 0;
-  return n < 0 ? 0 : n > 1 ? 1 : n;
-}
+import {
+  buildPhaseDirective,
+  clamp01,
+  computePhaseVolleyVectors,
+  resolvePhaseFromHpFraction,
+} from './boss-phase-controller.mjs';
 
 // Per-phase runtime combat shape. Keyed by the choreography phase id so the
 // design plan stays the source of truth for hpPct thresholds + telegraph + add
@@ -58,31 +58,13 @@ export const LEVEL_ONE_BOSS_PHASE_COMBAT = Object.freeze({
 // The final phase owns 0 so a dead-but-not-yet-resolved boss still maps cleanly.
 export function resolveLevelOneBossPhase(hpFraction, { plan = null } = {}) {
   const choreography = plan ?? buildLevelOneBossChoreographyPlan();
-  const phases = choreography.finalBoss.phases;
-  const hpPct = clamp01(hpFraction) * 100;
-
-  let index = phases.length - 1;
-  for (let i = 0; i < phases.length; i += 1) {
-    const [high, low] = phases[i].hpPct;
-    // Highest-HP band that still contains hpPct wins. Upper phase owns its top
-    // edge (100), lower bands own everything strictly below their high edge.
-    if (hpPct <= high && hpPct > low) { index = i; break; }
-    if (i === 0 && hpPct >= high) { index = 0; break; }
-  }
-  const phase = phases[index];
-  const combat = LEVEL_ONE_BOSS_PHASE_COMBAT[phase.id] ?? LEVEL_ONE_BOSS_PHASE_COMBAT['gate-warning'];
-
+  const phase = resolvePhaseFromHpFraction(hpFraction, choreography.finalBoss.phases, {
+    combatByPhaseId: LEVEL_ONE_BOSS_PHASE_COMBAT,
+    fallbackPhaseId: 'gate-warning',
+  });
   return Object.freeze({
-    index,
-    id: phase.id,
-    phaseNumber: index + 1,
-    phaseCount: phases.length,
-    telegraphFrames: phase.telegraphFrames,
+    ...phase,
     addWaveSuppression: Boolean(phase.addWaveSuppression),
-    pattern: phase.pattern,
-    counterplay: phase.counterplay,
-    ...combat,
-    isFinalPhase: index === phases.length - 1,
   });
 }
 
@@ -91,20 +73,16 @@ export function resolveLevelOneBossPhase(hpFraction, { plan = null } = {}) {
 // and returns everything the update loop needs. `lastPhaseId` is the phase id
 // recorded on the boss proxy from the previous frame (null on first evaluation).
 export function buildLevelOneBossDirective({ hp, maxHp, lastPhaseId = null, plan = null } = {}) {
-  const safeMax = Math.max(1, Number(maxHp) || 1);
-  const fraction = clamp01((Number(hp) || 0) / safeMax);
-  const phase = resolveLevelOneBossPhase(fraction, { plan });
-  const changed = lastPhaseId !== phase.id;
-  return Object.freeze({
-    phase,
-    hpFraction: Number(fraction.toFixed(3)),
-    phaseChanged: changed,
-    // Adds only spawn on a genuine phase ENTRY, and never when the phase's plan
-    // suppresses add waves (so the extraction-break finale stays a clean duel).
-    summonAdds: changed && !phase.addWaveSuppression ? phase.summonAddsOnEntry : 0,
-    // The banner text runtime should surface on phase entry.
-    banner: changed ? `${phase.pattern}`.toUpperCase() : null,
-    nextLastPhaseId: phase.id,
+  const choreography = plan ?? buildLevelOneBossChoreographyPlan();
+  return buildPhaseDirective({
+    hp,
+    maxHp,
+    lastPhaseId,
+    phases: choreography.finalBoss.phases,
+    combatByPhaseId: LEVEL_ONE_BOSS_PHASE_COMBAT,
+    fallbackPhaseId: 'gate-warning',
+    summonAddsForPhase: (phase) => (!phase.addWaveSuppression ? phase.summonAddsOnEntry : 0),
+    bannerForPhase: (phase) => `${phase.pattern}`.toUpperCase(),
   });
 }
 
@@ -112,22 +90,7 @@ export function buildLevelOneBossDirective({ hp, maxHp, lastPhaseId = null, plan
 // evenly across `spreadRad`, centered on the aim direction (dirX, dirY). Pure
 // geometry so the runtime just pushes these into combat.enemyShots.
 export function computeBossVolleyVectors({ dirX, dirY, baseSpeed, phase } = {}) {
-  const count = Math.max(1, Math.round(phase?.fanShots ?? 1));
-  const spread = Math.max(0, Number(phase?.fanSpreadRad ?? 0));
-  const speed = (Number(baseSpeed) || 1) * (phase?.shotSpeedMul ?? 1);
-  // NB: use ?? not || for the direction components — a legitimate 0 (e.g. aiming
-  // straight along an axis) is falsy and must NOT be coerced to a fallback.
-  const dx = Number.isFinite(dirX) ? dirX : 1;
-  const dy = Number.isFinite(dirY) ? dirY : 0;
-  const baseAngle = Math.atan2(dy, dx);
-  const start = baseAngle - spread / 2;
-  const step = count > 1 ? spread / (count - 1) : 0;
-  const vectors = [];
-  for (let i = 0; i < count; i += 1) {
-    const a = start + step * i;
-    vectors.push({ vx: Math.cos(a) * speed, vy: Math.sin(a) * speed });
-  }
-  return vectors;
+  return computePhaseVolleyVectors({ dirX, dirY, baseSpeed, phase });
 }
 
 // --- Mini-bosses ------------------------------------------------------------

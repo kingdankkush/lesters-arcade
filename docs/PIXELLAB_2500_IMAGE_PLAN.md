@@ -169,11 +169,15 @@ helpers so the integration is a drop-in replacement for the hand-made Lester/Lil
 
 ## Quality Gates
 
-Every harvested image is validated:
+Every harvested image is validated against the global art bible (`docs/art/ART_BIBLE.md`):
 - PNG-24 with alpha channel (transparent background)
-- No watermarks, no text artifacts, no off-canvas pixels
+- Nearest-color quantized to the Lester's Arcade master palette unless explicitly waived
+- Selective 1px dark-navy outline normalization for actors, pickups, hazards, and interactives
+- Alpha-cleaned with no matte/fringe, watermarks, text artifacts, or off-canvas pixels
 - Frame consistency across animation sequences (all frames same dimensions)
-- Direction consistency (8-dir sets must be exactly 8 frames per state)
+- Direction consistency (8-dir sets must be exactly 8 directions per state)
+- Runtime metadata exists for pivot, collision/shadow footprint, frame timing, muzzle/hit anchors, and event tags where applicable
+- Accepted sequences are atlas-packed and manifest-backed; raw generations stay outside the deploy repo
 
 Rejected frames fall back to the existing hand-made art until regenerated.
 
