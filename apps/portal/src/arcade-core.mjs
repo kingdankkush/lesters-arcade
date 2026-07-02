@@ -25,6 +25,7 @@ import {
   validateWeaponUpgrades,
 } from './weapon-upgrades.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, syncConfiguredCharacterUnlocks, resolveSelectedCharacterId } from './hmh-character-config.mjs';
+import { createSeededSubstreams } from './seeded-rng.mjs';
 
 export {
   LEADERBOARD_CADENCES,
@@ -2238,8 +2239,15 @@ function cloneRoguelikeRun(run) {
     stats: { ...run.stats },
     skills: { ...run.skills },
     map: { ...run.map },
+    rngStreams: { ...(run.rngStreams ?? {}) },
     spawnDirector: { ...run.spawnDirector },
   };
+}
+
+const ROGUELIKE_RNG_STREAM_NAMES = Object.freeze(['spawns', 'drops', 'boss', 'draft', 'crit']);
+
+export function createRoguelikeRunRngStreams(seed = 1) {
+  return createSeededSubstreams(seed, ROGUELIKE_RNG_STREAM_NAMES);
 }
 
 export function buildIsometricRoguelikeRunConfig({ seed = 1, mapRadiusTiles = 42 } = {}) {
@@ -2284,6 +2292,7 @@ export function createRoguelikeRunState({
   return {
     mode,
     seed: config.seed,
+    rngStreams: createRoguelikeRunRngStreams(config.seed),
     characterId,
     campaignLevelId,
     campaignLevelNumber: Math.max(1, Math.floor(Number(campaignLevelNumber) || 1)),
@@ -2316,7 +2325,7 @@ export function grantRoguelikeXp(run, amount = 0) {
   return next;
 }
 
-export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false } = {}) {
+export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false, rng = null } = {}) {
   const campaignLevelNumber = Math.max(1, Math.floor(Number(run?.campaignLevelNumber) || 1));
   const available = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => {
     if ((skill.availableFromCampaignLevel ?? 1) > campaignLevelNumber) return false;
@@ -2325,7 +2334,7 @@ export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, rero
   const choices = [];
   const saltBase = (run.level ?? 1) * 17 + (reroll ? 101 : 0);
   for (let i = 0; i < Math.min(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, available.length); i += 1) {
-    const index = seededIndex(seed, saltBase + i * 13, available.length);
+    const index = rng?.int ? rng.int(0, available.length - 1) : seededIndex(seed, saltBase + i * 13, available.length);
     const [skill] = available.splice(index, 1);
     choices.push(Object.freeze({ ...skill, currentLevel: run.skills?.[skill.id] ?? 0, nextLevel: (run.skills?.[skill.id] ?? 0) + 1 }));
   }
@@ -3048,7 +3057,7 @@ export function buildHardMoneyHeroesAnimationProductionBriefs(coverage = buildHa
   });
 }
 
-export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false, extraction = null, killedBy = null, bestUpgrade = null } = {}) {
+export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false, extraction = null, killedBy = null, bestUpgrade = null, runSeed = null } = {}) {
   const official = Boolean(session?.isPaid || session?.mode === 'paid' || session?.leaderboardEligible);
   const safeScore = Number.isFinite(score) ? Math.max(0, Math.round(score)) : 0;
   const safeElapsed = Number.isFinite(elapsedSeconds) ? Math.max(0, Math.round(elapsedSeconds)) : 0;
@@ -3073,6 +3082,7 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
   }
   if (killedBy) metricList.push(Object.freeze({ id: 'killed-by', label: 'Killed By', value: String(killedBy) }));
   if (bestUpgrade) metricList.push(Object.freeze({ id: 'best-upgrade', label: 'Best Augment', value: String(bestUpgrade) }));
+  if (runSeed !== null && runSeed !== undefined) metricList.push(Object.freeze({ id: 'run-seed', label: 'Run Seed', value: String(runSeed) }));
   const metrics = Object.freeze(metricList);
   const baseActions = [
     Object.freeze({ id: official ? 'play-again-ranked' : 'play-again-free', label: official ? 'Play Again Ranked' : 'Play Again Free', cost: official ? 'requires new testnet credit' : 'free', target: 'level-intro', enabled: true }),

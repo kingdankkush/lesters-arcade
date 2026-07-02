@@ -9,7 +9,6 @@ import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemy
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
-import { SeededRng, hashSeed } from './src/seeded-rng.mjs';
 import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollDrop } from './src/drop-tables.mjs';
@@ -1963,6 +1962,7 @@ function currentGameOverSummaryModel() {
     extraction,
     killedBy: cleared ? null : combat.killedBy,
     bestUpgrade: bestRoguelikeUpgradeTitle(),
+    runSeed: combat.roguelikeRun?.seed ?? null,
   });
 }
 
@@ -2474,6 +2474,7 @@ function renderRoguelikeStatBar() {
     { id: 'score', label: 'SCORE', value: Math.round(combat.score).toLocaleString(), tone: 'gold' },
     { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
     { id: 'rank', label: 'RANK', value: `${run.level}`, tone: 'green' },
+    { id: 'seed', label: 'SEED', value: `${run.seed}`, tone: 'cyan' },
     { id: 'wpn', label: 'WEAPON', value: (weapon.displayName ?? weapon.title).toUpperCase(), tone: 'green' },
     { id: 'ammo', label: 'AMMO', value: ammoValue, tone: combat.reloading ? 'orange' : 'green' },
     { id: 'thrown', label: 'NADES', value: `💣${combat.grenades}`, tone: 'orange' },
@@ -4648,7 +4649,7 @@ function hmhLoadingBackgroundForLevel(levelMeta = currentCampaignLevel()) {
   // Level 1 should not show legacy/key-art enemy hordes during load. The actual
   // authored gameplay canvas appears immediately behind READY after generation.
   if (level.id === HMH_LEVEL_ONE_ID) return null;
-  return HMH_LOADING_KEYARTS[Math.floor(Math.random() * HMH_LOADING_KEYARTS.length)] ?? HMH_KEY_ART_BG;
+  return HMH_LOADING_KEYARTS[Math.floor(Math.random() * HMH_LOADING_KEYARTS.length)] ?? HMH_KEY_ART_BG; // cosmetic-rng-ok loading art rotation only
 }
 
 function hmhNeutralLoadingBackground() {
@@ -4685,7 +4686,7 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
   // Progress bar animation
   let progress = 0;
   const interval = setInterval(() => {
-    progress += Math.random() * 4 + 1.5;
+    progress += Math.random() * 4 + 1.5; // cosmetic-rng-ok loading progress shimmer only
     if (progress > 100) progress = 100;
     bar.style.width = progress + '%';
     if (progress > 35) status.textContent = 'RENDERING DISTRICTS & ROAD NETWORK...';
@@ -5675,10 +5676,9 @@ async function startCombat(options = {}) {
     carryOver: carryOver?.roguelikeRun ?? null,
   });
   // Dedicated seeded RNG stream for consuming gameplay rolls (crit chance) so a
-  // run is fully reproducible from roguelikeRun.seed. Derived via hashSeed from
-  // the run seed with a fixed salt so it is independent of the positional
-  // (seededIndex) streams used for spawns/upgrades and cannot entangle draw order.
-  combat.critRng = new SeededRng(hashSeed(combat.roguelikeRun.seed ^ 0x6c726974));
+  // run is fully reproducible from roguelikeRun.seed. The stream lives on the
+  // run state beside spawns/drops/boss/draft so replay verifiers can snapshot it.
+  combat.critRng = combat.roguelikeRun.rngStreams?.crit ?? null;
   preloadHeroRoster(combat.characterId); // decode hurt/death/melee frames up front (no first-hit art pop)
   preloadWorldPropImages(); // decode all world-prop art up front (no scroll-in pop-in)
   
@@ -6131,12 +6131,18 @@ function updateCombatStep(stepMs) {
   }
 }
 
+function roguelikeRngStream(name) {
+  return combat.roguelikeRun?.rngStreams?.[name] ?? null;
+}
+
 function spawnEnemy(options = {}) {
   const l2Tuning = l2CampaignCombatTuning();
   const cap = enemyCapForStage(options.stageIndex ?? combat.stageIndex) + l2Tuning.maxEnemiesOnMapBonus;
   const liveStageEnemies = combat.enemies.filter((enemy) => enemy.stageIndex === (options.stageIndex ?? combat.stageIndex)).length;
   if (liveStageEnemies >= cap) return null;
-  const spawn = chooseEnemySpawn({ elapsedSeconds: combat.elapsedGameSeconds, seed: combat.frame + combat.kills + combat.waveEnemiesSpawned });
+  const spawnSeed = roguelikeRngStream('spawns')?.int(0, 1_000_000_000)
+    ?? (combat.frame + combat.kills + combat.waveEnemiesSpawned);
+  const spawn = chooseEnemySpawn({ elapsedSeconds: combat.elapsedGameSeconds, seed: spawnSeed });
   const tacticalRoomTuning = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.tacticalRoomTuning;
   const role = options.role ?? (spawn.ai?.aggression > 1.2 ? 'aggressive-melee-rusher' : 'cover-shooter');
   const flying = spawn.enemy.class?.includes('flying');
@@ -6421,9 +6427,12 @@ function updateBoss(difficulty) {
   combat.boss.attackTimer -= 1;
   if (combat.invulnerableFrames <= 0 && rectsOverlap(bossHitbox(), playerHitbox())) damagePlayer(NORMAL_HIT_DAMAGE, 'boss-contact');
   if (combat.boss.attackTimer <= 0) {
-    const pattern = combat.boss.patterns[(combat.frame + combat.boss.phase) % combat.boss.patterns.length] ?? 'ranged-burst';
-    const superMove = combat.boss.phase >= 2 && combat.frame % 3 === 0
-      ? combat.boss.superMoves[(combat.frame + combat.boss.phase) % combat.boss.superMoves.length]
+    const bossRng = roguelikeRngStream('boss');
+    const patternIndex = bossRng?.int(0, Math.max(0, combat.boss.patterns.length - 1))
+      ?? ((combat.frame + combat.boss.phase) % combat.boss.patterns.length);
+    const pattern = combat.boss.patterns[patternIndex] ?? 'ranged-burst';
+    const superMove = combat.boss.phase >= 2 && ((bossRng?.chance(1 / 3)) ?? (combat.frame % 3 === 0))
+      ? combat.boss.superMoves[(bossRng?.int(0, Math.max(0, combat.boss.superMoves.length - 1))) ?? ((combat.frame + combat.boss.phase) % combat.boss.superMoves.length)]
       : null;
     // Boss attacks: pattern-specific behavior driven by pattern name.
     // Super moves use a big multi-lane burst and take precedence over the pattern.
@@ -6603,9 +6612,9 @@ function rollHitPresentation(baseDamage, source) {
     stats: { ...stats, damage: 1 }, // base already scaled by caller; only roll crit/type here
     enemyArmored: false,
     // Seeded crit RNG so crit outcomes (which feed damage -> kills -> score) are
-    // reproducible from the run seed. Falls back to Math.random only on the
-    // legacy non-roguelike path where no run-scoped stream exists.
-    rng: combat.critRng ? () => combat.critRng.float() : Math.random,
+    // reproducible from the run seed. Legacy non-roguelike sandbox falls back to
+    // the browser RNG because that path is not replay-ranked.
+    rng: combat.critRng ? () => combat.critRng.float() : Math.random, // cosmetic-rng-ok legacy non-roguelike sandbox fallback only
   });
   // Scale the caller's flat damage by crit/type multiplier ratio.
   const ratio = result.amount / Math.max(1, Math.round(DAMAGE_BASE_FOR(source)));
@@ -6858,14 +6867,14 @@ function spawnBlood(x, y, color) {
   if (dampening <= 0) return;
   spawnFxImage('blood', x, y, 54, 0.38 * dampening);
   const particleCount = Math.max(2, Math.round(9 * dampening));
-  for (let i = 0; i < particleCount; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 });
+  for (let i = 0; i < particleCount; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3, color, size: 18 + Math.random() * 18, life: 0.65 + Math.random() * 0.3, maxLife: 0.95 }); // cosmetic-rng-ok visual-only or legacy-non-replay jitter
 }
 
 function spawnExplosion(x, y, color) {
   if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(12, (combat.shake ?? 0) + 6);
   spawnFxImage('fireball', x, y, 96, 0.5);
   spawnSpriteParticle('level-up-burst', x, y, { color, size: 112, life: 0.72 });
-  for (let i = 0; i < 12; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 22 + Math.random() * 20, life: 0.8 + Math.random() * 0.35, maxLife: 1.15 });
+  for (let i = 0; i < 12; i += 1) combat.particles.push({ type: 'impact-sparks', x, y, vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.7) * 5, color: i % 3 ? color : '#f9f7ff', size: 22 + Math.random() * 20, life: 0.8 + Math.random() * 0.35, maxLife: 1.15 }); // cosmetic-rng-ok visual-only or legacy-non-replay jitter
 }
 
 // Grenade / explosive ordnance detonation: warm YELLOW-AND-RED mix so it reads
@@ -6884,11 +6893,11 @@ function spawnGrenadeExplosion(x, y) {
     combat.particles.push({
       type: 'impact-sparks',
       x, y,
-      vx: (Math.random() - 0.5) * 9,
-      vy: (Math.random() - 0.55) * 7 - 0.8, // bias upward for plume
+      vx: (Math.random() - 0.5) * 9, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
+      vy: (Math.random() - 0.55) * 7 - 0.8, // bias upward for plume // cosmetic-rng-ok visual-only or legacy-non-replay jitter
       color,
-      size: 24 + Math.random() * 26,
-      life: 0.7 + Math.random() * 0.5,
+      size: 24 + Math.random() * 26, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
+      life: 0.7 + Math.random() * 0.5, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
       maxLife: 1.2,
     });
   }
@@ -6896,13 +6905,13 @@ function spawnGrenadeExplosion(x, y) {
   for (let i = 0; i < 4; i += 1) {
     combat.particles.push({
       type: 'impact-sparks',
-      x: x + (Math.random() - 0.5) * 14,
-      y: y - 4 + (Math.random() - 0.5) * 10,
-      vx: (Math.random() - 0.5) * 0.8,
-      vy: -0.45 - Math.random() * 0.3,
+      x: x + (Math.random() - 0.5) * 14, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
+      y: y - 4 + (Math.random() - 0.5) * 10, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
+      vx: (Math.random() - 0.5) * 0.8, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
+      vy: -0.45 - Math.random() * 0.3, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
       color: '#4a4a55',
-      size: 36 + Math.random() * 16,
-      life: 1.4 + Math.random() * 0.4,
+      size: 36 + Math.random() * 16, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
+      life: 1.4 + Math.random() * 0.4, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
       maxLife: 1.8,
     });
   }
@@ -6916,7 +6925,7 @@ function spawnText(text, x, y, color) {
 function spawnDamageNumber(text, x, y, color, crit = false) {
   combat.floatingTexts.push({
     text,
-    x: x + (Math.random() - 0.5) * 10,
+    x: x + (Math.random() - 0.5) * 10, // cosmetic-rng-ok visual-only or legacy-non-replay jitter
     y,
     color,
     life: crit ? 95 : 70,
@@ -7108,7 +7117,8 @@ function shootRoguelike() {
 
 function openLevelUpMenu() {
   if (!combat.roguelikeRun?.pausedForLevelUp) return;
-  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills });
+  const draftRng = roguelikeRngStream('draft');
+  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills });
   // 2 choices total: if the weapon tree has available branches this level, we
   // pair one weapon-branch card with one roguelike-skill card; otherwise both
   // slots come from the roguelike library. The player always sees exactly 2
@@ -7124,7 +7134,8 @@ function openLevelUpMenu() {
 function rerollLevelUpChoices() {
   if (!combat.levelUpPaused || !combat.roguelikeRun || combat.roguelikeRun.rerollsRemaining <= 0) return;
   combat.roguelikeRun = { ...combat.roguelikeRun, rerollsRemaining: combat.roguelikeRun.rerollsRemaining - 1 };
-  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { seed: combat.frame + combat.kills + 999, reroll: true });
+  const draftRng = roguelikeRngStream('draft');
+  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills + 999, reroll: true });
   combat.levelUpChoices = buildLevelUpPair(offer.options);
   syncCombatOverlay();
 }
@@ -7167,9 +7178,11 @@ function weaponTreeBranchChoices() {
     candidates.push({ branchKey, nextTier, currentTier });
   }
   if (!candidates.length) return [];
-  // Deterministic but seeded pick: so the choice is stable per reroll frame but varies.
-  const seed = combat.frame ^ (combat.kills * 31) ^ (branches._lastReroll ?? 0);
-  const pick = candidates[Math.abs(seed) % candidates.length];
+  // Deterministic run-scoped pick: weapon-tree cards share the draft substream so
+  // card-offer logs replay without coupling to frame/kills.
+  const draftRng = roguelikeRngStream('draft');
+  const fallbackSeed = combat.frame ^ (combat.kills * 31) ^ (branches._lastReroll ?? 0);
+  const pick = candidates[draftRng?.int(0, candidates.length - 1) ?? (Math.abs(fallbackSeed) % candidates.length)];
   return [Object.freeze({
     id: `weapon-tree-${pick.branchKey}`,
     title: `${pick.nextTier.effect}`,
@@ -7686,7 +7699,7 @@ function updateRoguelikeBullets(dt) {
       damageLevelOneInteractiveObstacle(hitObstacle, bullet.damage, bullet.weaponId ?? 'bullet');
       emitCombatVfxParticles(createHitSparks(projected.x, projected.y + 18, 6));
       for (let i = 0; i < 3; i += 1) {
-        combat.particles.push({ type: 'impact-sparks', x: projected.x, y: projected.y + 18, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2, color: i % 2 ? '#f9f7ff' : '#9aa7c7', size: 12 + Math.random() * 8, life: 0.3, maxLife: 0.3 });
+        combat.particles.push({ type: 'impact-sparks', x: projected.x, y: projected.y + 18, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2, color: i % 2 ? '#f9f7ff' : '#9aa7c7', size: 12 + Math.random() * 8, life: 0.3, maxLife: 0.3 }); // cosmetic-rng-ok visual-only or legacy-non-replay jitter
       }
       bullet.ttl = 0;
       continue;
@@ -8054,7 +8067,8 @@ function dropRoguelikePowerUp(worldX, worldY, { rare = false, dropChance = null 
   // runtime spawn behavior is unchanged.
   const tier = rare ? 'elite' : 'grunt';
   const luck = combat.roguelikeRun?.stats?.luck ?? 1;
-  const seed = (combat.frame * 31 + combat.kills * 17 + combat.powerUps.length) >>> 0;
+  const seed = roguelikeRngStream('drops')?.int(0, 1_000_000_000)
+    ?? ((combat.frame * 31 + combat.kills * 17 + combat.powerUps.length) >>> 0);
   const dropId = rollDrop({ seed, tier, luck, dropChance: dropChance ?? (rare ? 1.0 : currentRoguelikeNormalDropChance(combat.elapsedGameSeconds)) });
   if (!dropId) return;
   // Map drop-table ids to the existing power-up pool. The table already uses the
@@ -9951,7 +9965,7 @@ function drawCombatScene(timestamp = 0) {
   if (combat.shake < 0.15 || gameSettings.reduceMotion || !gameSettings.screenShake) combat.shake = 0;
   const shakeApplied = combat.shake > 0;
   if (shakeApplied) {
-    const ang = Math.random() * Math.PI * 2;
+    const ang = Math.random() * Math.PI * 2; // cosmetic-rng-ok visual-only or legacy-non-replay jitter
     const mag = combat.shake;
     ctx.save();
     ctx.translate(Math.cos(ang) * mag, Math.sin(ang) * mag);

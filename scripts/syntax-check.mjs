@@ -80,6 +80,7 @@ const NODE_CHECK_FILES = [
   "tests/world-obstacles.test.mjs",
   "tests/leaderboard-engine.test.mjs",
   "tests/seeded-rng.test.mjs",
+  "tests/seeded-rng-routing.test.mjs",
   "tests/iso-runtime-determinism.test.mjs",
   "tests/username-registry.test.mjs",
   "tests/settlement.test.mjs",

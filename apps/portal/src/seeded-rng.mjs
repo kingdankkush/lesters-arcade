@@ -45,6 +45,16 @@ export function hashSeed(value) {
   return (h ^ (h >>> 16)) >>> 0;
 }
 
+function hashStreamName(name) {
+  const text = String(name ?? 'default');
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+}
+
 /**
  * A stateful, resumable seeded RNG with convenience helpers. This is what the
  * combat runtime uses for gameplay rolls (crit chance, jitter that affects sim
@@ -104,4 +114,24 @@ export class SeededRng {
 /** Convenience factory mirroring the class for call sites that prefer a function. */
 export function createSeededRng(seed = 1, count = 0) {
   return new SeededRng(seed, count);
+}
+
+/**
+ * Derive independent named gameplay RNG streams from one run seed.
+ *
+ * Each stream receives a stable salt based on its name, so adding a draw to one
+ * subsystem (drops, draft, boss, etc.) cannot shift another subsystem's replay
+ * sequence. This is the boundary Wave 2 uses for deterministic run simulation.
+ * @param {number} baseSeed
+ * @param {string[]} names
+ * @returns {Record<string, SeededRng>}
+ */
+export function createSeededSubstreams(baseSeed = 1, names = []) {
+  const safeSeed = Math.floor(Number(baseSeed) || 1) >>> 0;
+  const streams = {};
+  for (const name of names) {
+    const streamSeed = hashSeed(safeSeed ^ hashStreamName(name));
+    streams[name] = new SeededRng(streamSeed);
+  }
+  return streams;
 }
