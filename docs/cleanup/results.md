@@ -35,6 +35,7 @@ _Last updated: 2026-07-02_
 - Converted `apps/portal/src/hmh-level-editor-runtime-sprite-library.mjs` from a 6.5 MB data module into a small lazy loader backed by `apps/portal/assets/hmh-level-editor/runtime-sprite-library.json`.
 - Wave 3 Slice 1: vaulted 39 tracked Lester PixelLab splinter/raw-fragment dirs (`anim0`–`anim23`, `idle-2`–`idle-8`, `walk-2`–`walk-8`, `victory-2`) to `~/lesters-arcade-vault/pixellab-raw/wave3-lester-splinter-dirs-20260702-085052/` after checksum verification; the canonical animated-roster manifest referenced none of them.
 - Dedupe: vaulted the full `apps/portal/assets/hmh-curated-level-kit/` source tree to `~/lesters-arcade-vault/superseded-art/hmh-curated-level-kit-full-source/`, verified it with `diff -rq`, kept the 1,216 manifest-referenced PNG subset at `apps/portal/assets/generated/hmh-curated-level-kit/source/`, and removed the old duplicate root.
+- Dedupe: vaulted and removed 5,593 `hmh-animated-roster` PNGs (37.04 MiB) that were not referenced by `hmh-animated-roster.mjs` or roster ledgers. Manifest validation now reports 7,857 referenced PNGs, 0 missing, and 7,857 remaining PNGs.
 
 ## Measurements
 
@@ -57,6 +58,7 @@ The largest remaining repo weight is still legitimate-gated work: generated/runt
 - Editor runtime sprite-library JSON fetch passed against the local `apps/portal` web root: 17,372 entries.
 - Full post-structural gate passed locally: `npm test`, `npm run check`, `npm run contracts:check`, `npm run assets:verify`, and `npm run build`.
 - Curated source dedupe regenerated `hmh-curated-level-kit` from the canonical subset: 1,216 source assets, 1,797 sliced ground cells, 1,022 trimmed props.
+- Animated roster dedupe copied the removed files to `~/lesters-arcade-vault/pixellab-raw/hmh-animated-roster-unreferenced-20260702/VAULT-MANIFEST.json` before deletion and verified all runtime manifest frames still exist.
 
 ## Remaining gated work
 
