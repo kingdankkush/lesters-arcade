@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_FINAL_SETPIECE_KIT, finalSetpieceAssetByKey } from '../apps/portal/assets/generated/hmh-final-setpiece-kit/hmh-final-setpiece-kit-manifest.mjs';
@@ -56,20 +56,47 @@ test('enemyProxyRenderProfile gives authored animal and human POI enemies bespok
   const captain = enemyProxyRenderProfile({ id: 'bandit-captain' });
 
   assert.equal(coyote.proxyFamily, 'trenchDegen');
-  assert.equal(coyote.scaleMul > 1, true);
+  assert.equal(coyote.scaleMul, 1);
+  assert.equal(coyote.spriteAuthoringScale < 1, true);
   assert.equal(coyote.telegraphStyle, 'dust-lunge-line');
   assert.equal(coyote.anchorBiasY < 0, true);
 
   assert.equal(scorpion.proxyFamily, 'gasBeast');
+  assert.equal(scorpion.scaleMul, 1);
   assert.equal(scorpion.telegraphStyle, 'burrow-ring');
   assert.equal(typeof scorpion.accentColor, 'string');
 
   assert.equal(caveGoblin.proxyFamily, 'trenchDegen');
   assert.equal(caveGoblin.telegraphStyle, 'torch-pop');
-  assert.equal(caveGoblin.scaleMul < coyote.scaleMul, true);
+  assert.equal(caveGoblin.scaleMul, 1);
+  assert.equal(caveGoblin.spriteAuthoringScale < coyote.spriteAuthoringScale, true);
 
   assert.equal(captain.proxyFamily, 'evilBanker');
-  assert.equal(captain.scaleMul > 1, true);
+  assert.equal(captain.scaleMul, 1);
+  assert.equal(captain.spriteAuthoringScale, 1);
+});
+
+test('enemy runtime art stays at 100 percent scale; size differences belong to authored sprite canvases and hit footprints', () => {
+  for (const [id, kit] of Object.entries(BESPOKE_ENEMY_VISUAL_KITS)) {
+    assert.equal(kit.drawScaleMul, 1, `${id} should not scale sprites at runtime`);
+    assert.equal(kit.runtimeScale, 1, `${id} runtime scale must stay 100%`);
+    assert.equal(typeof kit.spriteAuthoringScale, 'number', `${id} needs sprite authoring scale metadata`);
+    assert.equal(typeof kit.hitFootprintRadius, 'number', `${id} needs hit footprint metadata`);
+  }
+
+  const smallIds = ['rug-rat', 'sybil-drone', 'gas-fee-wisp', 'fud-goblin-cave'];
+  for (const id of smallIds) {
+    assert.equal(BESPOKE_ENEMY_VISUAL_KITS[id].runtimeScale, 1);
+    assert.equal(BESPOKE_ENEMY_VISUAL_KITS[id].spriteAuthoringScale < 1, true, `${id} should be generated smaller within its sprite canvas`);
+  }
+});
+
+test('main runtime no longer randomizes enemy draw size between 50 and 150 percent', () => {
+  const source = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.equal(source.includes('Math.random() * 0.75'), false);
+  assert.equal(source.includes('Math.random() * 0.7'), false);
+  assert.equal(source.includes('enemy.sizeScale'), false);
+  assert.equal(source.includes('const drawScaleMul = 1;'), true);
 });
 
 test('buildEncounterVisualPlan gives authored Dry Forest Cave, Oasis Lakeside, Crossroads, and Mesa visual staging', () => {

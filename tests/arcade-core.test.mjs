@@ -94,6 +94,7 @@ import {
   getHmhLevelTarget,
   HMH_LEVEL_TARGETS,
   HMH_LEVEL_ONE_PLAYTEST_BALANCE,
+  HMH_LEVEL_ONE_SHIP_FOCUS,
   buildLevelOnePlaytestBalanceModel,
   buildLevelOneRunWorldDimensions,
   levelOneRoguelikeSpawnDirectorAt,
@@ -740,6 +741,16 @@ test('Level 1 playtest balance reaches an 8 minute pressure wall and rewards fig
   const active = balance.xpPacing.swarmFighterRun;
   assert.ok(active.targetLevelAtEightMinutes >= passive.targetLevelAtEightMinutes + 3, 'swarm fighting must clearly out-level passive running');
   assert.ok(active.targetLevelAtEightMinutes >= 7, 'active fighters should have enough augments for the 8 minute wall');
+});
+
+test('Level 1 ship focus is endless survival first, with 8 minutes kept as pressure-cap rather than run-ending extraction', () => {
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.mode, 'endless-survival-first');
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.runEndsAtTargetSeconds, false);
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.pressureCapSeconds, HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds);
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.levelOneOnlyUntilPolished, true);
+  assert.deepEqual(HMH_LEVEL_ONE_SHIP_FOCUS.deferredSystems, ['extraction-helicopter', 'level-2-litecoin-city', 'level-3-the-getaway']);
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('ground/path/water tiles'), true);
+  assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('100%-scale enemy hit detection'), true);
 });
 
 test('Level 1 world dimensions target 50-65% unique traversal within an 8 minute run', () => {

@@ -2102,6 +2102,25 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
   }),
 });
 
+export const HMH_LEVEL_ONE_SHIP_FOCUS = Object.freeze({
+  mode: 'endless-survival-first',
+  runEndsAtTargetSeconds: false,
+  pressureCapSeconds: HMH_LEVEL_ONE_PLAYTEST_BALANCE.targetPressureSeconds,
+  levelOneOnlyUntilPolished: true,
+  targetLevelId: 'level-1-crypto-wasteland',
+  deferredSystems: Object.freeze(['extraction-helicopter', 'level-2-litecoin-city', 'level-3-the-getaway']),
+  polishPriorities: Object.freeze([
+    'ground/path/water tiles',
+    'biome-authored towns/forests/waterfronts',
+    'parallax bridges/tunnels/cliffs/overpasses',
+    'playable hero sprite/animation QA',
+    'enemy and boss animation readability',
+    '100%-scale enemy hit detection',
+    'combat physics/VFX/audio feel',
+  ]),
+  note: 'Treat 8:00 as the point where Level 1 reaches full pressure, not as the required end of the shipped survival loop. Later extraction/Level 2/Level 3 content can reattach after Level 1 feels shippable.',
+});
+
 export const HMH_LEVEL_ONE_BOSS_PROXY_ROSTER = Object.freeze([
   Object.freeze({ role: 'mini-boss', zoneId: 'ghost-saloon-mainstreet', enemyId: 'claim-jumper-sheriff', title: 'Claim-Jumper Sheriff', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/claim-jumper', read: 'rifle humanoid commander for the first saloon lock' }),
   Object.freeze({ role: 'mini-boss', zoneId: 'dead-forest-mushroom-grove', enemyId: 'scam-cult-zealot', title: 'Scam Cult Zealot Alpha', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/scam-cult-zealot', read: 'fully animated humanoid zealot used as forest-loop pressure until bespoke mini-boss art exists' }),
@@ -2199,6 +2218,7 @@ export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {
 export function buildLevelOnePlaytestBalanceModel() {
   return Object.freeze({
     ...HMH_LEVEL_ONE_PLAYTEST_BALANCE,
+    shipFocus: HMH_LEVEL_ONE_SHIP_FOCUS,
     world: buildLevelOneRunWorldDimensions(),
     bossProxyRoster: HMH_LEVEL_ONE_BOSS_PROXY_ROSTER,
     checkpoints: Object.freeze([0, 120, 240, 360, 480].map((seconds) => levelOneRoguelikeSpawnDirectorAt(seconds))),

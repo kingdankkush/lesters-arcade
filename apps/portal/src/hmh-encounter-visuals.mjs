@@ -225,7 +225,10 @@ export const BESPOKE_ENEMY_VISUAL_KITS = Object.freeze(
         id,
         rosterKey: spec.rosterKey,
         states: Object.freeze(['idle', 'walk', 'run', 'attack', 'hit', 'death']),
-        drawScaleMul: spec.drawScaleMul,
+        drawScaleMul: 1,
+        runtimeScale: 1,
+        spriteAuthoringScale: spec.drawScaleMul ?? 1,
+        hitFootprintRadius: spec.hitFootprintRadius ?? (spec.drawScaleMul && spec.drawScaleMul < 1 ? 0.36 : spec.drawScaleMul && spec.drawScaleMul > 1.12 ? 0.64 : 0.5),
         anchorBiasY: spec.anchorBiasY,
       }),
     ]),
@@ -302,7 +305,8 @@ export function enemyProxyRenderProfile(entity = {}) {
   if (hay.includes('coyote') || hay.includes('wild-boar')) {
     return Object.freeze({
       proxyFamily: 'trenchDegen',
-      scaleMul: hay.includes('wild-boar') ? 1.12 : 1.08,
+      scaleMul: 1,
+      spriteAuthoringScale: hay.includes('wild-boar') ? 1.12 : 0.92,
       anchorBiasY: -6,
       accentColor: '#d9a15b',
       telegraphColor: '#ffd27a',
@@ -313,7 +317,8 @@ export function enemyProxyRenderProfile(entity = {}) {
   if (hay.includes('scorpion') || hay.includes('rattlesnake') || hay.includes('sandbar-apex')) {
     return Object.freeze({
       proxyFamily: 'gasBeast',
-      scaleMul: 1.1,
+      scaleMul: 1,
+      spriteAuthoringScale: 0.86,
       anchorBiasY: -4,
       accentColor: '#74e0d6',
       telegraphColor: '#8cf7ff',
@@ -324,7 +329,8 @@ export function enemyProxyRenderProfile(entity = {}) {
   if (hay.includes('fud-goblin-cave') || (hay.includes('cave') && hay.includes('goblin'))) {
     return Object.freeze({
       proxyFamily: 'trenchDegen',
-      scaleMul: 0.94,
+      scaleMul: 1,
+      spriteAuthoringScale: 0.72,
       anchorBiasY: -2,
       accentColor: '#ffb24c',
       telegraphColor: '#ffd37d',
@@ -335,7 +341,8 @@ export function enemyProxyRenderProfile(entity = {}) {
   if (hay.includes('claim-jumper') || hay.includes('bandit-captain') || hay.includes('ridge-raider') || hay.includes('scam-cult-zealot')) {
     return Object.freeze({
       proxyFamily: 'evilBanker',
-      scaleMul: hay.includes('bandit-captain') ? 1.1 : 1.04,
+      scaleMul: 1,
+      spriteAuthoringScale: hay.includes('bandit-captain') ? 1 : 0.96,
       anchorBiasY: -6,
       accentColor: hay.includes('scam-cult-zealot') ? '#ff8f5c' : '#c8d3e8',
       telegraphColor: hay.includes('scam-cult-zealot') ? '#ffd37d' : '#ffe84d',
@@ -346,7 +353,8 @@ export function enemyProxyRenderProfile(entity = {}) {
   if (hay.includes('buzzard')) {
     return Object.freeze({
       proxyFamily: 'cryptoBro',
-      scaleMul: 1.04,
+      scaleMul: 1,
+      spriteAuthoringScale: 0.82,
       anchorBiasY: -10,
       accentColor: '#d6c7a2',
       telegraphColor: '#f5dda3',
@@ -357,6 +365,7 @@ export function enemyProxyRenderProfile(entity = {}) {
   return Object.freeze({
     proxyFamily: null,
     scaleMul: 1,
+    spriteAuthoringScale: 1,
     anchorBiasY: 0,
     accentColor: '#ffe84d',
     telegraphColor: '#ffe84d',

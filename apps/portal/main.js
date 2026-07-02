@@ -7318,12 +7318,6 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
       resolved: safeSpawn,
     });
   }
-  let sizeScale;
-  if (miniBoss || spawn.enemy.boss || spawn.enemy.tier === 'heavy') {
-    sizeScale = 0.9 + Math.random() * 0.7;
-  } else {
-    sizeScale = 0.55 + Math.random() * 0.75;
-  }
   const durabilityScale = options.boss ? 4.2 : miniBoss ? 2.45 : elite ? 1.55 : 0.82;
   const enemy = {
     ...spawn.enemy,
@@ -7338,7 +7332,6 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     miniBoss,
     boss: Boolean(options.boss || spawn.enemy.boss),
     finalBossProxy: Boolean(options.finalBossProxy),
-    sizeScale,
     districtFamily: options.districtFamily ?? districtContext?.districtFamily ?? null,
     poiId,
     poiEncounterId: options.poiEncounterId ?? null,
@@ -10574,14 +10567,11 @@ function drawSingleEnemy(ctx, enemy) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
-    // sizeScale multiplier MUST live at function scope: it is used by the
-    // HP-bar drawing at the bottom of this function on every code path.
-    // (A previous shadow-removal pass commented out the old declaration and
-    // crashed the entire render loop with a ReferenceError the moment the
-    // first enemy spawned — keep this here.)
-    const sizeMul = enemy.sizeScale ?? 1.0;
+    // Enemy art is always drawn at 100% runtime scale. Small/large enemies must
+    // be authored as different-sized sprites inside their source canvas so hit
+    // detection and combat readability stay aligned with the actual footprint.
     const renderProfile = enemyProxyRenderProfile(enemy);
-    const drawScaleMul = sizeMul * (renderProfile.scaleMul ?? 1);
+    const drawScaleMul = 1;
     const intent = enemyAnimationIntent(enemy);
     // Contact shadows are disabled here too; keep enemies grounded via art only.
 
@@ -10601,8 +10591,8 @@ function drawSingleEnemy(ctx, enemy) {
       const isWave = enemyFrame === waveFrame;
       const enemyKey = manifestEnemyKeyFor(enemy);
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
-      // sizeMul (0.5x-2.0x enemy variety) declared at function scope above.
-      const drawSize = Math.round(((isAnim || isWave) ? (enemy.elite ? 104 : 88) : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78) * drawScaleMul);
+      // Enemy draw size is fixed; silhouette scale is authored in the sprite canvas.
+      const drawSize = Math.round(((isAnim || isWave) ? 88 : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78) * drawScaleMul);
       ctx.save();
       ctx.imageSmoothingEnabled = false;
       const ex = Math.round(enemy.x + w / 2 - drawSize / 2);

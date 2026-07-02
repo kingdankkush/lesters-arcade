@@ -1,26 +1,15 @@
 {
-  "id": "hmh-level-one-reference-style-environment-queue-v1",
+  "queueId": "hmh-level-one-reference-style-environment-queue-v1",
   "styleId": "level1-isometric-metal-slug-quality-v1",
-  "referencePolicy": "reference-only: Justin-provided Age of Empires II, Hades, Deep Rock Survivor, IMG_5849 macro map, and level.mp4 references guide composition, density, readability, palette discipline, and asset-production quality; do not ship or trace the reference files as runtime assets.",
-  "generationTool": "PixelLab create_tiles_pro for terrain/path/water + create_map_object for objects/props",
-  "priorities": [
-    "P0"
-  ],
-  "generationCostEstimate": 18,
-  "outputRoot": "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style",
+  "sourceQueue": "scripts/pixellab-hmh-level-one-environment-queue.json",
+  "outputRoot": "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates",
   "jobs": [
     {
       "jobKey": "ground-textures__packed-dirt",
       "category": "ground-textures",
       "priority": "P0",
       "targetAsset": "packed dirt",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "hades-combat-readability",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/ground-textures/packed-dirt",
-      "renderRole": "ground-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -47,20 +36,20 @@
         "clear path-edge variants",
         "low-noise center lanes",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "697006a3-b2de-4259-ae61-f8ac8db7cead",
+      "status": "complete",
+      "queuedAt": 1782965483,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__packed-dirt.png",
+      "bytes": 1325,
+      "collectedAt": 1782965595
     },
     {
       "jobKey": "ground-textures__dusty-sand",
       "category": "ground-textures",
       "priority": "P0",
       "targetAsset": "dusty sand",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "hades-combat-readability",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/ground-textures/dusty-sand",
-      "renderRole": "ground-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -87,20 +76,20 @@
         "clear path-edge variants",
         "low-noise center lanes",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "d2eb9327-e295-45c1-8929-fe55efa4aca1",
+      "status": "complete",
+      "queuedAt": 1782965485,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__dusty-sand.png",
+      "bytes": 1230,
+      "collectedAt": 1782965598
     },
     {
       "jobKey": "ground-textures__worn-grass",
       "category": "ground-textures",
       "priority": "P0",
       "targetAsset": "worn grass",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "hades-combat-readability",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/ground-textures/worn-grass",
-      "renderRole": "ground-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -127,20 +116,20 @@
         "clear path-edge variants",
         "low-noise center lanes",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "c3a0b11f-535d-433c-b597-7b33166ef61f",
+      "status": "complete",
+      "queuedAt": 1782965487,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__worn-grass.png",
+      "bytes": 2570,
+      "collectedAt": 1782965600
     },
     {
       "jobKey": "ground-textures__mossy-cobble",
       "category": "ground-textures",
       "priority": "P0",
       "targetAsset": "mossy cobble",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "hades-combat-readability",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/ground-textures/mossy-cobble",
-      "renderRole": "ground-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -167,20 +156,20 @@
         "clear path-edge variants",
         "low-noise center lanes",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "ac1abf4f-8788-47ac-9b1e-6336c140c1e9",
+      "status": "complete",
+      "queuedAt": 1782965489,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__mossy-cobble.png",
+      "bytes": 3636,
+      "collectedAt": 1782965602
     },
     {
       "jobKey": "ground-textures__cracked-asphalt",
       "category": "ground-textures",
       "priority": "P0",
       "targetAsset": "cracked asphalt",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "hades-combat-readability",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/ground-textures/cracked-asphalt",
-      "renderRole": "ground-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -207,20 +196,20 @@
         "clear path-edge variants",
         "low-noise center lanes",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "35c8c8d4-a0a3-4ace-9192-7d6c1ac142b3",
+      "status": "complete",
+      "queuedAt": 1782965491,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__cracked-asphalt.png",
+      "bytes": 1433,
+      "collectedAt": 1782965604
     },
     {
       "jobKey": "ground-textures__boss-yard-scorched-ground",
       "category": "ground-textures",
       "priority": "P0",
       "targetAsset": "boss-yard scorched ground",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "hades-combat-readability",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/ground-textures/boss-yard-scorched-ground",
-      "renderRole": "ground-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -247,20 +236,20 @@
         "clear path-edge variants",
         "low-noise center lanes",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "47e367a5-7d4e-4c86-abed-ec64dafdbfad",
+      "status": "complete",
+      "queuedAt": 1782965493,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__boss-yard-scorched-ground.png",
+      "bytes": 2792,
+      "collectedAt": 1782965606
     },
     {
       "jobKey": "roads-and-paths__broken-highway-lane",
       "category": "roads-and-paths",
       "priority": "P0",
       "targetAsset": "broken highway lane",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town",
-        "hades-combat-readability"
-      ],
       "outputKey": "level1-reference-style/roads-and-paths/broken-highway-lane",
-      "renderRole": "path-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -287,20 +276,20 @@
         "edge damage variants",
         "combat center stays visually quiet",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "95b46631-9717-471f-8e80-334d13f5e4f6",
+      "status": "complete",
+      "queuedAt": 1782965648,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__broken-highway-lane.png",
+      "bytes": 2250,
+      "collectedAt": 1782965776
     },
     {
       "jobKey": "roads-and-paths__gas-station-forecourt-concrete",
       "category": "roads-and-paths",
       "priority": "P0",
       "targetAsset": "gas-station forecourt concrete",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town",
-        "hades-combat-readability"
-      ],
       "outputKey": "level1-reference-style/roads-and-paths/gas-station-forecourt-concrete",
-      "renderRole": "path-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -327,20 +316,20 @@
         "edge damage variants",
         "combat center stays visually quiet",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "236144a6-104c-43d0-aff2-275f1700d1ba",
+      "status": "complete",
+      "queuedAt": 1782965650,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__gas-station-forecourt-concrete.png",
+      "bytes": 1420,
+      "collectedAt": 1782965778
     },
     {
       "jobKey": "roads-and-paths__ghost-town-main-street-cobble-dirt-blend",
       "category": "roads-and-paths",
       "priority": "P0",
       "targetAsset": "ghost-town main street cobble/dirt blend",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town",
-        "hades-combat-readability"
-      ],
       "outputKey": "level1-reference-style/roads-and-paths/ghost-town-main-street-cobble-dirt-blend",
-      "renderRole": "path-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -367,20 +356,20 @@
         "edge damage variants",
         "combat center stays visually quiet",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "208c0dc2-1bb9-4d17-877d-0cb06ef43457",
+      "status": "complete",
+      "queuedAt": 1782965652,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend.png",
+      "bytes": 2294,
+      "collectedAt": 1782965780
     },
     {
       "jobKey": "roads-and-paths__farm-road-spur",
       "category": "roads-and-paths",
       "priority": "P0",
       "targetAsset": "farm road spur",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town",
-        "hades-combat-readability"
-      ],
       "outputKey": "level1-reference-style/roads-and-paths/farm-road-spur",
-      "renderRole": "path-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -407,20 +396,20 @@
         "edge damage variants",
         "combat center stays visually quiet",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "19cb4f87-1b9f-4f7e-8013-be193b651742",
+      "status": "complete",
+      "queuedAt": 1782965654,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__farm-road-spur.png",
+      "bytes": 2825,
+      "collectedAt": 1782965782
     },
     {
       "jobKey": "roads-and-paths__bridge-planks",
       "category": "roads-and-paths",
       "priority": "P0",
       "targetAsset": "bridge planks",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town",
-        "hades-combat-readability"
-      ],
       "outputKey": "level1-reference-style/roads-and-paths/bridge-planks",
-      "renderRole": "path-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -447,20 +436,17 @@
         "edge damage variants",
         "combat center stays visually quiet",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "7a96a9f4-34db-403c-8090-8539122660d3",
+      "status": "processing",
+      "queuedAt": 1782965656
     },
     {
       "jobKey": "roads-and-paths__extraction-flare-road",
       "category": "roads-and-paths",
       "priority": "P0",
       "targetAsset": "extraction flare road",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town",
-        "hades-combat-readability"
-      ],
       "outputKey": "level1-reference-style/roads-and-paths/extraction-flare-road",
-      "renderRole": "path-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -487,19 +473,17 @@
         "edge damage variants",
         "combat center stays visually quiet",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "82f779a9-9197-40ac-aff2-e424aa8acf0b",
+      "status": "processing",
+      "queuedAt": 1782965658
     },
     {
       "jobKey": "water-and-shorelines__animated-river-strip",
       "category": "water-and-shorelines",
       "priority": "P0",
       "targetAsset": "animated river strip",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/water-and-shorelines/animated-river-strip",
-      "renderRole": "water-edge-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -526,19 +510,20 @@
         "shore collision is visually obvious",
         "water is non-solid unless metadata says bridge",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "0d17e95e-9259-450a-8386-d69d1f1085a1",
+      "status": "complete",
+      "queuedAt": 1782965660,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__animated-river-strip.png",
+      "bytes": 1966,
+      "collectedAt": 1782965786
     },
     {
       "jobKey": "water-and-shorelines__shore-reeds",
       "category": "water-and-shorelines",
       "priority": "P0",
       "targetAsset": "shore reeds",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/water-and-shorelines/shore-reeds",
-      "renderRole": "water-edge-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -565,19 +550,20 @@
         "shore collision is visually obvious",
         "water is non-solid unless metadata says bridge",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "62f069a7-d37b-440b-af6b-2a24eb4ba710",
+      "status": "complete",
+      "queuedAt": 1782965662,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__shore-reeds.png",
+      "bytes": 1909,
+      "collectedAt": 1782965788
     },
     {
       "jobKey": "water-and-shorelines__wash-crossing-water",
       "category": "water-and-shorelines",
       "priority": "P0",
       "targetAsset": "wash crossing water",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/water-and-shorelines/wash-crossing-water",
-      "renderRole": "water-edge-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -604,19 +590,20 @@
         "shore collision is visually obvious",
         "water is non-solid unless metadata says bridge",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "db57799f-1917-470d-8994-71c897dc98fc",
+      "status": "complete",
+      "queuedAt": 1782965664,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__wash-crossing-water.png",
+      "bytes": 3106,
+      "collectedAt": 1782965790
     },
     {
       "jobKey": "water-and-shorelines__lake-beach-edge",
       "category": "water-and-shorelines",
       "priority": "P0",
       "targetAsset": "lake/beach edge",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/water-and-shorelines/lake-beach-edge",
-      "renderRole": "water-edge-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -643,19 +630,20 @@
         "shore collision is visually obvious",
         "water is non-solid unless metadata says bridge",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "3d911761-5bff-4d21-a067-5720c46d10de",
+      "status": "complete",
+      "queuedAt": 1782965666,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__lake-beach-edge.png",
+      "bytes": 1556,
+      "collectedAt": 1782965792
     },
     {
       "jobKey": "water-and-shorelines__rocky-bank",
       "category": "water-and-shorelines",
       "priority": "P0",
       "targetAsset": "rocky bank",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/water-and-shorelines/rocky-bank",
-      "renderRole": "water-edge-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -682,19 +670,20 @@
         "shore collision is visually obvious",
         "water is non-solid unless metadata says bridge",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "ddd1f09b-73c6-4480-9eaa-3233de340c58",
+      "status": "complete",
+      "queuedAt": 1782965668,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__rocky-bank.png",
+      "bytes": 2199,
+      "collectedAt": 1782965795
     },
     {
       "jobKey": "water-and-shorelines__dock-bridge-support",
       "category": "water-and-shorelines",
       "priority": "P0",
       "targetAsset": "dock/bridge support",
-      "referenceTargets": [
-        "aoe2-de-world-density",
-        "level-video-handpainted-town"
-      ],
       "outputKey": "level1-reference-style/water-and-shorelines/dock-bridge-support",
-      "renderRole": "water-edge-tile",
       "tool": "create_tiles_pro",
       "pollTool": "get_tiles_pro",
       "idField": "tileId",
@@ -721,7 +710,13 @@
         "shore collision is visually obvious",
         "water is non-solid unless metadata says bridge",
         "no baked reference emblems/text"
-      ]
+      ],
+      "tileId": "2c3eba9f-499e-4e7c-a333-28d954841776",
+      "status": "complete",
+      "queuedAt": 1782965670,
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__dock-bridge-support.png",
+      "bytes": 2431,
+      "collectedAt": 1782965798
     }
   ]
 }

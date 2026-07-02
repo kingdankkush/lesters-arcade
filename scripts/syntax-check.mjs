@@ -165,7 +165,8 @@ const PY_COMPILE_FILES = [
   "scripts/generate-hmh-final-setpiece-kit.py",
   "scripts/generate-hmh-final-vfx-and-ambient.py",
   "scripts/generate-hmh-final-boss-and-level2-city.py",
-  "scripts/generate-hmh-level3-getaway-art.py"
+  "scripts/generate-hmh-level3-getaway-art.py",
+  "scripts/pixellab-hmh-level1-asset-wave.py"
 ];
 
 let failures = 0;

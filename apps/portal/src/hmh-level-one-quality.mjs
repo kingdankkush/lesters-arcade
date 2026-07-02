@@ -163,23 +163,30 @@ function slugifyAssetRole(value) {
     .replace(/^-+|-+$/g, '');
 }
 
-function queueJobForEnvironmentAsset(plan, assetRole) {
-  const hint = LEVEL_ONE_ENVIRONMENT_ASSET_CATEGORY_HINTS[plan.category] ?? LEVEL_ONE_ENVIRONMENT_ASSET_CATEGORY_HINTS['ground-textures'];
-  const roleSlug = slugifyAssetRole(assetRole);
-  const brief = buildLevelOneEnvironmentAssetPromptBrief({
-    category: plan.category,
-    districtFamily: hint.districtFamily,
-    assetRole,
-  });
+function queueArgsForEnvironmentAsset(plan, assetRole, hint, brief) {
+  if (['ground-textures', 'roads-and-paths', 'water-and-shorelines'].includes(plan.category)) {
+    return Object.freeze({
+      tool: 'create_tiles_pro',
+      args: Object.freeze({
+        description: [
+          `1). ${assetRole}`,
+          brief.prompt,
+          'single original isometric terrain tile, quiet combat center, no buildings, no characters, no props standing on top of the tile, no text, no logos',
+        ].join(', '),
+        tile_type: 'isometric',
+        tile_size: 64,
+        tile_view: 'high top-down',
+        tile_depth_ratio: 0.12,
+        tile_flat_top_px: 4,
+        outline_mode: 'outline',
+        style_options: '{"color_palette":true,"outline":true,"detail":true,"shading":true}',
+      }),
+      pollTool: 'get_tiles_pro',
+      idField: 'tileId',
+    });
+  }
 
   return Object.freeze({
-    jobKey: `${plan.category}__${roleSlug}`,
-    category: plan.category,
-    priority: plan.priority,
-    targetAsset: assetRole,
-    referenceTargets: plan.referenceTargets,
-    outputKey: `level1-reference-style/${plan.category}/${roleSlug}`,
-    renderRole: hint.renderRole,
     tool: 'create_map_object',
     args: Object.freeze({
       description: brief.prompt,
@@ -189,8 +196,35 @@ function queueJobForEnvironmentAsset(plan, assetRole) {
       outline: 'selective outline',
       shading: 'detailed shading',
     }),
+    pollTool: 'get_map_object',
+    idField: 'objectId',
+  });
+}
+
+function queueJobForEnvironmentAsset(plan, assetRole) {
+  const hint = LEVEL_ONE_ENVIRONMENT_ASSET_CATEGORY_HINTS[plan.category] ?? LEVEL_ONE_ENVIRONMENT_ASSET_CATEGORY_HINTS['ground-textures'];
+  const roleSlug = slugifyAssetRole(assetRole);
+  const brief = buildLevelOneEnvironmentAssetPromptBrief({
+    category: plan.category,
+    districtFamily: hint.districtFamily,
+    assetRole,
+  });
+  const toolSpec = queueArgsForEnvironmentAsset(plan, assetRole, hint, brief);
+
+  return Object.freeze({
+    jobKey: `${plan.category}__${roleSlug}`,
+    category: plan.category,
+    priority: plan.priority,
+    targetAsset: assetRole,
+    referenceTargets: plan.referenceTargets,
+    outputKey: `level1-reference-style/${plan.category}/${roleSlug}`,
+    renderRole: hint.renderRole,
+    tool: toolSpec.tool,
+    pollTool: toolSpec.pollTool,
+    idField: toolSpec.idField,
+    args: toolSpec.args,
     postProcess: brief.postProcess,
-    acceptance: brief.acceptance,
+    acceptance: plan.acceptance,
   });
 }
 
@@ -204,7 +238,7 @@ export function buildLevelOneEnvironmentAssetQueue({ priorities = ['P0', 'P1'] }
     id: 'hmh-level-one-reference-style-environment-queue-v1',
     styleId: HMH_LEVEL_ONE_QUALITY_STYLE.id,
     referencePolicy: HMH_LEVEL_ONE_QUALITY_STYLE.referencePolicy,
-    generationTool: 'PixelLab create_map_object',
+    generationTool: 'PixelLab create_tiles_pro for terrain/path/water + create_map_object for objects/props',
     priorities: Object.freeze([...allowedPriorities]),
     generationCostEstimate: jobs.length,
     outputRoot: 'apps/portal/assets/generated/hmh-coherent-world/level1-reference-style',

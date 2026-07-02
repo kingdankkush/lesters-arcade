@@ -1,0 +1,287 @@
+{
+  "id": "hmh-level-one-p0-pixellab-terrain-candidates-v1",
+  "generatedBy": "PixelLab create_tiles_pro via scripts/pixellab-hmh-level1-asset-wave.py",
+  "status": "candidate-contact-sheet-qc",
+  "count": 16,
+  "contactSheets": [
+    "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-p0-terrain-contact-sheet.png",
+    "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-ground-texture-contact-sheet.png"
+  ],
+  "knownGaps": [
+    "roads-and-paths/bridge-planks and roads-and-paths/extraction-flare-road were still processing at latest collection attempt"
+  ],
+  "entries": [
+    {
+      "key": "ground-textures/ground-textures__boss-yard-scorched-ground",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__boss-yard-scorched-ground.png",
+      "category": "ground-textures",
+      "width": 64,
+      "height": 64,
+      "bytes": 2792,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "ground-textures/ground-textures__cracked-asphalt",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__cracked-asphalt.png",
+      "category": "ground-textures",
+      "width": 64,
+      "height": 64,
+      "bytes": 1433,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "ground-textures/ground-textures__dusty-sand",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__dusty-sand.png",
+      "category": "ground-textures",
+      "width": 64,
+      "height": 64,
+      "bytes": 1230,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "ground-textures/ground-textures__mossy-cobble",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__mossy-cobble.png",
+      "category": "ground-textures",
+      "width": 64,
+      "height": 64,
+      "bytes": 3636,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "ground-textures/ground-textures__packed-dirt",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__packed-dirt.png",
+      "category": "ground-textures",
+      "width": 64,
+      "height": 64,
+      "bytes": 1325,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "ground-textures/ground-textures__worn-grass",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__worn-grass.png",
+      "category": "ground-textures",
+      "width": 64,
+      "height": 64,
+      "bytes": 2570,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__broken-highway-lane",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__broken-highway-lane.png",
+      "category": "roads-and-paths",
+      "width": 64,
+      "height": 64,
+      "bytes": 2250,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__farm-road-spur",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__farm-road-spur.png",
+      "category": "roads-and-paths",
+      "width": 64,
+      "height": 64,
+      "bytes": 2825,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__gas-station-forecourt-concrete",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__gas-station-forecourt-concrete.png",
+      "category": "roads-and-paths",
+      "width": 64,
+      "height": 64,
+      "bytes": 1420,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend.png",
+      "category": "roads-and-paths",
+      "width": 64,
+      "height": 64,
+      "bytes": 2294,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__animated-river-strip",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__animated-river-strip.png",
+      "category": "water-and-shorelines",
+      "width": 64,
+      "height": 64,
+      "bytes": 1966,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__dock-bridge-support",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__dock-bridge-support.png",
+      "category": "water-and-shorelines",
+      "width": 64,
+      "height": 64,
+      "bytes": 2431,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__lake-beach-edge",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__lake-beach-edge.png",
+      "category": "water-and-shorelines",
+      "width": 64,
+      "height": 64,
+      "bytes": 1556,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__rocky-bank",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__rocky-bank.png",
+      "category": "water-and-shorelines",
+      "width": 64,
+      "height": 64,
+      "bytes": 2199,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__shore-reeds",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__shore-reeds.png",
+      "category": "water-and-shorelines",
+      "width": 64,
+      "height": 64,
+      "bytes": 1909,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__wash-crossing-water",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__wash-crossing-water.png",
+      "category": "water-and-shorelines",
+      "width": 64,
+      "height": 64,
+      "bytes": 3106,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate",
+      "qcNote": "create_tiles_pro candidate; requires in-game tiling/atlas review before final integration"
+    }
+  ]
+}

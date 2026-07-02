@@ -100,10 +100,12 @@ test('Level 1 environment asset queue emits flat PixelLab map-object jobs for ev
   const plannedCount = HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN.reduce((sum, plan) => sum + plan.targetAssets.length, 0);
   assert.equal(queue.id, 'hmh-level-one-reference-style-environment-queue-v1');
   assert.equal(queue.jobs.length, plannedCount);
-  assert.equal(queue.jobs.every((job) => job.tool === 'create_map_object'), true);
+  assert.equal(queue.jobs.filter((job) => job.tool === 'create_tiles_pro').length, 18);
+  assert.equal(queue.jobs.filter((job) => job.tool === 'create_map_object').length, plannedCount - 18);
   assert.equal(queue.jobs.every((job) => job.args && !('image_size' in job.args)), true);
-  assert.equal(queue.jobs.every((job) => job.args.view === 'high top-down'), true);
-  assert.equal(queue.jobs.every((job) => job.args.description.includes('original silhouettes only')), true);
+  assert.equal(queue.jobs.filter((job) => job.tool === 'create_map_object').every((job) => job.args.view === 'high top-down'), true);
+  assert.equal(queue.jobs.filter((job) => job.tool === 'create_tiles_pro').every((job) => job.args.tile_type === 'isometric' && job.pollTool === 'get_tiles_pro'), true);
+  assert.equal(queue.jobs.every((job) => job.args.description.includes('original')), true);
   assert.equal(queue.jobs.every((job) => job.postProcess.includes('contact-sheet-qc')), true);
 
   const ids = queue.jobs.map((job) => job.jobKey);
@@ -126,6 +128,7 @@ test('Level 1 environment asset queue can be narrowed to P0 terrain/path/water w
   assert.equal(p0.jobs.some((job) => job.category === 'ground-textures'), true);
   assert.equal(p0.jobs.some((job) => job.category === 'roads-and-paths'), true);
   assert.equal(p0.jobs.some((job) => job.category === 'water-and-shorelines'), true);
+  assert.equal(p0.jobs.every((job) => job.tool === 'create_tiles_pro'), true);
   assert.equal(p0.jobs.every((job) => job.outputKey.startsWith('level1-reference-style/')), true);
   assert.equal(p0.jobs.every((job) => job.referenceTargets.includes('aoe2-de-world-density')), true);
 });
