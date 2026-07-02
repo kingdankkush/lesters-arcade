@@ -57,6 +57,100 @@ export function calculateEnemyMeleeDamage({ normalHitDamage = 5, elite = false }
   return Math.max(1, Math.round(scaled));
 }
 
+function enemyBalanceRole(enemy = {}, { boss = false } = {}) {
+  const signature = `${enemy.id ?? ''} ${enemy.class ?? ''} ${enemy.aiArchetype ?? ''} ${enemy.preferredRangeMode ?? ''}`.toLowerCase();
+  if (boss || enemy.boss || signature.includes('boss')) return 'boss';
+  if ((enemy.speed ?? 0) <= 0 || signature.includes('stationary') || signature.includes('turret') || signature.includes('trap')) return 'stationary';
+  if (signature.includes('flyer') || signature.includes('hover') || signature.includes('drone') || signature.includes('wisp')) return 'flyer';
+  if (enemy.preferredRangeMode === 'ranged' || signature.includes('ranged') || signature.includes('shooter')) return 'ranged';
+  return 'melee';
+}
+
+export function buildEnemyBalanceCard({
+  enemy = {},
+  elite = false,
+  boss = false,
+  pressure = 0,
+  encounterSpeedMul = 1,
+  slowFactor = 1,
+  playerMoveSpeed = HMH_PLAYER_BASE_MOVE_SPEED_TILES_PER_SECOND,
+} = {}) {
+  const role = enemyBalanceRole(enemy, { boss });
+  const catalogSpeed = clamp(enemy.speed ?? enemy.catalogSpeed ?? 1, 0, 8);
+  const safePlayerSpeed = clamp(playerMoveSpeed, 1, 12);
+  const effectiveElite = Boolean(elite || boss || enemy.boss);
+  const chaseSpeed = role === 'melee'
+    ? calculateEnemyChaseSpeed({
+        enemySpeed: catalogSpeed,
+        elite: effectiveElite,
+        pressure,
+        encounterSpeedMul,
+        slowFactor,
+        playerMoveSpeed: safePlayerSpeed,
+      })
+    : 0;
+  const spawnSpeed = role === 'stationary'
+    ? 0
+    : role === 'boss'
+      ? Math.min(catalogSpeed * 0.62, 1.1)
+      : role === 'flyer'
+        ? Math.min(catalogSpeed * 0.72, safePlayerSpeed * 0.78)
+        : role === 'ranged'
+          ? Math.min(catalogSpeed * 0.64, safePlayerSpeed * 0.68)
+          : chaseSpeed;
+  const minTellFrames = role === 'boss' ? 48
+    : role === 'stationary' ? 42
+      : role === 'ranged' ? 34
+        : role === 'flyer' ? 30
+          : effectiveElite ? 30 : 28;
+  const recoveryFrames = role === 'boss' ? 54
+    : role === 'stationary' ? 40
+      : role === 'ranged' ? 32
+        : role === 'flyer' ? 28
+          : effectiveElite ? 30 : 24;
+  const capRatio = effectiveElite ? 0.92 : 0.86;
+  return Object.freeze({
+    enemyId: enemy.id ?? enemy.enemyId ?? 'unknown-enemy',
+    title: enemy.title ?? enemy.id ?? 'Unknown Enemy',
+    role,
+    tier: boss || enemy.boss ? 'boss' : effectiveElite ? 'elite' : (enemy.tier ?? enemy.class ?? 'grunt'),
+    speedLaw: Object.freeze({
+      catalogSpeed: Number(catalogSpeed.toFixed(3)),
+      spawnSpeed: Number(spawnSpeed.toFixed(3)),
+      chaseSpeed,
+      playerMoveSpeed: Number(safePlayerSpeed.toFixed(3)),
+      capRatio,
+      pressure: Number(clamp(pressure, 0, 1).toFixed(3)),
+    }),
+    readability: Object.freeze({
+      minTellFrames,
+      recoveryFrames,
+      note: role === 'melee' ? 'pressures below player escape speed' : role === 'boss' ? 'deliberate boss-class movement' : 'readable non-melee pressure',
+    }),
+  });
+}
+
+export function buildEnemyBalanceCards(enemies = [], options = {}) {
+  return Object.freeze((Array.isArray(enemies) ? enemies : []).map((enemy) => buildEnemyBalanceCard({ enemy, ...options })));
+}
+
+export function validateEnemyBalanceCards(cards = []) {
+  const errors = [];
+  for (const card of Array.isArray(cards) ? cards : []) {
+    if (!card.enemyId) errors.push('enemy card missing id');
+    if (!['melee', 'ranged', 'flyer', 'stationary', 'boss'].includes(card.role)) errors.push(`${card.enemyId} invalid role ${card.role}`);
+    if ((card.speedLaw?.spawnSpeed ?? -1) < 0) errors.push(`${card.enemyId} spawn speed must be non-negative`);
+    if (card.role === 'melee') {
+      const cap = (card.speedLaw?.playerMoveSpeed ?? HMH_PLAYER_BASE_MOVE_SPEED_TILES_PER_SECOND) * (card.speedLaw?.capRatio ?? 0.86);
+      if ((card.speedLaw?.chaseSpeed ?? 0) > cap + 1e-6) errors.push(`${card.enemyId} chase speed ${card.speedLaw.chaseSpeed} exceeds speed-law cap ${cap.toFixed(3)}`);
+    }
+    if ((card.readability?.minTellFrames ?? 0) < 24) errors.push(`${card.enemyId} tell frames too low`);
+    if ((card.readability?.recoveryFrames ?? 0) < 20) errors.push(`${card.enemyId} recovery frames too low`);
+    if (card.role === 'boss' && (card.readability?.minTellFrames ?? 0) < 42) errors.push(`${card.enemyId} boss tell frames too low`);
+  }
+  return Object.freeze({ ok: errors.length === 0, errors: Object.freeze(errors) });
+}
+
 export function calculateMeleeAttackResetFrames({ preferredResetFrames = null } = {}) {
   const preferred = Number(preferredResetFrames);
   if (!Number.isFinite(preferred)) return 72;

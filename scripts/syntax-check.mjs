@@ -157,6 +157,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-run-simulator.test.mjs",
   "tests/hmh-drop-economy.test.mjs",
   "tests/hmh-grenade-economy.test.mjs",
+  "tests/hmh-enemy-balance-cards.test.mjs",
   "apps/portal/src/boss-phase-controller.mjs",
   "tests/boss-phase-controller.test.mjs",
   "apps/portal/src/hmh-level-one-boss.mjs",

@@ -61,7 +61,7 @@ import {
   levelOneInteractiveRuntimeStateForObstacle,
   levelOneInteractiveSfxCuePlan,
 } from './src/hmh-level-one-aaa-slices.mjs';
-import { calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculatePlayerDamageRecovery, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
+import { buildEnemyBalanceCard, calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculatePlayerDamageRecovery, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
 import {
   buildLevelOneBossChoreographyPlan,
   buildLevelOneSpawnCompositionAt,
@@ -7344,6 +7344,13 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     });
   }
   const durabilityScale = options.boss ? 4.2 : miniBoss ? 2.45 : elite ? 1.55 : 0.82;
+  const balanceCard = buildEnemyBalanceCard({
+    enemy: spawn.enemy,
+    elite: elite || miniBoss,
+    boss: Boolean(options.boss || spawn.enemy.boss),
+    pressure: director.pressure,
+    playerMoveSpeed: 4.15 * (combat.roguelikeRun?.stats?.movementSpeed ?? 1),
+  });
   const enemy = {
     ...spawn.enemy,
     title: options.title ?? spawn.enemy.title,
@@ -7351,7 +7358,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     mapY: safeSpawn.y,
     hp: Math.max(8, Math.round(spawn.scaledHealth * durabilityScale)),
     maxHp: Math.max(8, Math.round(spawn.scaledHealth * durabilityScale)),
-    speed: (spawn.enemy.speed ?? 1) * (miniBoss ? 0.94 : elite ? 1.08 : 0.9),
+    speed: balanceCard.speedLaw.spawnSpeed,
     ranged,
     elite: elite || miniBoss || Boolean(options.boss),
     miniBoss,
@@ -7362,9 +7369,11 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     poiEncounterId: options.poiEncounterId ?? null,
     macroRole: districtContext?.macroRole ?? null,
     spawnSource: options.spawnSource ?? (spawn.spawnContext?.source ?? 'timeline'),
+    balanceCard,
+    speedLaw: balanceCard.speedLaw,
     attackTimer: Math.max(options.attackTimer ?? (ranged ? 110 + (combat.frame % 50) : 90), ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES),
     tellFrames: 0,
-    recoveryFrames: miniBoss ? Math.max(spawn.ai?.recoveryFrames ?? 20, 28) : (spawn.ai?.recoveryFrames ?? 20),
+    recoveryFrames: Math.max(balanceCard.readability.recoveryFrames, miniBoss ? Math.max(spawn.ai?.recoveryFrames ?? 20, 28) : (spawn.ai?.recoveryFrames ?? 20)),
     recoveryFramesRemaining: 0,
     score: spawn.enemy.score + (options.boss ? 900 : miniBoss ? 220 : elite ? 80 : 0),
     state: ranged ? 'ranged-fire' : 'chase-player',
