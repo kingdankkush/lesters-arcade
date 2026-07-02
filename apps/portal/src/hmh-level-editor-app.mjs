@@ -6,12 +6,18 @@ import {
   createHmhLevelExportBundle,
   hmhLevelDraftFileName,
 } from './hmh-level-editor-schema.mjs';
-import { buildHmhEditorAssetPalette } from './hmh-level-editor-assets.mjs';
+import { buildHmhEditorAssetPalette, loadHmhEditorAssetPalette } from './hmh-level-editor-assets.mjs';
 
 const STORAGE_KEY = 'hmh-level-builder-draft-v1';
 const EDITOR_COMMAND_LABELS = Object.freeze(['Export JSON', 'Hermes Handoff']);
 const ASSET_PAGE_SIZE = 180;
-const palette = buildHmhEditorAssetPalette();
+let palette;
+try {
+  palette = await loadHmhEditorAssetPalette();
+} catch (error) {
+  console.warn('Failed to load HMH level editor runtime sprite library; editor will use generated manifests only.', error);
+  palette = buildHmhEditorAssetPalette();
+}
 const imageCache = new Map();
 let editorIdCounter = 0;
 const state = {

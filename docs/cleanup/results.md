@@ -32,6 +32,7 @@ _Last updated: 2026-07-02_
   - `scripts/hooks/pre-commit-size-check.mjs`
   - `scripts/hooks/pre-commit`
   - local `git config core.hooksPath scripts/hooks`
+- Converted `apps/portal/src/hmh-level-editor-runtime-sprite-library.mjs` from a 6.5 MB data module into a small lazy loader backed by `apps/portal/assets/hmh-level-editor/runtime-sprite-library.json`.
 
 ## Measurements
 
@@ -51,8 +52,8 @@ The largest remaining repo weight is still legitimate-gated work: generated/runt
 - Reference vault copy verified with `diff -rq`.
 - Dropping vault copy verified with SHA-256 manifest generation.
 - `smoke:portal:interactions` passed against a local `apps/portal` web root using `MSYS_NO_PATHCONV=1`.
-
-Final full gate results are recorded in the handoff after the final local commit.
+- Editor runtime sprite-library JSON fetch passed against the local `apps/portal` web root: 17,372 entries.
+- Full post-structural gate passed locally: `npm test`, `npm run check`, `npm run contracts:check`, `npm run assets:verify`, and `npm run build`.
 
 ## Remaining gated work
 

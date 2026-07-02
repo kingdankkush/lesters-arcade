@@ -1,5 +1,5 @@
 import { HMH_LEVEL_EDITOR_GENERATED_MANIFESTS } from './hmh-level-editor-generated-library.mjs';
-import { HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY } from './hmh-level-editor-runtime-sprite-library.mjs';
+import { loadHmhLevelEditorRuntimeSpriteLibrary } from './hmh-level-editor-runtime-sprite-library.mjs';
 
 export const HMH_LEVEL_EDITOR_ASSET_GROUPS = Object.freeze([
   Object.freeze({ id: 'all-sprites', label: 'All Sprites', color: '#f97316' }),
@@ -153,12 +153,12 @@ function pushManifest(out, manifest, source) {
   }
 }
 
-export function buildHmhEditorAssetPalette() {
+export function buildHmhEditorAssetPalette({ runtimeSpriteLibrary = [] } = {}) {
   const assets = [];
   for (const entry of HMH_LEVEL_EDITOR_GENERATED_MANIFESTS) {
     pushManifest(assets, entry.manifest, entry.source);
   }
-  for (const asset of HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY) {
+  for (const asset of runtimeSpriteLibrary) {
     const normalized = classifyAsset(asset, asset.source ?? 'runtime-sprite-library');
     if (normalized.assetKey) assets.push(normalized);
   }
@@ -178,4 +178,9 @@ export function buildHmhEditorAssetPalette() {
     markerTools: HMH_LEVEL_EDITOR_MARKER_TOOLS,
     assets: Object.freeze(deduped),
   });
+}
+
+export async function loadHmhEditorAssetPalette(options = {}) {
+  const runtimeSpriteLibrary = options.runtimeSpriteLibrary ?? await loadHmhLevelEditorRuntimeSpriteLibrary(options);
+  return buildHmhEditorAssetPalette({ runtimeSpriteLibrary });
 }

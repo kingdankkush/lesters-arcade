@@ -19,10 +19,15 @@ import {
   buildHmhEditorAssetPalette,
 } from '../apps/portal/src/hmh-level-editor-assets.mjs';
 import { HMH_LEVEL_EDITOR_GENERATED_MANIFESTS } from '../apps/portal/src/hmh-level-editor-generated-library.mjs';
-import { HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY } from '../apps/portal/src/hmh-level-editor-runtime-sprite-library.mjs';
 
 const editorHtmlPath = fileURLToPath(new URL('../apps/portal/editor.html', import.meta.url));
 const editorJsPath = fileURLToPath(new URL('../apps/portal/src/hmh-level-editor-app.mjs', import.meta.url));
+const runtimeSpriteLibraryPath = fileURLToPath(new URL('../apps/portal/assets/hmh-level-editor/runtime-sprite-library.json', import.meta.url));
+const HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY = Object.freeze(JSON.parse(readFileSync(runtimeSpriteLibraryPath, 'utf8')));
+
+function buildFullHmhEditorAssetPalette() {
+  return buildHmhEditorAssetPalette({ runtimeSpriteLibrary: HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY });
+}
 
 test('level editor schema captures Justin authored-level requirements and helicopter extraction flow', () => {
   assert.equal(HMH_LEVEL_EDITOR_SCHEMA_VERSION, 1);
@@ -83,7 +88,7 @@ test('validateHmhLevelDraft requires player start, boss, and helicopter extracti
 });
 
 test('asset palette groups existing runtime art into Justin-friendly editor categories', () => {
-  const palette = buildHmhEditorAssetPalette();
+  const palette = buildFullHmhEditorAssetPalette();
   const groupIds = palette.groups.map((group) => group.id);
   assert.equal(groupIds[0], 'all-sprites');
   assert.equal(HMH_LEVEL_EDITOR_ASSET_GROUPS.find((group) => group.id === 'all-sprites').label, 'All Sprites');
@@ -97,7 +102,7 @@ test('asset palette groups existing runtime art into Justin-friendly editor cate
 });
 
 test('asset palette preserves generated PNG preview metadata for thumbnail placement', () => {
-  const palette = buildHmhEditorAssetPalette();
+  const palette = buildFullHmhEditorAssetPalette();
   const previewAssets = palette.assets.filter((asset) => asset.src && asset.src.endsWith('.png'));
   assert.ok(previewAssets.length >= 100, `expected many generated PNG assets, got ${previewAssets.length}`);
   const ground = previewAssets.find((asset) => asset.assetKey === 'final-paint/grass-handpaint-01');
@@ -124,7 +129,7 @@ test('asset palette imports the entire generated pixel-art library for placement
   ]) {
     assert.equal(sources.includes(requiredSource), true, `${requiredSource} missing from generated library`);
   }
-  const palette = buildHmhEditorAssetPalette();
+  const palette = buildFullHmhEditorAssetPalette();
   const previewAssets = palette.assets.filter((asset) => asset.src && asset.src.endsWith('.png'));
   assert.ok(previewAssets.length >= 240, `expected full pixel-art library, got ${previewAssets.length} PNG assets`);
   assert.equal(palette.assets.some((asset) => asset.source === 'hmh-coherent-world/level2-final-city' && asset.assetKey.includes('level2-final-city/')), true);
@@ -135,7 +140,7 @@ test('asset palette imports the entire generated pixel-art library for placement
 
 test('asset palette includes the actual HMH runtime sprite folders, not only setpiece manifests', () => {
   assert.ok(HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY.length >= 15000, `expected the generated runtime sprite index, got ${HMH_LEVEL_EDITOR_RUNTIME_SPRITE_LIBRARY.length}`);
-  const palette = buildHmhEditorAssetPalette();
+  const palette = buildFullHmhEditorAssetPalette();
   const hasSource = (needle) => palette.assets.some((asset) => asset.source?.includes(needle) || asset.assetKey.includes(needle));
   for (const required of [
     'generated/hmh-animated-roster/lester',
@@ -156,7 +161,7 @@ test('asset palette includes the actual HMH runtime sprite folders, not only set
 });
 
 test('asset palette categorizes high-end level environment sprites into usable map-building groups', () => {
-  const palette = buildHmhEditorAssetPalette();
+  const palette = buildFullHmhEditorAssetPalette();
   const byKey = (key) => palette.assets.find((asset) => asset.assetKey.includes(key));
   const expected = [
     ['hmh-coherent-world/crypto/ghost-saloon-front', 'buildings'],
