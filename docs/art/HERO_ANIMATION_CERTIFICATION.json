@@ -1,0 +1,411 @@
+{
+  "version": "wo-19-hero-animation-certification-v1",
+  "generatedBy": "scripts/hero-animation-certification.mjs",
+  "requiredCoreStates": [
+    "idle",
+    "walk",
+    "run",
+    "shoot",
+    "melee",
+    "throw",
+    "hurt",
+    "death"
+  ],
+  "requiredDirections": [
+    "south",
+    "south-east",
+    "east",
+    "north-east",
+    "north",
+    "north-west",
+    "west",
+    "south-west"
+  ],
+  "summary": {
+    "heroCount": 4,
+    "coreCertifiedHeroCount": 4,
+    "failedHeroCount": 0,
+    "averageMinFramesPerState": 7.69
+  },
+  "finalCompletionPack": {
+    "id": "hmh-final-animation-completion-v1",
+    "heroActorCount": 4,
+    "heroPolishStates": [
+      "crouch",
+      "fall",
+      "victory"
+    ],
+    "framesPerDirection": 4
+  },
+  "heroes": [
+    {
+      "key": "lester",
+      "characterId": "canonical-reference-lester",
+      "role": "hero",
+      "coreCertified": true,
+      "states": [
+        {
+          "state": "idle",
+          "directionsPresent": 8,
+          "minFrames": 8,
+          "maxFrames": 8,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "walk",
+          "directionsPresent": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "run",
+          "directionsPresent": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "shoot",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "melee",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "throw",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "hurt",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "death",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        }
+      ],
+      "directionCoverage": {
+        "requiredDirections": [
+          "south",
+          "south-east",
+          "east",
+          "north-east",
+          "north",
+          "north-west",
+          "west",
+          "south-west"
+        ],
+        "complete": true
+      },
+      "smoothness": {
+        "pass": true,
+        "minFramesPerStateDirection": 7,
+        "maxFramesPerStateDirection": 12,
+        "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
+      }
+    },
+    {
+      "key": "lilly",
+      "characterId": "canonical-reference-lilly",
+      "role": "hero",
+      "coreCertified": true,
+      "states": [
+        {
+          "state": "idle",
+          "directionsPresent": 8,
+          "minFrames": 8,
+          "maxFrames": 8,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "walk",
+          "directionsPresent": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "run",
+          "directionsPresent": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "shoot",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "melee",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "throw",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "hurt",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "death",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        }
+      ],
+      "directionCoverage": {
+        "requiredDirections": [
+          "south",
+          "south-east",
+          "east",
+          "north-east",
+          "north",
+          "north-west",
+          "west",
+          "south-west"
+        ],
+        "complete": true
+      },
+      "smoothness": {
+        "pass": true,
+        "minFramesPerStateDirection": 7,
+        "maxFramesPerStateDirection": 12,
+        "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
+      }
+    },
+    {
+      "key": "lit-commando",
+      "characterId": "c96d19d1-8958-4fcd-b517-9dfded9e0051",
+      "role": "hero",
+      "coreCertified": true,
+      "states": [
+        {
+          "state": "idle",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "walk",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "run",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "shoot",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "melee",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "throw",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "hurt",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "death",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        }
+      ],
+      "directionCoverage": {
+        "requiredDirections": [
+          "south",
+          "south-east",
+          "east",
+          "north-east",
+          "north",
+          "north-west",
+          "west",
+          "south-west"
+        ],
+        "complete": true
+      },
+      "smoothness": {
+        "pass": true,
+        "minFramesPerStateDirection": 7,
+        "maxFramesPerStateDirection": 7,
+        "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
+      }
+    },
+    {
+      "key": "lit-valkyrie",
+      "characterId": "74b5efc0-e7d8-4400-85f5-9db85ef05db9",
+      "role": "hero",
+      "coreCertified": true,
+      "states": [
+        {
+          "state": "idle",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "walk",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "run",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "shoot",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "melee",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "throw",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "hurt",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        },
+        {
+          "state": "death",
+          "directionsPresent": 8,
+          "minFrames": 7,
+          "maxFrames": 7,
+          "complete": true,
+          "smooth": true
+        }
+      ],
+      "directionCoverage": {
+        "requiredDirections": [
+          "south",
+          "south-east",
+          "east",
+          "north-east",
+          "north",
+          "north-west",
+          "west",
+          "south-west"
+        ],
+        "complete": true
+      },
+      "smoothness": {
+        "pass": true,
+        "minFramesPerStateDirection": 7,
+        "maxFramesPerStateDirection": 7,
+        "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
+      }
+    }
+  ],
+  "recommendations": [
+    "Use the runtime roster, not still fallbacks, as the hero certification source of truth.",
+    "Treat final completion-pack polish states as additive; core gameplay certification remains idle/walk/run/shoot/melee/throw/hurt/death across all 8 directions.",
+    "Regenerate with `npm run design:hero-cert` after hero art or frame-selection changes."
+  ]
+}
