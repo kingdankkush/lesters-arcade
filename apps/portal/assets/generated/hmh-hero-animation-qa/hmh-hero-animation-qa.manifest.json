@@ -1,0 +1,147 @@
+{
+  "id": "hmh-hero-animation-qa-v1",
+  "status": "qa-contact-sheet",
+  "contactSheet": "./assets/generated/hmh-hero-animation-qa/hmh-hero-animation-qa-contact-sheet.png",
+  "summary": [
+    {
+      "hero": "lester-production-current",
+      "state": "idle",
+      "frameCount": 25,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/lester-production/frames/idle"
+    },
+    {
+      "hero": "lester-production-current",
+      "state": "jump",
+      "frameCount": 25,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/lester-production/frames/jump"
+    },
+    {
+      "hero": "lester-production-current",
+      "state": "run",
+      "frameCount": 25,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/lester-production/frames/run"
+    },
+    {
+      "hero": "lester-production-current",
+      "state": "walk",
+      "frameCount": 25,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/lester-production/frames/walk"
+    },
+    {
+      "hero": "lilly-current",
+      "state": "attack",
+      "frameCount": 8,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/hard-money-heroes/frames/lilly/attack"
+    },
+    {
+      "hero": "lilly-current",
+      "state": "idle",
+      "frameCount": 8,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/hard-money-heroes/frames/lilly/idle"
+    },
+    {
+      "hero": "lilly-current",
+      "state": "jump",
+      "frameCount": 8,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/hard-money-heroes/frames/lilly/jump"
+    },
+    {
+      "hero": "lilly-current",
+      "state": "run",
+      "frameCount": 8,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/hard-money-heroes/frames/lilly/run"
+    },
+    {
+      "hero": "lilly-current",
+      "state": "walk",
+      "frameCount": 8,
+      "sampleCount": 8,
+      "path": "apps/portal/assets/hard-money-heroes/frames/lilly/walk"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "grenade",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/grenade"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "hurt",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/hurt"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "idle",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/idle"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "jump",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/jump"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "melee",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/melee"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "run",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/run"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "shoot",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/shoot"
+    },
+    {
+      "hero": "lilly-expanded",
+      "state": "victory",
+      "frameCount": 6,
+      "sampleCount": 6,
+      "path": "apps/portal/assets/generated/hmh-expanded-pixel-pack/characters/lilly/victory"
+    },
+    {
+      "hero": "lester-reference-sheets",
+      "state": "reference",
+      "frameCount": 1,
+      "sampleCount": 1,
+      "path": "apps/portal/assets/reference/lester-sprites-sheet-01.png"
+    },
+    {
+      "hero": "lester-reference-sheets",
+      "state": "reference",
+      "frameCount": 1,
+      "sampleCount": 1,
+      "path": "apps/portal/assets/reference/lester-sprites-sheet-02.png"
+    },
+    {
+      "hero": "lilly-reference-sheet",
+      "state": "reference",
+      "frameCount": 1,
+      "sampleCount": 1,
+      "path": "apps/portal/assets/reference/lilly-reference-teal-sprite-sheet.png"
+    }
+  ]
+}

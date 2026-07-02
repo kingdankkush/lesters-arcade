@@ -1,0 +1,96 @@
+{
+  "id": "hmh-level1-weak-terrain-regeneration-v1",
+  "tool": "create_tiles_pro",
+  "jobs": [
+    {
+      "jobKey": "bridge-planks-regenerated",
+      "description": "weathered wooden bridge plank road tile, straight readable boardwalk surface with dark gaps between planks, no railings, no posts",
+      "args": {
+        "description": "1). weathered wooden bridge plank road tile, straight readable boardwalk surface with dark gaps between planks, no railings, no posts, Hard Money Heroes Level 1 original AAA 2:1 isometric pixel-art terrain tile, high top-down, top-left key light, clean transparent background, quiet playable center, no buildings, no characters, no props standing on top, no text, no logos, combat-readable, Litecoin cyan/gold accent only as tiny material flecks",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "high top-down",
+        "tile_depth_ratio": 0.1,
+        "tile_flat_top_px": 4,
+        "outline_mode": "outline",
+        "style_options": "{\"color_palette\":true,\"outline\":true,\"detail\":true,\"shading\":true}"
+      },
+      "tileId": "9f620d11-feae-488f-ad33-4c50b9939303",
+      "status": "complete",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/bridge-planks-regenerated.png",
+      "bytes": 3008
+    },
+    {
+      "jobKey": "extraction-flare-road-regenerated",
+      "description": "dusty extraction road tile with subtle scorched tire marks and one tiny cyan flare glow decal near edge, center lane clear",
+      "args": {
+        "description": "1). dusty extraction road tile with subtle scorched tire marks and one tiny cyan flare glow decal near edge, center lane clear, Hard Money Heroes Level 1 original AAA 2:1 isometric pixel-art terrain tile, high top-down, top-left key light, clean transparent background, quiet playable center, no buildings, no characters, no props standing on top, no text, no logos, combat-readable, Litecoin cyan/gold accent only as tiny material flecks",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "high top-down",
+        "tile_depth_ratio": 0.1,
+        "tile_flat_top_px": 4,
+        "outline_mode": "outline",
+        "style_options": "{\"color_palette\":true,\"outline\":true,\"detail\":true,\"shading\":true}"
+      },
+      "tileId": "72602078-eab4-4902-afeb-40782ec3ee01",
+      "status": "complete",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/extraction-flare-road-regenerated.png",
+      "bytes": 1518
+    },
+    {
+      "jobKey": "boss-yard-scorched-clean-regenerated",
+      "description": "scorched boss yard dirt tile, cracked ash, tiny toxic magenta fissures at edges only, center playable and quiet",
+      "args": {
+        "description": "1). scorched boss yard dirt tile, cracked ash, tiny toxic magenta fissures at edges only, center playable and quiet, Hard Money Heroes Level 1 original AAA 2:1 isometric pixel-art terrain tile, high top-down, top-left key light, clean transparent background, quiet playable center, no buildings, no characters, no props standing on top, no text, no logos, combat-readable, Litecoin cyan/gold accent only as tiny material flecks",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "high top-down",
+        "tile_depth_ratio": 0.1,
+        "tile_flat_top_px": 4,
+        "outline_mode": "outline",
+        "style_options": "{\"color_palette\":true,\"outline\":true,\"detail\":true,\"shading\":true}"
+      },
+      "tileId": "781b0af7-18a6-4af5-bd20-e328c31e11ca",
+      "status": "complete",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/boss-yard-scorched-clean-regenerated.png",
+      "bytes": 2224
+    },
+    {
+      "jobKey": "worn-grass-clean-regenerated",
+      "description": "flat worn grass and trampled trail tile, no raised mound, no tall grass protruding outside diamond, soft yellow green patches",
+      "args": {
+        "description": "1). flat worn grass and trampled trail tile, no raised mound, no tall grass protruding outside diamond, soft yellow green patches, Hard Money Heroes Level 1 original AAA 2:1 isometric pixel-art terrain tile, high top-down, top-left key light, clean transparent background, quiet playable center, no buildings, no characters, no props standing on top, no text, no logos, combat-readable, Litecoin cyan/gold accent only as tiny material flecks",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "high top-down",
+        "tile_depth_ratio": 0.1,
+        "tile_flat_top_px": 4,
+        "outline_mode": "outline",
+        "style_options": "{\"color_palette\":true,\"outline\":true,\"detail\":true,\"shading\":true}"
+      },
+      "tileId": "58f78c0b-ae0c-4433-b52b-f180314588b8",
+      "status": "complete",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/worn-grass-clean-regenerated.png",
+      "bytes": 1245
+    },
+    {
+      "jobKey": "dock-support-clean-regenerated",
+      "description": "shoreline dock support terrain tile, low wooden deck edge integrated into ground, no tall posts blocking player silhouette",
+      "args": {
+        "description": "1). shoreline dock support terrain tile, low wooden deck edge integrated into ground, no tall posts blocking player silhouette, Hard Money Heroes Level 1 original AAA 2:1 isometric pixel-art terrain tile, high top-down, top-left key light, clean transparent background, quiet playable center, no buildings, no characters, no props standing on top, no text, no logos, combat-readable, Litecoin cyan/gold accent only as tiny material flecks",
+        "tile_type": "isometric",
+        "tile_size": 64,
+        "tile_view": "high top-down",
+        "tile_depth_ratio": 0.1,
+        "tile_flat_top_px": 4,
+        "outline_mode": "outline",
+        "style_options": "{\"color_palette\":true,\"outline\":true,\"detail\":true,\"shading\":true}"
+      },
+      "tileId": "fc43e37a-3f66-48dc-a743-bd396e3c316c",
+      "status": "complete",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/dock-support-clean-regenerated.png",
+      "bytes": 2653
+    }
+  ]
+}

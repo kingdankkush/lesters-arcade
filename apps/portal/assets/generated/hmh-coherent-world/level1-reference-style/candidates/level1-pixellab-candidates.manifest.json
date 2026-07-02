@@ -1,0 +1,640 @@
+{
+  "id": "hmh-level-one-pixellab-reference-style-candidates-v2",
+  "generatedBy": "PixelLab create_tiles_pro + create_map_object via Level 1 candidate queues",
+  "status": "candidate-contact-sheet-qc",
+  "count": 39,
+  "contactSheets": [
+    "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-p0-terrain-contact-sheet.png",
+    "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-p1-object-candidates-contact-sheet.png",
+    "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-regenerated-terrain-contact-sheet.png"
+  ],
+  "knownGaps": [
+    "original bridge-planks and extraction-flare-road jobs remain processing; regenerated replacements are present under regenerated-terrain/"
+  ],
+  "entries": [
+    {
+      "key": "buildings-and-walls/buildings-and-walls__boss-yard-gate",
+      "category": "buildings-and-walls",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__boss-yard-gate.png",
+      "width": 192,
+      "height": 192,
+      "bytes": 21167,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "buildings-and-walls/buildings-and-walls__farm-barn-silo",
+      "category": "buildings-and-walls",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__farm-barn-silo.png",
+      "width": 192,
+      "height": 192,
+      "bytes": 14035,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "buildings-and-walls/buildings-and-walls__gas-station-canopy",
+      "category": "buildings-and-walls",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__gas-station-canopy.png",
+      "width": 192,
+      "height": 192,
+      "bytes": 38293,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "buildings-and-walls/buildings-and-walls__litecoin-extraction-arch",
+      "category": "buildings-and-walls",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__litecoin-extraction-arch.png",
+      "width": 192,
+      "height": 192,
+      "bytes": 17545,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "buildings-and-walls/buildings-and-walls__saloon-false-front",
+      "category": "buildings-and-walls",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__saloon-false-front.png",
+      "width": 192,
+      "height": 192,
+      "bytes": 17252,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "buildings-and-walls/buildings-and-walls__stone-brick-wall-segments",
+      "category": "buildings-and-walls",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__stone-brick-wall-segments.png",
+      "width": 192,
+      "height": 192,
+      "bytes": 40169,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "combat-readable-props/combat-readable-props__boss-gate-markers",
+      "category": "combat-readable-props",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/combat-readable-props/combat-readable-props__boss-gate-markers.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 17826,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "combat-readable-props/combat-readable-props__cache-crate",
+      "category": "combat-readable-props",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/combat-readable-props/combat-readable-props__cache-crate.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 5751,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "combat-readable-props/combat-readable-props__destructible-barrel",
+      "category": "combat-readable-props",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/combat-readable-props/combat-readable-props__destructible-barrel.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 18386,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "combat-readable-props/combat-readable-props__gas-pump-explosive",
+      "category": "combat-readable-props",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/combat-readable-props/combat-readable-props__gas-pump-explosive.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 15865,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "combat-readable-props/combat-readable-props__pickup-resource-glow-decals",
+      "category": "combat-readable-props",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/combat-readable-props/combat-readable-props__pickup-resource-glow-decals.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 16284,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "combat-readable-props/combat-readable-props__warning-sign",
+      "category": "combat-readable-props",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/combat-readable-props/combat-readable-props__warning-sign.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 15948,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "ground-textures/ground-textures__boss-yard-scorched-ground",
+      "category": "ground-textures",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__boss-yard-scorched-ground.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2792,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "ground-textures/ground-textures__cracked-asphalt",
+      "category": "ground-textures",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__cracked-asphalt.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1433,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "ground-textures/ground-textures__dusty-sand",
+      "category": "ground-textures",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__dusty-sand.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1230,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "ground-textures/ground-textures__mossy-cobble",
+      "category": "ground-textures",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__mossy-cobble.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 3636,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "ground-textures/ground-textures__packed-dirt",
+      "category": "ground-textures",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__packed-dirt.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1325,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "ground-textures/ground-textures__worn-grass",
+      "category": "ground-textures",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/ground-textures/ground-textures__worn-grass.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2570,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "regenerated-terrain/boss-yard-scorched-clean-regenerated",
+      "category": "regenerated-terrain",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/boss-yard-scorched-clean-regenerated.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2224,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "regenerated-terrain/bridge-planks-regenerated",
+      "category": "regenerated-terrain",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/bridge-planks-regenerated.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 3008,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "regenerated-terrain/dock-support-clean-regenerated",
+      "category": "regenerated-terrain",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/dock-support-clean-regenerated.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2653,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "regenerated-terrain/extraction-flare-road-regenerated",
+      "category": "regenerated-terrain",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/extraction-flare-road-regenerated.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1518,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "regenerated-terrain/worn-grass-clean-regenerated",
+      "category": "regenerated-terrain",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/worn-grass-clean-regenerated.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1245,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__broken-highway-lane",
+      "category": "roads-and-paths",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__broken-highway-lane.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2250,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__farm-road-spur",
+      "category": "roads-and-paths",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__farm-road-spur.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2825,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__gas-station-forecourt-concrete",
+      "category": "roads-and-paths",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__gas-station-forecourt-concrete.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1420,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend",
+      "category": "roads-and-paths",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2294,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__cactus-walls",
+      "category": "trees-rocks-and-natural-blockers",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__cactus-walls.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 6696,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__crystal-ore-like-litecoin-blockers",
+      "category": "trees-rocks-and-natural-blockers",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__crystal-ore-like-litecoin-blockers.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 3524,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__dead-trees",
+      "category": "trees-rocks-and-natural-blockers",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__dead-trees.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 10595,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__mesa-boulders",
+      "category": "trees-rocks-and-natural-blockers",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__mesa-boulders.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 13042,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__pine-oak-clusters",
+      "category": "trees-rocks-and-natural-blockers",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__pine-oak-clusters.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 13379,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__river-rocks",
+      "category": "trees-rocks-and-natural-blockers",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__river-rocks.png",
+      "width": 160,
+      "height": 160,
+      "bytes": 13947,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__animated-river-strip",
+      "category": "water-and-shorelines",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__animated-river-strip.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1966,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__dock-bridge-support",
+      "category": "water-and-shorelines",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__dock-bridge-support.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2431,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__lake-beach-edge",
+      "category": "water-and-shorelines",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__lake-beach-edge.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1556,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__rocky-bank",
+      "category": "water-and-shorelines",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__rocky-bank.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 2199,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__shore-reeds",
+      "category": "water-and-shorelines",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__shore-reeds.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 1909,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    },
+    {
+      "key": "water-and-shorelines/water-and-shorelines__wash-crossing-water",
+      "category": "water-and-shorelines",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/water-and-shorelines/water-and-shorelines__wash-crossing-water.png",
+      "width": 64,
+      "height": 64,
+      "bytes": 3106,
+      "cornerAlpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alphaClean": true,
+      "status": "candidate"
+    }
+  ]
+}
