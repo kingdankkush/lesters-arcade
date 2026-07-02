@@ -16,6 +16,7 @@
     "assets:playlist": "python scripts/ingest-arcade-playlist-music.py",
     "assets:verify": "node scripts/verify-generated-assets.mjs",
     "assets:qa": "node scripts/sprite-qa.mjs",
+    "assets:footprints": "node scripts/build-asset-footprints.mjs",
     "assets:atlas": "python scripts/generate-hmh-hd-sprite-atlas.py",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
