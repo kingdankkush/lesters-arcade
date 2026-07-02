@@ -85,6 +85,7 @@ function animatedSceneAssetByKey(key) {
 }
 import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
 import { buildUpgradeMenuPresentation } from './src/hmh-upgrade-menu-ui.mjs';
+import { buildCombatFeedbackPlan } from './src/hmh-combat-feedback.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -1468,6 +1469,8 @@ const combat = {
   particles: [],
   vfxParticles: [],
   floatingTexts: [],
+  feedbackEvents: [],
+  playerDamageFlash: 0,
   powerUps: [],
   // Active timed power-up effects (seconds remaining). 0 = inactive.
   powerUpTimers: { magnet: 0, slowEnemies: 0, berserk: 0, weapon: 0 },
@@ -5679,6 +5682,8 @@ async function startCombat(options = {}) {
   combat.enemies = [];
   combat.particles = [];
   combat.floatingTexts = [];
+  combat.feedbackEvents = [];
+  combat.playerDamageFlash = 0;
   combat.powerUps = [];
   combat.powerUpTimers = { magnet: 0, slowEnemies: 0, berserk: 0, weapon: 0 };
   // Power-up telegraph and animated spawns
@@ -6109,6 +6114,7 @@ function updateCombatStep(stepMs) {
   combat.elapsedGameSeconds += dt;
   combat.noDamageSeconds += dt;
   combat.invulnerableFrames = Math.max(0, combat.invulnerableFrames - 1);
+  combat.playerDamageFlash = Math.max(0, (combat.playerDamageFlash ?? 0) - 1);
 
   const difficulty = getLesterBlasterDifficultyAt(combat.elapsedGameSeconds);
   if (combat.roguelikeRun) {
@@ -6665,13 +6671,21 @@ function damageEnemy(enemy, damage, source, opts = {}) {
   const present = opts.crit !== undefined ? opts : rollHitPresentation(damage, source);
   const applied = present.finalDamage ?? damage;
   enemy.hp -= applied;
-  enemy.hitFlash = 6; // frames of white flash so EVERY enemy shows hit feedback
+  const hitFeedback = applyCombatFeedback('enemy-hit', {
+    amount: applied,
+    label: present.label,
+    color: present.color,
+    crit: Boolean(present.crit),
+    source,
+    spawnTexts: false,
+    sfxVolume: 0.035,
+  }, { x: enemy.x + 12, y: enemy.y });
+  enemy.hitFlash = Math.max(6, hitFeedback.flashFrames); // frames of white flash so EVERY enemy shows hit feedback
   enemy.goreFrames = Math.max(enemy.goreFrames ?? 0, source === 'grenade' ? 14 : 10);
   combat.combo += 1;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   combat.damageCombo += applied;
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
-  playSfxCue('enemy-hit', 0.035);
   // RED spurt of blood on bullet impacts. Crimson for standard shots, deeper
   // red for knife slashes (visceral), purple for hash-rail plasma.
   const bloodColor =
@@ -6693,13 +6707,23 @@ function damageBoss(damage, source, opts = {}) {
   const present = opts.crit !== undefined ? opts : rollHitPresentation(damage, source);
   const applied = present.finalDamage ?? damage;
   combat.boss.hp -= applied;
-  combat.boss.hitFlash = Math.max(combat.boss.hitFlash ?? 0, 8);
+  const bossFeedback = applyCombatFeedback('enemy-hit', {
+    amount: applied,
+    label: present.label,
+    color: present.color,
+    crit: Boolean(present.crit),
+    source,
+    spawnTexts: false,
+    shakeMul: 1.35,
+    sfxCue: 'boss-warning',
+    sfxVolume: 0.035,
+  }, { x: combat.boss.x + 40, y: GROUND_Y - 44 });
+  combat.boss.hitFlash = Math.max(combat.boss.hitFlash ?? 0, bossFeedback.flashFrames);
   combat.boss.goreFrames = Math.max(combat.boss.goreFrames ?? 0, source === 'grenade' ? 16 : 12);
   combat.combo += 1;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
   combat.damageCombo += applied;
   combat.maxDamageCombo = Math.max(combat.maxDamageCombo, combat.damageCombo);
-  playSfxCue('boss-warning', 0.035);
   spawnBlood(combat.boss.x + 40, GROUND_Y - 70, source === 'hash-rail' ? '#19f7ff' : '#ff236d');
   emitCombatVfxParticles(createHitSparks(combat.boss.x + 40, GROUND_Y - 72, source === 'grenade' ? 18 : 12));
   spawnDamageNumber(present.label ?? `${Math.round(applied)}`, combat.boss.x + 40, GROUND_Y - 84, present.color ?? '#ffe84d', Boolean(present.crit));
@@ -6736,8 +6760,13 @@ function damagePlayer(damage, source = 'hit', attackerTitle = null) {
   // show "Killed By" (Isaac/Hades-style learning loop).
   combat.lastHitBy = attackerTitle || recovery.recapLabel || DAMAGE_SOURCE_LABELS[source] || 'Combat damage';
   combat.invulnerableFrames = recovery.invulnerableFrames;
-  playSfxCue('player-hit', 0.06);
-  spawnText(`-${applied}% HP`, combat.playerX, combat.playerY - 80, '#ff476f');
+  const hitFeedback = applyCombatFeedback('player-hit', {
+    amount: applied,
+    source,
+    sourceLabel: attackerTitle || recovery.recapLabel || DAMAGE_SOURCE_LABELS[source] || 'Combat damage',
+    sfxVolume: 0.06,
+  }, { x: combat.playerX, y: combat.playerY });
+  combat.playerDamageFlash = Math.max(combat.playerDamageFlash ?? 0, hitFeedback.flashFrames);
   spawnBlood(combat.playerX + 12, combat.playerY - 40, '#ff476f');
   if (source === 'enemy-melee') spawnText('MELEE HIT', combat.playerX + 24, combat.playerY - 96, '#ffe84d');
   if (combat.health <= LESTER_BLASTER_TACTICAL_COMBAT_V2.health.deathAtPercent) {
@@ -6764,6 +6793,13 @@ function killEnemy(enemy) {
   combat.stagedEnemiesDefeated += enemy.stageIndex === combat.stageIndex ? 1 : 0;
   combat.combo += 2;
   combat.maxCombo = Math.max(combat.maxCombo, combat.combo);
+  applyCombatFeedback('enemy-kill', {
+    score: enemy.score ?? 100,
+    title: enemy.title ?? enemy.id,
+    sfxVolume: enemy.miniBoss ? 0.07 : 0.045,
+    spawnTexts: false,
+    shakeMul: enemy.miniBoss ? 1.6 : 1,
+  }, { x: enemy.x, y: enemy.y });
   spawnText(`+${enemy.score ?? 100}`, enemy.x, enemy.y - 70, '#ffe84d');
   spawnExplosion(enemy.x + 12, enemy.y - 28, enemy.miniBoss ? '#ff7b2f' : '#ff476f');
   const budget = currentLevelOnePerformanceBudget();
@@ -6949,6 +6985,25 @@ function spawnGrenadeExplosion(x, y) {
       maxLife: 1.8,
     });
   }
+}
+
+function applyCombatFeedback(momentId, context = {}, origin = {}) {
+  const plan = buildCombatFeedbackPlan(momentId, context, {
+    reduceMotion: gameSettings.reduceMotion || !gameSettings.screenShake,
+    reduceFlash: gameSettings.reduceFlash,
+  });
+  combat.feedbackEvents.push({ id: plan.id, frame: combat.frame, channels: plan.channels, stateTags: plan.stateTags });
+  if (combat.feedbackEvents.length > 80) combat.feedbackEvents.splice(0, combat.feedbackEvents.length - 80);
+  if (plan.shake > 0 && gameSettings.screenShake && !gameSettings.reduceMotion) {
+    combat.shake = Math.min(14, (combat.shake ?? 0) + plan.shake);
+  }
+  if (plan.sfxCue) playSfxCue(plan.sfxCue, plan.sfxVolume);
+  const baseX = Number.isFinite(origin.x) ? origin.x : ISO_CENTER_X;
+  const baseY = Number.isFinite(origin.y) ? origin.y : ISO_CENTER_Y;
+  for (const text of context.spawnTexts === false ? [] : plan.texts) {
+    spawnText(text.text, baseX + (text.dx ?? 0), baseY + (text.dy ?? 0), text.color);
+  }
+  return plan;
 }
 
 function spawnText(text, x, y, color) {
@@ -7161,7 +7216,11 @@ function openLevelUpMenu() {
   combat.levelUpPaused = true;
   combat.paused = true;
   combat.status = 'LEVEL UP: choose one upgrade. The roguelike run is paused until you pick.';
-  spawnText('LEVEL UP', ISO_CENTER_X - 28, ISO_CENTER_Y - 72, '#ffe84d');
+  applyCombatFeedback('level-up', {
+    level: combat.roguelikeRun?.level ?? 1,
+    rerollsRemaining: combat.roguelikeRun?.rerollsRemaining ?? 0,
+    sfxVolume: 0.07,
+  }, { x: ISO_CENTER_X, y: ISO_CENTER_Y });
   syncCombatOverlay();
 }
 
@@ -7850,7 +7909,10 @@ function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = 
     combat.miniBossLock = false;
     combat.scrollLockReason = null;
     combat.completedCampaignPoiIds?.add(enemy.poiEncounterId ?? enemy.poiId ?? 'rugpull-gulch-boss-yard');
-    spawnText('BOSS CLEAR — KEEP SURVIVING', ISO_CENTER_X - 112, ISO_CENTER_Y - 78, '#45ff8a');
+    applyCombatFeedback('boss-clear', {
+      title: enemy.title ?? enemy.id,
+      sfxVolume: 0.08,
+    }, { x: ISO_CENTER_X, y: ISO_CENTER_Y });
   }
   const typeId = enemy.id ?? enemy.enemyKey ?? 'unknown';
   combat.killsByType[typeId] = (combat.killsByType[typeId] ?? 0) + 1;
@@ -8199,7 +8261,7 @@ function updateRoguelikeGrenades() {
     const burst = isoToScreen(g.x, g.y);
     spawnGrenadeExplosion(burst.x, burst.y);
     emitCombatVfxParticles(createExplosion(burst.x, burst.y, g.radius * 18));
-    spawnText('💥', burst.x, burst.y - 30, '#ff7b2f');
+    applyCombatFeedback('grenade-detonate', { sfxVolume: 0.075 }, { x: burst.x, y: burst.y });
   }
   combat.activeGrenades = combat.activeGrenades.filter((g) => !g.detonated);
 }
@@ -8217,7 +8279,7 @@ function updateRoguelikeXpGems() {
     if (distance < pickupRadius) {
       combat.roguelikeRun = grantRoguelikeXp(combat.roguelikeRun, gem.value);
       gem.ttl = 0;
-      spawnText(`XP +${gem.value}`, ISO_CENTER_X + 22, ISO_CENTER_Y - 46, '#19f7ff');
+      applyCombatFeedback('xp-collect', { value: gem.value, sfxVolume: 0.025 }, { x: ISO_CENTER_X, y: ISO_CENTER_Y });
       if (combat.roguelikeRun.pausedForLevelUp) openLevelUpMenu();
     } else if (distance < attractRadius) {
       gem.worldX += (dx / distance) * attractSpeed;
@@ -8388,8 +8450,11 @@ function applyRoguelikePowerUp(power) {
     default:
       break;
   }
-  playSfxCue('pickup', 0.055);
-  spawnText(power.title, px, py - 18, '#45ff8a');
+  applyCombatFeedback('powerup-collect', {
+    title: power.title,
+    rarity: power.rarity,
+    sfxVolume: 0.055,
+  }, { x: px, y: py });
 }
 
 function updateRoguelikePowerUpTimers(dt) {

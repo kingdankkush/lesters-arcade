@@ -1,0 +1,122 @@
+{
+  "scorecard": {
+    "version": "wo-32-combat-feedback-v1",
+    "rows": [
+      {
+        "id": "enemy-hit",
+        "title": "Enemy hit confirmation",
+        "channels": [
+          "damage-number",
+          "sfx",
+          "vfx",
+          "flash",
+          "shake"
+        ],
+        "channelCount": 5,
+        "missing": []
+      },
+      {
+        "id": "enemy-kill",
+        "title": "Enemy kill / reward confirmation",
+        "channels": [
+          "text",
+          "sfx",
+          "vfx",
+          "shake",
+          "state"
+        ],
+        "channelCount": 5,
+        "missing": []
+      },
+      {
+        "id": "player-hit",
+        "title": "Player took damage",
+        "channels": [
+          "text",
+          "sfx",
+          "vfx",
+          "flash",
+          "shake",
+          "state",
+          "accessibility"
+        ],
+        "channelCount": 7,
+        "missing": []
+      },
+      {
+        "id": "powerup-collect",
+        "title": "Power-up collected",
+        "channels": [
+          "text",
+          "sfx",
+          "vfx",
+          "state",
+          "accessibility"
+        ],
+        "channelCount": 5,
+        "missing": []
+      },
+      {
+        "id": "xp-collect",
+        "title": "XP collected",
+        "channels": [
+          "text",
+          "sfx",
+          "vfx",
+          "state"
+        ],
+        "channelCount": 4,
+        "missing": []
+      },
+      {
+        "id": "grenade-detonate",
+        "title": "Grenade detonation",
+        "channels": [
+          "text",
+          "sfx",
+          "vfx",
+          "shake",
+          "flash"
+        ],
+        "channelCount": 5,
+        "missing": []
+      },
+      {
+        "id": "level-up",
+        "title": "Level-up draft opened",
+        "channels": [
+          "text",
+          "sfx",
+          "vfx",
+          "state",
+          "accessibility"
+        ],
+        "channelCount": 5,
+        "missing": []
+      },
+      {
+        "id": "boss-clear",
+        "title": "Boss clear",
+        "channels": [
+          "text",
+          "sfx",
+          "vfx",
+          "shake",
+          "state",
+          "accessibility"
+        ],
+        "channelCount": 6,
+        "missing": []
+      }
+    ],
+    "totalMoments": 8,
+    "totalRequiredChannels": 42,
+    "totalMissingChannels": 0,
+    "overallScore": 100
+  },
+  "validation": {
+    "ok": true,
+    "gaps": [],
+    "score": 100
+  }
+}
