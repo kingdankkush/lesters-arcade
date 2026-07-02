@@ -68,6 +68,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-asset-footprints.test.mjs",
   "tests/hmh-footprint-runtime.test.mjs",
   "tests/hmh-open-survival.test.mjs",
+  "tests/hmh-upgrade-tree.test.mjs",
   "tests/hmh-level-one-curated-world-contract.test.mjs",
   "apps/portal/src/hmh-level-one-curated-world-contract.mjs",
   "tests/hmh-level-one-quality-escalation.test.mjs",

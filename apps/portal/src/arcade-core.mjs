@@ -651,85 +651,89 @@ export const LESTER_BLASTER_TACTICAL_COMBAT_V2 = Object.freeze({
   ]),
 });
 
-const roguelikeSkill = (id, title, stat, category, description, options = {}) => Object.freeze({
+const freezeRank = (rank) => Object.freeze({ ...rank });
+
+const rankStats = (stat, deltas) => Object.freeze(deltas.map((statDelta, index) => freezeRank({ rank: index + 1, stat, statDelta })));
+
+const roguelikeSkill = ({
+  id,
+  title,
+  stat = null,
+  category,
+  description,
+  maxRank = 4,
+  ranks = null,
+  gate = null,
+  kind = 'stat',
+  grenadeType = null,
+}) => {
+  const frozenRanks = Object.freeze((ranks ?? rankStats(stat, Array.from({ length: maxRank }, () => 5))).map(freezeRank));
+  const safeMaxRank = frozenRanks.length;
+  return Object.freeze({
+    id,
+    title,
+    stat,
+    category,
+    kind,
+    maxRank: safeMaxRank,
+    maxLevel: safeMaxRank,
+    perLevelPercent: frozenRanks[0]?.statDelta ?? 0,
+    ranks: frozenRanks,
+    gate: gate ? Object.freeze({
+      ...gate,
+      requires: Object.freeze((gate.requires ?? []).map((req) => Object.freeze({ ...req }))),
+    }) : null,
+    grenadeType,
+    availableFromCampaignLevel: 1,
+    description,
+  });
+};
+
+const unlockSkill = ({ id, title, category = 'throwable', description, gate, grenadeType = null, statDelta = null, stat = null }) => roguelikeSkill({
   id,
   title,
   stat,
   category,
-  maxLevel: options.maxLevel ?? 5,
-  perLevelPercent: options.perLevelPercent ?? 5,
-  availableFromCampaignLevel: options.availableFromCampaignLevel ?? 1,
   description,
+  maxRank: 1,
+  kind: 'unlock',
+  grenadeType,
+  gate,
+  ranks: Object.freeze([freezeRank({ rank: 1, stat, statDelta, unlock: true, grenadeType })]),
 });
 
 export const LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY = Object.freeze([
-  roguelikeSkill('damage-alpha', 'Damage Alpha', 'damage', 'offense', '+5% weapon damage per rank.'),
-  roguelikeSkill('rate-of-fire', 'Rate of Fire', 'rateOfFire', 'offense', '+5% fire-rate per rank.'),
-  roguelikeSkill('reload-hands', 'Reload Hands', 'reloadSpeed', 'offense', '+5% reload speed per rank.'),
-  roguelikeSkill('move-speed', 'Street Runner', 'movementSpeed', 'mobility', '+5% movement speed per rank.'),
-  roguelikeSkill('max-health', 'Diamond Hands HP', 'maxHealth', 'defense', '+5% max health per rank.'),
-  roguelikeSkill('armor', 'Cold Wallet Armor', 'armor', 'defense', '+5% damage reduction per rank.'),
-  roguelikeSkill('pickup-radius', 'Magnet Wallet', 'pickupRadius', 'utility', '+5% XP pickup radius per rank.'),
-  roguelikeSkill('xp-gain', 'Wisdom Candles', 'xpGain', 'economy', '+5% XP gained per rank.'),
-  roguelikeSkill('critical-chance', 'Crit Candle', 'criticalChance', 'offense', '+5% critical chance budget per rank.'),
-  roguelikeSkill('critical-damage', 'Crit Multiplier', 'criticalDamage', 'offense', '+5% critical damage per rank.'),
-  roguelikeSkill('bullet-speed', 'Tracer Velocity', 'bulletSpeed', 'offense', '+5% projectile speed per rank.'),
-  roguelikeSkill('bullet-size', 'Fat Rounds', 'bulletSize', 'offense', '+5% projectile size per rank.'),
-  roguelikeSkill('pierce', 'Piercing Ledger', 'pierce', 'offense', '+5% pierce budget per rank.'),
-  roguelikeSkill('multishot', 'Multi-Sig Burst', 'multishot', 'offense', '+5% multishot chance per rank.'),
-  roguelikeSkill('spread-control', 'Spread Control', 'spreadControl', 'offense', '+5% spread control per rank.'),
-  roguelikeSkill('knockback', 'Hard Rejection', 'knockback', 'control', '+5% knockback per rank.'),
-  roguelikeSkill('dash-cooldown', 'Dash Settlement', 'dashCooldown', 'mobility', '+5% dash cooldown recovery per rank.'),
-  roguelikeSkill('dash-distance', 'Gap Runner', 'dashDistance', 'mobility', '+5% dash distance per rank.'),
-  roguelikeSkill('health-regen', 'Self Custody Regen', 'healthRegen', 'defense', '+5% regeneration budget per rank.'),
-  roguelikeSkill('shield-capacity', 'Shield Capacity', 'shieldCapacity', 'defense', '+5% shield capacity per rank.'),
-  roguelikeSkill('grenade-damage', 'Frag Yield', 'grenadeDamage', 'throwable', '+5% grenade damage per rank.'),
-  roguelikeSkill('grenade-cooldown', 'Fast Fuse', 'grenadeCooldown', 'throwable', '+5% throwable cooldown recovery per rank.'),
-  roguelikeSkill('area-size', 'Blast Radius', 'areaSize', 'throwable', '+5% area size per rank.'),
-  roguelikeSkill('duration', 'Buff Duration', 'duration', 'utility', '+5% buff duration per rank.'),
-  roguelikeSkill('luck', 'Green Candle Luck', 'luck', 'economy', '+5% drop luck per rank.'),
-  roguelikeSkill('reroll-bank', 'Reroll Bank', 'rerollBank', 'economy', '+5% reroll economy per rank.'),
-  roguelikeSkill('coin-score', 'Hard Money Score', 'scoreMultiplier', 'economy', '+5% score multiplier per rank.'),
-  roguelikeSkill('enemy-slow', 'Mempool Tar', 'enemySlow', 'control', '+5% enemy slow power per rank.'),
-  roguelikeSkill('burn-damage', 'Hot Wallet Burn', 'burnDamage', 'status', '+5% burn damage per rank.'),
-  roguelikeSkill('chain-lightning', 'Chain Lightning', 'chainLightning', 'status', '+5% chain proc budget per rank.'),
-  roguelikeSkill('orbitals', 'Satellite Wallets', 'orbitals', 'summon', '+5% orbital uptime per rank.'),
-  roguelikeSkill('drone-damage', 'Drone Damage', 'droneDamage', 'summon', '+5% drone damage per rank.'),
-  roguelikeSkill('turret-speed', 'Turret Speed', 'turretSpeed', 'summon', '+5% turret fire-rate per rank.'),
-  roguelikeSkill('boss-damage', 'Boss Breaker', 'bossDamage', 'offense', '+5% boss damage per rank.'),
-  roguelikeSkill('saloon-ricochet', 'Saloon Ricochet', 'pierce', 'route-mechanic', '+5% pierce budget per rank; bullets read as saloon/warehouse lane control.'),
-  roguelikeSkill('gas-chain-refund', 'Gas Chain Refund', 'grenadeCooldown', 'route-mechanic', '+5% grenade tempo per rank after gas-pump chain setups.'),
-  roguelikeSkill('spore-filter', 'Spore Filter', 'armor', 'route-mechanic', '+5% hazard mitigation per rank for mushroom/spore routing.'),
-  roguelikeSkill('cache-magnet', 'Cache Magnet', 'pickupRadius', 'route-mechanic', '+5% pickup radius per rank so cache rewards stay readable while kiting.'),
-  roguelikeSkill('boss-yard-breaker', 'Boss Yard Breaker', 'bossDamage', 'route-mechanic', '+5% boss damage per rank for the Rugpull gate/extraction finale.'),
-  roguelikeSkill('ford-line-dash', 'Ford Line Dash', 'dashDistance', 'route-mechanic', '+5% dash distance per rank for ford, bridge, and chokepoint routes.'),
-  roguelikeSkill('elite-damage', 'Elite Breaker', 'eliteDamage', 'offense', '+5% elite damage per rank.'),
-  roguelikeSkill('contact-damage', 'Contact Punish', 'contactDamage', 'defense', '+5% contact retaliation per rank.'),
-  roguelikeSkill('invulnerability', 'I-Frame Ledger', 'invulnerability', 'defense', '+5% invulnerability duration per rank.'),
-  roguelikeSkill('revive', 'Second Wallet', 'revive', 'defense', '+5% revive budget per rank.'),
-  roguelikeSkill('loot-quality', 'Loot Quality', 'lootQuality', 'economy', '+5% upgrade rarity weight per rank.'),
-  roguelikeSkill('cooldown-global', 'Global Cooldown', 'globalCooldown', 'utility', '+5% global cooldown recovery per rank.'),
+  roguelikeSkill({ id: 'damage-alpha', title: 'Damage Alpha', stat: 'damage', category: 'damage', maxRank: 5, ranks: rankStats('damage', [10, 8, 7, 6, 5]), description: 'Weapon damage rises with diminishing returns.' }),
+  roguelikeSkill({ id: 'reload-hands', title: 'Reload Hands', stat: 'reloadSpeed', category: 'reload-speed', maxRank: 4, ranks: rankStats('reloadSpeed', [10, 8, 6, 5]), description: 'Reload faster without changing weapon identity.' }),
+  roguelikeSkill({ id: 'move-speed', title: 'Street Runner', stat: 'movementSpeed', category: 'movement-speed', maxRank: 4, ranks: rankStats('movementSpeed', [8, 6, 5, 4]), description: 'Base movement upgrade, the escape valve for the speed law.' }),
+  roguelikeSkill({ id: 'magazine-size', title: 'Deep Mags', stat: 'magazineSize', category: 'magazine-size', maxRank: 4, ranks: rankStats('magazineSize', [14, 11, 9, 7]), description: 'More shots before reload pressure hits.' }),
+  roguelikeSkill({ id: 'rate-of-fire', title: 'Hashrate Fire', stat: 'rateOfFire', category: 'fire-rate', maxRank: 5, ranks: rankStats('rateOfFire', [9, 8, 6, 5, 4]), description: 'Fire faster with controlled late-rank returns.' }),
+  roguelikeSkill({ id: 'pickup-radius', title: 'Magnet Wallet', stat: 'pickupRadius', category: 'pickup-magnet', maxRank: 4, ranks: rankStats('pickupRadius', [20, 15, 12, 9]), description: 'Pull XP and coins from a wider safe route.' }),
+  roguelikeSkill({ id: 'max-health', title: 'Cold Storage', stat: 'maxHealth', category: 'max-hp', maxRank: 4, ranks: rankStats('maxHealth', [18, 14, 11, 8]), description: 'Increase max HP for longer survival.' }),
+  roguelikeSkill({ id: 'critical-chance', title: 'Crit Candle', stat: 'criticalChance', category: 'crit-chance', maxRank: 4, ranks: rankStats('criticalChance', [6, 5, 4, 3]), description: 'Add critical-hit chance.' }),
 
-  // Level 2: Litecoin City adds its own upgrade pool on top of carried Level 1
-  // builds. These cards start appearing only after the player continues into
-  // Level 2, so the city has fresh progression instead of replaying the same
-  // Wasteland deck.
-  roguelikeSkill('l2-neon-aim', 'Neon Aim Stabilizer', 'damage', 'city-offense', '+5% city weapon damage per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-boulevard-runner', 'Boulevard Runner', 'movementSpeed', 'city-mobility', '+5% city movement speed per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-crosswalk-dodge', 'Crosswalk Dodge', 'dashDistance', 'city-mobility', '+5% city dash distance per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-street-medic', 'Street Medic Kit', 'maxHealth', 'city-defense', '+5% city max health per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-silver-vest', 'Silver Vest Plating', 'armor', 'city-defense', '+5% city armor per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-market-crit', 'Market Open Crits', 'criticalChance', 'city-offense', '+5% city critical chance budget per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-ticker-pierce', 'Ticker Tape Pierce', 'pierce', 'city-offense', '+5% city pierce budget per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-harbor-magnet', 'Harbor Magnet', 'pickupRadius', 'city-utility', '+5% city pickup radius per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-plaza-luck', 'Plaza Luck', 'luck', 'city-economy', '+5% city drop luck per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-yield-score', 'Yield Score Engine', 'scoreMultiplier', 'city-economy', '+5% city score multiplier per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-rig-overclock', 'Rig Overclock', 'rateOfFire', 'city-offense', '+5% city fire-rate per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-fountain-shield', 'Fountain Shield', 'shieldCapacity', 'city-defense', '+5% city shield capacity per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-drone-routing', 'Drone Routing', 'droneDamage', 'city-summon', '+5% city drone damage per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-orbital-permit', 'Orbital Permit', 'orbitals', 'city-summon', '+5% city orbital uptime per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-vent-control', 'Vent Control', 'enemySlow', 'city-control', '+5% city enemy slow power per rank.', { availableFromCampaignLevel: 2 }),
-  roguelikeSkill('l2-vip-revive', 'VIP Revive Clause', 'revive', 'city-defense', '+5% city revive budget per rank.', { availableFromCampaignLevel: 2 }),
+  roguelikeSkill({ id: 'critical-damage', title: 'Crit Multiplier', stat: 'criticalDamage', category: 'crit-damage', maxRank: 4, gate: { playerLevel: 5, requires: [{ skillId: 'critical-chance', rank: 1 }] }, ranks: rankStats('criticalDamage', [18, 14, 11, 8]), description: 'Critical hits pay harder once crits exist.' }),
+  roguelikeSkill({ id: 'projectile-speed', title: 'Tracer Velocity', stat: 'bulletSpeed', category: 'projectile-speed', maxRank: 4, gate: { playerLevel: 5 }, ranks: rankStats('bulletSpeed', [12, 9, 7, 5]), description: 'Shots cross lanes faster.' }),
+  roguelikeSkill({ id: 'pierce', title: 'Piercing Ledger', stat: 'pierce', category: 'pierce', maxRank: 4, gate: { playerLevel: 5, requires: [{ skillId: 'damage-alpha', rank: 1 }] }, ranks: rankStats('pierce', [1, 1, 1, 1]), description: 'Bullets punch through more bodies.' }),
+  roguelikeSkill({ id: 'spread-control', title: 'Spread Control', stat: 'spreadControl', category: 'spread-control', maxRank: 4, gate: { playerLevel: 5 }, ranks: rankStats('spreadControl', [12, 9, 7, 5]), description: 'Tighten wide weapons and make aim matter.' }),
+  roguelikeSkill({ id: 'grenade-capacity', title: 'Nade Pockets', stat: 'grenadeCapacity', category: 'grenade-capacity', maxRank: 4, gate: { playerLevel: 5 }, ranks: rankStats('grenadeCapacity', [1, 1, 1, 1]), description: 'Raise grenade carry cap.' }),
+  roguelikeSkill({ id: 'armor', title: 'Cold Armor', stat: 'armor', category: 'armor', maxRank: 4, gate: { playerLevel: 5 }, ranks: rankStats('armor', [7, 6, 5, 4]), description: 'Reduce incoming damage.' }),
+
+  roguelikeSkill({ id: 'grenade-damage', title: 'Frag Yield', stat: 'grenadeDamage', category: 'grenade-damage', maxRank: 4, gate: { playerLevel: 10, requires: [{ skillId: 'grenade-capacity', rank: 1 }] }, ranks: rankStats('grenadeDamage', [16, 13, 10, 8]), description: 'Grenades hit harder.' }),
+  roguelikeSkill({ id: 'grenade-radius', title: 'Blast Radius', stat: 'grenadeRadius', category: 'grenade-radius', maxRank: 4, gate: { playerLevel: 10, requires: [{ skillId: 'grenade-capacity', rank: 1 }] }, ranks: rankStats('grenadeRadius', [14, 11, 9, 7]), description: 'Grenade blasts cover more tiles.' }),
+  roguelikeSkill({ id: 'xp-gain', title: 'Wisdom Candles', stat: 'xpGain', category: 'xp-gain', maxRank: 4, gate: { playerLevel: 10 }, ranks: rankStats('xpGain', [12, 9, 7, 5]), description: 'Earn XP faster without adding extra picks.' }),
+  roguelikeSkill({ id: 'power-up-luck', title: 'Green Luck', stat: 'luck', category: 'power-up-luck', maxRank: 4, gate: { playerLevel: 10 }, ranks: rankStats('luck', [10, 8, 6, 5]), description: 'Shift drop rarity weights without increasing volume.' }),
+  roguelikeSkill({ id: 'dash-cooldown', title: 'Dash Clock', stat: 'dashCooldown', category: 'dash-cooldown', maxRank: 4, gate: { playerLevel: 10 }, ranks: rankStats('dashCooldown', [10, 8, 6, 5]), description: 'Recover dash sooner.' }),
+  unlockSkill({ id: 'launcher-rig', title: 'Launcher Rig', grenadeType: 'launcher-rig', description: 'Switch grenades to a longer, flatter, faster launcher arc.', gate: { playerLevel: 10 } }),
+
+  roguelikeSkill({ id: 'dash-distance', title: 'Gap Runner', stat: 'dashDistance', category: 'dash-distance', maxRank: 4, gate: { playerLevel: 15, requires: [{ skillId: 'dash-cooldown', rank: 2 }] }, ranks: rankStats('dashDistance', [12, 9, 7, 5]), description: 'Dash farther through authored routes.' }),
+  roguelikeSkill({ id: 'health-regen', title: 'Self Custody', stat: 'healthRegen', category: 'hp-regen', maxRank: 4, gate: { playerLevel: 15, requires: [{ skillId: 'max-health', rank: 2 }] }, ranks: rankStats('healthRegen', [0.35, 0.28, 0.22, 0.18]), description: 'Regenerate small HP amounts during long kites.' }),
+  roguelikeSkill({ id: 'coin-value', title: 'Hard Money', stat: 'scoreMultiplier', category: 'coin-value', maxRank: 4, gate: { playerLevel: 15 }, ranks: rankStats('scoreMultiplier', [12, 9, 7, 5]), description: 'Coins and score caches pay more.' }),
+  roguelikeSkill({ id: 'combo-retention', title: 'Diamond Combo', stat: 'comboRetention', category: 'combo-retention', maxRank: 4, gate: { playerLevel: 15 }, ranks: rankStats('comboRetention', [18, 14, 11, 8]), description: 'Combo drops more slowly under pressure.' }),
+  unlockSkill({ id: 'homing-cluster', title: 'Homing Cluster', grenadeType: 'homing-cluster', description: 'Switch grenades to seek the largest enemy cluster.', gate: { playerLevel: 15, requires: [{ skillId: 'grenade-damage', rank: 2 }] } }),
+  unlockSkill({ id: 'block-buster', title: 'Block Buster', grenadeType: 'block-buster', description: 'Switch grenades to a huge heavy blast with lower carry cap.', gate: { playerLevel: 15, requires: [{ skillId: 'grenade-radius', rank: 2 }] } }),
+
+  unlockSkill({ id: 'revive', title: 'Second Wallet', category: 'defense', stat: 'revive', statDelta: 1, description: 'Survive one killing blow when the late run turns ugly.', gate: { playerLevel: 20, requires: [{ skillId: 'max-health', rank: 3 }, { skillId: 'armor', rank: 2 }] } }),
 ]);
 
 export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
@@ -772,11 +776,12 @@ export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
   }),
   levelUp: Object.freeze({
     pausesGame: true,
-    choicesPerLevel: 2,
+    choicesPerLevel: 3,
     rerollsPerLevel: 1,
-    skills: 56,
-    levelsPerSkill: 5,
-    statStepPercent: 5,
+    skills: LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length,
+    totalRanks: LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.reduce((sum, skill) => sum + skill.maxRank, 0),
+    levelsPerSkill: [3, 5],
+    statStepPercent: 'per-rank-data',
   }),
   modeBoundary: Object.freeze({
     freeWritesOfficialState: false,
@@ -1998,7 +2003,9 @@ function clampNumber(value, min, max) {
 
 
 const roguelikeStatDefaults = () => Object.fromEntries(
-  LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.map((skill) => [skill.stat, 1]),
+  LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY
+    .filter((skill) => skill.stat)
+    .map((skill) => [skill.stat, 1]),
 );
 
 // Per-hero STARTING stat identity (multipliers layered on the level-1 defaults).
@@ -2029,7 +2036,7 @@ function roguelikeStartingStatsFor(characterId) {
 export function roguelikeXpCostForLevel(level = 1) {
   const safeLevel = Math.max(1, Math.floor(Number(level) || 1));
   const completedLevels = safeLevel - 1;
-  return 100 + completedLevels * 55 + completedLevels * completedLevels * 7;
+  return Math.round(80 + completedLevels * 8 + completedLevels * completedLevels * 0.33);
 }
 
 export function calculateRoguelikeKillXp(enemy = {}) {
@@ -2291,6 +2298,7 @@ function cloneRoguelikeRun(run) {
     player: { ...run.player },
     stats: { ...run.stats },
     skills: { ...run.skills },
+    unlocks: { ...(run.unlocks ?? {}) },
     map: { ...run.map },
     rngStreams: { ...(run.rngStreams ?? {}) },
     spawnDirector: { ...run.spawnDirector },
@@ -2359,6 +2367,7 @@ export function createRoguelikeRunState({
     player: { x: config.player.startWorld.x, y: config.player.startWorld.y, facing: 'E' },
     stats: carriedStats ?? roguelikeStartingStatsFor(characterId),
     skills,
+    unlocks: { ...(carryOver?.unlocks ?? {}) },
     map: { procedural: true, tilesetPerspective: config.map.tilesetPerspective, seedLabel: config.map.seedLabel },
     spawnDirector: getRoguelikeSpawnDirectorAt(0),
   };
@@ -2379,33 +2388,103 @@ export function grantRoguelikeXp(run, amount = 0) {
   return next;
 }
 
-export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false, rng = null } = {}) {
-  const campaignLevelNumber = Math.max(1, Math.floor(Number(run?.campaignLevelNumber) || 1));
+function roguelikeGateSatisfied(skill, run) {
+  const gate = skill.gate ?? null;
+  if (!gate) return true;
+  const level = Math.max(1, Math.floor(Number(run?.level) || 1));
+  if (gate.playerLevel && level < gate.playerLevel) return false;
+  for (const req of gate.requires ?? []) {
+    if ((run?.skills?.[req.skillId] ?? 0) < req.rank) return false;
+  }
+  return true;
+}
+
+function gateHintForSkill(skill) {
+  const gate = skill.gate ?? null;
+  if (!gate) return '';
+  const hints = [];
+  if (gate.playerLevel) hints.push(`UNLOCKS AT LEVEL ${gate.playerLevel}`);
+  for (const req of gate.requires ?? []) {
+    const requiredSkill = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.find((candidate) => candidate.id === req.skillId);
+    hints.push(`REQUIRES ${(requiredSkill?.title ?? req.skillId).toUpperCase()} R${req.rank}`);
+  }
+  return hints.join(' + ');
+}
+
+function roguelikeDraftWeight(skill, run) {
+  const currentRank = run?.skills?.[skill.id] ?? 0;
+  if (skill.kind === 'unlock') return 3;
+  return Math.max(1, skill.maxRank - currentRank);
+}
+
+function pickWeightedSkill(available, { seed, salt, rng, run }) {
+  const totalWeight = available.reduce((sum, skill) => sum + roguelikeDraftWeight(skill, run), 0);
+  if (totalWeight <= 0) return 0;
+  let roll = rng?.next
+    ? rng.next() * totalWeight
+    : (Math.abs(Math.sin((Number(seed) || 0) * 12.9898 + salt * 78.233) * 43758.5453) % 1) * totalWeight;
+  for (let i = 0; i < available.length; i += 1) {
+    roll -= roguelikeDraftWeight(available[i], run);
+    if (roll <= 0) return i;
+  }
+  return available.length - 1;
+}
+
+function optionForSkill(skill, run) {
+  const currentRank = run?.skills?.[skill.id] ?? 0;
+  const nextRank = currentRank + 1;
+  const rank = skill.ranks[currentRank] ?? skill.ranks.at(-1) ?? null;
+  return Object.freeze({
+    ...skill,
+    currentRank,
+    currentLevel: currentRank,
+    nextRank,
+    nextLevel: nextRank,
+    nextRankStats: rank ? Object.freeze({ ...rank }) : null,
+    gateHint: gateHintForSkill(skill),
+  });
+}
+
+export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false, rng = null, includeLockedPreviews = false } = {}) {
   const available = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => {
-    if ((skill.availableFromCampaignLevel ?? 1) > campaignLevelNumber) return false;
-    return (run.skills?.[skill.id] ?? 0) < skill.maxLevel;
+    if ((run?.skills?.[skill.id] ?? 0) >= skill.maxRank) return false;
+    return roguelikeGateSatisfied(skill, run);
   });
   const choices = [];
-  const saltBase = (run.level ?? 1) * 17 + (reroll ? 101 : 0);
+  const saltBase = (run?.level ?? 1) * 17 + (reroll ? 101 : 0);
   for (let i = 0; i < Math.min(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, available.length); i += 1) {
-    const index = rng?.int ? rng.int(0, available.length - 1) : seededIndex(seed, saltBase + i * 13, available.length);
+    const index = pickWeightedSkill(available, { seed, salt: saltBase + i * 13, rng, run });
     const [skill] = available.splice(index, 1);
-    choices.push(Object.freeze({ ...skill, currentLevel: run.skills?.[skill.id] ?? 0, nextLevel: (run.skills?.[skill.id] ?? 0) + 1 }));
+    choices.push(optionForSkill(skill, run));
   }
+  const lockedPreviews = includeLockedPreviews
+    ? Object.freeze(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY
+      .filter((skill) => (run?.skills?.[skill.id] ?? 0) < skill.maxRank && !roguelikeGateSatisfied(skill, run))
+      .map((skill) => Object.freeze({ id: skill.id, title: skill.title, gateHint: gateHintForSkill(skill), gate: skill.gate })))
+    : Object.freeze([]);
   return Object.freeze({
     options: Object.freeze(choices),
-    rerollsRemaining: Math.max(0, (run.rerollsRemaining ?? 0) - (reroll ? 1 : 0)),
+    lockedPreviews,
+    rerollsRemaining: Math.max(0, (run?.rerollsRemaining ?? 0) - (reroll ? 1 : 0)),
   });
 }
 
 export function applyRoguelikeSkillUpgrade(run, skillId) {
   const skill = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.find((candidate) => candidate.id === skillId);
   if (!skill) throw new Error(`Unknown roguelike skill: ${skillId}`);
-  const currentLevel = run.skills?.[skill.id] ?? 0;
-  if (currentLevel >= skill.maxLevel) return cloneRoguelikeRun(run);
+  if (!roguelikeGateSatisfied(skill, run)) return cloneRoguelikeRun(run);
+  const currentRank = run.skills?.[skill.id] ?? 0;
+  if (currentRank >= skill.maxRank) return cloneRoguelikeRun(run);
+  const rank = skill.ranks[currentRank] ?? skill.ranks.at(-1) ?? {};
   const next = cloneRoguelikeRun(run);
-  next.skills[skill.id] = currentLevel + 1;
-  next.stats[skill.stat] = (next.stats[skill.stat] ?? 1) + skill.perLevelPercent / 100;
+  next.skills[skill.id] = currentRank + 1;
+  if (skill.kind === 'unlock') {
+    next.unlocks[skill.id] = true;
+    if (skill.grenadeType) next.stats.grenadeType = skill.grenadeType;
+    if (skill.stat && Number.isFinite(Number(rank.statDelta))) next.stats[skill.stat] = (next.stats[skill.stat] ?? 0) + Number(rank.statDelta);
+  } else if (skill.stat && Number.isFinite(Number(rank.statDelta))) {
+    next.stats[skill.stat] = (next.stats[skill.stat] ?? 1) + Number(rank.statDelta) / 100;
+  }
   next.pausedForLevelUp = false;
   next.pendingUpgradeChoices = 0;
   return next;

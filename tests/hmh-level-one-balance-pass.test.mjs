@@ -76,22 +76,34 @@ test('Level 1 boss choreography has phase gates, add windows, counterplay, and e
   assert.ok(plan.miniBosses.every((miniBoss) => miniBoss.counterplay && miniBoss.rewardHook));
 });
 
-test('Level 1 upgrade variety exposes mechanic-changing cards and deterministic two-card offers can include them', () => {
+test('Level 1 upgrade variety exposes WO-27 mechanic-changing cards and deterministic three-card offers can include them', () => {
   const plan = buildLevelOneUpgradeVarietyPlan();
   const ids = plan.mechanicCards.map((card) => card.id);
-  assert.ok(ids.includes('saloon-ricochet'));
-  assert.ok(ids.includes('gas-chain-refund'));
-  assert.ok(ids.includes('spore-filter'));
-  assert.ok(ids.includes('cache-magnet'));
-  assert.ok(ids.includes('boss-yard-breaker'));
-  assert.ok(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.some((skill) => skill.id === 'saloon-ricochet'));
+  assert.ok(ids.includes('pierce'));
+  assert.ok(ids.includes('grenade-damage'));
+  assert.ok(ids.includes('pickup-radius'));
+  assert.ok(ids.includes('dash-distance'));
+  assert.ok(ids.includes('block-buster'));
+  assert.ok(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.some((skill) => skill.id === 'pierce'));
 
   const run = createRoguelikeRunState({ seed: 91, mode: 'free', campaignLevelNumber: 1 });
+  const seededRun = {
+    ...run,
+    level: 16,
+    skills: {
+      ...run.skills,
+      'damage-alpha': 1,
+      'grenade-capacity': 1,
+      'grenade-damage': 2,
+      'grenade-radius': 2,
+      'dash-cooldown': 2,
+    },
+  };
   const offerIds = new Set();
   for (let seed = 1; seed <= 80; seed += 1) {
-    for (const option of chooseRoguelikeUpgradeOptions({ ...run, level: 3 }, { seed }).options) offerIds.add(option.id);
+    for (const option of chooseRoguelikeUpgradeOptions(seededRun, { seed }).options) offerIds.add(option.id);
   }
-  assert.ok(ids.some((id) => offerIds.has(id)), 'new mechanic cards should be eligible in live Level 1 choices');
+  assert.ok(ids.some((id) => offerIds.has(id)), 'mechanic cards should be eligible in live Level 1 choices');
 });
 
 test('player damage recovery scales armor, i-frames, knockback, and labels damage sources readably', () => {

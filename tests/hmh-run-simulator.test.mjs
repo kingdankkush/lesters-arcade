@@ -9,13 +9,13 @@ import {
 
 test('levelFromCumulativeXp follows the current roguelike XP cost curve', () => {
   assert.equal(levelFromCumulativeXp(0), 1);
-  assert.equal(levelFromCumulativeXp(99), 1);
-  assert.equal(levelFromCumulativeXp(100), 2);
-  assert.equal(levelFromCumulativeXp(261), 2);
-  assert.equal(levelFromCumulativeXp(262), 3);
+  assert.equal(levelFromCumulativeXp(79), 1);
+  assert.equal(levelFromCumulativeXp(80), 2);
+  assert.equal(levelFromCumulativeXp(167), 2);
+  assert.equal(levelFromCumulativeXp(168), 3);
 });
 
-test('simulator calibrates to current Level 1 open-ended XP-income ground truth before WO-27 rebalance', () => {
+test('simulator calibrates to WO-27 half-tree scarcity bands', () => {
   const sim = simulateHmhRunEconomy({ minutes: 25, skillFactor: 1, tickSeconds: 1 });
   const m0 = sim.timeline.find((point) => point.minute === 0);
   const m4 = sim.timeline.find((point) => point.minute === 4);
@@ -28,7 +28,7 @@ test('simulator calibrates to current Level 1 open-ended XP-income ground truth 
   assert.ok(m8.xpPerSecond >= 12.0 && m8.xpPerSecond <= 15.0, `8:00 XP/s should no longer be a wall spike, got ${m8.xpPerSecond}`);
   assert.ok(m8.cumulativeXp >= 3_700 && m8.cumulativeXp <= 4_600, `8:00 cumulative XP expected ~4k-4.5k, got ${m8.cumulativeXp}`);
   assert.ok(m20.cumulativeXp >= 19_000 && m20.cumulativeXp <= 23_000, `20:00 cumulative XP expected ~20k-22k, got ${m20.cumulativeXp}`);
-  assert.ok(m20.level >= 17 && m20.level <= 20, `pre-WO-27 20-minute run should stay near level 18, got ${m20.level}`);
+  assert.ok(m20.level >= 45 && m20.level <= 58, `WO-27 20-minute elite run should enter half-tree band, got ${m20.level}`);
   assert.ok(m25.cumulativeXp > m20.cumulativeXp, 'record-chase runs keep gaining XP after the elite band opens');
 });
 

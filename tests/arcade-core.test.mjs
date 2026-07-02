@@ -667,7 +667,7 @@ test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike 
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.mode, 'open-ended-survival');
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.mapGeneration.procedural, true);
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.pausesGame, true);
-  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 2);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 3);
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel, 1);
   assert.equal(config.seed, 42);
   assert.equal(config.map.tilesetPerspective, 'isometric');
@@ -675,29 +675,25 @@ test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike 
   assert.equal(config.spawnDirector.pressureCurveMinutes.at(-1), 30);
 });
 
-test('roguelike skill library exposes Level 1 plus Level 2 upgrade pools with deterministic two-choice offers', () => {
+test('roguelike skill library exposes the WO-27 ranked tree with deterministic three-card offers', () => {
   const run = createRoguelikeRunState({ seed: 11, mode: 'free' });
   const leveled = grantRoguelikeXp(run, roguelikeXpCostForLevel(1));
   const offered = chooseRoguelikeUpgradeOptions(leveled, { seed: 5 });
   const upgraded = applyRoguelikeSkillUpgrade(leveled, offered.options[0].id);
-  const level2Run = createRoguelikeRunState({ seed: 12, mode: 'free', campaignLevelNumber: 2, carryOver: upgraded });
-  const level2Offer = chooseRoguelikeUpgradeOptions({ ...level2Run, level: 2 }, { seed: 8 });
 
-  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length >= 56, true);
-  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.maxLevel === 5), true);
-  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.perLevelPercent === 5), true);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length >= 24, true);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length <= 28, true);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.maxLevel === skill.maxRank), true);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => Array.isArray(skill.ranks) && skill.ranks.length === skill.maxRank), true);
   assert.equal(leveled.level, 2);
   assert.equal(leveled.pausedForLevelUp, true);
-  assert.equal(leveled.pendingUpgradeChoices, 2);
+  assert.equal(leveled.pendingUpgradeChoices, 3);
   assert.equal(leveled.rerollsRemaining, 1);
-  assert.equal(offered.options.length, 2);
-  assert.equal(offered.options.every((option) => (option.availableFromCampaignLevel ?? 1) === 1), true);
-  assert.equal(new Set(offered.options.map((option) => option.id)).size, 2);
+  assert.equal(offered.options.length, 3);
+  assert.equal(new Set(offered.options.map((option) => option.id)).size, 3);
   assert.equal(upgraded.pausedForLevelUp, false);
   assert.equal(upgraded.skills[offered.options[0].id], 1);
-  assert.equal(upgraded.stats[offered.options[0].stat] > leveled.stats[offered.options[0].stat], true);
-  assert.equal(level2Run.skills[offered.options[0].id], 1);
-  assert.equal(level2Offer.options.some((option) => (option.availableFromCampaignLevel ?? 1) >= 2), true);
+  if (offered.options[0].stat) assert.equal(upgraded.stats[offered.options[0].stat] > leveled.stats[offered.options[0].stat], true);
 });
 
 test('roguelike XP pacing prevents one enemy pack from chaining multiple level-ups', () => {
@@ -709,7 +705,7 @@ test('roguelike XP pacing prevents one enemy pack from chaining multiple level-u
   const afterPack = grantRoguelikeXp(run, packXp);
   const afterHugeBurst = grantRoguelikeXp(run, roguelikeXpCostForLevel(1) + roguelikeXpCostForLevel(2) + 500);
 
-  assert.ok(roguelikeXpCostForLevel(1) >= 100);
+  assert.ok(roguelikeXpCostForLevel(1) >= 80);
   assert.ok(roguelikeXpCostForLevel(3) > roguelikeXpCostForLevel(2));
   assert.ok(gruntXp <= 12, `grunt XP should stay modest, got ${gruntXp}`);
   assert.ok(eliteXp <= 24, `elite XP should stay capped, got ${eliteXp}`);

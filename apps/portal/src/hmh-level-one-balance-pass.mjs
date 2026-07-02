@@ -171,17 +171,17 @@ export function buildLevelOneBossChoreographyPlan() {
 
 export function buildLevelOneUpgradeVarietyPlan() {
   const mechanicCards = Object.freeze([
-    Object.freeze({ id: 'saloon-ricochet', mechanic: 'shots glance through saloon/warehouse lanes', stat: 'pierce' }),
-    Object.freeze({ id: 'gas-chain-refund', mechanic: 'gas-pump chain kills refund grenade tempo', stat: 'grenadeCooldown' }),
-    Object.freeze({ id: 'spore-filter', mechanic: 'mushroom pulse slow/damage is easier to route around', stat: 'armor' }),
-    Object.freeze({ id: 'cache-magnet', mechanic: 'Litecoin cache rewards pull harder and stay readable', stat: 'pickupRadius' }),
-    Object.freeze({ id: 'boss-yard-breaker', mechanic: 'boss gate/final boss damage windows hit harder', stat: 'bossDamage' }),
-    Object.freeze({ id: 'ford-line-dash', mechanic: 'short safer dashes through ford/bridge chokepoints', stat: 'dashDistance' }),
+    Object.freeze({ id: 'pierce', mechanic: 'shots punch through dense saloon and road-loop bodies', stat: 'pierce' }),
+    Object.freeze({ id: 'grenade-damage', mechanic: 'grenade builds become a deliberate branch instead of a one-off pickup', stat: 'grenadeDamage' }),
+    Object.freeze({ id: 'pickup-radius', mechanic: 'cache and XP rewards pull harder and stay readable while kiting', stat: 'pickupRadius' }),
+    Object.freeze({ id: 'dash-distance', mechanic: 'safer committed dashes through ford, bridge, and chokepoint routes', stat: 'dashDistance' }),
+    Object.freeze({ id: 'block-buster', mechanic: 'grenade type can become a heavy room-clearing build identity', stat: 'grenadeType' }),
+    Object.freeze({ id: 'revive', mechanic: 'late-run defense can trade many picks for one extra lethal mistake', stat: 'revive' }),
   ]);
   return Object.freeze({
-    choicesPerLevel: 2,
+    choicesPerLevel: 3,
     mechanicCards,
-    buildVarietyGoal: 'at least one card per route act should change movement, routing, explosive setup, or boss pressure instead of only nudging a stat',
+    buildVarietyGoal: 'ranked bases and gated unlocks should create build identity instead of letting one run complete every upgrade',
   });
 }
 
@@ -233,6 +233,6 @@ export function validateLevelOneBalancePass() {
   if (snapshot.checkpoints.at(-1).director.maxEnemiesOnMap < 125) errors.push('elite-band pressure needs dense but continuous swarms');
   if (snapshot.xpPacing.swarmFighter.targetLevelAtEliteBand < 18) errors.push('swarm fighter should keep progressing into the elite band');
   if (!snapshot.bossChoreography.finalBoss.onDefeat.unlocksGate) errors.push('final boss must unlock the authored gate');
-  if (!snapshot.upgradeVariety.mechanicCards.some((card) => card.id === 'gas-chain-refund')) errors.push('gas chain upgrade card missing');
+  if (!snapshot.upgradeVariety.mechanicCards.some((card) => card.id === 'grenade-damage')) errors.push('grenade branch upgrade card missing');
   return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors) });
 }

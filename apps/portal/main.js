@@ -7120,10 +7120,9 @@ function openLevelUpMenu() {
   if (!combat.roguelikeRun?.pausedForLevelUp) return;
   const draftRng = roguelikeRngStream('draft');
   const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills });
-  // 2 choices total: if the weapon tree has available branches this level, we
-  // pair one weapon-branch card with one roguelike-skill card; otherwise both
-  // slots come from the roguelike library. The player always sees exactly 2
-  // options, matching the card-container layout in the UI.
+  // 3 choices total: if the weapon tree has available branches this level, we
+  // pair two roguelike-skill cards with one weapon-branch card; otherwise all
+  // three slots come from the WO-27 ranked upgrade tree.
   combat.levelUpChoices = buildLevelUpPair(offer.options);
   combat.levelUpPaused = true;
   combat.paused = true;
@@ -7142,19 +7141,21 @@ function rerollLevelUpChoices() {
 }
 
 // Combine the roguelike-skill options and (optional) weapon-branch option into
-// exactly 2 cards. If weapon-tree branches are available, we show ONE weapon
-// card + ONE roguelike card. Otherwise two roguelike cards.
+// exactly 3 cards. If weapon-tree branches are available, we show ONE weapon
+// card + TWO roguelike cards. Otherwise three roguelike cards.
 function buildLevelUpPair(roguelikeOptions) {
   const options = [...(roguelikeOptions ?? [])];
   const weaponBranch = (weaponTreeBranchChoices() ?? [])[0] ?? null;
   const out = [];
 
   if (weaponBranch) {
-    // Pair one weapon branch with one roguelike card (first in the options list).
+    // Pair one weapon branch with two ranked-tree cards.
+    if (options.length) out.push(options.shift());
     if (options.length) out.push(options.shift());
     out.push(weaponBranch);
   } else {
-    // No weapon branches available — use two roguelike cards.
+    // No weapon branches available — use three roguelike cards.
+    if (options.length) out.push(options.shift());
     if (options.length) out.push(options.shift());
     if (options.length) out.push(options.shift());
   }
