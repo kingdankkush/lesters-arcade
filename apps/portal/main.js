@@ -74,6 +74,7 @@ import {
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
+import HMH_ASSET_FOOTPRINTS from './assets/hmh-asset-footprints.json' with { type: 'json' };
 
 function animatedSceneAssetByKey(key) {
   return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key) ?? levelThreeFinalGetawayAssetByKey(key);
@@ -9396,18 +9397,36 @@ function currentObstacles() {
   return _obstacleCache;
 }
 
-// Per-role art sizing + collision footprint for placed obstacles. Establishes
-// real SCALE so the world doesn't read as "everything is the same size": the
-// hero draws ~72px, so a building at ~300px towers ~4x over him, vehicles/trees
-// sit in between, and small litter is genuinely small. targetW = on-screen draw
-// width (px); radius = collision footprint (world tiles); ground = foot offset.
+// Per-role collision/anchor factors for placed obstacles. Draw size now comes
+// from the WO-8 asset footprint manifest so every prop preserves native aspect
+// ratio and a single texel-density law instead of bucketed target widths.
 const PROP_ROLE_STYLE = Object.freeze({
-  building:  { targetW: 300, radius: 1.7,  ground: 120 },
-  bigprop:   { targetW: 188, radius: 1.2,  ground: 86 },
-  vehicle:   { targetW: 132, radius: 1.0,  ground: 48 },
-  tree:      { targetW: 116, radius: 0.62, ground: 78 },
-  smallprop: { targetW: 46,  radius: 0.42, ground: 30 },
+  building:  { radius: 1.7,  ground: 120 },
+  bigprop:   { radius: 1.2,  ground: 86 },
+  vehicle:   { radius: 1.0,  ground: 48 },
+  tree:      { radius: 0.62, ground: 78 },
+  smallprop: { radius: 0.42, ground: 30 },
 });
+
+const ASSET_FOOTPRINT_BY_KEY = new Map();
+for (const footprint of HMH_ASSET_FOOTPRINTS.assets ?? []) {
+  for (const key of [footprint.key, footprint.runtimeKey, footprint.src]) {
+    if (key && !ASSET_FOOTPRINT_BY_KEY.has(key)) ASSET_FOOTPRINT_BY_KEY.set(key, footprint);
+  }
+}
+
+function footprintTilesForAssetKey(key) {
+  const entry = ASSET_FOOTPRINT_BY_KEY.get(key);
+  return entry?.override?.footprintTiles ?? entry?.footprintTiles ?? null;
+}
+
+function resolveDrawMetricsForFootprint(img, footprint, style) {
+  const footprintW = Math.max(0.5, Number(footprint?.w ?? img.naturalWidth / ISO_TILE_WIDTH));
+  const drawWidth = Math.max(8, Math.round(footprintW * ISO_TILE_WIDTH));
+  const drawHeight = Math.max(8, Math.round(drawWidth * (img.naturalHeight / Math.max(1, img.naturalWidth))));
+  const radius = Math.max(0.1, footprintW * 0.5 * (style.radius ?? 1));
+  return { drawWidth, drawHeight, radius };
+}
 
 // World props that are valid as discrete, placeable obstacles. Excludes:
 //  - "scenery" (wide parallax-style strips that would block the scene), and
@@ -9457,7 +9476,8 @@ function resolveObstacleProp(obstacle, worldProps) {
   const prop = pool[obstacle.propIndex % pool.length];
   if (!prop) return null;
   const style = PROP_ROLE_STYLE[prop.role] ?? PROP_ROLE_STYLE.smallprop;
-  return { prop, img: canonicalLandmarkImage(prop.src), style };
+  const footprint = footprintTilesForAssetKey(prop.src);
+  return { prop, img: canonicalLandmarkImage(prop.src), style, footprint };
 }
 
 // Build depth-sorted render entries for the on-screen obstacles. These are
@@ -9511,15 +9531,11 @@ function buildObstacleRenderEntries(ctx) {
     if (Math.abs(o.worldX - combat.playerMapX) > renderRadius || Math.abs(o.worldY - combat.playerMapY) > renderRadius) continue;
     const resolved = resolveObstacleProp(o, worldProps);
     if (!resolved || !imageReady(resolved.img)) continue;
-    const { img, style } = resolved;
+    const { img, style, footprint } = resolved;
     const projected = isoToScreen(o.worldX, o.worldY);
-    const targetW = style.targetW;
-    const scale = targetW / img.naturalWidth;
-    const w = Math.round(img.naturalWidth * scale);
-    const drawH = Math.round(img.naturalHeight * scale);
+    const { drawWidth: w, drawHeight: drawH, radius } = resolveDrawMetricsForFootprint(img, footprint, style);
     const baseX = Math.round(projected.x - w / 2);
     const baseY = Math.round(projected.y + style.ground - drawH);
-    const shadowW = Math.max(14, w * 0.32);
     entries.push({
           depth: projected.y + (o.drawOrderBias ?? 0),
           draw: () => {
@@ -9563,7 +9579,10 @@ function buildObstacleRenderEntries(ctx) {
 
     // Keep the obstacle's collision footprint in sync with the art that is
 
-    o.radius = style.radius;
+    o.footprintTiles = footprint ?? null;
+    o.drawWidth = w;
+    o.drawHeight = drawH;
+    o.radius = radius;
   }
   return entries;
 }
@@ -10060,8 +10079,14 @@ function drawAmbientEnvironmentProps(ctx, width, height, environmentStage) {
   if (!props.length) return;
   for (const [index, prop] of props.entries()) {
     const draw = prop.draw ?? {};
+    const imageIsReady = imageReady(prop.image);
     const drawWidth = draw.width ?? 118;
-    const drawHeight = draw.height ?? 118;
+    const naturalRatio = imageIsReady
+      ? prop.image.naturalWidth / Math.max(1, prop.image.naturalHeight)
+      : null;
+    const drawHeight = naturalRatio
+      ? Math.max(8, Math.round(drawWidth / naturalRatio))
+      : Math.max(8, Math.round(drawWidth * 0.85));
     const scrollSpeed = draw.scrollSpeed ?? 0.42;
     const wrap = width + (draw.spacing ?? 320);
     const rawX = (draw.slotOffset ?? 140) + index * (draw.spacing ?? 280) - combat.scroll * scrollSpeed;
