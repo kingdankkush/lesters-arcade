@@ -1,0 +1,257 @@
+{
+  "version": "wo-17-global-art-census-v1",
+  "generatedBy": "scripts/global-art-census.mjs",
+  "summary": {
+    "totalAssets": 9321,
+    "totalActors": 72,
+    "layerCount": 8,
+    "runtimeActorCount": 37,
+    "runtimeCompleteActorCount": 0,
+    "runtimePartialActorCount": 29,
+    "runtimeZeroAnimationActorCount": 8,
+    "complianceScore": 43
+  },
+  "layers": {
+    "runtimeAnimatedRoster": {
+      "id": "runtimeAnimatedRoster",
+      "label": "Runtime animated roster",
+      "manifestId": "hmh-animated-roster",
+      "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
+      "actorCount": 37,
+      "assetCount": 7857,
+      "animationStateCount": 140,
+      "completeActorCount": 0,
+      "partialActorCount": 29,
+      "zeroAnimationActorCount": 8,
+      "levelOneShipEnemyCount": 23,
+      "sampleKeys": [
+        "lester",
+        "whale-dumper-boss",
+        "gas-fee-wisp",
+        "fud-goblin",
+        "chain-reaper-boss",
+        "bit-whale-boss",
+        "warren-spear-rider",
+        "rugpull-summoner"
+      ],
+      "notes": [
+        "Counts frame references, not unique PNG files; it is the live runtime coverage layer.",
+        "Partial and zero-animation actors intentionally remain visible for WO-18/WO-19 decisions."
+      ]
+    },
+    "finalAnimationCompletion": {
+      "id": "finalAnimationCompletion",
+      "label": "Final animation completion pack",
+      "manifestId": "hmh-final-animation-completion-v1",
+      "sourcePolicy": "Original repo-owned HMH final animation completion pixel art; no downloaded pixels copied.",
+      "assetCount": 92,
+      "actorCount": 20,
+      "animatedAssetCount": 92,
+      "policyCompliantAssetCount": 92,
+      "sampleKeys": [
+        "hero/lit-commando/crouch",
+        "hero/lit-commando/fall",
+        "hero/lit-commando/victory",
+        "hero/lit-valkyrie/crouch",
+        "hero/lit-valkyrie/fall",
+        "hero/lit-valkyrie/victory",
+        "hero/lester/crouch",
+        "hero/lester/fall"
+      ],
+      "notes": []
+    },
+    "finalBossAnimations": {
+      "id": "finalBossAnimations",
+      "label": "Final boss and mini-boss animations",
+      "manifestId": "hmh-final-boss-animations-v1",
+      "sourcePolicy": "Original repo-owned boss and mini-boss pixel-art spritesheets; no downloaded pixels copied.",
+      "assetCount": 90,
+      "actorCount": 15,
+      "animatedAssetCount": 90,
+      "policyCompliantAssetCount": 90,
+      "sampleKeys": [
+        "rug-pull-baron/intro",
+        "rug-pull-baron/idle",
+        "rug-pull-baron/attack-tell",
+        "rug-pull-baron/attack",
+        "rug-pull-baron/hit",
+        "rug-pull-baron/death",
+        "claim-jumper-sheriff/intro",
+        "claim-jumper-sheriff/idle"
+      ],
+      "notes": []
+    },
+    "combatVfx": {
+      "id": "combatVfx",
+      "label": "Final combat VFX",
+      "manifestId": "hmh-final-combat-vfx-v1",
+      "sourcePolicy": "Original repo-owned combat VFX pixel spritesheets; no downloaded pixels copied.",
+      "assetCount": 10,
+      "actorCount": 0,
+      "animatedAssetCount": 10,
+      "policyCompliantAssetCount": 10,
+      "sampleKeys": [
+        "muzzle-flash-pistol",
+        "muzzle-flash-rail",
+        "hit-spark-metal",
+        "hit-spark-flesh",
+        "shell-casing-brass",
+        "coin-pickup-pop",
+        "grenade-explosion-ring",
+        "death-dust-burst"
+      ],
+      "notes": []
+    },
+    "finalSetpieces": {
+      "id": "finalSetpieces",
+      "label": "Final Level 1 setpieces",
+      "manifestId": "hmh-final-setpiece-kit-v1",
+      "sourcePolicy": "Original repo-owned final POI setpiece art for HMH Level 1; no downloaded pixels copied.",
+      "assetCount": 25,
+      "actorCount": 0,
+      "animatedAssetCount": 0,
+      "policyCompliantAssetCount": 25,
+      "sampleKeys": [
+        "level-final-setpiece/cave-mouth-rocks",
+        "level-final-setpiece/torch-pockets",
+        "level-final-setpiece/pine-wall-shadow",
+        "level-final-setpiece/reed-bank-ring",
+        "level-final-setpiece/driftwood-sandbar",
+        "level-final-setpiece/shoreline-ripple-line",
+        "level-final-setpiece/wagon-circle",
+        "level-final-setpiece/signpost-fork"
+      ],
+      "notes": []
+    },
+    "curatedLevelKit": {
+      "id": "curatedLevelKit",
+      "label": "Curated Level 1 kit",
+      "manifestId": "hmh-curated-level-kit-v1",
+      "sourcePolicy": "Justin-curated approved assets only; old editor/runtime sprite library is intentionally ignored.",
+      "assetCount": 1216,
+      "actorCount": 0,
+      "animatedAssetCount": 0,
+      "policyCompliantAssetCount": 1216,
+      "sampleKeys": [
+        "level-1/building/exterior",
+        "level-1/building/ghost-boarded-storefront",
+        "level-1/building/ghost-saloon-front",
+        "level-1/building/house-details",
+        "level-1/building/hunter-0",
+        "level-1/building/hunter-02",
+        "level-1/building/industrial-warehouse-facade",
+        "level-1/building/innercity-billboard-frame"
+      ],
+      "notes": [
+        "Justin-curated approved assets only; legacy editor sprite library is intentionally excluded."
+      ]
+    },
+    "finalPaintGround": {
+      "id": "finalPaintGround",
+      "label": "Final Level 1 ground paint",
+      "manifestId": "hmh-level-one-final-paint-ground-v1",
+      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied. SBS CC0 pack remains only geometry/fallback reference.",
+      "assetCount": 21,
+      "actorCount": 0,
+      "animatedAssetCount": 6,
+      "policyCompliantAssetCount": 21,
+      "sampleKeys": [
+        "final-paint/grass-handpaint-01",
+        "final-paint/grass-handpaint-02",
+        "final-paint/dirt-handpaint-01",
+        "final-paint/dirt-handpaint-02",
+        "final-paint/sand-handpaint-01",
+        "final-paint/sand-handpaint-02",
+        "final-paint/rocky-handpaint-01",
+        "final-paint/rocky-handpaint-02"
+      ],
+      "notes": []
+    },
+    "ambientWorld": {
+      "id": "ambientWorld",
+      "label": "Final ambient world assets",
+      "manifestId": "hmh-level-one-final-ambient-world-v1",
+      "sourcePolicy": "Original repo-owned animated ambient world detail loops; no downloaded pixels copied.",
+      "assetCount": 10,
+      "actorCount": 0,
+      "animatedAssetCount": 10,
+      "policyCompliantAssetCount": 10,
+      "sampleKeys": [
+        "level-final-ambient/desert-dust-devil",
+        "level-final-ambient/leaf-swirl",
+        "level-final-ambient/water-sparkle-line",
+        "level-final-ambient/neon-window-flicker",
+        "level-final-ambient/road-heat-haze",
+        "level-final-ambient/coin-dust-motes",
+        "level-final-ambient/billboard-static",
+        "level-final-ambient/firefly-pocket"
+      ],
+      "notes": []
+    }
+  },
+  "scorecard": {
+    "overallScore": 43,
+    "categories": {
+      "animationCoverage": {
+        "score": 24,
+        "summary": "0/37 actors complete; 8 zero-animation actors",
+        "gaps": [
+          "bit-whale-boss: zero-animation",
+          "chain-reaper-boss: zero-animation",
+          "crypto-bro-rusher: zero-animation",
+          "evil-banker-ranged: zero-animation",
+          "gas-beast-tank: zero-animation",
+          "liquidation-cascade-golem: zero-animation",
+          "rugpull-summoner: zero-animation",
+          "warren-spear-rider: zero-animation",
+          "bitcoin-maximalist-riot-cop: partial coverage",
+          "bridge-exploiter: partial coverage",
+          "buzzard: partial coverage",
+          "claim-jumper: partial coverage",
+          "coyote-pack-runner: partial coverage",
+          "fud-goblin: partial coverage",
+          "gas-fee-wisp: partial coverage",
+          "honeypot-turret: partial coverage",
+          "influencer-camera-drone: partial coverage",
+          "lester: partial coverage",
+          "lilly: partial coverage",
+          "lit-commando: partial coverage",
+          "lit-valkyrie: partial coverage",
+          "mev-reaper: partial coverage",
+          "nft-valet: partial coverage",
+          "paper-hand: partial coverage"
+        ]
+      },
+      "sourcePolicy": {
+        "score": 16,
+        "summary": "1464/9321 counted assets carry repo-owned/original/curated policy text",
+        "gaps": []
+      },
+      "gameplayReadability": {
+        "score": 100,
+        "summary": "5/5 gameplay-readability art layers populated",
+        "gaps": []
+      },
+      "purgeReadiness": {
+        "score": 35,
+        "summary": "8 zero-animation actor(s) need keep/defer/purge ruling",
+        "gaps": [
+          "bit-whale-boss",
+          "chain-reaper-boss",
+          "crypto-bro-rusher",
+          "evil-banker-ranged",
+          "gas-beast-tank",
+          "liquidation-cascade-golem",
+          "rugpull-summoner",
+          "warren-spear-rider"
+        ]
+      }
+    }
+  },
+  "recommendations": [
+    "WO-18: use this census as the approved keep/defer/purge ledger; purge or repair zero-animation runtime actors before declaring art complete.",
+    "WO-19: certify hero smoothness against the runtime roster plus final animation completion pack; do not rely on still fallback coverage alone.",
+    "WO-20: route pickups, achievements, VFX, and UI chrome through the same source-policy scorecard before replacing runtime art.",
+    "Regenerate with `npm run design:art-census` after every generated-art or manifest change."
+  ]
+}
