@@ -1,0 +1,819 @@
+{
+  "version": "wo-20-pickups-achievements-vfx-ui-redo-v1",
+  "generatedBy": "scripts/art-redo-queue.mjs",
+  "sourceCensus": {
+    "version": "wo-17-global-art-census-v1",
+    "complianceScore": 43,
+    "path": "docs/art/GLOBAL_ART_CENSUS.json"
+  },
+  "summary": {
+    "categoryCount": 4,
+    "totalItemCount": 55,
+    "p0Count": 19,
+    "p1Count": 36,
+    "needsManifestCount": 43
+  },
+  "categories": [
+    {
+      "id": "pickups",
+      "title": "Pickups",
+      "summary": {
+        "itemCount": 15,
+        "p0Count": 5,
+        "p1Count": 10,
+        "missingCount": 15
+      },
+      "coverage": {
+        "runtimePowerUpCount": 15
+      },
+      "items": [
+        {
+          "runtimeId": "health-pack",
+          "title": "Cold Storage",
+          "category": "health",
+          "rarity": "common",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "glowing blue hardware-wallet medkit with white Ł heartbeat glow",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "grenade-crate",
+          "title": "Crypto Bomb Cache",
+          "category": "ammo",
+          "rarity": "common",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "matte-black bomb cache stamped with small blue Ł",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "bonus-life",
+          "title": "Extra Hard Money Hero",
+          "category": "life",
+          "rarity": "rare",
+          "priority": "P0",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "tiny Lester head icon with silver-blue halo",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "block-breaker-shells",
+          "title": "Block Breaker Shells",
+          "category": "weapon",
+          "rarity": "uncommon",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "orange shotgun shell chip that unlocks a short-range pellet cone",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "hashstorm-drum",
+          "title": "Hashstorm Drum",
+          "category": "weapon",
+          "rarity": "uncommon",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "cyan machine-gun drum magazine with rapid-fire tracer sparks",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "spread-ltc-chip",
+          "title": "Spread LTC Chip",
+          "category": "weapon",
+          "rarity": "uncommon",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "cyan fan chip",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "hash-rail-core",
+          "title": "Hash Rail Core",
+          "category": "weapon",
+          "rarity": "rare",
+          "priority": "P0",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "glowing white/cyan core",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "score-multiplier",
+          "title": "2x Hard Money Multiplier",
+          "category": "score",
+          "rarity": "uncommon",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "gold x2 token with subtle blue rim",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "shield-cache",
+          "title": "Cold Wallet Shield",
+          "category": "defense",
+          "rarity": "uncommon",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "hovering blue-and-silver hex barrier device",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "ammo-cache",
+          "title": "Ammo Cache",
+          "category": "ammo",
+          "rarity": "common",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "silver magazine crate with orange hazard stripe",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "ltc-cache",
+          "title": "LTC Cache",
+          "category": "score",
+          "rarity": "common",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "sparkling silver coin pile used as pickup accent, not wallpaper",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "magnet-surge",
+          "title": "Magnet Wallet Surge",
+          "category": "utility",
+          "rarity": "uncommon",
+          "priority": "P1",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "glowing horseshoe magnet with blue pull rings",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "time-dilation",
+          "title": "Block-Time Dilation",
+          "category": "utility",
+          "rarity": "rare",
+          "priority": "P0",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "blue hourglass with slow-motion swirl",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "berserk-candle",
+          "title": "Green-Candle Berserk",
+          "category": "offense",
+          "rarity": "rare",
+          "priority": "P0",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "red-and-green flaming candlestick",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        },
+        {
+          "runtimeId": "nuke-liquidation",
+          "title": "Liquidation Nuke",
+          "category": "offense",
+          "rarity": "super-rare",
+          "priority": "P0",
+          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "red glowing screen-clear nuke",
+          "acceptance": [
+            "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
+            "Color/shape communicates category and rarity without relying only on text.",
+            "Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "achievements",
+      "title": "Achievements",
+      "summary": {
+        "itemCount": 21,
+        "p0Count": 7,
+        "p1Count": 14,
+        "missingCount": 21
+      },
+      "coverage": {
+        "runtimeAchievementCount": 57,
+        "tiers": [
+          "bronze",
+          "diamond",
+          "gold",
+          "mythic",
+          "platinum",
+          "silver"
+        ]
+      },
+      "items": [
+        {
+          "runtimeId": "achievement-tier-bronze",
+          "title": "BRONZE badge atlas",
+          "priority": "P1",
+          "status": "needs-badge-atlas-certification",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "10 runtime achievements use bronze tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
+          "acceptance": [
+            "Locked and unlocked badge states exist for every achievement in this tier.",
+            "Badge shape/color remains readable in profile grid, toast, and game-over summary.",
+            "Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback."
+          ]
+        },
+        {
+          "runtimeId": "achievement-tier-diamond",
+          "title": "DIAMOND badge atlas",
+          "priority": "P0",
+          "status": "needs-badge-atlas-certification",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "6 runtime achievements use diamond tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
+          "acceptance": [
+            "Locked and unlocked badge states exist for every achievement in this tier.",
+            "Badge shape/color remains readable in profile grid, toast, and game-over summary.",
+            "Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback."
+          ]
+        },
+        {
+          "runtimeId": "achievement-tier-gold",
+          "title": "GOLD badge atlas",
+          "priority": "P0",
+          "status": "needs-badge-atlas-certification",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "12 runtime achievements use gold tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
+          "acceptance": [
+            "Locked and unlocked badge states exist for every achievement in this tier.",
+            "Badge shape/color remains readable in profile grid, toast, and game-over summary.",
+            "Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback."
+          ]
+        },
+        {
+          "runtimeId": "achievement-tier-mythic",
+          "title": "MYTHIC badge atlas",
+          "priority": "P0",
+          "status": "needs-badge-atlas-certification",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "6 runtime achievements use mythic tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
+          "acceptance": [
+            "Locked and unlocked badge states exist for every achievement in this tier.",
+            "Badge shape/color remains readable in profile grid, toast, and game-over summary.",
+            "Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback."
+          ]
+        },
+        {
+          "runtimeId": "achievement-tier-platinum",
+          "title": "PLATINUM badge atlas",
+          "priority": "P0",
+          "status": "needs-badge-atlas-certification",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "13 runtime achievements use platinum tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
+          "acceptance": [
+            "Locked and unlocked badge states exist for every achievement in this tier.",
+            "Badge shape/color remains readable in profile grid, toast, and game-over summary.",
+            "Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback."
+          ]
+        },
+        {
+          "runtimeId": "achievement-tier-silver",
+          "title": "SILVER badge atlas",
+          "priority": "P1",
+          "status": "needs-badge-atlas-certification",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "10 runtime achievements use silver tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
+          "acceptance": [
+            "Locked and unlocked badge states exist for every achievement in this tier.",
+            "Badge shape/color remains readable in profile grid, toast, and game-over summary.",
+            "Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-boss",
+          "title": "boss achievement icon language",
+          "priority": "P0",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "7 achievements share unlock type boss; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-collection",
+          "title": "collection achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "5 achievements share unlock type collection; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-combo",
+          "title": "combo achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "4 achievements share unlock type combo; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-enemy-hunt",
+          "title": "enemy-hunt achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "3 achievements share unlock type enemy-hunt; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-grenade",
+          "title": "grenade achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "4 achievements share unlock type grenade; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-kill",
+          "title": "kill achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "4 achievements share unlock type kill; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-level-clear",
+          "title": "level-clear achievement icon language",
+          "priority": "P0",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "4 achievements share unlock type level-clear; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-login",
+          "title": "login achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "1 achievements share unlock type login; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-melee",
+          "title": "melee achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "2 achievements share unlock type melee; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-paid-run",
+          "title": "paid-run achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "1 achievements share unlock type paid-run; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-score",
+          "title": "score achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "5 achievements share unlock type score; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-skill",
+          "title": "skill achievement icon language",
+          "priority": "P0",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "5 achievements share unlock type skill; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-survival",
+          "title": "survival achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "4 achievements share unlock type survival; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-volume",
+          "title": "volume achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "6 achievements share unlock type volume; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-weapon",
+          "title": "weapon achievement icon language",
+          "priority": "P1",
+          "status": "needs-icon-language-pass",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "reason": "2 achievements share unlock type weapon; define a visual motif so badge art is not one-off noise.",
+          "acceptance": [
+            "Icon motif is distinct from pickup and weapon icons.",
+            "Motif works in grayscale/value for colorblind mode."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vfx",
+      "title": "VFX",
+      "summary": {
+        "itemCount": 13,
+        "p0Count": 4,
+        "p1Count": 9,
+        "missingCount": 3
+      },
+      "coverage": {
+        "manifestId": "hmh-final-combat-vfx-v1",
+        "manifestAssetCount": 10
+      },
+      "items": [
+        {
+          "runtimeId": "muzzle-flash-pistol",
+          "title": "muzzle-flash-pistol",
+          "priority": "P1",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "6 frames, 48x48, role muzzle.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "muzzle-flash-rail",
+          "title": "muzzle-flash-rail",
+          "priority": "P1",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "6 frames, 56x48, role muzzle.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "hit-spark-metal",
+          "title": "hit-spark-metal",
+          "priority": "P1",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "6 frames, 64x64, role hit-spark.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "hit-spark-flesh",
+          "title": "hit-spark-flesh",
+          "priority": "P1",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "6 frames, 64x64, role hit-spark.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "shell-casing-brass",
+          "title": "shell-casing-brass",
+          "priority": "P1",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "8 frames, 48x48, role shell-casing.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "coin-pickup-pop",
+          "title": "coin-pickup-pop",
+          "priority": "P0",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "8 frames, 48x48, role pickup-pop.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "grenade-explosion-ring",
+          "title": "grenade-explosion-ring",
+          "priority": "P0",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "8 frames, 96x96, role explosion.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "death-dust-burst",
+          "title": "death-dust-burst",
+          "priority": "P1",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "8 frames, 80x64, role death-burst.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "gore-pixel-splatter",
+          "title": "gore-pixel-splatter",
+          "priority": "P1",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "8 frames, 80x64, role gore-overlay.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "level-up-burst",
+          "title": "level-up-burst",
+          "priority": "P0",
+          "status": "manifest-backed-keep-or-wire",
+          "sourcePolicy": "Original repo-owned pixel-art spritesheet; no downloaded pixels copied.",
+          "reason": "8 frames, 72x72, role level-up.",
+          "acceptance": [
+            "Effect has bounded lifetime and does not obscure bullets, enemies, or pickup silhouettes.",
+            "Effect is manifest-backed or explicitly listed as a coded primitive exception.",
+            "Reduce-motion/reduce-flash settings can dampen intensity without deleting gameplay information."
+          ]
+        },
+        {
+          "runtimeId": "achievement-unlock-burst",
+          "title": "Achievement unlock burst",
+          "status": "missing-spritesheet",
+          "priority": "P0",
+          "reason": "Achievements currently rely on text/emoji badges; unlock moments need a reusable readable sprite burst.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Spritesheet is transparent, repo-owned, and registered in a generated manifest.",
+            "Runtime use is capped and respects reduce-motion/reduce-flash settings."
+          ]
+        },
+        {
+          "runtimeId": "pickup-rarity-beams",
+          "title": "Pickup rarity beams",
+          "status": "missing-spritesheet",
+          "priority": "P1",
+          "reason": "Rare and super-rare pickups should read before the player reaches them without noisy full-screen effects.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Spritesheet is transparent, repo-owned, and registered in a generated manifest.",
+            "Runtime use is capped and respects reduce-motion/reduce-flash settings."
+          ]
+        },
+        {
+          "runtimeId": "ui-confirm-spark",
+          "title": "UI confirm spark",
+          "status": "missing-spritesheet",
+          "priority": "P1",
+          "reason": "Menus and official-run confirmations need a small shared pixel flourish instead of ad-hoc CSS glow only.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Spritesheet is transparent, repo-owned, and registered in a generated manifest.",
+            "Runtime use is capped and respects reduce-motion/reduce-flash settings."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ui-chrome",
+      "title": "UI chrome",
+      "summary": {
+        "itemCount": 6,
+        "p0Count": 3,
+        "p1Count": 3,
+        "missingCount": 4
+      },
+      "coverage": {
+        "brandTokenCount": 0
+      },
+      "items": [
+        {
+          "runtimeId": "combat-hud-frame",
+          "title": "Combat HUD frame and stat chips",
+          "priority": "P0",
+          "status": "redo-css-plus-sprite-border",
+          "reason": "HUD should read as a diegetic arcade overlay without covering Level 1 combat space. Brand token count available for palette alignment: 0.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
+            "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
+            "Does not introduce new unmanifested downloaded art."
+          ]
+        },
+        {
+          "runtimeId": "level-up-card-frame",
+          "title": "Level-up / upgrade card frame",
+          "priority": "P0",
+          "status": "handoff-to-wo-40",
+          "reason": "Upgrade cards are gameplay critical and need consistent rarity/category chrome. Brand token count available for palette alignment: 0.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
+            "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
+            "Does not introduce new unmanifested downloaded art."
+          ]
+        },
+        {
+          "runtimeId": "achievement-toast-frame",
+          "title": "Achievement toast frame",
+          "priority": "P0",
+          "status": "needs-spritesheet",
+          "reason": "Profile/on-chain accomplishments should have a unique badge reveal language. Brand token count available for palette alignment: 0.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
+            "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
+            "Does not introduce new unmanifested downloaded art."
+          ]
+        },
+        {
+          "runtimeId": "minimap-frame",
+          "title": "Finite-map minimap frame",
+          "priority": "P1",
+          "status": "needs-sprite-border",
+          "reason": "WO-21 minimap exists; its frame should match the arcade-LitVM HUD language. Brand token count available for palette alignment: 0.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
+            "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
+            "Does not introduce new unmanifested downloaded art."
+          ]
+        },
+        {
+          "runtimeId": "wallet-ranked-badges",
+          "title": "Wallet/ranked/testnet status badges",
+          "priority": "P1",
+          "status": "needs-icon-atlas",
+          "reason": "Web3 state must be legible without long copy blocks during the run flow. Brand token count available for palette alignment: 0.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
+            "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
+            "Does not introduce new unmanifested downloaded art."
+          ]
+        },
+        {
+          "runtimeId": "mobile-control-chrome",
+          "title": "Mobile control button chrome",
+          "priority": "P1",
+          "status": "needs-touch-scale-pass",
+          "reason": "Touch controls need high-contrast hit affordances that survive phone glare and reduce-motion mode. Brand token count available for palette alignment: 0.",
+          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "acceptance": [
+            "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
+            "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
+            "Does not introduce new unmanifested downloaded art."
+          ]
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    "WO-40 should consume the level-up-card-frame UI chrome item before deeper upgrade-menu polish.",
+    "Generate pickup and achievement icon atlases before replacing runtime CSS/emoji placeholders.",
+    "Keep normal bullets coded primitives; use final VFX sheets for large readable moments only."
+  ]
+}
