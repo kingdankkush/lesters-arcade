@@ -40,3 +40,11 @@ cd apps/portal && python -m http.server 8791    # then open http://127.0.0.1:879
 Serving the repo root and opening `/apps/portal/` will 404 every asset (main.js, styles.css, images),
 because `<base href="/">` resolves them against `/` — the app will appear completely dead with no
 console errors. This is a local-serving artifact only; production (Vercel root) is correct.
+
+## Repo asset hygiene
+
+The repo holds code, tests, contracts, docs, integrated runtime assets (atlases + manifests), QA
+reports, and small SFX/brand art. Raw generation output, reference-art dumps, audio/video masters,
+downloaded ZIPs, and prompt/error logs live in `~/lesters-arcade-vault/` or a gitignored staging
+folder, not in committed `apps/portal/assets/`. Any new asset wave should land as: raw output → vault,
+integrated frames → atlas/runtime manifest, manifest + QA report/contact sheet → repo.

@@ -34,6 +34,14 @@ tmp/
 tmp/
 raw-tool-output/
 contact-sheets/
+contact-sheets/working/
+
+# Asset pipeline raw output — belongs in the vault, never in git
+apps/portal/assets/_staging/
+**/downloads/*.zip
+**/downloads/*.txt
+apps/portal/assets/**/*.zip
+apps/portal/assets/**/*.txt
 
 # PixelLab demo-wave work-in-progress (committed once collected)
 apps/portal/assets/generated/hmh-demo-wave/demo-wave-ledger.json

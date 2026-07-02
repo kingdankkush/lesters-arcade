@@ -157,8 +157,8 @@ export const HARD_MONEY_HEROES_CANON = Object.freeze({
     legalFlag: 'before launch, get explicit written brand sign-off for Litecoin name/logo/Ł usage, Litecoin City, Lester mascot, and pay-to-play monetization',
   }),
   spriteReferences: Object.freeze([
-    Object.freeze({ file: './assets/hard-money-heroes/reference/Lester/Lester-Sprites-01.png', purpose: 'repo-local Lester reference for future production sprite pass' }),
-    Object.freeze({ file: './assets/hard-money-heroes/reference/Lester/Lester-Sprites-02.png', purpose: 'repo-local Lester reference for future production sprite pass' }),
+    Object.freeze({ file: './assets/reference/lester-reference-sprites-01.png', purpose: 'repo-local Lester reference for future production sprite pass' }),
+    Object.freeze({ file: './assets/reference/lester-reference-sprites-02.png', purpose: 'repo-local Lester reference for future production sprite pass' }),
   ]),
 });
 
