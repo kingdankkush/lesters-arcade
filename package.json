@@ -32,6 +32,7 @@
     "serve": "python -m http.server 8791 --bind 127.0.0.1",
     "contracts:compile": "node scripts/compile-contracts.mjs",
     "assets:hmh:canonical": "python scripts/ingest-hmh-canonical-art.py",
+    "assets:hmh:level1:queue": "node scripts/write-hmh-level-one-environment-asset-queue.mjs",
     "assets:hmh:level-env": "python scripts/ingest-hmh-level-environment.py",
     "assets:hmh:alpha-clean": "python scripts/clean-hmh-level-design-alpha.py",
     "assets:hmh:curated-level-kit": "python scripts/build-hmh-curated-level-kit.py"

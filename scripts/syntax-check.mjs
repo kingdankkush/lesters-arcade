@@ -98,6 +98,7 @@ const NODE_CHECK_FILES = [
   "scripts/smoke-portal-flow.mjs",
   "scripts/smoke-portal-interactions.mjs",
   "scripts/smoke-pixellab-calibration-browser.mjs",
+  "scripts/write-hmh-level-one-environment-asset-queue.mjs",
   "scripts/write-hmh-weekly-design-review.mjs",
   "scripts/write-hmh-animation-production-requests.mjs",
   "tests/hmh-curated-level-kit.test.mjs",

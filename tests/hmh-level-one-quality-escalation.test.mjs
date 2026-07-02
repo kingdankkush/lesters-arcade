@@ -8,6 +8,7 @@ import {
   HMH_LEVEL_ONE_QUALITY_STYLE,
   HMH_LEVEL_ONE_REFERENCE_MAP_ANCHORS,
   HMH_LEVEL_ONE_REFERENCE_STYLE_TARGETS,
+  buildLevelOneEnvironmentAssetQueue,
   buildLevelOneEnvironmentAssetPromptBrief,
   levelOneQualityContextForDistrictCell,
 } from '../apps/portal/src/hmh-level-one-quality.mjs';
@@ -92,6 +93,41 @@ test('Level 1 prompt brief turns reference style into asset-specific PixelLab gu
   assert.match(brief.prompt, /transparent background/i);
   assert.match(brief.prompt, /main-street cobblestone lane/i);
   assert.deepEqual(brief.postProcess, ['palette-quantize', 'selective-outline-normalize', 'alpha-clean', 'atlas-pack', 'contact-sheet-qc']);
+});
+
+test('Level 1 environment asset queue emits flat PixelLab map-object jobs for every planned target asset', () => {
+  const queue = buildLevelOneEnvironmentAssetQueue();
+  const plannedCount = HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN.reduce((sum, plan) => sum + plan.targetAssets.length, 0);
+  assert.equal(queue.id, 'hmh-level-one-reference-style-environment-queue-v1');
+  assert.equal(queue.jobs.length, plannedCount);
+  assert.equal(queue.jobs.every((job) => job.tool === 'create_map_object'), true);
+  assert.equal(queue.jobs.every((job) => job.args && !('image_size' in job.args)), true);
+  assert.equal(queue.jobs.every((job) => job.args.view === 'high top-down'), true);
+  assert.equal(queue.jobs.every((job) => job.args.description.includes('original silhouettes only')), true);
+  assert.equal(queue.jobs.every((job) => job.postProcess.includes('contact-sheet-qc')), true);
+
+  const ids = queue.jobs.map((job) => job.jobKey);
+  for (const required of [
+    'ground-textures__packed-dirt',
+    'roads-and-paths__ghost-town-main-street-cobble-dirt-blend',
+    'water-and-shorelines__animated-river-strip',
+    'buildings-and-walls__saloon-false-front',
+    'trees-rocks-and-natural-blockers__mesa-boulders',
+    'combat-readable-props__gas-pump-explosive',
+  ]) {
+    assert.equal(ids.includes(required), true, `${required} missing from queue`);
+  }
+});
+
+test('Level 1 environment asset queue can be narrowed to P0 terrain/path/water work without losing metadata', () => {
+  const p0 = buildLevelOneEnvironmentAssetQueue({ priorities: ['P0'] });
+  assert.equal(p0.jobs.length, 18);
+  assert.deepEqual([...new Set(p0.jobs.map((job) => job.priority))], ['P0']);
+  assert.equal(p0.jobs.some((job) => job.category === 'ground-textures'), true);
+  assert.equal(p0.jobs.some((job) => job.category === 'roads-and-paths'), true);
+  assert.equal(p0.jobs.some((job) => job.category === 'water-and-shorelines'), true);
+  assert.equal(p0.jobs.every((job) => job.outputKey.startsWith('level1-reference-style/')), true);
+  assert.equal(p0.jobs.every((job) => job.referenceTargets.includes('aoe2-de-world-density')), true);
 });
 
 test('Level 1 reference-map anchors preserve the forest/town/river/desert/waterfront quality targets', () => {

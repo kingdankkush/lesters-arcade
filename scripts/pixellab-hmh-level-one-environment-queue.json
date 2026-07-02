@@ -1,0 +1,655 @@
+{
+  "id": "hmh-level-one-reference-style-environment-queue-v1",
+  "styleId": "level1-isometric-metal-slug-quality-v1",
+  "referencePolicy": "reference-only: Justin-provided Age of Empires II, Hades, Deep Rock Survivor, IMG_5849 macro map, and level.mp4 references guide composition, density, readability, palette discipline, and asset-production quality; do not ship or trace the reference files as runtime assets.",
+  "generationTool": "PixelLab create_map_object",
+  "priorities": [
+    "P0"
+  ],
+  "generationCostEstimate": 18,
+  "outputRoot": "apps/portal/assets/generated/hmh-coherent-world/level1-reference-style",
+  "jobs": [
+    {
+      "jobKey": "ground-textures__packed-dirt",
+      "category": "ground-textures",
+      "priority": "P0",
+      "targetAsset": "packed dirt",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "hades-combat-readability",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/ground-textures/packed-dirt",
+      "renderRole": "ground-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: desert_approach, asset role: packed dirt, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "128x64 iso diamond or atlas-backed ground role",
+        "clear path-edge variants",
+        "low-noise center lanes",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "ground-textures__dusty-sand",
+      "category": "ground-textures",
+      "priority": "P0",
+      "targetAsset": "dusty sand",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "hades-combat-readability",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/ground-textures/dusty-sand",
+      "renderRole": "ground-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: desert_approach, asset role: dusty sand, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "128x64 iso diamond or atlas-backed ground role",
+        "clear path-edge variants",
+        "low-noise center lanes",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "ground-textures__worn-grass",
+      "category": "ground-textures",
+      "priority": "P0",
+      "targetAsset": "worn grass",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "hades-combat-readability",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/ground-textures/worn-grass",
+      "renderRole": "ground-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: desert_approach, asset role: worn grass, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "128x64 iso diamond or atlas-backed ground role",
+        "clear path-edge variants",
+        "low-noise center lanes",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "ground-textures__mossy-cobble",
+      "category": "ground-textures",
+      "priority": "P0",
+      "targetAsset": "mossy cobble",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "hades-combat-readability",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/ground-textures/mossy-cobble",
+      "renderRole": "ground-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: desert_approach, asset role: mossy cobble, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "128x64 iso diamond or atlas-backed ground role",
+        "clear path-edge variants",
+        "low-noise center lanes",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "ground-textures__cracked-asphalt",
+      "category": "ground-textures",
+      "priority": "P0",
+      "targetAsset": "cracked asphalt",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "hades-combat-readability",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/ground-textures/cracked-asphalt",
+      "renderRole": "ground-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: desert_approach, asset role: cracked asphalt, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "128x64 iso diamond or atlas-backed ground role",
+        "clear path-edge variants",
+        "low-noise center lanes",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "ground-textures__boss-yard-scorched-ground",
+      "category": "ground-textures",
+      "priority": "P0",
+      "targetAsset": "boss-yard scorched ground",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "hades-combat-readability",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/ground-textures/boss-yard-scorched-ground",
+      "renderRole": "ground-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: desert_approach, asset role: boss-yard scorched ground, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "128x64 iso diamond or atlas-backed ground role",
+        "clear path-edge variants",
+        "low-noise center lanes",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "roads-and-paths__broken-highway-lane",
+      "category": "roads-and-paths",
+      "priority": "P0",
+      "targetAsset": "broken highway lane",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town",
+        "hades-combat-readability"
+      ],
+      "outputKey": "level1-reference-style/roads-and-paths/broken-highway-lane",
+      "renderRole": "path-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: ghost_town, asset role: broken highway lane, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "route direction readable in one screen",
+        "edge damage variants",
+        "combat center stays visually quiet",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "roads-and-paths__gas-station-forecourt-concrete",
+      "category": "roads-and-paths",
+      "priority": "P0",
+      "targetAsset": "gas-station forecourt concrete",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town",
+        "hades-combat-readability"
+      ],
+      "outputKey": "level1-reference-style/roads-and-paths/gas-station-forecourt-concrete",
+      "renderRole": "path-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: ghost_town, asset role: gas-station forecourt concrete, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "route direction readable in one screen",
+        "edge damage variants",
+        "combat center stays visually quiet",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "roads-and-paths__ghost-town-main-street-cobble-dirt-blend",
+      "category": "roads-and-paths",
+      "priority": "P0",
+      "targetAsset": "ghost-town main street cobble/dirt blend",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town",
+        "hades-combat-readability"
+      ],
+      "outputKey": "level1-reference-style/roads-and-paths/ghost-town-main-street-cobble-dirt-blend",
+      "renderRole": "path-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: ghost_town, asset role: ghost-town main street cobble/dirt blend, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "route direction readable in one screen",
+        "edge damage variants",
+        "combat center stays visually quiet",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "roads-and-paths__farm-road-spur",
+      "category": "roads-and-paths",
+      "priority": "P0",
+      "targetAsset": "farm road spur",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town",
+        "hades-combat-readability"
+      ],
+      "outputKey": "level1-reference-style/roads-and-paths/farm-road-spur",
+      "renderRole": "path-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: ghost_town, asset role: farm road spur, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "route direction readable in one screen",
+        "edge damage variants",
+        "combat center stays visually quiet",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "roads-and-paths__bridge-planks",
+      "category": "roads-and-paths",
+      "priority": "P0",
+      "targetAsset": "bridge planks",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town",
+        "hades-combat-readability"
+      ],
+      "outputKey": "level1-reference-style/roads-and-paths/bridge-planks",
+      "renderRole": "path-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: ghost_town, asset role: bridge planks, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "route direction readable in one screen",
+        "edge damage variants",
+        "combat center stays visually quiet",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "roads-and-paths__extraction-flare-road",
+      "category": "roads-and-paths",
+      "priority": "P0",
+      "targetAsset": "extraction flare road",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town",
+        "hades-combat-readability"
+      ],
+      "outputKey": "level1-reference-style/roads-and-paths/extraction-flare-road",
+      "renderRole": "path-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: ghost_town, asset role: extraction flare road, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture; hand-painted diorama contrast where the player, danger zones, pickups, and traversal lanes remain readable over ornate floor and wall detail, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "route direction readable in one screen",
+        "edge damage variants",
+        "combat center stays visually quiet",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "water-and-shorelines__animated-river-strip",
+      "category": "water-and-shorelines",
+      "priority": "P0",
+      "targetAsset": "animated river strip",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/water-and-shorelines/animated-river-strip",
+      "renderRole": "water-edge-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: country_road, asset role: animated river strip, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "animated water has 4-8 loop frames",
+        "shore collision is visually obvious",
+        "water is non-solid unless metadata says bridge",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "water-and-shorelines__shore-reeds",
+      "category": "water-and-shorelines",
+      "priority": "P0",
+      "targetAsset": "shore reeds",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/water-and-shorelines/shore-reeds",
+      "renderRole": "water-edge-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: country_road, asset role: shore reeds, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "animated water has 4-8 loop frames",
+        "shore collision is visually obvious",
+        "water is non-solid unless metadata says bridge",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "water-and-shorelines__wash-crossing-water",
+      "category": "water-and-shorelines",
+      "priority": "P0",
+      "targetAsset": "wash crossing water",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/water-and-shorelines/wash-crossing-water",
+      "renderRole": "water-edge-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: country_road, asset role: wash crossing water, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "animated water has 4-8 loop frames",
+        "shore collision is visually obvious",
+        "water is non-solid unless metadata says bridge",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "water-and-shorelines__lake-beach-edge",
+      "category": "water-and-shorelines",
+      "priority": "P0",
+      "targetAsset": "lake/beach edge",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/water-and-shorelines/lake-beach-edge",
+      "renderRole": "water-edge-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: country_road, asset role: lake/beach edge, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "animated water has 4-8 loop frames",
+        "shore collision is visually obvious",
+        "water is non-solid unless metadata says bridge",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "water-and-shorelines__rocky-bank",
+      "category": "water-and-shorelines",
+      "priority": "P0",
+      "targetAsset": "rocky bank",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/water-and-shorelines/rocky-bank",
+      "renderRole": "water-edge-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: country_road, asset role: rocky bank, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "animated water has 4-8 loop frames",
+        "shore collision is visually obvious",
+        "water is non-solid unless metadata says bridge",
+        "no baked reference emblems/text"
+      ]
+    },
+    {
+      "jobKey": "water-and-shorelines__dock-bridge-support",
+      "category": "water-and-shorelines",
+      "priority": "P0",
+      "targetAsset": "dock/bridge support",
+      "referenceTargets": [
+        "aoe2-de-world-density",
+        "level-video-handpainted-town"
+      ],
+      "outputKey": "level1-reference-style/water-and-shorelines/dock-bridge-support",
+      "renderRole": "water-edge-tile",
+      "tool": "create_map_object",
+      "args": {
+        "description": "Hard Money Heroes / Lester's Arcade pixel art environment asset, Age of Empires II-inspired authored world density, Hades-inspired combat readability, Deep Rock Survivor-inspired swarm readability, level1-isometric-metal-slug-quality-v1, district family: country_road, asset role: dock/bridge support, reference translation: dense authored isometric worldbuilding with legible roads, bridge chokepoints, stone walls, farms, water edges, and repeated-but-varied town modules; hand-painted town density with soft grass-to-stone transitions, lived-in roofs, bridges, ruins, lamp posts, docks, and vertically stacked readable architecture, 2:1 isometric game asset, top-left key light, selective dark navy outline, Litecoin cyan/gold hard-money accents vs toxic green/magenta fiat-corruption accents, transparent background, original silhouettes only, no copied reference buildings, no logos, no text, readable at gameplay zoom",
+        "width": 128,
+        "height": 64,
+        "view": "high top-down",
+        "outline": "selective outline",
+        "shading": "detailed shading"
+      },
+      "postProcess": [
+        "palette-quantize",
+        "selective-outline-normalize",
+        "alpha-clean",
+        "atlas-pack",
+        "contact-sheet-qc"
+      ],
+      "acceptance": [
+        "original silhouettes only",
+        "animated water has 4-8 loop frames",
+        "shore collision is visually obvious",
+        "water is non-solid unless metadata says bridge",
+        "no baked reference emblems/text"
+      ]
+    }
+  ]
+}

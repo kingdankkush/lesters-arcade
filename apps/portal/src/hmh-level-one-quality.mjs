@@ -147,6 +147,71 @@ export function buildLevelOneEnvironmentAssetPromptBrief({ category = 'ground-te
   });
 }
 
+const LEVEL_ONE_ENVIRONMENT_ASSET_CATEGORY_HINTS = Object.freeze({
+  'ground-textures': Object.freeze({ districtFamily: 'desert_approach', width: 128, height: 64, renderRole: 'ground-tile' }),
+  'roads-and-paths': Object.freeze({ districtFamily: 'ghost_town', width: 128, height: 64, renderRole: 'path-tile' }),
+  'water-and-shorelines': Object.freeze({ districtFamily: 'country_road', width: 128, height: 64, renderRole: 'water-edge-tile' }),
+  'buildings-and-walls': Object.freeze({ districtFamily: 'ghost_town', width: 192, height: 192, renderRole: 'structure-prop' }),
+  'trees-rocks-and-natural-blockers': Object.freeze({ districtFamily: 'desert_approach', width: 160, height: 160, renderRole: 'natural-blocker' }),
+  'combat-readable-props': Object.freeze({ districtFamily: 'ghost_town', width: 128, height: 128, renderRole: 'interactive-prop' }),
+});
+
+function slugifyAssetRole(value) {
+  return String(value ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function queueJobForEnvironmentAsset(plan, assetRole) {
+  const hint = LEVEL_ONE_ENVIRONMENT_ASSET_CATEGORY_HINTS[plan.category] ?? LEVEL_ONE_ENVIRONMENT_ASSET_CATEGORY_HINTS['ground-textures'];
+  const roleSlug = slugifyAssetRole(assetRole);
+  const brief = buildLevelOneEnvironmentAssetPromptBrief({
+    category: plan.category,
+    districtFamily: hint.districtFamily,
+    assetRole,
+  });
+
+  return Object.freeze({
+    jobKey: `${plan.category}__${roleSlug}`,
+    category: plan.category,
+    priority: plan.priority,
+    targetAsset: assetRole,
+    referenceTargets: plan.referenceTargets,
+    outputKey: `level1-reference-style/${plan.category}/${roleSlug}`,
+    renderRole: hint.renderRole,
+    tool: 'create_map_object',
+    args: Object.freeze({
+      description: brief.prompt,
+      width: hint.width,
+      height: hint.height,
+      view: 'high top-down',
+      outline: 'selective outline',
+      shading: 'detailed shading',
+    }),
+    postProcess: brief.postProcess,
+    acceptance: brief.acceptance,
+  });
+}
+
+export function buildLevelOneEnvironmentAssetQueue({ priorities = ['P0', 'P1'] } = {}) {
+  const allowedPriorities = new Set(priorities);
+  const jobs = HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN
+    .filter((plan) => allowedPriorities.has(plan.priority))
+    .flatMap((plan) => plan.targetAssets.map((assetRole) => queueJobForEnvironmentAsset(plan, assetRole)));
+
+  return Object.freeze({
+    id: 'hmh-level-one-reference-style-environment-queue-v1',
+    styleId: HMH_LEVEL_ONE_QUALITY_STYLE.id,
+    referencePolicy: HMH_LEVEL_ONE_QUALITY_STYLE.referencePolicy,
+    generationTool: 'PixelLab create_map_object',
+    priorities: Object.freeze([...allowedPriorities]),
+    generationCostEstimate: jobs.length,
+    outputRoot: 'apps/portal/assets/generated/hmh-coherent-world/level1-reference-style',
+    jobs: Object.freeze(jobs),
+  });
+}
+
 export const HMH_LEVEL_ONE_REFERENCE_MAP_ANCHORS = Object.freeze([
   Object.freeze({
     id: 'forest-mini-boss-park',
