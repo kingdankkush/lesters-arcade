@@ -149,6 +149,7 @@ import {
   levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
+  buildLevelOneBoundaryObstaclesNear,
   buildLevelOneMinimapModel,
   buildLevelOneRunWorldDimensions,
   clampLevelOneWorldPoint,
@@ -9475,7 +9476,16 @@ function currentObstacles() {
   const authoredObjects = (useCuratedLevelOneRuntime ? [] : authoredObstaclesNear(combat.playerMapX, combat.playerMapY, sceneWindow))
     .map((obstacle) => refreshLevelOneInteractiveObstacleState(obstacle))
     .filter((obstacle) => !obstacle.hidden);
-  _obstacleCache = [...curatedObstacles, ...sceneObstacles, ...encounterSceneObjects, ...authoredObjects];
+  const boundaryObstacles = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
+    ? buildLevelOneBoundaryObstaclesNear({
+        world: buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight }),
+        playerX: combat.playerMapX,
+        playerY: combat.playerMapY,
+        window: sceneWindow + 8,
+      })
+        .map((edge) => ({ ...edge, naturalEdgeType: edge.naturalEdgeType }))
+    : [];
+  _obstacleCache = [...curatedObstacles, ...sceneObstacles, ...encounterSceneObjects, ...authoredObjects, ...boundaryObstacles];
 
   _obstacleCacheFrame = combat.frame;
   return _obstacleCache;

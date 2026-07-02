@@ -2282,6 +2282,50 @@ export function buildLevelOneMinimapModel({
   });
 }
 
+export function buildLevelOneBoundaryObstaclesNear({
+  world = buildLevelOneRunWorldDimensions(),
+  playerX = 0,
+  playerY = 0,
+  window = 45,
+  segmentSpacingTiles = 24,
+} = {}) {
+  const safeWorld = world ?? buildLevelOneRunWorldDimensions();
+  const spacing = Math.max(6, Math.round(Number(segmentSpacingTiles) || 24));
+  const reach = Math.max(0, Number(window) || 0) + spacing;
+  const px = Number(playerX) || 0;
+  const py = Number(playerY) || 0;
+  const segments = [];
+  const add = (side, x, y, index) => {
+    if (Math.abs(x - px) > reach || Math.abs(y - py) > reach) return;
+    const naturalEdgeType = side === 'north' ? 'ridge'
+      : side === 'south' ? 'ravine'
+        : side === 'west' ? 'riverbank'
+          : 'fence';
+    segments.push(Object.freeze({
+      id: `level-one-boundary-${side}-${index}`,
+      worldX: Number(x.toFixed(3)),
+      worldY: Number(y.toFixed(3)),
+      radius: side === 'north' || side === 'south' ? 1.65 : 1.35,
+      solid: true,
+      kind: 'boundary-edge',
+      sceneRole: 'edge',
+      boundarySide: side,
+      naturalEdgeType,
+      drawOrderBias: side === 'north' ? -2 : 2,
+    }));
+  };
+  let index = 0;
+  for (let x = safeWorld.minX; x <= safeWorld.maxX; x += spacing) {
+    add('north', x, safeWorld.minY, index++);
+    add('south', x, safeWorld.maxY, index++);
+  }
+  for (let y = safeWorld.minY; y <= safeWorld.maxY; y += spacing) {
+    add('west', safeWorld.minX, y, index++);
+    add('east', safeWorld.maxX, y, index++);
+  }
+  return Object.freeze(segments);
+}
+
 function smoothPressureAt(seconds = 0, tauSeconds = 540) {
   const safeSeconds = Math.max(0, Number(seconds) || 0);
   const safeTau = Math.max(1, Number(tauSeconds) || 1);

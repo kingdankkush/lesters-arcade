@@ -159,6 +159,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-grenade-economy.test.mjs",
   "tests/hmh-enemy-balance-cards.test.mjs",
   "tests/hmh-level-one-map-bounds.test.mjs",
+  "tests/hmh-level-one-boundary-edges.test.mjs",
   "apps/portal/src/boss-phase-controller.mjs",
   "tests/boss-phase-controller.test.mjs",
   "apps/portal/src/hmh-level-one-boss.mjs",
