@@ -68,6 +68,16 @@ test('borderInfo is present exactly on cardinal zone boundaries', () => {
   assert.ok(interiorTiles > boundaryTiles, 'the plan should still have broad zone interiors');
 });
 
+test('WO-4 plan references only approved final-paint keep-list textures', () => {
+  const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
+  const textureKeys = new Set(plan.zones.map((zone) => zone.textureKey));
+  assert.ok(textureKeys.size > 0, 'expected plan textures to be present');
+  for (const textureKey of textureKeys) {
+    assert.match(textureKey, /^final-paint\//, `${textureKey} should be a final-paint keep-list texture`);
+    assert.ok(plan.textureForKey(textureKey), `${textureKey} should resolve through the plan texture lookup`);
+  }
+});
+
 test('ground plan source and tests are covered by the explicit syntax gate', () => {
   const syntax = readFileSync(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
   assert.match(syntax, /apps\/portal\/src\/hmh-ground-plan\.mjs/);

@@ -98,6 +98,7 @@ const NODE_CHECK_FILES = [
   "scripts/compile-contracts.mjs",
   "scripts/verify-generated-assets.mjs",
   "scripts/sprite-qa.mjs",
+  "scripts/ground-texture-audit.mjs",
   "scripts/report-hmh-animation-coverage.mjs",
   "scripts/roster-coverage-report.mjs",
   "scripts/write-hmh-balance-snapshot.mjs",

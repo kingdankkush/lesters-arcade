@@ -121,7 +121,9 @@ function buildPixellabZones() {
       source: 'pixellab-surface-zones',
       zoneId: zone.id,
       role,
-      textureKey: asset?.key ?? preferredTextureKeyForRole(role),
+      // WO-4 approval: PixelLab candidate swatches are killed/de-referenced from
+      // the runtime ground plan until square seamless replacements are generated.
+      textureKey: preferredTextureKeyForRole(role),
       priority: 500 + (zone.priority ?? 0),
       xMin: zone.xMin,
       xMax: zone.xMax,
