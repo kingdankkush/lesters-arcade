@@ -53,6 +53,7 @@ import {
   isCampaignExtractionReached,
 } from './src/hmh-campaign-runtime.mjs';
 import { BESPOKE_ENEMY_VISUAL_KITS, bespokeEnemyVisualKitFor, buildEncounterEnemyBehaviorProfile, buildEncounterSceneObjects, buildEncounterTemplateContext, buildEncounterTerrainPressure, enemyProxyRenderProfile } from './src/hmh-encounter-visuals.mjs';
+import { repairRuntimeActorKey } from './src/hmh-art-repair.mjs';
 import {
   levelOneInteractiveDebrisStateForObstacle,
   levelOneAaaRouteWorldStateAt,
@@ -10628,40 +10629,47 @@ function rosterFrame(src) {
 }
 
 // Map a game enemy/boss to a roster character key by id/title keywords.
+function safeRuntimeRosterKey(candidateKey) {
+  const roster = hmh('HMH_ANIMATED_ROSTER') ?? {};
+  const repaired = repairRuntimeActorKey(candidateKey, roster);
+  return repaired.key || candidateKey;
+}
+
 function rosterKeyForEntity(entity, role) {
   const hay = `${entity.id ?? ''} ${entity.title ?? ''} ${entity.enemyKey ?? ''} ${entity.class ?? ''}`.toLowerCase();
+  let candidateKey = 'fud-goblin';
   if (role === 'boss') {
-    if (hay.includes('whale') || hay.includes('bank') || hay.includes('tycoon')) return 'whale-dumper-boss';
-    if (hay.includes('chain') || hay.includes('reaper')) return 'chain-reaper-boss';
-    return 'whale-dumper-boss';
+    if (hay.includes('whale') || hay.includes('bank') || hay.includes('tycoon')) candidateKey = 'whale-dumper-boss';
+    else if (hay.includes('chain') || hay.includes('reaper')) candidateKey = 'chain-reaper-boss';
+    else candidateKey = 'whale-dumper-boss';
+    return safeRuntimeRosterKey(candidateKey);
   }
-  // Check the bespoke kit registry first for an explicit roster key mapping
+  // Check the bespoke kit registry first for an explicit roster key mapping.
   const kit = bespokeEnemyVisualKitFor(entity);
-  if (kit?.rosterKey) return kit.rosterKey;
-  // Direct enemy ID matching (preferred — each enemy gets its own art)
-  if (hay.includes('paper-hand') || hay.includes('paper')) return 'paper-hand';
-  if (hay.includes('honeypot-turret') || hay.includes('honeypot')) return 'honeypot-turret';
-  if (hay.includes('slippage-skater') || hay.includes('slippage')) return 'slippage-skater';
-  if (hay.includes('crypto-bro') || hay.includes('bro')) return 'crypto-bro-rusher';
-  if (hay.includes('evil-banker') || hay.includes('banker') || hay.includes('bandit-captain') || hay.includes('ridge-raider') || hay.includes('claim-jumper')) return 'evil-banker-ranged';
-  if (hay.includes('gas-beast') || hay.includes('beast') || hay.includes('liquidation') || hay.includes('cascade')) return 'gas-beast-tank';
-  if (hay.includes('goblin') || hay.includes('fud')) return 'fud-goblin';
-  if (hay.includes('wisp') || hay.includes('gas-fee') || hay.includes('tax')) return 'gas-fee-wisp';
-  if (hay.includes('trench') || hay.includes('degen')) return 'trench-degen';
+  if (kit?.rosterKey) return safeRuntimeRosterKey(kit.rosterKey);
+  // Direct enemy ID matching (preferred — each enemy gets its own art).
+  if (hay.includes('paper-hand') || hay.includes('paper')) candidateKey = 'paper-hand';
+  else if (hay.includes('honeypot-turret') || hay.includes('honeypot')) candidateKey = 'honeypot-turret';
+  else if (hay.includes('slippage-skater') || hay.includes('slippage')) candidateKey = 'slippage-skater';
+  else if (hay.includes('crypto-bro') || hay.includes('bro')) candidateKey = 'crypto-bro-rusher';
+  else if (hay.includes('evil-banker') || hay.includes('banker') || hay.includes('bandit-captain') || hay.includes('ridge-raider') || hay.includes('claim-jumper')) candidateKey = 'evil-banker-ranged';
+  else if (hay.includes('gas-beast') || hay.includes('beast') || hay.includes('liquidation') || hay.includes('cascade')) candidateKey = 'gas-beast-tank';
+  else if (hay.includes('goblin') || hay.includes('fud')) candidateKey = 'fud-goblin';
+  else if (hay.includes('wisp') || hay.includes('gas-fee') || hay.includes('tax')) candidateKey = 'gas-fee-wisp';
+  else if (hay.includes('trench') || hay.includes('degen')) candidateKey = 'trench-degen';
   // Animals and creatures now use their own PixelLab roster keys when the
   // entity ID is not caught by the explicit bespoke kit registry above.
-  if (hay.includes('coyote')) return 'coyote-pack-runner';
-  if (hay.includes('wild-boar') || hay.includes('boar')) return 'wild-boar';
-  if (hay.includes('buzzard')) return 'buzzard';
-  if (hay.includes('rattlesnake') || hay.includes('snake')) return 'rattlesnake';
-  if (hay.includes('scorpion')) return 'scorpion-ambusher';
-  if (hay.includes('rug-rat') || hay.includes('rug')) return 'rug-rat';
-  if (hay.includes('flyer') || hay.includes('sybil') || hay.includes('drone')) return 'sybil-drone';
-  if (hay.includes('mev-reaper')) return 'mev-reaper';
-  if (hay.includes('phishing') || hay.includes('angler')) return 'phishing-angler';
-  if (hay.includes('scam-cult') || hay.includes('zealot')) return 'evil-banker-ranged';
-  // Default grunt animation set.
-  return 'fud-goblin';
+  else if (hay.includes('coyote')) candidateKey = 'coyote-pack-runner';
+  else if (hay.includes('wild-boar') || hay.includes('boar')) candidateKey = 'wild-boar';
+  else if (hay.includes('buzzard')) candidateKey = 'buzzard';
+  else if (hay.includes('rattlesnake') || hay.includes('snake')) candidateKey = 'rattlesnake';
+  else if (hay.includes('scorpion')) candidateKey = 'scorpion-ambusher';
+  else if (hay.includes('rug-rat') || hay.includes('rug')) candidateKey = 'rug-rat';
+  else if (hay.includes('flyer') || hay.includes('sybil') || hay.includes('drone')) candidateKey = 'sybil-drone';
+  else if (hay.includes('mev-reaper')) candidateKey = 'mev-reaper';
+  else if (hay.includes('phishing') || hay.includes('angler')) candidateKey = 'phishing-angler';
+  else if (hay.includes('scam-cult') || hay.includes('zealot')) candidateKey = 'evil-banker-ranged';
+  return safeRuntimeRosterKey(candidateKey);
 }
 
 // Pick the roster animation name for an entity's current combat state, with

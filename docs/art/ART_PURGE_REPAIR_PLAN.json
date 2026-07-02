@@ -1,0 +1,130 @@
+{
+  "version": "wo-18-art-purge-repair-v1",
+  "generatedBy": "scripts/art-purge-repair.mjs",
+  "summary": {
+    "inspectedZeroAnimationActorCount": 8,
+    "autoRepairCount": 5,
+    "deferOrPurgeCount": 3,
+    "unresolvedCount": 0
+  },
+  "repairs": [
+    {
+      "from": "bit-whale-boss",
+      "to": "whale-dumper-boss",
+      "resolvedKey": "whale-dumper-boss",
+      "action": "defer-or-purge",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Not proven in current Level 1 runtime scope; existing whale-dumper-boss is the renderable boss fallback."
+    },
+    {
+      "from": "chain-reaper-boss",
+      "to": "whale-dumper-boss",
+      "resolvedKey": "whale-dumper-boss",
+      "action": "defer-or-purge",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Not proven in current Level 1 runtime scope; keep out of live selection unless a future boss beat explicitly needs it."
+    },
+    {
+      "from": "crypto-bro-rusher",
+      "to": "fud-goblin",
+      "resolvedKey": "fud-goblin",
+      "action": "auto-repair",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Level 1 runtime-spawnable humanoid rusher currently has zero frames; fud-goblin keeps readable melee/run/hit/death states."
+    },
+    {
+      "from": "evil-banker-ranged",
+      "to": "gas-fee-wisp",
+      "resolvedKey": "gas-fee-wisp",
+      "action": "auto-repair",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Level 1 ranged banker proxy currently has zero frames; gas-fee-wisp provides idle/walk/run/attack/readable ranged pressure frames."
+    },
+    {
+      "from": "gas-beast-tank",
+      "to": "wild-boar",
+      "resolvedKey": "wild-boar",
+      "action": "auto-repair",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Warehouse tank proxy currently has zero frames; wild-boar gives a large readable charger silhouette until bespoke tank art lands."
+    },
+    {
+      "from": "liquidation-cascade-golem",
+      "to": "wild-boar",
+      "resolvedKey": "wild-boar",
+      "action": "auto-repair",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Level 1 late armored elite is spawnable but has zero frames; wild-boar keeps slow heavy collision readable instead of invisible."
+    },
+    {
+      "from": "rugpull-summoner",
+      "to": "scam-cult-zealot",
+      "resolvedKey": "scam-cult-zealot",
+      "action": "defer-or-purge",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Not proven in current Level 1 runtime scope; defer until a summoner encounter is authored."
+    },
+    {
+      "from": "warren-spear-rider",
+      "to": "coyote-pack-runner",
+      "resolvedKey": "coyote-pack-runner",
+      "action": "auto-repair",
+      "repaired": true,
+      "sourceRenderable": false,
+      "targetRenderable": true,
+      "reason": "Handoff keep candidate has zero frames; coyote-pack-runner preserves fast pressure readability."
+    }
+  ],
+  "runtimeGuardrails": [
+    {
+      "originalKey": "crypto-bro-rusher",
+      "resolvedKey": "fud-goblin",
+      "reason": "Level 1 runtime-spawnable humanoid rusher currently has zero frames; fud-goblin keeps readable melee/run/hit/death states."
+    },
+    {
+      "originalKey": "evil-banker-ranged",
+      "resolvedKey": "gas-fee-wisp",
+      "reason": "Level 1 ranged banker proxy currently has zero frames; gas-fee-wisp provides idle/walk/run/attack/readable ranged pressure frames."
+    },
+    {
+      "originalKey": "gas-beast-tank",
+      "resolvedKey": "wild-boar",
+      "reason": "Warehouse tank proxy currently has zero frames; wild-boar gives a large readable charger silhouette until bespoke tank art lands."
+    },
+    {
+      "originalKey": "liquidation-cascade-golem",
+      "resolvedKey": "wild-boar",
+      "reason": "Level 1 late armored elite is spawnable but has zero frames; wild-boar keeps slow heavy collision readable instead of invisible."
+    },
+    {
+      "originalKey": "warren-spear-rider",
+      "resolvedKey": "coyote-pack-runner",
+      "reason": "Handoff keep candidate has zero frames; coyote-pack-runner preserves fast pressure readability."
+    }
+  ],
+  "purgePolicy": [
+    "Auto-repair only runtime-spawnable actor keys that would otherwise render invisible.",
+    "Defer-or-purge zero-animation actors that are not proven in the current Level 1 runtime scope.",
+    "Keep provenance on every repaired visual kit so future bespoke art can replace the fallback deliberately."
+  ],
+  "approvedCensus": {
+    "version": "wo-17-global-art-census-v1",
+    "complianceScore": 43,
+    "zeroAnimationActorCount": 8,
+    "source": "docs/art/GLOBAL_ART_CENSUS.json"
+  }
+}

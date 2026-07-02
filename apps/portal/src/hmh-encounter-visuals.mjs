@@ -1,3 +1,6 @@
+import { HMH_ANIMATED_ROSTER } from '../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { repairRuntimeVisualKitSpec } from './hmh-art-repair.mjs';
+
 function normalizeId(value) {
   return String(value ?? '')
     .trim()
@@ -221,7 +224,7 @@ export const BESPOKE_ENEMY_VISUAL_KITS = Object.freeze(
   Object.fromEntries(
     Object.entries(ENEMY_ROSTER_KEYS).map(([id, spec]) => [
       id,
-      Object.freeze({
+      Object.freeze(repairRuntimeVisualKitSpec(Object.freeze({
         id,
         rosterKey: spec.rosterKey,
         states: Object.freeze(['idle', 'walk', 'run', 'attack', 'hit', 'death']),
@@ -230,7 +233,7 @@ export const BESPOKE_ENEMY_VISUAL_KITS = Object.freeze(
         spriteAuthoringScale: spec.drawScaleMul ?? 1,
         hitFootprintRadius: spec.hitFootprintRadius ?? (spec.drawScaleMul && spec.drawScaleMul < 1 ? 0.36 : spec.drawScaleMul && spec.drawScaleMul > 1.12 ? 0.64 : 0.5),
         anchorBiasY: spec.anchorBiasY,
-      }),
+      }), HMH_ANIMATED_ROSTER)),
     ]),
   ),
 );
