@@ -90,7 +90,9 @@ export const LEVEL_1_AUTHORED_LAYOUT = Object.freeze({
       transitionCue: 'false-fronts appear on the horizon, road widens into main street',
     }),
     navigationCues: Object.freeze([
-      { id: 'da-signpost', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 6, gridY: 5, text: 'GHOST TOWN →' },
+      { id: 'da-sign-bus-stop', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 4, gridY: 5, text: 'BROKEN HIGHWAY / LTC BUS STOP' },
+      { id: 'da-sign-gas', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 9, gridY: 6, text: 'GAS STATION FORECOURT ARENA' },
+      { id: 'da-sign-mesa', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 24, gridY: 6, text: 'MESA CUT / BOULDER ROAD' },
     ]),
   }),
 
@@ -135,8 +137,8 @@ export const LEVEL_1_AUTHORED_LAYOUT = Object.freeze({
       transitionCue: 'main street narrows to a dirt road with roadside pull-offs',
     }),
     navigationCues: Object.freeze([
-      { id: 'gt-signpost', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 35, gridY: 6, text: 'CROSSROADS →' },
-      { id: 'gt-signpost2', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 35, gridY: 3, text: '← RUGPULL GULCH' },
+      { id: 'gt-sign-mainstreet', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 35, gridY: 6, text: 'GHOST TOWN MAIN STREET' },
+      { id: 'gt-sign-farm', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 45, gridY: 6, text: 'FARMSTEAD LOOP →' },
     ]),
   }),
 
@@ -177,9 +179,9 @@ export const LEVEL_1_AUTHORED_LAYOUT = Object.freeze({
       transitionCue: 'dirt road meets paved road, lawns and hedges appear',
     }),
     navigationCues: Object.freeze([
-      { id: 'cr-signpost-n', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 60, gridY: 3, text: '↑ DRY FOREST CAVE' },
-      { id: 'cr-signpost-s', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 60, gridY: 8, text: '↓ CROSSROADS POST' },
-      { id: 'cr-signpost-e', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 63, gridY: 5, text: '→ OASIS / CITY' },
+      { id: 'cr-sign-river', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 60, gridY: 3, text: 'RIVER BRIDGE / WASH CROSSING' },
+      { id: 'cr-sign-farm', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 60, gridY: 8, text: '← FARMSTEAD SIDE LOOP' },
+      { id: 'cr-sign-mesa', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 63, gridY: 5, text: '→ MESA CUT / EXTRACTION' },
     ]),
   }),
 
@@ -207,6 +209,16 @@ export const LEVEL_1_AUTHORED_LAYOUT = Object.freeze({
         { suffix: 'h2', assetKey: 'crypto/residential-hedge-run', role: 'hedge', dx: 3, dy: 0 },
         { suffix: 'gate', assetKey: 'construct/fence-gate', role: 'gate', dx: 1, dy: 0 },
       ]),
+      // Farmstead side-loop: fences/crops/barn-silo silhouettes give the optional
+      // spur a readable rural identity instead of another generic hedge pocket.
+      cluster('re-farmstead-loop', 78, 6, [
+        { suffix: 'gate', assetKey: 'construct/fence-gate', role: 'farm', dx: -2, dy: 0 },
+        { suffix: 'fence-a', assetKey: 'construct/fence-segment', role: 'farm', dx: -1, dy: 0 },
+        { suffix: 'crop-a', assetKey: 'nature/flower-patch', role: 'crop', dx: 1, dy: 1, solid: false },
+        { suffix: 'crop-b', assetKey: 'nature/bush', role: 'crop', dx: 3, dy: 1, solid: false },
+        { suffix: 'barn', assetKey: 'crypto/ghost-boarded-storefront', role: 'barn', dx: 5, dy: -2, zHeight: 3 },
+        { suffix: 'silo', assetKey: 'crypto/utility-pole', role: 'silo', dx: 7, dy: -1, solid: false, zHeight: 4 },
+      ]),
     ]),
     edgeTreatment: Object.freeze({
       northBorder: 'mesa-cliff-line',
@@ -215,7 +227,8 @@ export const LEVEL_1_AUTHORED_LAYOUT = Object.freeze({
       transitionCue: 'sand and grass give way to cracked asphalt and neon skyline grows',
     }),
     navigationCues: Object.freeze([
-      { id: 're-signpost', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 76, gridY: 5, text: '→ LITECOIN CITY' },
+      { id: 're-sign-farmstead', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 76, gridY: 5, text: 'FARMSTEAD SIDE LOOP' },
+      { id: 're-sign-second-town', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 86, gridY: 6, text: 'SECOND TOWN / EXTRACTION YARD →' },
     ]),
   }),
 
@@ -251,7 +264,8 @@ export const LEVEL_1_AUTHORED_LAYOUT = Object.freeze({
       transitionCue: 'neon towers fill the horizon, asphalt meets city grid',
     }),
     navigationCues: Object.freeze([
-      { id: 'ic-signpost', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 88, gridY: 5, text: '→ ENTERING LITECOIN CITY' },
+      { id: 'ic-sign-extraction-yard', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 88, gridY: 5, text: 'SECOND TOWN / EXTRACTION YARD' },
+      { id: 'ic-sign-extraction-pad', assetKey: 'street/bus-stop-sign', role: 'sign', gridX: 98, gridY: 5, text: 'LTC EXTRACTION PAD →' },
     ]),
   }),
 });
@@ -497,14 +511,14 @@ function routeNode(id, districtId, gridX, gridY, label, objective, { assetKey = 
 }
 
 export const LEVEL_1_AUTHORED_ROUTE = Object.freeze([
-  routeNode('spawn-gas-station', 'desert-approach', 4, 5, 'Salvage Gas Station', 'learn the road spine and pick first cover', { beat: 'spawn' }),
-  routeNode('dry-creek-crossing', 'desert-approach', 14, 5, 'Dry Creek Crossing', 'first animal ambush and bridge read', { assetKey: 'construct/wood-bridge', beat: 'ambush' }),
-  routeNode('saloon-square', 'ghost-town', 40, 6, 'Ghost Town Main Street', 'cover-heavy shootout around saloon fronts', { beat: 'arena' }),
-  routeNode('warehouse-alley', 'ghost-town', 48, 4, 'Warehouse Alley', 'side loop teaches alley cut-throughs', { assetKey: 'street/street-lamp', beat: 'loop' }),
-  routeNode('crossroads-post', 'country-road', 60, 6, 'Crossroads Trading Post', 'branching hub with utility-pole sightline', { beat: 'hub' }),
-  routeNode('oasis-park', 'residential-edge', 84, 6, 'Oasis Park', 'water landmark and softer residential cover', { assetKey: 'street/park-bench', beat: 'breather' }),
-  routeNode('city-checkpoint', 'inner-city-threshold', 90, 6, 'Inner City Checkpoint', 'final barricade pressure before extraction', { beat: 'gate' }),
-  routeNode('litecoin-city-gate', 'inner-city-threshold', 98, 5, 'Litecoin City Gate', 'level hand-off to the urban campaign', { assetKey: 'crypto/innercity-billboard-frame', beat: 'extract' }),
+  routeNode('spawn-broken-highway', 'desert-approach', 4, 5, 'Broken Highway / Litecoin Bus Stop', 'teach movement, shooting direction, lane width, first cache read, and gas-station sightline before combat density rises', { beat: 'spawn' }),
+  routeNode('gas-station-forecourt', 'desert-approach', 10, 5, 'Gas Station Forecourt Arena', 'first authored combat bowl with pump hazards, canopy blockers, wrecked-car cover, and clear north/south boundaries', { assetKey: 'crypto/landmark-gas-station', beat: 'arena' }),
+  routeNode('ghost-town-main-street', 'ghost-town', 40, 6, 'Ghost Town Main Street', 'wide false-front road spine with saloon cover, porch edges, and alley breaks for the first real shootout', { assetKey: 'crypto/ghost-saloon-front', beat: 'arena' }),
+  routeNode('farmstead-side-loop', 'residential-edge', 78, 5, 'Farmstead Side Loop', 'optional risk/reward spur with fence rows, crop lanes, barn/silo reads, and a calmer recovery loop before the finale', { assetKey: 'construct/fence-gate', beat: 'loop' }),
+  routeNode('river-bridge-wash-crossing', 'country-road', 62, 6, 'River Bridge / Wash Crossing', 'hard chokepoint with animated-water read, bridge rails, shoreline danger, and space for grenade arcs', { assetKey: 'construct/wood-bridge', beat: 'chokepoint' }),
+  routeNode('desert-boulder-road', 'desert-approach', 24, 5, 'Desert Boulder Road / Mesa Cut', 'open survival pressure zone where boulder walls and cliff silhouettes make lanes without random rock scatter', { assetKey: 'crypto/canyon-cliff-edge', beat: 'pressure' }),
+  routeNode('second-town-extraction-yard', 'inner-city-threshold', 92, 6, 'Second Town / Extraction Yard', 'final readable arena with boarded buildings, boss gate, barricades, and extraction beacon staging', { assetKey: 'level-final-setpiece/cohesive-boss-yard-gate', beat: 'boss' }),
+  routeNode('ltc-extraction-pad', 'inner-city-threshold', 98, 5, 'Litecoin Extraction Pad', 'post-boss cyan/gold flare path that cleanly hands the player to extraction or the next level', { assetKey: 'level-final-setpiece/cohesive-extraction-flare-road', beat: 'extract' }),
 ]);
 
 export const LEVEL_2_AUTHORED_ROUTE = Object.freeze([

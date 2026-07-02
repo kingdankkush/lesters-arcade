@@ -47,6 +47,21 @@ Level 1 is now organized as five authored acts:
 | Desert Cache / Gas Yard Pressure | 5:00-7:15 | Desert Bone Camp, Warehouse/Gas Station Yard | reward cache + explosive gas yard pressure |
 | Rugpull Boss Yard / Extraction Reveal | 7:15-8:00 | Rugpull Gulch Boss Yard, LTC Road Extraction | final lock, boss kill, extraction cue |
 
+### Runtime critical path alignment
+
+The live authored route markers in `authored-world-layout.mjs` now follow the Level 1 artistic-world critical path instead of the older generic desert-to-city chain:
+
+1. Broken Highway / Litecoin Bus Stop.
+2. Gas Station Forecourt Arena.
+3. Ghost Town Main Street.
+4. Farmstead Side Loop.
+5. River Bridge / Wash Crossing.
+6. Desert Boulder Road / Mesa Cut.
+7. Second Town / Extraction Yard.
+8. Litecoin Extraction Pad.
+
+The route markers render through `getAllAuthoredSceneObjects(...)` as non-solid sign/guide objects, and the district prop data now includes a farmstead side-loop cluster plus explicit river, boulder-road, and extraction-yard signage so the canvas has stronger authored world reads before final art replacement.
+
 ## New interactive objects
 
 Each major POI now has an authored interactive contract:

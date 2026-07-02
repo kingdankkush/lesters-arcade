@@ -173,6 +173,35 @@ test('authored routes define a complete critical path for both campaign levels',
   assert.ok(level2.some((node) => node.beat === 'chokepoint'));
 });
 
+test('Level 1 authored route matches the AAA artistic-world critical path', () => {
+  const level1 = getAuthoredRouteNodes('level-1-crypto-wasteland');
+  assert.deepEqual(level1.map((node) => node.id), [
+    'spawn-broken-highway',
+    'gas-station-forecourt',
+    'ghost-town-main-street',
+    'farmstead-side-loop',
+    'river-bridge-wash-crossing',
+    'desert-boulder-road',
+    'second-town-extraction-yard',
+    'ltc-extraction-pad',
+  ]);
+  assert.deepEqual(level1.map((node) => node.beat), [
+    'spawn',
+    'arena',
+    'arena',
+    'loop',
+    'chokepoint',
+    'pressure',
+    'boss',
+    'extract',
+  ]);
+  assert.equal(level1.every((node) => node.objective.length > 30), true, 'every route beat should carry implementation-facing objective copy');
+  assert.equal(level1.some((node) => /farm/i.test(node.label)), true, 'AAA route includes the farmstead side loop');
+  assert.equal(level1.some((node) => /river|wash/i.test(node.label)), true, 'AAA route includes the river/wash crossing');
+  assert.equal(level1.some((node) => /boulder|mesa/i.test(node.label)), true, 'AAA route includes the desert boulder road');
+  assert.equal(level1.some((node) => /extraction yard/i.test(node.label)), true, 'AAA route includes the second-town extraction yard');
+});
+
 test('every authored district has at least one route marker object in getAllAuthoredSceneObjects', () => {
   const checks = [
     ['level-1-crypto-wasteland', ['desert-approach', 'ghost-town', 'country-road', 'residential-edge', 'inner-city-threshold']],
@@ -209,4 +238,25 @@ test('authored foreground staging adds non-solid near-plane animation cues to ev
       assert.ok(allObjects.some((o) => o.foregroundBand === 'near'), `${levelId}/${districtId} should render near-plane foreground objects`);
     }
   }
+});
+
+test('Level 1 districts expose AAA critical-path signposts and farm/river/desert/extraction setpieces', () => {
+  const desert = getAllAuthoredSceneObjects('desert-approach', 'level-1-crypto-wasteland');
+  const country = getAllAuthoredSceneObjects('country-road', 'level-1-crypto-wasteland');
+  const residential = getAllAuthoredSceneObjects('residential-edge', 'level-1-crypto-wasteland');
+  const innerCity = getAllAuthoredSceneObjects('inner-city-threshold', 'level-1-crypto-wasteland');
+  const all = [...desert, ...country, ...residential, ...innerCity];
+  const signText = all.filter((obj) => obj.role === 'sign' && obj.text).map((obj) => obj.text).join(' | ');
+
+  assert.match(signText, /BROKEN HIGHWAY/i);
+  assert.match(signText, /GAS STATION/i);
+  assert.match(signText, /FARMSTEAD/i);
+  assert.match(signText, /RIVER BRIDGE|WASH CROSSING/i);
+  assert.match(signText, /BOULDER ROAD|MESA CUT/i);
+  assert.match(signText, /EXTRACTION YARD/i);
+
+  assert.equal(residential.some((obj) => ['farm', 'crop', 'silo', 'barn'].includes(obj.role)), true, 'residential-edge should include a farmstead side-loop setpiece');
+  assert.equal(country.some((obj) => obj.role === 'bridge' || obj.role === 'water-strip'), true, 'country-road should include river/wash crossing staging');
+  assert.equal(desert.some((obj) => obj.id.includes('boulder-road') || obj.role === 'rock'), true, 'desert approach should include boulder/mesa road staging');
+  assert.equal(innerCity.some((obj) => obj.role === 'gate' || /extraction/i.test(obj.text ?? '')), true, 'inner-city threshold should include extraction-yard staging');
 });
