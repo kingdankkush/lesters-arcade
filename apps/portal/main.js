@@ -12,6 +12,7 @@ import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollLevelOnePowerUpDrop } from './src/hmh-drop-economy.mjs';
+import { planEnemyAttackPattern } from './src/hmh-attack-patterns.mjs';
 import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow, resolveGrenadeTypeForRun } from './src/hmh-grenade-economy.mjs';
 import { buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-game-feel-tuning.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
@@ -8009,6 +8010,67 @@ function updateLevelOneBossBeatSchedule(director) {
   }
 }
 
+function emitEnemyPatternActions(enemy, patternPlan, shotSpeed = 5.2) {
+  const actions = patternPlan?.actions ?? [];
+  let emittedShots = 0;
+  for (const action of actions) {
+    if (action.type === 'shot') {
+      combat.enemyShots.push({
+        worldX: enemy.mapX,
+        worldY: enemy.mapY,
+        vx: action.vx,
+        vy: action.vy,
+        damage: NORMAL_HIT_DAMAGE,
+        ttl: 180,
+        firedBy: enemy.title ?? null,
+        patternId: patternPlan.patternId,
+        delayFrames: action.delayFrames ?? 0,
+      });
+      emittedShots += 1;
+    } else if (action.type === 'mortar-marker') {
+      const dirX = action.x - enemy.mapX;
+      const dirY = action.y - enemy.mapY;
+      const d = Math.hypot(dirX, dirY) || 1;
+      combat.enemyShots.push({
+        worldX: enemy.mapX,
+        worldY: enemy.mapY,
+        vx: (dirX / d) * shotSpeed * 0.72,
+        vy: (dirY / d) * shotSpeed * 0.72,
+        damage: NORMAL_HIT_DAMAGE,
+        ttl: action.impactFrames + 90,
+        firedBy: enemy.title ?? null,
+        patternId: patternPlan.patternId,
+        marker: { x: action.x, y: action.y, radius: action.radiusTiles },
+      });
+      spawnText('MORTAR', enemy.x - 18, enemy.y - 62, '#ff7b2f');
+      emittedShots += 1;
+    } else if (action.type === 'dash-lane') {
+      enemy.lunging = true;
+      enemy.state = 'attack';
+      spawnText('DASH', enemy.x - 10, enemy.y - 58, '#ffe84d');
+    } else if (action.type === 'summon-adds') {
+      spawnText(`SUMMON x${action.count}`, enemy.x - 30, enemy.y - 62, '#a98cff');
+    } else if (action.type === 'hazard-pool') {
+      spawnText('POOL', enemy.x - 8, enemy.y - 58, '#45ff8a');
+    }
+  }
+  if (!emittedShots && enemy.ranged) {
+    const dx = combat.playerMapX - enemy.mapX;
+    const dy = combat.playerMapY - enemy.mapY;
+    const distance = Math.hypot(dx, dy) || 1;
+    combat.enemyShots.push({
+      worldX: enemy.mapX,
+      worldY: enemy.mapY,
+      vx: (dx / distance) * shotSpeed,
+      vy: (dy / distance) * shotSpeed,
+      damage: NORMAL_HIT_DAMAGE,
+      ttl: 180,
+      firedBy: enemy.title ?? null,
+      patternId: patternPlan?.patternId ?? 'fallback-shot',
+    });
+  }
+}
+
 function updateRoguelikeEnemies(director, dt) {
   combat.roguelikeSpawnTimer -= dt;
   updateCampaignPoiEncounter(director);
@@ -8207,18 +8269,22 @@ function updateRoguelikeEnemies(director, dt) {
           enemy.attackTimer = Math.round(baseReset * miniBossResetMul);
           enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 16);
         } else {
-          combat.enemyShots.push({
-            worldX: enemy.mapX,
-            worldY: enemy.mapY,
-            vx: (dx / distance) * shotSpeed,
-            vy: (dy / distance) * shotSpeed,
-            damage: NORMAL_HIT_DAMAGE,
-            ttl: 180,
-            firedBy: enemy.title ?? null,
+          const patternPlan = planEnemyAttackPattern({
+            enemyId: enemy.id,
+            role: enemy.balanceCard?.role ?? enemy.class ?? '',
+            ranged: enemy.ranged,
+            pressure: director.pressure,
+            seed: (combat.roguelikeRun?.seed ?? 0) + combat.frame + Math.round(enemy.mapX * 17) + Math.round(enemy.mapY * 31),
+            origin: { x: enemy.mapX, y: enemy.mapY },
+            target: { x: combat.playerMapX, y: combat.playerMapY },
+            shotSpeed,
           });
+          enemy.attackPatternId = patternPlan.patternId;
+          enemy.activeTelegraphDecal = patternPlan.telegraphDecal;
+          emitEnemyPatternActions(enemy, patternPlan, shotSpeed);
           const baseReset = encounterBehavior.attackResetFrames ?? Math.max(34, Math.round(92 - director.pressure * 38));
-          enemy.attackTimer = Math.round(baseReset * miniBossResetMul);
-          enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, 16);
+          enemy.attackTimer = Math.round((baseReset / patternPlan.frequencyMultiplier) * miniBossResetMul);
+          enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, patternPlan.recoveryFrames);
         }
       }
     }
