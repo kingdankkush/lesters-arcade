@@ -6,30 +6,32 @@ import {
   simulateHmhRunEconomy,
   levelFromCumulativeXp,
 } from '../apps/portal/src/hmh-run-simulator.mjs';
+import {
+  ROGUELIKE_LEVEL_CAP,
+  POST_CAP_XP_TO_SCORE,
+  roguelikeXpCostForLevel,
+} from '../apps/portal/src/arcade-core.mjs';
 
-test('levelFromCumulativeXp follows the current roguelike XP cost curve', () => {
+test('Wave 2 XP curve has an 80-level cap and post-cap score conversion constants', () => {
+  assert.equal(ROGUELIKE_LEVEL_CAP, 80);
+  assert.equal(POST_CAP_XP_TO_SCORE, 2);
   assert.equal(levelFromCumulativeXp(0), 1);
-  assert.equal(levelFromCumulativeXp(79), 1);
-  assert.equal(levelFromCumulativeXp(80), 2);
-  assert.equal(levelFromCumulativeXp(167), 2);
-  assert.equal(levelFromCumulativeXp(168), 3);
+  assert.equal(levelFromCumulativeXp(roguelikeXpCostForLevel(1)), 2);
+  assert.equal(levelFromCumulativeXp(1_000_000), 80);
 });
 
-test('simulator calibrates to WO-27 half-tree scarcity bands', () => {
-  const sim = simulateHmhRunEconomy({ minutes: 25, skillFactor: 1, tickSeconds: 1 });
-  const m0 = sim.timeline.find((point) => point.minute === 0);
-  const m4 = sim.timeline.find((point) => point.minute === 4);
-  const m8 = sim.timeline.find((point) => point.minute === 8);
-  const m20 = sim.timeline.find((point) => point.minute === 20);
-  const m25 = sim.timeline.find((point) => point.minute === 25);
+test('Wave 2 economy simulator hits Fable 60-80 level bands', () => {
+  const strong = simulateHmhRunEconomy({ minutes: 28, skillFactor: 0.9, tickSeconds: 1 });
+  const average20 = simulateHmhRunEconomy({ minutes: 20, skillFactor: 0.75, tickSeconds: 1 }).summary;
+  const m8 = strong.timeline.find((point) => point.minute === 8);
+  const m20 = strong.timeline.find((point) => point.minute === 20);
+  const m28 = strong.timeline.find((point) => point.minute === 28);
 
-  assert.ok(m0.xpPerSecond >= 3.7 && m0.xpPerSecond <= 5.4, `0:00 XP/s expected ~4.5, got ${m0.xpPerSecond}`);
-  assert.ok(m4.xpPerSecond >= 7.0 && m4.xpPerSecond <= 9.4, `4:00 XP/s expected ~8, got ${m4.xpPerSecond}`);
-  assert.ok(m8.xpPerSecond >= 12.0 && m8.xpPerSecond <= 15.0, `8:00 XP/s should no longer be a wall spike, got ${m8.xpPerSecond}`);
-  assert.ok(m8.cumulativeXp >= 3_700 && m8.cumulativeXp <= 4_600, `8:00 cumulative XP expected ~4k-4.5k, got ${m8.cumulativeXp}`);
-  assert.ok(m20.cumulativeXp >= 19_000 && m20.cumulativeXp <= 23_000, `20:00 cumulative XP expected ~20k-22k, got ${m20.cumulativeXp}`);
-  assert.ok(m20.level >= 45 && m20.level <= 58, `WO-27 20-minute elite run should enter half-tree band, got ${m20.level}`);
-  assert.ok(m25.cumulativeXp > m20.cumulativeXp, 'record-chase runs keep gaining XP after the elite band opens');
+  assert.ok(m8.level >= 30 && m8.level <= 38, `strong 8:00 run should be level 30-38, got ${m8.level}`);
+  assert.ok(m20.level >= 58 && m20.level <= 70, `strong 20:00 run should be level 58-70, got ${m20.level}`);
+  assert.ok(m28.level >= 72 && m28.level <= 80, `strong 28:00 run should be level 72-80, got ${m28.level}`);
+  assert.ok(average20.level >= 45, `average 20:00 run should reach at least level 45, got ${average20.level}`);
+  assert.ok(m28.cumulativeXp > m20.cumulativeXp, 'record-chase runs keep gaining XP after the 20-minute elite band');
 });
 
 test('skill factor affects kill throughput and leveling in the coarse economy model', () => {

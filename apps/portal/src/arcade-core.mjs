@@ -2035,10 +2035,16 @@ function roguelikeStartingStatsFor(characterId) {
   return stats;
 }
 
+export const ROGUELIKE_LEVEL_CAP = 80;
+export const POST_CAP_XP_TO_SCORE = 2;
+
 export function roguelikeXpCostForLevel(level = 1) {
   const safeLevel = Math.max(1, Math.floor(Number(level) || 1));
   const completedLevels = safeLevel - 1;
-  return Math.round(80 + completedLevels * 8 + completedLevels * completedLevels * 0.33);
+  // Wave 2 economy: cheap early levels, quadratic late stretch, hard cap at 80.
+  // Tuned against the current Level 1 spawn/kill XP simulator so strong runs land
+  // L58-L70 at 20:00 and rare record chases can touch L72-L80 by ~28:00.
+  return Math.round(45 + completedLevels * 2.5 + completedLevels * completedLevels * 0.15);
 }
 
 export function calculateRoguelikeKillXp(enemy = {}) {
@@ -2496,6 +2502,10 @@ export function createRoguelikeRunState({
     level: 1,
     xp: 0,
     xpToNextLevel: roguelikeXpCostForLevel(1),
+    maxLevel: ROGUELIKE_LEVEL_CAP,
+    postCapXpToScore: POST_CAP_XP_TO_SCORE,
+    postCapScoreBonus: 0,
+    maxLevelReached: false,
     pausedForLevelUp: false,
     pendingUpgradeChoices: 0,
     rerollsRemaining: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel,
@@ -2511,11 +2521,29 @@ export function createRoguelikeRunState({
 export function grantRoguelikeXp(run, amount = 0) {
   const next = cloneRoguelikeRun(run);
   const xpMultiplier = next.stats.xpGain ?? 1;
-  next.xp += Math.max(0, Number(amount) || 0) * xpMultiplier;
-  while (!next.pausedForLevelUp && next.xp >= next.xpToNextLevel) {
+  const gainedXp = Math.max(0, Number(amount) || 0) * xpMultiplier;
+  if (next.level >= ROGUELIKE_LEVEL_CAP) {
+    next.level = ROGUELIKE_LEVEL_CAP;
+    next.maxLevelReached = true;
+    next.xpToNextLevel = 0;
+    next.postCapScoreBonus = Math.round((next.postCapScoreBonus ?? 0) + gainedXp * POST_CAP_XP_TO_SCORE);
+    return next;
+  }
+  next.xp += gainedXp;
+  while (!next.pausedForLevelUp && next.level < ROGUELIKE_LEVEL_CAP && next.xp >= next.xpToNextLevel) {
     next.xp -= next.xpToNextLevel;
     next.level += 1;
-    next.xpToNextLevel = roguelikeXpCostForLevel(next.level);
+    if (next.level >= ROGUELIKE_LEVEL_CAP) {
+      next.level = ROGUELIKE_LEVEL_CAP;
+      next.maxLevelReached = true;
+      next.xpToNextLevel = 0;
+      if (next.xp > 0) {
+        next.postCapScoreBonus = Math.round((next.postCapScoreBonus ?? 0) + next.xp * POST_CAP_XP_TO_SCORE);
+        next.xp = 0;
+      }
+    } else {
+      next.xpToNextLevel = roguelikeXpCostForLevel(next.level);
+    }
     next.pausedForLevelUp = true;
     next.pendingUpgradeChoices = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel;
     next.rerollsRemaining = LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel;

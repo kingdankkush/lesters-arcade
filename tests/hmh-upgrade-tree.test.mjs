@@ -44,11 +44,11 @@ test('WO-27 upgrade tree is a compact ranked base tree with deliberate scarcity'
   assert.deepEqual(byId('block-buster').gate.requires, [{ skillId: 'grenade-radius', rank: 2 }]);
 });
 
-test('WO-27 draft offers exactly 3 legal cards, respects gates, and never empties across 60 levels', () => {
+test('Wave 2 draft offers exactly 3 legal cards, respects gates, and never empties across 80 levels', () => {
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 3);
   let run = createRoguelikeRunState({ seed: 2701, mode: 'free', campaignLevelNumber: 1 });
 
-  for (let level = 1; level <= 60; level += 1) {
+  for (let level = 1; level <= 80; level += 1) {
     run = { ...run, level };
     const offer = chooseRoguelikeUpgradeOptions(run, { seed: 27_000 + level });
     assert.equal(offer.options.length, 3, `level ${level} should offer 3 cards`);
@@ -66,15 +66,18 @@ test('WO-27 locked preview data explains gates without leaking locked cards into
   assert.ok(offer.lockedPreviews.some((preview) => preview.id === 'revive' && /LEVEL 20/.test(preview.gateHint)));
 });
 
-test('WO-27 XP simulator makes elite runs earn roughly half the tree, never the full tree', () => {
-  const average = simulateHmhRunEconomy({ minutes: 12, skillFactor: 0.8, tickSeconds: 1 }).summary;
-  const strong = simulateHmhRunEconomy({ minutes: 18, skillFactor: 0.9, tickSeconds: 1 }).summary;
-  const elite20 = simulateHmhRunEconomy({ minutes: 20, skillFactor: 1, tickSeconds: 1 }).summary;
+test('Wave 2 XP simulator sustains 60-80 level endless-run cadence', () => {
+  const average20 = simulateHmhRunEconomy({ minutes: 20, skillFactor: 0.75, tickSeconds: 1 }).summary;
+  const strong = simulateHmhRunEconomy({ minutes: 28, skillFactor: 0.9, tickSeconds: 1 });
   const elite25 = simulateHmhRunEconomy({ minutes: 25, skillFactor: 1, tickSeconds: 1 }).summary;
+  const m8 = strong.timeline.find((point) => point.minute === 8);
+  const m20 = strong.timeline.find((point) => point.minute === 20);
+  const m28 = strong.timeline.find((point) => point.minute === 28);
 
-  assert.ok(average.level >= 22 && average.level <= 30, `12-minute average run should reach 22-30 level-ups, got level ${average.level}`);
-  assert.ok(strong.level >= 32 && strong.level <= 42, `18-minute strong run should reach 32-42 level-ups, got level ${strong.level}`);
-  assert.ok(elite20.level >= 45 && elite20.level <= 58, `20-minute elite run should enter half-tree band, got level ${elite20.level}`);
-  assert.ok(elite25.level >= 45 && elite25.level <= 58, `25-minute elite run should stay near half-tree band, got level ${elite25.level}`);
-  assert.ok(elite25.level < sumRanks(), `no run should complete ${sumRanks()} ranks, got level ${elite25.level}`);
+  assert.ok(m8.level >= 30 && m8.level <= 38, `strong 8-minute run should reach level 30-38, got level ${m8.level}`);
+  assert.ok(m20.level >= 58 && m20.level <= 70, `strong 20-minute run should reach level 58-70, got level ${m20.level}`);
+  assert.ok(m28.level >= 72 && m28.level <= 80, `strong 28-minute run should reach level 72-80, got level ${m28.level}`);
+  assert.ok(average20.level >= 45, `20-minute average run should reach at least level 45, got level ${average20.level}`);
+  assert.ok(elite25.level <= 80, `level cap should prevent over-leveling, got level ${elite25.level}`);
+  assert.ok(sumRanks() >= 80, `Wave 2 80-level economy needs at least 80 available rank slots, got ${sumRanks()}`);
 });

@@ -87,6 +87,8 @@ import {
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
   roguelikeXpCostForLevel,
+  ROGUELIKE_LEVEL_CAP,
+  POST_CAP_XP_TO_SCORE,
   calculateRoguelikeKillXp,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
@@ -705,7 +707,7 @@ test('roguelike XP pacing prevents one enemy pack from chaining multiple level-u
   const afterPack = grantRoguelikeXp(run, packXp);
   const afterHugeBurst = grantRoguelikeXp(run, roguelikeXpCostForLevel(1) + roguelikeXpCostForLevel(2) + 500);
 
-  assert.ok(roguelikeXpCostForLevel(1) >= 80);
+  assert.equal(roguelikeXpCostForLevel(1), 45, 'Wave 2 opening level cost should produce ~10-15s early cadence');
   assert.ok(roguelikeXpCostForLevel(3) > roguelikeXpCostForLevel(2));
   assert.ok(gruntXp <= 12, `grunt XP should stay modest, got ${gruntXp}`);
   assert.ok(eliteXp <= 24, `elite XP should stay capped, got ${eliteXp}`);
@@ -713,6 +715,26 @@ test('roguelike XP pacing prevents one enemy pack from chaining multiple level-u
   assert.equal(afterPack.level <= 2, true, `one pack should not jump several levels, got level ${afterPack.level}`);
   assert.equal(afterHugeBurst.level, 2, 'grantRoguelikeXp should pause after one level-up even with overflow XP');
   assert.equal(afterHugeBurst.pausedForLevelUp, true);
+});
+
+test('Wave 2 max-level XP converts to score instead of overflowing past level 80', () => {
+  const run = {
+    ...createRoguelikeRunState({ seed: 80, mode: 'free' }),
+    level: ROGUELIKE_LEVEL_CAP,
+    xp: 0,
+    xpToNextLevel: 0,
+    maxLevelReached: true,
+  };
+  const afterCapPickup = grantRoguelikeXp(run, 123);
+
+  assert.equal(afterCapPickup.level, ROGUELIKE_LEVEL_CAP);
+  assert.equal(afterCapPickup.xpToNextLevel, 0);
+  assert.equal(afterCapPickup.maxLevelReached, true);
+  assert.equal(afterCapPickup.postCapScoreBonus, 123 * POST_CAP_XP_TO_SCORE);
+
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.match(mainSource, /MAX LEVEL — XP → SCORE/);
+  assert.match(mainSource, /postCapScoreBonus/);
 });
 
 test('Level 1 open-ended survival pressure climbs continuously into the elite band', () => {

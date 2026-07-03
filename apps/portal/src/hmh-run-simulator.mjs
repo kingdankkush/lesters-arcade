@@ -2,6 +2,7 @@ import {
   calculateRoguelikeKillXp,
   levelOneRoguelikeSpawnDirectorAt,
   roguelikeXpCostForLevel,
+  ROGUELIKE_LEVEL_CAP,
 } from './arcade-core.mjs';
 
 const DEFAULT_STANDARD_KILL_SCORE = 140;
@@ -17,7 +18,7 @@ function clampNumber(value, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-export function levelFromCumulativeXp(cumulativeXp = 0, { maxLevel = 10_000 } = {}) {
+export function levelFromCumulativeXp(cumulativeXp = 0, { maxLevel = ROGUELIKE_LEVEL_CAP } = {}) {
   let xp = Math.max(0, Number(cumulativeXp) || 0);
   let level = 1;
   while (level < maxLevel) {

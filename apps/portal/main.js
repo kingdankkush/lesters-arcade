@@ -152,6 +152,7 @@ import {
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
   levelOneRoguelikeSpawnDirectorAt,
+  ROGUELIKE_LEVEL_CAP,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
@@ -2446,8 +2447,9 @@ function renderRoguelikeStatBar() {
   const director = run.spawnDirector ?? currentRoguelikeSpawnDirector(combat.elapsedGameSeconds);
   const augments = Object.values(run.skills).reduce((sum, level) => sum + level, 0);
   const weapon = weaponById(combat.weaponId);
-  const xpToNext = Math.max(0, Math.round(run.xpToNextLevel - run.xp));
-  const xpRatio = Math.max(0, Math.min(1, run.xp / Math.max(1, run.xpToNextLevel)));
+  const isMaxRoguelikeLevel = (run.maxLevelReached === true) || run.level >= ROGUELIKE_LEVEL_CAP;
+  const xpToNext = isMaxRoguelikeLevel ? 0 : Math.max(0, Math.round(run.xpToNextLevel - run.xp));
+  const xpRatio = isMaxRoguelikeLevel ? 1 : Math.max(0, Math.min(1, run.xp / Math.max(1, run.xpToNextLevel)));
   const heroName = (combat.characterId && CHARACTER_DISPLAY_NAMES[combat.characterId]) || 'Hero';
   const ammoValue = combat.reloading
     ? 'RELOAD…'
@@ -2529,7 +2531,9 @@ function renderRoguelikeStatBar() {
   bar.append(chips);
 
   const xpWrap = el('div', { className: 'stat-xp' });
-  appendText(xpWrap, 'span', `XP ${xpToNext} to LV ${run.level + 1}`);
+  appendText(xpWrap, 'span', isMaxRoguelikeLevel
+    ? `MAX LEVEL — XP → SCORE +${Math.round(run.postCapScoreBonus ?? 0).toLocaleString()}`
+    : `XP ${xpToNext} to LV ${run.level + 1}`);
   const track = el('div', { className: 'stat-xp-track' });
   const fill = el('div', { className: 'stat-xp-fill' });
   fill.style.width = `${Math.round(xpRatio * 100)}%`;
@@ -8573,7 +8577,9 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   updateRoguelikePowerUps();
   updateParticles(dt);
   updateFloatingTexts();
-  const xpScore = (combat.roguelikeRun.level - 1) * 250 + Math.round((combat.roguelikeRun.xp || 0) * 1.5);
+  const xpScore = (combat.roguelikeRun.level - 1) * 250
+    + Math.round((combat.roguelikeRun.xp || 0) * 1.5)
+    + Math.round(combat.roguelikeRun.postCapScoreBonus || 0);
   combat.score = calculateLesterBlasterScore({
     elapsedSeconds: combat.elapsedGameSeconds,
     kills: combat.kills,
