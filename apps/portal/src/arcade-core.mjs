@@ -3557,12 +3557,35 @@ export function buildHardMoneyHeroesAnimationProductionBriefs(coverage = buildHa
   });
 }
 
-export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false, extraction = null, killedBy = null, bestUpgrade = null, runSeed = null } = {}) {
+export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false, extraction = null, killedBy = null, bestUpgrade = null, runSeed = null, previousBestScore = null, sessionStreak = 1, backgroundSettlementQueued = false } = {}) {
   const official = Boolean(session?.isPaid || session?.mode === 'paid' || session?.leaderboardEligible);
   const safeScore = Number.isFinite(score) ? Math.max(0, Math.round(score)) : 0;
   const safeElapsed = Number.isFinite(elapsedSeconds) ? Math.max(0, Math.round(elapsedSeconds)) : 0;
   const safeKills = Number.isFinite(kills) ? Math.max(0, Math.round(kills)) : 0;
   const safeBosses = Number.isFinite(bossesDefeated) ? Math.max(0, Math.round(bossesDefeated)) : 0;
+  const safePreviousBest = Number.isFinite(previousBestScore) ? Math.max(0, Math.round(previousBestScore)) : null;
+  const personalBest = Object.freeze({
+    previousBestScore: safePreviousBest,
+    isNewBest: safePreviousBest !== null && safeScore > safePreviousBest,
+    delta: safePreviousBest !== null ? Math.max(0, safeScore - safePreviousBest) : 0,
+  });
+  const streakCount = Math.max(1, Math.round(Number(sessionStreak) || 1));
+  const streak = Object.freeze({
+    count: streakCount,
+    copy: streakCount > 1 ? `${streakCount}-run streak. One more run keeps the cabinet hot.` : 'First run of this streak. Run it back while the build is fresh.',
+  });
+  const oneMoreRun = Object.freeze({
+    primaryActionId: 'run-it-back',
+    estimatedRestartSeconds: 3,
+    copy: 'Run it back in under 3 seconds: no menu detour, same mode, fresh seed.',
+  });
+  const settlement = Object.freeze(!official
+    ? { status: 'local-only', copy: 'Free practice stays local; nothing publishes in the background.' }
+    : acceptedForGlobalLeaderboard
+      ? { status: 'published', copy: 'Run is already published on-chain and reflected in leaderboard/profile state.' }
+      : backgroundSettlementQueued
+        ? { status: 'background-pending', copy: 'Settlement continues in the background while Run It Back stays available.' }
+        : { status: 'submit-ready', copy: 'Confirm or retry LitVM publish from this screen.' });
   const metricList = [
     Object.freeze({ id: 'score', label: 'Score', value: safeScore.toLocaleString() }),
     Object.freeze({ id: 'time', label: 'Time', value: `${Math.floor(safeElapsed / 60)}:${String(safeElapsed % 60).padStart(2, '0')}` }),
@@ -3580,10 +3603,12 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
       metricList.push(Object.freeze({ id: 'vs-target', label: 'Vs Target', value: delta >= 0 ? `${stamp} under` : `${stamp} over` }));
     }
   }
+  if (personalBest.isNewBest) metricList.push(Object.freeze({ id: 'personal-best', label: 'PB Flash', value: `NEW BEST +${personalBest.delta.toLocaleString()}` }));
   if (killedBy) metricList.push(Object.freeze({ id: 'killed-by', label: 'Killed By', value: String(killedBy) }));
   if (bestUpgrade) metricList.push(Object.freeze({ id: 'best-upgrade', label: 'Best Augment', value: String(bestUpgrade) }));
   if (runSeed !== null && runSeed !== undefined) metricList.push(Object.freeze({ id: 'run-seed', label: 'Run Seed', value: String(runSeed) }));
   const metrics = Object.freeze(metricList);
+  const runItBackAction = Object.freeze({ id: 'run-it-back', label: 'Run It Back', cost: oneMoreRun.copy, target: 'instant-restart', enabled: true, estimatedSeconds: oneMoreRun.estimatedRestartSeconds });
   const baseActions = [
     Object.freeze({ id: official ? 'play-again-ranked' : 'play-again-free', label: official ? 'Play Again Ranked' : 'Play Again Free', cost: official ? 'requires new testnet credit' : 'free', target: 'level-intro', enabled: true }),
     Object.freeze({ id: 'return-to-game-menu', label: 'Game Menu', cost: 'none', target: 'mode-select', enabled: true }),
@@ -3597,7 +3622,11 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
       title: 'Practice Run Complete',
       metrics,
       trackingCopy: 'Free practice result is not tracked: no progress, achievements, official scores, or transactions were written.',
-      actions: Object.freeze(baseActions),
+      actions: Object.freeze([runItBackAction, ...baseActions]),
+      oneMoreRun,
+      personalBest,
+      streak,
+      settlement,
       exitRampCopy: LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.find((ramp) => ramp.id === 'return-to-arcade')?.copy,
     });
   }
@@ -3611,9 +3640,14 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
       ? 'Score published on-chain to LitVM and synced to the global leaderboard, achievements, and your profile.'
       : 'Publishing your run to LitVM… confirm the transaction in your wallet. If you declined or it failed, use Retry Publish.',
     actions: Object.freeze([
-      Object.freeze({ id: 'submit-official-score', label: acceptedForGlobalLeaderboard ? 'Published On-Chain ✓' : 'Retry Publish', cost: 'zkLTC gas', target: 'parent-sync', enabled: !acceptedForGlobalLeaderboard }),
+      runItBackAction,
+      Object.freeze({ id: 'submit-official-score', label: acceptedForGlobalLeaderboard ? 'Published On-Chain ✓' : 'Retry Publish', cost: settlement.copy, target: 'parent-sync', enabled: !acceptedForGlobalLeaderboard }),
       ...baseActions,
     ]),
+    oneMoreRun,
+    personalBest,
+    streak,
+    settlement,
     exitRampCopy: LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.find((ramp) => ramp.id === 'return-to-arcade')?.copy,
   });
 }

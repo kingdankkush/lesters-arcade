@@ -1405,6 +1405,9 @@ let lastSettlementError = null;
 // button can re-attempt the LitVM transaction without replaying the run.
 let lastSettlementInput = null;
 let lastRunStatsForSettlement = null;
+let lastRunPreviousBestScore = 0;
+let sessionRunStreak = 0;
+let lastSettlementQueued = false;
 // True only after the run actually published on-chain (or simulated for mock).
 // Drives the game-over "Published ✓" vs "Retry Publish" state, so a declined
 // wallet tx is never shown as a successful publish.
@@ -1928,6 +1931,15 @@ function renderCombatSandboxStatus() {
   dom.combatRunStatus.dataset.state = model.state;
 }
 
+function currentPlayerBestScoreForMode(mode = currentSession?.mode ?? officialSelectedMode) {
+  if (!connectedWallet) return 0;
+  const snapshot = buildPlayerArcadeSnapshot(state, connectedWallet);
+  const progress = snapshot.progress?.['lester-blaster'];
+  return mode === 'free'
+    ? Math.max(0, Math.round(progress?.bestFreeScore ?? 0))
+    : Math.max(0, Math.round(progress?.bestPaidScore ?? 0));
+}
+
 function gameplaySyncCopy() {
   const modeCopy = officialSelectedMode === 'ranked'
     ? 'Ranked testnet: official score sync is held until game-over submission; restart requires a new paid credit.'
@@ -1968,6 +1980,9 @@ function currentGameOverSummaryModel() {
     killedBy: cleared ? null : combat.killedBy,
     bestUpgrade: bestRoguelikeUpgradeTitle(),
     runSeed: combat.roguelikeRun?.seed ?? null,
+    previousBestScore: lastRunPreviousBestScore || currentPlayerBestScoreForMode(session?.mode),
+    sessionStreak: sessionRunStreak || 1,
+    backgroundSettlementQueued: Boolean(lastSettlementQueued && !lastSettlementSucceeded),
   });
 }
 
@@ -2007,12 +2022,16 @@ function renderGameOverSummary() {
 
   const metricGrid = el('div', { className: 'game-over-summary-grid' });
   for (const metric of summary.metrics) {
-    const card = el('article', { className: 'summary-metric-card' });
+    const card = el('article', { className: `summary-metric-card ${metric.id === 'personal-best' ? 'summary-metric-card-pb-flash' : ''}` });
     appendText(card, 'span', metric.label, 'summary-metric-label');
     appendText(card, 'strong', metric.value, 'summary-metric-value');
     metricGrid.append(card);
   }
   dom.combatGameOverSummary.append(metricGrid);
+
+  const loopNote = el('p', { className: 'game-over-one-more-run-copy' });
+  loopNote.textContent = `${summary.oneMoreRun.copy} ${summary.streak.copy} ${summary.settlement.copy}`;
+  dom.combatGameOverSummary.append(loopNote);
 
   const actionNote = el('p', { className: 'game-over-action-copy' });
   const continueCopy = combat.clearedCampaignLevelId && nextLevel
@@ -2021,9 +2040,10 @@ function renderGameOverSummary() {
   actionNote.textContent = `${summary.actions.map((action) => `${action.label}: ${action.cost}`).join(' // ')}.${continueCopy} ${summary.exitRampCopy}`;
   dom.combatGameOverSummary.append(actionNote);
 
-  const replayButton = el('button', { className: 'combat-action-button combat-action-button-primary' });
+  const replayButton = el('button', { className: 'combat-action-button combat-action-button-primary run-it-back-button' });
   replayButton.type = 'button';
-  replayButton.textContent = 'Play Again';
+  replayButton.dataset.action = summary.oneMoreRun.primaryActionId;
+  replayButton.textContent = `Run It Back (${summary.oneMoreRun.estimatedRestartSeconds}s)`;
   replayButton.addEventListener('click', () => { playSfxCue('menu-click'); restartCombatRun(); });
   dom.combatGameOverSummary.append(replayButton);
 
@@ -2041,6 +2061,9 @@ function renderGameOverSummary() {
 
 function submitCombatGameOver() {
   if (!combat.gameOver || !currentSession?.isPaid || combat.gameOverSubmitted) return;
+  lastRunPreviousBestScore = currentPlayerBestScoreForMode(currentSession?.mode);
+  sessionRunStreak += 1;
+  lastSettlementQueued = false;
   const result = recordScore(state, currentSession, Math.max(0, Math.round(combat.score)), {
     distanceMeters: Math.round((combat.elapsedGameSeconds || 0) * 2.7),
     elapsedSeconds: Math.round(combat.elapsedGameSeconds || 0),
@@ -2089,6 +2112,7 @@ function submitCombatGameOver() {
   // Retained so the Retry Publish button can re-attempt if the player declines
   // the wallet tx or it errors.
   if (result.acceptedForGlobalLeaderboard && result.settlementInput) {
+    lastSettlementQueued = true;
     lastSettlementInput = result.settlementInput;
     lastRunStatsForSettlement = {
       kills: combat.kills,
@@ -2096,6 +2120,8 @@ function submitCombatGameOver() {
       survivalSeconds: Math.round(combat.elapsedGameSeconds || 0),
       bossId: combat.bossDefeated ? lastBossId : null,
     };
+    renderGameOverSummary();
+    renderCombatMenuActionGrid();
     settleRankedRun(lastSettlementInput, lastRunStatsForSettlement);
   }
 }
@@ -2127,6 +2153,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
   if (!integrity.rankable) {
     console.warn('[integrity] ranked run rejected as implausible:', integrity.flags);
     lastSettlementError = 'This run could not be verified as a legitimate ranked result and was not published on-chain.';
+    lastSettlementQueued = false;
     lastSettlementSucceeded = false;
     if (dom.combatStatus) {
       dom.combatStatus.textContent = 'Run not published: it failed the ranked integrity check (implausible score/time). Free-mode practice is unaffected.';
@@ -2182,6 +2209,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
       }
       lastSettlementTxUrl = explorerTxUrl(txHash);
       lastSettlementError = null;
+      lastSettlementQueued = false;
       lastSettlementSucceeded = true;
       if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
       if (officialAppStep === 'profile') renderOfficialProfile();
@@ -2199,6 +2227,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         dom.combatStatus.textContent = `Score saved locally, but the on-chain publish did not complete: ${reason} You can retry from the game-over screen.`;
       }
       lastSettlementError = reason;
+      lastSettlementQueued = false;
       lastSettlementSucceeded = false;
       renderGameOverSummary();
       renderCombatMenuActionGrid();
@@ -2213,6 +2242,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     settlement.integrity = integrity;
     applySettlement(state, settlement);
     persistArcadeStateSoon();
+    lastSettlementQueued = false;
     lastSettlementSucceeded = true;
     const shortTx = settlement.primaryTxHash ? `${settlement.primaryTxHash.slice(0, 10)}…${settlement.primaryTxHash.slice(-6)}` : 'pending';
     if (dom.combatStatus) {
@@ -5641,8 +5671,10 @@ async function startCombat(options = {}) {
   combat.gameOverSubmitted = false;
   // Reset on-chain settlement tracking for the new run.
   lastSettlementSucceeded = false;
+  lastSettlementQueued = false;
   lastSettlementInput = null;
   lastRunStatsForSettlement = null;
+  lastRunPreviousBestScore = currentPlayerBestScoreForMode(currentSession?.mode);
   lastSettlementError = null;
   lastSettlementTxUrl = null;
   combat.gameOverReason = '';

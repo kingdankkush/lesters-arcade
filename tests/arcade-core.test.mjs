@@ -1920,6 +1920,17 @@ test('game-over summary model separates free practice from ranked submit, replay
     bossesDefeated: 1,
     acceptedForGlobalLeaderboard: true,
   });
+  const oneMoreRunSummary = buildGameOverSummaryModel({
+    session: paidSession,
+    score: 15000,
+    elapsedSeconds: 388,
+    kills: 44,
+    bossesDefeated: 1,
+    acceptedForGlobalLeaderboard: false,
+    previousBestScore: 12840,
+    sessionStreak: 4,
+    backgroundSettlementQueued: true,
+  });
 
   assert.equal(freeSummary.channel, 'practice');
   assert.equal(freeSummary.trackingCopy.includes('not tracked'), true);
@@ -1934,6 +1945,24 @@ test('game-over summary model separates free practice from ranked submit, replay
 
   assert.equal(syncedSummary.actions.find((action) => action.id === 'submit-official-score').enabled, false);
   assert.equal(syncedSummary.trackingCopy.includes('published'), true);
+
+  assert.equal(oneMoreRunSummary.oneMoreRun.primaryActionId, 'run-it-back');
+  assert.equal(oneMoreRunSummary.oneMoreRun.estimatedRestartSeconds <= 3, true);
+  assert.equal(oneMoreRunSummary.actions[0].id, 'run-it-back');
+  assert.equal(oneMoreRunSummary.actions[0].enabled, true);
+  assert.equal(oneMoreRunSummary.personalBest.isNewBest, true);
+  assert.equal(oneMoreRunSummary.personalBest.delta, 2160);
+  assert.equal(oneMoreRunSummary.metrics.some((metric) => metric.id === 'personal-best' && metric.value.includes('+2,160')), true);
+  assert.equal(oneMoreRunSummary.streak.count, 4);
+  assert.equal(oneMoreRunSummary.streak.copy.includes('4-run streak'), true);
+  assert.equal(oneMoreRunSummary.settlement.status, 'background-pending');
+  assert.equal(oneMoreRunSummary.settlement.copy.includes('background'), true);
+
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.match(mainSource, /run-it-back-button/);
+  assert.match(mainSource, /summary-metric-card-pb-flash/);
+  assert.match(mainSource, /sessionRunStreak/);
+  assert.match(mainSource, /lastSettlementQueued/);
 });
 
 test('enemy AI state machine formalizes readable tells, cover choices, role caps, and recovery windows', () => {
