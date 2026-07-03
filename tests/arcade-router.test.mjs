@@ -8,6 +8,7 @@ import {
   isInGameStep,
   isGuestAllowedStep,
   DEFAULT_GAME_SLUG,
+  gameIdForSlug,
 } from '../apps/portal/src/arcade-router.mjs';
 
 test('routeForView maps each view step to the canonical URL path', () => {
@@ -23,6 +24,12 @@ test('routeForView maps each view step to the canonical URL path', () => {
   );
   // Gameplay with no session id (free mode) falls back to the game page.
   assert.equal(routeForView('gameplay', { gameSlug: 'hard-money-heroes' }), '/games/hard-money-heroes');
+  assert.equal(routeForView('mode-select', { gameSlug: 'chikun', routeBase: 'play' }), '/play/chikun');
+  assert.equal(routeForView('gameplay', { gameSlug: 'chikun', routeBase: 'play' }), '/play/chikun');
+  assert.equal(
+    routeForView('gameplay', { gameSlug: 'chikun', sessionId: 'game-session-000000056', routeBase: 'play' }),
+    '/play/chikun/game-session-000000056',
+  );
   assert.equal(routeForView('profile'), '/profile');
   assert.equal(routeForView('leaderboards'), '/leaderboards');
   assert.equal(routeForView('settings'), '/settings');
@@ -32,6 +39,11 @@ test('viewForPath parses URLs back into view intents (connected)', () => {
   assert.deepEqual(viewForPath('/', { connected: true }), { step: 'wallet-splash', gameSlug: null, sessionId: null });
   assert.deepEqual(viewForPath('/games', { connected: true }), { step: 'cabinet-select', gameSlug: null, sessionId: null });
   assert.deepEqual(viewForPath('/games/hard-money-heroes', { connected: true }), { step: 'mode-select', gameSlug: 'hard-money-heroes', sessionId: null });
+  assert.deepEqual(viewForPath('/play/chikun', { connected: true }), { step: 'mode-select', gameSlug: 'chikun', sessionId: null });
+  assert.deepEqual(
+    viewForPath('/play/chikun/game-session-000000056', { connected: true }),
+    { step: 'gameplay', gameSlug: 'chikun', sessionId: 'game-session-000000056' },
+  );
   assert.deepEqual(
     viewForPath('/games/hard-money-heroes/game-session-000000001', { connected: true }),
     { step: 'gameplay', gameSlug: 'hard-money-heroes', sessionId: 'game-session-000000001' },
@@ -46,6 +58,8 @@ test('viewForPath is guest-first: arcade + free game entry reachable without a w
   assert.equal(viewForPath('/games', { connected: false }).step, 'cabinet-select');
   assert.equal(viewForPath('/games/hard-money-heroes', { connected: false }).step, 'mode-select');
   assert.equal(viewForPath('/games/hard-money-heroes', { connected: false }).gameSlug, 'hard-money-heroes');
+  assert.equal(viewForPath('/play/chikun', { connected: false }).step, 'mode-select');
+  assert.equal(viewForPath('/play/chikun', { connected: false }).gameSlug, 'chikun');
 });
 
 test('viewForPath gates ranked sessions but lets guests browse profile/scores/settings', () => {
@@ -87,6 +101,8 @@ test('round-trip: routeForView -> viewForPath is stable for key views', () => {
     ['cabinet-select', {}],
     ['mode-select', { gameSlug: 'hard-money-heroes' }],
     ['gameplay', { gameSlug: 'hard-money-heroes', sessionId: 'game-session-000000042' }],
+    ['mode-select', { gameSlug: 'chikun', routeBase: 'play' }],
+    ['gameplay', { gameSlug: 'chikun', sessionId: 'game-session-000000056', routeBase: 'play' }],
   ];
   for (const [step, ctx] of cases) {
     const path = routeForView(step, ctx);
@@ -100,6 +116,10 @@ test('gameSlugFor resolves internal engine ids to the public slug', () => {
   assert.equal(gameSlugFor('hard-money-heroes'), 'hard-money-heroes');
   assert.equal(gameSlugFor('hmh'), 'hard-money-heroes');
   assert.equal(gameSlugFor('lester-blaster'), 'hard-money-heroes');
+  assert.equal(gameSlugFor('chikun'), 'chikun');
+  assert.equal(gameIdForSlug('hard-money-heroes'), 'lester-blaster');
+  assert.equal(gameIdForSlug('chikun'), 'chikun');
+  assert.equal(gameIdForSlug('mystery'), 'lester-blaster');
   assert.equal(gameSlugFor('unknown-game'), DEFAULT_GAME_SLUG);
 });
 

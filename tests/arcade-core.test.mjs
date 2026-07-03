@@ -655,6 +655,12 @@ test('game selection model presents arcade cabinets as SNES-style cartridges con
   assert.equal(lesterBlaster.presentation.medium, 'snes-cartridge');
   assert.equal(lesterBlaster.presentation.cabinetAsset.endsWith('cabinet-lester-blaster.svg'), true);
   assert.equal(lesterBlaster.presentation.cartridgeAsset.endsWith('cartridge-lester-blaster.svg'), true);
+  assert.equal(lesterBlaster.playable, true);
+  assert.equal(lesterBlaster.routePath, '/play/hard-money-heroes');
+  const chikun = cartridges.find((cartridge) => cartridge.id === 'chikun');
+  assert.equal(chikun.playable, true);
+  assert.equal(chikun.routePath, '/play/chikun');
+  assert.equal(chikun.discoveryTags.includes('tap'), true);
 });
 
 test('Lester Blaster design targets five-minute average runs and 15-20 minute master runs with ten rotating bosses', () => {

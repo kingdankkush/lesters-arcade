@@ -19,6 +19,14 @@ export const ARCADE_GAME_SLUGS = Object.freeze({
   'hard-money-heroes': 'hard-money-heroes',
   hmh: 'hard-money-heroes',
   'lester-blaster': 'hard-money-heroes',
+  chikun: 'chikun',
+  'mweb-invaders': 'mweb-invaders',
+  'litvm-legends': 'litvm-legends',
+});
+
+export const ARCADE_GAME_IDS_BY_SLUG = Object.freeze({
+  'hard-money-heroes': 'lester-blaster',
+  chikun: 'chikun',
   'mweb-invaders': 'mweb-invaders',
   'litvm-legends': 'litvm-legends',
 });
@@ -57,8 +65,17 @@ export function gameSlugFor(gameId) {
   return ARCADE_GAME_SLUGS[gameId] ?? DEFAULT_GAME_SLUG;
 }
 
+export function gameIdForSlug(gameSlug) {
+  return ARCADE_GAME_IDS_BY_SLUG[gameSlug] ?? ARCADE_GAME_IDS_BY_SLUG[DEFAULT_GAME_SLUG];
+}
+
+function gameRoutePrefix(routeBase = 'games') {
+  return routeBase === 'play' ? '/play' : '/games';
+}
+
 // Build the canonical URL path for a given view + context.
-export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = null } = {}) {
+export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = null, routeBase = 'games' } = {}) {
+  const gamePrefix = gameRoutePrefix(routeBase);
   switch (step) {
     case 'wallet-splash':
       return '/';
@@ -68,10 +85,10 @@ export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = n
     case 'mode-select':
     case 'character-select':
     case 'level-one-intro':
-      return `/games/${gameSlug}`;
+      return `${gamePrefix}/${gameSlug}`;
     case 'gameplay':
       // Ranked sessions get a session URL; free / no-session falls back to the game page.
-      return sessionId ? `/games/${gameSlug}/${sessionId}` : `/games/${gameSlug}`;
+      return sessionId ? `${gamePrefix}/${gameSlug}/${sessionId}` : `${gamePrefix}/${gameSlug}`;
     case 'profile':
       return '/profile';
     case 'leaderboards':
@@ -98,9 +115,10 @@ export function viewForPath(pathname, { connected = false } = {}) {
   if (parts[0] === 'leaderboards') return guestGate('leaderboards', connected);
   if (parts[0] === 'settings') return guestGate('settings', connected);
 
-  if (parts[0] === 'games') {
+  if (parts[0] === 'games' || parts[0] === 'play') {
     // /games -> cabinet select (guest-allowed: browse before connecting)
-    if (parts.length === 1) return guestGate('cabinet-select', connected);
+    if (parts[0] === 'games' && parts.length === 1) return guestGate('cabinet-select', connected);
+    if (parts[0] === 'play' && parts.length === 1) return guestGate('cabinet-select', connected);
     const gameSlug = parts[1];
     // /games/<slug> -> game app entry (mode select). Guest-allowed so guests
     // can reach Free mode; ranked is gated at mode-select in the UI.

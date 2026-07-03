@@ -31,7 +31,7 @@ import { HMH_FINAL_WORLD_AMBIENT_ASSETS, finalWorldAmbientAssetByKey } from './a
 import { HMH_LEVEL_TWO_FINAL_CITY_ASSETS, levelTwoFinalCityAssetByKey } from './assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, levelThreeFinalGetawayAssetByKey } from './assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GROUND } from './assets/generated/hmh-level-three-ground/final-getaway/level3-final-getaway-ground-manifest.mjs';
-import { routeForView, viewForPath, gameSlugFor, isGuestAllowedStep } from './src/arcade-router.mjs';
+import { routeForView, viewForPath, gameSlugFor, gameIdForSlug, isGuestAllowedStep } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
   generateRoadNetwork,
@@ -3001,7 +3001,7 @@ function exitToArcade() {
   combat.keys.clear();
   setArcadeMusicContext('arcade');
   currentSession = null;
-  selectedGameId = 'hmh';
+  selectedGameId = 'lester-blaster';
   officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash';
   officialSelectedMode = 'free';
   if (dom.combatMenuPanel) dom.combatMenuPanel.hidden = true;
@@ -3368,7 +3368,7 @@ function syncRouteForView(step) {
   if (suppressRouteSync || typeof window === 'undefined' || !window.history?.pushState) return;
   const gameSlug = gameSlugFor(selectedGameId);
   const sessionId = currentSession?.urlSessionId ?? null;
-  const path = routeForView(step, { gameSlug, sessionId });
+  const path = routeForView(step, { gameSlug, sessionId, routeBase: 'play' });
   if (window.location.pathname !== path) {
     window.history.pushState({ step, gameSlug, sessionId }, '', path);
   }
@@ -12332,7 +12332,7 @@ function ensureTouchControls(profile) {
 function applyRouteFromLocation() {
   if (typeof window === 'undefined') return;
   const { step, gameSlug } = viewForPath(window.location.pathname, { connected: Boolean(connectedWallet) });
-  if (gameSlug) selectedGameId = 'hmh';
+  if (gameSlug) selectedGameId = gameIdForSlug(gameSlug);
   suppressRouteSync = true;
   officialAppStep = step;
   try {

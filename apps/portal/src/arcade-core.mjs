@@ -33,6 +33,7 @@ import {
 import { HMH_COPY_SHEET } from './hmh-copy-sheet.mjs';
 import { normalizeProfileIdentity } from './hmh-profile-parity.mjs';
 import { createSeededSubstreams } from './seeded-rng.mjs';
+import { gameSlugFor } from './arcade-router.mjs';
 
 export {
   LEADERBOARD_CADENCES,
@@ -4149,18 +4150,34 @@ export function getSessionByUrlId(state, urlSessionId) {
 }
 
 export function getCartridgeSelectModel() {
-  return ARCADE_GAMES.map((game) => ({
-    id: game.id,
-    title: game.title,
-    status: game.status,
-    genre: game.genre,
-    developer: game.developer,
-    tagline: game.tagline,
-    entryFeeMicroUsdc: game.entryFeeMicroUsdc,
-    systemRole: game.systemRole,
-    parentSystem: game.parentSystem,
-    presentation: { ...game.presentation },
-  }));
+  return ARCADE_GAMES.map((game) => {
+    const slug = gameSlugFor(game.id);
+    const discoveryText = `${game.genre ?? ''} ${game.tagline ?? ''}`.toLowerCase();
+    const discoveryTags = [
+      game.status,
+      game.presentation?.medium,
+      ...(discoveryText.includes('tap') ? ['tap'] : []),
+      ...(discoveryText.includes('run') ? ['run-and-gun'] : []),
+      ...(discoveryText.includes('pinball') ? ['pinball'] : []),
+      ...(discoveryText.includes('platform') ? ['platformer'] : []),
+    ].filter(Boolean);
+    return {
+      id: game.id,
+      title: game.title,
+      status: game.status,
+      playable: game.status === 'playable',
+      routePath: `/play/${slug}`,
+      discoveryTags: Object.freeze([...new Set(discoveryTags)]),
+      cabinet: game.cabinet,
+      genre: game.genre,
+      developer: game.developer,
+      tagline: game.tagline,
+      entryFeeMicroUsdc: game.entryFeeMicroUsdc,
+      systemRole: game.systemRole,
+      parentSystem: game.parentSystem,
+      presentation: { ...game.presentation },
+    };
+  });
 }
 
 export function calculateRevenueSplit(amountMicroUnits, splitBps = DEFAULT_REVENUE_SPLIT_BPS, { settlementGasMicroUnits = null } = {}) {
