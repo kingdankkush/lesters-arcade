@@ -24,6 +24,7 @@ import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterColli
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
+import { buildTerrainBlobCell } from './src/hmh-terrain-blob-map.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
@@ -9285,29 +9286,40 @@ function groundPlanPatternSource(asset, image) {
 function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   const plan = getCombatGroundPlan();
   const textureGroups = new Map();
+  const shadowPath = new Path2D();
+  const waterRipplePath = new Path2D();
+  const bridgeDeckPath = new Path2D();
   const fallbackTiles = [];
   const worldOrigin = isoToScreen(0, 0);
   const cameraWorldOffsetX = worldOrigin.x;
   const cameraWorldOffsetY = worldOrigin.y + 64;
 
+  const addDiamond = (path, tile) => {
+    path.moveTo(tile.cx, tile.cy - ISO_TILE_HEIGHT / 2);
+    path.lineTo(tile.cx + ISO_TILE_WIDTH / 2, tile.cy);
+    path.lineTo(tile.cx, tile.cy + ISO_TILE_HEIGHT / 2);
+    path.lineTo(tile.cx - ISO_TILE_WIDTH / 2, tile.cy);
+    path.closePath();
+  };
+
   for (const tile of visibleTiles) {
-    const zone = plan.zoneAt(tile.worldX, tile.worldY);
-    const asset = plan.textureForKey(zone.textureKey);
+    const terrainCell = buildTerrainBlobCell(plan, tile.worldX, tile.worldY);
+    const asset = plan.textureForKey(terrainCell.textureKey);
     const image = sbsGroundTileImage(asset);
     if (!imageReady(image)) {
       fallbackTiles.push(tile);
       continue;
     }
-    let group = textureGroups.get(zone.textureKey);
+    const groupKey = `${terrainCell.textureKey}|blob-${terrainCell.blob.variantIndex}|elev-${terrainCell.elevation.band}`;
+    let group = textureGroups.get(groupKey);
     if (!group) {
-      group = { asset, image, path: new Path2D() };
-      textureGroups.set(zone.textureKey, group);
+      group = { asset, image, path: new Path2D(), terrainCell };
+      textureGroups.set(groupKey, group);
     }
-    group.path.moveTo(tile.cx, tile.cy - ISO_TILE_HEIGHT / 2);
-    group.path.lineTo(tile.cx + ISO_TILE_WIDTH / 2, tile.cy);
-    group.path.lineTo(tile.cx, tile.cy + ISO_TILE_HEIGHT / 2);
-    group.path.lineTo(tile.cx - ISO_TILE_WIDTH / 2, tile.cy);
-    group.path.closePath();
+    addDiamond(group.path, tile);
+    if (terrainCell.renderLayers.includes('bridge-deck')) addDiamond(bridgeDeckPath, tile);
+    if (terrainCell.renderLayers.includes('water-ripple')) addDiamond(waterRipplePath, tile);
+    if (terrainCell.vfx.includes('bridge-shadow') || terrainCell.vfx.includes('terrain-cast-shadow')) addDiamond(shadowPath, tile);
   }
 
   for (const group of textureGroups.values()) {
@@ -9320,6 +9332,15 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     ctx.fillStyle = pattern;
     ctx.fill(group.path);
   }
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(8, 5, 3, 0.22)';
+  ctx.fill(shadowPath);
+  ctx.fillStyle = `rgba(95, 226, 255, ${0.06 + Math.sin(combat.frame * 0.05) * 0.025})`;
+  ctx.fill(waterRipplePath);
+  ctx.fillStyle = 'rgba(120, 83, 42, 0.18)';
+  ctx.fill(bridgeDeckPath);
+  ctx.restore();
 
   for (const tile of fallbackTiles) {
     drawProductionIsoTile(ctx, tile.cx, tile.cy, tile.worldX, tile.worldY);
