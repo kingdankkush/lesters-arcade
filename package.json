@@ -61,6 +61,7 @@
     "assets:hmh:curated-level-kit": "python scripts/build-hmh-curated-level-kit.py",
     "assets:hmh:authored-stamp-art": "python scripts/generate-hmh-level-one-authored-stamp-art.py",
     "assets:hmh:pickup-icons": "python scripts/generate-hmh-pickup-icons.py",
+    "assets:hmh:achievement-atlas": "python scripts/generate-hmh-achievement-atlas.py",
     "repo:audit": "node scripts/repo-cleanup-audit.mjs",
     "repo:health": "node scripts/repo-health.mjs",
     "vault:status": "node scripts/vault-sync.mjs status"

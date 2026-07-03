@@ -1613,6 +1613,17 @@ function renderArcadeIcon(icon, label = '') {
   return node;
 }
 
+function renderAchievementIcon({ iconSrc = null, icon = '🏅', label = 'Achievement badge' } = {}) {
+  if (iconSrc) {
+    return el('img', {
+      className: 'achievement-icon achievement-icon-image',
+      src: iconSrc,
+      alt: label,
+    });
+  }
+  return el('span', { className: 'achievement-icon', textContent: icon, ariaLabel: label || icon, role: 'img' });
+}
+
 function renderRotatingCabinetSprite(sprite, variant = 'splash') {
   const rotator = el('div', {
     className: `hmh-cabinet-rotator ${variant === 'card' ? 'cabinet-card-rotator' : 'splash-cabinet-rotator'}`,
@@ -4121,7 +4132,7 @@ function renderOfficialProfile() {
     badge.tabIndex = 0;
     badge.setAttribute('aria-label', `${a.title}. ${a.description}`);
     const tooltip = el('span', { className: 'achievement-tooltip', textContent: a.description });
-    appendText(badge, 'span', a.unlocked ? (a.icon ?? '🏅') : '🔒', 'achievement-icon');
+    badge.append(renderAchievementIcon({ iconSrc: a.iconSrc, icon: a.unlocked ? (a.icon ?? '🏅') : '🔒', label: a.title }));
     appendText(badge, 'span', a.title, 'achievement-name');
     badge.append(tooltip);
     grid.append(badge);

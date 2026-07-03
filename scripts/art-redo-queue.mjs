@@ -9,6 +9,7 @@ import {
 } from '../apps/portal/src/arcade-core.mjs';
 import { HMH_FINAL_COMBAT_VFX_PACK } from '../apps/portal/assets/generated/hmh-final-combat-vfx/hmh-final-combat-vfx-manifest.mjs';
 import { HMH_PICKUP_ICON_PACK } from '../apps/portal/assets/generated/hmh-pickup-icons/hmh-pickup-icons-manifest.mjs';
+import { HMH_ACHIEVEMENT_ATLAS } from '../apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.mjs';
 import { buildGlobalArtCensus } from './global-art-census.mjs';
 
 const ORIGINAL_POLICY = 'Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.';
@@ -103,31 +104,39 @@ function achievementQueueItems(achievements = ACHIEVEMENT_LIST) {
     byTier.set(achievement.tier, (byTier.get(achievement.tier) ?? 0) + 1);
     byUnlockType.set(achievement.unlockType, (byUnlockType.get(achievement.unlockType) ?? 0) + 1);
   }
-  const tierItems = [...byTier.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([tier, count]) => ({
-    runtimeId: `achievement-tier-${tier}`,
-    title: `${tier.toUpperCase()} badge atlas`,
-    priority: tier === 'bronze' || tier === 'silver' ? 'P1' : 'P0',
-    status: 'needs-badge-atlas-certification',
-    sourcePolicy: ORIGINAL_POLICY,
-    reason: `${count} runtime achievements use ${tier} tier language; replace emoji/placeholder badge reads with tier-consistent medals.`,
-    acceptance: Object.freeze([
-      'Locked and unlocked badge states exist for every achievement in this tier.',
-      'Badge shape/color remains readable in profile grid, toast, and game-over summary.',
-      'Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback.',
-    ]),
-  }));
-  const unlockItems = [...byUnlockType.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([unlockType, count]) => ({
-    runtimeId: `achievement-unlock-${unlockType}`,
-    title: `${unlockType} achievement icon language`,
-    priority: ['boss', 'skill', 'level-clear'].includes(unlockType) ? 'P0' : 'P1',
-    status: 'needs-icon-language-pass',
-    sourcePolicy: ORIGINAL_POLICY,
-    reason: `${count} achievements share unlock type ${unlockType}; define a visual motif so badge art is not one-off noise.`,
-    acceptance: Object.freeze([
-      'Icon motif is distinct from pickup and weapon icons.',
-      'Motif works in grayscale/value for colorblind mode.',
-    ]),
-  }));
+  const tierItems = [...byTier.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([tier, count]) => {
+    const tierAsset = HMH_ACHIEVEMENT_ATLAS.tiersById?.[tier] ?? null;
+    return {
+      runtimeId: `achievement-tier-${tier}`,
+      title: `${tier.toUpperCase()} badge atlas`,
+      priority: tier === 'bronze' || tier === 'silver' ? 'P1' : 'P0',
+      status: tierAsset ? 'manifest-backed-tier-atlas' : 'needs-badge-atlas-certification',
+      sourcePolicy: tierAsset?.sourcePolicy ?? ORIGINAL_POLICY,
+      iconSrc: tierAsset?.src ?? null,
+      reason: `${count} runtime achievements use ${tier} tier language; replace emoji/placeholder badge reads with tier-consistent medals.`,
+      acceptance: Object.freeze([
+        'Locked and unlocked badge states exist for every achievement in this tier.',
+        'Badge shape/color remains readable in profile grid, toast, and game-over summary.',
+        'Atlas filenames map directly to ACHIEVEMENT_LIST ids or an approved tier fallback.',
+      ]),
+    };
+  });
+  const unlockItems = [...byUnlockType.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([unlockType, count]) => {
+    const unlockAsset = HMH_ACHIEVEMENT_ATLAS.unlockTypesById?.[unlockType] ?? null;
+    return {
+      runtimeId: `achievement-unlock-${unlockType}`,
+      title: `${unlockType} achievement icon language`,
+      priority: ['boss', 'skill', 'level-clear'].includes(unlockType) ? 'P0' : 'P1',
+      status: unlockAsset ? 'manifest-backed-unlock-type-icon' : 'needs-icon-language-pass',
+      sourcePolicy: unlockAsset?.sourcePolicy ?? ORIGINAL_POLICY,
+      iconSrc: unlockAsset?.src ?? null,
+      reason: `${count} achievements share unlock type ${unlockType}; define a visual motif so badge art is not one-off noise.`,
+      acceptance: Object.freeze([
+        'Icon motif is distinct from pickup and weapon icons.',
+        'Motif works in grayscale/value for colorblind mode.',
+      ]),
+    };
+  });
   return freezeItems([...tierItems, ...unlockItems]);
 }
 
@@ -202,7 +211,7 @@ export function buildArtRedoQueue({ repoRoot = repoRootFromHere() } = {}) {
       id: 'achievements',
       title: 'Achievements',
       summary: categorySummary(achievements),
-      coverage: Object.freeze({ runtimeAchievementCount: ACHIEVEMENT_LIST.length, tiers: Object.freeze(achievementTiers) }),
+      coverage: Object.freeze({ runtimeAchievementCount: ACHIEVEMENT_LIST.length, tiers: Object.freeze(achievementTiers), manifestId: HMH_ACHIEVEMENT_ATLAS.id, manifestAchievementCount: HMH_ACHIEVEMENT_ATLAS.achievementCount, unlockTypeCount: HMH_ACHIEVEMENT_ATLAS.unlockTypeCount }),
       items: achievements,
     },
     {

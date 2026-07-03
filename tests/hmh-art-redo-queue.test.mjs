@@ -45,8 +45,11 @@ test('WO-20 achievement and VFX queues are tied to runtime definitions and final
   const vfx = queue.categories.find((category) => category.id === 'vfx');
 
   assert.equal(achievements.coverage.runtimeAchievementCount, ACHIEVEMENT_LIST.length);
+  assert.equal(achievements.coverage.manifestId, 'hmh-achievement-atlas-v1');
+  assert.equal(achievements.coverage.manifestAchievementCount, ACHIEVEMENT_LIST.length);
   assert.equal(achievements.coverage.tiers.includes('mythic'), true);
   assert.ok(achievements.items.some((item) => /badge atlas/i.test(item.title)));
+  assert.equal(achievements.items.every((item) => /manifest-backed/.test(item.status)), true, 'achievement tier and unlock-type items should be manifest-backed');
   assert.equal(vfx.coverage.manifestAssetCount, HMH_FINAL_COMBAT_VFX_PACK.assetCount);
   assert.ok(vfx.items.some((item) => item.runtimeId === 'coin-pickup-pop'));
   assert.ok(vfx.items.some((item) => /missing/i.test(item.status)));

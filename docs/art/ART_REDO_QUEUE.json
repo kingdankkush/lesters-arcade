@@ -11,7 +11,7 @@
     "totalItemCount": 55,
     "p0Count": 19,
     "p1Count": 36,
-    "needsManifestCount": 38
+    "needsManifestCount": 17
   },
   "categories": [
     {
@@ -278,7 +278,7 @@
         "itemCount": 21,
         "p0Count": 7,
         "p1Count": 14,
-        "missingCount": 21
+        "missingCount": 0
       },
       "coverage": {
         "runtimeAchievementCount": 57,
@@ -289,15 +289,19 @@
           "mythic",
           "platinum",
           "silver"
-        ]
+        ],
+        "manifestId": "hmh-achievement-atlas-v1",
+        "manifestAchievementCount": 57,
+        "unlockTypeCount": 15
       },
       "items": [
         {
           "runtimeId": "achievement-tier-bronze",
           "title": "BRONZE badge atlas",
           "priority": "P1",
-          "status": "needs-badge-atlas-certification",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-tier-atlas",
+          "sourcePolicy": "Original repo-owned tier badge icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/tier-bronze.png",
           "reason": "10 runtime achievements use bronze tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
           "acceptance": [
             "Locked and unlocked badge states exist for every achievement in this tier.",
@@ -309,8 +313,9 @@
           "runtimeId": "achievement-tier-diamond",
           "title": "DIAMOND badge atlas",
           "priority": "P0",
-          "status": "needs-badge-atlas-certification",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-tier-atlas",
+          "sourcePolicy": "Original repo-owned tier badge icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/tier-diamond.png",
           "reason": "6 runtime achievements use diamond tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
           "acceptance": [
             "Locked and unlocked badge states exist for every achievement in this tier.",
@@ -322,8 +327,9 @@
           "runtimeId": "achievement-tier-gold",
           "title": "GOLD badge atlas",
           "priority": "P0",
-          "status": "needs-badge-atlas-certification",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-tier-atlas",
+          "sourcePolicy": "Original repo-owned tier badge icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/tier-gold.png",
           "reason": "12 runtime achievements use gold tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
           "acceptance": [
             "Locked and unlocked badge states exist for every achievement in this tier.",
@@ -335,8 +341,9 @@
           "runtimeId": "achievement-tier-mythic",
           "title": "MYTHIC badge atlas",
           "priority": "P0",
-          "status": "needs-badge-atlas-certification",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-tier-atlas",
+          "sourcePolicy": "Original repo-owned tier badge icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/tier-mythic.png",
           "reason": "6 runtime achievements use mythic tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
           "acceptance": [
             "Locked and unlocked badge states exist for every achievement in this tier.",
@@ -348,8 +355,9 @@
           "runtimeId": "achievement-tier-platinum",
           "title": "PLATINUM badge atlas",
           "priority": "P0",
-          "status": "needs-badge-atlas-certification",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-tier-atlas",
+          "sourcePolicy": "Original repo-owned tier badge icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/tier-platinum.png",
           "reason": "13 runtime achievements use platinum tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
           "acceptance": [
             "Locked and unlocked badge states exist for every achievement in this tier.",
@@ -361,8 +369,9 @@
           "runtimeId": "achievement-tier-silver",
           "title": "SILVER badge atlas",
           "priority": "P1",
-          "status": "needs-badge-atlas-certification",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-tier-atlas",
+          "sourcePolicy": "Original repo-owned tier badge icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/tier-silver.png",
           "reason": "10 runtime achievements use silver tier language; replace emoji/placeholder badge reads with tier-consistent medals.",
           "acceptance": [
             "Locked and unlocked badge states exist for every achievement in this tier.",
@@ -374,8 +383,9 @@
           "runtimeId": "achievement-unlock-boss",
           "title": "boss achievement icon language",
           "priority": "P0",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-boss.png",
           "reason": "7 achievements share unlock type boss; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -386,8 +396,9 @@
           "runtimeId": "achievement-unlock-collection",
           "title": "collection achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-collection.png",
           "reason": "5 achievements share unlock type collection; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -398,8 +409,9 @@
           "runtimeId": "achievement-unlock-combo",
           "title": "combo achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-combo.png",
           "reason": "4 achievements share unlock type combo; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -410,8 +422,9 @@
           "runtimeId": "achievement-unlock-enemy-hunt",
           "title": "enemy-hunt achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-enemy-hunt.png",
           "reason": "3 achievements share unlock type enemy-hunt; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -422,8 +435,9 @@
           "runtimeId": "achievement-unlock-grenade",
           "title": "grenade achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-grenade.png",
           "reason": "4 achievements share unlock type grenade; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -434,8 +448,9 @@
           "runtimeId": "achievement-unlock-kill",
           "title": "kill achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-kill.png",
           "reason": "4 achievements share unlock type kill; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -446,8 +461,9 @@
           "runtimeId": "achievement-unlock-level-clear",
           "title": "level-clear achievement icon language",
           "priority": "P0",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-level-clear.png",
           "reason": "4 achievements share unlock type level-clear; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -458,8 +474,9 @@
           "runtimeId": "achievement-unlock-login",
           "title": "login achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-login.png",
           "reason": "1 achievements share unlock type login; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -470,8 +487,9 @@
           "runtimeId": "achievement-unlock-melee",
           "title": "melee achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-melee.png",
           "reason": "2 achievements share unlock type melee; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -482,8 +500,9 @@
           "runtimeId": "achievement-unlock-paid-run",
           "title": "paid-run achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-paid-run.png",
           "reason": "1 achievements share unlock type paid-run; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -494,8 +513,9 @@
           "runtimeId": "achievement-unlock-score",
           "title": "score achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-score.png",
           "reason": "5 achievements share unlock type score; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -506,8 +526,9 @@
           "runtimeId": "achievement-unlock-skill",
           "title": "skill achievement icon language",
           "priority": "P0",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-skill.png",
           "reason": "5 achievements share unlock type skill; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -518,8 +539,9 @@
           "runtimeId": "achievement-unlock-survival",
           "title": "survival achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-survival.png",
           "reason": "4 achievements share unlock type survival; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -530,8 +552,9 @@
           "runtimeId": "achievement-unlock-volume",
           "title": "volume achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-volume.png",
           "reason": "6 achievements share unlock type volume; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",
@@ -542,8 +565,9 @@
           "runtimeId": "achievement-unlock-weapon",
           "title": "weapon achievement icon language",
           "priority": "P1",
-          "status": "needs-icon-language-pass",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-unlock-type-icon",
+          "sourcePolicy": "Original repo-owned unlock-type motif icon.",
+          "iconSrc": "./assets/generated/hmh-achievement-atlas/unlock-weapon.png",
           "reason": "2 achievements share unlock type weapon; define a visual motif so badge art is not one-off noise.",
           "acceptance": [
             "Icon motif is distinct from pickup and weapon icons.",

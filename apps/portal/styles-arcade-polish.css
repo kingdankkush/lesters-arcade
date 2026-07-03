@@ -813,6 +813,14 @@
 .achievement-badge.unlocked.tier-gold { border-color: #ffd54a; box-shadow: 0 0 12px rgba(255,213,74,0.45); }
 .achievement-badge.unlocked.tier-platinum { border-color: #7bf6ff; box-shadow: 0 0 14px rgba(123,246,255,0.5); }
 .achievement-icon { font-size: 1.6rem; line-height: 1; }
+.achievement-icon-image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 8px rgba(25,247,255,0.25));
+}
+.achievement-badge.locked .achievement-icon-image { filter: grayscale(0.8) drop-shadow(0 0 5px rgba(255,255,255,0.12)); opacity: 0.85; }
 .achievement-name { font-size: 0.64rem; color: #d6f6ff; line-height: 1.2; }
 .achievement-badge.locked .achievement-name { color: rgba(214,228,255,0.6); }
 .achievement-tooltip {

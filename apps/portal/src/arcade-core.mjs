@@ -1,5 +1,6 @@
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../assets/generated/hmh-hd-sprite-atlas.mjs';
 import { HMH_EXPANDED_PIXEL_PACK_MANIFEST } from '../assets/generated/hmh-expanded-pixel-pack.mjs';
+import { HMH_ACHIEVEMENT_ATLAS } from '../assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.mjs';
 import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/environment/hmh-environment-manifest.mjs';
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
@@ -1309,7 +1310,10 @@ export const HARD_MONEY_HEROES_ASSET_MANIFEST = Object.freeze({
   }),
 });
 
-const ACHIEVEMENT_BADGE_BY_ID = new Map((HMH_EXPANDED_PIXEL_PACK_MANIFEST.achievementBadges ?? []).map((badge) => [badge.id, badge]));
+const ACHIEVEMENT_BADGE_BY_ID = new Map([
+  ...(HMH_EXPANDED_PIXEL_PACK_MANIFEST.achievementBadges ?? []).map((badge) => [badge.id, badge]),
+  ...Object.entries(HMH_ACHIEVEMENT_ATLAS.achievementsById ?? {}).map(([id, badge]) => [id, badge]),
+]);
 
 function achievementBadgeFor(id) {
   const badge = ACHIEVEMENT_BADGE_BY_ID.get(id);
@@ -1333,6 +1337,8 @@ function defineAchievement({ key, id, title, description, tier, difficulty, unlo
     requirement: Object.freeze({ ...(requirement ?? {}) }),
     badgeSrc: badge.src,
     lockedBadgeSrc: badge.lockedSrc,
+    tierBadgeSrc: HMH_ACHIEVEMENT_ATLAS.tiersById?.[tier]?.src ?? null,
+    unlockTypeIconSrc: HMH_ACHIEVEMENT_ATLAS.unlockTypesById?.[unlockType]?.src ?? null,
   });
 }
 
@@ -4996,7 +5002,7 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
   const rareAchievement = unlockedAchievements
     .map((achievement) => ({ ...achievement, rarityPct: achievementRarityPct(achievement) }))
     .sort((a, b) => a.rarityPct - b.rarityPct || a.title.localeCompare(b.title))[0] ?? null;
-  const achievementGroups = ['bronze', 'silver', 'gold', 'platinum', 'diamond'].map((tier) => {
+  const achievementGroups = ['bronze', 'silver', 'gold', 'platinum', 'diamond', 'mythic'].map((tier) => {
     const entries = (snapshot.achievements ?? []).filter((achievement) => (achievement.tier ?? 'bronze') === tier);
     return {
       id: tier,
@@ -5008,6 +5014,9 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
         title: achievement.title,
         description: achievement.description,
         icon: achievement.unlocked ? (achievement.icon ?? '🏅') : '🔒',
+        iconSrc: achievement.iconSrc,
+        tierBadgeSrc: achievement.tierBadgeSrc,
+        unlockTypeIconSrc: achievement.unlockTypeIconSrc,
         tier: achievement.tier,
         unlocked: achievement.unlocked,
         rarityPct: achievementRarityPct(achievement),
@@ -5092,7 +5101,7 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
         { id: 'best-score', label: 'Best Score', value: formatScoreValue(bestScore), tone: bestScore > 0 ? 'gold' : 'muted' },
         { id: 'ranked-runs', label: 'Ranked Runs', value: String(totalRankedRuns), tone: totalRankedRuns > 0 ? 'silver' : 'muted' },
         { id: 'settled-receipts', label: 'Settled Receipts', value: String(settledRuns), tone: settledRuns > 0 ? 'verified' : 'muted' },
-        { id: 'rare-achievement', label: 'Rarest Badge', value: rareAchievement?.title ?? 'Locked', tier: rareAchievement?.tier ?? null, icon: rareAchievement?.icon ?? '🔒', rarityPct: rareAchievement?.rarityPct ?? null },
+        { id: 'rare-achievement', label: 'Rarest Badge', value: rareAchievement?.title ?? 'Locked', tier: rareAchievement?.tier ?? null, icon: rareAchievement?.icon ?? '🔒', iconSrc: rareAchievement?.iconSrc ?? null, rarityPct: rareAchievement?.rarityPct ?? null },
       ],
     },
     sessionFeed: {
@@ -5107,6 +5116,7 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
         title: achievement.title,
         tier: achievement.tier,
         icon: achievement.icon,
+        iconSrc: achievement.iconSrc,
         rarityPct: achievementRarityPct(achievement),
       })),
     },
@@ -5176,7 +5186,7 @@ export function buildHardMoneyHeroesStatsModule(state, wallet, gameId = 'lester-
     longestSurvivalLabel: formatSurvival(progress.longestRunSeconds ?? 0),
     topAchievement: topAchievement ? {
       id: topAchievement.id, title: topAchievement.title, description: topAchievement.description,
-      tier: topAchievement.tier, icon: topAchievement.icon, rarityPct: topAchievement.rarityPct,
+      tier: topAchievement.tier, icon: topAchievement.icon, iconSrc: topAchievement.iconSrc, rarityPct: topAchievement.rarityPct,
     } : null,
     achievementsUnlocked: unlockedAchievements.length,
     achievementsTotal: Object.values(ACHIEVEMENTS).length,
