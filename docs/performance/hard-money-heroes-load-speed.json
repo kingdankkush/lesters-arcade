@@ -1,0 +1,49 @@
+{
+  "version": "wo-36-load-speed-v1",
+  "budgets": {
+    "mainBundleMaxBytes": 2700000,
+    "totalInitialJsMaxBytes": 2900000,
+    "sourceMapMaxCount": 0
+  },
+  "metrics": {
+    "mainBytes": 2606937,
+    "totalJsBytes": 4413192,
+    "jsFileCount": 17,
+    "sourceMapCount": 0,
+    "initialEntrypoints": [
+      "dist/main.js"
+    ]
+  },
+  "checks": [
+    {
+      "id": "uses-dist-bundle",
+      "pass": true,
+      "detail": "index.html loads the optimized esbuild bundle instead of raw source main.js"
+    },
+    {
+      "id": "modulepreload-main",
+      "pass": true,
+      "detail": "browser can start fetching the module graph from the head"
+    },
+    {
+      "id": "keyart-preload",
+      "pass": true,
+      "detail": "first-screen HMH key art is hinted as high-priority image"
+    },
+    {
+      "id": "no-production-sourcemaps",
+      "pass": true,
+      "detail": "0 source maps emitted by default build"
+    },
+    {
+      "id": "main-budget",
+      "pass": true,
+      "detail": "2.49 MB main bundle"
+    }
+  ],
+  "summary": {
+    "status": "PASS",
+    "passCount": 5,
+    "checkCount": 5
+  }
+}

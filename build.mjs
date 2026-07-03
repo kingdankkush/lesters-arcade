@@ -22,6 +22,7 @@
 // Usage:
 //   node build.mjs            # build minified bundle into apps/portal/dist/
 //   node build.mjs --metafile # also write dist/meta.json for bundle analysis
+//   node build.mjs --sourcemap # opt into external maps for local profiling
 
 import { build } from 'esbuild';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +35,7 @@ const entry = resolve(portalDir, 'main.js');
 const outdir = resolve(portalDir, 'dist');
 
 const wantMeta = process.argv.includes('--metafile');
+const wantSourceMap = process.argv.includes('--sourcemap');
 
 function human(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -61,7 +63,7 @@ async function run() {
     chunkNames: 'chunks/[name]-[hash]',
     assetNames: 'assets/[name]-[hash]',
     legalComments: 'none',
-    sourcemap: true,        // external .map for prod debugging; not referenced unless opened
+    sourcemap: wantSourceMap, // default off for production payload; pass --sourcemap for profiling
     metafile: true,
     logLevel: 'info',
     // Do NOT add file/dataurl loaders: asset URLs are runtime strings, not imports.

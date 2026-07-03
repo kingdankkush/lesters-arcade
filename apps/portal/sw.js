@@ -10,11 +10,11 @@
 //                            this is where the repeat-visit speedup comes from)
 // Bumping CACHE_VERSION drops every old cache on activate.
 
-const CACHE_VERSION = 'lesters-arcade-v1';
+const CACHE_VERSION = 'lesters-arcade-v2-dist-bundle';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
-const PRECACHE_URLS = ['/', '/index.html'];
+const PRECACHE_URLS = ['/', '/index.html', '/dist/main.js'];
 
 const CACHE_FIRST_DESTINATIONS = new Set(['image', 'font', 'audio', 'video']);
 
