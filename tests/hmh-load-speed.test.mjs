@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
@@ -31,6 +32,10 @@ test('WO-36 production build keeps sourcemaps opt-in instead of default deploy p
 });
 
 test('WO-36 load speed report passes bundle and source-map budgets after build', () => {
+  execFileSync(process.execPath, ['build.mjs'], {
+    cwd: new URL('..', import.meta.url),
+    stdio: 'ignore',
+  });
   const report = buildLoadSpeedReport();
   assert.equal(report.summary.status, 'PASS', JSON.stringify(report.checks, null, 2));
   assert.ok(report.metrics.mainBytes <= HMH_LOAD_SPEED_BUDGETS.mainBundleMaxBytes);
