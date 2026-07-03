@@ -101,7 +101,13 @@ Every cabinet ships a `game.manifest.json`:
 
 ## 5. Chikun's Escape — Reference Implementation
 
-Chikun's Escape is the first third-party game being onboarded:
+Chikun's Escape is the first third-party game being onboarded, but it is **not public-playable yet**. The public arcade card remains COMING SOON until Louie's actual game is integrated.
+
+Developer harness:
+
+1. Open the portal with `?devCabinets=1` (for example `/games?devCabinets=1`).
+2. The Chikun cabinet becomes clickable and loads the reference SDK slice.
+3. Public users without the flag see a desaturated COMING SOON cabinet and no leaderboard filter.
 
 - **Manifest**: `games/chikun/game.manifest.json` (already created)
 - **Cabinet art**: `apps/portal/assets/generated/chikun-cabinet/` (6 angle sprites)

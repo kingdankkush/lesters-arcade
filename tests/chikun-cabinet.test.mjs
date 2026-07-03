@@ -77,18 +77,23 @@ test('WO-55 Chikun cabinet emits valid free/ranked SDK events through the public
   }
 });
 
-test('WO-55 portal model exposes Chikun as playable with free and ranked session support', () => {
+test('WO-72 portal model keeps Chikun dev-testable but public coming soon', () => {
   const game = getGame('chikun');
-  assert.equal(game.status, 'playable');
+  assert.equal(game.status, 'coming-soon');
+  assert.equal(game.devPlayable, true);
   assert.equal(game.systemRole, 'child-dapp-cartridge');
   assert.equal(game.presentation.cartridgeAsset.endsWith('cartridge-chikun.svg'), true);
   const cartridge = getCartridgeSelectModel().find((entry) => entry.id === 'chikun');
-  assert.equal(cartridge.status, 'playable');
+  assert.equal(cartridge.status, 'coming-soon');
+  assert.equal(cartridge.playable, false);
+  assert.equal(cartridge.routePath, null);
+  assert.equal(cartridge.devRoutePath, '/play/chikun?devCabinets=1');
 
-  const free = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'free' });
+  assert.throws(() => startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'free' }), /not playable yet/);
+  const free = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'free', allowDevCabinet: true });
   assert.equal(free.leaderboardEligible, false);
   assert.equal(free.entryFeeMicroUsdc, 0);
-  const ranked = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'paid', urlSessionId: 'game-session-000000055', sequenceNumber: 55 });
+  const ranked = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'paid', urlSessionId: 'game-session-000000055', sequenceNumber: 55, allowDevCabinet: true });
   assert.equal(ranked.leaderboardEligible, true);
   assert.equal(ranked.urlSessionId, 'game-session-000000055');
   const packet = buildParentSyncPacket(ranked, { score: 155, runStats: { survivalTime: 42, coinsCollected: 3 } });

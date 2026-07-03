@@ -260,7 +260,7 @@ test('WO-58 profile v2 model builds trophy room, session feed, achievements, col
     stageIndexReached: 13,
   });
   const chikunHandle = nextGlobalSessionId(state);
-  const sessionB = startPlaySession({ wallet, gameId: 'chikun', mode: 'paid', urlSessionId: chikunHandle.urlSessionId, sequenceNumber: chikunHandle.sequence });
+  const sessionB = startPlaySession({ wallet, gameId: 'chikun', mode: 'paid', urlSessionId: chikunHandle.urlSessionId, sequenceNumber: chikunHandle.sequence, allowDevCabinet: true });
   recordScore(state, sessionB, 1280, { elapsedSeconds: 94, coins: 17, maxCombo: 4 });
   applySettlement(state, {
     ...resultA.settlementInput,
@@ -731,16 +731,28 @@ test('free score submission remains practice-only and does not track progress, a
   assert.equal(snapshot.transactions.length, 0);
 });
 
-test('initial arcade state exposes multiple arcade machines with Hard Money Heroes and Chikun playable now', () => {
+test('initial arcade state exposes only shipped public cabinets as playable', () => {
   const state = createInitialArcadeState();
   const playable = ARCADE_GAMES.filter((game) => game.status === 'playable');
   const playableIds = playable.map((game) => game.id);
+  const chikun = ARCADE_GAMES.find((game) => game.id === 'chikun');
 
-  assert.equal(playable.length, 2);
-  assert.deepEqual(playableIds, ['lester-blaster', 'chikun']);
+  assert.deepEqual(playableIds, ['lester-blaster']);
   assert.equal(playable[0].title, 'Hard Money Heroes');
-  assert.equal(playable[1].title, 'Chikun: The Flying Coin');
+  assert.equal(chikun.status, 'coming-soon');
+  assert.equal(chikun.publicPlayable, false);
   assert.equal(state.games.length >= 4, true);
+});
+
+test('public play sessions reject coming-soon cabinets unless the dev harness explicitly opts in', () => {
+  const wallet = '0x' + '1'.repeat(40);
+  assert.throws(
+    () => startPlaySession({ wallet, gameId: 'chikun', mode: 'paid' }),
+    /not playable yet/,
+  );
+  const devSession = startPlaySession({ wallet, gameId: 'chikun', mode: 'free', allowDevCabinet: true });
+  assert.equal(devSession.gameId, 'chikun');
+  assert.equal(devSession.leaderboardEligible, false);
 });
 
 test('Hard Money Heroes canon captures Justin confirmed title, tone, world, economy, audio, and brand direction', () => {
@@ -774,8 +786,10 @@ test('game selection model presents arcade cabinets as SNES-style cartridges con
   assert.equal(lesterBlaster.playable, true);
   assert.equal(lesterBlaster.routePath, '/play/hard-money-heroes');
   const chikun = cartridges.find((cartridge) => cartridge.id === 'chikun');
-  assert.equal(chikun.playable, true);
-  assert.equal(chikun.routePath, '/play/chikun');
+  assert.equal(chikun.playable, false);
+  assert.equal(chikun.status, 'coming-soon');
+  assert.equal(chikun.routePath, null);
+  assert.equal(chikun.devRoutePath, '/play/chikun?devCabinets=1');
   assert.equal(chikun.discoveryTags.includes('tap'), true);
 });
 
@@ -1525,9 +1539,12 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
     assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
   }
   const chikunCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'chikun');
-  assert.equal(chikunCabinet.playable, true);
+  assert.equal(chikunCabinet.status, 'coming-soon');
+  assert.equal(chikunCabinet.playable, false);
+  assert.equal(chikunCabinet.devPlayable, true);
+  assert.match(chikunCabinet.description, /In development by Louie/);
   assert.equal(chikunCabinet.desktopCabinetSprite.id, 'chikun-cabinet');
-  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 2);
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 1);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.requiresZkLtc, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.levelIntro.durationSeconds, 8);
@@ -1624,7 +1641,10 @@ test('leaderboard page treats games and time windows as compact filters above th
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
   const polishSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url)), 'utf8');
   assert.equal(mainSource.includes('leaderboard-filter-shell'), true);
-  assert.equal(mainSource.includes('chikun'), true);
+  assert.equal(mainSource.includes('publicLeaderboardCabinets()'), true);
+  assert.match(mainSource, /filter\(\(cabinet\) => cabinet\.playable/);
+  assert.equal(mainSource.includes("cabinet.id === 'chikun'"), false, 'Chikun loader should not be hard-wired into public cabinet clicks');
+  assert.equal(mainSource.includes("get('devCabinets') === '1'"), true);
   assert.equal(mainSource.includes('leaderboard-game-filter'), true);
   assert.equal(mainSource.includes('leaderboard-time-filter'), true);
   assert.equal(mainSource.includes('leaderboard-coming-soon-banner'), false);

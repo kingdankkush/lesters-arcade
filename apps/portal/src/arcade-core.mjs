@@ -515,9 +515,10 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
       id: 'chikun',
       gameId: 'chikun',
       title: "Chikun's Escape",
-      status: 'playable',
-      playable: true,
-      description: 'Tap to flap. Dodge the forks. Stack the silver. One-button flappy-bird arcade with Litecoin coin mechanic on LitVM.',
+      status: 'coming-soon',
+      playable: false,
+      devPlayable: true,
+      description: "In development by Louie / LitVM Port Team. Chikun's Escape is being integrated behind the dev cabinet harness and is not publicly playable yet.",
       desktopCabinetSprite: Object.freeze({
         id: 'chikun-cabinet',
         frameDurationMs: 600,
@@ -2094,8 +2095,10 @@ export const ARCADE_GAMES = Object.freeze([
     title: 'Chikun: The Flying Coin',
     cabinet: 'FLAPPY CABINET 04',
     genre: 'One-button flappy-bird arcade with Litecoin coin mechanic',
-    status: 'playable',
-    developer: 'LitVM Port Team',
+    status: 'coming-soon',
+    publicPlayable: false,
+    devPlayable: true,
+    developer: 'Louie / LitVM Port Team',
     entryFeeMicroUsdc: DEFAULT_ENTRY_FEE_MICRO_USDC,
     livesPaid: 3,
     livesFree: Infinity,
@@ -4303,8 +4306,9 @@ export function getCartridgeSelectModel() {
       id: game.id,
       title: game.title,
       status: game.status,
-      playable: game.status === 'playable',
-      routePath: `/play/${slug}`,
+      playable: game.status === 'playable' && game.publicPlayable !== false,
+      routePath: game.status === 'playable' && game.publicPlayable !== false ? `/play/${slug}` : null,
+      devRoutePath: game.devPlayable ? `/play/${slug}?devCabinets=1` : null,
       discoveryTags: Object.freeze([...new Set(discoveryTags)]),
       cabinet: game.cabinet,
       genre: game.genre,
@@ -4441,6 +4445,7 @@ export function nextGlobalSessionId(state) {
 }
 
 export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken = 'USDC', urlSessionId = null, sequenceNumber = null }) {
+  const allowDevCabinet = Boolean(arguments[0]?.allowDevCabinet);
   const normalizedWallet = normalizeWallet(wallet);
   const game = getGame(gameId);
 
@@ -4448,7 +4453,7 @@ export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken =
     throw new Error(`Unsupported play mode: ${mode}`);
   }
 
-  if (game.status !== 'playable') {
+  if (game.status !== 'playable' && !(allowDevCabinet && game.devPlayable)) {
     throw new Error(`${game.title} is not playable yet`);
   }
 

@@ -213,6 +213,21 @@ import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs'
 import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
 
 const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
+const DEV_CABINETS_ENABLED = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('devCabinets') === '1';
+function cabinetPlayableInCurrentMode(cabinet) {
+  return Boolean(cabinet?.playable || (DEV_CABINETS_ENABLED && cabinet?.devPlayable));
+}
+function publicLeaderboardCabinets() {
+  return LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable && cabinet.leaderboardEligible !== false);
+}
+function playableCabinetNames() {
+  return publicLeaderboardCabinets().map((cabinet) => cabinet.title);
+}
+function humanList(items) {
+  if (items.length <= 1) return items[0] ?? 'Hard Money Heroes';
+  if (items.length === 2) return `${items[0]} and ${items[1]}`;
+  return `${items.slice(0, -1).join(', ')}, and ${items.at(-1)}`;
+}
 function debugRuntimeLog(...args) {
   if (DEBUG_ARCADE_RUNTIME) console.log(...args);
 }
@@ -3651,11 +3666,13 @@ function renderOfficialCabinets() {
     const cabinetSprite = cabinet.id === 'hard-money-heroes'
       ? (cabinet.desktopCabinetSprite ?? productionCabinetSprite())
       : cabinet.desktopCabinetSprite;
-    const card = el('button', { className: `official-cabinet-card ${cabinet.playable ? 'playable' : 'locked'} ${cabinetSprite ? 'featured-cabinet-card' : ''}` });
+    const isCabinetPlayable = cabinetPlayableInCurrentMode(cabinet);
+    const isDevOnlyCabinet = !cabinet.playable && isCabinetPlayable;
+    const card = el('button', { className: `official-cabinet-card ${isCabinetPlayable ? 'playable' : 'locked'} ${isDevOnlyCabinet ? 'dev-cabinet' : ''} ${cabinetSprite ? 'featured-cabinet-card' : ''}` });
     card.type = 'button';
-    card.disabled = !cabinet.playable;
+    card.disabled = !isCabinetPlayable;
     card.addEventListener('click', async () => {
-      if (!cabinet.playable) return;
+      if (!cabinetPlayableInCurrentMode(cabinet)) return;
       // Lazy-load the game's art and data manifests the first time the player
       // selects this cabinet. The heavy HMH bundles live in games/<id>/loader.mjs,
       // fetched over HTTP only on demand, so the portal shell stays small.
@@ -3675,7 +3692,7 @@ function renderOfficialCabinets() {
           card.classList.remove('is-loading');
           card.removeAttribute('aria-busy');
         }
-      } else if (cabinet.id === 'chikun') {
+      } else if (cabinet.gameId === 'chikun' && DEV_CABINETS_ENABLED) {
         card.classList.add('is-loading');
         card.setAttribute('aria-busy', 'true');
         try {
@@ -3706,8 +3723,8 @@ function renderOfficialCabinets() {
       card.classList.add('banner-cabinet-card');
     }
     const copy = el('div', { className: 'cabinet-card-copy' });
-    appendText(copy, 'span', cabinet.playable ? 'PLAYABLE NOW' : 'COMING SOON', 'cabinet-status-label');
-    copy.append(renderArcadeIcon(cabinet.playable ? '⚡' : '🔒', cabinet.playable ? 'Playable' : 'Locked'));
+    appendText(copy, 'span', isCabinetPlayable ? (isDevOnlyCabinet ? 'DEV HARNESS' : 'PLAYABLE NOW') : 'COMING SOON', 'cabinet-status-label');
+    copy.append(renderArcadeIcon(isCabinetPlayable ? '⚡' : '🔒', isCabinetPlayable ? 'Playable' : 'Locked'));
     appendText(copy, 'strong', cabinet.title);
     appendText(copy, 'small', cabinet.description);
     card.append(copy);
@@ -4224,8 +4241,7 @@ function renderOfficialLeaderboards() {
   // Games and time windows are filters for ONE primary leaderboard, not separate
   // page cards. Keep them compact above the board so the ranked table remains
   // the focus of the page.
-  const leaderboardGameFilters = LESTERS_ARCADE_V2_APP_SHELL.cabinets
-    .filter((cabinet) => ['lester-blaster', 'chikun'].includes(cabinet.gameId));
+  const leaderboardGameFilters = publicLeaderboardCabinets();
   if (!leaderboardGameFilters.some((cabinet) => cabinet.gameId === leaderboardGameId)) {
     leaderboardGameId = leaderboardGameFilters[0]?.gameId ?? 'lester-blaster';
   }
@@ -4244,8 +4260,8 @@ function renderOfficialLeaderboards() {
   const filterHead = el('div', { className: 'leaderboard-filter-head' });
   const filterCopy = el('div', { className: 'leaderboard-filter-copy' });
   appendText(filterCopy, 'span', 'Leaderboard Filters', 'cabinet-status-label');
-  appendText(filterCopy, 'strong', 'Choose a game and score window');
-  appendText(filterCopy, 'small', 'Hard Money Heroes and Chikun\'s Escape are score filters. Daily, weekly, monthly, yearly, and all-time are time filters for the same ranked board below.');
+  appendText(filterCopy, 'strong', leaderboardGameFilters.length > 1 ? 'Choose a game and score window' : 'Choose a score window');
+  appendText(filterCopy, 'small', `${humanList(playableCabinetNames())} ${leaderboardGameFilters.length === 1 ? 'is the current public score filter' : 'are the current public score filters'}. Daily, weekly, monthly, yearly, and all-time are time filters for the same ranked board below.`);
   const filterSummary = el('div', { className: 'leaderboard-filter-summary' });
   appendText(filterSummary, 'span', activeLeaderboardTitle, 'leaderboard-filter-summary-game');
   appendText(filterSummary, 'strong', `${active.total.toLocaleString()} ranked run${active.total === 1 ? '' : 's'}`);
@@ -4521,8 +4537,8 @@ function renderOfficialArcadeFloor() {
   const copyByStep = {
     'arcade-walk-in': `${walletShort} is active. Neon doors opening; cabinet row loading...`,
     'cabinet-select': connectedWallet
-      ? 'Select a cabinet. Hard Money Heroes and Chikun\'s Escape are playable now; future cabinets remain locked.'
-      : 'Select a cabinet and play Free as a guest. Hard Money Heroes and Chikun\'s Escape are playable now. Connect a wallet anytime to save progress and unlock Ranked.',
+      ? `Select a cabinet. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now; future cabinets remain locked.`
+      : `Select a cabinet and play Free as a guest. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now. Connect a wallet anytime to save progress and unlock Ranked.`,
     profile: LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy,
     leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
     settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
