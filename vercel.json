@@ -18,7 +18,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/(profile|leaderboards|settings)",
+      "source": "/(profile|scores|leaderboards|settings)",
       "destination": "/index.html"
     }
   ]

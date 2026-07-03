@@ -9,6 +9,10 @@
 //   /games/hard-money-heroes                           -> HMH game app (mode/character/intro)
 //   /games/hard-money-heroes/game-session-000000001    -> an active ranked session
 //
+//   /profile                                           -> guest-browsable profile shell
+//   /scores                                            -> guest-browsable scores shell
+//   /settings                                          -> guest-browsable settings shell
+//
 // Future games reuse the same shape: /games/<gameSlug>/game-session-<id>.
 // These helpers are pure (no DOM/history) so they can be unit-tested; main.js
 // wires them to history.pushState + popstate.
@@ -32,6 +36,20 @@ export const ARCADE_GAME_IDS_BY_SLUG = Object.freeze({
 });
 
 export const DEFAULT_GAME_SLUG = 'hard-money-heroes';
+
+export const PLATFORM_SHELL_NAV = Object.freeze([
+  Object.freeze({ id: 'cabinets', step: 'cabinet-select', label: 'Play' }),
+  Object.freeze({ id: 'profile', step: 'profile', label: 'Profile' }),
+  Object.freeze({ id: 'leaderboards', step: 'leaderboards', label: 'Scores' }),
+  Object.freeze({ id: 'settings', step: 'settings', label: 'Settings' }),
+]);
+
+const GAME_TITLE_BY_SLUG = Object.freeze({
+  'hard-money-heroes': 'Hard Money Heroes',
+  chikun: 'Chikun',
+  'mweb-invaders': 'MWEB Invaders',
+  'litvm-legends': 'LitVM Legends',
+});
 
 // View steps that live "inside" a selected game (mode/character/intro screens).
 const IN_GAME_STEPS = Object.freeze(['mode-select', 'character-select', 'level-one-intro']);
@@ -92,7 +110,7 @@ export function routeForView(step, { gameSlug = DEFAULT_GAME_SLUG, sessionId = n
     case 'profile':
       return '/profile';
     case 'leaderboards':
-      return '/leaderboards';
+      return '/scores';
     case 'settings':
       return '/settings';
     default:
@@ -112,7 +130,7 @@ export function viewForPath(pathname, { connected = false } = {}) {
     return { step: 'wallet-splash', gameSlug: null, sessionId: null };
   }
   if (parts[0] === 'profile') return guestGate('profile', connected);
-  if (parts[0] === 'leaderboards') return guestGate('leaderboards', connected);
+  if (parts[0] === 'scores' || parts[0] === 'leaderboards') return guestGate('leaderboards', connected);
   if (parts[0] === 'settings') return guestGate('settings', connected);
 
   if (parts[0] === 'games' || parts[0] === 'play') {
@@ -151,6 +169,50 @@ function guestGate(step, connected, gameSlug = null, sessionId = null) {
     return { step, gameSlug, sessionId };
   }
   return gate(step, connected, gameSlug, sessionId);
+}
+
+export function buildPlatformShellModel(step, { connected = false, gameSlug = DEFAULT_GAME_SLUG, sessionId = null } = {}) {
+  const normalizedStep = step || 'wallet-splash';
+  const activeNavId = ['mode-select', 'character-select', 'level-one-intro', 'gameplay', 'arcade-walk-in', 'cabinet-select'].includes(normalizedStep)
+    ? 'cabinets'
+    : normalizedStep === 'leaderboards' ? 'leaderboards' : normalizedStep;
+  const nav = PLATFORM_SHELL_NAV.map((item) => Object.freeze({
+    ...item,
+    href: routeForView(item.step, { gameSlug }),
+    active: item.id === activeNavId,
+    guestBrowsable: isGuestAllowedStep(item.step),
+    requiresWallet: !isGuestAllowedStep(item.step),
+    connected: Boolean(connected),
+  }));
+  const gameTitle = GAME_TITLE_BY_SLUG[gameSlug] ?? GAME_TITLE_BY_SLUG[DEFAULT_GAME_SLUG];
+  const arcadeCrumb = Object.freeze({ label: 'Arcade', href: '/games', step: 'cabinet-select' });
+  const breadcrumbs = [arcadeCrumb];
+  if (['mode-select', 'character-select', 'level-one-intro', 'gameplay'].includes(normalizedStep)) {
+    breadcrumbs.push(Object.freeze({ label: gameTitle, href: routeForView('mode-select', { gameSlug }), step: 'mode-select' }));
+  }
+  if (normalizedStep === 'character-select') breadcrumbs.push(Object.freeze({ label: 'Hero Select', href: routeForView('character-select', { gameSlug }), step: 'character-select' }));
+  if (normalizedStep === 'level-one-intro') breadcrumbs.push(Object.freeze({ label: 'Level Intro', href: routeForView('level-one-intro', { gameSlug }), step: 'level-one-intro' }));
+  if (normalizedStep === 'gameplay') breadcrumbs.push(Object.freeze({ label: 'Run', href: routeForView('gameplay', { gameSlug, sessionId }), step: 'gameplay' }));
+  if (normalizedStep === 'profile') breadcrumbs.push(Object.freeze({ label: 'Profile', href: '/profile', step: 'profile' }));
+  if (normalizedStep === 'leaderboards') breadcrumbs.push(Object.freeze({ label: 'Scores', href: '/scores', step: 'leaderboards' }));
+  if (normalizedStep === 'settings') breadcrumbs.push(Object.freeze({ label: 'Settings', href: '/settings', step: 'settings' }));
+
+  const backMap = Object.freeze({
+    profile: Object.freeze({ step: 'cabinet-select', href: '/games', label: 'Back to Arcade' }),
+    leaderboards: Object.freeze({ step: 'cabinet-select', href: '/games', label: 'Back to Arcade' }),
+    settings: Object.freeze({ step: 'cabinet-select', href: '/games', label: 'Back to Arcade' }),
+    'mode-select': Object.freeze({ step: 'cabinet-select', href: '/games', label: 'Back to Cabinets' }),
+    'character-select': Object.freeze({ step: 'mode-select', href: routeForView('mode-select', { gameSlug }), label: 'Back to Mode Select' }),
+    'level-one-intro': Object.freeze({ step: 'character-select', href: routeForView('character-select', { gameSlug }), label: 'Back to Hero Select' }),
+    gameplay: Object.freeze({ step: 'mode-select', href: routeForView('mode-select', { gameSlug }), label: 'Back to Game Menu' }),
+  });
+
+  return Object.freeze({
+    step: normalizedStep,
+    nav: Object.freeze(nav),
+    breadcrumbs: Object.freeze(breadcrumbs),
+    backTarget: backMap[normalizedStep] ?? null,
+  });
 }
 
 export function isInGameStep(step) {

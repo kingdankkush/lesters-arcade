@@ -1589,7 +1589,10 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
 
   assert.deepEqual(LESTERS_ARCADE_V2_APP_SHELL.publicFlow, ['connect-wallet', 'select-game', 'watch-or-skip-intro', 'choose-mode', 'begin-level', 'play']);
-  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.primaryNav.length, 3);
+  assert.deepEqual(
+    LESTERS_ARCADE_V2_APP_SHELL.primaryNav.map((item) => [item.id, item.label]),
+    [['cabinets', 'Play'], ['profile', 'Profile'], ['leaderboards', 'Scores'], ['settings', 'Settings']],
+  );
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.hiddenByDefault.includes('developer-backstage'), true);
   assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
   assert.equal(mainSource.includes('ensureCombatMusic'), true);

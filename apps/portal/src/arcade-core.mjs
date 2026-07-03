@@ -493,6 +493,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
     Object.freeze({ id: 'cabinets', label: 'Play', purpose: 'Select Hard Money Heroes and start playing.' }),
     Object.freeze({ id: 'profile', label: 'Profile', purpose: 'View the active wallet profile and run history.' }),
     Object.freeze({ id: 'leaderboards', label: 'Scores', purpose: 'Browse global boards plus the current wallet profile placement.' }),
+    Object.freeze({ id: 'settings', label: 'Settings', purpose: 'Controls, audio, accessibility, network status, and sign-out.' }),
   ]),
   navigation: Object.freeze([
     Object.freeze({ id: 'cabinets', label: 'Play', purpose: 'Select Hard Money Heroes or future Lester arcade cabinets.' }),

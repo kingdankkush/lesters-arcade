@@ -37,7 +37,7 @@ import { HMH_FINAL_WORLD_AMBIENT_ASSETS, finalWorldAmbientAssetByKey } from './a
 import { HMH_LEVEL_TWO_FINAL_CITY_ASSETS, levelTwoFinalCityAssetByKey } from './assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, levelThreeFinalGetawayAssetByKey } from './assets/generated/hmh-coherent-world/level3-final-getaway/level3-final-getaway-manifest.mjs';
 import { HMH_LEVEL_THREE_FINAL_GROUND } from './assets/generated/hmh-level-three-ground/final-getaway/level3-final-getaway-ground-manifest.mjs';
-import { routeForView, viewForPath, gameSlugFor, gameIdForSlug, isGuestAllowedStep } from './src/arcade-router.mjs';
+import { routeForView, viewForPath, gameSlugFor, gameIdForSlug, isGuestAllowedStep, buildPlatformShellModel } from './src/arcade-router.mjs';
 import {
   generateDistrictGrid,
   generateRoadNetwork,
@@ -3575,9 +3575,27 @@ function renderOfficialNav() {
   if (!dom.officialNavTabs) return;
   dom.officialNavTabs.replaceChildren();
   const iconById = { cabinets: '🕹️', profile: '👤', leaderboards: '🏆', settings: '⚙️' };
-  for (const item of (LESTERS_ARCADE_V2_APP_SHELL.primaryNav ?? LESTERS_ARCADE_V2_APP_SHELL.navigation)) {
-    const button = el('button', { className: `official-nav-tab ${officialAppStep === item.id || (item.id === 'cabinets' && ['arcade-walk-in', 'cabinet-select', 'mode-select', 'character-select', 'level-one-intro', 'gameplay'].includes(officialAppStep)) ? 'active' : ''}` });
+  const shell = buildPlatformShellModel(officialAppStep, {
+    connected: Boolean(connectedWallet),
+    gameSlug: gameSlugFor(selectedGameId),
+    sessionId: currentSession?.urlSessionId ?? null,
+  });
+  if (dom.officialApp) {
+    dom.officialApp.dataset.shellStep = shell.step;
+    dom.officialApp.dataset.shellBreadcrumb = shell.breadcrumbs.map((crumb) => crumb.label).join(' / ');
+    if (shell.backTarget) {
+      dom.officialApp.dataset.shellBackStep = shell.backTarget.step;
+      dom.officialApp.dataset.shellBackLabel = shell.backTarget.label;
+    } else {
+      delete dom.officialApp.dataset.shellBackStep;
+      delete dom.officialApp.dataset.shellBackLabel;
+    }
+  }
+  for (const item of shell.nav) {
+    const button = el('button', { className: `official-nav-tab ${item.active ? 'active' : ''}` });
     button.type = 'button';
+    button.dataset.route = item.href;
+    button.setAttribute('aria-current', item.active ? 'page' : 'false');
     // Guest-first: every primary view is browsable without a wallet. Profile /
     // Scores render a clear "connect to save" state instead of being dead,
     // disabled buttons. Connecting later upgrades the same session in place.
@@ -3589,10 +3607,7 @@ function renderOfficialNav() {
     button.append(renderArcadeIcon(iconById[item.id] ?? '◆', item.label), document.createTextNode(item.label));
     button.addEventListener('click', () => {
       playSfxCue('menu-click');
-      if (item.id === 'cabinets') setOfficialView('cabinet-select');
-      if (item.id === 'profile') setOfficialView('profile');
-      if (item.id === 'leaderboards') setOfficialView('leaderboards');
-      if (item.id === 'settings') setOfficialView('settings');
+      setOfficialView(item.step);
     });
     dom.officialNavTabs.append(button);
   }
