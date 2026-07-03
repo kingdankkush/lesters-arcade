@@ -13,6 +13,142 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, n));
 }
 
+export const ELITE_AFFIX_CATALOG = Object.freeze([
+  Object.freeze({
+    id: 'shielded',
+    title: 'Shielded',
+    nameplateTag: 'SHIELD',
+    visualTell: 'front-facing blue hex shield wedge; exposed back edge stays unlit',
+    counterplay: Object.freeze(['flank the exposed rear arc', 'grenade behind the shield']),
+    modifiers: Object.freeze({ directionalFrontShield: true, shieldArcDegrees: 118 }),
+  }),
+  Object.freeze({
+    id: 'splitter',
+    title: 'Splitter',
+    nameplateTag: 'SPLIT',
+    visualTell: 'two ghost silhouettes flicker inside the elite before death',
+    counterplay: Object.freeze(['clear space before finishing it', 'save pierce or area damage for the split adds']),
+    modifiers: Object.freeze({ splitOnDeathCount: 2, splitSpawnTier: 'swarm' }),
+  }),
+  Object.freeze({
+    id: 'volatile',
+    title: 'Volatile',
+    nameplateTag: 'BOOM',
+    visualTell: 'orange fuse decal pulses underfoot for one second on death',
+    counterplay: Object.freeze(['dash out after the kill', 'detonate inside enemy packs for payoff']),
+    modifiers: Object.freeze({ deathExplosion: true, fuseFrames: 60, explosionRadiusTiles: 2.4 }),
+  }),
+  Object.freeze({
+    id: 'magnetron',
+    title: 'Magnetron',
+    nameplateTag: 'MAGNET',
+    visualTell: 'purple coin-arcs spiral toward the elite chest',
+    counterplay: Object.freeze(['kill it to release stolen drops', 'kite away from loose XP piles']),
+    modifiers: Object.freeze({ pullsDrops: true, dropPullRadiusTiles: 8 }),
+  }),
+  Object.freeze({
+    id: 'warder',
+    title: 'Warder',
+    nameplateTag: 'WARD',
+    visualTell: 'slow-aura dome decal with clear cyan edge',
+    counterplay: Object.freeze(['fight outside the dome', 'focus the warder before the pack catches you']),
+    modifiers: Object.freeze({ slowAura: true, auraRadiusTiles: 4.2, playerSlowMultiplier: 0.82 }),
+  }),
+  Object.freeze({
+    id: 'vampiric',
+    title: 'Vampiric',
+    nameplateTag: 'VAMP',
+    visualTell: 'red fiat-glow tether pulses from nearby enemies into the elite',
+    counterplay: Object.freeze(['burst it first', 'separate it from the pack before committing damage']),
+    modifiers: Object.freeze({ healsNearbyOnHit: true, healPulseRadiusTiles: 5, healShare: 0.12 }),
+  }),
+  Object.freeze({
+    id: 'juggernaut',
+    title: 'Juggernaut',
+    nameplateTag: 'JUGG',
+    visualTell: 'heavy white shoulder plates and dust puffs on every step',
+    counterplay: Object.freeze(['do not rely on knockback', 'use movement lanes and damage over time']),
+    modifiers: Object.freeze({ immuneToKnockback: true, speedMultiplier: 0.8 }),
+  }),
+]);
+
+function affixWeightByPressureFor({ pressure = 0, role = 'melee' } = {}) {
+  const p = clamp(pressure, 0, 1);
+  const ranged = role === 'ranged' || role === 'stationary';
+  return Object.freeze({
+    shielded: Number((1.1 + p * 0.55 + (role === 'melee' ? 0.25 : 0)).toFixed(3)),
+    splitter: Number((0.85 + p * 0.7).toFixed(3)),
+    volatile: Number((0.95 + p * 0.8).toFixed(3)),
+    magnetron: Number((0.75 + p * 0.55).toFixed(3)),
+    warder: Number((0.8 + p * 0.9).toFixed(3)),
+    vampiric: Number((0.7 + p * 0.75).toFixed(3)),
+    juggernaut: Number((0.8 + p * 0.55 + (ranged ? -0.25 : 0.2)).toFixed(3)),
+  });
+}
+
+function seededAffixHash(seed = 0, salt = 0, enemyId = '') {
+  let h = (Number(seed) || 0) >>> 0;
+  for (let i = 0; i < String(enemyId).length; i += 1) h = Math.imul(h ^ String(enemyId).charCodeAt(i), 16777619) >>> 0;
+  h = (h + Math.imul(salt + 1, 2246822519)) >>> 0;
+  h ^= h >>> 15;
+  h = Math.imul(h, 2246822507) >>> 0;
+  h ^= h >>> 13;
+  return h >>> 0;
+}
+
+function weightedAffixPick(pool, weights, seed, salt, enemyId) {
+  const total = pool.reduce((sum, affix) => sum + Math.max(0, Number(weights[affix.id]) || 0), 0);
+  if (total <= 0) return pool[seededAffixHash(seed, salt, enemyId) % pool.length];
+  const roll = (seededAffixHash(seed, salt, enemyId) / 0xffffffff) * total;
+  let acc = 0;
+  for (const affix of pool) {
+    acc += Math.max(0, Number(weights[affix.id]) || 0);
+    if (roll <= acc) return affix;
+  }
+  return pool.at(-1);
+}
+
+export function resolveEliteAffixes({ enemyId = 'unknown-enemy', elite = false, boss = false, pressure = 0, seed = 0, role = 'melee', affixWeightByPressure = null } = {}) {
+  if (!elite && !boss) return Object.freeze([]);
+  const count = clamp(pressure, 0, 1) >= 0.7 ? 2 : 1;
+  const weights = affixWeightByPressure ?? affixWeightByPressureFor({ pressure, role });
+  const pool = [...ELITE_AFFIX_CATALOG];
+  const picks = [];
+  for (let i = 0; i < count && pool.length > 0; i += 1) {
+    const picked = weightedAffixPick(pool, weights, seed, i, enemyId);
+    picks.push(picked);
+    const index = pool.findIndex((affix) => affix.id === picked.id);
+    if (index >= 0) pool.splice(index, 1);
+  }
+  return Object.freeze(picks.map((affix) => Object.freeze({ ...affix })));
+}
+
+export function summarizeEliteAffixRuntime(affixes = []) {
+  const summary = {
+    speedMultiplier: 1,
+    immuneToKnockback: false,
+    directionalFrontShield: false,
+    splitOnDeathCount: 0,
+    deathExplosion: false,
+    pullsDrops: false,
+    slowAura: false,
+    healsNearbyOnHit: false,
+  };
+  for (const affix of Array.isArray(affixes) ? affixes : []) {
+    const modifiers = affix.modifiers ?? {};
+    summary.speedMultiplier *= Number(modifiers.speedMultiplier) || 1;
+    summary.immuneToKnockback ||= Boolean(modifiers.immuneToKnockback);
+    summary.directionalFrontShield ||= Boolean(modifiers.directionalFrontShield);
+    summary.splitOnDeathCount += Math.max(0, Number(modifiers.splitOnDeathCount) || 0);
+    summary.deathExplosion ||= Boolean(modifiers.deathExplosion);
+    summary.pullsDrops ||= Boolean(modifiers.pullsDrops);
+    summary.slowAura ||= Boolean(modifiers.slowAura);
+    summary.healsNearbyOnHit ||= Boolean(modifiers.healsNearbyOnHit);
+  }
+  summary.speedMultiplier = Number(summary.speedMultiplier.toFixed(3));
+  return Object.freeze(summary);
+}
+
 export function calculateEnemyChaseSpeed({
   catalogSpeed = 1,
   enemySpeed = catalogSpeed,
@@ -109,6 +245,8 @@ export function buildEnemyBalanceCard({
         : role === 'flyer' ? 28
           : effectiveElite ? 30 : 24;
   const capRatio = effectiveElite ? 0.92 : 0.86;
+  const safePressure = clamp(pressure, 0, 1);
+  const affixWeightByPressure = affixWeightByPressureFor({ pressure: safePressure, role });
   return Object.freeze({
     enemyId: enemy.id ?? enemy.enemyId ?? 'unknown-enemy',
     title: enemy.title ?? enemy.id ?? 'Unknown Enemy',
@@ -127,6 +265,7 @@ export function buildEnemyBalanceCard({
       recoveryFrames,
       note: role === 'melee' ? 'pressures below player escape speed' : role === 'boss' ? 'deliberate boss-class movement' : 'readable non-melee pressure',
     }),
+    affixWeightByPressure,
   });
 }
 
@@ -147,6 +286,16 @@ export function validateEnemyBalanceCards(cards = []) {
     if ((card.readability?.minTellFrames ?? 0) < 24) errors.push(`${card.enemyId} tell frames too low`);
     if ((card.readability?.recoveryFrames ?? 0) < 20) errors.push(`${card.enemyId} recovery frames too low`);
     if (card.role === 'boss' && (card.readability?.minTellFrames ?? 0) < 42) errors.push(`${card.enemyId} boss tell frames too low`);
+    const weights = card.affixWeightByPressure ?? {};
+    for (const affixId of ELITE_AFFIX_CATALOG.map((affix) => affix.id)) {
+      if (!Number.isFinite(Number(weights[affixId])) || Number(weights[affixId]) < 0) errors.push(`${card.enemyId} invalid affix weight ${affixId}`);
+    }
+    for (const affix of Array.isArray(card.affixes) ? card.affixes : []) {
+      const modifiers = affix.modifiers ?? {};
+      if (Object.hasOwn(modifiers, 'healthMultiplier') || Object.hasOwn(modifiers, 'rawHp') || Object.hasOwn(modifiers, 'maxHpMultiplier')) {
+        errors.push(`${card.enemyId} affix ${affix.id ?? 'unknown'} adds HP inflation`);
+      }
+    }
   }
   return Object.freeze({ ok: errors.length === 0, errors: Object.freeze(errors) });
 }

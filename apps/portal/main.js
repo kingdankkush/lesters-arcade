@@ -65,7 +65,7 @@ import {
   levelOnePlayerAnimationPlan,
   nearestLevelOneInteractivePrompt,
 } from './src/hmh-level-one-aaa-slices.mjs';
-import { buildEnemyBalanceCard, calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculatePlayerDamageRecovery, calculateSideScrollerEnemySpeed } from './src/hmh-combat-balance.mjs';
+import { buildEnemyBalanceCard, calculateEnemyChaseSpeed, calculateEnemyMeleeDamage, calculateMeleeAttackResetFrames, calculatePlayerDamageRecovery, calculateSideScrollerEnemySpeed, resolveEliteAffixes, summarizeEliteAffixRuntime } from './src/hmh-combat-balance.mjs';
 import {
   buildLevelOneBossChoreographyPlan,
   buildLevelOneSpawnCompositionAt,
@@ -7443,6 +7443,17 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     pressure: director.pressure,
     playerMoveSpeed: 4.15 * (combat.roguelikeRun?.stats?.movementSpeed ?? 1),
   });
+  const affixes = resolveEliteAffixes({
+    enemyId: spawn.enemy.id,
+    elite: elite || miniBoss,
+    boss: Boolean(options.boss || spawn.enemy.boss),
+    pressure: director.pressure,
+    seed: options.affixSeed ?? options.seed ?? ((combat.roguelikeRun?.seed ?? 0) + combat.frame + combat.kills + combat.enemies.length),
+    role: balanceCard.role,
+    affixWeightByPressure: balanceCard.affixWeightByPressure,
+  });
+  const affixRuntime = summarizeEliteAffixRuntime(affixes);
+  const spawnSpeed = Number((balanceCard.speedLaw.spawnSpeed * affixRuntime.speedMultiplier).toFixed(3));
   const enemy = {
     ...spawn.enemy,
     title: options.title ?? spawn.enemy.title,
@@ -7450,11 +7461,16 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     mapY: safeSpawn.y,
     hp: Math.max(8, Math.round(spawn.scaledHealth * durabilityScale)),
     maxHp: Math.max(8, Math.round(spawn.scaledHealth * durabilityScale)),
-    speed: balanceCard.speedLaw.spawnSpeed,
+    speed: spawnSpeed,
     ranged,
     elite: elite || miniBoss || Boolean(options.boss),
     miniBoss,
     boss: Boolean(options.boss || spawn.enemy.boss),
+    affixes,
+    affixIds: affixes.map((affix) => affix.id),
+    nameplateTags: affixes.map((affix) => affix.nameplateTag),
+    affixRuntime,
+    immuneToKnockback: Boolean(affixRuntime.immuneToKnockback),
     finalBossProxy: Boolean(options.finalBossProxy),
     districtFamily: options.districtFamily ?? districtContext?.districtFamily ?? null,
     poiId,
@@ -11178,6 +11194,22 @@ function drawSingleEnemy(ctx, enemy) {
     ctx.fillStyle = '#45ff8a';
     const hpBarW = Math.round(w * drawScaleMul);
     ctx.fillRect(enemy.x, enemy.y - h - 8, hpBarW * Math.max(0, enemy.hp / enemy.maxHp), 4);
+    if (enemy.nameplateTags?.length) {
+      const tagText = enemy.nameplateTags.slice(0, 2).join('+');
+      ctx.save();
+      ctx.font = '9px monospace';
+      ctx.textBaseline = 'middle';
+      const tagW = Math.max(hpBarW + 8, Math.ceil(ctx.measureText(tagText).width) + 8);
+      const tagX = Math.round(enemy.x + hpBarW / 2 - tagW / 2);
+      const tagY = Math.round(enemy.y - h - 24);
+      ctx.fillStyle = 'rgba(8, 6, 22, 0.82)';
+      ctx.fillRect(tagX, tagY, tagW, 12);
+      ctx.strokeStyle = '#ffd45a';
+      ctx.strokeRect(tagX + 0.5, tagY + 0.5, tagW - 1, 11);
+      ctx.fillStyle = '#fff3a8';
+      ctx.fillText(tagText, tagX + 4, tagY + 6);
+      ctx.restore();
+    }
     if (enemy.attackTimer < 18) {
       ctx.fillStyle = '#ffe84d';
       const hpBarW = Math.round(w * drawScaleMul);
