@@ -128,8 +128,8 @@ test('main runtime uses clean Level 1 loading art and authored opening ground ro
   assert.equal(loadingScreen.includes('Math.random() * HMH_LOADING_KEYARTS.length'), false, 'random legacy loading-keyart selection must not be inline in showHMHLoadingScreen');
 
   const tileDraw = source.slice(source.indexOf('function drawGroundPlanPatternTiles'), source.indexOf('function productionPropForIndex'));
-  assert.equal(tileDraw.includes('buildTerrainBlobCell(plan, tile.worldX, tile.worldY)'), true, 'floor renderer should consume the authored Level 1 ground plan through terrain blob metadata instead of per-tile texture rolls');
-  assert.equal(tileDraw.includes("createPattern(source, 'repeat')"), true, 'floor renderer should fill batched zones with world-anchored texture patterns');
+  assert.equal(tileDraw.includes('plan.cellAt(tile.worldX, tile.worldY)'), true, 'floor renderer should consume cached authored Level 1 terrain blob metadata instead of per-frame rebuilds or per-tile texture rolls');
+  assert.equal(tileDraw.includes('groundPlanPatternForGroup(ctx, group)'), true, 'floor renderer should fill batched zones with cached world-anchored texture patterns');
   assert.equal(tileDraw.includes('drawLevelOneGroundEdgeBreakup'), false, 'WO-3 disables seam-breakup overlays until real border transitions land');
   const enemyDraw = source.slice(source.indexOf('function drawSingleEnemy'), source.indexOf('function bossArtFor'));
   assert.equal(enemyDraw.includes('drawLevelOneEnemyReadabilityAura'), true, 'enemy renderer should add Level 1 readable outlines/glows instead of relying on weak raw sprites only');

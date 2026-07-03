@@ -1,3 +1,4 @@
+import { buildTerrainBlobCell } from './hmh-terrain-blob-map.mjs';
 import { HMH_LEVEL_ONE_CURATED_ROUTE } from './hmh-level-one-curated-world-contract.mjs';
 import {
   HMH_LEVEL_ONE_ID,
@@ -185,7 +186,12 @@ export function buildGroundPlan({ levelId = HMH_LEVEL_ONE_ID, seed = 0 } = {}) {
     }).filter(Boolean));
   };
 
-  return Object.freeze({
+  const terrainCellCache = new Map();
+  let terrainCellCacheHits = 0;
+  let terrainCellCacheMisses = 0;
+  const terrainCellKey = (worldX, worldY) => `${Math.round(Number(worldX) || 0)}|${Math.round(Number(worldY) || 0)}`;
+
+  const plan = {
     levelId: safeLevelId,
     seed: Number(seed) || 0,
     zones,
@@ -199,7 +205,24 @@ export function buildGroundPlan({ levelId = HMH_LEVEL_ONE_ID, seed = 0 } = {}) {
         borderInfo: borderInfoFor(worldX, worldY, zone),
       });
     },
-  });
+    cellAt(worldX, worldY) {
+      const key = terrainCellKey(worldX, worldY);
+      const cached = terrainCellCache.get(key);
+      if (cached) {
+        terrainCellCacheHits += 1;
+        return cached;
+      }
+      terrainCellCacheMisses += 1;
+      const cell = buildTerrainBlobCell(plan, worldX, worldY);
+      terrainCellCache.set(key, cell);
+      return cell;
+    },
+    terrainCellCacheStats() {
+      return Object.freeze({ size: terrainCellCache.size, hits: terrainCellCacheHits, misses: terrainCellCacheMisses });
+    },
+  };
+
+  return Object.freeze(plan);
 }
 
 export function validateGroundPlanSample({ levelId = HMH_LEVEL_ONE_ID, seed = 0, width = 200, height = 200 } = {}) {

@@ -20,7 +20,7 @@ function functionBody(name) {
 
 test('roguelike renderer imports and caches the Level 1 ground plan plus terrain blob-map metadata', () => {
   assert.match(mainSource, /import \{ buildGroundPlan \} from '\.\/src\/hmh-ground-plan\.mjs';/);
-  assert.match(mainSource, /import \{ buildTerrainBlobCell \} from '\.\/src\/hmh-terrain-blob-map\.mjs';/);
+  assert.doesNotMatch(mainSource, /from '\.\/src\/hmh-terrain-blob-map\.mjs';/);
   assert.match(mainSource, /hmh-ground-plane-rendering\.mjs/);
   assert.match(mainSource, /combat\.groundPlan/);
   assert.match(mainSource, /buildGroundPlan\(\{\s*levelId: combat\.currentCampaignLevelId/);
@@ -50,16 +50,21 @@ test('WO-60 ground pattern anchor matches rounded tile lattice origin for fracti
 test('roguelike ground pass batches diamonds by texture key and fills world-anchored patterns', () => {
   assert.match(mainSource, /function drawGroundPlanPatternTiles\(/);
   const body = functionBody('drawGroundPlanPatternTiles');
-  assert.match(body, /buildTerrainBlobCell\(plan, tile\.worldX, tile\.worldY\)/);
-  assert.match(body, /terrainCell\.blob\.variantIndex/);
+  assert.match(body, /plan\.cellAt\(tile\.worldX, tile\.worldY\)/);
+  assert.doesNotMatch(body, /buildTerrainBlobCell\(/);
   assert.match(body, /terrainCell\.renderLayers\.includes\('bridge-deck'\)/);
   assert.match(body, /terrainCell\.renderLayers\.includes\('water-ripple'\)/);
   assert.match(body, /terrainCell\.vfx\.includes\('bridge-shadow'\)/);
   assert.match(body, /new Path2D\(/);
-  assert.match(body, /createPattern\([^,]+, 'repeat'\)/);
+  assert.match(mainSource, /function groundPlanPatternForGroup\(/);
+  assert.match(mainSource, /ctx\.createPattern\(source, 'repeat'\)/);
   assert.match(body, /pattern\.setTransform\(new DOMMatrix\(\)\.translate\(/);
   assert.match(body, /groundPatternAnchorForOrigin\(/);
   assert.doesNotMatch(body, /translate\(-cameraWorldOffsetX, -cameraWorldOffsetY\)/);
+  assert.match(body, /const groupKey = terrainCell\.textureKey/);
+  assert.doesNotMatch(body, /blob-\$\{terrainCell\.blob\.variantIndex\}/);
+  assert.doesNotMatch(body, /elev-\$\{terrainCell\.elevation\.band\}/);
+  assert.match(body, /groundPlanPatternForGroup\(/);
   assert.match(body, /textureGroups\.get\(groupKey\)/);
   assert.match(body, /ctx\.fill\(group\.path\)/);
 });

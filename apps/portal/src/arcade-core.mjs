@@ -3336,6 +3336,7 @@ export function buildTacticalBalanceDebugOverlayModel({
   stageTravelGoal = 1,
   enemies = [],
   props = [],
+  groundRender = null,
   camera = LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
 } = {}) {
   const safeEnemies = Array.isArray(enemies) ? enemies : [];
@@ -3352,6 +3353,13 @@ export function buildTacticalBalanceDebugOverlayModel({
   const telegraphing = safeEnemies.filter((enemy) => /tell|telegraph|windup/i.test(String(enemy.state ?? enemy.aiState ?? enemy.phase ?? ''))).length;
   const safeStageGoal = Math.max(1, Math.round(Number(stageTravelGoal) || 1));
   const safeStageTravel = Math.max(0, Math.round(Number(stageTravel) || 0));
+  const groundRenderMetrics = Object.freeze({
+    passMs: Number.isFinite(groundRender?.passMs) ? Number(groundRender.passMs.toFixed?.(2) ?? groundRender.passMs) : 0,
+    groupCount: Math.max(0, Math.round(Number(groundRender?.groupCount) || 0)),
+    cacheSize: Math.max(0, Math.round(Number(groundRender?.cacheSize) || 0)),
+    cacheHits: Math.max(0, Math.round(Number(groundRender?.cacheHits) || 0)),
+    cacheMisses: Math.max(0, Math.round(Number(groundRender?.cacheMisses) || 0)),
+  });
   const layerItems = Object.freeze({
     'camera-bounds': Object.freeze([
       `${camera.mode} // scroll ${Math.round(Number(scroll) || 0)}px`,
@@ -3374,11 +3382,19 @@ export function buildTacticalBalanceDebugOverlayModel({
       `${explosiveCount} explosive props`,
       `${safeProps.length} total tactical props`,
     ]),
+    'ground-render': Object.freeze([
+      `${groundRenderMetrics.passMs.toFixed(2)}ms ground pass`,
+      `${groundRenderMetrics.groupCount} texture groups`,
+      `cache ${groundRenderMetrics.cacheSize} cells // ${groundRenderMetrics.cacheHits} hits / ${groundRenderMetrics.cacheMisses} misses`,
+    ]),
   });
-  const layers = Object.freeze(LESTER_BLASTER_DEV_BALANCE_OVERLAY.layers.map((layer) => Object.freeze({
-    ...clone(layer),
-    items: layerItems[layer.id] ?? Object.freeze([]),
-  })));
+  const layers = Object.freeze([
+    ...LESTER_BLASTER_DEV_BALANCE_OVERLAY.layers.map((layer) => Object.freeze({
+      ...clone(layer),
+      items: layerItems[layer.id] ?? Object.freeze([]),
+    })),
+    Object.freeze({ id: 'ground-render', label: 'Ground render', items: layerItems['ground-render'] }),
+  ]);
 
   return Object.freeze({
     enabled: Boolean(debugEnabled),
@@ -3396,6 +3412,7 @@ export function buildTacticalBalanceDebugOverlayModel({
       player: Object.freeze({ x: Math.round(Number(playerX) || camera.playerStartScreenX), backtrackFloor: camera.backtrackFloorScreenX }),
       enemies: Object.freeze({ count: safeEnemies.length, telegraphing }),
       cover: Object.freeze({ coverCount, explosiveCount, propCount: safeProps.length }),
+      groundRender: groundRenderMetrics,
     }),
     safeguards: LESTER_BLASTER_DEV_BALANCE_OVERLAY.safeguards,
   });

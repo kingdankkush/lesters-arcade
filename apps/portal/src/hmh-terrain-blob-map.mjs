@@ -99,9 +99,10 @@ export function buildTerrainBlobCell(plan, worldX = 0, worldY = 0) {
 }
 
 export function buildTerrainRenderingCapabilityReport(plan, { xMin = 0, xMax = 105, yMin = 0, yMax = 80 } = {}) {
+  const cellAt = typeof plan.cellAt === 'function' ? plan.cellAt.bind(plan) : (x, y) => buildTerrainBlobCell(plan, x, y);
   const cells = [];
   for (let x = xMin; x <= xMax; x += 1) {
-    for (let y = yMin; y <= yMax; y += 1) cells.push(buildTerrainBlobCell(plan, x, y));
+    for (let y = yMin; y <= yMax; y += 1) cells.push(cellAt(x, y));
   }
   const roles = new Set(cells.map((cell) => cell.terrainRole));
   const elevationBands = [...new Set(cells.map((cell) => cell.elevation.band))].sort();

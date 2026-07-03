@@ -24,7 +24,6 @@ import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterColli
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
-import { buildTerrainBlobCell } from './src/hmh-terrain-blob-map.mjs';
 import { groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
@@ -1545,6 +1544,7 @@ const combat = {
   accumulatorMs: 0,
   frameTimes: [],
   fps: 60,
+  groundRenderStats: { passMs: 0, groupCount: 0, cacheSize: 0, cacheHits: 0, cacheMisses: 0 },
   status: 'Attract mode: choose free or paid, then start the 60fps combat test.',
   gameOverSubmitted: false,
 };
@@ -2592,6 +2592,7 @@ function renderTacticalBalanceDebugOverlay() {
     stageTravelGoal: combat.stageTravelGoal,
     enemies: combat.enemies,
     props: [...combat.props, ...combat.hazards, ...combat.platforms],
+    groundRender: combat.groundRenderStats,
   });
   dom.tacticalBalanceDebugOverlay.hidden = !(overlay.enabled && (combat.active || combat.gameOver));
   dom.tacticalBalanceDebugOverlay.dataset.enabled = String(overlay.enabled);
@@ -9256,6 +9257,7 @@ function collectAnimatedProps(ctx) {
 }
 
 const groundPlanPatternFrames = new Map();
+const groundPlanPatternCacheByContext = new WeakMap();
 
 function getCombatGroundPlan() {
   const levelId = combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID;
@@ -9266,10 +9268,14 @@ function getCombatGroundPlan() {
   return combat.groundPlan;
 }
 
-function groundPlanPatternSource(asset, image) {
-  if (!asset?.animated || !(asset.frames > 1) || !(asset.frameWidth > 0) || !(asset.frameHeight > 0) || typeof document === 'undefined') return image;
+function groundPlanPatternFrameIndex(asset) {
+  if (!asset?.animated || !(asset.frames > 1)) return 0;
   const frameDuration = asset.frameDuration ?? 8;
-  const frameIndex = Math.floor((combat.frame / frameDuration) % asset.frames);
+  return Math.floor((combat.frame / frameDuration) % asset.frames);
+}
+
+function groundPlanPatternSource(asset, image, frameIndex = groundPlanPatternFrameIndex(asset)) {
+  if (!asset?.animated || !(asset.frames > 1) || !(asset.frameWidth > 0) || !(asset.frameHeight > 0) || typeof document === 'undefined') return image;
   const key = `${asset.key}:${frameIndex}`;
   let canvas = groundPlanPatternFrames.get(key);
   if (!canvas) {
@@ -9284,7 +9290,24 @@ function groundPlanPatternSource(asset, image) {
   return canvas;
 }
 
+function groundPlanPatternForGroup(ctx, group) {
+  let cache = groundPlanPatternCacheByContext.get(ctx);
+  if (!cache) {
+    cache = new Map();
+    groundPlanPatternCacheByContext.set(ctx, cache);
+  }
+  const frameIndex = groundPlanPatternFrameIndex(group.asset);
+  const key = `${group.asset?.key ?? group.asset?.src ?? 'ground'}:${frameIndex}`;
+  const cached = cache.get(key);
+  if (cached) return cached;
+  const source = groundPlanPatternSource(group.asset, group.image, frameIndex);
+  const pattern = ctx.createPattern(source, 'repeat');
+  if (pattern) cache.set(key, pattern);
+  return pattern;
+}
+
 function drawGroundPlanPatternTiles(ctx, visibleTiles) {
+  const groundPassStartedAt = typeof performance !== 'undefined' ? performance.now() : 0;
   const plan = getCombatGroundPlan();
   const textureGroups = new Map();
   const shadowPath = new Path2D();
@@ -9302,14 +9325,14 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   };
 
   for (const tile of visibleTiles) {
-    const terrainCell = buildTerrainBlobCell(plan, tile.worldX, tile.worldY);
+    const terrainCell = plan.cellAt(tile.worldX, tile.worldY);
     const asset = plan.textureForKey(terrainCell.textureKey);
     const image = sbsGroundTileImage(asset);
     if (!imageReady(image)) {
       fallbackTiles.push(tile);
       continue;
     }
-    const groupKey = `${terrainCell.textureKey}|blob-${terrainCell.blob.variantIndex}|elev-${terrainCell.elevation.band}`;
+    const groupKey = terrainCell.textureKey;
     let group = textureGroups.get(groupKey);
     if (!group) {
       group = { asset, image, path: new Path2D(), terrainCell };
@@ -9322,8 +9345,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   }
 
   for (const group of textureGroups.values()) {
-    const source = groundPlanPatternSource(group.asset, group.image);
-    const pattern = ctx.createPattern(source, 'repeat');
+    const pattern = groundPlanPatternForGroup(ctx, group);
     if (!pattern) continue;
     if (typeof DOMMatrix !== 'undefined' && typeof pattern.setTransform === 'function') {
       pattern.setTransform(new DOMMatrix().translate(cameraAnchor.x, cameraAnchor.y));
@@ -9344,6 +9366,17 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   for (const tile of fallbackTiles) {
     drawProductionIsoTile(ctx, tile.cx, tile.cy, tile.worldX, tile.worldY);
   }
+
+  const cacheStats = typeof plan.terrainCellCacheStats === 'function'
+    ? plan.terrainCellCacheStats()
+    : { size: 0, hits: 0, misses: 0 };
+  combat.groundRenderStats = {
+    passMs: typeof performance !== 'undefined' ? performance.now() - groundPassStartedAt : 0,
+    groupCount: textureGroups.size,
+    cacheSize: cacheStats.size,
+    cacheHits: cacheStats.hits,
+    cacheMisses: cacheStats.misses,
+  };
 }
 
 function drawProductionIsoTile(ctx, cx, cy, worldX, worldY) {

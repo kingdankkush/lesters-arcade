@@ -28,6 +28,22 @@ test('terrain blob cell derives 47-blob masks and bridge/water metadata from the
   assert.equal(water.vfx.includes('shoreline-foam'), true);
 });
 
+test('ground plan serves immutable terrain blob cells from a per-run cache', () => {
+  const plan = buildGroundPlan({ seed: 61 });
+  assert.equal(typeof plan.cellAt, 'function');
+  assert.equal(typeof plan.terrainCellCacheStats, 'function');
+
+  const first = plan.cellAt(61, 5);
+  const second = plan.cellAt(61, 5);
+  const fractional = plan.cellAt(61.2, 4.8);
+
+  assert.equal(first, second, 'same tile should return the exact cached object');
+  assert.equal(first, fractional, 'rounded equivalent tile should return the exact cached object');
+  assert.equal(Object.isFrozen(first), true);
+  assert.equal(first.isBridge, true);
+  assert.deepEqual(plan.terrainCellCacheStats(), { size: 1, hits: 2, misses: 1 });
+});
+
 test('terrain capability report covers EPIC 4-6 features without legacy terrain fallbacks', () => {
   const report = buildTerrainRenderingCapabilityReport(buildGroundPlan({ seed: 47 }));
 

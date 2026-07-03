@@ -2341,6 +2341,7 @@ test('dev tactical balance overlay exposes camera, cover, and enemy AI diagnosti
       { kind: 'crate', cover: true, x: 180, w: 54 },
       { kind: 'barrel', explosive: true, x: 340, w: 34 },
     ],
+    groundRender: { passMs: 1.72, groupCount: 6, cacheSize: 256, cacheHits: 1400, cacheMisses: 256 },
   });
 
   assert.equal(overlay.enabled, true);
@@ -2352,7 +2353,9 @@ test('dev tactical balance overlay exposes camera, cover, and enemy AI diagnosti
   assert.equal(overlay.metrics.enemies.telegraphing, 1);
   assert.equal(overlay.metrics.cover.coverCount, 1);
   assert.equal(overlay.metrics.cover.explosiveCount, 1);
+  assert.deepEqual(overlay.metrics.groundRender, { passMs: 1.72, groupCount: 6, cacheSize: 256, cacheHits: 1400, cacheMisses: 256 });
   assert.equal(overlay.layers.some((layer) => layer.id === 'enemy-ai' && layer.items.some((item) => item.includes('telegraph'))), true);
+  assert.equal(overlay.layers.some((layer) => layer.id === 'ground-render' && layer.items.some((item) => item.includes('1.72ms'))), true);
 });
 
 test('next-move workflow automation includes interaction smoke and weekly design review outputs', () => {
