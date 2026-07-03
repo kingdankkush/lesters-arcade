@@ -126,6 +126,7 @@ import {
   buildCombatAccessibilitySettingsModel,
   computeWeaponUpgrades,
   WEAPON_UPGRADE_TREES,
+  buildRoguelikeSynergyHudModel,
   buildCombatOptionsMenuModel,
   buildCombatPauseGate,
   buildTacticalBalanceDebugOverlayModel,
@@ -2289,12 +2290,13 @@ function renderLevelUpActionGrid() {
 
   const cardStack = el('div', { className: 'level-up-card-stack' });
   for (const card of presentation.cards) {
-    const button = el('button', { className: 'combat-menu-action level-up-upgrade-card', type: 'button', dataset: card.dataset });
+    const button = el('button', { className: `combat-menu-action level-up-upgrade-card ${card.rarity === 'golden' ? 'is-golden-card' : ''}`, type: 'button', dataset: { ...card.dataset, rarity: card.rarity ?? 'common' } });
     const head = el('div', { className: 'upgrade-card-head' });
     const badge = el('span', { className: 'upgrade-card-badge', textContent: card.icon });
     badge.setAttribute('aria-hidden', 'true');
     const titleWrap = el('div', { className: 'upgrade-card-titlewrap' });
     appendText(titleWrap, 'span', card.branchLabel.toUpperCase(), 'upgrade-card-cat');
+    if (card.rarity === 'golden') appendText(titleWrap, 'span', 'POWER MOMENT // GOLDEN CARD', 'upgrade-card-tone-tag');
     if (card.category.colorblindTag) appendText(titleWrap, 'span', card.category.colorblindTag, 'upgrade-card-tone-tag');
     appendText(titleWrap, 'strong', card.title, 'upgrade-card-title');
     head.append(badge, titleWrap);
@@ -2498,6 +2500,11 @@ function renderRoguelikeStatBar() {
     { id: 'aug', label: 'AUG', value: `${augments} · ⟳${run.rerollsRemaining}`, tone: 'orange' },
   ];
   const activeFx = [];
+  const synergyHud = buildRoguelikeSynergyHudModel(run);
+  if (run.powerMoments?.lastMoment?.banner) activeFx.push(`POWER MOMENT ${run.powerMoments.lastMoment.banner}`);
+  for (const chip of synergyHud.chips.filter((candidate) => ['ready', 'evolved', 'near'].includes(candidate.status)).slice(0, 3)) {
+    activeFx.push(`${chip.status === 'evolved' ? 'EVOLVED' : chip.status === 'ready' ? 'GOLDEN READY' : 'SYNERGY'} ${chip.title.toUpperCase()}`);
+  }
   if (guidance) activeFx.push(`GUIDE ${guidance.label}`);
   else if (activePoi) activeFx.push(`POI ${activePoi.label}`);
   else activeFx.push(objective.label.toUpperCase());

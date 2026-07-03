@@ -18,6 +18,9 @@ import {
   LESTER_BLASTER_HUD_OVERLAY_MODEL,
   LESTER_BLASTER_ISOMETRIC_ROGUELIKE,
   LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY,
+  HMH_WEAPON_EVOLUTION_LIBRARY,
+  buildRoguelikePowerMomentState,
+  buildRoguelikeSynergyHudModel,
   LESTER_BLASTER_TACTICAL_CAMERA_MODEL,
   LESTER_BLASTER_ANIMATION_PRODUCTION_BRIEFS,
   LESTER_BLASTER_DEV_BALANCE_OVERLAY,
@@ -686,7 +689,7 @@ test('roguelike skill library exposes the WO-27 ranked tree with deterministic t
   const upgraded = applyRoguelikeSkillUpgrade(leveled, offered.options[0].id);
 
   assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length >= 24, true);
-  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length <= 28, true);
+  assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length <= 32, true);
   assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => skill.maxLevel === skill.maxRank), true);
   assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => Array.isArray(skill.ranks) && skill.ranks.length === skill.maxRank), true);
   assert.equal(leveled.level, 2);
@@ -698,6 +701,49 @@ test('roguelike skill library exposes the WO-27 ranked tree with deterministic t
   assert.equal(upgraded.pausedForLevelUp, false);
   assert.equal(upgraded.skills[offered.options[0].id], 1);
   if (offered.options[0].stat) assert.equal(upgraded.stats[offered.options[0].stat] > leveled.stats[offered.options[0].stat], true);
+});
+
+test('WO-45 weapon evolutions unlock from completed synergies and advertise payoff', () => {
+  assert.equal(HMH_WEAPON_EVOLUTION_LIBRARY.length >= 4, true);
+  assert.equal(HMH_WEAPON_EVOLUTION_LIBRARY.every((evo) => evo.requires.length >= 2), true);
+
+  const run = createRoguelikeRunState({ seed: 45, mode: 'free' });
+  let built = { ...run, level: 24, skills: { ...run.skills, 'damage-alpha': 5, pierce: 4, 'rate-of-fire': 3 } };
+  built = applyRoguelikeSkillUpgrade(built, 'evolve-settler-rail');
+
+  assert.equal(built.unlocks['evolve-settler-rail'], true);
+  assert.equal(built.powerMoments.evolutions.includes('settler-rail'), true);
+  assert.equal(built.stats.weaponEvolution, 'settler-rail');
+  assert.match(built.powerMoments.lastMoment.banner, /EVOLUTION/i);
+});
+
+test('WO-45 golden cards surface as rare payoff choices once prerequisite builds are online', () => {
+  const run = createRoguelikeRunState({ seed: 145, mode: 'free' });
+  const synergized = { ...run, level: 24, skills: { ...run.skills, 'damage-alpha': 5, pierce: 4, 'rate-of-fire': 3 } };
+  const offered = chooseRoguelikeUpgradeOptions(synergized, { seed: 145 });
+
+  assert.equal(offered.options.some((option) => option.rarity === 'golden' && option.kind === 'evolution'), true);
+  assert.equal(offered.options.filter((option) => option.rarity === 'golden').length <= 1, true);
+  assert.equal(offered.options.find((option) => option.rarity === 'golden').presentation.tone, 'gold');
+});
+
+test('WO-45 synergy HUD model explains near-complete builds and max-build payoff', () => {
+  const run = createRoguelikeRunState({ seed: 245, mode: 'free' });
+  const almost = { ...run, level: 18, skills: { ...run.skills, 'damage-alpha': 5, pierce: 3, 'rate-of-fire': 3, 'critical-chance': 4, 'critical-damage': 2 } };
+  const hud = buildRoguelikeSynergyHudModel(almost);
+
+  assert.equal(hud.chips.length >= 2, true);
+  assert.ok(hud.chips.some((chip) => chip.status === 'ready' || chip.status === 'near'));
+  assert.ok(hud.chips.every((chip) => chip.progressPct >= 0 && chip.progressPct <= 100));
+  assert.match(hud.maxBuildPayoff.label, /MAX BUILD/i);
+  assert.equal(hud.maxBuildPayoff.reward.scoreMultiplier >= 1.25, true);
+});
+
+test('WO-45 runtime HUD and level-up cards expose power moment metadata', () => {
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.match(mainSource, /buildRoguelikeSynergyHudModel/);
+  assert.match(mainSource, /POWER MOMENT/);
+  assert.match(mainSource, /card\.rarity/);
 });
 
 test('roguelike XP pacing prevents one enemy pack from chaining multiple level-ups', () => {

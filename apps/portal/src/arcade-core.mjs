@@ -668,6 +668,10 @@ const roguelikeSkill = ({
   gate = null,
   kind = 'stat',
   grenadeType = null,
+  rarity = 'common',
+  presentation = null,
+  evolutionId = null,
+  payoff = null,
 }) => {
   const frozenRanks = Object.freeze((ranks ?? rankStats(stat, Array.from({ length: maxRank }, () => 5))).map(freezeRank));
   const safeMaxRank = frozenRanks.length;
@@ -686,6 +690,10 @@ const roguelikeSkill = ({
       requires: Object.freeze((gate.requires ?? []).map((req) => Object.freeze({ ...req }))),
     }) : null,
     grenadeType,
+    rarity,
+    presentation: Object.freeze({ tone: rarity === 'golden' ? 'gold' : 'cyan', label: rarity.toUpperCase(), ...(presentation ?? {}) }),
+    evolutionId,
+    payoff: payoff ? Object.freeze({ ...payoff }) : null,
     availableFromCampaignLevel: 1,
     description,
   });
@@ -702,6 +710,60 @@ const unlockSkill = ({ id, title, category = 'throwable', description, gate, gre
   grenadeType,
   gate,
   ranks: Object.freeze([freezeRank({ rank: 1, stat, statDelta, unlock: true, grenadeType })]),
+});
+
+export const HMH_WEAPON_EVOLUTION_LIBRARY = Object.freeze([
+  Object.freeze({
+    id: 'evolve-settler-rail',
+    evolutionId: 'settler-rail',
+    title: 'Settler Rail Dividend',
+    weaponId: 'coin-blaster',
+    requires: Object.freeze([{ skillId: 'damage-alpha', rank: 5 }, { skillId: 'pierce', rank: 4 }, { skillId: 'rate-of-fire', rank: 3 }]),
+    payoff: Object.freeze({ scoreMultiplier: 1.35, projectileTag: 'rail-dividend', banner: 'EVOLUTION // SETTLER RAIL' }),
+    counterFantasy: 'Coin Blaster shots become clean Litecoin rail payouts that punch through elite packs.',
+  }),
+  Object.freeze({
+    id: 'evolve-hashstorm-overdrive',
+    evolutionId: 'hashstorm-overdrive',
+    title: 'Hashstorm Overdrive',
+    weaponId: 'auto-miner',
+    requires: Object.freeze([{ skillId: 'rate-of-fire', rank: 5 }, { skillId: 'magazine-size', rank: 4 }, { skillId: 'reload-hands', rank: 3 }]),
+    payoff: Object.freeze({ scoreMultiplier: 1.3, projectileTag: 'overdrive-barrage', banner: 'EVOLUTION // HASHSTORM' }),
+    counterFantasy: 'Auto fire becomes a readable max-build spray moment without hiding enemy tells.',
+  }),
+  Object.freeze({
+    id: 'evolve-crit-candle',
+    evolutionId: 'crit-candle',
+    title: 'Golden Crit Candle',
+    weaponId: 'hash-rail',
+    requires: Object.freeze([{ skillId: 'critical-chance', rank: 4 }, { skillId: 'critical-damage', rank: 4 }, { skillId: 'projectile-speed', rank: 3 }]),
+    payoff: Object.freeze({ scoreMultiplier: 1.4, projectileTag: 'gold-crit', banner: 'EVOLUTION // CRIT CANDLE' }),
+    counterFantasy: 'Rail hits flash gold on crit chains and create a visible score spike.',
+  }),
+  Object.freeze({
+    id: 'evolve-crypto-bomb-orbit',
+    evolutionId: 'crypto-bomb-orbit',
+    title: 'Crypto Bomb Orbit',
+    weaponId: 'crypto-bombs',
+    requires: Object.freeze([{ skillId: 'grenade-damage', rank: 4 }, { skillId: 'grenade-radius', rank: 4 }, { skillId: 'grenade-capacity', rank: 4 }]),
+    payoff: Object.freeze({ scoreMultiplier: 1.25, projectileTag: 'orbit-bomb', banner: 'EVOLUTION // BOMB ORBIT' }),
+    counterFantasy: 'Grenade builds graduate into orbiting bomb protection for one-more-run survival.',
+  }),
+]);
+
+const evolutionSkill = (evolution) => roguelikeSkill({
+  id: evolution.id,
+  title: evolution.title,
+  category: 'weapon-evolution',
+  description: evolution.counterFantasy,
+  maxRank: 1,
+  kind: 'evolution',
+  rarity: 'golden',
+  evolutionId: evolution.evolutionId,
+  gate: { playerLevel: 18, requires: evolution.requires },
+  payoff: evolution.payoff,
+  ranks: Object.freeze([freezeRank({ rank: 1, unlock: true, evolutionId: evolution.evolutionId, stat: 'weaponEvolution', statDelta: 1 })]),
+  presentation: { tone: 'gold', label: 'GOLDEN EVOLUTION', icon: '★', banner: evolution.payoff.banner },
 });
 
 export const LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY = Object.freeze([
@@ -734,6 +796,8 @@ export const LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY = Object.freeze([
   roguelikeSkill({ id: 'combo-retention', title: 'Diamond Combo', stat: 'comboRetention', category: 'combo-retention', maxRank: 4, gate: { playerLevel: 15 }, ranks: rankStats('comboRetention', [18, 14, 11, 8]), description: 'Combo drops more slowly under pressure.' }),
   unlockSkill({ id: 'homing-cluster', title: 'Homing Cluster', grenadeType: 'homing-cluster', description: 'Switch grenades to seek the largest enemy cluster.', gate: { playerLevel: 15, requires: [{ skillId: 'grenade-damage', rank: 2 }] } }),
   unlockSkill({ id: 'block-buster', title: 'Block Buster', grenadeType: 'block-buster', description: 'Switch grenades to a huge heavy blast with lower carry cap.', gate: { playerLevel: 15, requires: [{ skillId: 'grenade-radius', rank: 2 }] } }),
+
+  ...HMH_WEAPON_EVOLUTION_LIBRARY.map(evolutionSkill),
 
   unlockSkill({ id: 'revive', title: 'Second Wallet', category: 'defense', stat: 'revive', statDelta: 1, description: 'Survive one killing blow when the late run turns ugly.', gate: { playerLevel: 20, requires: [{ skillId: 'max-health', rank: 3 }, { skillId: 'armor', rank: 2 }] } }),
 ]);
@@ -790,6 +854,61 @@ export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
     rankedRequiresExplicitSubmit: true,
   }),
 });
+
+function skillRequirementProgress(run, requirements = []) {
+  const items = requirements.map((req) => {
+    const current = run?.skills?.[req.skillId] ?? 0;
+    return Object.freeze({ ...req, current, complete: current >= req.rank });
+  });
+  const complete = items.filter((item) => item.complete).length;
+  const totalRequiredRanks = items.reduce((sum, item) => sum + item.rank, 0) || 1;
+  const earnedRanks = items.reduce((sum, item) => sum + Math.min(item.current, item.rank), 0);
+  return Object.freeze({ items: Object.freeze(items), complete, total: items.length, progressPct: Math.round((earnedRanks / totalRequiredRanks) * 100) });
+}
+
+export function buildRoguelikePowerMomentState(run = {}) {
+  const evolutions = HMH_WEAPON_EVOLUTION_LIBRARY.filter((evolution) => run.unlocks?.[evolution.id]).map((evolution) => evolution.evolutionId);
+  const maxedSkills = Object.entries(run.skills ?? {}).filter(([id, rank]) => {
+    const skill = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.find((candidate) => candidate.id === id);
+    return skill && rank >= skill.maxRank;
+  }).map(([id]) => id);
+  const bestPayoff = HMH_WEAPON_EVOLUTION_LIBRARY
+    .filter((evolution) => evolutions.includes(evolution.evolutionId))
+    .sort((a, b) => (b.payoff.scoreMultiplier ?? 1) - (a.payoff.scoreMultiplier ?? 1))[0]?.payoff ?? null;
+  return Object.freeze({
+    evolutions: Object.freeze(evolutions),
+    maxedSkills: Object.freeze(maxedSkills),
+    activePayoff: bestPayoff ? Object.freeze({ ...bestPayoff }) : null,
+    lastMoment: run.powerMoments?.lastMoment ? Object.freeze({ ...run.powerMoments.lastMoment }) : null,
+  });
+}
+
+export function buildRoguelikeSynergyHudModel(run = {}) {
+  const chips = HMH_WEAPON_EVOLUTION_LIBRARY.map((evolution) => {
+    const progress = skillRequirementProgress(run, evolution.requires);
+    const unlocked = Boolean(run.unlocks?.[evolution.id]);
+    const status = unlocked ? 'evolved' : progress.complete === progress.total ? 'ready' : progress.progressPct >= 70 ? 'near' : 'building';
+    return Object.freeze({
+      id: evolution.evolutionId,
+      title: evolution.title,
+      status,
+      progressPct: progress.progressPct,
+      requirements: progress.items,
+      payoff: evolution.payoff,
+      label: status === 'ready' ? `GOLDEN READY // ${evolution.title}` : `${evolution.title} ${progress.progressPct}%`,
+    });
+  });
+  const readyCount = chips.filter((chip) => chip.status === 'ready' || chip.status === 'evolved').length;
+  return Object.freeze({
+    title: 'POWER MOMENT SYNERGIES',
+    chips: Object.freeze(chips),
+    readyCount,
+    maxBuildPayoff: Object.freeze({
+      label: readyCount >= 2 ? 'MAX BUILD PAYOFF ONLINE' : 'MAX BUILD PAYOFF PREVIEW',
+      reward: Object.freeze({ scoreMultiplier: readyCount >= 2 ? 1.35 : 1.25, banner: 'MAX BUILD // GOLDEN PAYOFF' }),
+    }),
+  });
+}
 
 export const LESTER_BLASTER_TACTICAL_CAMERA_MODEL = Object.freeze({
   mode: 'player-led-rightward-scroll',
@@ -2509,6 +2628,12 @@ function cloneRoguelikeRun(run) {
     stats: { ...run.stats },
     skills: { ...run.skills },
     unlocks: { ...(run.unlocks ?? {}) },
+    powerMoments: {
+      ...(run.powerMoments ?? {}),
+      evolutions: [...(run.powerMoments?.evolutions ?? [])],
+      maxedSkills: [...(run.powerMoments?.maxedSkills ?? [])],
+      lastMoment: run.powerMoments?.lastMoment ? { ...run.powerMoments.lastMoment } : null,
+    },
     map: { ...run.map },
     rngStreams: { ...(run.rngStreams ?? {}) },
     spawnDirector: { ...run.spawnDirector },
@@ -2582,6 +2707,11 @@ export function createRoguelikeRunState({
     stats: carriedStats ?? roguelikeStartingStatsFor(characterId),
     skills,
     unlocks: { ...(carryOver?.unlocks ?? {}) },
+    powerMoments: {
+      evolutions: [...(carryOver?.powerMoments?.evolutions ?? [])],
+      maxedSkills: [...(carryOver?.powerMoments?.maxedSkills ?? [])],
+      lastMoment: carryOver?.powerMoments?.lastMoment ? { ...carryOver.powerMoments.lastMoment } : null,
+    },
     map: { procedural: true, tilesetPerspective: config.map.tilesetPerspective, seedLabel: config.map.seedLabel },
     spawnDirector: getRoguelikeSpawnDirectorAt(0),
   };
@@ -2683,8 +2813,16 @@ export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, rero
     return roguelikeGateSatisfied(skill, run);
   });
   const choices = [];
+  const golden = available.filter((skill) => skill.rarity === 'golden');
+  if (golden.length) {
+    const goldenIndex = pickWeightedSkill(golden, { seed, salt: (run?.level ?? 1) * 31 + (reroll ? 313 : 0), rng, run });
+    const [goldenSkill] = golden.splice(goldenIndex, 1);
+    choices.push(optionForSkill(goldenSkill, run));
+    const removeIndex = available.findIndex((skill) => skill.id === goldenSkill.id);
+    if (removeIndex >= 0) available.splice(removeIndex, 1);
+  }
   const saltBase = (run?.level ?? 1) * 17 + (reroll ? 101 : 0);
-  for (let i = 0; i < Math.min(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, available.length); i += 1) {
+  for (let i = choices.length; i < Math.min(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, available.length + choices.length); i += 1) {
     const index = pickWeightedSkill(available, { seed, salt: saltBase + i * 13, rng, run });
     const [skill] = available.splice(index, 1);
     choices.push(optionForSkill(skill, run));
@@ -2710,7 +2848,19 @@ export function applyRoguelikeSkillUpgrade(run, skillId) {
   const rank = skill.ranks[currentRank] ?? skill.ranks.at(-1) ?? {};
   const next = cloneRoguelikeRun(run);
   next.skills[skill.id] = currentRank + 1;
-  if (skill.kind === 'unlock') {
+  if (skill.kind === 'evolution') {
+    next.unlocks[skill.id] = true;
+    next.stats.weaponEvolution = skill.evolutionId;
+    next.powerMoments = next.powerMoments ?? { evolutions: [], maxedSkills: [], lastMoment: null };
+    if (!next.powerMoments.evolutions.includes(skill.evolutionId)) next.powerMoments.evolutions.push(skill.evolutionId);
+    next.powerMoments.lastMoment = {
+      id: skill.id,
+      type: 'weapon-evolution',
+      banner: skill.payoff?.banner ?? `EVOLUTION // ${skill.title.toUpperCase()}`,
+      tone: 'gold',
+      scoreMultiplier: skill.payoff?.scoreMultiplier ?? 1.25,
+    };
+  } else if (skill.kind === 'unlock') {
     next.unlocks[skill.id] = true;
     if (skill.grenadeType) next.stats.grenadeType = skill.grenadeType;
     if (skill.stat && Number.isFinite(Number(rank.statDelta))) next.stats[skill.stat] = (next.stats[skill.stat] ?? 0) + Number(rank.statDelta);

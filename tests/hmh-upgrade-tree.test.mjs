@@ -11,7 +11,8 @@ import {
 import { simulateHmhRunEconomy } from '../apps/portal/src/hmh-run-simulator.mjs';
 
 const byId = (id) => LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.find((skill) => skill.id === id);
-const sumRanks = () => LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.reduce((sum, skill) => sum + skill.maxRank, 0);
+const baseSkills = () => LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => skill.kind !== 'evolution');
+const sumRanks = (skills = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY) => skills.reduce((sum, skill) => sum + skill.maxRank, 0);
 
 function assertLegalOffer(option, run) {
   assert.ok(option, 'expected an option');
@@ -23,9 +24,9 @@ function assertLegalOffer(option, run) {
 }
 
 test('WO-27 upgrade tree is a compact ranked base tree with deliberate scarcity', () => {
-  const tree = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY;
+  const tree = baseSkills();
   assert.ok(tree.length >= 24 && tree.length <= 28, `expected 24-28 base upgrades, got ${tree.length}`);
-  assert.ok(sumRanks() >= 95 && sumRanks() <= 120, `expected 95-120 total ranks, got ${sumRanks()}`);
+  assert.ok(sumRanks(tree) >= 95 && sumRanks(tree) <= 120, `expected 95-120 base total ranks, got ${sumRanks(tree)}`);
 
   for (const skill of tree) {
     assert.equal(skill.maxLevel, skill.maxRank, `${skill.id} should expose maxLevel alias for runtime compatibility`);
@@ -42,6 +43,9 @@ test('WO-27 upgrade tree is a compact ranked base tree with deliberate scarcity'
   assert.equal(byId('revive').gate.playerLevel, 20);
   assert.deepEqual(byId('homing-cluster').gate.requires, [{ skillId: 'grenade-damage', rank: 2 }]);
   assert.deepEqual(byId('block-buster').gate.requires, [{ skillId: 'grenade-radius', rank: 2 }]);
+  const golden = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => skill.kind === 'evolution');
+  assert.equal(golden.length >= 4, true, 'WO-45 golden evolutions extend the base tree without counting as base scarcity cards');
+  assert.equal(golden.every((skill) => skill.rarity === 'golden' && skill.maxRank === 1), true);
 });
 
 test('Wave 2 draft offers exactly 3 legal cards, respects gates, and never empties across 80 levels', () => {

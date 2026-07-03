@@ -8,6 +8,7 @@ const CATEGORY_STYLES = Object.freeze({
   throwable: Object.freeze({ icon: '💣', tone: 'orange', label: 'Throwable' }),
   status: Object.freeze({ icon: '🔥', tone: 'orange', label: 'Status' }),
   weapon: Object.freeze({ icon: '🔫', tone: 'weapon', label: 'Weapon Branch' }),
+  'weapon-evolution': Object.freeze({ icon: '★', tone: 'gold', label: 'Golden Evolution' }),
   fallback: Object.freeze({ icon: '▲', tone: 'cyan', label: 'Augment' }),
 });
 
@@ -51,7 +52,9 @@ function completionLabel(choice) {
 function buildCard(choice, index, options) {
   const category = upgradeCategoryStyle(choice.category, options);
   const rankPips = buildRankPips(choice);
+  const rarity = choice.rarity ?? 'common';
   const branchLabel = choice.category === 'weapon' ? 'Weapon Branch' : category.label;
+  const tone = choice.presentation?.tone ?? (rarity === 'golden' ? 'gold' : category.tone);
   return Object.freeze({
     id: choice.id,
     title: choice.title,
@@ -59,13 +62,15 @@ function buildCard(choice, index, options) {
     index,
     category,
     branchLabel,
-    tone: category.tone,
-    icon: category.icon,
+    rarity,
+    presentation: choice.presentation ?? Object.freeze({ tone, label: rarity.toUpperCase() }),
+    tone,
+    icon: choice.presentation?.icon ?? category.icon,
     gainLabel: choiceGainLabel(choice),
     rankLabel: `Rank ${choice.currentLevel ?? 0} → ${choice.nextLevel ?? 1}`,
     completionLabel: completionLabel(choice),
     rankPips,
-    dataset: Object.freeze({ skill: choice.id, tone: category.tone, category: choice.category ?? 'unknown' }),
+    dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity }),
     ariaLabel: `${choice.title}. ${branchLabel}. ${choice.description ?? ''}`.trim(),
   });
 }
