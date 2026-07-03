@@ -1,0 +1,170 @@
+{
+  "generatedAt": "2026-07-03T12:00:00.000Z",
+  "source": "deterministic-local-prototype-sessions",
+  "summary": {
+    "totalRuns": 5,
+    "rankedRuns": 5,
+    "settledRuns": 2,
+    "uniqueWallets": 5,
+    "gamesTracked": 2
+  },
+  "trust": {
+    "settled": 2,
+    "prototype": 3,
+    "suspicious": 0,
+    "rejected": 0
+  },
+  "score": {
+    "min": 740,
+    "p50": 3800,
+    "p90": 10260,
+    "max": 12500,
+    "avg": 5024
+  },
+  "survivalSeconds": {
+    "min": 72,
+    "p50": 252,
+    "p90": 701,
+    "max": 910,
+    "avg": 345
+  },
+  "games": {
+    "lester-blaster": {
+      "gameId": "lester-blaster",
+      "title": "Hard Money Heroes",
+      "runs": 3,
+      "rankedRuns": 3,
+      "settledRuns": 2,
+      "prototypeRuns": 1,
+      "score": {
+        "min": 3800,
+        "p50": 6900,
+        "p90": 11380,
+        "max": 12500,
+        "avg": 7733
+      },
+      "survivalSeconds": {
+        "min": 252,
+        "p50": 388,
+        "p90": 806,
+        "max": 910,
+        "avg": 517
+      },
+      "kills": {
+        "min": 30,
+        "p50": 49,
+        "p90": 123,
+        "max": 141,
+        "avg": 73
+      },
+      "killsPerMinute": 8.52,
+      "scorePerMinute": 898,
+      "maxCombo": {
+        "min": 7,
+        "p50": 12,
+        "p90": 23,
+        "max": 26,
+        "avg": 15
+      }
+    },
+    "chikun": {
+      "gameId": "chikun",
+      "title": "Chikun's Escape",
+      "runs": 2,
+      "rankedRuns": 2,
+      "settledRuns": 0,
+      "prototypeRuns": 2,
+      "score": {
+        "min": 740,
+        "p50": 960,
+        "p90": 1136,
+        "max": 1180,
+        "avg": 960
+      },
+      "survivalSeconds": {
+        "min": 72,
+        "p50": 89,
+        "p90": 102,
+        "max": 105,
+        "avg": 89
+      },
+      "kills": {
+        "min": 0,
+        "p50": 0,
+        "p90": 0,
+        "max": 0,
+        "avg": 0
+      },
+      "killsPerMinute": 0,
+      "scorePerMinute": 651,
+      "maxCombo": {
+        "min": 4,
+        "p50": 6,
+        "p90": 7,
+        "max": 7,
+        "avg": 6
+      }
+    }
+  },
+  "balanceFlags": [
+    {
+      "id": "hmh-master-run-window",
+      "severity": "info",
+      "metric": "6.5m p50 / 13.4m p90",
+      "copy": "Hard Money Heroes sample sits inside the intended 5-minute average / 15-20 minute mastery window."
+    },
+    {
+      "id": "chikun-early-slice-sample",
+      "severity": "info",
+      "metric": "2 run(s)",
+      "copy": "Chikun is a vertical slice; keep sample sizes separate from HMH balance calls."
+    }
+  ],
+  "samples": [
+    {
+      "analyticsId": "game-session-000000201",
+      "gameId": "lester-blaster",
+      "score": 3800,
+      "survivalSeconds": 252,
+      "kills": 30,
+      "trustVerdict": "settled",
+      "recordedAt": "2026-07-03T09:00:00.000Z"
+    },
+    {
+      "analyticsId": "game-session-000000202",
+      "gameId": "lester-blaster",
+      "score": 6900,
+      "survivalSeconds": 388,
+      "kills": 49,
+      "trustVerdict": "prototype",
+      "recordedAt": "2026-07-03T09:12:00.000Z"
+    },
+    {
+      "analyticsId": "game-session-000000203",
+      "gameId": "lester-blaster",
+      "score": 12500,
+      "survivalSeconds": 910,
+      "kills": 141,
+      "trustVerdict": "settled",
+      "recordedAt": "2026-07-03T09:28:00.000Z"
+    },
+    {
+      "analyticsId": "game-session-000000204",
+      "gameId": "chikun",
+      "score": 740,
+      "survivalSeconds": 72,
+      "kills": 0,
+      "trustVerdict": "prototype",
+      "recordedAt": "2026-07-03T09:31:00.000Z"
+    },
+    {
+      "analyticsId": "game-session-000000205",
+      "gameId": "chikun",
+      "score": 1180,
+      "survivalSeconds": 105,
+      "kills": 0,
+      "trustVerdict": "prototype",
+      "recordedAt": "2026-07-03T09:35:00.000Z"
+    }
+  ]
+}
