@@ -1,0 +1,76 @@
+{
+  "version": "wo-38-web3-settlement-audit-v1",
+  "network": {
+    "name": "LitVM LiteForge",
+    "chainId": 4441,
+    "chainIdHex": "0x1159",
+    "explorerUrl": "https://liteforge.explorer.caldera.xyz"
+  },
+  "contractAddresses": {
+    "playerProfileRegistry": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+    "scoreSubmissionRegistry": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+    "achievementRegistry": "0xc7b8Efc844E66FB4E3eEb9dB2c1f436F4cF86c53",
+    "arcadePaymentRouter": "0x7c999E9570D44090b9279dbAbE33B361e94bf78B",
+    "lestersArcadeCore": "0x609CBED352699003dec2381a79EFe5090B56F1D2"
+  },
+  "plan": {
+    "sessionId": "game-session-000000038",
+    "methods": [
+      "setProfile",
+      "submitSession"
+    ],
+    "callCount": 2
+  },
+  "checks": [
+    {
+      "id": "live-testnet-addresses-present",
+      "pass": true,
+      "detail": "all LitVM contract addresses are populated and settlement live flag is true"
+    },
+    {
+      "id": "score-abi-submit-session",
+      "pass": true,
+      "detail": "score client calls deployed submitSession ABI"
+    },
+    {
+      "id": "profile-abi-set-profile",
+      "pass": true,
+      "detail": "profile client calls deployed setProfile ABI"
+    },
+    {
+      "id": "ranked-submit-chain-guard",
+      "pass": true,
+      "detail": "ranked score write blocks wrong chain before signer transaction"
+    },
+    {
+      "id": "profile-submit-chain-guard",
+      "pass": true,
+      "detail": "profile writes use the same LitVM chain guard as score submissions"
+    },
+    {
+      "id": "ranked-readiness-preflight",
+      "pass": true,
+      "detail": "ranked entry performs pre-flight network/funds readiness before run start"
+    },
+    {
+      "id": "gameover-submit-only",
+      "pass": true,
+      "detail": "on-chain score publish is attached to game-over submission path"
+    },
+    {
+      "id": "leaderboard-readback",
+      "pass": true,
+      "detail": "leaderboard path reads chain records and maintains cadence boards"
+    },
+    {
+      "id": "settlement-plan-methods-match-abi",
+      "pass": true,
+      "detail": "plan methods: setProfile, submitSession"
+    }
+  ],
+  "summary": {
+    "status": "PASS",
+    "passCount": 9,
+    "checkCount": 9
+  }
+}

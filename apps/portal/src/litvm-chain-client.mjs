@@ -127,6 +127,10 @@ export async function submitProfile(walletProvider, { displayName, avatarUri = '
   if (!displayName) throw new Error('displayName is required.');
   const ethers = await loadEthers();
   const browserProvider = new ethers.BrowserProvider(walletProvider);
+  const net = await browserProvider.getNetwork();
+  if (Number(net.chainId) !== LITVM_LITEFORGE_NETWORK.chainId) {
+    throw new Error(`Wrong network: wallet is on chain ${net.chainId}, expected ${LITVM_LITEFORGE_NETWORK.chainId} (${LITVM_LITEFORGE_NETWORK.name}).`);
+  }
   const signer = await browserProvider.getSigner();
   const contract = new ethers.Contract(profileContractAddress(), PROFILE_REGISTRY_ABI, signer);
   const tx = await contract.setProfile(displayName, avatarUri);
