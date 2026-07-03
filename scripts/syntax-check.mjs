@@ -63,6 +63,7 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/authored-world-layout.mjs",
   "apps/portal/src/combat-vfx.mjs",
   "apps/portal/main.js",
+  "tests/agents-policy.test.mjs",
   "tests/hmh-campaign-levels.test.mjs",
   "tests/hmh-level-one-sketch-layout.test.mjs",
   "tests/hmh-level-one-ground.test.mjs",

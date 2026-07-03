@@ -28,6 +28,16 @@ npm run check
 npm run contracts:check
 ```
 
+### Render-layer visual verification
+
+Any change that touches isometric rendering, ground plane math, terrain cache/patterns, prop grounding, obstacle placement, depth sorting, loading/prewarm behavior, canvas camera projection, or `docs/testing/VISUAL_BASELINES/` must also run:
+
+```bash
+npm run visual:regression
+```
+
+Use `npm run visual:accept` only when the visual change is intentional. Review the new captures in `docs/testing/VISUAL_BASELINES/hmh-level-1/`, then commit the updated baseline PNGs with the code that changed the render output. Do not rely on screenshots alone: keep or add source-level tests for the math/policy, and use the visual harness as the browser proof that the live canvas still boots, waits through loading, captures seed `1337`, and passes the tight pixel-diff gate.
+
 For UI changes, also serve locally and check the browser console. IMPORTANT: `apps/portal/index.html`
 has `<base href="/" />` and uses root-relative asset paths, and Vercel serves the portal from the
 site root (`outputDirectory: apps/portal`). So you MUST serve `apps/portal` itself as the web root —
