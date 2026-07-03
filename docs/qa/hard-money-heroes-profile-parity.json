@@ -1,0 +1,42 @@
+{
+  "version": "wo-35-profile-parity-cert-v1",
+  "report": {
+    "version": "wo-35-profile-parity-v1",
+    "wallet": "0x0000000000000000000000000000000000000035",
+    "identity": {
+      "wallet": "0x0000000000000000000000000000000000000035",
+      "displayName": "WO35Tester",
+      "handle": "WO35Tester",
+      "usernameSet": true,
+      "avatarDataUrl": "data:image/jpeg;base64,wo35-local-avatar-fixture",
+      "avatarUri": "ipfs://wo35-chain-avatar-fixture",
+      "selectedCharacterId": "lit-valkyrie",
+      "source": {
+        "displayName": "local",
+        "avatar": "local-data-url",
+        "selectedCharacter": "local-preference"
+      },
+      "parity": {
+        "hasLocalProfile": true,
+        "hasChainProfile": true,
+        "hasDisplayName": true,
+        "hasAvatar": true,
+        "hasSelectedCharacter": true
+      }
+    },
+    "summary": {
+      "snapshotReady": true,
+      "localProfilePresent": true,
+      "chainProfilePresent": true,
+      "avatarParity": "custom-or-chain",
+      "selectedCharacterParity": "local-preference",
+      "status": "PASS"
+    },
+    "gaps": []
+  },
+  "validation": {
+    "ok": true,
+    "gaps": [],
+    "status": "PASS"
+  }
+}

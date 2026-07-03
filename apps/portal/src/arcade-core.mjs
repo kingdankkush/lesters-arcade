@@ -26,6 +26,7 @@ import {
 } from './weapon-upgrades.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, syncConfiguredCharacterUnlocks, resolveSelectedCharacterId } from './hmh-character-config.mjs';
 import { HMH_COPY_SHEET } from './hmh-copy-sheet.mjs';
+import { normalizeProfileIdentity } from './hmh-profile-parity.mjs';
 import { createSeededSubstreams } from './seeded-rng.mjs';
 
 export {
@@ -3798,6 +3799,8 @@ export function createPlayerProfile(wallet, options = {}) {
     usernameSet: false,
     usernameKey: null,
     avatar: options.avatar || '🕹️',
+    avatarUri: options.avatarUri || '',
+    avatarDataUrl: options.avatarDataUrl || '',
     rank: 'New Challenger',
     xp: 0,
     joinedAt: nowIso(),
@@ -4400,6 +4403,7 @@ function cloneProgress(progress) {
 
 export function buildPlayerArcadeSnapshot(state, wallet) {
   const profile = ensureProfile(state, wallet);
+  const identity = normalizeProfileIdentity({ wallet: profile.wallet, localProfile: profile });
   const progress = cloneProgress(profile.progress);
   const highScores = [];
 
@@ -4423,11 +4427,14 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
     parentSystem: state.systemName || 'Lester\'s Arcade',
     systemRole: 'parent-arcade-account',
     profile: {
-      wallet: profile.wallet,
-      handle: profile.handle,
-      displayName: resolveDisplayName(profile, profile.wallet),
-      usernameSet: Boolean(profile.usernameSet),
+      wallet: identity.wallet,
+      handle: identity.handle,
+      displayName: identity.displayName,
+      usernameSet: Boolean(identity.usernameSet),
       avatar: profile.avatar,
+      avatarDataUrl: identity.avatarDataUrl,
+      avatarUri: identity.avatarUri,
+      profileParity: identity.parity,
       rank: profile.rank,
       xp: profile.xp,
       joinedAt: profile.joinedAt,
