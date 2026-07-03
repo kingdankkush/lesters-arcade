@@ -48,18 +48,36 @@ test('WO-27 upgrade tree is a compact ranked base tree with deliberate scarcity'
   assert.equal(golden.every((skill) => skill.rarity === 'golden' && skill.maxRank === 1), true);
 });
 
-test('Wave 2 draft offers exactly 3 legal cards, respects gates, and never empties across 80 levels', () => {
-  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 3);
-  let run = createRoguelikeRunState({ seed: 2701, mode: 'free', campaignLevelNumber: 1 });
+test('WO-73 draft offers exactly 2 legal guided cards with continuation/new slots across 50 seeds', () => {
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 2);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel >= 1, true);
 
-  for (let level = 1; level <= 80; level += 1) {
-    run = { ...run, level };
-    const offer = chooseRoguelikeUpgradeOptions(run, { seed: 27_000 + level });
-    assert.equal(offer.options.length, 3, `level ${level} should offer 3 cards`);
-    assert.equal(new Set(offer.options.map((option) => option.id)).size, 3, `level ${level} should not duplicate cards`);
-    for (const option of offer.options) assertLegalOffer(option, run);
-    run = applyRoguelikeSkillUpgrade(run, offer.options[0].id);
+  for (let seed = 2701; seed < 2751; seed += 1) {
+    let run = createRoguelikeRunState({ seed, mode: 'free', campaignLevelNumber: 1 });
+    for (let level = 1; level <= 60; level += 1) {
+      run = { ...run, level };
+      const offer = chooseRoguelikeUpgradeOptions(run, { seed: seed * 100 + level, includeLockedPreviews: true });
+      assert.equal(offer.options.length, 2, `seed ${seed} level ${level} should offer 2 cards`);
+      assert.equal(new Set(offer.options.map((option) => option.id)).size, 2, `seed ${seed} level ${level} should not duplicate cards`);
+      assert.deepEqual(offer.slots.map((slot) => slot.role), ['continuation', 'new'], `seed ${seed} level ${level} slot roles`);
+      assert.equal(offer.options[0].slotRole, 'continuation');
+      assert.equal(offer.options[1].slotRole, 'new');
+      for (const option of offer.options) assertLegalOffer(option, run);
+      run = applyRoguelikeSkillUpgrade(run, offer.options[0].id);
+    }
   }
+});
+
+test('WO-73 draft surfaces newly unlocked dependent stems before generic rank-ups', () => {
+  const run = createRoguelikeRunState({ seed: 73, mode: 'free', campaignLevelNumber: 1 });
+  const unlockedPierceRun = { ...run, level: 5, skills: { ...run.skills, 'damage-alpha': 1 } };
+  const offer = chooseRoguelikeUpgradeOptions(unlockedPierceRun, { seed: 73_005 });
+
+  assert.equal(offer.options.length, 2);
+  assert.equal(offer.options[0].id, 'pierce');
+  assert.equal(offer.options[0].slotRole, 'continuation');
+  assert.equal(offer.options[0].slotLabel, 'UNLOCKED!');
+  assert.equal((unlockedPierceRun.skills?.[offer.options[1].id] ?? 0), 0, 'slot B should be a fresh tree');
 });
 
 test('WO-27 locked preview data explains gates without leaking locked cards into legal options', () => {

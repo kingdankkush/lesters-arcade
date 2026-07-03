@@ -67,8 +67,9 @@ function simulateModelRun(runSeed, { durationSeconds = 90, stepSeconds = 0.5 } =
         run = grantRoguelikeXp(run, xp);
         // On level-up, deterministically pick an upgrade from the seeded options.
         if (run.level > before) {
-          const opts = chooseRoguelikeUpgradeOptions(run, { seed: upgradeRng.int(0, 1_000_000) });
-          if (opts && opts.length) {
+          const offer = chooseRoguelikeUpgradeOptions(run, { seed: upgradeRng.int(0, 1_000_000) });
+          const opts = offer.options ?? [];
+          if (opts.length) {
             const pick = opts[upgradeRng.int(0, opts.length - 1)];
             upgradeLog.push(`L${run.level}:${pick?.id ?? pick?.skillId ?? 'none'}`);
           }

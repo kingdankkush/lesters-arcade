@@ -42,7 +42,7 @@ This replaces the old constant side-scroll structure. The game should still feel
 4. **XP and buildcraft loop**
    - Kills award XP directly or drop collectible XP shards/coins.
    - Leveling pauses the game.
-   - Each level-up presents exactly **two random skill upgrade options** and **one reroll**.
+   - Each level-up presents exactly **two guided skill upgrade options**: one continuation/unlock slot and one fresh-tree slot, plus **one reroll**.
    - Choosing an upgrade immediately applies stat changes and unpauses the run.
 
 5. **Large augment library**
@@ -118,7 +118,7 @@ Confirmed rules:
 - Kills grant XP.
 - XP levels the player up.
 - Level-up pauses all gameplay simulation.
-- The player sees two randomly selected upgrade options.
+- The player sees two guided upgrade options: a continuation/unlock slot and a fresh-tree slot.
 - The player has one reroll option per level-up event.
 - After a skill is selected, the game unpauses and updated stats take effect immediately.
 
@@ -279,7 +279,7 @@ Recommended order:
 - Enemies spawn outside the safe radius, chase or fire ranged attacks, and scale over time.
 - Kills grant XP.
 - Level-up pauses gameplay.
-- Level-up presents two random upgrade options and one reroll.
+- Level-up presents two guided upgrade options and one reroll.
 - Selecting an upgrade changes stats and resumes gameplay.
 - Run timer/difficulty curve targets a ~20-minute survival ceiling.
 - Windowed mode remains embedded on the site.

@@ -148,6 +148,7 @@ const NODE_CHECK_FILES = [
   "scripts/repo-cleanup-audit.mjs",
   "scripts/repo-health.mjs",
   "scripts/repo-cdn-cleanup-gate.mjs",
+  "scripts/generate-upgrade-tree-map.mjs",
   "scripts/vault-sync.mjs",
   "tests/repo-cdn-cleanup-gate.test.mjs",
   "scripts/hooks/pre-commit-size-check.mjs",

@@ -2387,6 +2387,8 @@ function renderLevelUpActionGrid() {
 
   const cardStack = el('div', { className: 'level-up-card-stack' });
   for (const card of presentation.cards) {
+    const cardWrap = el('div', { className: `level-up-slot level-up-slot-${card.slotRole ?? 'draft'}` });
+    appendText(cardWrap, 'span', card.slotLabel ?? (card.index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'), 'level-up-slot-label');
     const button = el('button', { className: `combat-menu-action level-up-upgrade-card ${card.rarity === 'golden' ? 'is-golden-card' : ''}`, type: 'button', dataset: { ...card.dataset, rarity: card.rarity ?? 'common' } });
     const head = el('div', { className: 'upgrade-card-head' });
     const badge = el('span', { className: 'upgrade-card-badge', textContent: card.icon });
@@ -2414,7 +2416,8 @@ function renderLevelUpActionGrid() {
     appendText(button, 'p', card.description, 'upgrade-card-desc');
     button.setAttribute('title', card.ariaLabel);
     button.addEventListener('click', () => selectLevelUpUpgrade(card.id));
-    cardStack.append(button);
+    cardWrap.append(button);
+    cardStack.append(cardWrap);
   }
   shell.append(cardStack);
 
@@ -2789,7 +2792,7 @@ function syncCombatOverlay() {
     dom.combatMenuCopy.textContent = combat.gameOver
       ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again restarts free mode immediately; ranked mode requires a new paid credit.`
       : combat.levelUpPaused
-        ? 'The isometric roguelike run is paused. Pick one of two random +5% skill upgrades, or spend your one reroll for this level.'
+        ? 'The isometric roguelike run is paused. Pick one of two guided augments: continue your build or start a new tree. Reroll refreshes both slots.'
         : menu.copy;
   }
   renderCombatHudOverlay();
@@ -7472,9 +7475,9 @@ function openLevelUpMenu() {
   if (!combat.roguelikeRun?.pausedForLevelUp) return;
   const draftRng = roguelikeRngStream('draft');
   const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills, includeLockedPreviews: true });
-  // 3 choices total: if the weapon tree has available branches this level, we
-  // pair two roguelike-skill cards with one weapon-branch card; otherwise all
-  // three slots come from the WO-27 ranked upgrade tree.
+  // WO-73: two choices total. The pure draft generator composes one continuation
+  // slot and one fresh tree slot; weapon branches remain data in the broader
+  // upgrade system but no longer add a third level-up card.
   combat.levelUpChoices = buildLevelUpPair(offer.options);
   combat.levelUpLockedPreviews = offer.lockedPreviews ?? [];
   combat.levelUpPaused = true;
@@ -7498,33 +7501,15 @@ function rerollLevelUpChoices() {
   syncCombatOverlay();
 }
 
-// Combine the roguelike-skill options and (optional) weapon-branch option into
-// exactly 3 cards. If weapon-tree branches are available, we show ONE weapon
-// card + TWO roguelike cards. Otherwise three roguelike cards.
+// Preserve the historical runtime hook name, but WO-73 delegates composition to
+// chooseRoguelikeUpgradeOptions: exactly two cards, already labeled by slot.
 function buildLevelUpPair(roguelikeOptions) {
-  const options = [...(roguelikeOptions ?? [])];
-  const weaponBranch = (weaponTreeBranchChoices() ?? [])[0] ?? null;
-  const out = [];
-
-  if (weaponBranch) {
-    // Pair one weapon branch with two ranked-tree cards.
-    if (options.length) out.push(options.shift());
-    if (options.length) out.push(options.shift());
-    out.push(weaponBranch);
-  } else {
-    // No weapon branches available — use three roguelike cards.
-    if (options.length) out.push(options.shift());
-    if (options.length) out.push(options.shift());
-    if (options.length) out.push(options.shift());
-  }
-  return out;
+  return [...(roguelikeOptions ?? [])].slice(0, LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel);
 }
 
-// Build exactly ONE weapon-tree branch upgrade card for the current weapon per
-// level-up. The player chooses between 2 roguelike augments + 1 weapon-branch
-// card (total 3). If the active weapon has no upgrade tree (e.g. a pickup
-// weapon) or all branches are maxed, we return [] and the menu falls back to
-// 2 roguelike-only cards for this level-up.
+// Build one weapon-tree branch card for design/debug consumers. WO-73's public
+// level-up draft no longer injects this as a third card; the two visible slots
+// come from the guided roguelike draft above.
 function weaponTreeBranchChoices() {
   const weaponId = combat.weaponId;
   const tree = WEAPON_UPGRADE_TREES[weaponId];
@@ -10708,7 +10693,7 @@ function drawRoguelikeScene(ctx, width, height) {
     ctx.fillText('LEVEL UP - CHOOSE AUGMENT', Math.round(width / 2), modalY + Math.round(maxModalHeight * 0.16));
     ctx.font = `${bodySize}px monospace`;
     ctx.fillStyle = '#f9f7ff';
-    ctx.fillText('Game is paused. Pick one of two random +5% upgrades or use your reroll.', Math.round(width / 2), modalY + Math.round(maxModalHeight * 0.35));
+    ctx.fillText('Game is paused. Pick a guided augment: continue your build or start a new tree.', Math.round(width / 2), modalY + Math.round(maxModalHeight * 0.35));
     ctx.textAlign = 'left';
   }
 }

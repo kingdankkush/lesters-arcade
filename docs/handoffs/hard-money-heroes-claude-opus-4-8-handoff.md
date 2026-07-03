@@ -22,7 +22,7 @@ IMPORTANT CANON NOTE: The active direction as of 2026-06-07 is **isometric run-a
 
 Lester's Arcade is the parent Web3 arcade portal. Hard Money Heroes is the first playable child cabinet/game. The portal uses an EVM wallet as the durable player account, then lets the player select cabinets, play free practice runs, or play ranked/paid runs that are eligible for official leaderboards, achievements, profile progress, and transaction receipts.
 
-Hard Money Heroes began as a Metal Slug-style side-scrolling run-and-gun but is actively pivoting into an isometric roguelike survival shooter. The intended fantasy is: Lester drops into Litecoin City After Dark, moves freely across procedural isometric chunks, survives escalating enemies, earns XP from kills, pauses on level-up, chooses from two random upgrades with one reroll, and builds toward a run that becomes overwhelming around the 20-minute mark.
+Hard Money Heroes began as a Metal Slug-style side-scrolling run-and-gun but is actively pivoting into an isometric roguelike survival shooter. The intended fantasy is: Lester drops into Litecoin City After Dark, moves freely across procedural isometric chunks, survives escalating enemies, earns XP from kills, pauses on level-up, chooses from a guided two-card draft (continue your build vs start a new tree) with one reroll, and builds toward a run that becomes overwhelming around the 20-minute mark.
 
 Primary design identity:
 - Parent portal: Lester's Arcade.

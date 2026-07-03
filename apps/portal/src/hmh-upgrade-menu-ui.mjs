@@ -70,7 +70,10 @@ function buildCard(choice, index, options) {
     rankLabel: `Rank ${choice.currentLevel ?? 0} → ${choice.nextLevel ?? 1}`,
     completionLabel: completionLabel(choice),
     rankPips,
-    dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity }),
+    slotRole: choice.slotRole ?? (index === 0 ? 'continuation' : 'new'),
+    slotLabel: choice.slotLabel ?? (index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'),
+    slotReason: choice.slotReason ?? null,
+    dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity, slot: choice.slotRole ?? (index === 0 ? 'continuation' : 'new') }),
     ariaLabel: `${choice.title}. ${branchLabel}. ${choice.description ?? ''}`.trim(),
   });
 }
@@ -90,12 +93,12 @@ export function buildUpgradeMenuPresentation({
   })));
   const remaining = Math.max(0, Number(rerollsRemaining ?? 0) || 0);
   return Object.freeze({
-    version: 'wo-40-upgrade-menu-ui-v1',
+    version: 'wo-73-upgrade-menu-ui-v2',
     title: 'Choose One Augment',
     subtitle: level ? `Level ${level} upgrade draft` : 'Ranked tree draft',
     shell: Object.freeze({
-      layout: 'focused-card-stack',
-      accessibility: 'Mobile-safe 44px minimum tap targets, text labels for color and category, reduced card clutter.',
+      layout: 'two-card-guided-draft',
+      accessibility: 'Two 44px-minimum tap targets with slot labels, larger type, and mobile-safe stacking.',
       cardCount: cards.length,
     }),
     cards,
@@ -103,7 +106,7 @@ export function buildUpgradeMenuPresentation({
     reroll: Object.freeze({
       enabled: remaining > 0,
       remaining,
-      label: `Reroll (${remaining})`,
+      label: `Reroll Both (${remaining})`,
     }),
   });
 }

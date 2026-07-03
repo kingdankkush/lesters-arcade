@@ -847,11 +847,11 @@ export const LESTER_BLASTER_ISOMETRIC_ROGUELIKE = Object.freeze({
   xp: Object.freeze({
     source: 'enemy-kills-drop-xp-gems',
     baseXpPerKill: 6,
-    curve: 'campaign levels use a slower 150+ XP curve so upgrades pace across each 8-10 minute level instead of chaining several level-ups from one pack',
+    curve: 'open-ended survival uses a slower 150+ XP curve so upgrades pace across long runs instead of chaining several level-ups from one pack',
   }),
   levelUp: Object.freeze({
     pausesGame: true,
-    choicesPerLevel: 3,
+    choicesPerLevel: 2,
     rerollsPerLevel: 1,
     skills: LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.length,
     totalRanks: LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.reduce((sum, skill) => sum + skill.maxRank, 0),
@@ -2806,10 +2806,10 @@ function pickWeightedSkill(available, { seed, salt, rng, run }) {
   return available.length - 1;
 }
 
-function optionForSkill(skill, run) {
+function optionForSkill(skill, run, slot = {}) {
   const currentRank = run?.skills?.[skill.id] ?? 0;
   const nextRank = currentRank + 1;
-  const rank = skill.ranks[currentRank] ?? skill.ranks.at(-1) ?? null;
+  const rank = skill.ranks?.[currentRank] ?? skill.ranks?.at?.(-1) ?? null;
   return Object.freeze({
     ...skill,
     currentRank,
@@ -2818,36 +2818,124 @@ function optionForSkill(skill, run) {
     nextLevel: nextRank,
     nextRankStats: rank ? Object.freeze({ ...rank }) : null,
     gateHint: gateHintForSkill(skill),
+    slotRole: slot.role ?? 'draft',
+    slotLabel: slot.label ?? 'DRAFT PICK',
+    slotReason: slot.reason ?? 'legal-offer',
+    slotIndex: slot.index ?? 0,
+  });
+}
+
+function hasRequiresGate(skill) {
+  return (skill.gate?.requires?.length ?? 0) > 0;
+}
+
+function ownedRank(run, skill) {
+  return run?.skills?.[skill.id] ?? 0;
+}
+
+function isFreshSkill(run, skill) {
+  return ownedRank(run, skill) <= 0;
+}
+
+function pickGuidedSkill(pool, { seed, salt, rng, run }) {
+  if (!pool.length) return null;
+  const copy = [...pool];
+  const index = pickWeightedSkill(copy, { seed, salt, rng, run });
+  return copy[index] ?? copy[0];
+}
+
+function postCapCoinOption(slot) {
+  return Object.freeze({
+    id: `post-cap-coin-${slot.index + 1}`,
+    title: 'Hard Money Dividend',
+    category: 'economy',
+    description: 'All upgrade trees are capped. Convert this draft slot into bonus score coins.',
+    maxRank: 1,
+    maxLevel: 1,
+    currentRank: 0,
+    currentLevel: 0,
+    nextRank: 1,
+    nextLevel: 1,
+    perLevelPercent: null,
+    rarity: 'post-cap',
+    presentation: Object.freeze({ tone: 'gold', label: 'POST-CAP', icon: '💎' }),
+    slotRole: slot.role,
+    slotLabel: slot.label,
+    slotReason: 'post-cap-coin-fallback',
+    slotIndex: slot.index,
   });
 }
 
 export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false, rng = null, includeLockedPreviews = false } = {}) {
   const available = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => {
-    if ((run?.skills?.[skill.id] ?? 0) >= skill.maxRank) return false;
+    if (ownedRank(run, skill) >= skill.maxRank) return false;
     return roguelikeGateSatisfied(skill, run);
   });
-  const choices = [];
-  const golden = available.filter((skill) => skill.rarity === 'golden');
-  if (golden.length) {
-    const goldenIndex = pickWeightedSkill(golden, { seed, salt: (run?.level ?? 1) * 31 + (reroll ? 313 : 0), rng, run });
-    const [goldenSkill] = golden.splice(goldenIndex, 1);
-    choices.push(optionForSkill(goldenSkill, run));
-    const removeIndex = available.findIndex((skill) => skill.id === goldenSkill.id);
-    if (removeIndex >= 0) available.splice(removeIndex, 1);
-  }
   const saltBase = (run?.level ?? 1) * 17 + (reroll ? 101 : 0);
-  for (let i = choices.length; i < Math.min(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, available.length + choices.length); i += 1) {
-    const index = pickWeightedSkill(available, { seed, salt: saltBase + i * 13, rng, run });
-    const [skill] = available.splice(index, 1);
-    choices.push(optionForSkill(skill, run));
+  const chosen = [];
+  const chosenIds = new Set();
+  const withoutChosen = (items) => items.filter((skill) => !chosenIds.has(skill.id));
+
+  const justUnlockedDependent = available.filter((skill) => isFreshSkill(run, skill) && hasRequiresGate(skill));
+  const ownedContinuation = available.filter((skill) => ownedRank(run, skill) > 0);
+  const slotAReason = justUnlockedDependent.length ? 'newly-unlocked-dependent-stem'
+    : ownedContinuation.length ? 'owned-tree-rank-up'
+      : 'fresh-fallback';
+  const slotASkill = pickGuidedSkill(
+    justUnlockedDependent.length ? justUnlockedDependent : ownedContinuation.length ? ownedContinuation : available,
+    { seed, salt: saltBase + 11, rng, run },
+  );
+  if (slotASkill) {
+    chosen.push(optionForSkill(slotASkill, run, {
+      index: 0,
+      role: 'continuation',
+      label: slotAReason === 'newly-unlocked-dependent-stem' ? 'UNLOCKED!' : 'CONTINUE YOUR BUILD',
+      reason: slotAReason,
+    }));
+    chosenIds.add(slotASkill.id);
   }
+
+  const freshBase = withoutChosen(available).filter((skill) => isFreshSkill(run, skill) && !hasRequiresGate(skill) && skill.kind !== 'evolution');
+  const anyFresh = withoutChosen(available).filter((skill) => isFreshSkill(run, skill));
+  const secondContinuation = withoutChosen(available).filter((skill) => ownedRank(run, skill) > 0);
+  const slotBPool = freshBase.length ? freshBase : anyFresh.length ? anyFresh : secondContinuation.length ? secondContinuation : withoutChosen(available);
+  const slotBReason = freshBase.length ? 'fresh-base-tree'
+    : anyFresh.length ? 'fresh-gated-tree'
+      : secondContinuation.length ? 'second-continuation-fallback'
+        : 'legal-fallback';
+  const slotBSkill = pickGuidedSkill(slotBPool, { seed, salt: saltBase + 29, rng, run });
+  if (slotBSkill) {
+    chosen.push(optionForSkill(slotBSkill, run, {
+      index: 1,
+      role: 'new',
+      label: slotBReason.includes('continuation') ? 'CONTINUE ANOTHER TREE' : 'NEW TREE',
+      reason: slotBReason,
+    }));
+    chosenIds.add(slotBSkill.id);
+  }
+
+  while (chosen.length < LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel) {
+    chosen.push(postCapCoinOption({
+      index: chosen.length,
+      role: chosen.length === 0 ? 'continuation' : 'new',
+      label: chosen.length === 0 ? 'POST-CAP PAYOUT' : 'BONUS PAYOUT',
+    }));
+  }
+
   const lockedPreviews = includeLockedPreviews
     ? Object.freeze(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY
-      .filter((skill) => (run?.skills?.[skill.id] ?? 0) < skill.maxRank && !roguelikeGateSatisfied(skill, run))
+      .filter((skill) => ownedRank(run, skill) < skill.maxRank && !roguelikeGateSatisfied(skill, run))
       .map((skill) => Object.freeze({ id: skill.id, title: skill.title, gateHint: gateHintForSkill(skill), gate: skill.gate })))
     : Object.freeze([]);
   return Object.freeze({
-    options: Object.freeze(choices),
+    options: Object.freeze(chosen),
+    slots: Object.freeze(chosen.map((option) => Object.freeze({
+      index: option.slotIndex,
+      role: option.slotRole,
+      label: option.slotLabel,
+      skillId: option.id,
+      reason: option.slotReason,
+    }))),
     lockedPreviews,
     rerollsRemaining: Math.max(0, (run?.rerollsRemaining ?? 0) - (reroll ? 1 : 0)),
   });

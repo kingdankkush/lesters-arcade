@@ -76,7 +76,7 @@ test('Level 1 boss choreography has phase gates, add windows, counterplay, and e
   assert.ok(plan.miniBosses.every((miniBoss) => miniBoss.counterplay && miniBoss.rewardHook));
 });
 
-test('Level 1 upgrade variety exposes WO-27 mechanic-changing cards and deterministic three-card offers can include them', () => {
+test('Level 1 upgrade variety exposes WO-27 mechanic-changing cards and deterministic guided offers can include them', () => {
   const plan = buildLevelOneUpgradeVarietyPlan();
   const ids = plan.mechanicCards.map((card) => card.id);
   assert.ok(ids.includes('pierce'));

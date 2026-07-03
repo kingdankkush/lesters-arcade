@@ -68,6 +68,7 @@
     "repo:audit": "node scripts/repo-cleanup-audit.mjs",
     "repo:health": "node scripts/repo-health.mjs",
     "repo:cdn-gate": "node scripts/repo-cdn-cleanup-gate.mjs",
+    "upgrades:tree-map": "node scripts/generate-upgrade-tree-map.mjs",
     "vault:status": "node scripts/vault-sync.mjs status"
   },
   "keywords": [

@@ -14,19 +14,27 @@ const SAMPLE_CHOICES = Object.freeze([
   Object.freeze({ id: 'hash-rail-rate', title: 'Hash Rail Rate', category: 'weapon', currentLevel: 2, nextLevel: 3, maxLevel: 3, perLevelPercent: 12, description: 'Weapon branch upgrade.', weaponId: 'hash-rail' }),
 ]);
 
-test('WO-40 upgrade menu presentation builds readable cards with category, rank, and reroll metadata', () => {
-  const model = buildUpgradeMenuPresentation({ choices: SAMPLE_CHOICES, rerollsRemaining: 2, colorblindTags: true });
+test('WO-73 upgrade menu presentation labels the two-card continuation/new draft', () => {
+  const model = buildUpgradeMenuPresentation({
+    choices: [
+      { ...SAMPLE_CHOICES[0], slotRole: 'continuation', slotLabel: 'CONTINUE YOUR BUILD' },
+      { ...SAMPLE_CHOICES[1], slotRole: 'new', slotLabel: 'NEW TREE' },
+    ],
+    rerollsRemaining: 2,
+    colorblindTags: true,
+  });
 
-  assert.equal(model.version, 'wo-40-upgrade-menu-ui-v1');
+  assert.equal(model.version, 'wo-73-upgrade-menu-ui-v2');
   assert.equal(model.title, 'Choose One Augment');
-  assert.equal(model.cards.length, 3);
+  assert.equal(model.cards.length, 2);
+  assert.equal(model.shell.layout, 'two-card-guided-draft');
   assert.equal(model.reroll.enabled, true);
-  assert.equal(model.reroll.label, 'Reroll (2)');
+  assert.equal(model.reroll.label, 'Reroll Both (2)');
+  assert.equal(model.cards[0].slotLabel, 'CONTINUE YOUR BUILD');
+  assert.equal(model.cards[1].slotLabel, 'NEW TREE');
   assert.equal(model.cards[0].category.label, 'Offense');
   assert.equal(model.cards[0].category.colorblindTag, 'TONE RED');
   assert.deepEqual(model.cards[0].rankPips.map((pip) => pip.state), ['filled', 'next', 'empty', 'empty', 'empty']);
-  assert.equal(model.cards[2].branchLabel, 'Weapon Branch');
-  assert.equal(model.cards[2].completionLabel, 'MAX THIS PICK');
 });
 
 test('WO-40 upgrade category style covers all live card categories with text-safe fallbacks', () => {
@@ -49,7 +57,7 @@ test('WO-40 upgrade menu supports locked previews and mobile-safe shell metadata
   });
 
   assert.equal(model.reroll.enabled, false);
-  assert.equal(model.shell.layout, 'focused-card-stack');
+  assert.equal(model.shell.layout, 'two-card-guided-draft');
   assert.ok(model.shell.accessibility.includes('44px'));
   assert.equal(model.lockedPreviewRail.length, 2);
   assert.match(model.lockedPreviewRail[0].gateHint, /LEVEL 10/);
@@ -63,7 +71,9 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(main.includes("./src/hmh-upgrade-menu-ui.mjs"), true);
   assert.equal(main.includes('buildUpgradeMenuPresentation({'), true);
   assert.equal(main.includes('level-up-shell'), true);
+  assert.equal(main.includes('level-up-slot-label'), true);
   assert.equal(css.includes('.level-up-shell'), true);
+  assert.equal(css.includes('.level-up-slot-label'), true);
   assert.equal(css.includes('.upgrade-card-meter'), true);
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-upgrade-menu-ui.mjs'), true);
   assert.equal(syntaxCheck.includes('tests/hmh-upgrade-menu-ui.test.mjs'), true);

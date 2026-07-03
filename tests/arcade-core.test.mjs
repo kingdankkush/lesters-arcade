@@ -812,7 +812,7 @@ test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike 
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.runPacing.mode, 'open-ended-survival');
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.mapGeneration.procedural, true);
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.pausesGame, true);
-  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 3);
+  assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel, 2);
   assert.equal(LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel, 1);
   assert.equal(config.seed, 42);
   assert.equal(config.map.tilesetPerspective, 'isometric');
@@ -820,7 +820,7 @@ test('Hard Money Heroes pivot is codified as an isometric run-and-gun roguelike 
   assert.equal(config.spawnDirector.pressureCurveMinutes.at(-1), 30);
 });
 
-test('roguelike skill library exposes the WO-27 ranked tree with deterministic three-card offers', () => {
+test('roguelike skill library exposes the WO-73 ranked tree with deterministic two-card offers', () => {
   const run = createRoguelikeRunState({ seed: 11, mode: 'free' });
   const leveled = grantRoguelikeXp(run, roguelikeXpCostForLevel(1));
   const offered = chooseRoguelikeUpgradeOptions(leveled, { seed: 5 });
@@ -832,10 +832,10 @@ test('roguelike skill library exposes the WO-27 ranked tree with deterministic t
   assert.equal(LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.every((skill) => Array.isArray(skill.ranks) && skill.ranks.length === skill.maxRank), true);
   assert.equal(leveled.level, 2);
   assert.equal(leveled.pausedForLevelUp, true);
-  assert.equal(leveled.pendingUpgradeChoices, 3);
+  assert.equal(leveled.pendingUpgradeChoices, 2);
   assert.equal(leveled.rerollsRemaining, 1);
-  assert.equal(offered.options.length, 3);
-  assert.equal(new Set(offered.options.map((option) => option.id)).size, 3);
+  assert.equal(offered.options.length, 2);
+  assert.equal(new Set(offered.options.map((option) => option.id)).size, 2);
   assert.equal(upgraded.pausedForLevelUp, false);
   assert.equal(upgraded.skills[offered.options[0].id], 1);
   if (offered.options[0].stat) assert.equal(upgraded.stats[offered.options[0].stat] > leveled.stats[offered.options[0].stat], true);
