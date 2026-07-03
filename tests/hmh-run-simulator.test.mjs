@@ -70,3 +70,15 @@ test('long-run telemetry reports elite-band pacing, cap timing, and post-cap sco
   assert.ok(telemetry.postCap.perfect.scoreBonus > 0, 'post-cap XP should convert to score for record-chase runs');
   assert.ok(telemetry.flags.length === 0, `telemetry flags should be empty: ${JSON.stringify(telemetry.flags)}`);
 });
+
+test('WO-42 simulator logs composition pressure and five threat-beat types by minute 15', () => {
+  const sim = simulateHmhRunEconomy({ minutes: 15, skillFactor: 0.85, seed: 20260701, tickSeconds: 1 });
+  const late = sim.timeline.find((point) => point.minute === 12);
+  const beatTypes = new Set(sim.threatBeatLog.map((beat) => beat.type));
+
+  assert.ok(late.archetypeMixCount >= 6, `minute 12 should expose 6+ archetypes, got ${late.archetypeMixCount}`);
+  assert.ok(late.packCohesion >= 0.45, `minute 12 pack cohesion should be meaningful, got ${late.packCohesion}`);
+  assert.ok(late.patternDensity >= 1.7, `minute 12 pattern density should replace HP inflation, got ${late.patternDensity}`);
+  assert.ok(beatTypes.size >= 5, `15-minute sim should log five beat types, got ${[...beatTypes].join(', ')}`);
+  assert.ok(sim.summary.healthMultiplier <= 2, `summary HP multiplier should cap at 2x, got ${sim.summary.healthMultiplier}`);
+});

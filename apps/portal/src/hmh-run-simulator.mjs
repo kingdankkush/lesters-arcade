@@ -1,6 +1,7 @@
 import {
   calculateRoguelikeKillXp,
   levelOneRoguelikeSpawnDirectorAt,
+  levelOneThreatBeatSchedule,
   roguelikeXpCostForLevel,
   ROGUELIKE_LEVEL_CAP,
   POST_CAP_XP_TO_SCORE,
@@ -49,6 +50,12 @@ function timelinePointAt({ minute, cumulativeXp, xpPerSecond, director }) {
     level: levelFromCumulativeXp(cumulativeXp),
     xpPerSecond: Number(xpPerSecond.toFixed(2)),
     activeStage: activeStageForDirector(director),
+    archetypeMixCount: director.archetypeMixCount ?? 2,
+    packCohesion: director.packCohesion ?? 0,
+    patternDensity: director.patternDensity ?? 1,
+    healthMultiplier: director.healthMultiplier ?? 1,
+    damageMultiplier: director.damageMultiplier ?? 1,
+    currentThreatBeat: director.currentThreatBeat ?? null,
   });
 }
 
@@ -59,6 +66,7 @@ export function simulateHmhRunEconomy({
   miniBossIntervalSeconds = DEFAULT_MINIBOSS_INTERVAL_SECONDS,
   bossSeconds = DEFAULT_BOSS_SECONDS,
   includeBossXp = true,
+  seed = 0,
 } = {}) {
   const totalSeconds = Math.max(0, Number(minutes) || 0) * 60;
   const dt = Math.max(0.1, Number(tickSeconds) || 1);
@@ -69,7 +77,7 @@ export function simulateHmhRunEconomy({
   let bossAwarded = false;
 
   for (let elapsed = 0; elapsed <= totalSeconds + 1e-9; elapsed += dt) {
-    const director = levelOneRoguelikeSpawnDirectorAt(elapsed);
+    const director = levelOneRoguelikeSpawnDirectorAt(elapsed, { seed });
     const killsPerSecond = (1 / Math.max(0.1, director.spawnIntervalSeconds)) * clearFactor;
     const xpPerSecond = killsPerSecond * xpPerKillAt(director);
     const roundedElapsed = Math.round(elapsed);
@@ -97,7 +105,7 @@ export function simulateHmhRunEconomy({
     }
   }
 
-  const finalDirector = levelOneRoguelikeSpawnDirectorAt(totalSeconds);
+  const finalDirector = levelOneRoguelikeSpawnDirectorAt(totalSeconds, { seed });
   const finalKillsPerSecond = (1 / Math.max(0.1, finalDirector.spawnIntervalSeconds)) * clearFactor;
   const finalXpPerSecond = finalKillsPerSecond * xpPerKillAt(finalDirector);
   const summary = timelinePointAt({
@@ -111,6 +119,8 @@ export function simulateHmhRunEconomy({
     minutes: Number((totalSeconds / 60).toFixed(2)),
     skillFactor: clearFactor,
     tickSeconds: dt,
+    seed: Math.floor(Number(seed) || 0),
+    threatBeatLog: levelOneThreatBeatSchedule({ seed, minutes: totalSeconds / 60 }),
     timeline: Object.freeze(timeline),
     summary,
   });

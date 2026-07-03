@@ -89,6 +89,7 @@ import {
   roguelikeXpCostForLevel,
   ROGUELIKE_LEVEL_CAP,
   POST_CAP_XP_TO_SCORE,
+  LEVEL_ONE_THREAT_BEAT_TYPES,
   calculateRoguelikeKillXp,
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
@@ -100,6 +101,7 @@ import {
   buildLevelOnePlaytestBalanceModel,
   buildLevelOneRunWorldDimensions,
   levelOneRoguelikeSpawnDirectorAt,
+  levelOneThreatBeatSchedule,
   levelOneRoguelikeDropChance,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
@@ -752,12 +754,43 @@ test('Level 1 open-ended survival pressure climbs continuously into the elite ba
   assert.ok(eliteBand.maxEnemiesOnMap >= 125, `elite band needs dense swarms, got ${eliteBand.maxEnemiesOnMap}`);
   assert.ok(eliteBand.spawnIntervalSeconds <= 0.45, `elite spawn cadence should overwhelm weak builds, got ${eliteBand.spawnIntervalSeconds}`);
   assert.ok(eliteBand.chaseEnemyShare >= opening.chaseEnemyShare, 'late game should lean into enemies chasing the player');
-  assert.ok(eliteBand.rangedEnemyShare <= 0.31, 'late ranged share should not turn the screen into unavoidable bullet spam');
   assert.ok(levelOneRoguelikeDropChance({ elapsedSeconds: 0, rare: false }) < levelOneRoguelikeDropChance({ elapsedSeconds: 25 * 60, rare: false }));
 
   const passive = balance.xpPacing.passiveRun;
   const active = balance.xpPacing.swarmFighterRun;
   assert.ok(active.targetLevelAtEliteBand >= passive.targetLevelAtEliteBand + 3, 'swarm fighting must clearly out-level passive running');
+});
+
+test('WO-42 difficulty pressure comes from composition, not HP inflation', () => {
+  const opening = levelOneRoguelikeSpawnDirectorAt(0, { seed: 42 });
+  const m12 = levelOneRoguelikeSpawnDirectorAt(12 * 60, { seed: 42 });
+  const record = levelOneRoguelikeSpawnDirectorAt(60 * 60, { seed: 42 });
+
+  assert.equal(HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.healthMultiplierCap <= 2, true);
+  assert.ok(record.healthMultiplier <= 2, `health multiplier must cap at 2x, got ${record.healthMultiplier}`);
+  assert.ok(record.damageMultiplier <= 1.35, `damage multiplier should stay seasoning, got ${record.damageMultiplier}`);
+  assert.equal(opening.archetypeMixCount, 2);
+  assert.ok(m12.archetypeMixCount >= 6, `minute 12 should have 6+ concurrent archetypes, got ${m12.archetypeMixCount}`);
+  assert.ok(m12.packCohesion > opening.packCohesion, 'late pressure should increasingly spawn composed packs');
+  assert.ok(m12.patternDensity > opening.patternDensity, 'late pressure should scale ranged pattern density instead of HP');
+});
+
+test('WO-42 deterministic threat beats rotate five readable event types without random minutes', () => {
+  const beatsA = levelOneThreatBeatSchedule({ seed: 1337, minutes: 15 });
+  const beatsB = levelOneThreatBeatSchedule({ seed: 1337, minutes: 15 });
+  const beatsC = levelOneThreatBeatSchedule({ seed: 7331, minutes: 15 });
+  const types = new Set(beatsA.map((beat) => beat.type));
+
+  assert.deepEqual(beatsA, beatsB);
+  assert.notDeepEqual(beatsA, beatsC);
+  assert.equal(LEVEL_ONE_THREAT_BEAT_TYPES.length, 5);
+  assert.ok(types.size >= 5, `15-minute schedule should show all five beat types, got ${[...types].join(', ')}`);
+  assert.ok(beatsA.length >= 9, `60-90s beat cadence should produce a varied 15-minute log, got ${beatsA.length}`);
+  for (let i = 1; i < beatsA.length; i += 1) {
+    const gap = beatsA[i].startSeconds - beatsA[i - 1].startSeconds;
+    assert.ok(gap >= 60 && gap <= 90, `beat gap should be 60-90s, got ${gap}`);
+  }
+  assert.ok(beatsA.every((beat) => beat.telegraphSeconds === 2));
 });
 
 test('Level 1 ship focus is open-ended survival with no timer extraction target', () => {

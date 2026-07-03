@@ -2094,9 +2094,18 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
     projectileSpeedStart: 1,
     projectileSpeedCap: 1.72,
     projectileSpeedTauSeconds: 600,
+    archetypeMixStart: 2,
+    archetypeMixCap: 7,
+    archetypeMixTauSeconds: 480,
+    packCohesionStart: 0.12,
+    packCohesionCap: 0.82,
+    packCohesionTauSeconds: 600,
+    patternDensityStart: 1,
+    patternDensityCap: 2.4,
+    patternDensityTauSeconds: 520,
     healthMultiplierStart: 1,
-    healthMultiplierCap: 4.3,
-    healthMultiplierTauSeconds: 560,
+    healthMultiplierCap: 2,
+    healthMultiplierTauSeconds: 900,
     damageMultiplierStart: 1,
     damageMultiplierCap: 1.35,
     damageMultiplierTauSeconds: 600,
@@ -2148,6 +2157,62 @@ export const HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE = Object.freeze([
   Object.freeze({ id: 'beat-007-mini-pair', type: 'mini-boss-pair', startSeconds: 1410, pressureTier: 4, rosterOffset: 0 }),
   Object.freeze({ id: 'beat-008-major-rematch', type: 'major-boss', startSeconds: 1590, pressureTier: 4, rosterOffset: 0 }),
 ]);
+
+export const LEVEL_ONE_THREAT_BEAT_TYPES = Object.freeze([
+  'SURGE',
+  'PINCER',
+  'HUNTER',
+  'ARTILLERY_MINUTE',
+  'BLACKOUT',
+]);
+
+const LEVEL_ONE_THREAT_BEAT_META = Object.freeze({
+  SURGE: Object.freeze({ label: 'SURGE', telegraph: 'one-gate weak swarm', durationSeconds: 28, composition: Object.freeze({ swarm: 30, rangedBias: 0.08, eliteBias: 0 }) }),
+  PINCER: Object.freeze({ label: 'PINCER', telegraph: 'opposite-gate synchronized packs', durationSeconds: 34, composition: Object.freeze({ packs: 2, rangedBias: 0.16, flankBias: 0.42 }) }),
+  HUNTER: Object.freeze({ label: 'HUNTER', telegraph: 'bounty elite enters fast', durationSeconds: 36, composition: Object.freeze({ elites: 1, bounty: true, flankBias: 0.2 }) }),
+  ARTILLERY_MINUTE: Object.freeze({ label: 'ARTILLERY MINUTE', telegraph: 'ranged-heavy dodge pressure', durationSeconds: 60, composition: Object.freeze({ rangedBias: 0.48, volleyBias: 0.35 }) }),
+  BLACKOUT: Object.freeze({ label: 'BLACKOUT', telegraph: 'ambient light drop; neon and muzzle flashes carry the read', durationSeconds: 8, composition: Object.freeze({ ambientDimPct: 40, rangedBias: 0.18 }) }),
+});
+
+function threatBeatHash(seed = 0, salt = 0) {
+  let x = (Math.imul((Number(seed) || 0) >>> 0, 1664525) + 1013904223 + Math.imul(salt + 1, 2246822519)) >>> 0;
+  x ^= x >>> 16;
+  x = Math.imul(x, 2246822507) >>> 0;
+  x ^= x >>> 13;
+  return x >>> 0;
+}
+
+export function levelOneThreatBeatSchedule({ seed = 0, minutes = 15 } = {}) {
+  const totalSeconds = Math.max(0, Number(minutes) || 0) * 60;
+  const offset = threatBeatHash(seed, 11) % LEVEL_ONE_THREAT_BEAT_TYPES.length;
+  let cursor = 60 + (threatBeatHash(seed, 3) % 16);
+  const beats = [];
+  let index = 0;
+  while (cursor <= totalSeconds) {
+    const type = LEVEL_ONE_THREAT_BEAT_TYPES[(offset + index) % LEVEL_ONE_THREAT_BEAT_TYPES.length];
+    const meta = LEVEL_ONE_THREAT_BEAT_META[type];
+    beats.push(Object.freeze({
+      id: `wo42-${String(index + 1).padStart(2, '0')}-${type.toLowerCase().replace(/_/g, '-')}`,
+      type,
+      label: meta.label,
+      startSeconds: Math.round(cursor),
+      endSeconds: Math.round(cursor + meta.durationSeconds),
+      durationSeconds: meta.durationSeconds,
+      telegraphSeconds: 2,
+      telegraph: meta.telegraph,
+      composition: meta.composition,
+    }));
+    cursor += 60 + (threatBeatHash(seed, 100 + index) % 31);
+    index += 1;
+  }
+  return Object.freeze(beats);
+}
+
+export function levelOneThreatBeatAt(elapsedSeconds = 0, { seed = 0 } = {}) {
+  const seconds = Math.max(0, Number(elapsedSeconds) || 0);
+  const schedule = levelOneThreatBeatSchedule({ seed, minutes: Math.max(15, Math.ceil(seconds / 60) + 2) });
+  return schedule.find((beat) => seconds >= beat.startSeconds - beat.telegraphSeconds && seconds <= beat.endSeconds) ?? null;
+}
 
 export const HMH_LEVEL_ONE_SHIP_FOCUS = Object.freeze({
   mode: 'open-ended-survival',
@@ -2385,7 +2450,7 @@ export function levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds = 0, activ
   });
 }
 
-export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {
+export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0, { seed = 0 } = {}) {
   const seconds = Math.max(0, Number(elapsedSeconds) || 0);
   const minutes = seconds / 60;
   const pressure = smoothPressureAt(seconds, HMH_LEVEL_ONE_PLAYTEST_BALANCE.pressure.combinedTauSeconds);
@@ -2410,6 +2475,10 @@ export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0) {
     rangedEnemyShare: smoothKnobAt(seconds, d.rangedShareStart, d.rangedShareCap, d.rangedShareTauSeconds, 3),
     eliteEnemyShare: smoothKnobAt(seconds, d.eliteShareStart, d.eliteShareCap, d.eliteShareTauSeconds, 3),
     projectileSpeedMultiplier: smoothKnobAt(seconds, d.projectileSpeedStart, d.projectileSpeedCap, d.projectileSpeedTauSeconds, 3),
+    archetypeMixCount: Math.round(smoothKnobAt(seconds, d.archetypeMixStart, d.archetypeMixCap, d.archetypeMixTauSeconds, 3)),
+    packCohesion: smoothKnobAt(seconds, d.packCohesionStart, d.packCohesionCap, d.packCohesionTauSeconds, 3),
+    patternDensity: smoothKnobAt(seconds, d.patternDensityStart, d.patternDensityCap, d.patternDensityTauSeconds, 3),
+    currentThreatBeat: levelOneThreatBeatAt(seconds, { seed }),
     healthMultiplier: smoothKnobAt(seconds, d.healthMultiplierStart, d.healthMultiplierCap, d.healthMultiplierTauSeconds, 3),
     damageMultiplier: smoothKnobAt(seconds, d.damageMultiplierStart, d.damageMultiplierCap, d.damageMultiplierTauSeconds, 3),
     difficultyLabel,
