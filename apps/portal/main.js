@@ -194,6 +194,7 @@ import {
   validateAvatarFile,
   computeAvatarResize,
   buildPlayerArcadeSnapshot,
+  buildProfileExperienceV2Model,
 } from './src/arcade-core.mjs';
 import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
@@ -3648,6 +3649,7 @@ function renderOfficialProfile() {
   dom.officialCabinetGrid.replaceChildren();
   dom.officialCabinetGrid.classList.add('profile-command-grid');
   const snapshot = connectedWallet ? buildPlayerArcadeSnapshot(state, connectedWallet) : null;
+  const profileV2 = connectedWallet ? buildProfileExperienceV2Model(state, connectedWallet, { selectedGameId: profileGameId }) : null;
   const profile = snapshot?.profile;
 
   const profileHero = el('article', { className: 'official-info-card profile-hero-card hmh-visual-polish-v12' });
@@ -3663,15 +3665,16 @@ function renderOfficialProfile() {
   profileHero.append(heroTop);
 
   if (connectedWallet && snapshot) {
-    const bestScore = Math.max(...Object.values(snapshot.progress ?? {}).map((entry) => Math.max(entry.bestPaidScore ?? 0, entry.bestFreeScore ?? 0)), 0);
+    const bestScore = profileV2?.trophyRoom.summary.bestScore ?? Math.max(...Object.values(snapshot.progress ?? {}).map((entry) => Math.max(entry.bestPaidScore ?? 0, entry.bestFreeScore ?? 0)), 0);
     const heroStats = el('div', { className: 'profile-hero-stats' });
     for (const [label, value] of [
       ['Rank', profile.rank],
       ['XP', profile.xp.toLocaleString()],
       ['Best Score', bestScore.toLocaleString()],
-      ['Ranked Runs', profile.totalPaidRuns.toLocaleString()],
-      ['Achievements', `${snapshot.achievementSummary.unlocked}/${snapshot.achievementSummary.total}`],
-      ['Settlements', String(snapshot.settlements.length)],
+      ['Ranked Runs', String(profileV2?.trophyRoom.summary.totalRankedRuns ?? profile.totalPaidRuns)],
+      ['Achievements', `${profileV2?.achievements.summary.unlocked ?? snapshot.achievementSummary.unlocked}/${profileV2?.achievements.summary.total ?? snapshot.achievementSummary.total}`],
+      ['Settlements', String(profileV2?.trophyRoom.summary.settledRuns ?? snapshot.settlements.length)],
+      ['Privacy', profileV2?.privacy.options.find((option) => option.id === profileV2.privacy.current)?.label ?? 'Public'],
     ]) {
       const stat = el('div', { className: 'profile-hero-stat' });
       appendText(stat, 'span', label);
@@ -3689,6 +3692,22 @@ function renderOfficialProfile() {
     profileHero.append(quickActions);
   }
   dom.officialCabinetGrid.append(profileHero);
+
+  if (connectedWallet && profileV2) {
+    const trophyCard = el('article', { className: 'official-info-card profile-trophy-room-card' });
+    appendText(trophyCard, 'span', 'TROPHY ROOM', 'cabinet-status-label');
+    appendText(trophyCard, 'strong', `${profileV2.trophyRoom.summary.achievementsUnlocked}/${profileV2.trophyRoom.summary.achievementsTotal} badges · ${profileV2.trophyRoom.summary.totalRankedRuns} ranked runs`);
+    const trophyGrid = el('div', { className: 'profile-hero-stats profile-trophy-grid' });
+    for (const card of profileV2.trophyRoom.cards) {
+      const cell = el('div', { className: `profile-hero-stat trophy-card-${card.id} trophy-tone-${card.tone ?? card.tier ?? 'muted'}` });
+      appendText(cell, 'span', card.label);
+      appendText(cell, 'strong', `${card.icon ? `${card.icon} ` : ''}${card.value}`);
+      if (card.rarityPct) appendText(cell, 'small', `approx ${card.rarityPct}% unlock rate`);
+      trophyGrid.append(cell);
+    }
+    trophyCard.append(trophyGrid);
+    dom.officialCabinetGrid.append(trophyCard);
+  }
 
   // Guest profile: show local play stats so guests feel they have a profile too.
   if (!connectedWallet) {
@@ -3742,6 +3761,29 @@ function renderOfficialProfile() {
   }
   walletCard.append(walletFacts);
   dom.officialCabinetGrid.append(walletCard);
+
+  if (profileV2) {
+    const privacyCard = el('article', { className: 'official-info-card profile-privacy-card' });
+    appendText(privacyCard, 'span', 'PRIVACY', 'cabinet-status-label');
+    appendText(privacyCard, 'strong', 'Profile visibility');
+    appendText(privacyCard, 'small', 'Wallet remains the locked identity for scores and receipts. Visibility controls how much of the profile should appear in future public discovery.');
+    const privacyOptions = el('div', { className: 'leaderboard-game-tabs profile-privacy-tabs' });
+    for (const option of profileV2.privacy.options) {
+      const button = el('button', { className: `pixel-button leaderboard-game-tab${option.id === profileV2.privacy.current ? ' is-active' : ''}`, type: 'button' });
+      appendText(button, 'span', option.label, 'leaderboard-game-tab-title');
+      appendText(button, 'small', option.copy, 'profile-privacy-copy');
+      button.addEventListener('click', () => {
+        state.profiles[connectedWallet].preferences ??= {};
+        state.profiles[connectedWallet].preferences.profileVisibility = option.id;
+        persistArcadeStateSoon();
+        playSfxCue('menu-click', 0.05);
+        renderOfficialProfile();
+      });
+      privacyOptions.append(button);
+    }
+    privacyCard.append(privacyOptions);
+    dom.officialCabinetGrid.append(privacyCard);
+  }
 
   // --- Username / display-name editor ---
   const editor = el('article', { className: 'official-info-card username-editor-card' });
@@ -3975,9 +4017,9 @@ function renderOfficialProfile() {
     statsCard.append(breakdown);
 
     // Recent run history for THIS game (most recent first).
-    const sessions = (snapshot?.officialSessions ?? [])
+    const sessions = (profileV2?.sessionFeed.rows ?? [])
       .filter((s) => s.gameId === profileGameId || s.gameId === 'hmh' && profileGameId === 'lester-blaster')
-      .slice(-5).reverse();
+      .slice(0, 5);
     if (sessions.length) {
       appendText(statsCard, 'span', 'RECENT RANKED RUNS', 'cabinet-status-label game-stats-subhead');
       const histList = el('div', { className: 'game-history-list' });
@@ -3985,14 +4027,43 @@ function renderOfficialProfile() {
         const row = el('div', { className: 'game-history-row' });
         const rs = s.runStats ?? {};
         appendText(row, 'span', `${(s.score ?? rs.score ?? 0).toLocaleString()} pts`, 'game-history-score');
-        appendText(row, 'span', `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
-        if (s.settlement?.primaryTxHash) appendText(row, 'span', '⛓ settled', 'game-history-chain');
+        appendText(row, 'span', `${s.urlSessionId ?? s.sessionId.slice(0, 12)} · ${rs.kills ?? 0} kills · ${s.survivalLabel ?? formatSurvive(rs.surviveSeconds ?? rs.elapsedSeconds ?? 0)}`, 'game-history-detail');
+        appendText(row, 'span', s.trust?.label ?? (s.settlement?.primaryTxHash ? 'Settled' : 'Prototype'), `game-history-chain trust-${s.trust?.tone ?? 'muted'}`);
+        if (s.detailHref) {
+          const link = el('a', { className: 'game-history-link', href: s.detailHref, textContent: 'Open run' });
+          row.append(link);
+        }
         histList.append(row);
       }
       statsCard.append(histList);
     }
   }
   dom.officialCabinetGrid.append(statsCard);
+
+  if (profileV2) {
+    const collectionCard = el('article', { className: 'official-info-card profile-collection-card' });
+    appendText(collectionCard, 'span', 'COLLECTION', 'cabinet-status-label');
+    appendText(collectionCard, 'strong', `${profileV2.collection.unlockCounts.gamesPlayed} games played · ${profileV2.collection.unlockCounts.charactersUnlocked} heroes unlocked`);
+    const gameRows = el('div', { className: 'game-history-list profile-collection-list' });
+    for (const game of profileV2.collection.games.filter((item) => item.playable).slice(0, 4)) {
+      const row = el('div', { className: `game-history-row collection-game-row${game.played ? ' is-played' : ' is-empty'}` });
+      appendText(row, 'span', game.title, 'game-history-score');
+      appendText(row, 'span', `${game.bestScoreLabel} best · ${game.totalRuns} run(s) · ${game.longestRunLabel}`, 'game-history-detail');
+      const playLink = el('a', { className: 'game-history-link', href: game.routePath, textContent: game.played ? 'Replay' : 'Play' });
+      row.append(playLink);
+      gameRows.append(row);
+    }
+    const characterRows = el('div', { className: 'achievements-grid profile-character-collection' });
+    for (const character of profileV2.collection.characters) {
+      const chip = el('div', { className: `achievement-badge tier-bronze ${character.unlocked ? 'unlocked' : 'locked'}` });
+      appendText(chip, 'span', character.unlocked ? '🧍' : '🔒', 'achievement-icon');
+      appendText(chip, 'span', character.title, 'achievement-name');
+      appendText(chip, 'small', character.unlocked ? (character.selected ? 'Selected' : 'Unlocked') : character.unlockDescription, 'achievement-tooltip');
+      characterRows.append(chip);
+    }
+    collectionCard.append(gameRows, characterRows);
+    dom.officialCabinetGrid.append(collectionCard);
+  }
 
   // --- Achievements module (full-width, below profile cards) ---
   const unlockedByTitle = new Map((snapshot?.achievements ?? []).map((a) => [a.title, a]));

@@ -4935,6 +4935,175 @@ function formatSurvival(totalSeconds) {
   return `${m}:${String(rem).padStart(2, '0')}`;
 }
 
+function formatScoreValue(score) {
+  return Math.max(0, Math.round(Number(score) || 0)).toLocaleString();
+}
+
+export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 'lester-blaster', sessionLimit = 12 } = {}) {
+  const snapshot = buildPlayerArcadeSnapshot(state, wallet);
+  const profile = ensureProfile(state, wallet);
+  const selectedGame = getGame(selectedGameId);
+  const officialSessions = [...(snapshot.officialSessions ?? [])]
+    .sort((a, b) => (b.sequenceNumber ?? 0) - (a.sequenceNumber ?? 0) || String(b.syncedAt ?? '').localeCompare(String(a.syncedAt ?? '')));
+  const settlementsBySessionId = new Map((snapshot.settlements ?? []).map((settlement) => [settlement.sessionId, settlement]));
+  const sessionFeedRows = officialSessions.slice(0, sessionLimit).map((session) => {
+    const game = getGame(session.gameId);
+    const score = Math.max(0, Math.round(Number(session.score ?? session.runStats?.score ?? 0) || 0));
+    const row = {
+      gameId: session.gameId,
+      wallet: profile.wallet,
+      sessionId: session.sessionId,
+      urlSessionId: session.urlSessionId,
+      score,
+      runStats: { ...(session.runStats ?? {}) },
+      recordedAt: session.syncedAt ?? session.recordedAt ?? null,
+      settlementTxHash: session.settlement?.primaryTxHash ?? settlementsBySessionId.get(session.sessionId)?.primaryTxHash ?? null,
+    };
+    const trust = leaderboardRowTrust(state, session.gameId, row);
+    const detail = leaderboardDetailFor(state, session.gameId, row);
+    return {
+      ...row,
+      gameTitle: game.title,
+      scoreLabel: formatScoreValue(score),
+      survivalLabel: formatSurvival(row.runStats.surviveSeconds ?? row.runStats.elapsedSeconds ?? 0),
+      kills: row.runStats.kills ?? 0,
+      trust,
+      detailHref: detail.detailHref,
+      urlSessionId: detail.urlSessionId,
+      actions: { viewSession: detail.detailHref, inspectTrust: trust.flags.length > 0 },
+    };
+  });
+
+  const unlockedAchievements = (snapshot.achievements ?? []).filter((achievement) => achievement.unlocked);
+  const lockedAchievements = (snapshot.achievements ?? []).filter((achievement) => !achievement.unlocked);
+  const rareAchievement = unlockedAchievements
+    .map((achievement) => ({ ...achievement, rarityPct: achievementRarityPct(achievement) }))
+    .sort((a, b) => a.rarityPct - b.rarityPct || a.title.localeCompare(b.title))[0] ?? null;
+  const achievementGroups = ['bronze', 'silver', 'gold', 'platinum', 'diamond'].map((tier) => {
+    const entries = (snapshot.achievements ?? []).filter((achievement) => (achievement.tier ?? 'bronze') === tier);
+    return {
+      id: tier,
+      label: tier[0].toUpperCase() + tier.slice(1),
+      total: entries.length,
+      unlocked: entries.filter((achievement) => achievement.unlocked).length,
+      badges: entries.map((achievement) => ({
+        id: achievement.id,
+        title: achievement.title,
+        description: achievement.description,
+        icon: achievement.unlocked ? (achievement.icon ?? '🏅') : '🔒',
+        tier: achievement.tier,
+        unlocked: achievement.unlocked,
+        rarityPct: achievementRarityPct(achievement),
+      })),
+    };
+  }).filter((group) => group.total > 0);
+
+  const gameCollection = ARCADE_GAMES.map((game) => {
+    const progress = snapshot.progress?.[game.id] ?? createEmptyGameProgress(game.id);
+    const bestScore = Math.max(progress.bestPaidScore ?? 0, progress.bestFreeScore ?? 0);
+    const totalRuns = (progress.paidRuns ?? 0) + (progress.freeRuns ?? 0);
+    return {
+      id: game.id,
+      title: game.title,
+      status: game.status,
+      playable: game.status === 'playable',
+      played: totalRuns > 0,
+      totalRuns,
+      rankedRuns: progress.paidRuns ?? 0,
+      bestScore,
+      bestScoreLabel: formatScoreValue(bestScore),
+      longestRunLabel: formatSurvival(progress.longestRunSeconds ?? 0),
+      routePath: `/play/${gameSlugFor(game.id)}`,
+    };
+  });
+  const characterCollection = LESTER_BLASTER_CHARACTER_ROSTER.map((character) => {
+    const unlocked = Boolean(profile.unlocks?.characters?.[character.id] ?? profile.unlocks?.characters?.[character.legacyId]);
+    return {
+      id: character.id,
+      legacyId: character.legacyId,
+      title: character.title,
+      role: character.role,
+      portraitAsset: character.portraitAsset,
+      unlocked,
+      selected: snapshot.profile.selectedCharacterId === character.id || snapshot.profile.selectedCharacterId === character.legacyId,
+      unlock: character.unlock,
+      unlockDescription: character.unlockDescription ?? (unlocked ? 'Unlocked' : 'Locked'),
+    };
+  });
+
+  const totalRankedRuns = officialSessions.length;
+  const settledRuns = sessionFeedRows.filter((row) => row.trust.verdict === 'settled' || row.settlementTxHash).length;
+  const bestScore = Math.max(...Object.values(snapshot.progress ?? {}).map((progress) => Math.max(progress.bestPaidScore ?? 0, progress.bestFreeScore ?? 0)), 0);
+  const selectedProgress = snapshot.progress?.[selectedGame.id] ?? createEmptyGameProgress(selectedGame.id);
+
+  return {
+    profile: {
+      ...snapshot.profile,
+      walletShort: `${profile.wallet.slice(0, 8)}…${profile.wallet.slice(-6)}`,
+      joinedLabel: snapshot.profile.joinedAt ? new Date(snapshot.profile.joinedAt).toISOString().slice(0, 10) : 'unknown',
+    },
+    selectedGame: {
+      id: selectedGame.id,
+      title: selectedGame.title,
+      bestScore: Math.max(selectedProgress.bestPaidScore ?? 0, selectedProgress.bestFreeScore ?? 0),
+      bestScoreLabel: formatScoreValue(Math.max(selectedProgress.bestPaidScore ?? 0, selectedProgress.bestFreeScore ?? 0)),
+    },
+    privacy: {
+      current: profile.preferences?.profileVisibility ?? 'public',
+      options: [
+        { id: 'public', label: 'Public', copy: 'Show display name, avatar, trophies, ranked runs, and public score links.' },
+        { id: 'unlisted', label: 'Unlisted', copy: 'Keep the profile shareable by direct link, but out of future public discovery.' },
+        { id: 'private', label: 'Private', copy: 'Only show wallet-owned data locally after connecting this wallet.' },
+      ],
+      walletLocked: true,
+    },
+    editing: {
+      username: { enabled: true, minLength: 3, maxLength: 18, value: snapshot.profile.usernameSet ? snapshot.profile.handle : '' },
+      avatar: { enabled: true, maxBytes: 2 * 1024 * 1024, acceptedTypes: ['image/jpeg', 'image/png'], requiredPixels: 150 },
+      privacy: { enabled: true, field: 'preferences.profileVisibility' },
+    },
+    trophyRoom: {
+      summary: {
+        totalRankedRuns,
+        totalFreeRuns: snapshot.profile.totalFreeRuns ?? 0,
+        settledRuns,
+        achievementsUnlocked: unlockedAchievements.length,
+        achievementsTotal: (snapshot.achievements ?? []).length,
+        bestScore,
+      },
+      cards: [
+        { id: 'best-score', label: 'Best Score', value: formatScoreValue(bestScore), tone: bestScore > 0 ? 'gold' : 'muted' },
+        { id: 'ranked-runs', label: 'Ranked Runs', value: String(totalRankedRuns), tone: totalRankedRuns > 0 ? 'silver' : 'muted' },
+        { id: 'settled-receipts', label: 'Settled Receipts', value: String(settledRuns), tone: settledRuns > 0 ? 'verified' : 'muted' },
+        { id: 'rare-achievement', label: 'Rarest Badge', value: rareAchievement?.title ?? 'Locked', tier: rareAchievement?.tier ?? null, icon: rareAchievement?.icon ?? '🔒', rarityPct: rareAchievement?.rarityPct ?? null },
+      ],
+    },
+    sessionFeed: {
+      rows: sessionFeedRows,
+      emptyCopy: 'Ranked game-over submissions appear here with score, trust state, and session detail links.',
+    },
+    achievements: {
+      summary: { total: (snapshot.achievements ?? []).length, unlocked: unlockedAchievements.length, locked: lockedAchievements.length },
+      groups: achievementGroups,
+      recent: unlockedAchievements.slice(-6).reverse().map((achievement) => ({
+        id: achievement.id,
+        title: achievement.title,
+        tier: achievement.tier,
+        icon: achievement.icon,
+        rarityPct: achievementRarityPct(achievement),
+      })),
+    },
+    collection: {
+      games: gameCollection,
+      characters: characterCollection,
+      unlockCounts: {
+        gamesPlayed: gameCollection.filter((game) => game.played).length,
+        charactersUnlocked: characterCollection.filter((character) => character.unlocked).length,
+      },
+    },
+  };
+}
+
 /**
  * Game-specific stats breakdown for the Profile/Leaderboard module.
  * For Hard Money Heroes: leaderboard rank, per-enemy-type and boss kills (with

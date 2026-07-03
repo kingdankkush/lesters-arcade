@@ -72,6 +72,7 @@ import {
   buildParentSyncPacket,
   buildHardMoneyHeroesAnimationCoverageReport,
   buildPlayerArcadeSnapshot,
+  buildProfileExperienceV2Model,
   buildHardMoneyHeroesStatsModule,
   achievementRarityPct,
   LESTER_BLASTER_POWER_UPS,
@@ -112,9 +113,11 @@ import {
   levelOneRoguelikeBossProxyRoster,
 
   recordScore,
+  applySettlement,
   resolveAchievementUnlocksForRun,
   scheduleBossEncounter,
   startPlaySession,
+  nextGlobalSessionId,
   AVATAR_RULES,
   validateAvatarFile,
   computeAvatarResize,
@@ -240,6 +243,61 @@ test('connectPlayerAccount creates the parent account system used across every c
   assert.equal(snapshot.progress['lester-blaster'].bestFreeScore, 0);
   assert.deepEqual(snapshot.transactions, []);
   assert.equal(snapshot.achievements.some((achievement) => achievement.id === ACHIEVEMENTS.CABINET_PIONEER.id && achievement.unlocked), true);
+});
+
+test('WO-58 profile v2 model builds trophy room, session feed, achievements, collection, privacy, and editing controls', async () => {
+  const state = createInitialArcadeState();
+  const wallet = '0x1212121212121212121212121212121212121212';
+  connectPlayerAccount(state, wallet, { handle: 'TrophyKing' });
+  const hmhHandle = nextGlobalSessionId(state);
+  const sessionA = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid', urlSessionId: hmhHandle.urlSessionId, sequenceNumber: hmhHandle.sequence });
+  const resultA = recordScore(state, sessionA, 7200, {
+    elapsedSeconds: 362,
+    kills: 18,
+    bossId: 'rug-pull-tank',
+    maxCombo: 11,
+    collectedPowerUps: ['shield', 'multiplier', 'health'],
+    stageIndexReached: 13,
+  });
+  const chikunHandle = nextGlobalSessionId(state);
+  const sessionB = startPlaySession({ wallet, gameId: 'chikun', mode: 'paid', urlSessionId: chikunHandle.urlSessionId, sequenceNumber: chikunHandle.sequence });
+  recordScore(state, sessionB, 1280, { elapsedSeconds: 94, coins: 17, maxCombo: 4 });
+  applySettlement(state, {
+    ...resultA.settlementInput,
+    mode: 'simulated',
+    settled: true,
+    primaryTxHash: '0x' + '5'.repeat(64),
+    receipts: [],
+    settledAt: '2026-07-03T12:00:00.000Z',
+  });
+  state.profiles[wallet].preferences.profileVisibility = 'unlisted';
+
+  const model = buildProfileExperienceV2Model(state, wallet, { selectedGameId: 'lester-blaster' });
+
+  assert.equal(model.profile.displayName, 'TrophyKing');
+  assert.equal(model.privacy.current, 'unlisted');
+  assert.deepEqual(model.privacy.options.map((option) => option.id), ['public', 'unlisted', 'private']);
+  assert.equal(model.editing.username.enabled, true);
+  assert.equal(model.editing.avatar.maxBytes, 2 * 1024 * 1024);
+  assert.equal(model.editing.privacy.enabled, true);
+
+  assert.equal(model.trophyRoom.summary.totalRankedRuns, 2);
+  assert.equal(model.trophyRoom.summary.settledRuns, 1);
+  assert.equal(model.trophyRoom.cards.some((card) => card.id === 'best-score' && card.value === '7,200'), true);
+  assert.equal(model.trophyRoom.cards.some((card) => card.id === 'rare-achievement' && card.tier), true);
+
+  assert.equal(model.sessionFeed.rows.length, 2);
+  assert.equal(model.sessionFeed.rows[0].gameId, 'chikun');
+  assert.match(model.sessionFeed.rows[0].detailHref, /^\/play\/chikun\/game-session-/);
+  assert.equal(model.sessionFeed.rows[1].trust.label, 'Settled');
+
+  assert.equal(model.achievements.summary.unlocked >= 4, true);
+  assert.equal(model.achievements.groups.some((group) => group.id === 'bronze' && group.unlocked > 0), true);
+  assert.equal(model.achievements.recent.length > 0, true);
+
+  assert.equal(model.collection.games.some((game) => game.id === 'lester-blaster' && game.played && game.bestScore === 7200), true);
+  assert.equal(model.collection.games.some((game) => game.id === 'chikun' && game.played && game.bestScore === 1280), true);
+  assert.equal(model.collection.characters.some((character) => character.id === 'lester-original' && character.unlocked), true);
 });
 
 test('player profiles initialize configurable character unlocks and selected-character preference', () => {
