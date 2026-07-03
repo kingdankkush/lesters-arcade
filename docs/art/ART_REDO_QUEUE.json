@@ -11,7 +11,7 @@
     "totalItemCount": 55,
     "p0Count": 19,
     "p1Count": 36,
-    "needsManifestCount": 17
+    "needsManifestCount": 10
   },
   "categories": [
     {
@@ -583,7 +583,7 @@
         "itemCount": 13,
         "p0Count": 4,
         "p1Count": 9,
-        "missingCount": 3
+        "missingCount": 0
       },
       "coverage": {
         "manifestId": "hmh-final-combat-vfx-v1",
@@ -723,10 +723,12 @@
         {
           "runtimeId": "achievement-unlock-burst",
           "title": "Achievement unlock burst",
-          "status": "missing-spritesheet",
+          "status": "manifest-backed-vfx-ui-chrome",
           "priority": "P0",
           "reason": "Achievements currently rely on text/emoji badges; unlock moments need a reusable readable sprite burst.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned VFX spritesheet; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/achievement-unlock-burst.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/achievement-unlock-burst.png",
           "acceptance": [
             "Spritesheet is transparent, repo-owned, and registered in a generated manifest.",
             "Runtime use is capped and respects reduce-motion/reduce-flash settings."
@@ -735,10 +737,12 @@
         {
           "runtimeId": "pickup-rarity-beams",
           "title": "Pickup rarity beams",
-          "status": "missing-spritesheet",
+          "status": "manifest-backed-vfx-ui-chrome",
           "priority": "P1",
           "reason": "Rare and super-rare pickups should read before the player reaches them without noisy full-screen effects.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned VFX spritesheet; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/pickup-rarity-beams.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/pickup-rarity-beams.png",
           "acceptance": [
             "Spritesheet is transparent, repo-owned, and registered in a generated manifest.",
             "Runtime use is capped and respects reduce-motion/reduce-flash settings."
@@ -747,10 +751,12 @@
         {
           "runtimeId": "ui-confirm-spark",
           "title": "UI confirm spark",
-          "status": "missing-spritesheet",
+          "status": "manifest-backed-vfx-ui-chrome",
           "priority": "P1",
           "reason": "Menus and official-run confirmations need a small shared pixel flourish instead of ad-hoc CSS glow only.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned VFX spritesheet; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/ui-confirm-spark.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/ui-confirm-spark.png",
           "acceptance": [
             "Spritesheet is transparent, repo-owned, and registered in a generated manifest.",
             "Runtime use is capped and respects reduce-motion/reduce-flash settings."
@@ -765,7 +771,7 @@
         "itemCount": 6,
         "p0Count": 3,
         "p1Count": 3,
-        "missingCount": 4
+        "missingCount": 0
       },
       "coverage": {
         "brandTokenCount": 0
@@ -775,9 +781,11 @@
           "runtimeId": "combat-hud-frame",
           "title": "Combat HUD frame and stat chips",
           "priority": "P0",
-          "status": "redo-css-plus-sprite-border",
+          "status": "manifest-backed-ui-chrome",
           "reason": "HUD should read as a diegetic arcade overlay without covering Level 1 combat space. Brand token count available for palette alignment: 0.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned UI chrome sprite; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/combat-hud-frame.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/combat-hud-frame.png",
           "acceptance": [
             "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
             "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
@@ -788,9 +796,11 @@
           "runtimeId": "level-up-card-frame",
           "title": "Level-up / upgrade card frame",
           "priority": "P0",
-          "status": "handoff-to-wo-40",
+          "status": "manifest-backed-ui-chrome",
           "reason": "Upgrade cards are gameplay critical and need consistent rarity/category chrome. Brand token count available for palette alignment: 0.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned UI chrome sprite; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/level-up-card-frame.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/level-up-card-frame.png",
           "acceptance": [
             "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
             "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
@@ -801,9 +811,11 @@
           "runtimeId": "achievement-toast-frame",
           "title": "Achievement toast frame",
           "priority": "P0",
-          "status": "needs-spritesheet",
+          "status": "manifest-backed-ui-chrome",
           "reason": "Profile/on-chain accomplishments should have a unique badge reveal language. Brand token count available for palette alignment: 0.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned UI chrome sprite; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/achievement-toast-frame.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/achievement-toast-frame.png",
           "acceptance": [
             "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
             "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
@@ -814,9 +826,11 @@
           "runtimeId": "minimap-frame",
           "title": "Finite-map minimap frame",
           "priority": "P1",
-          "status": "needs-sprite-border",
+          "status": "manifest-backed-ui-chrome",
           "reason": "WO-21 minimap exists; its frame should match the arcade-LitVM HUD language. Brand token count available for palette alignment: 0.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned UI chrome sprite; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/minimap-frame.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/minimap-frame.png",
           "acceptance": [
             "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
             "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
@@ -827,9 +841,11 @@
           "runtimeId": "wallet-ranked-badges",
           "title": "Wallet/ranked/testnet status badges",
           "priority": "P1",
-          "status": "needs-icon-atlas",
+          "status": "manifest-backed-ui-chrome",
           "reason": "Web3 state must be legible without long copy blocks during the run flow. Brand token count available for palette alignment: 0.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned UI chrome sprite; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/wallet-ranked-badges.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/wallet-ranked-badges.png",
           "acceptance": [
             "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
             "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",
@@ -840,9 +856,11 @@
           "runtimeId": "mobile-control-chrome",
           "title": "Mobile control button chrome",
           "priority": "P1",
-          "status": "needs-touch-scale-pass",
+          "status": "manifest-backed-ui-chrome",
           "reason": "Touch controls need high-contrast hit affordances that survive phone glare and reduce-motion mode. Brand token count available for palette alignment: 0.",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "sourcePolicy": "Original repo-owned UI chrome sprite; no downloaded pixels copied.",
+          "src": "./assets/generated/hmh-vfx-ui-chrome/mobile-control-chrome.png",
+          "iconSrc": "./assets/generated/hmh-vfx-ui-chrome/mobile-control-chrome.png",
           "acceptance": [
             "Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.",
             "Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.",

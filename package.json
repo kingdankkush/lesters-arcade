@@ -62,6 +62,7 @@
     "assets:hmh:authored-stamp-art": "python scripts/generate-hmh-level-one-authored-stamp-art.py",
     "assets:hmh:pickup-icons": "python scripts/generate-hmh-pickup-icons.py",
     "assets:hmh:achievement-atlas": "python scripts/generate-hmh-achievement-atlas.py",
+    "assets:hmh:vfx-ui-chrome": "python scripts/generate-hmh-vfx-ui-chrome.py",
     "repo:audit": "node scripts/repo-cleanup-audit.mjs",
     "repo:health": "node scripts/repo-health.mjs",
     "vault:status": "node scripts/vault-sync.mjs status"

@@ -10,6 +10,7 @@ import {
 import { HMH_FINAL_COMBAT_VFX_PACK } from '../apps/portal/assets/generated/hmh-final-combat-vfx/hmh-final-combat-vfx-manifest.mjs';
 import { HMH_PICKUP_ICON_PACK } from '../apps/portal/assets/generated/hmh-pickup-icons/hmh-pickup-icons-manifest.mjs';
 import { HMH_ACHIEVEMENT_ATLAS } from '../apps/portal/assets/generated/hmh-achievement-atlas/hmh-achievement-atlas-manifest.mjs';
+import { HMH_VFX_UI_CHROME_PACK } from '../apps/portal/assets/generated/hmh-vfx-ui-chrome/hmh-vfx-ui-chrome-manifest.mjs';
 import { buildGlobalArtCensus } from './global-art-census.mjs';
 
 const ORIGINAL_POLICY = 'Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.';
@@ -141,7 +142,10 @@ function achievementQueueItems(achievements = ACHIEVEMENT_LIST) {
 }
 
 function vfxQueueItems(vfxPack = HMH_FINAL_COMBAT_VFX_PACK) {
-  const manifestAssets = new Map((vfxPack.assets ?? []).map((asset) => [asset.key, asset]));
+  const manifestAssets = new Map([
+    ...(vfxPack.assets ?? []).map((asset) => [asset.key, asset]),
+    ...(HMH_VFX_UI_CHROME_PACK.vfx ?? []).map((asset) => [asset.key, asset]),
+  ]);
   const requiredItems = VFX_REQUIRED_RUNTIME_ROLES.map((runtimeId) => {
     const asset = manifestAssets.get(runtimeId);
     return {
@@ -158,29 +162,42 @@ function vfxQueueItems(vfxPack = HMH_FINAL_COMBAT_VFX_PACK) {
       ]),
     };
   });
-  const missingItems = VFX_MISSING_REDO_ITEMS.map((item) => ({
-    ...item,
-    sourcePolicy: ORIGINAL_POLICY,
-    acceptance: Object.freeze([
-      'Spritesheet is transparent, repo-owned, and registered in a generated manifest.',
-      'Runtime use is capped and respects reduce-motion/reduce-flash settings.',
-    ]),
-  }));
+  const missingItems = VFX_MISSING_REDO_ITEMS.map((item) => {
+    const asset = manifestAssets.get(item.runtimeId);
+    return {
+      ...item,
+      status: asset ? 'manifest-backed-vfx-ui-chrome' : item.status,
+      sourcePolicy: asset?.sourcePolicy ?? ORIGINAL_POLICY,
+      src: asset?.src ?? null,
+      iconSrc: asset?.src ?? null,
+      acceptance: Object.freeze([
+        'Spritesheet is transparent, repo-owned, and registered in a generated manifest.',
+        'Runtime use is capped and respects reduce-motion/reduce-flash settings.',
+      ]),
+    };
+  });
   return freezeItems([...requiredItems, ...missingItems]);
 }
 
 function uiChromeQueueItems() {
   const brandTokens = LESTER_ARCADE_BRAND_SYSTEM?.tokens?.length ?? 0;
-  return freezeItems(UI_CHROME_REDO_ITEMS.map((item) => ({
-    ...item,
-    sourcePolicy: ORIGINAL_POLICY,
-    reason: `${item.reason} Brand token count available for palette alignment: ${brandTokens}.`,
-    acceptance: Object.freeze([
-      'Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.',
-      'Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.',
-      'Does not introduce new unmanifested downloaded art.',
-    ]),
-  })));
+  const chromeAssets = new Map((HMH_VFX_UI_CHROME_PACK.uiChrome ?? []).map((asset) => [asset.key, asset]));
+  return freezeItems(UI_CHROME_REDO_ITEMS.map((item) => {
+    const asset = chromeAssets.get(item.runtimeId);
+    return {
+      ...item,
+      status: asset ? 'manifest-backed-ui-chrome' : item.status,
+      sourcePolicy: asset?.sourcePolicy ?? ORIGINAL_POLICY,
+      src: asset?.src ?? null,
+      iconSrc: asset?.src ?? null,
+      reason: `${item.reason} Brand token count available for palette alignment: ${brandTokens}.`,
+      acceptance: Object.freeze([
+        'Uses shared arcade/LitVM palette tokens and remains readable over bright combat backgrounds.',
+        'Has desktop and mobile sizing rules; no click target below 44 CSS px on touch controls.',
+        'Does not introduce new unmanifested downloaded art.',
+      ]),
+    };
+  }));
 }
 
 function categorySummary(items) {

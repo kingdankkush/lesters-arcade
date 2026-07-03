@@ -612,6 +612,15 @@ function buildProductionSpriteIndex(items = []) {
   }]));
 }
 
+function buildVfxUiChromeSpriteIndex(items = []) {
+  return Object.fromEntries(items.map((item) => [item.key, {
+    slug: item.key,
+    ...item,
+    image: item.src ? loadImageAsset(item.src) : null,
+    frames: (item.frameList ?? []).map((frame) => ({ ...frame, image: loadImageAsset(frame.src) })),
+  }]));
+}
+
 function buildProductionArtPass() {
   return {
     sourceAssetCount: hmh('HMH_ISOMETRIC_PIXELLAB_WAVE_1')?.assets?.length ?? 0,
@@ -622,8 +631,14 @@ function buildProductionArtPass() {
     rotatingProps: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.rotatingProps),
     pickups: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.pickups),
     weapons: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.weapons),
-    vfx: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.vfx),
-    ui: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.ui),
+    vfx: {
+      ...buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.vfx),
+      ...buildVfxUiChromeSpriteIndex(hmh('HMH_VFX_UI_CHROME_PACK')?.vfx),
+    },
+    ui: {
+      ...buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.ui),
+      ...buildVfxUiChromeSpriteIndex(hmh('HMH_VFX_UI_CHROME_PACK')?.uiChrome),
+    },
     levels: hmh('HMH_PRODUCTION_ART_PASS')?.levels ?? [],
     cabinet: hmh('HMH_PRODUCTION_ART_PASS')?.cabinet,
     animationPass: hmh('HMH_PRODUCTION_ART_PASS')?.animationPass,
@@ -694,6 +709,7 @@ async function ensureHMHLoaded() {
   if (HMH_LOAD_PROMISE) return HMH_LOAD_PROMISE;
   HMH_LOAD_PROMISE = loadHMHGame().then((payload) => {
     HMH_PAYLOAD = payload;
+    refreshHmhCombatArtPayload();
     return payload;
   });
   return HMH_LOAD_PROMISE;
@@ -1256,6 +1272,10 @@ const combatArt = {
   ])),
 };
 combatArt.hero = combatArt.characters.lester;
+
+function refreshHmhCombatArtPayload() {
+  combatArt.production = buildProductionArtPass();
+}
 
 const dom = {
   officialApp: document.querySelector('#officialApp'),

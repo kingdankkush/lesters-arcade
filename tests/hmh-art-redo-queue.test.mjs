@@ -52,7 +52,7 @@ test('WO-20 achievement and VFX queues are tied to runtime definitions and final
   assert.equal(achievements.items.every((item) => /manifest-backed/.test(item.status)), true, 'achievement tier and unlock-type items should be manifest-backed');
   assert.equal(vfx.coverage.manifestAssetCount, HMH_FINAL_COMBAT_VFX_PACK.assetCount);
   assert.ok(vfx.items.some((item) => item.runtimeId === 'coin-pickup-pop'));
-  assert.ok(vfx.items.some((item) => /missing/i.test(item.status)));
+  assert.equal(vfx.items.some((item) => /missing/i.test(item.status)), false, 'VFX missing-item list should now be manifest-backed by final VFX or chrome pack');
 });
 
 test('WO-20 markdown and scripts are wired into verification', () => {
