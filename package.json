@@ -20,6 +20,8 @@
     "assets:atlas": "python scripts/generate-hmh-hd-sprite-atlas.py",
     "smoke:portal": "node scripts/smoke-portal-flow.mjs",
     "smoke:portal:interactions": "node scripts/smoke-portal-interactions.mjs",
+    "visual:regression": "node scripts/visual-regression.mjs",
+    "visual:accept": "node scripts/visual-regression.mjs --accept",
     "design:audit": "node scripts/report-hmh-animation-coverage.mjs",
     "design:art-census": "node scripts/global-art-census.mjs",
     "design:art-repair": "node scripts/art-purge-repair.mjs",

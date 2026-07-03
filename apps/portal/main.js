@@ -254,7 +254,10 @@ async function decodeImageAsset(image) {
   if (imageReady(image)) return true;
   try {
     if (typeof image.decode === 'function') {
-      await image.decode();
+      await Promise.race([
+        image.decode(),
+        new Promise((resolve) => setTimeout(resolve, 1500, 'decode-timeout')),
+      ]);
       return imageReady(image);
     }
   } catch {
@@ -4879,13 +4882,16 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
   // roguelike scene is already painted — no flash of the old 2D background.
   try {
     await onComplete();
-    await prewarmHmhLevelAssets(level, ({ done, total }) => {
-      if (total > 0) {
-        progress = Math.max(progress, 70 + (done / total) * 25);
-        bar.style.width = `${Math.min(99, progress)}%`;
-        status.textContent = `DECODING LEVEL ART ${done}/${total}...`;
-      }
-    });
+    await Promise.race([
+      prewarmHmhLevelAssets(level, ({ done, total }) => {
+        if (total > 0) {
+          progress = Math.max(progress, 70 + (done / total) * 25);
+          bar.style.width = `${Math.min(99, progress)}%`;
+          status.textContent = `DECODING LEVEL ART ${done}/${total}...`;
+        }
+      }),
+      new Promise((resolve) => setTimeout(resolve, 5000, 'prewarm-timeout')),
+    ]);
   } catch (err) {
     console.error('[HMH] loading screen onComplete failed:', err);
   }

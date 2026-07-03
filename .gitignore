@@ -32,9 +32,11 @@ __pycache__/
 .tmp/
 tmp/
 tmp/
+.tmp-visual-chrome-*/
 raw-tool-output/
 contact-sheets/
 contact-sheets/working/
+docs/testing/VISUAL_BASELINES/current/
 
 # Asset pipeline raw output — belongs in the vault, never in git
 apps/portal/assets/_staging/

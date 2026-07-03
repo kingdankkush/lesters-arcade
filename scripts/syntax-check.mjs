@@ -129,6 +129,8 @@ const NODE_CHECK_FILES = [
   "scripts/write-hmh-balance-snapshot.mjs",
   "scripts/smoke-portal-flow.mjs",
   "scripts/smoke-portal-interactions.mjs",
+  "scripts/visual-regression.mjs",
+  "tests/visual-regression.test.mjs",
   "scripts/smoke-pixellab-calibration-browser.mjs",
   "scripts/repo-cleanup-audit.mjs",
   "scripts/repo-health.mjs",
