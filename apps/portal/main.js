@@ -25,6 +25,7 @@ import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } fro
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
 import { groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
+import { buildTerrainPresentationForCell } from './src/hmh-terrain-presentation.mjs';
 import {
   propDrawRectForGroundContact,
   propFrontEdgeDepth,
@@ -9398,58 +9399,98 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   const groundPassStartedAt = typeof performance !== 'undefined' ? performance.now() : 0;
   const plan = getCombatGroundPlan();
   const textureGroups = new Map();
-  const shadowPath = new Path2D();
-  const waterRipplePath = new Path2D();
-  const bridgeDeckPath = new Path2D();
+  const terrainPresentationPaths = new Map();
+  const terrainPresentationStats = {
+    cellCount: 0,
+    overlayIds: new Set(),
+    waterFlowCells: 0,
+    bridgeLightingCells: 0,
+    elevationLightingCells: 0,
+    castShadowCells: 0,
+  };
   const fallbackTiles = [];
   const cameraAnchor = groundPatternAnchorForOrigin(isoToScreen(0, 0));
 
-  const addDiamond = (path, tile) => {
-    path.moveTo(tile.cx, tile.cy - ISO_TILE_HEIGHT / 2);
-    path.lineTo(tile.cx + ISO_TILE_WIDTH / 2, tile.cy);
-    path.lineTo(tile.cx, tile.cy + ISO_TILE_HEIGHT / 2);
-    path.lineTo(tile.cx - ISO_TILE_WIDTH / 2, tile.cy);
+  const addDiamond = (path, tile, elevationPx = 0) => {
+    const cy = tile.cy + elevationPx;
+    path.moveTo(tile.cx, cy - ISO_TILE_HEIGHT / 2);
+    path.lineTo(tile.cx + ISO_TILE_WIDTH / 2, cy);
+    path.lineTo(tile.cx, cy + ISO_TILE_HEIGHT / 2);
+    path.lineTo(tile.cx - ISO_TILE_WIDTH / 2, cy);
     path.closePath();
+  };
+
+  const overlayPathFor = (overlay) => {
+    let entry = terrainPresentationPaths.get(overlay.id);
+    if (!entry) {
+      entry = {
+        path: new Path2D(),
+        color: overlay.color,
+        blendMode: overlay.blendMode,
+        blurPx: overlay.blurPx,
+        offsetPx: overlay.offsetPx,
+        alphaSum: 0,
+        count: 0,
+      };
+      terrainPresentationPaths.set(overlay.id, entry);
+    }
+    entry.alphaSum += overlay.alpha;
+    entry.count += 1;
+    entry.blurPx = Math.max(entry.blurPx, overlay.blurPx);
+    entry.offsetPx = overlay.offsetPx;
+    return entry.path;
   };
 
   for (const tile of visibleTiles) {
     const terrainCell = plan.cellAt(tile.worldX, tile.worldY);
+    const terrainPresentation = buildTerrainPresentationForCell(terrainCell, { frame: combat.frame });
     const asset = plan.textureForKey(terrainCell.textureKey);
     const image = sbsGroundTileImage(asset);
     if (!imageReady(image)) {
       fallbackTiles.push(tile);
       continue;
     }
-    const groupKey = terrainCell.textureKey;
+    const groupKey = `${terrainCell.textureKey}|${terrainPresentation.elevationPx}`;
     let group = textureGroups.get(groupKey);
     if (!group) {
-      group = { asset, image, path: new Path2D(), terrainCell };
+      group = { asset, image, path: new Path2D(), terrainCell, elevationPx: terrainPresentation.elevationPx };
       textureGroups.set(groupKey, group);
     }
-    addDiamond(group.path, tile);
-    if (terrainCell.renderLayers.includes('bridge-deck')) addDiamond(bridgeDeckPath, tile);
-    if (terrainCell.renderLayers.includes('water-ripple')) addDiamond(waterRipplePath, tile);
-    if (terrainCell.vfx.includes('bridge-shadow') || terrainCell.vfx.includes('terrain-cast-shadow')) addDiamond(shadowPath, tile);
+    addDiamond(group.path, tile, terrainPresentation.elevationPx);
+    terrainPresentationStats.cellCount += 1;
+    for (const overlay of terrainPresentation.overlays) {
+      terrainPresentationStats.overlayIds.add(overlay.id);
+      if (overlay.id === 'water-flow') terrainPresentationStats.waterFlowCells += 1;
+      if (overlay.id === 'bridge-deck-light') terrainPresentationStats.bridgeLightingCells += 1;
+      if (overlay.id === 'elevation-rim-light') terrainPresentationStats.elevationLightingCells += 1;
+      if (overlay.id === 'terrain-shadow' || overlay.id === 'bridge-contact-shadow') terrainPresentationStats.castShadowCells += 1;
+      addDiamond(overlayPathFor(overlay), tile, terrainPresentation.elevationPx);
+    }
   }
 
   for (const group of textureGroups.values()) {
     const pattern = groundPlanPatternForGroup(ctx, group);
     if (!pattern) continue;
     if (typeof DOMMatrix !== 'undefined' && typeof pattern.setTransform === 'function') {
-      pattern.setTransform(new DOMMatrix().translate(cameraAnchor.x, cameraAnchor.y));
+      pattern.setTransform(new DOMMatrix().translate(cameraAnchor.x, cameraAnchor.y + group.elevationPx));
     }
     ctx.fillStyle = pattern;
     ctx.fill(group.path);
   }
 
-  ctx.save();
-  ctx.fillStyle = 'rgba(8, 5, 3, 0.22)';
-  ctx.fill(shadowPath);
-  ctx.fillStyle = `rgba(95, 226, 255, ${0.06 + Math.sin(combat.frame * 0.05) * 0.025})`;
-  ctx.fill(waterRipplePath);
-  ctx.fillStyle = 'rgba(120, 83, 42, 0.18)';
-  ctx.fill(bridgeDeckPath);
-  ctx.restore();
+  for (const [overlayId, overlayEntry] of terrainPresentationPaths.entries()) {
+    const alpha = overlayEntry.count ? Math.max(0, Math.min(1, overlayEntry.alphaSum / overlayEntry.count)) : 0;
+    if (alpha <= 0) continue;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.globalCompositeOperation = overlayEntry.blendMode;
+    if (overlayEntry.blurPx > 0) ctx.filter = `blur(${overlayEntry.blurPx}px)`;
+    ctx.translate(overlayEntry.offsetPx.x, overlayEntry.offsetPx.y);
+    ctx.fillStyle = overlayEntry.color;
+    ctx.fill(overlayEntry.path);
+    ctx.restore();
+    terrainPresentationStats.lastOverlayId = overlayId;
+  }
 
   for (const tile of fallbackTiles) {
     drawProductionIsoTile(ctx, tile.cx, tile.cy, tile.worldX, tile.worldY);
@@ -9464,6 +9505,10 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     cacheSize: cacheStats.size,
     cacheHits: cacheStats.hits,
     cacheMisses: cacheStats.misses,
+    terrainPresentationStats: {
+      ...terrainPresentationStats,
+      overlayIds: [...terrainPresentationStats.overlayIds].sort(),
+    },
   };
 }
 
