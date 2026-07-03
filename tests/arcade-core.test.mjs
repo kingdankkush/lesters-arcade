@@ -615,13 +615,15 @@ test('free score submission remains practice-only and does not track progress, a
   assert.equal(snapshot.transactions.length, 0);
 });
 
-test('initial arcade state exposes multiple arcade machines with Hard Money Heroes playable now', () => {
+test('initial arcade state exposes multiple arcade machines with Hard Money Heroes and Chikun playable now', () => {
   const state = createInitialArcadeState();
   const playable = ARCADE_GAMES.filter((game) => game.status === 'playable');
+  const playableIds = playable.map((game) => game.id);
 
-  assert.equal(playable.length, 1);
-  assert.equal(playable[0].id, 'lester-blaster');
+  assert.equal(playable.length, 2);
+  assert.deepEqual(playableIds, ['lester-blaster', 'chikun']);
   assert.equal(playable[0].title, 'Hard Money Heroes');
+  assert.equal(playable[1].title, 'Chikun: The Flying Coin');
   assert.equal(state.games.length >= 4, true);
 });
 
@@ -1400,7 +1402,10 @@ test('V2 app shell hides prototype chrome behind full-screen wallet profile, cab
     const framePath = fileURLToPath(new URL(`../apps/portal/${cleanSrc.replace('./', '')}`, import.meta.url));
     assert.equal(existsSync(framePath) && statSync(framePath).size > 0, true, `${frame.src} exists`);
   }
-  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 1);
+  const chikunCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'chikun');
+  assert.equal(chikunCabinet.playable, true);
+  assert.equal(chikunCabinet.desktopCabinetSprite.id, 'chikun-cabinet');
+  assert.equal(LESTERS_ARCADE_V2_APP_SHELL.cabinets.filter((cabinet) => cabinet.playable).length, 2);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.requiresZkLtc, true);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked.faucetUrl, LITVM_LITEFORGE_NETWORK.faucetUrl);
   assert.equal(LESTERS_ARCADE_V2_APP_SHELL.levelIntro.durationSeconds, 8);

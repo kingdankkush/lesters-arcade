@@ -1,0 +1,15 @@
+{
+  "id": "chikun",
+  "name": "Chikun's Escape",
+  "version": "0.1.0",
+  "sdkVersion": "1.0.0",
+  "status": "playable",
+  "aspectSupport": ["9:16", "16:9"],
+  "controlScheme": "tap",
+  "capabilities": ["leaderboard", "achievements", "ranked", "audio"],
+  "rankedEligible": true,
+  "entry": "./main.mjs",
+  "endpoints": [],
+  "devWallet": null,
+  "description": "Tap-to-flap Litecoin chicken vertical slice: dodge forks, collect coins, submit free or ranked runs through Lester's Arcade Cabinet SDK v1."
+}

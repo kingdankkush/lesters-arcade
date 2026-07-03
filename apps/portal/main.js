@@ -3591,6 +3591,17 @@ function renderOfficialCabinets() {
           card.classList.remove('is-loading');
           card.removeAttribute('aria-busy');
         }
+      } else if (cabinet.id === 'chikun') {
+        card.classList.add('is-loading');
+        card.setAttribute('aria-busy', 'true');
+        try {
+          await import('./src/games/chikun/loader.mjs');
+        } catch (err) {
+          console.error('[Chikun] Failed to load game payload:', err);
+        } finally {
+          card.classList.remove('is-loading');
+          card.removeAttribute('aria-busy');
+        }
       }
       selectedGameId = cabinet.gameId;
       currentSession = null;
@@ -4339,8 +4350,8 @@ function renderOfficialArcadeFloor() {
   const copyByStep = {
     'arcade-walk-in': `${walletShort} is active. Neon doors opening; cabinet row loading...`,
     'cabinet-select': connectedWallet
-      ? 'Select a cabinet. Hard Money Heroes is the only playable option right now; future cabinets remain locked.'
-      : 'Select a cabinet and play Free as a guest. Hard Money Heroes is the only playable option right now. Connect a wallet anytime to save progress and unlock Ranked.',
+      ? 'Select a cabinet. Hard Money Heroes and Chikun\'s Escape are playable now; future cabinets remain locked.'
+      : 'Select a cabinet and play Free as a guest. Hard Money Heroes and Chikun\'s Escape are playable now. Connect a wallet anytime to save progress and unlock Ranked.',
     profile: LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy,
     leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
     settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
@@ -4376,6 +4387,14 @@ function renderOfficialModeSelect() {
 
 function renderOfficialGameplay() {
   const modeLabel = officialSelectedMode === 'ranked' ? 'Ranked Testnet' : 'Free Mode';
+  const game = selectedGame();
+  if (game.id === 'chikun') {
+    dom.officialGameModeTitle.textContent = `${game.title} // ${modeLabel}`;
+    if (dom.combatStatus) {
+      dom.combatStatus.textContent = "Chikun's Escape vertical slice is running through Cabinet SDK v1. Tap-to-flap scoring feeds the same free/ranked parent session rails.";
+    }
+    return;
+  }
   const level = currentCampaignLevel();
   dom.officialGameModeTitle.textContent = `${level.gameplayTitle} // ${modeLabel}`;
   syncCombatOverlay();
@@ -4492,8 +4511,10 @@ async function startOfficialMode(mode) {
   }
   officialSelectedMode = mode;
   await startMode(mode === 'ranked' ? 'paid' : 'free');
-  if (connectedWallet && state.profiles[connectedWallet]) combat.characterId = resolveSelectedCharacterId(state.profiles[connectedWallet], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
-  officialAppStep = 'character-select';
+  if (connectedWallet && state.profiles[connectedWallet] && selectedGameId === 'lester-blaster') {
+    combat.characterId = resolveSelectedCharacterId(state.profiles[connectedWallet], HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
+  }
+  officialAppStep = selectedGameId === 'lester-blaster' ? 'character-select' : 'gameplay';
   render();
 }
 
