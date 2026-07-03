@@ -1,0 +1,101 @@
+{
+  "version": "wo-37-device-input-qa-v1",
+  "rows": [
+    {
+      "id": "desktop-keyboard-mouse",
+      "expectedClass": "desktop",
+      "actualClass": "desktop",
+      "orientation": "landscape",
+      "touchControls": false,
+      "landscapeHint": false,
+      "minTapTargetPx": 0,
+      "inputs": [
+        "WASD/arrows",
+        "mouse aim",
+        "click/pointer",
+        "keyboard pause"
+      ],
+      "pass": true
+    },
+    {
+      "id": "mobile-portrait-touch",
+      "expectedClass": "mobile",
+      "actualClass": "mobile",
+      "orientation": "portrait",
+      "touchControls": true,
+      "landscapeHint": true,
+      "minTapTargetPx": 44,
+      "inputs": [
+        "virtual joystick",
+        "touch fire",
+        "touch grenade",
+        "touch pause"
+      ],
+      "pass": true
+    },
+    {
+      "id": "mobile-landscape-touch",
+      "expectedClass": "mobile",
+      "actualClass": "mobile",
+      "orientation": "landscape",
+      "touchControls": true,
+      "landscapeHint": false,
+      "minTapTargetPx": 44,
+      "inputs": [
+        "virtual joystick",
+        "right-side actions",
+        "orientation relayout"
+      ],
+      "pass": true
+    },
+    {
+      "id": "tablet-landscape-touch",
+      "expectedClass": "tablet",
+      "actualClass": "tablet",
+      "orientation": "landscape",
+      "touchControls": true,
+      "landscapeHint": false,
+      "minTapTargetPx": 44,
+      "inputs": [
+        "larger tap targets",
+        "stacked panels",
+        "right-stick aim isolation"
+      ],
+      "pass": true
+    },
+    {
+      "id": "touch-laptop-fine-pointer",
+      "expectedClass": "tablet",
+      "actualClass": "tablet",
+      "orientation": "landscape",
+      "touchControls": true,
+      "landscapeHint": false,
+      "minTapTargetPx": 44,
+      "inputs": [
+        "touch fallback",
+        "keyboard compatibility"
+      ],
+      "pass": true
+    },
+    {
+      "id": "small-desktop-no-touch",
+      "expectedClass": "mobile",
+      "actualClass": "mobile",
+      "orientation": "landscape",
+      "touchControls": true,
+      "landscapeHint": false,
+      "minTapTargetPx": 44,
+      "inputs": [
+        "responsive layout fallback",
+        "keyboard movement"
+      ],
+      "pass": true
+    }
+  ],
+  "summary": {
+    "caseCount": 6,
+    "passCount": 6,
+    "touchCaseCount": 5,
+    "status": "PASS"
+  }
+}

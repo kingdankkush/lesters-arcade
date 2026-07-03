@@ -97,3 +97,47 @@ export function joystickToKeys(dx, dy, deadZone = 0.3) {
   if (dy >= deadZone) keys.add('s');
   return keys;
 }
+
+export const DEVICE_INPUT_QA_CASES = Object.freeze([
+  Object.freeze({ id: 'desktop-keyboard-mouse', width: 1440, height: 900, coarsePointer: false, hasTouch: false, maxTouchPoints: 0, expectedClass: 'desktop', expectedTouchControls: false, inputs: Object.freeze(['WASD/arrows', 'mouse aim', 'click/pointer', 'keyboard pause']) }),
+  Object.freeze({ id: 'mobile-portrait-touch', width: 390, height: 844, coarsePointer: true, hasTouch: true, maxTouchPoints: 5, expectedClass: 'mobile', expectedTouchControls: true, expectedLandscapeHint: true, inputs: Object.freeze(['virtual joystick', 'touch fire', 'touch grenade', 'touch pause']) }),
+  Object.freeze({ id: 'mobile-landscape-touch', width: 844, height: 390, coarsePointer: true, hasTouch: true, maxTouchPoints: 5, expectedClass: 'mobile', expectedTouchControls: true, expectedLandscapeHint: false, inputs: Object.freeze(['virtual joystick', 'right-side actions', 'orientation relayout']) }),
+  Object.freeze({ id: 'tablet-landscape-touch', width: 1180, height: 820, coarsePointer: true, hasTouch: true, maxTouchPoints: 10, expectedClass: 'tablet', expectedTouchControls: true, inputs: Object.freeze(['larger tap targets', 'stacked panels', 'right-stick aim isolation']) }),
+  Object.freeze({ id: 'touch-laptop-fine-pointer', width: 1366, height: 768, coarsePointer: false, hasTouch: true, maxTouchPoints: 5, expectedClass: 'tablet', expectedTouchControls: true, inputs: Object.freeze(['touch fallback', 'keyboard compatibility']) }),
+  Object.freeze({ id: 'small-desktop-no-touch', width: 800, height: 600, coarsePointer: false, hasTouch: false, maxTouchPoints: 0, expectedClass: 'mobile', expectedTouchControls: true, inputs: Object.freeze(['responsive layout fallback', 'keyboard movement']) }),
+]);
+
+export function buildDeviceInputQaMatrix(cases = DEVICE_INPUT_QA_CASES) {
+  const rows = cases.map((testCase) => {
+    const profile = buildDeviceProfile(testCase);
+    const joystickForward = [...joystickToKeys(0.8, -0.8)].sort();
+    const mirrorBlocked = shouldMirrorMovementIntoAim({ usingMovementKeys: true, isTouchDevice: profile.isTouch, touchMovementActive: true });
+    const pass = profile.deviceClass === testCase.expectedClass
+      && profile.showTouchControls === testCase.expectedTouchControls
+      && (testCase.expectedLandscapeHint === undefined || profile.suggestLandscape === testCase.expectedLandscapeHint)
+      && joystickForward.includes('d')
+      && joystickForward.includes('w')
+      && mirrorBlocked === false;
+    return Object.freeze({
+      id: testCase.id,
+      expectedClass: testCase.expectedClass,
+      actualClass: profile.deviceClass,
+      orientation: profile.orientation,
+      touchControls: profile.showTouchControls,
+      landscapeHint: profile.suggestLandscape,
+      minTapTargetPx: profile.minTapTargetPx,
+      inputs: testCase.inputs,
+      pass,
+    });
+  });
+  return Object.freeze({
+    version: 'wo-37-device-input-qa-v1',
+    rows: Object.freeze(rows),
+    summary: Object.freeze({
+      caseCount: rows.length,
+      passCount: rows.filter((row) => row.pass).length,
+      touchCaseCount: rows.filter((row) => row.touchControls).length,
+      status: rows.every((row) => row.pass) ? 'PASS' : 'FAIL',
+    }),
+  });
+}
