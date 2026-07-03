@@ -8,8 +8,13 @@
   "controlScheme": "twin-stick",
   "capabilities": ["leaderboard", "achievements", "ranked", "audio"],
   "rankedEligible": true,
-  "entry": "./main.js",
+  "entry": "./main.mjs",
   "endpoints": [],
+  "sandbox": {
+    "allow": ["scripts"],
+    "walletAccess": false,
+    "sameOriginAccess": false
+  },
   "devWallet": null,
   "description": "Isometric roguelite score survival on LitVM LiteForge. The first playable Lester's Arcade cabinet."
 }

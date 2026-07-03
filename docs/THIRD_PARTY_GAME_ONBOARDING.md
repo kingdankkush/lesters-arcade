@@ -89,8 +89,8 @@ Every cabinet ships a `game.manifest.json`:
 1. **Create your game manifest** — copy the template above, fill in your game's details
 2. **Implement the SDK adapter** — use `createInProcessGameAdapter` from `apps/portal/src/game-adapter.mjs` as a reference. For sandboxed iframe mode, use `postMessage` with the `arcade.*` event schema
 3. **Build your game loader** — create `games/<your-game>/loader.mjs` that initializes your game
-4. **Test locally** — serve your game in an iframe, verify events flow to the parent
-5. **Security review** — your code will be static-scanned for:
+4. **Test locally** — open `apps/portal/dev/mock-parent-harness.html` from the portal dev server, point it at your `games/<your-game>/main.mjs`, and verify `arcade.ready`, session events, malformed-message rejection, flood-drop behavior, and wallet isolation
+5. **Security review** — run `npm run design:third-party-security` and ensure your candidate code passes the static review for:
    - No `window.ethereum` or wallet provider access
    - No `eval()` or `Function()` constructors
    - No remote code loading (no `import()` from external URLs)
@@ -117,7 +117,19 @@ Chikun's Escape is the first third-party game being onboarded:
 - [ ] Flip `status` from `coming-soon` to `playable` in the manifest + registry
 - [ ] QA playtest
 
-## 6. SDK Module Reference
+## 6. Mock Parent Harness
+
+External developers can validate a cabinet without touching the real parent runtime:
+
+1. Run the portal dev server (`npm run serve` from `apps/portal` or serve `apps/portal` over any local HTTP server).
+2. Open `/dev/mock-parent-harness.html`.
+3. Enter the candidate entry path, e.g. `../games/hard-money-heroes/main.mjs` or `../games/<your-game>/main.mjs`.
+4. Run the buttons for Free, Ranked, malformed-message rejection, flood drop, and wallet isolation.
+5. Only after the harness and `npm run design:third-party-security` pass should a cabinet request ranked review.
+
+Hard Money Heroes now dogfoods the same sandbox manifest path at `apps/portal/games/hard-money-heroes/game.manifest.json` with entry `./main.mjs` and `sandbox.allow = ["scripts"]`.
+
+## 7. SDK Module Reference
 
 - **SDK contract**: `apps/portal/src/arcade-sdk.mjs` — event schema, validators, rate limiter
 - **Game manifest**: `apps/portal/src/game-manifest.mjs` — manifest validation, registry

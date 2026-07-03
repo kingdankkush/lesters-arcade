@@ -37,6 +37,7 @@
     "design:device-input": "node scripts/hmh-device-input-qa.mjs",
     "design:web3-audit": "node scripts/hmh-web3-settlement-audit.mjs",
     "design:security-audit": "node scripts/hmh-security-audit-sweep.mjs",
+    "design:third-party-security": "node --test tests/arcade-sandbox-security.test.mjs",
     "design:fable-crosswalk": "node scripts/hmh-fable-markdown-crosswalk.mjs",
     "design:roster": "node scripts/roster-coverage-report.mjs",
     "design:wave3-art": "node scripts/write-wave3-art-matrix-report.mjs",
