@@ -25,6 +25,11 @@ import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } fro
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
 import { groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
+import {
+  propDrawRectForGroundContact,
+  propFrontEdgeDepth,
+  propShadowEllipseForGroundContact,
+} from './src/hmh-prop-grounding.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
@@ -10171,20 +10176,43 @@ function buildObstacleRenderEntries(ctx) {
     const { img, style, footprint } = resolved;
     const projected = isoToScreen(o.worldX, o.worldY);
     const { drawWidth: w, drawHeight: drawH, radius } = resolveDrawMetricsForFootprint(img, footprint, style);
-    const baseX = Math.round(projected.x - w / 2);
-    const baseY = Math.round(projected.y + style.ground - drawH);
+    const rect = propDrawRectForGroundContact({
+      projected,
+      drawWidth: w,
+      drawHeight: drawH,
+      tileHeight: ISO_TILE_HEIGHT,
+    });
+    const shadow = propShadowEllipseForGroundContact({
+      projected,
+      drawWidth: w,
+      drawHeight: drawH,
+      tileHeight: ISO_TILE_HEIGHT,
+    });
     entries.push({
-          depth: projected.y + (o.drawOrderBias ?? 0),
+          depth: propFrontEdgeDepth({
+            projected,
+            footprint,
+            radius,
+            drawOrderBias: o.drawOrderBias ?? 0,
+            tileHeight: ISO_TILE_HEIGHT,
+          }),
           draw: () => {
             ctx.save();
             ctx.imageSmoothingEnabled = false;
-            // Contact shadows are disabled; the sprite art itself provides the grounding cue.
+            if (!o.debrisState?.visible) {
+              ctx.globalAlpha = shadow.alpha;
+              ctx.fillStyle = '#000000';
+              ctx.beginPath();
+              ctx.ellipse(shadow.x, shadow.y, shadow.radiusX, shadow.radiusY, 0, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.globalAlpha = 1;
+            }
             if (o.debrisState?.visible) {
               drawLevelOneInteractiveDebris(ctx, o, projected, w, drawH);
               ctx.restore();
               return;
             }
-            ctx.drawImage(img, baseX, baseY, w, drawH);
+            ctx.drawImage(img, rect.x, rect.y, rect.width, rect.height);
             if (o.interactiveState?.glow || o.interactiveState?.pulseActive) {
               const pulseSeed = o.propIndex ?? o.worldX ?? 0;
               const pulse = 0.5 + 0.5 * Math.sin((combat.frame + pulseSeed * 7) * 0.12);
