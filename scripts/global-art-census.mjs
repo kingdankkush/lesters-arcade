@@ -11,6 +11,7 @@ import { HMH_CURATED_LEVEL_KIT } from '../apps/portal/assets/generated/hmh-curat
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from '../apps/portal/assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_FINAL_WORLD_AMBIENT_ASSETS } from '../apps/portal/assets/generated/hmh-coherent-world/level-final-ambient/level-final-ambient-manifest.mjs';
 import { buildRosterCoverageReport } from './roster-coverage-report.mjs';
+import { buildArtPurgeRepairPlan } from '../apps/portal/src/hmh-art-repair.mjs';
 
 const VERSION = 'wo-17-global-art-census-v1';
 
@@ -84,7 +85,35 @@ function runtimeRosterLayer(rosterReport) {
   });
 }
 
-function scorecardFor(layers, rosterReport) {
+function strictRuntimeActorCategory(rosterSummary, repairPlan) {
+  const actorCount = Math.max(0, rosterSummary.actorCount ?? 0);
+  const zeroCount = Math.max(0, rosterSummary.zeroAnimationActorCount ?? 0);
+  const autoRepaired = repairPlan.summary.autoRepairCount ?? 0;
+  const deferredOrPurged = repairPlan.summary.deferOrPurgeCount ?? 0;
+  const unresolved = repairPlan.summary.unresolvedCount ?? 0;
+  const ruledZeroCount = autoRepaired + deferredOrPurged;
+  const score = zeroCount === 0 ? 100 : Math.round(((zeroCount - unresolved) / zeroCount) * 100);
+  const strictRenderableActorCount = Math.max(0, actorCount - deferredOrPurged - unresolved);
+  const unresolvedEntries = repairPlan.repairs.filter((entry) => !entry.repaired && entry.action !== 'defer-or-purge');
+  return Object.freeze({
+    score,
+    summary: Object.freeze({
+      runtimeActorCount: actorCount,
+      rawZeroAnimationActorCount: zeroCount,
+      autoRepairedZeroAnimationActorCount: autoRepaired,
+      deferredOrPurgedZeroAnimationActorCount: deferredOrPurged,
+      ruledZeroAnimationActorCount: ruledZeroCount,
+      unresolvedZeroAnimationActorCount: unresolved,
+      strictRenderableActorCount,
+    }),
+    text: unresolved === 0
+      ? `${zeroCount}/${zeroCount} zero-animation actor(s) have runtime repair or defer/purge rulings; ${strictRenderableActorCount}/${actorCount} actors remain strict-runtime renderable.`
+      : `${unresolved}/${zeroCount} zero-animation actor(s) still lack runtime repair or defer/purge rulings.`,
+    gaps: Object.freeze(unresolvedEntries.map((entry) => `${entry.from}: unresolved zero-animation actor`)),
+  });
+}
+
+function scorecardFor(layers, rosterReport, repairPlan) {
   const rosterSummary = rosterReport.summary;
   const actorCount = Math.max(1, rosterSummary.actorCount);
   const complete = rosterSummary.completeActorCount;
@@ -99,8 +128,11 @@ function scorecardFor(layers, rosterReport) {
   const gameplayReady = gameplayLayerIds.filter((id) => (layers[id]?.assetCount ?? 0) > 0).length;
   const gameplayReadabilityScore = pct(gameplayReady, gameplayLayerIds.length);
 
-  const purgeReadinessScore = rosterSummary.zeroAnimationActorCount === 0 ? 90 : Math.max(35, 80 - rosterSummary.zeroAnimationActorCount * 6);
-  const overallScore = Math.round((animationScore * 0.35) + (sourcePolicyScore * 0.25) + (gameplayReadabilityScore * 0.25) + (purgeReadinessScore * 0.15));
+  const strictRuntimeActors = strictRuntimeActorCategory(rosterSummary, repairPlan);
+  const purgeReadinessScore = strictRuntimeActors.summary.unresolvedZeroAnimationActorCount === 0
+    ? 100
+    : Math.max(35, 80 - strictRuntimeActors.summary.unresolvedZeroAnimationActorCount * 8);
+  const overallScore = Math.round((animationScore * 0.25) + (sourcePolicyScore * 0.20) + (gameplayReadabilityScore * 0.25) + (purgeReadinessScore * 0.15) + (strictRuntimeActors.score * 0.15));
 
   return Object.freeze({
     overallScore,
@@ -127,8 +159,16 @@ function scorecardFor(layers, rosterReport) {
       }),
       purgeReadiness: Object.freeze({
         score: purgeReadinessScore,
-        summary: rosterSummary.zeroAnimationActorCount === 0 ? 'No zero-animation actors blocking purge.' : `${rosterSummary.zeroAnimationActorCount} zero-animation actor(s) need keep/defer/purge ruling`,
-        gaps: Object.freeze(rosterReport.zeroAnimationActors),
+        summary: strictRuntimeActors.summary.unresolvedZeroAnimationActorCount === 0
+          ? 'Every zero-animation runtime actor has an auto-repair or defer/purge ruling.'
+          : `${strictRuntimeActors.summary.unresolvedZeroAnimationActorCount} zero-animation actor(s) still need keep/defer/purge ruling`,
+        gaps: strictRuntimeActors.gaps,
+      }),
+      strictRuntimeActors: Object.freeze({
+        score: strictRuntimeActors.score,
+        summary: strictRuntimeActors.summary,
+        text: strictRuntimeActors.text,
+        gaps: strictRuntimeActors.gaps,
       }),
     }),
   });
@@ -154,7 +194,8 @@ export function buildGlobalArtCensus({ repoRoot = repoRootFromHere() } = {}) {
   });
   const totalAssets = Object.values(layers).reduce((sum, layer) => sum + (layer.assetCount ?? 0), 0);
   const totalActors = Object.values(layers).reduce((sum, layer) => sum + (layer.actorCount ?? 0), 0);
-  const scorecard = scorecardFor(layers, rosterReport);
+  const scorecard = scorecardFor(layers, rosterReport, buildArtPurgeRepairPlan({ roster: HMH_ANIMATED_ROSTER, zeroAnimationActors: rosterReport.zeroAnimationActors }));
+  const strictRuntimeActors = scorecard.categories.strictRuntimeActors.summary;
   return Object.freeze({
     version: VERSION,
     generatedBy: 'scripts/global-art-census.mjs',
@@ -166,6 +207,10 @@ export function buildGlobalArtCensus({ repoRoot = repoRootFromHere() } = {}) {
       runtimeCompleteActorCount: rosterReport.summary.completeActorCount,
       runtimePartialActorCount: rosterReport.summary.partialActorCount,
       runtimeZeroAnimationActorCount: rosterReport.summary.zeroAnimationActorCount,
+      runtimeStrictRenderableActorCount: strictRuntimeActors.strictRenderableActorCount,
+      runtimeAutoRepairedZeroAnimationActorCount: strictRuntimeActors.autoRepairedZeroAnimationActorCount,
+      runtimeDeferredOrPurgedZeroAnimationActorCount: strictRuntimeActors.deferredOrPurgedZeroAnimationActorCount,
+      runtimeUnresolvedZeroAnimationActorCount: strictRuntimeActors.unresolvedZeroAnimationActorCount,
       complianceScore: scorecard.overallScore,
     }),
     layers,
@@ -198,10 +243,10 @@ export function renderGlobalArtCensusMarkdown(census) {
   const scoreRows = Object.entries(census.scorecard.categories).map(([key, entry]) => [
     key,
     `${entry.score}/100`,
-    entry.summary,
+    entry.text ?? entry.summary,
     entry.gaps.length ? entry.gaps.slice(0, 8).join('; ') : 'none',
   ]);
-  return `# Hard Money Heroes Global Art Census\n\nGenerated by \`${census.generatedBy}\`.\n\n## Summary\n\n- Census version: ${census.version}\n- Counted art layers: ${census.summary.layerCount}\n- Counted assets/frame references: ${census.summary.totalAssets}\n- Counted actors across art packs: ${census.summary.totalActors}\n- Runtime roster actors: ${census.summary.runtimeActorCount}\n- Runtime complete actors: ${census.summary.runtimeCompleteActorCount}\n- Runtime partial actors: ${census.summary.runtimePartialActorCount}\n- Runtime zero-animation actors: ${census.summary.runtimeZeroAnimationActorCount}\n- Overall compliance score: ${census.scorecard.overallScore}/100\n\n## Compliance scorecard\n\n${table(['Category', 'Score', 'Summary', 'Top gaps'], scoreRows)}\n\n## Art layers\n\n${table(['Layer', 'Assets', 'Actors', 'Animated assets', 'Source policy'], layerRows)}\n\n## Runtime animated roster\n\nThe runtime animated roster is counted separately from final generated packs because it decides what the live game can draw right now. Its frame count is a frame-reference count rather than a unique-PNG count.\n\n## Recommendations\n\n${census.recommendations.map((item) => `- ${item}`).join('\n')}\n`;
+  return `# Hard Money Heroes Global Art Census\n\nGenerated by \`${census.generatedBy}\`.\n\n## Summary\n\n- Census version: ${census.version}\n- Counted art layers: ${census.summary.layerCount}\n- Counted assets/frame references: ${census.summary.totalAssets}\n- Counted actors across art packs: ${census.summary.totalActors}\n- Runtime roster actors: ${census.summary.runtimeActorCount}\n- Runtime complete actors: ${census.summary.runtimeCompleteActorCount}\n- Runtime partial actors: ${census.summary.runtimePartialActorCount}\n- Runtime zero-animation actors: ${census.summary.runtimeZeroAnimationActorCount}\n- Runtime strict-renderable actors after repair/defer rulings: ${census.summary.runtimeStrictRenderableActorCount}\n- Runtime auto-repaired zero-animation actors: ${census.summary.runtimeAutoRepairedZeroAnimationActorCount}\n- Runtime deferred/purged zero-animation actors: ${census.summary.runtimeDeferredOrPurgedZeroAnimationActorCount}\n- Runtime unresolved zero-animation actors: ${census.summary.runtimeUnresolvedZeroAnimationActorCount}\n- Overall compliance score: ${census.scorecard.overallScore}/100\n\n## Compliance scorecard\n\n${table(['Category', 'Score', 'Summary', 'Top gaps'], scoreRows)}\n\n## Art layers\n\n${table(['Layer', 'Assets', 'Actors', 'Animated assets', 'Source policy'], layerRows)}\n\n## Runtime animated roster\n\nThe runtime animated roster is counted separately from final generated packs because it decides what the live game can draw right now. Its frame count is a frame-reference count rather than a unique-PNG count.\n\n## Recommendations\n\n${census.recommendations.map((item) => `- ${item}`).join('\n')}\n`;
 }
 
 export function writeGlobalArtCensus({ repoRoot = repoRootFromHere() } = {}) {

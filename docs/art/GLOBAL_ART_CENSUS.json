@@ -9,7 +9,11 @@
     "runtimeCompleteActorCount": 0,
     "runtimePartialActorCount": 29,
     "runtimeZeroAnimationActorCount": 8,
-    "complianceScore": 43
+    "runtimeStrictRenderableActorCount": 34,
+    "runtimeAutoRepairedZeroAnimationActorCount": 5,
+    "runtimeDeferredOrPurgedZeroAnimationActorCount": 3,
+    "runtimeUnresolvedZeroAnimationActorCount": 0,
+    "complianceScore": 64
   },
   "layers": {
     "runtimeAnimatedRoster": {
@@ -190,7 +194,7 @@
     }
   },
   "scorecard": {
-    "overallScore": 43,
+    "overallScore": 64,
     "categories": {
       "animationCoverage": {
         "score": 24,
@@ -233,18 +237,23 @@
         "gaps": []
       },
       "purgeReadiness": {
-        "score": 35,
-        "summary": "8 zero-animation actor(s) need keep/defer/purge ruling",
-        "gaps": [
-          "bit-whale-boss",
-          "chain-reaper-boss",
-          "crypto-bro-rusher",
-          "evil-banker-ranged",
-          "gas-beast-tank",
-          "liquidation-cascade-golem",
-          "rugpull-summoner",
-          "warren-spear-rider"
-        ]
+        "score": 100,
+        "summary": "Every zero-animation runtime actor has an auto-repair or defer/purge ruling.",
+        "gaps": []
+      },
+      "strictRuntimeActors": {
+        "score": 100,
+        "summary": {
+          "runtimeActorCount": 37,
+          "rawZeroAnimationActorCount": 8,
+          "autoRepairedZeroAnimationActorCount": 5,
+          "deferredOrPurgedZeroAnimationActorCount": 3,
+          "ruledZeroAnimationActorCount": 8,
+          "unresolvedZeroAnimationActorCount": 0,
+          "strictRenderableActorCount": 34
+        },
+        "text": "8/8 zero-animation actor(s) have runtime repair or defer/purge rulings; 34/37 actors remain strict-runtime renderable.",
+        "gaps": []
       }
     }
   },

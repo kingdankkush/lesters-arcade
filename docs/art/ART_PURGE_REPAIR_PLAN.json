@@ -123,7 +123,7 @@
   ],
   "approvedCensus": {
     "version": "wo-17-global-art-census-v1",
-    "complianceScore": 43,
+    "complianceScore": 64,
     "zeroAnimationActorCount": 8,
     "source": "docs/art/GLOBAL_ART_CENSUS.json"
   }
