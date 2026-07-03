@@ -1,0 +1,15 @@
+{
+  "id": "template-cabinet",
+  "name": "Template Cabinet",
+  "version": "1.0.0",
+  "sdkVersion": "1.0.0",
+  "status": "disabled",
+  "aspectSupport": ["9:16", "16:9"],
+  "controlScheme": "tap",
+  "capabilities": [],
+  "rankedEligible": false,
+  "entry": "./main.mjs",
+  "endpoints": [],
+  "devWallet": null,
+  "description": "Reference Cabinet SDK v1 template. Disabled in production cabinet lists; copy this folder when creating a new game."
+}

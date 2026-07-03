@@ -14,15 +14,45 @@
 //   adapter.emitStatUpdate({ score: 4200, kills: 12 });
 //   adapter.end({ score: 4200, kills: 12, survived: 320 });
 
-import { buildArcadeMessage, validateEventPayload, SDK_EVENTS } from './arcade-sdk.mjs';
+import {
+  ARCADE_SDK_VERSION,
+  SDK_EVENTS,
+  SDK_LIFECYCLE_METHODS,
+  authorizeRankedSubmit,
+  buildArcadeMessage,
+  buildInitContext,
+  parseInboundMessage,
+  validateEventPayload,
+} from './arcade-sdk.mjs';
+import { validateGameManifest } from './game-manifest.mjs';
 
-export function createInProcessGameAdapter({ gameId = null } = {}) {
+export const CABINET_SDK_V1_PUBLIC_EXPORTS = Object.freeze([
+  'ARCADE_SDK_VERSION',
+  'SDK_EVENTS',
+  'SDK_LIFECYCLE_METHODS',
+  'authorizeRankedSubmit',
+  'buildArcadeMessage',
+  'buildInitContext',
+  'createInProcessGameAdapter',
+  'createTemplateCabinetAdapter',
+  'parseInboundMessage',
+  'validateEventPayload',
+  'validateGameManifest',
+]);
+
+function normalizeSurvivalTime(payload = {}) {
+  const survivalTime = payload.survivalTime ?? payload.survived ?? payload.survivalSeconds ?? 0;
+  return { ...payload, survivalTime };
+}
+
+export function createInProcessGameAdapter({ gameId = null, sessionId = null, rankedEligible = false } = {}) {
   if (!gameId) throw new Error('createInProcessGameAdapter requires { gameId }');
 
-  let state = 'idle'; // idle | starting | running | paused | ended
+  let state = 'idle'; // idle | ready | starting | running | paused | ended
   let seq = 0;
+  let initContext = null;
   const listeners = new Set();
-  const stats = { score: 0, kills: 0, survived: 0, powerUpsCollected: 0 };
+  const stats = { score: 0, kills: 0, survivalTime: 0, powerUpsCollected: 0 };
 
   function emit(type, payload = {}) {
     const validation = validateEventPayload(type, payload);
@@ -41,14 +71,22 @@ export function createInProcessGameAdapter({ gameId = null } = {}) {
     gameId,
     getState: () => state,
     getStats: () => ({ ...stats }),
+    getInitContext: () => initContext,
 
     on(fn) { listeners.add(fn); return () => listeners.delete(fn); },
 
+    init(context = {}) {
+      initContext = buildInitContext({ gameId, sessionId, rankedEligible, ...context });
+      state = 'ready';
+      return initContext;
+    },
+
     start(sessionConfig = {}) {
+      if (!initContext) this.init({ mode: sessionConfig.mode || 'free' });
       state = 'starting';
-      emit(SDK_EVENTS[0], { gameId, sessionConfig }); // arcade.ready
+      emit(SDK_EVENTS[0], {}); // arcade.ready
       state = 'running';
-      emit(SDK_EVENTS[1], { gameId, mode: sessionConfig.mode || 'free', ...sessionConfig }); // arcade.sessionStart
+      emit(SDK_EVENTS[1], { mode: sessionConfig.mode || initContext?.mode || 'free' }); // arcade.sessionStart
       return true;
     },
 
@@ -66,26 +104,27 @@ export function createInProcessGameAdapter({ gameId = null } = {}) {
 
     emitStatUpdate(partial = {}) {
       if (state !== 'running') return false;
-      Object.assign(stats, partial);
-      emit(SDK_EVENTS[2], { gameId, ...stats }); // arcade.statUpdate
+      Object.assign(stats, normalizeSurvivalTime(partial));
+      emit(SDK_EVENTS[2], { score: stats.score, kills: stats.kills }); // arcade.statUpdate
       return true;
     },
 
     emitAchievement(achievementId) {
-      return emit(SDK_EVENTS[3], { gameId, achievementId }) !== null; // arcade.achievement
+      return emit(SDK_EVENTS[3], { id: achievementId }) !== null; // arcade.achievement
     },
 
     submitScore(score, runStats = {}) {
       if (state !== 'running' && state !== 'ended') return false;
-      emit(SDK_EVENTS[4], { gameId, score, ...runStats }); // arcade.scoreSubmit
+      const payload = normalizeSurvivalTime({ ...runStats, score });
+      emit(SDK_EVENTS[4], { score: payload.score, survivalTime: payload.survivalTime }); // arcade.scoreSubmit
       return true;
     },
 
     end(result = {}) {
       if (state === 'ended') return false;
       state = 'ended';
-      Object.assign(stats, result);
-      emit(SDK_EVENTS[5], { gameId, ...stats }); // arcade.gameOver
+      Object.assign(stats, normalizeSurvivalTime(result));
+      emit(SDK_EVENTS[5], { score: stats.score }); // arcade.gameOver
       return true;
     },
 
@@ -94,8 +133,17 @@ export function createInProcessGameAdapter({ gameId = null } = {}) {
       listeners.clear();
       Object.keys(stats).forEach((k) => { stats[k] = 0; });
       seq = 0;
+      initContext = null;
     },
   };
+}
+
+export function createTemplateCabinetAdapter({ sessionId = null } = {}) {
+  return createInProcessGameAdapter({ gameId: 'template-cabinet', sessionId, rankedEligible: false });
+}
+
+export function createHardMoneyHeroesCabinetAdapter({ sessionId = null } = {}) {
+  return createInProcessGameAdapter({ gameId: 'hard-money-heroes', sessionId, rankedEligible: true });
 }
 
 // Validates the adapter invariants (called during npm test).

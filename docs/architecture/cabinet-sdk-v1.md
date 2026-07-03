@@ -1,0 +1,51 @@
+# Cabinet SDK v1 — Lester's Arcade
+
+**Status:** WO-54 local extraction complete when tests pass.  
+**Scope:** Pure, DOM-free SDK primitives plus in-process adapters used by current first-party cabinets. Sandboxed iframe transport can sit on the same event contract later.
+
+## Public surface
+
+`apps/portal/src/arcade-sdk.mjs`
+
+- `ARCADE_SDK_VERSION`
+- `SDK_LIFECYCLE_METHODS`
+- `SDK_EVENTS`
+- `buildInitContext()`
+- `buildArcadeMessage()`
+- `validateEventPayload()`
+- `parseInboundMessage()`
+- `createMessageRateLimiter()`
+- `authorizeRankedSubmit()`
+
+`apps/portal/src/game-adapter.mjs`
+
+- `CABINET_SDK_V1_PUBLIC_EXPORTS`
+- `createInProcessGameAdapter()`
+- `createTemplateCabinetAdapter()`
+- `createHardMoneyHeroesCabinetAdapter()`
+
+## Security rule
+
+A cabinet never receives a provider, signer, private key, full wallet write access, or direct official-state writer. The parent passes display-only identity in `buildInitContext()` and validates every `arcade.*` message through `parseInboundMessage()` before acting.
+
+## Template cabinet
+
+Reference files:
+
+- `apps/portal/games/template-cabinet/game.manifest.json`
+- `apps/portal/games/template-cabinet/main.mjs`
+
+The template is `disabled` so it does not render on the public arcade floor. Copy it for new cabinets and change the manifest id/name/entry/status.
+
+## HMH adapter proof
+
+`createHardMoneyHeroesCabinetAdapter()` binds the current in-process Hard Money Heroes runtime to the same SDK events a future iframe cabinet will emit:
+
+1. `arcade.ready`
+2. `arcade.sessionStart`
+3. `arcade.statUpdate`
+4. `arcade.achievement`
+5. `arcade.scoreSubmit`
+6. `arcade.gameOver`
+
+WO-55 should build Chikun's Escape against this same adapter path instead of adding another one-off parent integration.
