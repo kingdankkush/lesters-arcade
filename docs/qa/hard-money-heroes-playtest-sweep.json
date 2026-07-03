@@ -1,0 +1,126 @@
+{
+  "sweep": {
+    "version": "wo-34-structured-playtest-v1",
+    "summary": {
+      "scenarioCount": 6,
+      "p0ScenarioCount": 4,
+      "bugAreaCount": 7,
+      "uncoveredBugAreaCount": 0,
+      "blockerGapCount": 0,
+      "status": "PASS"
+    },
+    "scenarios": [
+      {
+        "id": "guest-arcade-entry",
+        "title": "Guest enters arcade and browses cabinets",
+        "priority": "P0",
+        "stepCount": 3,
+        "expectedCount": 3,
+        "automatedEvidenceCount": 2,
+        "status": "ready-for-human-smoke"
+      },
+      {
+        "id": "free-mode-ready-gate",
+        "title": "Free Mode starts behind READY gate",
+        "priority": "P0",
+        "stepCount": 4,
+        "expectedCount": 3,
+        "automatedEvidenceCount": 2,
+        "status": "ready-for-human-smoke"
+      },
+      {
+        "id": "ranked-submit-path",
+        "title": "Ranked run submits only after game over",
+        "priority": "P0",
+        "stepCount": 4,
+        "expectedCount": 3,
+        "automatedEvidenceCount": 3,
+        "status": "ready-for-human-smoke"
+      },
+      {
+        "id": "level-one-combat-loop",
+        "title": "Level 1 combat loop is readable under pressure",
+        "priority": "P0",
+        "stepCount": 5,
+        "expectedCount": 3,
+        "automatedEvidenceCount": 3,
+        "status": "ready-for-human-smoke"
+      },
+      {
+        "id": "audio-accessibility",
+        "title": "Audio, SFX, motion, and flash toggles are safe",
+        "priority": "P1",
+        "stepCount": 4,
+        "expectedCount": 3,
+        "automatedEvidenceCount": 2,
+        "status": "ready-for-human-smoke"
+      },
+      {
+        "id": "mobile-input-smoke",
+        "title": "Mobile/touch input does not dead-end combat",
+        "priority": "P1",
+        "stepCount": 4,
+        "expectedCount": 3,
+        "automatedEvidenceCount": 2,
+        "status": "ready-for-human-smoke"
+      }
+    ],
+    "bugAreas": [
+      {
+        "id": "route-dead-end",
+        "severity": "blocker",
+        "guard": "arcade-router.test.mjs",
+        "status": "covered",
+        "covered": true
+      },
+      {
+        "id": "pre-ready-sim-audio",
+        "severity": "blocker",
+        "guard": "arcade-core.test.mjs + smoke:portal:interactions",
+        "status": "covered",
+        "covered": true
+      },
+      {
+        "id": "on-chain-abi-mismatch",
+        "severity": "blocker",
+        "guard": "contract-abi-alignment.test.mjs + contracts:check",
+        "status": "covered",
+        "covered": true
+      },
+      {
+        "id": "spawn-on-player",
+        "severity": "major",
+        "guard": "hmh-finite-map-spawn.test.mjs + hmh-bounded-world-ai.test.mjs",
+        "status": "covered",
+        "covered": true
+      },
+      {
+        "id": "missing-feedback",
+        "severity": "major",
+        "guard": "hmh-combat-feedback.test.mjs",
+        "status": "covered",
+        "covered": true
+      },
+      {
+        "id": "sfx-spam",
+        "severity": "major",
+        "guard": "hmh-audio-system.test.mjs",
+        "status": "covered",
+        "covered": true
+      },
+      {
+        "id": "copy-cost-confusion",
+        "severity": "major",
+        "guard": "hmh-copy-sheet.test.mjs",
+        "status": "covered",
+        "covered": true
+      }
+    ],
+    "gaps": []
+  },
+  "validation": {
+    "ok": true,
+    "gaps": [],
+    "status": "PASS"
+  }
+}
