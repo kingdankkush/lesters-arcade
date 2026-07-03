@@ -24,7 +24,12 @@ import {
   hasSpecial,
   validateWeaponUpgrades,
 } from './weapon-upgrades.mjs';
-import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, syncConfiguredCharacterUnlocks, resolveSelectedCharacterId } from './hmh-character-config.mjs';
+import {
+  HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
+  HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES,
+  syncConfiguredCharacterUnlocks,
+  resolveSelectedCharacterId,
+} from './hmh-character-config.mjs';
 import { HMH_COPY_SHEET } from './hmh-copy-sheet.mjs';
 import { normalizeProfileIdentity } from './hmh-profile-parity.mjs';
 import { createSeededSubstreams } from './seeded-rng.mjs';
@@ -2136,12 +2141,9 @@ const roguelikeStatDefaults = () => Object.fromEntries(
 //   lit-valkyrie = agile glass-cannon (faster, higher fire-rate/crit, less HP)
 //   lester-original = balanced unlockable based on Justin's Lester reference art
 //   lilly = agile unlockable based on Justin's Lilly reference art
-export const HERO_STARTING_STAT_MODIFIERS = Object.freeze({
-  'lit-commando': Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
-  'lit-valkyrie': Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
-  'lester-original': Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0 }),
-  lilly: Object.freeze({ movementSpeed: 1.08, rateOfFire: 1.05, criticalChance: 1.08, maxHealth: 0.96 }),
-});
+export const HERO_STARTING_STAT_MODIFIERS = Object.freeze(Object.fromEntries(
+  Object.entries(HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES).map(([id, identity]) => [id, Object.freeze({ ...identity.simMultipliers })]),
+));
 
 function roguelikeStartingStatsFor(characterId) {
   const stats = roguelikeStatDefaults();
@@ -2705,6 +2707,7 @@ export function createRoguelikeRunState({
     rerollsRemaining: LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.rerollsPerLevel,
     player: { x: config.player.startWorld.x, y: config.player.startWorld.y, facing: 'E' },
     stats: carriedStats ?? roguelikeStartingStatsFor(characterId),
+    statTruthSource: 'hmh-character-config',
     skills,
     unlocks: { ...(carryOver?.unlocks ?? {}) },
     powerMoments: {

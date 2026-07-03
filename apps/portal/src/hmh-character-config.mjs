@@ -35,6 +35,49 @@ export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
   ]),
 });
 
+export const HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES = Object.freeze({
+  'lit-commando': Object.freeze({
+    id: 'lit-commando',
+    name: 'Lit Commando',
+    tagline: 'Tanky Bruiser',
+    bio: 'Litecoin-silver tactical commando in cyan-visor combat armor. More HP, armor, and damage — a touch slower. Walks straight into the panic with hard money on his side.',
+    stats: Object.freeze([Object.freeze(['Power', 5]), Object.freeze(['Speed', 3]), Object.freeze(['Armor', 5]), Object.freeze(['Luck', 3])]),
+    simMultipliers: Object.freeze({ maxHealth: 1.2, damage: 1.12, armor: 1.1, movementSpeed: 0.92 }),
+    combatStats: Object.freeze({ maxHealth: 120, speed: 0.92, jump: 1.0, melee: 1.15, luck: 0.95 }),
+    viability: Object.freeze({ ok: true, style: 'durable opener', tradeoff: 'slower movement offsets higher health, damage, and armor' }),
+  }),
+  'lit-valkyrie': Object.freeze({
+    id: 'lit-valkyrie',
+    name: 'Lit Valkyrie',
+    tagline: 'Agile Glass-Cannon',
+    bio: 'Teal-plasma energy warrior with short teal hair. Faster movement, higher fire-rate and crit chance — but more fragile. Darts through the panic and punishes mistakes.',
+    stats: Object.freeze([Object.freeze(['Power', 4]), Object.freeze(['Speed', 5]), Object.freeze(['Armor', 2]), Object.freeze(['Luck', 5])]),
+    simMultipliers: Object.freeze({ movementSpeed: 1.15, rateOfFire: 1.12, criticalChance: 1.15, maxHealth: 0.88 }),
+    combatStats: Object.freeze({ maxHealth: 88, speed: 1.15, jump: 1.0, melee: 0.95, luck: 1.15 }),
+    viability: Object.freeze({ ok: true, style: 'mobile glass-cannon', tradeoff: 'lower health offsets speed, fire-rate, and crit upside' }),
+  }),
+  'lester-original': Object.freeze({
+    id: 'lester-original',
+    name: 'Lester',
+    tagline: 'Original Commando',
+    bio: 'The blue-masked original arcade commando. Balanced stats across the board. Unlock by completing Level 1: The Crypto Wasteland.',
+    stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 3]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 3])]),
+    simMultipliers: Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0 }),
+    combatStats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
+    viability: Object.freeze({ ok: true, style: 'balanced unlockable', tradeoff: 'no extreme stat; consistency is the reward' }),
+  }),
+  lilly: Object.freeze({
+    id: 'lilly',
+    name: 'Lilly',
+    tagline: 'Ranked Veteran',
+    bio: 'Teal-haired tactical companion with glasses and gold/teal armor. Unlock by playing 10 ranked Hard Money Heroes matches.',
+    stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 4]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 4])]),
+    simMultipliers: Object.freeze({ movementSpeed: 1.08, rateOfFire: 1.05, criticalChance: 1.08, maxHealth: 0.96 }),
+    combatStats: Object.freeze({ maxHealth: 96, speed: 1.08, jump: 1.0, melee: 1.05, luck: 1.08 }),
+    viability: Object.freeze({ ok: true, style: 'agile veteran', tradeoff: 'moderate HP dip offsets broad mobility/fire-rate/crit lift' }),
+  }),
+});
+
 export const HMH_PLAYABLE_CHARACTER_VISUAL_KITS = Object.freeze({
   'lit-commando': Object.freeze({
     id: 'lit-commando',
@@ -69,6 +112,29 @@ export const HMH_PLAYABLE_CHARACTER_VISUAL_KITS = Object.freeze({
     productionStatus: 'runtime kit currently complete, but should be rebuilt/QAed against Justin reference sprites for AAA lock',
   }),
 });
+
+function canonicalPlayableCharacterId(value) {
+  const id = normalizeId(value);
+  return id === 'lester' ? 'lester-original' : id;
+}
+
+export function playableCharacterStatIdentityFor(characterId) {
+  const id = canonicalPlayableCharacterId(characterId);
+  return HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES[id] ?? null;
+}
+
+function characterStatIdentityEntry(characterId) {
+  const identity = playableCharacterStatIdentityFor(characterId);
+  if (!identity) return null;
+  return Object.freeze({
+    ...clone(identity),
+    statTruthSource: 'hmh-character-config',
+  });
+}
+
+export function buildCharacterStatIdentityRoster() {
+  return Object.freeze(Object.keys(HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES).map(characterStatIdentityEntry).filter(Boolean));
+}
 
 function normalizeId(value) {
   return String(value ?? '')
@@ -172,15 +238,27 @@ export function buildCharacterSelectEntries(baseRoster = [], profile = {}, confi
     const entryId = normalizeId(entry.id);
     const legacyId = normalizeId(entry.legacyId ?? entry.id);
     const lookupId = entryId || legacyId;
+    const identity = characterStatIdentityEntry(lookupId);
     const unlock = unlockById.get(lookupId);
     const unlocked = Boolean(unlocks[lookupId]);
+    const displayName = identity?.name ?? entry.name ?? entry.title ?? lookupId;
     const cta = unlocked
-      ? `SELECT — PLAY AS ${String(entry.name ?? entry.title ?? lookupId).toUpperCase()}`
+      ? `SELECT — PLAY AS ${String(displayName).toUpperCase()}`
       : unlock?.cta ?? 'LOCKED';
     return Object.freeze({
       ...entry,
+      ...(identity ?? {}),
       id: lookupId,
       legacyId: lookupId,
+      name: displayName,
+      title: identity?.name ?? entry.title ?? displayName,
+      tagline: identity?.tagline ?? entry.tagline,
+      bio: identity?.bio ?? entry.bio,
+      stats: identity?.stats ?? entry.stats,
+      simMultipliers: identity?.simMultipliers,
+      combatStats: identity?.combatStats,
+      viability: identity?.viability,
+      statTruthSource: identity?.statTruthSource ?? 'base-roster-entry',
       locked: !unlocked,
       unlocked,
       selected: selectedCharacterId === lookupId,

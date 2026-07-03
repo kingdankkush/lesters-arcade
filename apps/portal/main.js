@@ -78,7 +78,13 @@ import {
   levelOneOpeningGroundRoleForTile,
 } from './src/hmh-level-one-visible-runtime.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState, buildNoirLightingPlan } from './src/hmh-environment-manager.mjs';
-import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
+import {
+  buildCharacterSelectEntries,
+  buildCharacterStatIdentityRoster,
+  HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
+  resolveSelectedCharacterId,
+  setPreferredCharacter,
+} from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
 import HMH_ASSET_FOOTPRINTS from './assets/hmh-asset-footprints.json' with { type: 'json' };
 
@@ -1641,32 +1647,7 @@ function heroRotationSprite(characterId) {
   const frameDurationMs = Math.max(180, Math.round(1000 / (entry?.targetFps ?? 10)));
   return { id: characterId, animation: chosenName, frames, frameDurationMs };
 }
-const HERO_ROSTER_BASE = [
-  {
-    id: 'lit-commando', name: 'Lit Commando', locked: false,
-    tagline: 'Tanky Bruiser',
-    bio: 'Litecoin-silver tactical commando in cyan-visor combat armor. More HP, armor, and damage — a touch slower. Walks straight into the panic with hard money on his side.',
-    stats: [['Power', 5], ['Speed', 3], ['Armor', 5], ['Luck', 3]],
-  },
-  {
-    id: 'lit-valkyrie', name: 'Lit Valkyrie', locked: false,
-    tagline: 'Agile Glass-Cannon',
-    bio: 'Teal-plasma energy warrior with short teal hair. Faster movement, higher fire-rate and crit chance — but more fragile. Darts through the panic and punishes mistakes.',
-    stats: [['Power', 4], ['Speed', 5], ['Armor', 2], ['Luck', 5]],
-  },
-  {
-    id: 'lester-original', name: 'Lester', locked: true,
-    tagline: 'Original Commando',
-    bio: 'The blue-masked original arcade commando. Balanced stats across the board. Unlock by completing Level 1: The Crypto Wasteland.',
-    stats: [['Power', 3], ['Speed', 3], ['Armor', 3], ['Luck', 3]],
-  },
-  {
-    id: 'lilly', name: 'Lilly', locked: true,
-    tagline: 'Ranked Veteran',
-    bio: 'Teal-haired tactical companion with glasses and gold/teal armor. Unlock by playing 10 ranked Hard Money Heroes matches.',
-    stats: [['Power', 3], ['Speed', 4], ['Armor', 3], ['Luck', 4]],
-  },
-];
+const HERO_ROSTER_BASE = buildCharacterStatIdentityRoster();
 
 // Glyph per hero skill type, shown beside the stat label on the hero cards.
 const HERO_STAT_ICONS = {
