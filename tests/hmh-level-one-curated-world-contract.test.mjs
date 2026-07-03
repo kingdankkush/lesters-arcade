@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { HMH_CURATED_LEVEL_KIT, curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
 import {
   HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT,
+  HMH_LEVEL_ONE_NOIR_ZONE_PLAN,
+  HMH_LEVEL_ONE_SPAWN_GATE_REDRESS,
   curatedLevelOneAssetKeys,
   curatedLevelOneAssetRefsForZone,
   curatedLevelOneCriticalPath,
@@ -78,6 +80,24 @@ test('curated Level 1 POIs and arenas are authored with encounter, camera, and a
   assert.equal(boss.arena.kind, 'boss-arena');
   assert.equal(boss.enemyFamilies.includes('claim-jumper'), true);
   assert.equal(boss.phasePlan.length >= 3, true);
+});
+
+test('WO-48 noir Level 1 zone plan redresses the existing route without starting a full art batch', () => {
+  const criticalPathIds = curatedLevelOneCriticalPath().map((zone) => zone.id);
+  assert.equal(HMH_LEVEL_ONE_NOIR_ZONE_PLAN.id, 'level-1-noir-zone-plan-v1');
+  assert.equal(HMH_LEVEL_ONE_NOIR_ZONE_PLAN.assetPolicy, 'redress-existing-curated-assets-only');
+  assert.deepEqual(HMH_LEVEL_ONE_NOIR_ZONE_PLAN.zones.map((zone) => zone.criticalPathZoneId), criticalPathIds);
+  assert.equal(HMH_LEVEL_ONE_NOIR_ZONE_PLAN.zones.every((zone) => zone.noirRead && zone.silhouetteRule && zone.groundTreatment), true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_ZONE_PLAN.zones.some((zone) => /rain|wet|slick|lamp|shadow/i.test(zone.noirRead)), true);
+
+  assert.equal(HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.zoneId, 'spawn-broken-road');
+  assert.equal(HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.safeRadiusTiles >= 10, true);
+  assert.equal(HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.firstEnemySpawnMinDistanceTiles >= 16, true);
+  assert.equal(HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.holdEnemySeconds >= 6, true);
+  assert.equal(HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.forbiddenInsideGate.includes('water'), true);
+  assert.equal(HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.forbiddenInsideGate.includes('tall-solid-props'), true);
+  assert.equal(HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT.noirZonePlan.id, HMH_LEVEL_ONE_NOIR_ZONE_PLAN.id);
+  assert.equal(HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT.spawnGateRedress.id, HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.id);
 });
 
 test('every curated Level 1 asset reference resolves to a real generated/source file', () => {

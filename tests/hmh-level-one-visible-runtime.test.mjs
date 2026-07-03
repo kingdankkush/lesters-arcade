@@ -13,6 +13,7 @@ import {
   levelOneWorldDressingChunkForCell,
 } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 import { curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
+import { HMH_LEVEL_ONE_SPAWN_GATE_REDRESS } from '../apps/portal/src/hmh-level-one-curated-world-contract.mjs';
 
 function repoPath(relativePath) {
   return fileURLToPath(new URL(`../${relativePath}`, import.meta.url));
@@ -27,6 +28,18 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign'), true, 'spawn should include route signage from the curated folder');
   assert.equal(objects.every((object) => object.curated === true), true, 'all visible-runtime objects should be tagged as curated');
   assert.equal(objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'every object should resolve to Justin-curated manifest art');
+});
+
+test('WO-48 spawn gate redress keeps the opening safe while preserving route signage', () => {
+  const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 0, window: 18 });
+  const gateRadius = HMH_LEVEL_ONE_SPAWN_GATE_REDRESS.safeRadiusTiles;
+  const insideGate = objects.filter((object) => Math.hypot(object.gridX, object.gridY) < gateRadius);
+
+  assert.equal(insideGate.length > 0, true, 'spawn gate should still contain readable low route cues');
+  assert.equal(insideGate.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign'), true, 'spawn gate keeps the authored route sign');
+  assert.equal(insideGate.some((object) => object.sceneRole === 'road'), true, 'spawn gate keeps low road/readability ground props');
+  assert.equal(insideGate.some((object) => object.sceneRole === 'water-strip'), false, 'spawn gate should not start on water/noir clutter');
+  assert.equal(insideGate.some((object) => object.solid && (object.zHeight >= 2 || ['landmark', 'wall'].includes(object.sceneRole))), false, 'spawn gate should not contain tall solid blockers');
 });
 
 test('Level 1 opening composition declares AAA-readable route, boundary, landmark, and negative-space layers', () => {

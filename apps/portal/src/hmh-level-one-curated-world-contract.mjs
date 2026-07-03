@@ -206,6 +206,60 @@ function poiFromRoute(routeZone, data) {
   });
 }
 
+function noirZone(routeZone, title, noirRead, groundTreatment, silhouetteRule, accents = []) {
+  return Object.freeze({
+    id: `noir-${routeZone.id}`,
+    criticalPathZoneId: routeZone.id,
+    order: routeZone.order,
+    title,
+    routeBeat: routeZone.beat,
+    districtId: routeZone.districtId,
+    xPct: routeZone.xPct,
+    yPct: routeZone.yPct,
+    noirRead,
+    groundTreatment,
+    silhouetteRule,
+    accents: Object.freeze(accents),
+    assetPolicy: 'reuse-zone-curated-assets-with-lighting-ground-redress',
+  });
+}
+
+export const HMH_LEVEL_ONE_SPAWN_GATE_REDRESS = Object.freeze({
+  id: 'level-1-spawn-gate-redress-v1',
+  zoneId: 'spawn-broken-road',
+  title: 'Dead Highway Safe Gate',
+  safeRadiusTiles: 11,
+  cameraSafeRadiusTiles: 14,
+  firstEnemySpawnMinDistanceTiles: 16,
+  holdEnemySeconds: 7,
+  gateRead: 'A wet blacktop lane, bus-stop sign, low flares, and far silhouettes establish direction before the first pack enters.',
+  requiredInsideGate: Object.freeze(['clear-road-centerline', 'low-edge-dressing', 'route-signpost', 'lamplight-or-flare-cue']),
+  forbiddenInsideGate: Object.freeze(['water', 'tall-solid-props', 'enemy-spawn', 'pickup-clutter', 'wall-footprints']),
+  redressActions: Object.freeze([
+    'Reframe spawn-broken-road as a noir safehouse gate using existing road/sign/low desert assets.',
+    'Keep the first camera footprint readable: no water, tall walls, random scatter, or enemy slots inside the gate.',
+    'Push first enemy entries to the rim so the opening reads as intentional arrival rather than instant dogpile.',
+  ]),
+});
+
+export const HMH_LEVEL_ONE_NOIR_ZONE_PLAN = Object.freeze({
+  id: 'level-1-noir-zone-plan-v1',
+  levelId: LEVEL_1_ID,
+  title: 'Level 1 Noir Redress Zone Plan',
+  assetPolicy: 'redress-existing-curated-assets-only',
+  artBatchGate: 'WO-49 decides ground/tool direction before any full art batch.',
+  zones: freeze([
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[0], 'Dead Highway Gate', 'wet blacktop, low bus-stop lamp, dust haze, and a readable shadow lane into the run', 'darkened dirt-road base with thin reflective edge strips and no random spawn clutter', 'hero and first enemies must read against a low horizon, not tall foreground props', ['bus stop sign', 'low flares', 'distant neon skyline cue']),
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[1], 'False-Front Main Street', 'lamp-cut saloon fronts, boarded windows, and scam billboards turning the street into a noir ambush corridor', 'cobble/dirt main street with hard shadow edges under facades', 'rifle tells and zealot lanterns must silhouette against storefront negative space', ['saloon porch lamps', 'water tower shadow', 'billboard glow']),
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[2], 'Pine Shadow Cut', 'dead forest loop lit by cold moon shafts and mushroom accents, a quiet noir side route before pressure returns', 'worn grass and mud path with dark tree-wall borders', 'boar/cult silhouettes read in a central dodge oval with tree walls pushed to the rim', ['moonlit trunks', 'mushroom glints', 'thin fog']),
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[3], 'Blackwater Ford', 'wet shoreline, ripples, anchor shadows, and a tight bridge/fording read that breaks the dry palette', 'shallow-water strip with dry-bank contrast and visible stepping path', 'water hazards stay low; enemies enter from dry banks so tells do not vanish in blue noise', ['ripples', 'bridge plank highlight', 'shoreline ruins']),
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[4], 'Bone Camp Moonwash', 'open sand oval washed in moonlight, bones and cactus as readable perimeter, no prop soup in the kite lane', 'desert sand with high-contrast bone shadows and wide negative space', 'pack enemies must remain visible across the oval; cactus walls stay corner-biased', ['dragon bones', 'cactus corners', 'dust rim light']),
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[5], 'Sodium Warehouse Yard', 'gas-station canopy, warehouse wall, and orange sodium light create a hard-boiled ranged-combat yard', 'asphalt/dirt yard with oil-dark patches kept outside the central route', 'tank and ranged enemies silhouette against warehouse/gas-station landmarks with crate cover kept waist-high', ['gas canopy glow', 'warehouse edge', 'crate cover rhythm']),
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[6], 'Rugpull Billboard Boss Yard', 'false-front ruins, billboard backlight, and bone caps frame the boss like a noir showdown set', 'dark dirt yard with clean boss-circle negative space and lit perimeter gates', 'boss/add gates must be visible before spawn; BLACKOUT later can drop background while preserving attack tells', ['billboard backlight', 'ruin caps', 'boss gate markers']),
+    noirZone(HMH_LEVEL_ONE_CURATED_ROUTE[7], 'LTC Neon Road Out', 'post-boss extraction road, flare arrows, and distant Litecoin City neon pull the player out of the wasteland', 'clear road pad with reflective exit highlights and no random clutter after the boss', 'extraction silhouette stays empty and readable; city seam is the horizon reward', ['exit flares', 'bus stop sign', 'neon skyline seam']),
+  ]),
+});
+
 export const HMH_LEVEL_ONE_CURATED_POIS = freeze([
   poiFromRoute(HMH_LEVEL_ONE_CURATED_ROUTE[1], {
     enemyFamilies: Object.freeze(['claim-jumper', 'scam-cult-zealot', 'paper-hand']),
@@ -293,6 +347,8 @@ export const HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT = Object.freeze({
   aaaSlicePlan: HMH_LEVEL_ONE_AAA_SLICE_PLAN,
   assetRefs: Object.freeze(combinedAssetRefs),
   missingAssetRequests: HMH_LEVEL_ONE_CURATED_MISSING_ASSET_REQUESTS,
+  noirZonePlan: HMH_LEVEL_ONE_NOIR_ZONE_PLAN,
+  spawnGateRedress: HMH_LEVEL_ONE_SPAWN_GATE_REDRESS,
 });
 
 export function curatedLevelOneCriticalPath() {

@@ -1,5 +1,6 @@
 import {
   HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT,
+  HMH_LEVEL_ONE_SPAWN_GATE_REDRESS,
   curatedLevelOneCriticalPath,
 } from './hmh-level-one-curated-world-contract.mjs';
 import { curatedLevelKitAssetByKey } from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
@@ -354,10 +355,21 @@ function worldDressingObjects({ playerX = 0, playerY = 5, window = 18 } = {}) {
   return objects;
 }
 
+function isForbiddenInsideSpawnGate(object) {
+  const gate = HMH_LEVEL_ONE_SPAWN_GATE_REDRESS;
+  const dist = Math.hypot(Number(object?.gridX) || 0, Number(object?.gridY) || 0);
+  if (dist >= gate.safeRadiusTiles) return false;
+  const role = String(object?.role ?? object?.sceneRole ?? '');
+  const tallSolid = object?.solid && ((object?.zHeight ?? 0) >= 2 || ['landmark', 'wall', 'building'].includes(role));
+  const water = role === 'water-strip' || String(object?.assetKey ?? '').includes('/water/');
+  return tallSolid || water;
+}
+
 export function buildLevelOneCuratedVisibleSceneObjects({ playerX = 0, playerY = 5, window = 18 } = {}) {
   const objects = [...openingObjects(), ...contractZoneObjects(), ...worldDressingObjects({ playerX, playerY, window })];
   const visible = objects.filter((object) =>
-    Math.abs(object.gridX - playerX) <= window + 6
+    !isForbiddenInsideSpawnGate(object)
+    && Math.abs(object.gridX - playerX) <= window + 6
     && Math.abs(object.gridY - playerY) <= window + 6,
   );
   const ids = new Set();
