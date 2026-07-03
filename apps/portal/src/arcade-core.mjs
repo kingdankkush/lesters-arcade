@@ -3746,6 +3746,120 @@ export function buildLeaderboardModel(state, { gameId = 'lester-blaster', wallet
   };
 }
 
+function leaderboardRowTrust(state, gameId, row) {
+  const session = row.sessionId ? state?.sessions?.[row.sessionId] : null;
+  const flagged = row.sessionId ? (state?.flaggedSessions ?? []).find((flag) => flag.sessionId === row.sessionId) : null;
+  const verdict = flagged?.verdict ?? session?.integrity?.verdict ?? (row.settlementTxHash || session?.settlement?.primaryTxHash ? 'settled' : 'prototype');
+  if (verdict === 'suspicious' || verdict === 'rejected') {
+    return {
+      verdict,
+      label: verdict === 'rejected' ? 'Rejected' : 'Needs review',
+      tone: verdict === 'rejected' ? 'danger' : 'warning',
+      flags: [...(flagged?.flags ?? session?.integrity?.flags ?? [])],
+    };
+  }
+  if (verdict === 'settled') {
+    return { verdict: 'settled', label: 'Settled', tone: 'verified', flags: [] };
+  }
+  return { verdict: 'prototype', label: 'Prototype', tone: 'muted', flags: [] };
+}
+
+function leaderboardDetailFor(state, gameId, row) {
+  const session = row.sessionId ? state?.sessions?.[row.sessionId] : null;
+  const urlSessionId = session?.urlSessionId ?? row.urlSessionId ?? null;
+  const gameSlug = gameSlugFor(gameId);
+  return {
+    sessionId: row.sessionId ?? null,
+    urlSessionId,
+    sequenceNumber: session?.sequenceNumber ?? null,
+    detailHref: urlSessionId ? `/play/${gameSlug}/${urlSessionId}` : null,
+    recordedAt: row.recordedAt ?? session?.syncedAt ?? null,
+    runStats: { ...(session?.runStats ?? row.runStats ?? {}) },
+    settlementTxHash: row.settlementTxHash ?? session?.settlement?.primaryTxHash ?? null,
+  };
+}
+
+function leaderboardV2SourceHash(state, board) {
+  const rowHash = board.topEntries.map((row) => [row.sessionId, row.score, row.settlementTxHash ?? '', row.recordedAt].join('/')).join('|');
+  const flaggedHash = (state?.flaggedSessions ?? []).map((flag) => `${flag.sessionId}:${flag.verdict}`).join('|');
+  return `${board.total}:${rowHash}:${flaggedHash}`;
+}
+
+function indexLeaderboardV2Rows(state, rows) {
+  state.leaderboardIndexes ??= { bySessionId: {}, byUrlSessionId: {} };
+  state.leaderboardIndexes.bySessionId ??= {};
+  state.leaderboardIndexes.byUrlSessionId ??= {};
+  for (const row of rows) {
+    const summary = {
+      gameId: row.gameId,
+      sessionId: row.sessionId,
+      urlSessionId: row.sessionDetail.urlSessionId,
+      rank: row.rank,
+      score: row.score,
+      wallet: row.wallet,
+      trustVerdict: row.trust.verdict,
+    };
+    if (row.sessionId) state.leaderboardIndexes.bySessionId[row.sessionId] = summary;
+    if (row.sessionDetail.urlSessionId) state.leaderboardIndexes.byUrlSessionId[row.sessionDetail.urlSessionId] = summary;
+  }
+}
+
+export function buildLeaderboardExperienceV2Model(state, {
+  gameId = 'lester-blaster',
+  cadence = 'all-time',
+  wallet = null,
+  displayNameFor = (w) => w,
+  limit = 50,
+  now = Date.now(),
+} = {}) {
+  const game = getGame(gameId);
+  const board = getLeaderboard(state, game.id, cadence, { wallet, displayNameFor, limit, now });
+  const cacheKey = `${game.id}:${board.cadence}:${board.periodKey}:limit-${limit}`;
+  const sourceHash = leaderboardV2SourceHash(state, board);
+  state.leaderboardV2Cache ??= {};
+  const cached = state.leaderboardV2Cache[cacheKey];
+  if (cached?.sourceHash === sourceHash) {
+    return { ...cached.model, cache: { ...cached.model.cache, status: 'hit' } };
+  }
+
+  const rows = board.topEntries.map((row) => {
+    const trust = leaderboardRowTrust(state, game.id, row);
+    const sessionDetail = leaderboardDetailFor(state, game.id, row);
+    return {
+      ...row,
+      gameId: game.id,
+      trust,
+      sessionDetail,
+      actions: {
+        viewSession: sessionDetail.detailHref,
+        inspectTrust: trust.flags.length > 0,
+      },
+    };
+  });
+  indexLeaderboardV2Rows(state, rows);
+  const trustSummary = {
+    totalRankedRuns: board.total,
+    settledRuns: rows.filter((row) => row.trust.verdict === 'settled' || row.sessionDetail.settlementTxHash).length,
+    flaggedRuns: rows.filter((row) => row.trust.verdict === 'suspicious' || row.trust.verdict === 'rejected').length,
+    prototypeRuns: rows.filter((row) => row.trust.verdict === 'prototype').length,
+  };
+  const model = {
+    gameId: game.id,
+    gameTitle: game.title,
+    cadence: board.cadence,
+    periodKey: board.periodKey,
+    total: board.total,
+    rows,
+    topEntries: rows,
+    playerRank: board.playerRank,
+    playerEntry: rows.find((row) => row.isCurrentPlayer) ?? null,
+    trustSummary,
+    cache: { key: cacheKey, sourceHash, status: 'rebuilt' },
+  };
+  state.leaderboardV2Cache[cacheKey] = { sourceHash, model };
+  return model;
+}
+
 export function resolveAchievementUnlocksForRun({
   score = 0,
   elapsedSeconds = 0,

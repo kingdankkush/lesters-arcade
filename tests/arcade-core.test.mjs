@@ -53,6 +53,7 @@ import {
   advanceTacticalCameraModel,
   applyPowerUp,
   buildLeaderboardModel,
+  buildLeaderboardExperienceV2Model,
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
   buildCombatAccessibilitySettingsModel,
@@ -572,6 +573,63 @@ test('setArcadeUsername sets a unique display name shown on leaderboards', async
     displayNameFor: (w) => resolveDisplayName(state.profiles[w], w),
   });
   assert.equal(board.topEntries[0].displayName, 'HardMoneyKing');
+});
+
+test('WO-57 leaderboard v2 builds cached indexed rows with trust and detail UI metadata', async () => {
+  const { applySettlement, resolveDisplayName } = await import('../apps/portal/src/arcade-core.mjs');
+  const state = createInitialArcadeState();
+  const wallets = ['0x' + 'a'.repeat(40), '0x' + 'b'.repeat(40), '0x' + 'c'.repeat(40)];
+  wallets.forEach((wallet) => connectPlayerAccount(state, wallet));
+
+  const sessions = wallets.map((wallet, index) => startPlaySession({
+    wallet,
+    gameId: 'lester-blaster',
+    mode: 'paid',
+    sequenceNumber: 570 + index,
+    urlSessionId: `game-session-00000057${index}`,
+  }));
+  recordScore(state, sessions[0], 2200, { elapsedSeconds: 90, kills: 12, bossId: null });
+  recordScore(state, sessions[1], 4400, { elapsedSeconds: 140, kills: 33, bossId: 'rug-pull-tank' });
+  recordScore(state, sessions[2], 3300, { elapsedSeconds: 100, kills: 20, bossId: null });
+  applySettlement(state, {
+    mode: 'simulated',
+    wallet: wallets[1],
+    gameId: 'lester-blaster',
+    sessionId: sessions[1].sessionId,
+    primaryTxHash: '0x' + '5'.repeat(64),
+    settledAt: '2026-07-03T12:00:00.000Z',
+    receipts: [],
+    integrity: { verdict: 'suspicious', flags: [{ code: 'score-implausible', severity: 'suspect', detail: 'unit test' }] },
+  });
+
+  const first = buildLeaderboardExperienceV2Model(state, {
+    gameId: 'lester-blaster',
+    cadence: 'all-time',
+    wallet: wallets[0],
+    displayNameFor: (wallet) => resolveDisplayName(state.profiles[wallet], wallet),
+  });
+  assert.equal(first.cache.status, 'rebuilt');
+  assert.match(first.cache.key, /lester-blaster:all-time:all-time/);
+  assert.equal(first.trustSummary.totalRankedRuns, 3);
+  assert.equal(first.trustSummary.settledRuns, 1);
+  assert.equal(first.trustSummary.flaggedRuns, 1);
+  assert.equal(first.rows[0].score, 4400);
+  assert.equal(first.rows[0].trust.verdict, 'suspicious');
+  assert.equal(first.rows[0].trust.label, 'Needs review');
+  assert.equal(first.rows[0].sessionDetail.urlSessionId, 'game-session-000000571');
+  assert.equal(first.rows[0].sessionDetail.detailHref, '/play/hard-money-heroes/game-session-000000571');
+  assert.equal(first.rows[0].sessionDetail.runStats.kills, 33);
+  assert.equal(state.leaderboardIndexes.bySessionId[sessions[1].sessionId].rank, 1);
+  assert.equal(state.leaderboardIndexes.byUrlSessionId['game-session-000000571'].score, 4400);
+
+  const second = buildLeaderboardExperienceV2Model(state, {
+    gameId: 'lester-blaster',
+    cadence: 'all-time',
+    wallet: wallets[0],
+    displayNameFor: (wallet) => resolveDisplayName(state.profiles[wallet], wallet),
+  });
+  assert.equal(second.cache.status, 'hit');
+  assert.deepEqual(second.rows.map((row) => row.sessionId), first.rows.map((row) => row.sessionId));
 });
 
 test('child game sync packet describes the exact parent Lester Arcade write sets for Hard Money Heroes paid runs', () => {

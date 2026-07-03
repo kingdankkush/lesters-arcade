@@ -127,6 +127,7 @@ import {
   buildGameOverSummaryModel,
   buildHardMoneyHeroesAnimationCoverageReport,
   buildLeaderboardModel,
+  buildLeaderboardExperienceV2Model,
   buildLesterBlasterControlDisplayModel,
   buildCombatHudOverlayModel,
   buildCombatAccessibilitySettingsModel,
@@ -4076,7 +4077,9 @@ function renderOfficialLeaderboards() {
     leaderboardGameId = leaderboardGameFilters[0]?.gameId ?? 'lester-blaster';
   }
 
-  const active = getLeaderboard(state, leaderboardGameId, officialLeaderboardCadence, {
+  const active = buildLeaderboardExperienceV2Model(state, {
+    gameId: leaderboardGameId,
+    cadence: officialLeaderboardCadence,
     wallet: connectedWallet,
     displayNameFor,
     limit: 50,
@@ -4148,10 +4151,11 @@ function renderOfficialLeaderboards() {
   appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${active.total} ranked runs`, 'cabinet-status-label');
   const headerStats = el('div', { className: 'leaderboard-header-stats' });
   const topScore = active.topEntries[0]?.score ?? 0;
-  const settledCount = active.topEntries.filter((entry) => entry.settlementTxHash).length;
   for (const [label, value] of [
     ['Top Score', topScore.toLocaleString()],
-    ['Settled', `${settledCount}/${active.topEntries.length}`],
+    ['Settled', `${active.trustSummary.settledRuns}/${active.trustSummary.totalRankedRuns}`],
+    ['Review', `${active.trustSummary.flaggedRuns} flagged`],
+    ['Cache', active.cache.status.toUpperCase()],
     ['You', connectedWallet && active.playerRank ? `#${active.playerRank}` : 'Unranked'],
   ]) {
     const stat = el('div', { className: 'leaderboard-header-stat' });
@@ -4252,6 +4256,8 @@ function renderOfficialLeaderboards() {
     ['level', 'LVL', 'level'],
     ['combo', 'COMBO', 'combo'],
     ['powerups', 'PWR', 'powerups'],
+    ['trust', 'TRUST', 'trust'],
+    ['detail', 'RUN', 'date'],
     ['date', 'POSTED', 'date'],
   ];
   for (const [key, label, sortKey] of cols) {
@@ -4299,6 +4305,18 @@ function renderOfficialLeaderboards() {
     appendText(row, 'span', `L${entry.runStats?.level ?? 1}`, 'lt-level');
     appendText(row, 'span', `×${entry.runStats?.maxCombo ?? 0}`, 'lt-combo');
     appendText(row, 'span', String(entry.runStats?.collectedPowerUps?.length ?? entry.runStats?.powerUpsCollected ?? 0), 'lt-powerups');
+    const trustBadge = el('span', { className: `lt-trust lt-trust-${entry.trust?.tone ?? 'muted'}` });
+    trustBadge.textContent = entry.trust?.label ?? 'Prototype';
+    if (entry.trust?.flags?.length) {
+      trustBadge.title = entry.trust.flags.map((flag) => `${flag.code ?? 'flag'}: ${flag.detail ?? flag.severity ?? ''}`).join(' | ');
+    }
+    row.append(trustBadge);
+    if (entry.sessionDetail?.detailHref) {
+      const detailLink = el('a', { className: 'lt-session-detail', href: entry.sessionDetail.detailHref, textContent: entry.sessionDetail.urlSessionId ?? 'Open run' });
+      row.append(detailLink);
+    } else {
+      appendText(row, 'span', '—', 'lt-session-detail');
+    }
     appendText(row, 'span', fmtDate(entry.recordedAt), 'lt-date');
     table.append(row);
   }
