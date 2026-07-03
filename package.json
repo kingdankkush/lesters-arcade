@@ -67,6 +67,7 @@
     "assets:hmh:vfx-ui-chrome": "python scripts/generate-hmh-vfx-ui-chrome.py",
     "repo:audit": "node scripts/repo-cleanup-audit.mjs",
     "repo:health": "node scripts/repo-health.mjs",
+    "repo:cdn-gate": "node scripts/repo-cdn-cleanup-gate.mjs",
     "vault:status": "node scripts/vault-sync.mjs status"
   },
   "keywords": [
