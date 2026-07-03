@@ -6,11 +6,10 @@ import { fileURLToPath } from 'node:url';
 import {
   buildLevelOneCuratedVisibleSceneObjects,
   buildLevelOneOpeningComposition,
-  LEVEL_ONE_WORLD_DRESSING_CHUNKS,
+  LEVEL_ONE_AUTHORED_PREFAB_STAMPS,
   levelOneCuratedRuntimeArtPolicy,
   levelOneCuratedAssetSrc,
   levelOneOpeningGroundRoleForTile,
-  levelOneWorldDressingChunkForCell,
 } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 import { curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
 import { HMH_LEVEL_ONE_SPAWN_GATE_REDRESS } from '../apps/portal/src/hmh-level-one-curated-world-contract.mjs';
@@ -54,21 +53,19 @@ test('Level 1 opening composition declares AAA-readable route, boundary, landmar
   assert.equal(composition.objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'all opening objects use approved curated art');
 });
 
-test('Level 1 far-field world dressing keeps traversal authored instead of blank ground tiles', () => {
-  assert.equal(LEVEL_ONE_WORLD_DRESSING_CHUNKS.length >= 8, true, 'world dressing needs enough chunk grammar to cover town, farm, forest, water, desert, and boss-yard reads');
+test('WO-63 Level 1 far-field dressing uses explicit authored prefab stamps and exact asset keys', () => {
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.length >= 8, true, 'world dressing needs named prefab stamps for town, farm, forest, water, desert, and boss-yard reads');
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.authoredPrefabStamp === true), true);
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.anchor && Number.isFinite(stamp.anchor.x) && Number.isFinite(stamp.anchor.y)), true);
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.assetKeys.length === stamp.objects.length), true, 'stamps should expose the exact runtime asset keys they place');
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.assetKeys.every((assetKey) => curatedLevelKitAssetByKey(assetKey))), true, 'all stamp asset keys must resolve to approved curated art');
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.some((stamp) => stamp.routeBeat === 'boss' && stamp.id.includes('innercity-gate')), true, 'boss-yard gate prefab must be an authored exact-key stamp');
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.some((stamp) => stamp.routeBeat === 'chokepoint' && stamp.assetKeys.includes('level-1/water/water-02')), true, 'shoreline ford prefab must place exact water/bridge keys');
 
-  const chunk = levelOneWorldDressingChunkForCell({ cellX: 12, cellY: 3 });
-  assert.ok(chunk, 'far-field cells should resolve to an authored chunk');
-  assert.equal(Array.isArray(chunk.objects), true);
-  assert.equal(chunk.objects.length >= 5, true, 'each chunk should place multiple readable objects, not one token prop');
-  assert.equal(chunk.objects.some((object) => object.use === 'landmark'), true, 'chunks need at least one landmark/read anchor');
-  assert.equal(chunk.objects.some((object) => object.use === 'boundary'), true, 'chunks need diegetic boundary objects to avoid empty infinite floor');
-  assert.equal(chunk.objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'far-field chunks must use approved curated art');
-
-  const farObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 160, playerY: 42, window: 18 });
-  assert.equal(farObjects.length >= 22, true, `expected dense authored far-field objects around traversal, got ${farObjects.length}`);
-  assert.equal(farObjects.some((object) => object.sourceZoneId?.startsWith('world-dressing-')), true, 'far-field visible objects should be tagged as world dressing');
-  assert.equal(farObjects.some((object) => object.sceneRole === 'landmark'), true, 'far-field traversal needs landmark silhouettes');
+  const farObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 94, playerY: 6, window: 18 });
+  assert.equal(farObjects.length >= 18, true, `expected dense authored far-field objects around traversal, got ${farObjects.length}`);
+  assert.equal(farObjects.some((object) => object.authoredPrefabStamp === true && object.prefabStampId === 'innercity-gate-barricade'), true, 'visible objects should come from the authored boss-yard prefab stamp');
+  assert.equal(farObjects.some((object) => object.routeBeat === 'boss' && object.sceneRole === 'landmark'), true, 'far-field traversal needs exact-key landmark silhouettes');
   assert.equal(farObjects.some((object) => object.sceneRole === 'wall' || object.sceneRole === 'tree'), true, 'far-field traversal needs visible boundaries');
   assert.equal(farObjects.every((object) => object.use !== 'terrain'), true, 'far-field terrain must not be drawn as obstacle props');
   assert.equal(farObjects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'all far-field objects should resolve to curated art');
@@ -94,6 +91,8 @@ test('Level 1 art policy disables old enemy-wave/combatArt fallbacks and generic
   assert.equal(policy.enemyFallbacksAllowed, false);
   assert.deepEqual(policy.disallowedEnemyFallbacks, ['HMH_ENEMIES_WAVE', 'combatArt.enemies', 'rectangle-fallback']);
   assert.equal(policy.sceneObjectsNearAllowed, false);
+  assert.equal(policy.randomWorldDressingAllowed, false);
+  assert.equal(policy.worldDressingPlacement, 'authored-prefab-stamps-exact-asset-keys');
   assert.equal(policy.requiredWorldSource, 'hmh-level-one-curated-world-contract');
 });
 
@@ -107,6 +106,11 @@ test('main runtime consumes the curated visible runtime before generic sceneObje
   assert.equal(currentObstacles.includes('buildLevelOneCuratedVisibleSceneObjects'), true, 'currentObstacles should inject curated visible Level 1 art');
   assert.equal(currentObstacles.includes('if (isLevelOneCuratedRuntime())'), true, 'Level 1 should have an explicit curated-runtime branch');
   assert.equal(currentObstacles.indexOf('buildLevelOneCuratedVisibleSceneObjects') < currentObstacles.indexOf('sceneObjectsNear('), true, 'curated authored objects must be chosen before procedural scatter');
+
+  const visibleRuntimeSource = readFileSync(repoPath('apps/portal/src/hmh-level-one-visible-runtime.mjs'), 'utf8');
+  assert.equal(visibleRuntimeSource.includes('LEVEL_ONE_AUTHORED_PREFAB_STAMPS'), true, 'Level 1 visible runtime should expose exact-key authored prefab stamps');
+  assert.equal(visibleRuntimeSource.includes('levelOneWorldDressingChunkForCell'), false, 'WO-63 removes old hash-by-cell dressing selection');
+  assert.equal(visibleRuntimeSource.includes('chunkHash('), false, 'WO-63 disables random-looking hashed chunk placement');
 
   const enemyDraw = source.slice(source.indexOf('function drawSingleEnemy'), source.indexOf('function bossArtFor'));
   assert.equal(enemyDraw.includes('const waveFrame = isLevelOneCuratedRuntime() ? null :'), true, 'Level 1 should not use old HMH_ENEMIES_WAVE fallback art');

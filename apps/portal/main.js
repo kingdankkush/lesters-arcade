@@ -9987,6 +9987,10 @@ function currentObstacles() {
     text: o.text ?? null,
     curated: true,
     sourceZoneId: o.sourceZoneId ?? null,
+    authoredPrefabStamp: o.authoredPrefabStamp === true,
+    prefabStampId: o.prefabStampId ?? null,
+    routeBeat: o.routeBeat ?? null,
+    exactAssetKey: o.exactAssetKey ?? o.assetKey,
   }));
   const encounterSceneObjects = combat.activePoiEncounterVisualPlan
     ? buildEncounterSceneObjects({

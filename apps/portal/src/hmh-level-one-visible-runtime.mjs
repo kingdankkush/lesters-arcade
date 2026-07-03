@@ -106,12 +106,16 @@ const OPENING_COMPOSITION = Object.freeze({
   objects: Object.freeze([...OPENING_LANDMARKS, ...OPENING_BOUNDARIES, ...OPENING_SET_DRESSING]),
 });
 
-function chunkSpec(id, districtId, objects, data = {}) {
+function prefabStamp(id, districtId, objects, data = {}) {
   return Object.freeze({
     id,
     districtId,
+    authoredPrefabStamp: true,
     label: data.label ?? id,
-    routeRead: data.routeRead ?? 'authored traversal chunk',
+    routeBeat: data.routeBeat ?? 'route',
+    routeRead: data.routeRead ?? 'authored traversal stamp',
+    anchor: Object.freeze({ x: data.anchor?.x ?? 0, y: data.anchor?.y ?? 5 }),
+    assetKeys: Object.freeze(objects.map((object) => object.assetKey)),
     objects: Object.freeze(objects.map((object, index) => Object.freeze({
       id: object.id ?? `${id}-${index}`,
       assetKey: object.assetKey,
@@ -124,64 +128,64 @@ function chunkSpec(id, districtId, objects, data = {}) {
   });
 }
 
-export const LEVEL_ONE_WORLD_DRESSING_CHUNKS = Object.freeze([
-  chunkSpec('desert-road-salvage-wall', 'desert-approach', [
+export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
+  prefabStamp('desert-road-salvage-wall', 'desert-approach', [
     { assetKey: 'level-1/prop/desert-09', use: 'boundary', dx: -5, dy: -3, solid: true },
     { assetKey: 'level-1/prop/desert-10', use: 'boundary', dx: 3, dy: -3, solid: true },
     { assetKey: 'level-1/prop/dragon-bones-body-ground-shadow', use: 'landmark', dx: -3, dy: 3, solid: false },
     { assetKey: 'level-1/prop/oval-rock4-ground-shadow', use: 'boundary', dx: 5, dy: 2, solid: true },
     { assetKey: 'level-1/prop/bus-stop-sign', use: 'dressing', dx: 0, dy: -1, solid: false },
-  ], { label: 'Broken road salvage wall', routeRead: 'desert road edges and salvage silhouettes break up empty sand' }),
-  chunkSpec('ghost-town-frontage-pocket', 'ghost-town', [
+  ], { label: 'Broken road salvage wall', routeBeat: 'spawn', anchor: { x: 18, y: 5 }, routeRead: 'desert road edges and salvage silhouettes break up empty sand' }),
+  prefabStamp('ghost-town-frontage-pocket', 'ghost-town', [
     { assetKey: 'level-1/building/ghost-boarded-storefront', use: 'landmark', dx: -5, dy: -4, solid: true },
     { assetKey: 'level-1/building/ghost-saloon-front', use: 'landmark', dx: 3, dy: -4, solid: true },
     { assetKey: 'level-1/prop/street-lamp', use: 'dressing', dx: -1, dy: -1, solid: false },
     { assetKey: 'level-1/building/wooden-crate', use: 'dressing', dx: 5, dy: 2, solid: false },
     { assetKey: 'level-1/prop/town-01', use: 'boundary', dx: -4, dy: 3, solid: true },
     { assetKey: 'level-1/prop/trash-can', use: 'dressing', dx: 2, dy: 3, solid: false },
-  ], { label: 'Ghost town street frontage', routeRead: 'false-front silhouettes and curb dressing make the street read authored' }),
-  chunkSpec('forest-mushroom-ring', 'dead-forest-loop', [
+  ], { label: 'Ghost town street frontage', routeBeat: 'arena', anchor: { x: 42, y: 6 }, routeRead: 'false-front silhouettes and curb dressing make the street read authored' }),
+  prefabStamp('forest-mushroom-ring', 'dead-forest-loop', [
     { assetKey: 'level-1/flora/broken-tree3', use: 'boundary', dx: -4, dy: -3, solid: true },
     { assetKey: 'level-1/flora/burned-tree2', use: 'boundary', dx: 5, dy: -2, solid: true },
     { assetKey: 'level-1/prop/orange-mushrooms1-ground-shadow', use: 'landmark', dx: 0, dy: 0, solid: false },
     { assetKey: 'level-1/prop/black-mushrooms2-ground-shadow', use: 'dressing', dx: -3, dy: 3, solid: false },
     { assetKey: 'level-1/prop/oval-rock2-ground-shadow', use: 'boundary', dx: 4, dy: 3, solid: true },
-  ], { label: 'Dead forest mushroom ring', routeRead: 'tree walls and mushroom color accents define forest loops' }),
-  chunkSpec('shoreline-ford-bank', 'country-road', [
+  ], { label: 'Dead forest mushroom ring', routeBeat: 'loop', anchor: { x: 54, y: 12 }, routeRead: 'tree walls and mushroom color accents define forest loops' }),
+  prefabStamp('shoreline-ford-bank', 'country-road', [
     { assetKey: 'level-1/water/water-02', use: 'water', dx: -4, dy: 0, solid: false },
     { assetKey: 'level-1/water/water-03', use: 'water', dx: 0, dy: 0, solid: false },
     { assetKey: 'level-1/prop/water-ruins2', use: 'landmark', dx: 4, dy: -2, solid: true },
     { assetKey: 'level-1/prop/oval-rock5-ground-shadow', use: 'boundary', dx: -5, dy: 3, solid: true },
     { assetKey: 'level-1/prop/caury-white1-ground-shadow', use: 'dressing', dx: 2, dy: 3, solid: false },
-  ], { label: 'Shoreline ford bank', routeRead: 'waterline, rocks, and small shore reads make bridge/ford traversal legible' }),
-  chunkSpec('farmstead-fence-pocket', 'residential-edge', [
+  ], { label: 'Shoreline ford bank', routeBeat: 'chokepoint', anchor: { x: 64, y: 7 }, routeRead: 'waterline, rocks, and small shore reads make bridge/ford traversal legible' }),
+  prefabStamp('farmstead-fence-pocket', 'residential-edge', [
     { assetKey: 'level-1/building/town-10', use: 'landmark', dx: -4, dy: -3, solid: true },
     { assetKey: 'level-1/prop/park-bench', use: 'dressing', dx: 3, dy: -1, solid: false },
     { assetKey: 'level-1/flora/oak-tree', use: 'boundary', dx: 5, dy: 2, solid: true },
     { assetKey: 'level-1/prop/mailbox', use: 'dressing', dx: -2, dy: 3, solid: false },
     { assetKey: 'level-1/prop/oval-rock1-grass-shadow', use: 'boundary', dx: -5, dy: 2, solid: true },
-  ], { label: 'Farmstead fence pocket', routeRead: 'farm edge reads as a lived-in loop rather than blank grass' }),
-  chunkSpec('innercity-gate-barricade', 'inner-city-threshold', [
+  ], { label: 'Farmstead fence pocket', routeBeat: 'pressure', anchor: { x: 82, y: 6 }, routeRead: 'farm edge reads as a lived-in loop rather than blank grass' }),
+  prefabStamp('innercity-gate-barricade', 'inner-city-threshold', [
     { assetKey: 'level-1/building/industrial-warehouse-facade', use: 'landmark', dx: -5, dy: -4, solid: true },
     { assetKey: 'level-1/building/innercity-billboard-frame', use: 'landmark', dx: 4, dy: -4, solid: true },
     { assetKey: 'level-1/prop/blue-gray-ruins1', use: 'boundary', dx: -4, dy: 3, solid: true },
     { assetKey: 'level-1/prop/brown-ruins2', use: 'boundary', dx: 4, dy: 3, solid: true },
     { assetKey: 'level-1/prop/traffic-cone', use: 'dressing', dx: 0, dy: 1, solid: false },
-  ], { label: 'Inner-city gate barricade', routeRead: 'industrial silhouettes and ruins frame the boss-yard approach' }),
-  chunkSpec('ruined-camp-bone-yard', 'desert-bone-camp', [
+  ], { label: 'Inner-city gate barricade', routeBeat: 'boss', anchor: { x: 94, y: 6 }, routeRead: 'industrial silhouettes and ruins frame the boss-yard approach' }),
+  prefabStamp('ruined-camp-bone-yard', 'desert-bone-camp', [
     { assetKey: 'level-1/prop/dragon-bones-full-ground-shadow', use: 'landmark', dx: -2, dy: -2, solid: false },
     { assetKey: 'level-1/prop/sand-ruins3', use: 'boundary', dx: 5, dy: -2, solid: true },
     { assetKey: 'level-1/prop/brown-gray-ruins4', use: 'boundary', dx: -5, dy: 3, solid: true },
     { assetKey: 'level-1/prop/desert-14', use: 'dressing', dx: 2, dy: 3, solid: false },
     { assetKey: 'level-1/prop/rocky-05', use: 'boundary', dx: 0, dy: 5, solid: true },
-  ], { label: 'Ruined camp bone yard', routeRead: 'bone and ruin setpieces create desert arena edges' }),
-  chunkSpec('roadside-arcade-cache', 'desert-approach', [
+  ], { label: 'Ruined camp bone yard', routeBeat: 'pressure', anchor: { x: 28, y: -8 }, routeRead: 'bone and ruin setpieces create desert arena edges' }),
+  prefabStamp('roadside-arcade-cache', 'desert-approach', [
     { assetKey: 'level-1/building/arcade-cabinet', use: 'landmark', dx: -3, dy: -1, solid: false },
     { assetKey: 'level-1/building/soda-machine', use: 'dressing', dx: 3, dy: -1, solid: false },
     { assetKey: 'level-1/building/wooden-crate', use: 'dressing', dx: 5, dy: 2, solid: false },
     { assetKey: 'level-1/prop/road-03', use: 'dressing', dx: -5, dy: 2, solid: false },
     { assetKey: 'level-1/prop/desert-08', use: 'boundary', dx: 0, dy: 4, solid: true },
-  ], { label: 'Roadside arcade cache', routeRead: 'coin-slot fantasy and roadside props create a reward pocket' }),
+  ], { label: 'Roadside arcade cache', routeBeat: 'spawn', anchor: { x: 10, y: 8 }, routeRead: 'coin-slot fantasy and roadside props create a reward pocket' }),
 ]);
 
 const ZONE_OFFSETS = Object.freeze([
@@ -196,6 +200,8 @@ export function levelOneCuratedRuntimeArtPolicy() {
     requiredWorldSource: 'hmh-level-one-curated-world-contract',
     curatedManifestId: HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT.assetSource.manifestId,
     sceneObjectsNearAllowed: false,
+    randomWorldDressingAllowed: false,
+    worldDressingPlacement: 'authored-prefab-stamps-exact-asset-keys',
     enemyFallbacksAllowed: false,
     disallowedEnemyFallbacks: Object.freeze(['HMH_ENEMIES_WAVE', 'combatArt.enemies', 'rectangle-fallback']),
   });
@@ -235,7 +241,7 @@ function anchorForZone(zone) {
   });
 }
 
-function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, index = 0, solid = undefined }) {
+function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, index = 0, solid = undefined, metadata = {} }) {
   // Terrain sheets belong to the ground-tile renderer, not the obstacle/prop
   // renderer. Drawing them as props is what made the corrected runtime look like
   // repeated grey block clutter instead of a clean authored route.
@@ -261,6 +267,7 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
     text: notes,
     sourceZoneId: zoneId,
     propIndex: index,
+    ...metadata,
   });
 }
 
@@ -302,55 +309,39 @@ function contractZoneObjects() {
   return objects;
 }
 
-function chunkHash(cellX, cellY) {
-  let h = Math.imul(cellX | 0, 374761393) ^ Math.imul(cellY | 0, 668265263) ^ 0x9e3779b9;
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  h ^= h >>> 16;
-  return h >>> 0;
-}
-
-export function levelOneWorldDressingChunkForCell({ cellX = 0, cellY = 0 } = {}) {
-  if (!LEVEL_ONE_WORLD_DRESSING_CHUNKS.length) return null;
-  const hash = chunkHash(Math.round(cellX), Math.round(cellY));
-  return LEVEL_ONE_WORLD_DRESSING_CHUNKS[hash % LEVEL_ONE_WORLD_DRESSING_CHUNKS.length] ?? null;
-}
-
 function worldDressingObjects({ playerX = 0, playerY = 5, window = 18 } = {}) {
-  const spacing = 14;
   const pad = 10;
-  const minCellX = Math.floor((playerX - window - pad) / spacing);
-  const maxCellX = Math.ceil((playerX + window + pad) / spacing);
-  const minCellY = Math.floor((playerY - window - pad) / spacing);
-  const maxCellY = Math.ceil((playerY + window + pad) / spacing);
   const objects = [];
-  for (let cellX = minCellX; cellX <= maxCellX; cellX += 1) {
-    for (let cellY = minCellY; cellY <= maxCellY; cellY += 1) {
-      const chunk = levelOneWorldDressingChunkForCell({ cellX, cellY });
-      if (!chunk) continue;
-      const hash = chunkHash(cellX, cellY);
-      const anchorX = cellX * spacing + spacing / 2 + ((hash % 5) - 2);
-      const anchorY = cellY * spacing + spacing / 2 + (((hash >>> 4) % 5) - 2);
-      if (Math.abs(anchorX - playerX) > window + pad || Math.abs(anchorY - playerY) > window + pad) continue;
-      chunk.objects.forEach((spec, index) => {
-        const x = anchorX + spec.dx;
-        const y = anchorY + spec.dy;
-        // Keep a generous fight lane immediately around the player; silhouettes
-        // frame the screen instead of spawning directly underfoot.
-        if (Math.hypot(x - playerX, y - playerY) < 5.5 && spec.solid !== false) return;
-        const object = objectFromAsset({
-          id: `curated-world-${cellX}-${cellY}-${chunk.id}-${index}`,
-          assetKey: spec.assetKey,
-          use: spec.use,
-          x,
-          y,
-          solid: spec.solid,
-          notes: spec.notes,
-          zoneId: `world-dressing-${chunk.id}`,
-          index,
-        });
-        if (object) objects.push(object);
+  for (const stamp of LEVEL_ONE_AUTHORED_PREFAB_STAMPS) {
+    const anchorX = stamp.anchor.x;
+    const anchorY = stamp.anchor.y;
+    if (Math.abs(anchorX - playerX) > window + pad || Math.abs(anchorY - playerY) > window + pad) continue;
+    stamp.objects.forEach((spec, index) => {
+      const x = anchorX + spec.dx;
+      const y = anchorY + spec.dy;
+      // Keep a generous fight lane immediately around the player; silhouettes
+      // frame the screen instead of spawning directly underfoot.
+      if (Math.hypot(x - playerX, y - playerY) < 5.5 && spec.solid !== false) return;
+      const object = objectFromAsset({
+        id: `curated-prefab-${stamp.id}-${index}`,
+        assetKey: spec.assetKey,
+        use: spec.use,
+        x,
+        y,
+        solid: spec.solid,
+        notes: spec.notes,
+        zoneId: `authored-prefab-${stamp.id}`,
+        index,
+        metadata: {
+          authoredPrefabStamp: true,
+          prefabStampId: stamp.id,
+          districtId: stamp.districtId,
+          routeBeat: stamp.routeBeat,
+          exactAssetKey: spec.assetKey,
+        },
       });
-    }
+      if (object) objects.push(object);
+    });
   }
   return objects;
 }
