@@ -8,6 +8,7 @@ import {
   LESTER_BLASTER_POWER_UPS,
 } from '../apps/portal/src/arcade-core.mjs';
 import { HMH_FINAL_COMBAT_VFX_PACK } from '../apps/portal/assets/generated/hmh-final-combat-vfx/hmh-final-combat-vfx-manifest.mjs';
+import { HMH_PICKUP_ICON_PACK } from '../apps/portal/assets/generated/hmh-pickup-icons/hmh-pickup-icons-manifest.mjs';
 import { buildGlobalArtCensus } from './global-art-census.mjs';
 
 const ORIGINAL_POLICY = 'Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.';
@@ -74,21 +75,25 @@ function freezeItems(items) {
 }
 
 function pickupQueueItems(powerUps = LESTER_BLASTER_POWER_UPS) {
-  return freezeItems(powerUps.map((powerUp) => ({
-    runtimeId: powerUp.id,
-    title: powerUp.title,
-    category: powerUp.category,
-    rarity: powerUp.rarity ?? 'common',
-    priority: PICKUP_PRIORITY_BY_RARITY[powerUp.rarity ?? 'common'] ?? 'P1',
-    status: 'needs-manifested-pickup-icon-or-confirmed-keep',
-    sourcePolicy: ORIGINAL_POLICY,
-    reason: powerUp.sprite,
-    acceptance: Object.freeze([
-      '64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.',
-      'Color/shape communicates category and rarity without relying only on text.',
-      'Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep.',
-    ]),
-  })));
+  return freezeItems(powerUps.map((powerUp) => {
+    const iconAsset = HMH_PICKUP_ICON_PACK.assetsById?.[powerUp.id] ?? null;
+    return {
+      runtimeId: powerUp.id,
+      title: powerUp.title,
+      category: powerUp.category,
+      rarity: powerUp.rarity ?? 'common',
+      priority: PICKUP_PRIORITY_BY_RARITY[powerUp.rarity ?? 'common'] ?? 'P1',
+      status: iconAsset ? 'manifest-backed-runtime-icon' : 'needs-manifested-pickup-icon-or-confirmed-keep',
+      sourcePolicy: iconAsset?.sourcePolicy ?? ORIGINAL_POLICY,
+      iconSrc: iconAsset?.src ?? null,
+      reason: powerUp.sprite,
+      acceptance: Object.freeze([
+        '64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.',
+        'Color/shape communicates category and rarity without relying only on text.',
+        'Manifest entry is referenced by runtime pickup drawing or explicitly marked defer/keep.',
+      ]),
+    };
+  }));
 }
 
 function achievementQueueItems(achievements = ACHIEVEMENT_LIST) {
@@ -190,7 +195,7 @@ export function buildArtRedoQueue({ repoRoot = repoRootFromHere() } = {}) {
       id: 'pickups',
       title: 'Pickups',
       summary: categorySummary(pickups),
-      coverage: Object.freeze({ runtimePowerUpCount: LESTER_BLASTER_POWER_UPS.length }),
+      coverage: Object.freeze({ runtimePowerUpCount: LESTER_BLASTER_POWER_UPS.length, manifestId: HMH_PICKUP_ICON_PACK.id, manifestAssetCount: HMH_PICKUP_ICON_PACK.assetCount }),
       items: pickups,
     },
     {

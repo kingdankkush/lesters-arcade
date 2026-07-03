@@ -11,7 +11,7 @@
     "totalItemCount": 55,
     "p0Count": 19,
     "p1Count": 36,
-    "needsManifestCount": 43
+    "needsManifestCount": 38
   },
   "categories": [
     {
@@ -21,10 +21,12 @@
         "itemCount": 15,
         "p0Count": 5,
         "p1Count": 10,
-        "missingCount": 15
+        "missingCount": 10
       },
       "coverage": {
-        "runtimePowerUpCount": 15
+        "runtimePowerUpCount": 15,
+        "manifestId": "hmh-pickup-icons-p0-v1",
+        "manifestAssetCount": 5
       },
       "items": [
         {
@@ -35,6 +37,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "glowing blue hardware-wallet medkit with white Ł heartbeat glow",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -50,6 +53,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "matte-black bomb cache stamped with small blue Ł",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -63,8 +67,9 @@
           "category": "life",
           "rarity": "rare",
           "priority": "P0",
-          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-runtime-icon",
+          "sourcePolicy": "Original repo-owned pickup pixel icon; no downloaded pixels copied.",
+          "iconSrc": "./assets/generated/hmh-pickup-icons/bonus-life.png",
           "reason": "tiny Lester head icon with silver-blue halo",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -80,6 +85,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "orange shotgun shell chip that unlocks a short-range pellet cone",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -95,6 +101,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "cyan machine-gun drum magazine with rapid-fire tracer sparks",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -110,6 +117,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "cyan fan chip",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -123,8 +131,9 @@
           "category": "weapon",
           "rarity": "rare",
           "priority": "P0",
-          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-runtime-icon",
+          "sourcePolicy": "Original repo-owned pickup pixel icon; no downloaded pixels copied.",
+          "iconSrc": "./assets/generated/hmh-pickup-icons/hash-rail-core.png",
           "reason": "glowing white/cyan core",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -140,6 +149,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "gold x2 token with subtle blue rim",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -155,6 +165,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "hovering blue-and-silver hex barrier device",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -170,6 +181,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "silver magazine crate with orange hazard stripe",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -185,6 +197,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "sparkling silver coin pile used as pickup accent, not wallpaper",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -200,6 +213,7 @@
           "priority": "P1",
           "status": "needs-manifested-pickup-icon-or-confirmed-keep",
           "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "iconSrc": null,
           "reason": "glowing horseshoe magnet with blue pull rings",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -213,8 +227,9 @@
           "category": "utility",
           "rarity": "rare",
           "priority": "P0",
-          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-runtime-icon",
+          "sourcePolicy": "Original repo-owned pickup pixel icon; no downloaded pixels copied.",
+          "iconSrc": "./assets/generated/hmh-pickup-icons/time-dilation.png",
           "reason": "blue hourglass with slow-motion swirl",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -228,8 +243,9 @@
           "category": "offense",
           "rarity": "rare",
           "priority": "P0",
-          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-runtime-icon",
+          "sourcePolicy": "Original repo-owned pickup pixel icon; no downloaded pixels copied.",
+          "iconSrc": "./assets/generated/hmh-pickup-icons/berserk-candle.png",
           "reason": "red-and-green flaming candlestick",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",
@@ -243,8 +259,9 @@
           "category": "offense",
           "rarity": "super-rare",
           "priority": "P0",
-          "status": "needs-manifested-pickup-icon-or-confirmed-keep",
-          "sourcePolicy": "Original repo-owned pixel art only; no downloaded pixels copied; manifest-backed before runtime use.",
+          "status": "manifest-backed-runtime-icon",
+          "sourcePolicy": "Original repo-owned pickup pixel icon; no downloaded pixels copied.",
+          "iconSrc": "./assets/generated/hmh-pickup-icons/nuke-liquidation.png",
           "reason": "red glowing screen-clear nuke",
           "acceptance": [
             "64x64 or 48x48 transparent pixel icon/spritesheet with readable silhouette at 1x scale.",

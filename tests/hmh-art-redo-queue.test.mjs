@@ -32,6 +32,11 @@ test('WO-20 pickup queue includes every runtime power-up with rarity and action'
     assert.equal(pickupIds.has(powerUp.id), true, `${powerUp.id} is queued`);
   }
   assert.ok(pickupCategory.items.some((item) => item.rarity === 'super-rare'));
+  assert.equal(pickupCategory.coverage.manifestId, 'hmh-pickup-icons-p0-v1');
+  const p0Pickups = pickupCategory.items.filter((item) => item.priority === 'P0');
+  assert.equal(p0Pickups.length, 5);
+  assert.equal(p0Pickups.every((item) => item.status === 'manifest-backed-runtime-icon'), true, 'P0 pickup icons should now be manifest-backed');
+  assert.equal(p0Pickups.every((item) => item.iconSrc?.includes('hmh-pickup-icons')), true);
 });
 
 test('WO-20 achievement and VFX queues are tied to runtime definitions and final VFX manifest', () => {

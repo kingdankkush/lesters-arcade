@@ -11821,6 +11821,17 @@ function drawBullets(ctx) {
   ctx.restore();
 }
 
+// Prefer repo-owned Art Redo Queue P0 pickup icons first. The older
+// hmh-fx-powerups-wave remains as a broad fallback for non-P0 pickups and VFX.
+const p0PickupIconCache = new Map();
+function p0PickupIcon(powerId) {
+  if (!powerId) return null;
+  const src = hmh('HMH_PICKUP_ICON_PACK')?.assetsById?.[powerId]?.src;
+  if (!src) return null;
+  if (!p0PickupIconCache.has(src)) p0PickupIconCache.set(src, loadImageAsset(src));
+  return p0PickupIconCache.get(src);
+}
+
 // Maps power-up ids to the PixelLab fx-powerups-wave pickup icons. Falls back to
 // the older production pickup art (and finally the vector capsule) when missing.
 const fxPowerupIconCache = new Map();
@@ -11851,6 +11862,8 @@ function fxPowerupIcon(slug) {
 }
 
 function powerUpIconFor(power) {
+  const p0Icon = p0PickupIcon(power.id);
+  if (imageReady(p0Icon)) return p0Icon;
   // Prefer the dedicated PixelLab pickup icon for this specific power-up id.
   const fxSlug = FX_POWERUP_ICON_BY_ID[power.id] ?? null;
   const fxIcon = fxPowerupIcon(fxSlug);
