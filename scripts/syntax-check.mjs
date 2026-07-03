@@ -70,6 +70,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-ground-plan.test.mjs",
   "tests/hmh-terrain-blob-map.test.mjs",
   "tests/hmh-ground-rendering.test.mjs",
+  "tests/hmh-coordinate-spaces.test.mjs",
   "tests/hmh-prop-grounding.test.mjs",
   "tests/hmh-level-one-polish-tour.test.mjs",
   "tests/hmh-world-scale.test.mjs",
