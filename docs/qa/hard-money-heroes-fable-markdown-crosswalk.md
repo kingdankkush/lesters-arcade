@@ -32,7 +32,7 @@ This report captures the ignored/local Fable markdown task files in a tracked re
 
 | Area | Priority | Status | What remains |
 |---|---:|---|---|
-| Wave 2 / EPIC 1: endless survival economy and difficulty loop | P0 | in-progress: xp-80-level-slice-shipped | XP curve now targets Fable 60-80 level bands, exports an 80-level cap, validates 80-level draft depth, and converts post-cap XP into score. Remaining Wave 2 work is deeper game-feel physics, long-run balance telemetry, and full replay-verifier hardening. |
+| Wave 2 / EPIC 1: endless survival economy and difficulty loop | P0 | local-implementable-slices-shipped | XP curve targets Fable 60-80 level bands, 80-level draft depth is protected, post-cap XP converts into score, long-run telemetry reports cap/post-cap pressure, pure game-feel physics contracts are covered, and integrity now rejects over-cap levels plus impossible post-cap score claims. Remaining work is live playtest tuning and future backend replay re-simulation infrastructure. |
 | Wave 3 / EPIC 2-3: sprite QA, hero/enemy matrices, metadata, telegraph decals | P0 | remaining-major-work | Requires PixelLab/contact-sheet production and Justin sign-off before new animation batches; current repo has coverage reports and QA tooling, not the full generated matrix. |
 | EPIC 4-5: terrain autotiling, authored world chunks, water/bridges, elevation | P0 | remaining-major-work | Requires new terrain/elevation systems plus art integration; cannot be honestly completed as a small audit fix. |
 | EPIC 6: lighting, shadows, VFX, retro presentation | P0/P1 | remaining-major-work | Requires rendering/performance work after core loop and art matrices are locked. |

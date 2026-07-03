@@ -3,6 +3,7 @@ import {
   levelOneRoguelikeSpawnDirectorAt,
   roguelikeXpCostForLevel,
   ROGUELIKE_LEVEL_CAP,
+  POST_CAP_XP_TO_SCORE,
 } from './arcade-core.mjs';
 
 const DEFAULT_STANDARD_KILL_SCORE = 140;
@@ -112,5 +113,66 @@ export function simulateHmhRunEconomy({
     tickSeconds: dt,
     timeline: Object.freeze(timeline),
     summary,
+  });
+}
+
+function cumulativeXpForLevel(targetLevel = ROGUELIKE_LEVEL_CAP) {
+  let total = 0;
+  for (let level = 1; level < Math.max(1, targetLevel); level += 1) total += roguelikeXpCostForLevel(level);
+  return total;
+}
+
+function pointForMinute(sim, minute) {
+  return sim.timeline.find((point) => point.minute === minute) ?? sim.timeline.at(-1);
+}
+
+function capTimingFor(sim) {
+  const hit = sim.timeline.find((point) => point.level >= ROGUELIKE_LEVEL_CAP);
+  return Object.freeze({
+    reached: Boolean(hit),
+    minute: hit?.minute ?? null,
+    cumulativeXp: hit?.cumulativeXp ?? null,
+  });
+}
+
+function postCapFor(sim, capXp) {
+  const postCapXp = Math.max(0, sim.summary.cumulativeXp - capXp);
+  return Object.freeze({
+    xp: Math.round(postCapXp),
+    scoreBonus: Math.round(postCapXp * POST_CAP_XP_TO_SCORE),
+  });
+}
+
+export function summarizeHmhLongRunTelemetry({ minutes = 35, skillFactors = [0.75, 0.9, 1], tickSeconds = 1 } = {}) {
+  const factors = Object.freeze(skillFactors.map((factor) => clampNumber(factor, 0, 1.25)));
+  const labels = ['average', 'strong', 'perfect'];
+  const runs = {};
+  for (let i = 0; i < factors.length; i += 1) runs[labels[i] ?? `skill${i}`] = simulateHmhRunEconomy({ minutes, skillFactor: factors[i], tickSeconds });
+
+  const capXp = cumulativeXpForLevel(ROGUELIKE_LEVEL_CAP);
+  const strong = runs.strong ?? runs[Object.keys(runs)[0]];
+  const perfect = runs.perfect ?? runs[Object.keys(runs).at(-1)];
+  const flags = [];
+  const strong20 = pointForMinute(strong, 20);
+  const strong28 = pointForMinute(strong, 28);
+  if (!(strong20.level >= 58 && strong20.level <= 70)) flags.push(Object.freeze({ code: 'strong-20-out-of-band', detail: `level=${strong20.level}` }));
+  if (!(strong28.level >= 72 && strong28.level <= 80)) flags.push(Object.freeze({ code: 'strong-28-out-of-band', detail: `level=${strong28.level}` }));
+  if (!capTimingFor(perfect).reached) flags.push(Object.freeze({ code: 'perfect-run-no-cap', detail: `${minutes}m telemetry did not reach level cap` }));
+
+  return Object.freeze({
+    version: 'wave2-long-run-telemetry-v1',
+    minutes: Number((Math.max(0, Number(minutes) || 0)).toFixed(2)),
+    skillFactors: factors,
+    levelCap: ROGUELIKE_LEVEL_CAP,
+    capXp,
+    bands: Object.freeze({
+      strong20,
+      strong28,
+      average20: pointForMinute(runs.average ?? strong, 20),
+      perfect35: pointForMinute(perfect, Math.round(minutes)),
+    }),
+    capTiming: Object.freeze(Object.fromEntries(Object.entries(runs).map(([label, sim]) => [label, capTimingFor(sim)]))),
+    postCap: Object.freeze(Object.fromEntries(Object.entries(runs).map(([label, sim]) => [label, postCapFor(sim, capXp)]))),
+    flags: Object.freeze(flags),
   });
 }

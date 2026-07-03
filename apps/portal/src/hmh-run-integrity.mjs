@@ -23,6 +23,9 @@
 import {
   HMH_LEVEL_ONE_PLAYTEST_BALANCE,
   calculateRoguelikeKillXp,
+  ROGUELIKE_LEVEL_CAP,
+  POST_CAP_XP_TO_SCORE,
+  roguelikeXpCostForLevel,
 } from './arcade-core.mjs';
 
 // Tolerance multiplier applied to every derived ceiling. Real runs vary (elite
@@ -53,6 +56,38 @@ const MAX_PASSIVE_SCORE_PER_SECOND = 60;
 function num(v, fallback = 0) {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
+}
+
+function cumulativeXpForLevel(targetLevel = ROGUELIKE_LEVEL_CAP) {
+  let total = 0;
+  for (let level = 1; level < Math.max(1, targetLevel); level += 1) total += roguelikeXpCostForLevel(level);
+  return total;
+}
+
+function sortedObjectEntries(obj = {}) {
+  return Object.keys(obj ?? {}).sort().map((key) => [key, Math.max(0, Math.floor(num(obj[key], 0)))]);
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function replayDigest64(text) {
+  const input = String(text);
+  const seeds = [0x811c9dc5, 0x45d9f3b, 0x9e3779b9, 0x85ebca6b, 0xc2b2ae35, 0x27d4eb2f, 0x165667b1, 0xd3a2646c];
+  return seeds.map((seed, stream) => {
+    let h = seed >>> 0;
+    for (let i = 0; i < input.length; i += 1) {
+      h ^= input.charCodeAt(i) + stream;
+      h = Math.imul(h, 0x01000193) >>> 0;
+      h = (h ^ (h >>> 13)) >>> 0;
+    }
+    return h.toString(16).padStart(8, '0');
+  }).join('');
 }
 
 // Derive the physically-achievable ceilings for a run of `survivalSeconds`.
@@ -114,6 +149,7 @@ export function validateRunPlausibility({
   maxCombo = 0,
   survivalSeconds = 0,
   totalXp = null,
+  postCapScoreBonus = 0,
   bossDefeated = false,
   level = 1,
 } = {}) {
@@ -137,6 +173,10 @@ export function validateRunPlausibility({
   if (combo > ceilings.maxCombo && combo > k * INTEGRITY_TOLERANCE.combo + 10) {
     flags.push({ code: 'combo-exceeds-kills', severity: 'reject', detail: `combo=${combo} kills=${k}` });
   }
+  // 4. Wave 2 economy caps run level at 80; anything above that cannot be produced by the runtime.
+  if (Math.floor(num(level, 1)) > ROGUELIKE_LEVEL_CAP) {
+    flags.push({ code: 'level-cap-exceeded', severity: 'reject', detail: `level=${level} cap=${ROGUELIKE_LEVEL_CAP}` });
+  }
 
   // Soft implausibilities (suspicious): exceed design ceiling * tolerance.
   if (k > ceilings.maxKills * INTEGRITY_TOLERANCE.kills) {
@@ -153,6 +193,13 @@ export function validateRunPlausibility({
     if (xp > xpCeiling) {
       flags.push({ code: 'xp-exceeds-kills', severity: 'suspect', detail: `xp=${xp} ceiling≈${Math.round(xpCeiling)} for kills=${k}` });
     }
+    const postCapScore = Math.max(0, num(postCapScoreBonus));
+    if (postCapScore > 0) {
+      const maxPostCapScore = Math.max(0, xp - cumulativeXpForLevel(ROGUELIKE_LEVEL_CAP)) * POST_CAP_XP_TO_SCORE;
+      if (postCapScore > maxPostCapScore + 500) {
+        flags.push({ code: 'post-cap-score-without-xp', severity: 'suspect', detail: `postCapScore=${Math.round(postCapScore)} max≈${Math.round(maxPostCapScore)}` });
+      }
+    }
   }
 
   const rejected = flags.some((f) => f.severity === 'reject');
@@ -166,4 +213,32 @@ export function validateRunPlausibility({
     flags: Object.freeze(flags),
     ceilings,
   });
+}
+
+export function buildReplayVerificationEnvelope({
+  seed = 0,
+  gameVersion = 'unknown',
+  survivalSeconds = 0,
+  level = 1,
+  totalXp = 0,
+  postCapScoreBonus = 0,
+  rngDraws = {},
+  inputChecksum = '',
+  eventChecksum = '',
+} = {}) {
+  const normalizedRngDraws = Object.freeze(Object.fromEntries(sortedObjectEntries(rngDraws)));
+  const envelopeWithoutHash = Object.freeze({
+    version: 'wave2-replay-envelope-v1',
+    seed: Math.max(0, Math.floor(num(seed, 0))),
+    gameVersion: String(gameVersion || 'unknown'),
+    survivalSeconds: Math.max(0, Number(num(survivalSeconds, 0).toFixed(3))),
+    level: Math.max(1, Math.min(ROGUELIKE_LEVEL_CAP, Math.floor(num(level, 1)))),
+    totalXp: Math.max(0, Math.round(num(totalXp, 0))),
+    postCapScoreBonus: Math.max(0, Math.round(num(postCapScoreBonus, 0))),
+    rngDraws: normalizedRngDraws,
+    inputChecksum: String(inputChecksum || ''),
+    eventChecksum: String(eventChecksum || ''),
+  });
+  const replayHash = replayDigest64(canonicalJson(envelopeWithoutHash));
+  return Object.freeze({ ...envelopeWithoutHash, replayHash });
 }

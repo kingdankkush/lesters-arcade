@@ -5,6 +5,7 @@ import { performance } from 'node:perf_hooks';
 import {
   simulateHmhRunEconomy,
   levelFromCumulativeXp,
+  summarizeHmhLongRunTelemetry,
 } from '../apps/portal/src/hmh-run-simulator.mjs';
 import {
   ROGUELIKE_LEVEL_CAP,
@@ -55,4 +56,17 @@ test('simulator runs 30 simulated minutes quickly and emits minute timeline poin
   assert.equal(sim.timeline.at(-1).minute, 30);
   assert.ok(Number.isFinite(sim.summary.cumulativeXp));
   assert.ok(elapsedMs < 100, `30 sim-minutes should run in <100ms, took ${elapsedMs.toFixed(2)}ms`);
+});
+
+test('long-run telemetry reports elite-band pacing, cap timing, and post-cap score pressure', () => {
+  const telemetry = summarizeHmhLongRunTelemetry({ minutes: 35, skillFactors: [0.75, 0.9, 1], tickSeconds: 1 });
+
+  assert.equal(telemetry.version, 'wave2-long-run-telemetry-v1');
+  assert.equal(telemetry.levelCap, ROGUELIKE_LEVEL_CAP);
+  assert.deepEqual(telemetry.skillFactors, [0.75, 0.9, 1]);
+  assert.ok(telemetry.bands.strong20.level >= 58 && telemetry.bands.strong20.level <= 70);
+  assert.ok(telemetry.bands.strong28.level >= 72 && telemetry.bands.strong28.level <= 80);
+  assert.ok(telemetry.capTiming.perfect.minute <= 35, 'perfect run should reach cap within telemetry window');
+  assert.ok(telemetry.postCap.perfect.scoreBonus > 0, 'post-cap XP should convert to score for record-chase runs');
+  assert.ok(telemetry.flags.length === 0, `telemetry flags should be empty: ${JSON.stringify(telemetry.flags)}`);
 });

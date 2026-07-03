@@ -13,6 +13,7 @@ import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollLevelOnePowerUpDrop } from './src/hmh-drop-economy.mjs';
 import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow, resolveGrenadeTypeForRun } from './src/hmh-grenade-economy.mjs';
+import { buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-game-feel-tuning.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
@@ -215,6 +216,7 @@ const NORMAL_STAGE_CAP = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.normalEnemie
 const MINI_BOSS_STAGE_CAP = LESTER_BLASTER_TACTICAL_COMBAT_V2.levelOne.miniBossEnemiesOnScreenRange[1];
 const DEFAULT_VIEWPORT_MODE = LESTER_BLASTER_TACTICAL_COMBAT_V2.viewportModes.default;
 const DEFAULT_CAMPAIGN_LEVEL_ID = getInitialHmhCampaignLevelId();
+const WAVE2_GAME_FEEL_PROFILE = buildWave2GameFeelProfile({ hero: 'lester' });
 const DEBUG_BALANCE_QUERY = 'hmhDebug=balance';
 const debugSearchParams = new URLSearchParams(window.location.search);
 let tacticalBalanceDebugEnabled = debugSearchParams.get('hmhDebug') === 'balance';
@@ -7761,15 +7763,28 @@ function updateRoguelikeMovement(dt) {
       })
     : { moveSpeedMul: 1, hazardId: null, label: null };
   const levelOneInteractivePressure = currentLevelOneInteractiveHazardPressure();
-  const speed = 4.15
-    * (combat.roguelikeRun?.stats.movementSpeed ?? 1)
+  const liveMoveSpeedMul = (combat.roguelikeRun?.stats.movementSpeed ?? 1)
     * (encounterTerrainPressure.moveSpeedMul ?? 1)
     * (levelOneInteractivePressure.moveSpeedMul ?? 1);
-  if (mx !== 0 || my !== 0) {
+  const liveGameFeelProfile = {
+    ...WAVE2_GAME_FEEL_PROFILE,
+    movement: {
+      ...WAVE2_GAME_FEEL_PROFILE.movement,
+      maxSpeed: WAVE2_GAME_FEEL_PROFILE.movement.maxSpeed * liveMoveSpeedMul,
+    },
+  };
+  const movement = integrateWave2Movement(
+    { vx: combat.velocityX ?? 0, vy: combat.velocityY ?? 0 },
+    { x: mx, y: my },
+    { dtSeconds: dt, profile: liveGameFeelProfile },
+  );
+  combat.velocityX = movement.vx;
+  combat.velocityY = movement.vy;
+  if (movement.speed > 0.01) {
     const fromX = combat.playerMapX;
     const fromY = combat.playerMapY;
-    const toX = fromX + (mx / length) * speed * dt;
-    const toY = fromY + (my / length) * speed * dt;
+    const toX = fromX + movement.vx * dt;
+    const toY = fromY + movement.vy * dt;
     // Solid obstacles (buildings/trees/objects) block movement: the player slides
     // along / stops at their footprint instead of walking through them.
     const afterObstacles = resolvePlayerCollision(fromX, fromY, toX, toY, 0.42, currentObstacles());

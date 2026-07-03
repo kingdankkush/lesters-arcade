@@ -6,6 +6,7 @@ import {
   deriveRunCeilings,
   MIN_BOSS_CLEAR_SECONDS,
   INTEGRITY_TOLERANCE,
+  buildReplayVerificationEnvelope,
 } from '../apps/portal/src/hmh-run-integrity.mjs';
 import { HMH_LEVEL_ONE_PLAYTEST_BALANCE } from '../apps/portal/src/arcade-core.mjs';
 
@@ -127,6 +128,39 @@ test('omitting totalXp skips the XP check', () => {
 });
 
 // --- output shape is frozen + stable ----------------------------------------
+
+test('Wave 2 integrity rejects impossible level claims and suspicious post-cap score without XP proof', () => {
+  const overCap = validateRunPlausibility({ score: 20_000, kills: 100, maxCombo: 10, survivalSeconds: 600, level: 81 });
+  assert.equal(overCap.verdict, 'rejected');
+  assert.ok(overCap.flags.some((f) => f.code === 'level-cap-exceeded'));
+
+  const impossibleCap = validateRunPlausibility({ score: 1_200_000, kills: 10, maxCombo: 5, survivalSeconds: 120, level: 80, postCapScoreBonus: 50_000, totalXp: 800 });
+  assert.equal(impossibleCap.verdict, 'suspicious');
+  assert.ok(impossibleCap.flags.some((f) => f.code === 'post-cap-score-without-xp'));
+});
+
+test('buildReplayVerificationEnvelope freezes deterministic run metadata for future verifier replay', () => {
+  const envelope = buildReplayVerificationEnvelope({
+    seed: 424242,
+    gameVersion: 'hmh-wave2-test',
+    survivalSeconds: 1500,
+    level: 80,
+    totalXp: 64_000,
+    postCapScoreBonus: 3000,
+    rngDraws: { spawns: 123, drops: 45, draft: 79, boss: 6, crit: 200 },
+    inputChecksum: 'abc123',
+    eventChecksum: 'def456',
+  });
+
+  assert.equal(envelope.version, 'wave2-replay-envelope-v1');
+  assert.equal(envelope.seed, 424242);
+  assert.equal(envelope.level, 80);
+  assert.equal(envelope.postCapScoreBonus, 3000);
+  assert.deepEqual(Object.keys(envelope.rngDraws), ['boss', 'crit', 'draft', 'drops', 'spawns']);
+  assert.equal(envelope.replayHash.length, 64);
+  assert.ok(Object.isFrozen(envelope));
+  assert.ok(Object.isFrozen(envelope.rngDraws));
+});
 
 test('validateRunPlausibility returns a frozen verdict object', () => {
   const r = validateRunPlausibility({ score: 100, kills: 1, survivalSeconds: 10 });
