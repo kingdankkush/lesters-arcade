@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import {
@@ -9,10 +9,16 @@ import {
   LEVEL_ONE_AUTHORED_PREFAB_STAMPS,
   levelOneCuratedRuntimeArtPolicy,
   levelOneCuratedAssetSrc,
+  levelOneAuthoredStampAssetSrc,
   levelOneOpeningGroundRoleForTile,
 } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 import { curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
+import { authoredStampAssetByKey, HMH_LEVEL_ONE_AUTHORED_STAMP_ART } from '../apps/portal/assets/generated/hmh-level-one-authored-stamp-art/hmh-level-one-authored-stamp-art-manifest.mjs';
 import { HMH_LEVEL_ONE_SPAWN_GATE_REDRESS } from '../apps/portal/src/hmh-level-one-curated-world-contract.mjs';
+
+function levelOneVisibleAssetByKey(assetKey) {
+  return curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey);
+}
 
 function repoPath(relativePath) {
   return fileURLToPath(new URL(`../${relativePath}`, import.meta.url));
@@ -58,7 +64,7 @@ test('WO-63 Level 1 far-field dressing uses explicit authored prefab stamps and 
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.authoredPrefabStamp === true), true);
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.anchor && Number.isFinite(stamp.anchor.x) && Number.isFinite(stamp.anchor.y)), true);
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.assetKeys.length === stamp.objects.length), true, 'stamps should expose the exact runtime asset keys they place');
-  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.assetKeys.every((assetKey) => curatedLevelKitAssetByKey(assetKey))), true, 'all stamp asset keys must resolve to approved curated art');
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.assetKeys.every((assetKey) => levelOneVisibleAssetByKey(assetKey))), true, 'all stamp asset keys must resolve to curated or generated authored-stamp art');
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.some((stamp) => stamp.routeBeat === 'boss' && stamp.id.includes('innercity-gate')), true, 'boss-yard gate prefab must be an authored exact-key stamp');
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.some((stamp) => stamp.routeBeat === 'chokepoint' && stamp.assetKeys.includes('level-1/water/water-02')), true, 'shoreline ford prefab must place exact water/bridge keys');
 
@@ -68,7 +74,7 @@ test('WO-63 Level 1 far-field dressing uses explicit authored prefab stamps and 
   assert.equal(farObjects.some((object) => object.routeBeat === 'boss' && object.sceneRole === 'landmark'), true, 'far-field traversal needs exact-key landmark silhouettes');
   assert.equal(farObjects.some((object) => object.sceneRole === 'wall' || object.sceneRole === 'tree'), true, 'far-field traversal needs visible boundaries');
   assert.equal(farObjects.every((object) => object.use !== 'terrain'), true, 'far-field terrain must not be drawn as obstacle props');
-  assert.equal(farObjects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'all far-field objects should resolve to curated art');
+  assert.equal(farObjects.every((object) => levelOneVisibleAssetByKey(object.assetKey)), true, 'all far-field objects should resolve to curated or generated authored-stamp art');
 });
 
 test('Level 1 opening ground roles replace noisy procedural sand/grass with authored road, shoulder, and boundary bands', () => {
@@ -84,6 +90,35 @@ test('Level 1 curated visible runtime maps approved asset keys to direct runtime
   assert.equal(saloon, './assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png');
   const road = levelOneCuratedAssetSrc('level-1/road/road1-ground');
   assert.match(road, /hmh-curated-level-kit\/source\/level-1-crypto-wasteland\//);
+});
+
+test('generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps', () => {
+  assert.equal(HMH_LEVEL_ONE_AUTHORED_STAMP_ART.assetCount, 3);
+  const requiredKeys = [
+    'level1-authored-stamp/river-bridge-arrow-sign',
+    'level1-authored-stamp/boss-yard-warning-pylon',
+    'level1-authored-stamp/extraction-pad-litcoin-beacon',
+  ];
+  for (const key of requiredKeys) {
+    const record = authoredStampAssetByKey(key);
+    assert.ok(record, `${key} should exist in generated authored stamp manifest`);
+    assert.equal(levelOneAuthoredStampAssetSrc(key), record.src);
+    assert.equal(levelOneCuratedAssetSrc(key), record.src, `${key} should route through the combined visible-runtime resolver`);
+    assert.equal(existsSync(repoPath(record.src.replace('./', 'apps/portal/'))), true, `${key} PNG should exist on disk`);
+  }
+
+  const gapBeatObjects = [
+    ...buildLevelOneCuratedVisibleSceneObjects({ playerX: 64, playerY: 7, window: 10 }),
+    ...buildLevelOneCuratedVisibleSceneObjects({ playerX: 94, playerY: 6, window: 10 }),
+    ...buildLevelOneCuratedVisibleSceneObjects({ playerX: 100, playerY: 5, window: 10 }),
+  ];
+  for (const key of requiredKeys) {
+    const object = gapBeatObjects.find((item) => item.assetKey === key);
+    assert.ok(object, `${key} should be emitted as a visible authored prefab object`);
+    assert.equal(object.generatedStampArt, true);
+    assert.equal(object.sourcePolicy, 'repo-generated-authored-stamp-art');
+    assert.equal(object.authoredPrefabStamp, true);
+  }
 });
 
 test('Level 1 art policy disables old enemy-wave/combatArt fallbacks and generic procedural scatter', () => {

@@ -4,6 +4,7 @@ import {
   curatedLevelOneCriticalPath,
 } from './hmh-level-one-curated-world-contract.mjs';
 import { curatedLevelKitAssetByKey } from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
+import { authoredStampAssetByKey } from '../assets/generated/hmh-level-one-authored-stamp-art/hmh-level-one-authored-stamp-art-manifest.mjs';
 
 const ROLE_FOR_USE = Object.freeze({
   landmark: 'landmark',
@@ -157,6 +158,7 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/prop/water-ruins2', use: 'landmark', dx: 4, dy: -2, solid: true },
     { assetKey: 'level-1/prop/oval-rock5-ground-shadow', use: 'boundary', dx: -5, dy: 3, solid: true },
     { assetKey: 'level-1/prop/caury-white1-ground-shadow', use: 'dressing', dx: 2, dy: 3, solid: false },
+    { assetKey: 'level1-authored-stamp/river-bridge-arrow-sign', use: 'dressing', dx: 1, dy: -2, solid: false, notes: 'new generated arrow marker clarifies the bridge/ford route direction' },
   ], { label: 'Shoreline ford bank', routeBeat: 'chokepoint', anchor: { x: 64, y: 7 }, routeRead: 'waterline, rocks, and small shore reads make bridge/ford traversal legible' }),
   prefabStamp('farmstead-fence-pocket', 'residential-edge', [
     { assetKey: 'level-1/building/town-10', use: 'landmark', dx: -4, dy: -3, solid: true },
@@ -171,6 +173,7 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/prop/blue-gray-ruins1', use: 'boundary', dx: -4, dy: 3, solid: true },
     { assetKey: 'level-1/prop/brown-ruins2', use: 'boundary', dx: 4, dy: 3, solid: true },
     { assetKey: 'level-1/prop/traffic-cone', use: 'dressing', dx: 0, dy: 1, solid: false },
+    { assetKey: 'level1-authored-stamp/boss-yard-warning-pylon', use: 'dressing', dx: 1, dy: -2, solid: false, notes: 'new generated warning pylon telegraphs the boss-yard threshold' },
   ], { label: 'Inner-city gate barricade', routeBeat: 'boss', anchor: { x: 94, y: 6 }, routeRead: 'industrial silhouettes and ruins frame the boss-yard approach' }),
   prefabStamp('ruined-camp-bone-yard', 'desert-bone-camp', [
     { assetKey: 'level-1/prop/dragon-bones-full-ground-shadow', use: 'landmark', dx: -2, dy: -2, solid: false },
@@ -186,6 +189,12 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/prop/road-03', use: 'dressing', dx: -5, dy: 2, solid: false },
     { assetKey: 'level-1/prop/desert-08', use: 'boundary', dx: 0, dy: 4, solid: true },
   ], { label: 'Roadside arcade cache', routeBeat: 'spawn', anchor: { x: 10, y: 8 }, routeRead: 'coin-slot fantasy and roadside props create a reward pocket' }),
+  prefabStamp('litecoin-extraction-beacon-pad', 'finale-extraction', [
+    { assetKey: 'level1-authored-stamp/extraction-pad-litcoin-beacon', use: 'landmark', dx: 1, dy: -2, solid: false, notes: 'new generated beacon makes the extraction pad read as the final route target' },
+    { assetKey: 'level-1/building/town-10', use: 'landmark', dx: 5, dy: -4, solid: true },
+    { assetKey: 'level-1/prop/park-bench', use: 'dressing', dx: -5, dy: 2, solid: false },
+    { assetKey: 'level-1/flora/oak-tree', use: 'boundary', dx: 5, dy: 3, solid: true },
+  ], { label: 'Litecoin extraction beacon pad', routeBeat: 'extract', anchor: { x: 100, y: 5 }, routeRead: 'blue-gold beacon and flare road mark the final extraction read' }),
 ]);
 
 const ZONE_OFFSETS = Object.freeze([
@@ -211,8 +220,12 @@ export function buildLevelOneOpeningComposition() {
   return OPENING_COMPOSITION;
 }
 
+export function levelOneAuthoredStampAssetSrc(assetKey) {
+  return authoredStampAssetByKey(assetKey)?.src ?? null;
+}
+
 export function levelOneCuratedAssetSrc(assetKey) {
-  return curatedLevelKitAssetByKey(assetKey)?.src ?? null;
+  return curatedLevelKitAssetByKey(assetKey)?.src ?? levelOneAuthoredStampAssetSrc(assetKey);
 }
 
 export function levelOneOpeningGroundRoleForTile({ worldX = 0, worldY = 0 } = {}) {
@@ -246,16 +259,18 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
   // renderer. Drawing them as props is what made the corrected runtime look like
   // repeated grey block clutter instead of a clean authored route.
   if (use === 'terrain') return null;
-  const record = curatedLevelKitAssetByKey(assetKey);
+  const record = curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey);
   if (!record) return null;
+  const generatedStampArt = Boolean(authoredStampAssetByKey(assetKey));
   const sceneRole = ROLE_FOR_USE[use] ?? 'smallprop';
   return Object.freeze({
     id,
     assetKey,
     curatedAssetKey: assetKey,
     imageSrc: record.src,
-    curated: true,
-    sourcePolicy: 'Justin-curated-level-kit-only',
+    curated: !generatedStampArt,
+    generatedStampArt,
+    sourcePolicy: generatedStampArt ? 'repo-generated-authored-stamp-art' : 'Justin-curated-level-kit-only',
     role: sceneRole,
     sceneRole,
     use,

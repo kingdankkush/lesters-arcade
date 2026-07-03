@@ -59,6 +59,7 @@
     "assets:hmh:level-env": "python scripts/ingest-hmh-level-environment.py",
     "assets:hmh:alpha-clean": "python scripts/clean-hmh-level-design-alpha.py",
     "assets:hmh:curated-level-kit": "python scripts/build-hmh-curated-level-kit.py",
+    "assets:hmh:authored-stamp-art": "python scripts/generate-hmh-level-one-authored-stamp-art.py",
     "repo:audit": "node scripts/repo-cleanup-audit.mjs",
     "repo:health": "node scripts/repo-health.mjs",
     "vault:status": "node scripts/vault-sync.mjs status"
