@@ -196,6 +196,9 @@ export function buildGroundPlan({ levelId = HMH_LEVEL_ONE_ID, seed = 0 } = {}) {
     seed: Number(seed) || 0,
     zones,
     textureForKey: textureAssetByKey,
+    textureKeys() {
+      return Object.freeze([...new Set(zones.map((zone) => zone.textureKey).filter(Boolean))]);
+    },
     zoneAt(worldX, worldY) {
       const zone = zoneAtBare(worldX, worldY);
       return Object.freeze({

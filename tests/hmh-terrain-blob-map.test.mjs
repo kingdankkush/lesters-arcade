@@ -44,6 +44,17 @@ test('ground plan serves immutable terrain blob cells from a per-run cache', () 
   assert.deepEqual(plan.terrainCellCacheStats(), { size: 1, hits: 2, misses: 1 });
 });
 
+test('ground plan exposes the deterministic Level 1 texture set for loading prewarm', () => {
+  const plan = buildGroundPlan({ seed: 62 });
+  assert.equal(typeof plan.textureKeys, 'function');
+  const textureKeys = plan.textureKeys();
+  assert.equal(Object.isFrozen(textureKeys), true);
+  assert.equal(textureKeys.length > 1, true);
+  assert.equal(textureKeys.every((key) => typeof key === 'string' && key.length > 0), true);
+  assert.equal(new Set(textureKeys).size, textureKeys.length, 'texture keys should be unique');
+  assert.equal(textureKeys.some((key) => plan.textureForKey(key)?.src), true, 'texture keys should resolve to image assets');
+});
+
 test('terrain capability report covers EPIC 4-6 features without legacy terrain fallbacks', () => {
   const report = buildTerrainRenderingCapabilityReport(buildGroundPlan({ seed: 47 }));
 

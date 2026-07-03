@@ -87,6 +87,20 @@ test('WO-60 all ground-plane tile and road positions use the shared rounded latt
   assert.doesNotMatch(roadBody, /projected\.y \+ 64/);
 });
 
+test('WO-62 loading screen prewarms deterministic Level 1 ground and prop image sets before reveal', () => {
+  assert.match(mainSource, /async function decodeImageAsset\(/);
+  assert.match(mainSource, /async function prewarmHmhLevelAssets\(/);
+  const prewarmBody = functionBody('prewarmHmhLevelAssets');
+  assert.match(prewarmBody, /plan\.textureKeys\(\)/);
+  assert.match(prewarmBody, /sbsGroundTileImage\(asset\)/);
+  assert.match(prewarmBody, /buildLevelOneCuratedVisibleSceneObjects\(/);
+  assert.match(prewarmBody, /curatedLevelOneImage\(object\.assetKey\)/);
+  assert.match(prewarmBody, /decodeImageAsset\(/);
+  const loadingBody = functionBody('showHMHLoadingScreen');
+  assert.match(loadingBody, /await onComplete\(\)/);
+  assert.match(loadingBody, /await prewarmHmhLevelAssets\(level/);
+});
+
 test('ground rendering source test is covered by the explicit syntax gate', () => {
   assert.match(syntaxSource, /tests\/hmh-ground-rendering\.test\.mjs/);
   assert.match(syntaxSource, /apps\/portal\/src\/hmh-ground-plane-rendering\.mjs/);

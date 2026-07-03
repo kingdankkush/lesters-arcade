@@ -249,6 +249,30 @@ function imageReady(image) {
   return Boolean(image?.complete && image.naturalWidth > 0);
 }
 
+async function decodeImageAsset(image) {
+  if (!image) return false;
+  if (imageReady(image)) return true;
+  try {
+    if (typeof image.decode === 'function') {
+      await image.decode();
+      return imageReady(image);
+    }
+  } catch {
+    return imageReady(image);
+  }
+  return new Promise((resolve) => {
+    let settled = false;
+    const done = () => {
+      if (settled) return;
+      settled = true;
+      resolve(imageReady(image));
+    };
+    image.addEventListener?.('load', done, { once: true });
+    image.addEventListener?.('error', done, { once: true });
+    setTimeout(done, 1500);
+  });
+}
+
 // --- Durable sprite pipeline: registry of ALL actors ---
 // Canonical hand-made art (Justin's): heroes Lester/Lilly + enemies/bosses
 // (trench-degen, evil-banker, crypto-bro, gas-beast, evil-boss, warren-boss).
@@ -4855,6 +4879,13 @@ async function showHMHLoadingScreen(onComplete, levelMeta = currentCampaignLevel
   // roguelike scene is already painted — no flash of the old 2D background.
   try {
     await onComplete();
+    await prewarmHmhLevelAssets(level, ({ done, total }) => {
+      if (total > 0) {
+        progress = Math.max(progress, 70 + (done / total) * 25);
+        bar.style.width = `${Math.min(99, progress)}%`;
+        status.textContent = `DECODING LEVEL ART ${done}/${total}...`;
+      }
+    });
   } catch (err) {
     console.error('[HMH] loading screen onComplete failed:', err);
   }
@@ -9845,6 +9876,34 @@ function curatedLevelOneImage(assetKey) {
   if (!src) return null;
   if (!curatedLevelOneImageCache.has(src)) curatedLevelOneImageCache.set(src, loadImageAsset(src));
   return curatedLevelOneImageCache.get(src);
+}
+
+async function prewarmHmhLevelAssets(level, onProgress = () => {}) {
+  if (level?.id !== HMH_LEVEL_ONE_ID) return { decoded: 0, total: 0 };
+  const plan = combat.groundPlan ?? getCombatGroundPlan();
+  const images = [];
+  for (const textureKey of plan.textureKeys()) {
+    const asset = plan.textureForKey(textureKey);
+    const image = sbsGroundTileImage(asset);
+    if (image) images.push(image);
+  }
+  const curatedObjects = buildLevelOneCuratedVisibleSceneObjects({
+    playerX: combat.playerMapX ?? 0,
+    playerY: combat.playerMapY ?? 5,
+    window: 140,
+  });
+  for (const object of curatedObjects) {
+    const image = curatedLevelOneImage(object.assetKey);
+    if (image) images.push(image);
+  }
+  const uniqueImages = [...new Set(images)];
+  let completed = 0;
+  const results = await Promise.all(uniqueImages.map((image) => decodeImageAsset(image).then((ok) => {
+    completed += 1;
+    onProgress({ done: completed, total: uniqueImages.length });
+    return ok;
+  })));
+  return { decoded: results.filter(Boolean).length, total: uniqueImages.length };
 }
 function isLevelOneCuratedRuntime() {
   const policy = levelOneCuratedRuntimeArtPolicy();
