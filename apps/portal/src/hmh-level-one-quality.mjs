@@ -121,6 +121,61 @@ export const HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN = Object.freeze([
   }),
 ]);
 
+export const HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF = Object.freeze({
+  id: 'level1-noir-ground-tool-bakeoff-v1',
+  status: 'HALT_AWAITING_JUSTIN_TOOL_CHOICE',
+  requiresJustinChoice: true,
+  fullBatchAllowed: false,
+  haltCopy: 'HALT for Justin: choose one noir ground-art tool path before any full Level 1 ground batch is generated or committed.',
+  decisionQuestion: 'Which tool should produce the approved noir ground pilot before we scale to the full batch?',
+  options: Object.freeze([
+    Object.freeze({
+      toolId: 'pixellab-create-tiles-pro',
+      label: 'PixelLab create_tiles_pro',
+      bestFor: 'fast 2:1 isometric terrain/path/water candidates with existing repo prompts and manifest pipeline',
+      risk: 'can output mini-scenes or noisy non-seamless tiles; credit spend requires approval and contact-sheet QA',
+      pilotOutput: '6 tile candidates: wet blacktop, ghost-town cobble, moonwash sand, bridge/water edge, sodium asphalt, boss-yard scorched ground',
+      repoFit: 'reuses existing buildLevelOneEnvironmentAssetQueue/job manifest/contact-sheet workflow',
+    }),
+    Object.freeze({
+      toolId: 'comfyui-flux-img2img',
+      label: 'ComfyUI Flux/SDXL img2img workflow',
+      bestFor: 'style-locking a noir palette from existing final-paint/Pixellab candidates before hand pixel cleanup',
+      risk: 'local/cloud setup and model dependencies can cost time; output still needs tile normalization and alpha/edge cleanup',
+      pilotOutput: '3 style-lock passes over current final-paint route tiles plus one 3x3 seam contact sheet',
+      repoFit: 'best as a controlled post-process/variation pass, not the only source of runtime-ready tiles',
+    }),
+    Object.freeze({
+      toolId: 'repo-final-paint-postprocess',
+      label: 'Repo final-paint post-process first',
+      bestFor: 'zero-credit/no-new-model noir redress using existing repo-owned final-paint ground plus palette, edge-wear, and lighting overlays',
+      risk: 'least novel art; may look like a grade/filter unless hand-painted replacement follows',
+      pilotOutput: 'runtime-safe noir variants for spawn road, ghost-town street, water/shore, and boss-yard ground from current assets',
+      repoFit: 'lowest risk for immediate playable proof and strongest deploy-size control',
+    }),
+  ]),
+  pilotScope: Object.freeze([
+    Object.freeze({ id: 'spawn-road', role: 'road', zoneId: 'spawn-broken-road', approvalGate: 'pilot-only' }),
+    Object.freeze({ id: 'ghost-town-street', role: 'path', zoneId: 'ghost-saloon-mainstreet', approvalGate: 'pilot-only' }),
+    Object.freeze({ id: 'blackwater-ford-edge', role: 'water-shore', zoneId: 'shoreline-ford', approvalGate: 'pilot-only' }),
+    Object.freeze({ id: 'boss-yard-ground', role: 'arena-ground', zoneId: 'rugpull-gulch-boss-yard', approvalGate: 'pilot-only' }),
+  ]),
+  evaluationCriteria: Object.freeze([
+    '2:1 isometric ground reads at gameplay zoom without high-frequency noise',
+    '3x3 seam/contact-sheet pass before runtime integration',
+    'No text, logos, protected emblems, copied reference shapes, or baked characters',
+    'Hero/enemy silhouettes remain readable over the ground in noir lighting',
+    'Runtime output can be atlas-packed or manifest-backed without raw generation files in git',
+  ]),
+  fullBatchUnlock: Object.freeze({
+    requiresChosenToolId: true,
+    requiresContactSheetApproval: true,
+    requiresPilotBrowserSmoke: true,
+    requiresGenerationBudgetApproval: true,
+    nextWorkOrder: 'WO-50',
+  }),
+});
+
 export function buildLevelOneEnvironmentAssetPromptBrief({ category = 'ground-textures', districtFamily = 'desert_approach', assetRole = 'environment asset' } = {}) {
   const plan = HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN.find((item) => item.category === category) ?? HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN[0];
   const referenceNames = plan.referenceTargets

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   HMH_LEVEL_ONE_ENVIRONMENT_ASSET_GENERATION_PLAN,
+  HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF,
   HMH_LEVEL_ONE_QUALITY_STYLE,
   HMH_LEVEL_ONE_REFERENCE_MAP_ANCHORS,
   HMH_LEVEL_ONE_REFERENCE_STYLE_TARGETS,
@@ -131,6 +132,27 @@ test('Level 1 environment asset queue can be narrowed to P0 terrain/path/water w
   assert.equal(p0.jobs.every((job) => job.tool === 'create_tiles_pro'), true);
   assert.equal(p0.jobs.every((job) => job.outputKey.startsWith('level1-reference-style/')), true);
   assert.equal(p0.jobs.every((job) => job.referenceTargets.includes('aoe2-de-world-density')), true);
+});
+
+test('WO-49 noir ground/tool bake-off halts before full art batch until Justin picks a tool', () => {
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.id, 'level1-noir-ground-tool-bakeoff-v1');
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.status, 'HALT_AWAITING_JUSTIN_TOOL_CHOICE');
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.fullBatchAllowed, false);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.requiresJustinChoice, true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.options.length >= 3, true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.options.some((option) => option.toolId === 'pixellab-create-tiles-pro'), true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.options.some((option) => option.toolId === 'comfyui-flux-img2img'), true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.options.some((option) => option.toolId === 'repo-final-paint-postprocess'), true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.pilotScope.every((item) => item.approvalGate === 'pilot-only'), true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.fullBatchUnlock.requiresChosenToolId, true);
+  assert.equal(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.fullBatchUnlock.requiresContactSheetApproval, true);
+  assert.match(HMH_LEVEL_ONE_NOIR_GROUND_TOOL_BAKEOFF.haltCopy, /Justin/i);
+
+  const markdown = readFileSync(fileURLToPath(new URL('../docs/art/HMH_LEVEL_1_NOIR_GROUND_TOOL_BAKEOFF.md', import.meta.url)), 'utf8');
+  assert.match(markdown, /HALT awaiting Justin tool choice/i);
+  assert.match(markdown, /PixelLab `create_tiles_pro`/);
+  assert.match(markdown, /ComfyUI Flux\/SDXL img2img/);
+  assert.match(markdown, /Repo final-paint post-process/);
 });
 
 test('Level 1 reference-map anchors preserve the forest/town/river/desert/waterfront quality targets', () => {
