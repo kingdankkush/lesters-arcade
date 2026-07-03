@@ -25,6 +25,7 @@ import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } fro
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
 import { buildTerrainBlobCell } from './src/hmh-terrain-blob-map.mjs';
+import { groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
 import { HMH_LEVEL_ONE_SBS_GROUND } from './assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_FINAL_PAINT_GROUND } from './assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import { HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, animatedPolishAssetByKey } from './assets/generated/hmh-coherent-world/level1-final-animated/level1-final-animated-manifest.mjs';
@@ -9290,9 +9291,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   const waterRipplePath = new Path2D();
   const bridgeDeckPath = new Path2D();
   const fallbackTiles = [];
-  const worldOrigin = isoToScreen(0, 0);
-  const cameraWorldOffsetX = worldOrigin.x;
-  const cameraWorldOffsetY = worldOrigin.y + 64;
+  const cameraAnchor = groundPatternAnchorForOrigin(isoToScreen(0, 0));
 
   const addDiamond = (path, tile) => {
     path.moveTo(tile.cx, tile.cy - ISO_TILE_HEIGHT / 2);
@@ -9327,7 +9326,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     const pattern = ctx.createPattern(source, 'repeat');
     if (!pattern) continue;
     if (typeof DOMMatrix !== 'undefined' && typeof pattern.setTransform === 'function') {
-      pattern.setTransform(new DOMMatrix().translate(-cameraWorldOffsetX, -cameraWorldOffsetY));
+      pattern.setTransform(new DOMMatrix().translate(cameraAnchor.x, cameraAnchor.y));
     }
     ctx.fillStyle = pattern;
     ctx.fill(group.path);
@@ -9437,8 +9436,9 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
       const tile = index.get(roadTileKey(worldX, worldY));
       if (!tile) continue;
       const projected = isoToScreen(worldX, worldY);
-      const cx = projected.x;
-      const cy = projected.y + 64; // same ground-plane offset as drawProductionIsoTile
+      const groundPoint = groundTileLatticePointForProjection(projected);
+      const cx = groundPoint.x;
+      const cy = groundPoint.y;
       if (cx < -ISO_TILE_WIDTH || cx > cullWidth + ISO_TILE_WIDTH) continue;
       if (cy < -ISO_TILE_HEIGHT - 80 || cy > cullHeight + ISO_TILE_HEIGHT + 80) continue;
       if (tile.type === 'bridge') {
@@ -10219,7 +10219,8 @@ function drawRoguelikeScene(ctx, width, height) {
       // In fullscreen, renderWidth/renderHeight may exceed actual canvas size.
       if (projected.x < -ISO_TILE_WIDTH || projected.x > cullWidth + ISO_TILE_WIDTH) continue;
       if (projected.y < -ISO_TILE_HEIGHT - 80 || projected.y > cullHeight + ISO_TILE_HEIGHT + 80) continue;
-      visibleTiles.push({ worldX, worldY, cx: projected.x, cy: projected.y + 64 });
+      const groundPoint = groundTileLatticePointForProjection(projected);
+      visibleTiles.push({ worldX, worldY, cx: groundPoint.x, cy: groundPoint.y });
     }
   }
   drawGroundPlanPatternTiles(ctx, visibleTiles);

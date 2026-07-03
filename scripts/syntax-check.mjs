@@ -47,6 +47,7 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-level-one-ground.mjs",
   "apps/portal/src/hmh-ground-plan.mjs",
   "apps/portal/src/hmh-terrain-blob-map.mjs",
+  "apps/portal/src/hmh-ground-plane-rendering.mjs",
   "apps/portal/src/hmh-world-scale.mjs",
   "apps/portal/src/hmh-level-one-quality.mjs",
   "apps/portal/src/hmh-level-one-balance-pass.mjs",
