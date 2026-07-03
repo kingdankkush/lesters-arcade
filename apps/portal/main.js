@@ -2,7 +2,7 @@ import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
-import { buildDeviceProfile, joystickToKeys, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
+import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES, canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actors.mjs';
 import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
@@ -1440,6 +1440,8 @@ const combat = {
   playerMapY: 0,
   aimMapX: 1,
   aimMapY: 0,
+  manualAim: { x: 1, y: 0, active: false, source: 'initial' },
+  grenadeTarget: null,
   velocityY: 0,
   velocityX: 0,
   jumpsLeft: 2,
@@ -5658,6 +5660,8 @@ async function startCombat(options = {}) {
   combat.playerMapY = 0;
   combat.aimMapX = 1;
   combat.aimMapY = 0;
+  combat.manualAim = { x: 1, y: 0, active: false, source: 'reset' };
+  combat.grenadeTarget = null;
   combat.velocityX = 0;
   combat.velocityY = 0;
   combat.jumpsLeft = 2;
@@ -5917,13 +5921,27 @@ function grenade() {
     // throwable button through the unlocked grenade economy. The plan is still
     // pure/deterministic, but stats can now switch the role between Crypto Bombs,
     // Launcher Rig, Homing Cluster, and Block Buster.
+    const grenadeTarget = buildManualGrenadeTarget({
+      playerX: combat.playerMapX,
+      playerY: combat.playerMapY,
+      aimX: combat.manualAim?.x ?? combat.aimMapX,
+      aimY: combat.manualAim?.y ?? combat.aimMapY,
+      reach: 99,
+      maxRange: 7,
+      blastRadius: 2,
+    });
+    combat.grenadeTarget = grenadeTarget;
+    // Runtime marker contract: renderer/debug tests can identify this as the
+    // WO-46 grenade-reticle path, while the deterministic throw planner still
+    // owns grenade type, cost, fuse, damage, and true max-range tuning.
+    combat.grenadeTargetKind = 'grenade-reticle';
     const throwPlan = planLevelOneGrenadeThrow({
       run: combat.roguelikeRun,
       currentGrenades: combat.grenades,
       originX: combat.playerMapX,
       originY: combat.playerMapY,
-      aimX: combat.aimMapX,
-      aimY: combat.aimMapY,
+      aimX: grenadeTarget.aimX,
+      aimY: grenadeTarget.aimY,
       damageMultiplier: combat.roguelikeRun?.stats.grenadeDamage ?? 1,
     });
     if (!throwPlan.throwAllowed) {
@@ -7068,11 +7086,25 @@ function updateAimFromPointer(event) {
   combat.pointerWorldX = aimWorld.x;
   combat.pointerWorldY = aimWorld.y;
   combat.pointerActive = true;
-  const dx = aimWorld.x - combat.playerMapX;
-  const dy = aimWorld.y - combat.playerMapY;
-  const length = Math.hypot(dx, dy) || 1;
-  combat.aimMapX = dx / length;
-  combat.aimMapY = dy / length;
+  const manualAim = pointerToManualAim({
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    pointerX: aimWorld.x,
+    pointerY: aimWorld.y,
+    previous: combat.manualAim ?? { x: combat.aimMapX, y: combat.aimMapY },
+  });
+  combat.manualAim = manualAim;
+  combat.aimMapX = manualAim.x;
+  combat.aimMapY = manualAim.y;
+  combat.grenadeTarget = buildManualGrenadeTarget({
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    aimX: combat.aimMapX,
+    aimY: combat.aimMapY,
+    reach: 99,
+    maxRange: 7,
+    blastRadius: 2,
+  });
 }
 
 // Auto-fire: weapons fire on their own cadence (fire rate / reload), aiming in
@@ -10194,6 +10226,43 @@ function drawRoguelikeScene(ctx, width, height) {
       });
     }
   }
+  const liveGrenadeTarget = combat.grenadeTarget ?? buildManualGrenadeTarget({
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    aimX: combat.manualAim?.x ?? combat.aimMapX,
+    aimY: combat.manualAim?.y ?? combat.aimMapY,
+    reach: 99,
+    maxRange: 7,
+    blastRadius: 2,
+  });
+  combat.grenadeTarget = liveGrenadeTarget;
+  combat.grenadeTargetKind = 'grenade-reticle';
+  if (liveGrenadeTarget?.marker?.kind === 'grenade-reticle') {
+    const projected = isoToScreen(liveGrenadeTarget.landX, liveGrenadeTarget.landY);
+    const rx = Math.max(8, liveGrenadeTarget.marker.radius * (ISO_TILE_WIDTH / 2));
+    const ry = Math.max(5, liveGrenadeTarget.marker.radius * (ISO_TILE_HEIGHT / 2));
+    const pulse = 0.55 + 0.25 * Math.sin(combat.frame * 0.12);
+    renderList.push({
+      depth: projected.y - 2,
+      draw: () => {
+        ctx.save();
+        ctx.translate(projected.x, projected.y);
+        ctx.setLineDash([6, 5]);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = `rgba(255,232,77,${0.62 + pulse * 0.25})`;
+        ctx.fillStyle = 'rgba(255,232,77,0.055)';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(255,244,194,0.9)';
+        ctx.fillRect(-4, -1, 8, 2);
+        ctx.fillRect(-1, -4, 2, 8);
+        ctx.restore();
+      },
+    });
+  }
   for (const gem of combat.xpGems) {
     const projected = isoToScreen(gem.worldX, gem.worldY);
     const bob = Math.sin((combat.frame + gem.worldX * 13 + gem.worldY * 7) * 0.12) * 3;
@@ -12122,21 +12191,29 @@ function ensureTouchControls(profile) {
     if (mag > 1) { dx /= mag; dy /= mag; }
     aimNub.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
     if (mag < 0.2) return; // dead zone: tiny nudges don't redirect fire
-    // Convert the stick vector into a world-space aim direction using the live
-    // isometric camera center. This keeps the mapping stable on mobile and avoids
-    // the old near-constant diagonal drift from treating the stick like absolute
-    // screen coordinates.
-    const centerX = combat.viewCenterX ?? ISO_CENTER_X;
-    const centerY = combat.viewCenterY ?? ISO_CENTER_Y;
-    const world = screenToIso(centerX + dx * (ISO_TILE_WIDTH / 2), centerY + dy * (ISO_TILE_HEIGHT / 2));
-    const worldDx = world.x - combat.playerMapX;
-    const worldDy = world.y - combat.playerMapY;
-    const len = Math.hypot(worldDx, worldDy) || 1;
-    combat.aimMapX = worldDx / len;
-    combat.aimMapY = worldDy / len;
+    // Convert the stick vector into a world-space aim direction using the shared
+    // WO-46 pure helper so mobile right-stick, desktop pointer, and grenade
+    // targeting all agree on the same normalized manual-aim state.
+    const manualAim = joystickToManualAim(dx, dy, {
+      tileWidth: ISO_TILE_WIDTH,
+      tileHeight: ISO_TILE_HEIGHT,
+      previous: combat.manualAim ?? { x: combat.aimMapX, y: combat.aimMapY },
+    });
+    combat.manualAim = manualAim;
+    combat.aimMapX = manualAim.x;
+    combat.aimMapY = manualAim.y;
     combat.pointerWorldX = null;
     combat.pointerWorldY = null;
-    combat.pointerActive = true; // steer auto-fire toward the stick
+    combat.pointerActive = manualAim.active; // steer auto-fire toward the stick
+    combat.grenadeTarget = buildManualGrenadeTarget({
+      playerX: combat.playerMapX,
+      playerY: combat.playerMapY,
+      aimX: combat.aimMapX,
+      aimY: combat.aimMapY,
+      reach: 99,
+      maxRange: 7,
+      blastRadius: 2,
+    });
   };
   const releaseAim = () => {
     aimPointer = null;

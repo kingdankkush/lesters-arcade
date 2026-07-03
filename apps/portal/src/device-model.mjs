@@ -98,6 +98,73 @@ export function joystickToKeys(dx, dy, deadZone = 0.3) {
   return keys;
 }
 
+const defaultAim = Object.freeze({ x: 1, y: 0 });
+
+function normalizeManualAim(dx, dy, { deadZone = 0.16, previous = defaultAim, source = 'manual' } = {}) {
+  const x = Number(dx);
+  const y = Number(dy);
+  const length = Math.hypot(x, y);
+  const prevX = Number.isFinite(Number(previous?.x)) ? Number(previous.x) : defaultAim.x;
+  const prevY = Number.isFinite(Number(previous?.y)) ? Number(previous.y) : defaultAim.y;
+  if (!Number.isFinite(length) || length < deadZone) {
+    return Object.freeze({ x: prevX, y: prevY, active: false, source });
+  }
+  return Object.freeze({ x: x / length, y: y / length, active: true, source });
+}
+
+export function pointerToManualAim({ playerX = 0, playerY = 0, pointerX = 0, pointerY = 0, previous = defaultAim, deadZone = 0.16 } = {}) {
+  return normalizeManualAim(Number(pointerX) - Number(playerX), Number(pointerY) - Number(playerY), { previous, deadZone, source: 'pointer' });
+}
+
+export function joystickToManualAim(dx = 0, dy = 0, { deadZone = 0.2, tileWidth = 64, tileHeight = 32, previous = defaultAim } = {}) {
+  const stickX = Number(dx) || 0;
+  const stickY = Number(dy) || 0;
+  const mag = Math.hypot(stickX, stickY);
+  if (mag < deadZone) return normalizeManualAim(0, 0, { previous, deadZone: 1, source: 'touch-stick' });
+  const clampedX = mag > 1 ? stickX / mag : stickX;
+  const clampedY = mag > 1 ? stickY / mag : stickY;
+  const screenDx = clampedX * (Number(tileWidth) || 64) / 2;
+  const screenDy = clampedY * (Number(tileHeight) || 32) / 2;
+  const isoDx = screenDx / ((Number(tileWidth) || 64) / 2);
+  const isoDy = screenDy / ((Number(tileHeight) || 32) / 2);
+  const worldX = (isoDx + isoDy) / 2;
+  const worldY = (isoDy - isoDx) / 2;
+  return normalizeManualAim(worldX, worldY, { previous, deadZone: 0.001, source: 'touch-stick' });
+}
+
+export function buildManualGrenadeTarget({ playerX = 0, playerY = 0, aimX = 1, aimY = 0, reach = 1, maxRange = 7, blastRadius = 2 } = {}) {
+  const aim = normalizeManualAim(aimX, aimY, { deadZone: 0.001, previous: defaultAim, source: 'grenade-reticle' });
+  const distance = Math.max(0, Math.min(Number(maxRange) || 0, Number(reach) || 0));
+  const landX = Number(playerX) + aim.x * distance;
+  const landY = Number(playerY) + aim.y * distance;
+  return Object.freeze({
+    mode: 'manual-target',
+    aimX: aim.x,
+    aimY: aim.y,
+    distance,
+    landX,
+    landY,
+    marker: Object.freeze({ kind: 'grenade-reticle', x: landX, y: landY, radius: Number(blastRadius) || 0 }),
+    ariaLabel: `Grenade reticle ${distance.toFixed(1)} tiles from player`,
+  });
+}
+
+export function buildManualAimInputModel(profile = buildDeviceProfile()) {
+  const touch = Boolean(profile?.isTouch ?? profile?.showTouchControls);
+  return Object.freeze({
+    version: 'wo-46-manual-aim-v1',
+    manualAimMode: touch ? 'right-stick' : 'mouse-pointer',
+    controls: Object.freeze(touch
+      ? ['left virtual stick movement', 'right virtual stick aim', 'grenade button throws at stick reticle']
+      : ['WASD / arrows movement', 'mouse pointer aim', 'right click / grenade button targets current reticle']),
+    reticule: Object.freeze({
+      alwaysVisible: true,
+      kind: 'grenade-reticle',
+      accessibilityLabel: touch ? 'Right stick controls the aim and grenade reticle.' : 'Mouse pointer controls the aim and grenade reticle.',
+    }),
+  });
+}
+
 export const DEVICE_INPUT_QA_CASES = Object.freeze([
   Object.freeze({ id: 'desktop-keyboard-mouse', width: 1440, height: 900, coarsePointer: false, hasTouch: false, maxTouchPoints: 0, expectedClass: 'desktop', expectedTouchControls: false, inputs: Object.freeze(['WASD/arrows', 'mouse aim', 'click/pointer', 'keyboard pause']) }),
   Object.freeze({ id: 'mobile-portrait-touch', width: 390, height: 844, coarsePointer: true, hasTouch: true, maxTouchPoints: 5, expectedClass: 'mobile', expectedTouchControls: true, expectedLandscapeHint: true, inputs: Object.freeze(['virtual joystick', 'touch fire', 'touch grenade', 'touch pause']) }),
