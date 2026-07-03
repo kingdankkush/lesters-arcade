@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""Build WO-52 top-5 enemy exposure contact sheet from existing repo art.
+
+This does not generate new art or spend credits. It crops the first frame from
+existing final-animation-completion sheets so Justin can approve/reject the top
+exposure targets before any full enemy redesign batch.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFont
+
+ROOT = Path(__file__).resolve().parents[1]
+PORTAL = ROOT / "apps" / "portal"
+OUT = ROOT / "docs" / "game-design" / "assets" / "hmh-wo52-top5-enemy-exposure-contact-sheet.png"
+FRAME_W = 64
+FRAME_H = 72
+STATES = ["idle/current", "attack-tell", "hit", "death", "gore-overlay"]
+
+
+@dataclass(frozen=True)
+class Row:
+    rank: int
+    enemy_id: str
+    label: str
+    actor_id: str
+    issue: str
+
+
+ROWS = [
+    Row(1, "claim-jumper", "Claim-Jumper", "claim-jumper", "partial current kit"),
+    Row(2, "coyote-pack-runner", "Coyote Pack", "coyote-pack-runner", "melee read"),
+    Row(3, "wild-boar", "Wild Boar", "wild-boar", "charge read"),
+    Row(4, "rattlesnake", "Rattlesnake", "rattlesnake", "low profile"),
+    Row(5, "buzzard", "Buzzard", "crypto-bro-rusher", "proxy art row"),
+]
+
+STATE_TO_SRC = {
+    "idle/current": "attack-tell",
+    "attack-tell": "attack-tell",
+    "hit": "hit",
+    "death": "death",
+    "gore-overlay": "optional-gore-overlay",
+}
+
+
+def font(size: int):
+    candidates = [
+        "C:/Windows/Fonts/consola.ttf",
+        "C:/Windows/Fonts/arial.ttf",
+    ]
+    for candidate in candidates:
+        path = Path(candidate)
+        if path.exists():
+            return ImageFont.truetype(str(path), size)
+    return ImageFont.load_default()
+
+
+def sheet_path(actor_id: str, state_label: str) -> Path:
+    src_state = STATE_TO_SRC[state_label]
+    return PORTAL / "assets" / "generated" / "hmh-final-animation-completion" / "enemy" / actor_id / f"{src_state}.png"
+
+
+def first_frame(actor_id: str, state_label: str) -> Image.Image:
+    path = sheet_path(actor_id, state_label)
+    if not path.exists():
+        raise FileNotFoundError(f"Missing source sheet: {path.relative_to(ROOT)}")
+    with Image.open(path) as image:
+        rgba = image.convert("RGBA")
+        return rgba.crop((0, 0, FRAME_W, FRAME_H))
+
+
+def main() -> None:
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    title_font = font(20)
+    header_font = font(14)
+    label_font = font(12)
+    small_font = font(10)
+
+    margin = 18
+    label_w = 205
+    cell_w = 112
+    cell_h = 112
+    header_h = 84
+    footer_h = 54
+    width = margin * 2 + label_w + cell_w * len(STATES)
+    height = margin * 2 + header_h + cell_h * len(ROWS) + footer_h
+    img = Image.new("RGBA", (width, height), (15, 17, 24, 255))
+    draw = ImageDraw.Draw(img)
+
+    draw.rectangle((0, 0, width, 58), fill=(24, 26, 38, 255))
+    draw.text((margin, 12), "WO-52 Top-5 Enemy Exposure Contact Sheet — HALT for Justin Approval", fill=(245, 230, 180, 255), font=title_font)
+    draw.text((margin, 38), "Existing current/completion art only. No new generation, no full enemy batch.", fill=(176, 190, 210, 255), font=small_font)
+
+    x0 = margin + label_w
+    y0 = margin + header_h
+    for col, state in enumerate(STATES):
+        x = x0 + col * cell_w
+        draw.text((x + 8, y0 - 24), state, fill=(153, 220, 255, 255), font=header_font)
+
+    for row_i, row in enumerate(ROWS):
+        y = y0 + row_i * cell_h
+        bg = (24, 29, 42, 255) if row_i % 2 == 0 else (20, 24, 35, 255)
+        draw.rectangle((margin, y, width - margin, y + cell_h - 6), fill=bg, outline=(56, 66, 86, 255))
+        draw.text((margin + 8, y + 10), f"#{row.rank} {row.label}", fill=(255, 241, 186, 255), font=header_font)
+        draw.text((margin + 8, y + 32), row.enemy_id, fill=(216, 225, 236, 255), font=label_font)
+        draw.text((margin + 8, y + 50), f"actor: {row.actor_id}", fill=(156, 176, 200, 255), font=small_font)
+        draw.text((margin + 8, y + 66), row.issue, fill=(255, 160, 120, 255), font=small_font)
+
+        for col, state in enumerate(STATES):
+            x = x0 + col * cell_w
+            draw.rectangle((x + 10, y + 10, x + 10 + 88, y + 92), fill=(9, 11, 16, 255), outline=(72, 82, 104, 255))
+            frame = first_frame(row.actor_id, state)
+            scale = 1
+            frame = frame.resize((FRAME_W * scale, FRAME_H * scale), Image.Resampling.NEAREST)
+            fx = x + 10 + (88 - frame.width) // 2
+            fy = y + 14 + (78 - frame.height) // 2
+            img.alpha_composite(frame, (fx, fy))
+            if row.enemy_id == "buzzard" and col == 0:
+                draw.text((x + 12, y + 94), "proxy", fill=(255, 120, 95, 255), font=small_font)
+
+    footer_y = height - margin - footer_h + 10
+    draw.text((margin, footer_y), "Decision gate: approve / reject / regenerate only these five contact-sheet exposures before any full enemy art batch.", fill=(255, 220, 170, 255), font=label_font)
+    draw.text((margin, footer_y + 18), "Generated by scripts/build-hmh-wo52-enemy-contact-sheet.py from hmh-final-animation-completion sheets.", fill=(150, 165, 185, 255), font=small_font)
+    img.convert("RGB").save(OUT)
+    print(f"wrote {OUT.relative_to(ROOT)} ({width}x{height})")
+
+
+if __name__ == "__main__":
+    main()

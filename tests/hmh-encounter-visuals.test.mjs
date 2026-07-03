@@ -13,7 +13,10 @@ import {
   buildEncounterTemplateContext,
   buildEncounterTerrainPressure,
   buildEncounterVisualPlan,
+  buildEnemyVisualRedesignQueue,
+  buildTopEnemyExposureContactSheetPlan,
   enemyProxyRenderProfile,
+  HMH_ENEMY_VISUAL_REDESIGN_QUEUE,
 } from '../apps/portal/src/hmh-encounter-visuals.mjs';
 
 
@@ -287,4 +290,39 @@ test('bespoke authored enemy visual kits are registered with roster-key referenc
   assert.equal(coyote.states.includes('idle'), true);
   assert.equal(coyote.states.includes('attack'), true);
   assert.equal(coyote.states.includes('death'), true);
+});
+
+test('WO-52 enemy visual redesign queue ranks top-5 exposed Level 1 enemies and halts before generation', () => {
+  const queue = buildEnemyVisualRedesignQueue();
+  assert.equal(queue.id, 'hmh-enemy-visual-redesign-queue-wo52');
+  assert.equal(queue.approvalState, 'HALT_AWAITING_JUSTIN_TOP5_CONTACT_SHEET_APPROVAL');
+  assert.equal(queue.fullBatchAllowed, false);
+  assert.equal(queue.sourcePolicy, 'current-runtime-art-only-no-new-generation');
+  assert.deepEqual(queue.topFive.map((item) => item.enemyId), [
+    'claim-jumper',
+    'coyote-pack-runner',
+    'wild-boar',
+    'rattlesnake',
+    'buzzard',
+  ]);
+  assert.deepEqual(queue.topFive.map((item) => item.exposureRank), [1, 2, 3, 4, 5]);
+  assert.equal(queue.topFive.every((item) => item.exposureScore > 0 && item.currentRosterKey && item.redesignBrief.length > 40), true);
+  assert.equal(queue.topFive.every((item) => item.contactSheetRequired === true && item.approvalState === queue.approvalState), true);
+  assert.equal(queue.topFive.some((item) => item.enemyId === 'buzzard' && item.currentRosterKey === 'crypto-bro-rusher' && /proxy/i.test(item.currentArtIssue)), true);
+  assert.equal(HMH_ENEMY_VISUAL_REDESIGN_QUEUE, queue);
+});
+
+test('WO-52 top-5 exposure contact-sheet plan uses real current-art sources and docs a HALT', () => {
+  const plan = buildTopEnemyExposureContactSheetPlan();
+  assert.equal(plan.id, 'hmh-wo52-top5-enemy-exposure-contact-sheet');
+  assert.equal(plan.outputPath, 'docs/game-design/assets/hmh-wo52-top5-enemy-exposure-contact-sheet.png');
+  assert.equal(existsSync(fileURLToPath(new URL('../docs/game-design/assets/hmh-wo52-top5-enemy-exposure-contact-sheet.png', import.meta.url))), true);
+  assert.equal(existsSync(fileURLToPath(new URL('../docs/game-design/hmh-wo52-enemy-visual-redesign-queue.md', import.meta.url))), true);
+  assert.deepEqual(plan.states, ['idle', 'attack-tell', 'hit', 'death', 'optional-gore-overlay']);
+  assert.equal(plan.rows.length, 5);
+  assert.equal(plan.rows.every((row) => row.frames.length === plan.states.length), true);
+  assert.equal(plan.rows.every((row) => row.frames.every((frame) => frame.src.endsWith('.png'))), true);
+  assert.equal(plan.rows.some((row) => row.enemyId === 'buzzard' && row.currentActorId === 'crypto-bro-rusher'), true);
+  assert.equal(plan.haltCopy.includes('Justin'), true);
+  assert.equal(plan.haltCopy.includes('full enemy art batch'), true);
 });

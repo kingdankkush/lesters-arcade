@@ -217,6 +217,83 @@ const ENEMY_ROSTER_KEYS = Object.freeze({
   'stablecoin-socialite': { rosterKey: 'stablecoin-socialite', drawScaleMul: 1.06, anchorBiasY: -8 },
 });
 
+const WO52_HALT_STATE = 'HALT_AWAITING_JUSTIN_TOP5_CONTACT_SHEET_APPROVAL';
+const WO52_CONTACT_SHEET_ID = 'hmh-wo52-top5-enemy-exposure-contact-sheet';
+const WO52_CONTACT_SHEET_OUTPUT = 'docs/game-design/assets/hmh-wo52-top5-enemy-exposure-contact-sheet.png';
+const WO52_STATES = Object.freeze(['idle', 'attack-tell', 'hit', 'death', 'optional-gore-overlay']);
+
+function completionFrame(actorId, state, note = null) {
+  const srcState = state === 'idle' ? 'attack-tell' : state;
+  return Object.freeze({
+    state,
+    src: `./assets/generated/hmh-final-animation-completion/enemy/${actorId}/${srcState}.png`,
+    note: note ?? (state === 'idle' ? 'idle/current slot uses current best exposed frame when true idle is unavailable in completion pack' : 'final completion readability frame'),
+  });
+}
+
+function redesignQueueItem({ enemyId, title, exposureRank, exposureScore, currentRosterKey, currentArtIssue, redesignBrief, runtimeRole }) {
+  return Object.freeze({
+    enemyId,
+    title,
+    exposureRank,
+    exposureScore,
+    runtimeRole,
+    currentRosterKey,
+    currentArtIssue,
+    redesignBrief,
+    contactSheetRequired: true,
+    approvalState: WO52_HALT_STATE,
+    acceptance: Object.freeze([
+      'silhouette reads at 1x in noir lighting and BLACKOUT haze',
+      'attack-tell/hit/death states are distinct before runtime integration',
+      'approved top-5 contact sheet exists before any full enemy art batch or credit-spending generation',
+    ]),
+  });
+}
+
+const WO52_QUEUE = Object.freeze({
+  id: 'hmh-enemy-visual-redesign-queue-wo52',
+  approvalState: WO52_HALT_STATE,
+  fullBatchAllowed: false,
+  sourcePolicy: 'current-runtime-art-only-no-new-generation',
+  selectionRationale: 'Top-5 exposure combines Level 1 enemy-animation brief priority with early-run encounter frequency and current runtime proxy/partial-art risk.',
+  topFive: Object.freeze([
+    redesignQueueItem({ enemyId: 'claim-jumper', title: 'Claim-Jumper', exposureRank: 1, exposureScore: 98, currentRosterKey: 'claim-jumper', runtimeRole: 'ranged human opener/mesa pressure', currentArtIssue: 'partial runtime roster has shoot/attack-tell only; needs full silhouette identity review', redesignBrief: 'Rifle-raise outlaw with clear hat/shoulder-set silhouette, scope-glint tell, recoil, reload, cover hop, and readable collapse.' }),
+    redesignQueueItem({ enemyId: 'coyote-pack-runner', title: 'Coyote Pack Runner', exposureRank: 2, exposureScore: 94, currentRosterKey: 'coyote-pack-runner', runtimeRole: 'fast melee pack animal', currentArtIssue: 'high frequency melee threat; lunge tell must survive dust and small-canvas reads', redesignBrief: 'Low stalking coyote with split-flank run, feint-hop tell, bite lunge, skid recovery, and death tumble that never reads as a human proxy.' }),
+    redesignQueueItem({ enemyId: 'wild-boar', title: 'Wild Boar', exposureRank: 3, exposureScore: 89, currentRosterKey: 'wild-boar', runtimeRole: 'straight-line charger', currentArtIssue: 'charge silhouette is gameplay-critical and must stay separate from coyote body language', redesignBrief: 'Heavy head-down boar with hoof scrape anticipation, committed charge, impact skid, stun recoil, and death slide.' }),
+    redesignQueueItem({ enemyId: 'rattlesnake', title: 'Rattlesnake', exposureRank: 4, exposureScore: 84, currentRosterKey: 'rattlesnake', runtimeRole: 'burrow/ambush striker', currentArtIssue: 'small low profile can vanish under ground/noir treatment without a stronger coil/rattle read', redesignBrief: 'Half-buried snake with coil silhouette, tail-rattle tell, strike burst, recoil, and unwind death that contrasts against terrain.' }),
+    redesignQueueItem({ enemyId: 'buzzard', title: 'Buzzard', exposureRank: 5, exposureScore: 78, currentRosterKey: 'crypto-bro-rusher', runtimeRole: 'flyer/dive pressure', currentArtIssue: 'currently resolves through proxy-like crypto-bro-rusher exposure art instead of a bird silhouette', redesignBrief: 'Circling scavenger bird with bank left/right, tightening shadow dive tell, dive strike, pull-up recovery, and feather-burst death.' }),
+  ]),
+});
+
+export const HMH_ENEMY_VISUAL_REDESIGN_QUEUE = WO52_QUEUE;
+
+export function buildEnemyVisualRedesignQueue() {
+  return WO52_QUEUE;
+}
+
+export function buildTopEnemyExposureContactSheetPlan() {
+  const queue = buildEnemyVisualRedesignQueue();
+  const rows = queue.topFive.map((item) => {
+    const actorId = item.currentRosterKey;
+    return Object.freeze({
+      enemyId: item.enemyId,
+      label: item.title,
+      currentActorId: actorId,
+      exposureRank: item.exposureRank,
+      issue: item.currentArtIssue,
+      frames: Object.freeze(WO52_STATES.map((state) => completionFrame(actorId, state, item.enemyId === 'buzzard' ? 'buzzard row intentionally shows current proxy art pending approval' : null))),
+    });
+  });
+  return Object.freeze({
+    id: WO52_CONTACT_SHEET_ID,
+    outputPath: WO52_CONTACT_SHEET_OUTPUT,
+    states: WO52_STATES,
+    rows: Object.freeze(rows),
+    haltCopy: 'HALT: Justin must approve the top-5 exposure contact sheet before any full enemy art batch, PixelLab/ComfyUI generation, or runtime replacement work begins.',
+  });
+}
+
 // BESPOKE_ENEMY_VISUAL_KITS is kept as a backward-compatible export but now returns
 // roster-key-based kit descriptors instead of static sheet paths. The renderer uses
 // these to look up the animated roster entry for 8-dir frame selection.
