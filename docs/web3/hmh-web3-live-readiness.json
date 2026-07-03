@@ -1,0 +1,45 @@
+{
+  "version": "hmh-web3-live-readiness-v1",
+  "gates": [
+    {
+      "id": "deterministic-replay-verifier",
+      "status": "PASS",
+      "evidence": [
+        "sample replayHash 5456483eed6a… recomputes deterministically"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "chain-read-leaderboards",
+      "status": "PASS",
+      "evidence": [
+        "fallback=local-cache"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "official-profile-durability",
+      "status": "PASS",
+      "evidence": [
+        "local profile persistence + optional player-signed profile write/read"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "on-chain-registry-economy",
+      "status": "BLOCKED",
+      "evidence": [],
+      "blockers": [
+        "GameRegistry cabinet approval path is not live-gated.",
+        "SplitConfig/economy settings are not production-approved.",
+        "Legal/brand/economy approval is required before real-value launch."
+      ]
+    }
+  ],
+  "summary": {
+    "status": "PARTIAL",
+    "passCount": 3,
+    "blockedCount": 1,
+    "gateCount": 4
+  }
+}
