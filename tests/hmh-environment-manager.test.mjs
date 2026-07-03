@@ -1,11 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   WEATHER_PRESETS,
   buildAmbientZoneModel,
   buildCombatReadabilityProfile,
   buildEnvironmentState,
+  buildNoirLightingPlan,
 } from '../apps/portal/src/hmh-environment-manager.mjs';
 
 test('buildEnvironmentState is deterministic for a given seed and escalates from dusk toward night over a run', () => {
@@ -50,4 +52,44 @@ test('buildAmbientZoneModel maps district families and POIs to biome-extensible 
   assert.equal(forestPoi.dangerCue, 'cave-mouth-drip');
   assert.equal(rugpull.ambientBed, 'ghost-town-creak');
   assert.equal(rugpull.poiTensionCue, 'rugpull-mainstreet-tension');
+});
+
+test('WO-50 noir lighting plan supports BLACKOUT while preserving silhouette and perf gates', () => {
+  const environmentState = buildEnvironmentState({ seed: 12345, elapsedSeconds: 16 * 60 });
+  const calmReadability = buildCombatReadabilityProfile({ enemyCount: 4, projectileCount: 1, weatherId: environmentState.weather.id });
+  const chaosReadability = buildCombatReadabilityProfile({ enemyCount: 52, projectileCount: 20, weatherId: 'dust-storm' });
+
+  const calm = buildNoirLightingPlan({ environmentState, readability: calmReadability });
+  const blackout = buildNoirLightingPlan({
+    environmentState,
+    readability: chaosReadability,
+    activeThreatBeat: { type: 'BLACKOUT', composition: { ambientDimPct: 40 } },
+  });
+
+  assert.equal(calm.id, 'level1-noir-lighting-plan-v1');
+  assert.equal(calm.blackout.active, false);
+  assert.equal(blackout.blackout.active, true);
+  assert.equal(blackout.blackout.hook, 'LEVEL_ONE_THREAT_BEAT_BLACKOUT');
+  assert.equal(blackout.ambientDarkness > calm.ambientDarkness, true);
+  assert.equal(blackout.backgroundDimMul < calm.backgroundDimMul, true);
+  assert.equal(blackout.silhouetteRimAlpha >= 0.36, true);
+  assert.equal(blackout.muzzleFlashBoost > calm.muzzleFlashBoost, true);
+  assert.equal(blackout.weatherOverlayAlpha <= chaosReadability.weatherOverlayAlpha, true, 'BLACKOUT must not stack haze until actors disappear');
+  assert.equal(blackout.perf.maxLightSources <= calm.perf.maxLightSources, true);
+  assert.equal(blackout.perf.maxLightSources <= 14, true);
+  assert.equal(blackout.perf.cacheStaticGradients, true);
+  assert.deepEqual(blackout.layerOrder, ['night-tint', 'light-pools', 'colored-glow', 'silhouette-rim', 'weather-haze', 'edge-vignette']);
+});
+
+test('WO-50 runtime source consumes noir lighting plan and active BLACKOUT beat in drawSceneLighting', () => {
+  const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  const lightingBlock = mainSource.slice(mainSource.indexOf('function drawSceneLighting'), mainSource.indexOf('function drawCombatScene'));
+
+  assert.match(mainSource, /buildNoirLightingPlan/);
+  assert.match(mainSource, /levelOneThreatBeatAt/);
+  assert.match(lightingBlock, /currentLevelOneThreatBeat\(/);
+  assert.match(lightingBlock, /lightingPlan\.blackout\.active/);
+  assert.match(lightingBlock, /lightingPlan\.perf\.maxLightSources/);
+  assert.match(lightingBlock, /silhouetteRimAlpha/);
+  assert.match(lightingBlock, /muzzleFlashBoost/);
 });

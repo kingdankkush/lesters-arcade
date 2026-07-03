@@ -102,6 +102,44 @@ export function buildCombatReadabilityProfile({ enemyCount = 0, projectileCount 
   });
 }
 
+export function buildNoirLightingPlan({ environmentState = null, readability = null, activeThreatBeat = null } = {}) {
+  const baseDarkness = Number(environmentState?.timeOfDay?.ambientDarkness ?? 0.18) || 0.18;
+  const threat = clamp01(Number(readability?.threat ?? 0) || 0);
+  const isBlackout = activeThreatBeat?.type === 'BLACKOUT';
+  const blackoutDimPct = isBlackout ? clamp01(Number(activeThreatBeat?.composition?.ambientDimPct ?? 40) / 100) : 0;
+  const ambientDarkness = clamp01(baseDarkness + threat * 0.08 + blackoutDimPct * 0.52);
+  const weatherOverlayBase = Number(readability?.weatherOverlayAlpha ?? 0.05) || 0.05;
+  const weatherOverlayAlpha = clamp01(Math.min(0.28, weatherOverlayBase * (isBlackout ? 0.72 : 1)));
+  const maxAmbientProps = Math.max(4, Math.round(Number(readability?.maxAmbientProps ?? 12) || 12));
+  const maxLightSources = Math.max(5, Math.min(isBlackout ? 10 : 18, Math.round(maxAmbientProps * (isBlackout ? 0.85 : 1.15))));
+
+  return Object.freeze({
+    id: 'level1-noir-lighting-plan-v1',
+    paletteId: 'litecoin-city-after-dark-neon-noir-deco-v1',
+    ambientDarkness: Number(ambientDarkness.toFixed(3)),
+    backgroundDimMul: Number(Math.max(0.42, 1 - threat * 0.12 - blackoutDimPct * 0.72).toFixed(3)),
+    lightPoolAlphaMul: Number((isBlackout ? 1.18 : 1).toFixed(3)),
+    coloredGlowAlphaMul: Number((isBlackout ? 1.28 : 1).toFixed(3)),
+    silhouetteRimAlpha: Number(Math.min(0.52, 0.18 + threat * 0.14 + (isBlackout ? 0.24 : 0)).toFixed(3)),
+    muzzleFlashBoost: Number((1 + (isBlackout ? 0.55 : 0) + threat * 0.08).toFixed(3)),
+    weatherOverlayAlpha: Number(weatherOverlayAlpha.toFixed(3)),
+    blackout: Object.freeze({
+      active: isBlackout,
+      hook: isBlackout ? 'LEVEL_ONE_THREAT_BEAT_BLACKOUT' : null,
+      label: activeThreatBeat?.label ?? null,
+      telegraph: activeThreatBeat?.telegraph ?? null,
+      ambientDimPct: Math.round(blackoutDimPct * 100),
+    }),
+    perf: Object.freeze({
+      maxLightSources,
+      cacheStaticGradients: true,
+      maxDynamicGradientsPerFrame: maxLightSources * 2 + 1,
+      skipDecorativeLightPoolsUnderThreat: threat >= 0.72 || isBlackout,
+    }),
+    layerOrder: Object.freeze(['night-tint', 'light-pools', 'colored-glow', 'silhouette-rim', 'weather-haze', 'edge-vignette']),
+  });
+}
+
 export function buildAmbientZoneModel({ districtFamily = null, poiId = null, weatherId = 'clear' } = {}) {
   const district = normalizeId(districtFamily);
   const poi = normalizeId(poiId);

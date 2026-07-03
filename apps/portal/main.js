@@ -77,7 +77,7 @@ import {
   levelOneCuratedAssetSrc,
   levelOneOpeningGroundRoleForTile,
 } from './src/hmh-level-one-visible-runtime.mjs';
-import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState } from './src/hmh-environment-manager.mjs';
+import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState, buildNoirLightingPlan } from './src/hmh-environment-manager.mjs';
 import { buildCharacterSelectEntries, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG, resolveSelectedCharacterId, setPreferredCharacter } from './src/hmh-character-config.mjs';
 import { getAuthoredSceneObjects, getDistrictEdgeTreatment, getAllAuthoredSceneObjects } from './src/authored-world-layout.mjs';
 import HMH_ASSET_FOOTPRINTS from './assets/hmh-asset-footprints.json' with { type: 'json' };
@@ -159,6 +159,7 @@ import {
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeBossProxyRoster,
+  levelOneThreatBeatAt,
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
   buildLevelOneBoundaryObstaclesNear,
   buildLevelOneMinimapModel,
@@ -7431,6 +7432,11 @@ function currentReadabilityProfile(environmentState = currentEnvironmentState())
   });
 }
 
+function currentLevelOneThreatBeat() {
+  if ((combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) return null;
+  return levelOneThreatBeatAt(combat.elapsedGameSeconds ?? 0, { seed: combat.roguelikeRun?.seed ?? 0 });
+}
+
 function currentAmbientZoneModel(environmentState = currentEnvironmentState()) {
   const district = currentPlayerDistrictContext();
   const poi = currentCampaignPoi();
@@ -10399,20 +10405,27 @@ function collectLightSources() {
 // Night ambient + carved light pools. destination-out erases the dark overlay
 // where lights are, leaving soft lit circles over the world.
 function drawSceneLighting(ctx, width, height) {
-  const lights = collectLightSources();
   const environmentState = currentEnvironmentState();
   const readability = currentReadabilityProfile(environmentState);
+  const lightingPlan = buildNoirLightingPlan({
+    environmentState,
+    readability,
+    activeThreatBeat: currentLevelOneThreatBeat(),
+  });
+  const lights = collectLightSources().slice(0, lightingPlan.perf.maxLightSources);
   ctx.save();
-  // 1) Night tint over the whole world (deep indigo). Kept light now that the
-  //    player has no carved light pool, so the unlit hero stays clearly visible.
-  ctx.fillStyle = `rgba(6, 10, 28, ${environmentState.timeOfDay.ambientDarkness.toFixed(3)})`;
+  // 1) Night tint over the whole world. BLACKOUT hooks into the WO-42 threat beat
+  //    and drops ambient/background light while the silhouette rim keeps actors readable.
+  ctx.fillStyle = `rgba(6, 10, 28, ${lightingPlan.ambientDarkness.toFixed(3)})`;
   ctx.fillRect(0, 0, width, height);
   // 2) Carve light pools out of the darkness.
   ctx.globalCompositeOperation = 'destination-out';
   for (const l of lights) {
     const g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
-    g.addColorStop(0, 'rgba(0,0,0,0.92)');
-    g.addColorStop(0.55, 'rgba(0,0,0,0.45)');
+    const coreAlpha = Math.min(0.98, 0.92 * lightingPlan.lightPoolAlphaMul);
+    const shoulderAlpha = Math.min(0.64, 0.45 * lightingPlan.lightPoolAlphaMul);
+    g.addColorStop(0, `rgba(0,0,0,${coreAlpha.toFixed(3)})`);
+    g.addColorStop(0.55, `rgba(0,0,0,${shoulderAlpha.toFixed(3)})`);
     g.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = g;
     ctx.beginPath();
@@ -10426,30 +10439,47 @@ function drawSceneLighting(ctx, width, height) {
   for (const l of lights) {
     const g = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r);
     const tint = l.warm ? 'rgba(255, 176, 64,' : 'rgba(64, 200, 255,';
-    g.addColorStop(0, `${tint} 0.18)`);
+    g.addColorStop(0, `${tint} ${(0.18 * lightingPlan.coloredGlowAlphaMul).toFixed(3)})`);
     g.addColorStop(1, `${tint} 0)`);
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.arc(l.x, l.y, l.r, 0, Math.PI * 2);
     ctx.fill();
   }
+  // 3a) Player-centered silhouette rim. During BLACKOUT, bullets/muzzle flashes
+  //     carry the eye, but the hero/enemies still need a readable halo at canvas scale.
+  if (lightingPlan.silhouetteRimAlpha > 0) {
+    const rimX = combat.viewCenterX ?? width / 2;
+    const rimY = combat.viewCenterY ?? height / 2;
+    const rim = ctx.createRadialGradient(rimX, rimY, 10, rimX, rimY, lightingPlan.blackout.active ? 210 : 150);
+    rim.addColorStop(0, `rgba(25,247,255,${(lightingPlan.silhouetteRimAlpha * 0.38).toFixed(3)})`);
+    rim.addColorStop(0.44, `rgba(255,232,77,${(lightingPlan.silhouetteRimAlpha * 0.22).toFixed(3)})`);
+    rim.addColorStop(1, 'rgba(25,247,255,0)');
+    ctx.fillStyle = rim;
+    ctx.fillRect(0, 0, width, height);
+  }
+  if (lightingPlan.blackout.active && combat.fireFlash > 0) {
+    const flash = ctx.createRadialGradient(combat.viewCenterX ?? width / 2, combat.viewCenterY ?? height / 2, 0, combat.viewCenterX ?? width / 2, combat.viewCenterY ?? height / 2, 180);
+    flash.addColorStop(0, `rgba(255,232,77,${(0.12 * lightingPlan.muzzleFlashBoost).toFixed(3)})`);
+    flash.addColorStop(1, 'rgba(255,232,77,0)');
+    ctx.fillStyle = flash;
+    ctx.fillRect(0, 0, width, height);
+  }
   ctx.restore();
-  // 3b) Weather overlay tint / haze. Cosmetic only.
-  if (readability.weatherOverlayAlpha > 0) {
+  // 3b) Weather overlay tint / haze. Cosmetic only, capped by the noir plan so
+  //     BLACKOUT never stacks dust/fog until actors vanish.
+  if (lightingPlan.weatherOverlayAlpha > 0) {
     ctx.save();
-    if (environmentState.weather.id === 'dust-storm') ctx.fillStyle = `rgba(196, 148, 92, ${readability.weatherOverlayAlpha.toFixed(3)})`;
-    else if (environmentState.weather.id === 'fog') ctx.fillStyle = `rgba(170, 188, 208, ${readability.weatherOverlayAlpha.toFixed(3)})`;
-    else if (environmentState.weather.id === 'wind') ctx.fillStyle = `rgba(120, 136, 156, ${(readability.weatherOverlayAlpha * 0.55).toFixed(3)})`;
-    else ctx.fillStyle = `rgba(30, 36, 52, ${(readability.weatherOverlayAlpha * 0.35).toFixed(3)})`;
+    if (environmentState.weather.id === 'dust-storm') ctx.fillStyle = `rgba(196, 148, 92, ${lightingPlan.weatherOverlayAlpha.toFixed(3)})`;
+    else if (environmentState.weather.id === 'fog') ctx.fillStyle = `rgba(170, 188, 208, ${lightingPlan.weatherOverlayAlpha.toFixed(3)})`;
+    else if (environmentState.weather.id === 'wind') ctx.fillStyle = `rgba(120, 136, 156, ${(lightingPlan.weatherOverlayAlpha * 0.55).toFixed(3)})`;
+    else ctx.fillStyle = `rgba(30, 36, 52, ${(lightingPlan.weatherOverlayAlpha * 0.35).toFixed(3)})`;
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
   }
   // 4) Edge vignette + atmospheric fog: darken the screen edges with a soft
-  // radial falloff. This hides the abrupt end of the tiled world, focuses the
-  // eye on the player at center, and makes the darker ground accents read as
-  // intentional nocturnal mood instead of stray glitch patches.
-  // The gradient only depends on canvas size, so it's cached and rebuilt only
-  // on resize instead of being re-created 60x/second.
+  // radial falloff. The gradient only depends on canvas size, so it's cached and
+  // rebuilt only on resize instead of being re-created 60x/second.
   ctx.save();
   if (!drawSceneLighting._vg || drawSceneLighting._vgW !== width || drawSceneLighting._vgH !== height) {
     const vg = ctx.createRadialGradient(
