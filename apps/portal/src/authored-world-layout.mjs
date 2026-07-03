@@ -120,6 +120,36 @@ export const LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES = Object.freeze({
   ]),
 });
 
+function cityPrefabStamp(id, assetKey, role, gridX, gridY, routeBeat, noirPurpose, data = {}) {
+  return placed(id, assetKey, role, gridX, gridY, {
+    solid: data.solid ?? (role !== 'backdrop' && role !== 'lamp' && role !== 'sign' && role !== 'edge'),
+    zHeight: data.zHeight ?? (role === 'backdrop' ? 7 : role === 'billboard' ? 5 : 2),
+    variant: data.variant ?? 0,
+    districtId: 'inner-city-threshold',
+    routeBeat,
+    noirPrefabStamp: true,
+    silhouetteSafe: true,
+    source: 'level1-noir-city-prefab-stamps-v1',
+    noirPurpose,
+    acceptance: data.acceptance ?? 'anchors the city seam without blocking the combat lane or hiding enemy tells',
+  });
+}
+
+export const LEVEL_1_NOIR_CITY_PREFAB_STAMPS = Object.freeze({
+  id: 'level1-noir-city-prefab-stamps-v1',
+  assetPolicy: 'reuse-existing-city-and-curated-assets',
+  levelId: 'level-1-crypto-wasteland',
+  stamps: Object.freeze([
+    cityPrefabStamp('wo51-ic-skyline-backdrop', 'level2-final-city/chrome-tower-facade', 'backdrop', 92, 0, 'boss', 'distant glass-tower skyline backlight behind the boss yard, kept non-solid so it cannot clutter the lane', { solid: false, zHeight: 8 }),
+    cityPrefabStamp('wo51-ic-ticker-billboard', 'level2-final-city/ticker-billboard-loop', 'billboard', 91, 2, 'boss', 'billboard glow frames the boss gate and gives BLACKOUT a safe readable backlight', { zHeight: 5 }),
+    cityPrefabStamp('wo51-ic-boss-gate-lamps', 'street/street-lamp', 'lamp', 90, 5, 'boss', 'paired sodium lamps mark the boss/add gate silhouettes without becoming blockers', { solid: false, zHeight: 3 }),
+    cityPrefabStamp('wo51-ic-boss-gate-marker', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.bossGateMarkers, 'gate', 92, 6, 'boss', 'gate marker proves the boss entrance before spawns arrive and keeps the showdown readable', { zHeight: 2 }),
+    cityPrefabStamp('wo51-ic-neon-exit-horizon', 'level2-final-city/elevator-shaft-glow', 'backdrop', 98, 1, 'extract', 'vertical neon exit shaft pulls the eye toward Litecoin City after the boss', { solid: false, zHeight: 7 }),
+    cityPrefabStamp('wo51-ic-exit-lamp-arrow', 'street/street-lamp', 'lamp', 97, 5, 'extract', 'low cyan/gold exit lamp reads as an extraction arrow while preserving negative space', { solid: false, zHeight: 3 }),
+    cityPrefabStamp('wo51-ic-extraction-arch-repeat', LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.litecoinExtractionArch, 'gate', 99, 4, 'extract', 'exit/city arch confirms the road out without starting a new asset batch', { zHeight: 4 }),
+  ]),
+});
+
 // ============================================================================
 // LEVEL 1: CRYPTO WASTELAND — Authored District Layouts
 // Each district is a ~35-tile-wide band along the main spine.
@@ -642,6 +672,44 @@ export function getAuthoredEncounterBeats(levelId = 'level-1-crypto-wasteland') 
     objective: node.objective,
     label: node.label,
   })));
+}
+
+export function buildLevelOneNoirPlacementAcceptanceTour() {
+  const steps = LEVEL_1_AUTHORED_ROUTE.map((node, index) => {
+    const stamps = LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.filter((stamp) => stamp.routeBeat === node.beat && stamp.districtId === node.districtId);
+    const expectedObjects = [
+      `route-${node.districtId}-${node.id}`,
+      node.assetKey,
+      ...stamps.map((stamp) => stamp.id),
+    ];
+    return Object.freeze({
+      index,
+      routeId: node.id,
+      routeBeat: node.beat,
+      districtId: node.districtId,
+      label: node.label,
+      cameraAnchor: Object.freeze({ gridX: node.gridX, gridY: node.gridY }),
+      expectedObjects: Object.freeze(expectedObjects),
+      acceptance: Object.freeze([
+        'silhouette readability survives noir lighting and BLACKOUT haze',
+        'negative space remains open through the route lane before decorative props',
+        stamps.length > 0 ? 'city prefab stamps are visible as seam/backlight cues, not random scatter' : 'existing authored props remain readable without requiring a new art batch',
+      ]),
+    });
+  });
+
+  return Object.freeze({
+    id: 'level1-noir-placement-acceptance-tour-v1',
+    levelId: 'level-1-crypto-wasteland',
+    purpose: 'camera-by-camera acceptance tour for authored noir placement from spawn to city exit',
+    steps: Object.freeze(steps),
+    summary: Object.freeze({
+      totalSteps: steps.length,
+      noirPrefabStampCount: LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.length,
+      requiresBrowserTour: true,
+      routeCoverage: Object.freeze(steps.map((step) => step.routeId)),
+    }),
+  });
 }
 
 // ============================================================================
@@ -1173,6 +1241,10 @@ export const LEVEL_3_EXPANDED_PROPS = Object.freeze({
   finaleExtraction: Object.freeze([]),
 });
 
+function getLevelOneNoirCityPrefabSceneObjects(districtId) {
+  return districtId === 'inner-city-threshold' ? LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps : [];
+}
+
 // Get ALL authored objects (base layout + expanded props) for a district
 export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto-wasteland') {
   const base = getAuthoredSceneObjects(districtId, levelId);
@@ -1205,8 +1277,11 @@ export function getAllAuthoredSceneObjects(districtId, levelId = 'level-1-crypto
   const pixellabRuntimeObjects = levelId === 'level-1-crypto-wasteland'
     ? getLevelOnePixellabRuntimeSceneObjects(districtId)
     : [];
+  const noirCityPrefabStamps = levelId === 'level-1-crypto-wasteland'
+    ? getLevelOneNoirCityPrefabSceneObjects(districtId)
+    : [];
   const aaaInteractiveObjects = levelId === 'level-1-crypto-wasteland'
     ? aaaLevelOneSceneObjectsForDistrict(districtId)
     : [];
-  return Object.freeze([...base, ...extra, ...routeMarkers, ...foregrounds, ...pixellabRuntimeObjects, ...aaaInteractiveObjects]);
+  return Object.freeze([...base, ...extra, ...routeMarkers, ...foregrounds, ...pixellabRuntimeObjects, ...noirCityPrefabStamps, ...aaaInteractiveObjects]);
 }

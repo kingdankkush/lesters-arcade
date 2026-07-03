@@ -10,6 +10,8 @@ import {
   LEVEL_2_EXPANDED_PROPS,
   LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS,
   LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES,
+  LEVEL_1_NOIR_CITY_PREFAB_STAMPS,
+  buildLevelOneNoirPlacementAcceptanceTour,
   getAuthoredRouteNodes,
   getAuthoredDistrictRouteNodes,
   getAuthoredEncounterBeats,
@@ -248,6 +250,35 @@ test('Level 1 authored route matches the AAA artistic-world critical path', () =
   assert.equal(level1.some((node) => /river|wash/i.test(node.label)), true, 'AAA route includes the river/wash crossing');
   assert.equal(level1.some((node) => /boulder|mesa/i.test(node.label)), true, 'AAA route includes the desert boulder road');
   assert.equal(level1.some((node) => /extraction yard/i.test(node.label)), true, 'AAA route includes the second-town extraction yard');
+});
+
+test('WO-51 city prefab stamps bind noir city-seam objects to authored Level 1 route beats', () => {
+  assert.equal(LEVEL_1_NOIR_CITY_PREFAB_STAMPS.id, 'level1-noir-city-prefab-stamps-v1');
+  assert.equal(LEVEL_1_NOIR_CITY_PREFAB_STAMPS.assetPolicy, 'reuse-existing-city-and-curated-assets');
+  assert.equal(LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.length >= 6, true);
+  assert.deepEqual([...new Set(LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.map((stamp) => stamp.districtId))], ['inner-city-threshold']);
+  assert.equal(LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.every((stamp) => stamp.routeBeat && stamp.noirPurpose && stamp.silhouetteSafe === true), true);
+  assert.equal(LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.some((stamp) => stamp.routeBeat === 'boss' && /billboard|gate/i.test(stamp.noirPurpose)), true);
+  assert.equal(LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.some((stamp) => stamp.routeBeat === 'extract' && /neon|exit|city/i.test(stamp.noirPurpose)), true);
+
+  const innerCity = getAllAuthoredSceneObjects('inner-city-threshold', 'level-1-crypto-wasteland');
+  const stampObjects = innerCity.filter((object) => object.source === LEVEL_1_NOIR_CITY_PREFAB_STAMPS.id);
+  assert.equal(stampObjects.length, LEVEL_1_NOIR_CITY_PREFAB_STAMPS.stamps.length);
+  assert.equal(stampObjects.every((object) => object.noirPrefabStamp === true && object.silhouetteSafe === true), true);
+  assert.equal(stampObjects.some((object) => object.role === 'backdrop' && object.solid === false), true);
+  assert.equal(stampObjects.some((object) => object.role === 'lamp' && object.solid === false), true);
+  assert.equal(stampObjects.some((object) => object.role === 'gate' && object.routeBeat === 'boss'), true);
+});
+
+test('WO-51 authored noir placement acceptance tour covers spawn-to-exit route beats in order', () => {
+  const tour = buildLevelOneNoirPlacementAcceptanceTour();
+  assert.equal(tour.id, 'level1-noir-placement-acceptance-tour-v1');
+  assert.deepEqual(tour.steps.map((step) => step.routeBeat), ['spawn', 'arena', 'arena', 'loop', 'chokepoint', 'pressure', 'boss', 'extract']);
+  assert.equal(tour.steps.every((step) => step.expectedObjects.length >= 2), true);
+  assert.equal(tour.steps.every((step) => step.acceptance.some((rule) => /silhouette|negative space|readable/i.test(rule))), true);
+  assert.equal(tour.summary.totalSteps, 8);
+  assert.equal(tour.summary.noirPrefabStampCount >= 6, true);
+  assert.equal(tour.summary.requiresBrowserTour, true);
 });
 
 test('every authored district has at least one route marker object in getAllAuthoredSceneObjects', () => {
