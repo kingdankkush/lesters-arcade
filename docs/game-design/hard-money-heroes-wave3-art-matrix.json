@@ -1,0 +1,2442 @@
+{
+  "generatedBy": "npm run design:wave3-art",
+  "sourcePacks": {
+    "animatedRoster": "apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs",
+    "finalCompletionPack": "hmh-final-animation-completion-v1",
+    "sourcePolicy": "Original repo-owned HMH final animation completion pixel art; no downloaded pixels copied."
+  },
+  "policy": {
+    "legacyFallbacksAllowed": false,
+    "disallowedFallbacks": [
+      "still-only-runtime",
+      "rectangle-fallback",
+      "cross-character-roster-swap",
+      "legacy-combatArt-enemies"
+    ],
+    "productionRule": "Runtime heroes must resolve to one locked roster with real PNG frames for each required state/direction; enemy readability must come from the final completion pack, not old combatArt or rectangle placeholders."
+  },
+  "heroes": {
+    "rows": [
+      {
+        "actorId": "lit-commando",
+        "state": "idle",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/idle/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-commando",
+        "state": "walk",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/walk/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-commando",
+        "state": "run",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/run/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-commando",
+        "state": "shoot",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/shoot/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-commando",
+        "state": "melee",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/melee/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-commando",
+        "state": "throw",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/throw/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-commando",
+        "state": "hurt",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/hurt/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-commando",
+        "state": "death",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-commando/death/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "idle",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/idle/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "walk",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/walk/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "run",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/run/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "shoot",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/shoot/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "melee",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/melee/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "throw",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/throw/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "hurt",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/hurt/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lit-valkyrie",
+        "state": "death",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "idle",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/idle/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 64,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "walk",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/walk/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 96,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "run",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/run/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 96,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "shoot",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/shoot/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "melee",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/melee/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "throw",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/throw/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "hurt",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/hurt/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lester",
+        "state": "death",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lester/death/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "idle",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 8,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/idle/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 64,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "walk",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/walk/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 96,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "run",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 12,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/run/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 96,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "shoot",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/shoot/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "melee",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/melee/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "throw",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/throw/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "hurt",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/hurt/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      },
+      {
+        "actorId": "lilly",
+        "state": "death",
+        "directions": [
+          {
+            "direction": "south",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/south/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/south-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-east",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/north-east/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/north/00.png",
+            "complete": true
+          },
+          {
+            "direction": "north-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/north-west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/west/00.png",
+            "complete": true
+          },
+          {
+            "direction": "south-west",
+            "frameCount": 7,
+            "firstFrame": "./assets/generated/hmh-animated-roster/lilly/death/south-west/00.png",
+            "complete": true
+          }
+        ],
+        "missingDirections": [],
+        "frameCount": 56,
+        "complete": true
+      }
+    ],
+    "summary": {
+      "actorCount": 4,
+      "stateCount": 8,
+      "directionCount": 8,
+      "totalCells": 256,
+      "completeCells": 256,
+      "missingCells": 0
+    }
+  },
+  "enemies": {
+    "rows": [
+      {
+        "actorId": "claim-jumper",
+        "label": "Claim Jumper",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "claim-jumper",
+        "label": "Claim Jumper",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "claim-jumper",
+        "label": "Claim Jumper",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "claim-jumper",
+        "label": "Claim Jumper",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "claim-jumper",
+        "label": "Claim Jumper",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "coyote-pack-runner",
+        "label": "Coyote Pack Runner",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "coyote-pack-runner",
+        "label": "Coyote Pack Runner",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "coyote-pack-runner",
+        "label": "Coyote Pack Runner",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "coyote-pack-runner",
+        "label": "Coyote Pack Runner",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "coyote-pack-runner",
+        "label": "Coyote Pack Runner",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "crypto-bro-rusher",
+        "label": "Crypto Bro Rusher",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "crypto-bro-rusher",
+        "label": "Crypto Bro Rusher",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "crypto-bro-rusher",
+        "label": "Crypto Bro Rusher",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "crypto-bro-rusher",
+        "label": "Crypto Bro Rusher",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "crypto-bro-rusher",
+        "label": "Crypto Bro Rusher",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "evil-banker-ranged",
+        "label": "Evil Banker Ranged",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "evil-banker-ranged",
+        "label": "Evil Banker Ranged",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "evil-banker-ranged",
+        "label": "Evil Banker Ranged",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "evil-banker-ranged",
+        "label": "Evil Banker Ranged",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "evil-banker-ranged",
+        "label": "Evil Banker Ranged",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "gas-beast-tank",
+        "label": "Gas Beast Tank",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "gas-beast-tank",
+        "label": "Gas Beast Tank",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "gas-beast-tank",
+        "label": "Gas Beast Tank",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "gas-beast-tank",
+        "label": "Gas Beast Tank",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "gas-beast-tank",
+        "label": "Gas Beast Tank",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "honeypot-turret",
+        "label": "Honeypot Turret",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "honeypot-turret",
+        "label": "Honeypot Turret",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "honeypot-turret",
+        "label": "Honeypot Turret",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "honeypot-turret",
+        "label": "Honeypot Turret",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "honeypot-turret",
+        "label": "Honeypot Turret",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "mev-reaper",
+        "label": "Mev Reaper",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "mev-reaper",
+        "label": "Mev Reaper",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "mev-reaper",
+        "label": "Mev Reaper",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "mev-reaper",
+        "label": "Mev Reaper",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "mev-reaper",
+        "label": "Mev Reaper",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "paper-hand",
+        "label": "Paper Hand",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "paper-hand",
+        "label": "Paper Hand",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "paper-hand",
+        "label": "Paper Hand",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "paper-hand",
+        "label": "Paper Hand",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "paper-hand",
+        "label": "Paper Hand",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "phishing-angler",
+        "label": "Phishing Angler",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "phishing-angler",
+        "label": "Phishing Angler",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "phishing-angler",
+        "label": "Phishing Angler",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "phishing-angler",
+        "label": "Phishing Angler",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "phishing-angler",
+        "label": "Phishing Angler",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rattlesnake",
+        "label": "Rattlesnake",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rattlesnake",
+        "label": "Rattlesnake",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rattlesnake",
+        "label": "Rattlesnake",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rattlesnake",
+        "label": "Rattlesnake",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rattlesnake",
+        "label": "Rattlesnake",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rug-rat",
+        "label": "Rug Rat",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rug-rat",
+        "label": "Rug Rat",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rug-rat",
+        "label": "Rug Rat",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rug-rat",
+        "label": "Rug Rat",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "rug-rat",
+        "label": "Rug Rat",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "scorpion-ambusher",
+        "label": "Scorpion Ambusher",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "scorpion-ambusher",
+        "label": "Scorpion Ambusher",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "scorpion-ambusher",
+        "label": "Scorpion Ambusher",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "scorpion-ambusher",
+        "label": "Scorpion Ambusher",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "scorpion-ambusher",
+        "label": "Scorpion Ambusher",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "slippage-skater",
+        "label": "Slippage Skater",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "slippage-skater",
+        "label": "Slippage Skater",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "slippage-skater",
+        "label": "Slippage Skater",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "slippage-skater",
+        "label": "Slippage Skater",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "slippage-skater",
+        "label": "Slippage Skater",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "sybil-drone",
+        "label": "Sybil Drone",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "sybil-drone",
+        "label": "Sybil Drone",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "sybil-drone",
+        "label": "Sybil Drone",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "sybil-drone",
+        "label": "Sybil Drone",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "sybil-drone",
+        "label": "Sybil Drone",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "trench-degen",
+        "label": "Trench Degen",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "trench-degen",
+        "label": "Trench Degen",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "trench-degen",
+        "label": "Trench Degen",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "trench-degen",
+        "label": "Trench Degen",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "trench-degen",
+        "label": "Trench Degen",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "wild-boar",
+        "label": "Wild Boar",
+        "state": "attack-tell",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "wild-boar",
+        "label": "Wild Boar",
+        "state": "melee-counter",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "wild-boar",
+        "label": "Wild Boar",
+        "state": "hit",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "wild-boar",
+        "label": "Wild Boar",
+        "state": "death",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      },
+      {
+        "actorId": "wild-boar",
+        "label": "Wild Boar",
+        "state": "optional-gore-overlay",
+        "sourcePack": "hmh-final-animation-completion-v1",
+        "complete": true
+      }
+    ],
+    "summary": {
+      "requiredActorCount": 16,
+      "readabilityStateCount": 5,
+      "totalStateCells": 80,
+      "completeStateCells": 80,
+      "missingStateCells": 0
+    }
+  },
+  "gates": [
+    {
+      "id": "hero-state-direction-matrix",
+      "status": "pass",
+      "metric": "256/256 cells"
+    },
+    {
+      "id": "enemy-readability-matrix",
+      "status": "pass",
+      "metric": "80/80 cells"
+    },
+    {
+      "id": "legacy-fallback-policy",
+      "status": "pass",
+      "metric": "still-only-runtime, rectangle-fallback, cross-character-roster-swap, legacy-combatArt-enemies"
+    }
+  ]
+}
