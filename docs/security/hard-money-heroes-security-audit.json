@@ -1,0 +1,45 @@
+{
+  "version": "wo-39-security-audit-v1",
+  "scope": {
+    "filesScanned": 311,
+    "directories": [
+      "apps\\portal",
+      "scripts",
+      "tests"
+    ]
+  },
+  "findings": [],
+  "hardeningChecks": [
+    {
+      "id": "no-app-innerhtml",
+      "pass": true,
+      "detail": "runtime modal/content creation uses DOM/textContent APIs"
+    },
+    {
+      "id": "target-blank-rel-noopener",
+      "pass": true,
+      "detail": "external blank targets include noopener"
+    },
+    {
+      "id": "service-worker-network-first-scripts",
+      "pass": true,
+      "detail": "JS/CSS deploys are network-first to avoid stale code"
+    },
+    {
+      "id": "wallet-provider-readiness",
+      "pass": true,
+      "detail": "wallet path has provider detection, chain request, and readiness preflight"
+    },
+    {
+      "id": "avatar-sanitization",
+      "pass": true,
+      "detail": "avatar uploads are type/size checked and re-encoded through canvas"
+    }
+  ],
+  "summary": {
+    "status": "PASS",
+    "findingCount": 0,
+    "hardeningPassCount": 5,
+    "hardeningCheckCount": 5
+  }
+}

@@ -4832,16 +4832,15 @@ function signOutWallet() {
 
 function showSignOutConfirmModal() {
   const modal = el('div', { className: 'modal-overlay signout-confirm-modal' });
-  modal.innerHTML = `
-    <div class="modal-content signout-modal">
-      <h3>Sign Out</h3>
-      <p>Are you sure you want to sign out? This will disconnect your wallet and return you to the Lester's Arcade homepage.</p>
-      <div class="modal-actions">
-        <button class="btn btn-secondary signout-cancel">Cancel</button>
-        <button class="btn btn-danger signout-confirm">Sign Out</button>
-      </div>
-    </div>
-  `;
+  const content = el('div', { className: 'modal-content signout-modal' });
+  appendText(content, 'h3', 'Sign Out');
+  appendText(content, 'p', 'Are you sure you want to sign out? This will disconnect your wallet and return you to the Lester\'s Arcade homepage.');
+  const actions = el('div', { className: 'modal-actions' });
+  const cancelButton = el('button', { className: 'btn btn-secondary signout-cancel', type: 'button', textContent: 'Cancel' });
+  const confirmButton = el('button', { className: 'btn btn-danger signout-confirm', type: 'button', textContent: 'Sign Out' });
+  actions.append(cancelButton, confirmButton);
+  content.append(actions);
+  modal.append(content);
   document.body.appendChild(modal);
   
   modal.querySelector('.signout-cancel').addEventListener('click', () => {
