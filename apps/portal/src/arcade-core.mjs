@@ -2548,6 +2548,74 @@ export function buildLevelOneExplorationFogModel({
   });
 }
 
+export function levelOneVisionFogStateForPoint(model, { x = 0, y = 0 } = {}) {
+  if (!model?.grid || !model?.stateByKey) return 'visible';
+  const col = Math.max(0, Math.min(model.grid.columns - 1, Math.floor(((Number(x) || 0) - model.grid.minX) / model.grid.cellSize)));
+  const row = Math.max(0, Math.min(model.grid.rows - 1, Math.floor(((Number(y) || 0) - model.grid.minY) / model.grid.cellSize)));
+  return model.stateByKey[`${col},${row}`] ?? 'hidden';
+}
+
+export function buildLevelOneVisionFogModel({
+  world = buildLevelOneRunWorldDimensions(),
+  player = { x: 0, y: 0 },
+  visitedCells = [],
+  cellSize = 8,
+  visibleRadius = 1,
+} = {}) {
+  const safeWorld = world ?? buildLevelOneRunWorldDimensions();
+  const grid = levelOneExplorationGrid({ world: safeWorld, cellSize });
+  const playerCell = levelOneExplorationCellForPoint({ x: player.x, y: player.y, world: safeWorld, cellSize: grid.cellSize });
+  const visitedKeys = normalizedVisitedCellSet(visitedCells);
+  const radius = Math.max(1, Math.round(Number(visibleRadius) || 1));
+  const visibleKeys = new Set();
+  for (let col = playerCell.col - radius; col <= playerCell.col + radius; col += 1) {
+    for (let row = playerCell.row - radius; row <= playerCell.row + radius; row += 1) {
+      if (col < 0 || row < 0 || col >= grid.columns || row >= grid.rows) continue;
+      visibleKeys.add(`${col},${row}`);
+    }
+  }
+
+  const states = { visible: [], explored: [], hidden: [] };
+  const stateByKey = {};
+  for (let row = 0; row < grid.rows; row += 1) {
+    for (let col = 0; col < grid.columns; col += 1) {
+      const key = `${col},${row}`;
+      const state = visibleKeys.has(key) ? 'visible' : visitedKeys.has(key) ? 'explored' : 'hidden';
+      stateByKey[key] = state;
+      states[state].push(Object.freeze({
+        key,
+        col,
+        row,
+        state,
+        minX: Number((grid.minX + col * grid.cellSize).toFixed(3)),
+        maxX: Number((grid.minX + (col + 1) * grid.cellSize).toFixed(3)),
+        minY: Number((grid.minY + row * grid.cellSize).toFixed(3)),
+        maxY: Number((grid.minY + (row + 1) * grid.cellSize).toFixed(3)),
+      }));
+    }
+  }
+  const frozenStates = Object.freeze({
+    visible: Object.freeze(states.visible),
+    explored: Object.freeze(states.explored),
+    hidden: Object.freeze(states.hidden),
+  });
+  return Object.freeze({
+    version: 'wo-70-level-one-vision-fog-v1',
+    grid,
+    playerCell: Object.freeze({ ...playerCell, state: 'visible' }),
+    stateByKey: Object.freeze(stateByKey),
+    states: frozenStates,
+    layers: Object.freeze([
+      Object.freeze({ state: 'hidden', cells: frozenStates.hidden, fill: 'rgba(0, 0, 0, 0.58)', alpha: 0.58 }),
+      Object.freeze({ state: 'explored', cells: frozenStates.explored, fill: 'rgba(3, 7, 17, 0.28)', alpha: 0.28 }),
+    ]),
+    fairness: Object.freeze({
+      playerSafeRadiusCells: radius,
+      rule: 'Player cell and adjacent melee-threat cells remain visible; explored cells use haze instead of blackout; hidden cells carry noir blackout.',
+    }),
+  });
+}
+
 function levelOneExplorationRevealsPoint(explorationModel, { x = 0, y = 0, world = buildLevelOneRunWorldDimensions() } = {}) {
   if (!explorationModel?.revealedKeys) return true;
   const cell = levelOneExplorationCellForPoint({ x, y, world, cellSize: explorationModel.grid?.cellSize ?? 8 });

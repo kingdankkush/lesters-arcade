@@ -177,6 +177,7 @@ import {
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
   buildLevelOneBoundaryObstaclesNear,
   buildLevelOneMinimapModel,
+  buildLevelOneVisionFogModel,
   updateLevelOneExplorationTrail,
   buildLevelOneRunWorldDimensions,
   clampLevelOneWorldPoint,
@@ -10373,6 +10374,43 @@ function currentLevelOneExplorationLayer(world) {
   return { visitedCells: combat.explorationVisitedCells, cellSize: 8, revealRadius: 1 };
 }
 
+function drawLevelOneVisionFog(ctx, width, height) {
+  if (!combat.roguelikeRun || (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) return;
+  const world = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
+  const exploration = currentLevelOneExplorationLayer(world);
+  const visionFogModel = buildLevelOneVisionFogModel({
+    world,
+    player: { x: combat.playerMapX, y: combat.playerMapY },
+    visitedCells: exploration.visitedCells,
+    cellSize: exploration.cellSize,
+    visibleRadius: 1,
+  });
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, width, height);
+  ctx.clip();
+  for (const layer of visionFogModel.layers) {
+    if (!layer.cells.length) continue;
+    ctx.fillStyle = layer.fill;
+    for (const cell of layer.cells) {
+      const nw = isoToScreen(cell.minX, cell.minY);
+      const ne = isoToScreen(cell.maxX, cell.minY);
+      const se = isoToScreen(cell.maxX, cell.maxY);
+      const sw = isoToScreen(cell.minX, cell.maxY);
+      if (Math.max(nw.x, ne.x, se.x, sw.x) < -80 || Math.min(nw.x, ne.x, se.x, sw.x) > width + 80) continue;
+      if (Math.max(nw.y, ne.y, se.y, sw.y) < -80 || Math.min(nw.y, ne.y, se.y, sw.y) > height + 80) continue;
+      ctx.beginPath();
+      ctx.moveTo(nw.x, nw.y);
+      ctx.lineTo(ne.x, ne.y);
+      ctx.lineTo(se.x, se.y);
+      ctx.lineTo(sw.x, sw.y);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
 function drawRoguelikeMinimap(ctx, width, height) {
   if (!combat.roguelikeRun || (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) return;
   const world = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
@@ -10722,6 +10760,7 @@ function drawRoguelikeScene(ctx, width, height) {
   // so the scene reads as a lit nocturnal city instead of flat daylight. Drawn
   // after the world but before bullets/HUD so projectiles + UI stay crisp.
   drawSceneLighting(ctx, width, height);
+  drawLevelOneVisionFog(ctx, width, height);
 
   drawBullets(ctx);
   drawParticles(ctx);
