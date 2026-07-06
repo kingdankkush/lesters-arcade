@@ -243,9 +243,9 @@ export const LESTER_ARCADE_WALLET_RAILS = Object.freeze({
   ]),
   permissions: Object.freeze({
     readScopes: Object.freeze(['wallet address', 'chain id', 'parent arcade profile', 'child game progress']),
-    writeScopes: Object.freeze(['paid sessions', 'profile progress', 'achievements', 'official scores', 'transaction receipts']),
+    writeScopes: Object.freeze(['ranked testnet sessions', 'profile progress', 'achievements', 'official scores', 'transaction receipts']),
     freeModeRule: 'free practice never writes progress, achievements, scores, or transactions to the parent account',
-    paidModeRule: 'official paid runs create a parent-sync packet for progress, achievements, leaderboard, and receipt state',
+    paidModeRule: 'ranked testnet runs create a parent-sync packet for progress, achievements, leaderboard, and receipt state',
   }),
   verifier: Object.freeze({
     currentStatus: 'prototype-local-unverified',
@@ -282,8 +282,8 @@ export const LESTER_ARCADE_BRAND_SYSTEM = Object.freeze({
   icons: Object.freeze([
     Object.freeze({ id: 'wallet', symbol: '▣', label: 'Wallet / parent account', usage: 'login, profile, synced account state' }),
     Object.freeze({ id: 'cabinet', symbol: '▥', label: 'Cabinet dApp', usage: 'game-selection and child machines' }),
-    Object.freeze({ id: 'coin', symbol: '◉', label: 'Paid credit', usage: 'official paid session and score eligibility' }),
-    Object.freeze({ id: 'trophy', symbol: '★', label: 'Official leaderboard', usage: 'paid high-score tracking' }),
+    Object.freeze({ id: 'coin', symbol: '◉', label: 'Ranked credit', usage: 'ranked testnet session and score eligibility' }),
+    Object.freeze({ id: 'trophy', symbol: '★', label: 'Official leaderboard', usage: 'ranked high-score tracking' }),
     Object.freeze({ id: 'guide', symbol: '?', label: 'Guide / tooltip', usage: 'beginner help and hover hints' }),
     Object.freeze({ id: 'weapon', symbol: '⌁', label: 'Weapon / pickup', usage: 'loadouts, power-ups, combat cards' }),
     Object.freeze({ id: 'boss', symbol: '⚠', label: 'Boss / danger', usage: 'scroll locks, boss phases, hazard warnings' }),
@@ -317,14 +317,14 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
     Object.freeze({ anchor: 'connectWalletButton', title: 'Wallet login', copy: 'Tries MetaMask/Rabby first, requests LitVM LiteForge if needed, then falls back to a local mock wallet. No funds or live game transaction.' }),
     Object.freeze({ anchor: 'freePlayButton', title: 'Free play', copy: 'Practice for free with no official tracking: no progress, achievements, high scores, or transactions.' }),
     Object.freeze({ anchor: 'paidPlayButton', title: 'Play Ranked', copy: 'Publishes your score, achievements, and name on-chain to LitVM as a permanent run record. On testnet the only cost is the zkLTC gas to write it — free from the faucet, no real funds.' }),
-    Object.freeze({ anchor: 'simulateRunButton', title: 'Sync prototype result', copy: 'Completes a generated run summary and writes progress back to the parent account model.' }),
-    Object.freeze({ anchor: 'startCombatButton', title: 'Start 60fps combat', copy: 'Starts the Canvas test loop. Target: 60fps, smooth controls, pixel-snapped sprites.' }),
+    Object.freeze({ anchor: 'simulateRunButton', title: 'Sync sample result', copy: 'Completes a generated run summary and writes progress back to the parent account model.' }),
+    Object.freeze({ anchor: 'startCombatButton', title: 'Start 60fps practice', copy: 'Starts the Canvas run loop. Target: 60fps, smooth controls, pixel-snapped sprites.' }),
     Object.freeze({ anchor: 'jumpButton', title: 'Jump / double jump', copy: 'Keyboard: Space. Use double jump to reach vertical platforms and dodge boss sweeps.' }),
     Object.freeze({ anchor: 'shootButton', title: 'Shoot', copy: 'Mouse: Left Click. Fire your current gun; pickups can swap blaster, shotgun, auto, rail, or rare super weapon.' }),
     Object.freeze({ anchor: 'grenadeButton', title: 'Grenade', copy: 'Desktop: Right Click or F. Mobile: NADE button. Wide-area Crypto Bomb blast — scarce, replenished by map pickups.' }),
-    Object.freeze({ anchor: 'powerUpButton', title: 'Drop power-up', copy: 'Prototype helper for testing health, shield, ammo, +1up, score multiplier, and weapon pickups.' }),
-    Object.freeze({ anchor: 'combatCanvas', title: 'Gameplay viewport', copy: 'Left-to-right parallax side scroller with mini-boss scroll locks and infinite level-three escalation.' }),
-    Object.freeze({ anchor: 'leaderboardPanel', title: 'Official board', copy: 'Only paid prototype runs are eligible for official leaderboard state.' }),
+    Object.freeze({ anchor: 'powerUpButton', title: 'Drop power-up', copy: 'Practice helper for testing health, shield, ammo, +1up, score multiplier, and weapon pickups.' }),
+    Object.freeze({ anchor: 'combatCanvas', title: 'Gameplay viewport', copy: 'Isometric roguelite arena with authored POIs, swarms, boss beats, and extraction pressure.' }),
+    Object.freeze({ anchor: 'leaderboardPanel', title: 'Official board', copy: 'Only Ranked Testnet runs can submit official leaderboard state.' }),
   ]),
   controls: Object.freeze({
     keyboard: Object.freeze([
@@ -388,7 +388,7 @@ export const LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP = Object.freeze({
   exitRamps: Object.freeze([
     Object.freeze({ id: 'pause-menu', label: 'Pause Menu', target: 'gameplay', copy: 'Resume, restart, audio, character swap, viewport, game menu, and exit actions remain one click away.' }),
     Object.freeze({ id: 'game-menu', label: 'Return to Game Menu', target: 'mode-select', copy: 'Leave the current attempt and re-pick Free or Ranked before starting again.' }),
-    Object.freeze({ id: 'return-to-arcade', label: 'Exit to Lester’s Arcade', target: 'cabinet-select', copy: 'No hidden paid-run sync occurs when a player exits back to Lester’s Arcade.' }),
+    Object.freeze({ id: 'return-to-arcade', label: 'Exit to Lester’s Arcade', target: 'cabinet-select', copy: 'No hidden ranked submit occurs when a player exits back to Lester’s Arcade.' }),
   ]),
   firstImpressionChecklist: Object.freeze([
     'One obvious primary action per step.',
@@ -556,7 +556,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   }),
   profileRules: Object.freeze({
     walletIsPrimaryKey: true,
-    walletLockCopy: 'Progress, high scores, achievements, uploads, and official paid-run submissions are assigned to the connected wallet. Sign out to use a different wallet.',
+    walletLockCopy: 'Progress, high scores, achievements, uploads, and ranked testnet submissions are assigned to the connected wallet. Sign out to use a different wallet.',
     username: Object.freeze({ editable: true, minLength: 3, maxLength: 18, appearsOnLeaderboards: true }),
     avatar: Object.freeze({ editable: true, upload: true, requiredPixels: 150, shape: 'square', appearsOnLeaderboards: true }),
   }),
@@ -1346,7 +1346,7 @@ function defineAchievement({ key, id, title, description, tier, difficulty, unlo
 
 const ACHIEVEMENT_DEFINITIONS = Object.freeze([
   defineAchievement({ key: 'CABINET_PIONEER', id: 'cabinet-pioneer', title: 'Cabinet Pioneer', description: 'Connected a wallet profile inside Lester\'s Arcade.', tier: 'bronze', difficulty: 'easy', unlockType: 'login', icon: '🕹️', requirement: { login: true } }),
-  defineAchievement({ key: 'FIRST_PAID_RUN', id: 'first-paid-run', title: 'First Paid Run', description: 'Inserted an official credit and played a leaderboard-eligible run.', tier: 'bronze', difficulty: 'easy', unlockType: 'paid-run', icon: '◉', requirement: { paidRuns: 1 } }),
+  defineAchievement({ key: 'FIRST_PAID_RUN', id: 'first-paid-run', title: 'First Ranked Run', description: 'Started an official testnet credit and played a leaderboard-eligible run.', tier: 'bronze', difficulty: 'easy', unlockType: 'paid-run', icon: '◉', requirement: { paidRuns: 1 } }),
   defineAchievement({ key: 'FIRST_1000_POINTS', id: 'first-1000-points', title: 'First 1,000 Points', description: 'Scored at least 1,000 points in an official run.', tier: 'bronze', difficulty: 'easy', unlockType: 'score', icon: '★', requirement: { score: 1000 } }),
   defineAchievement({ key: 'FIRST_BLOOD', id: 'first-blood', title: 'First Blood', description: 'Defeated your first Hard Money Heroes enemy.', tier: 'bronze', difficulty: 'easy', unlockType: 'kill', icon: '⚔', requirement: { kills: 1 } }),
   defineAchievement({ key: 'TEN_ENEMY_KILLS', id: 'ten-enemy-kills', title: 'Ten-Enemy Cleanup', description: 'Defeated 10 enemies in one official run.', tier: 'bronze', difficulty: 'easy', unlockType: 'kill', icon: '☠', requirement: { kills: 10 } }),
@@ -1815,7 +1815,7 @@ export const LESTER_BLASTER_MENU_OPTIONS = Object.freeze({
     Object.freeze({ id: 'free-run', title: 'Free Run', section: 'play', description: 'Casual infinite run; local score only.' }),
     Object.freeze({ id: 'paid-run', title: 'Ranked Run ⛓', section: 'play', description: 'Leaderboard-eligible run published on-chain to LitVM (testnet: zkLTC gas only).' }),
     Object.freeze({ id: 'loadout', title: 'Loadout', section: 'prep', description: 'Choose character, primary weapon, grenade, and cosmetic unlocks.' }),
-    Object.freeze({ id: 'leaderboard', title: 'Leaderboard', section: 'scores', description: 'Global paid high-score board.' }),
+    Object.freeze({ id: 'leaderboard', title: 'Leaderboard', section: 'scores', description: 'Global ranked high-score board.' }),
     Object.freeze({ id: 'achievements', title: 'Achievements', section: 'profile', description: 'Unlock medals, skins, weapons, music, and cabinet art.' }),
     Object.freeze({ id: 'sound-options', title: 'Sound / Music', section: 'options', description: 'Adjust synthwave/darksynth music, arcade voice barks, SFX, and attract-mode audio.' }),
     Object.freeze({ id: 'accessibility', title: 'Controls + Accessibility', section: 'options', description: 'Rebind controls and tune camera/flash settings.' }),
@@ -1852,7 +1852,7 @@ export const LESTER_BLASTER_SOUND_DESIGN = Object.freeze({
 
 export const LESTER_BLASTER_UNLOCKABLES = Object.freeze([
   Object.freeze({ id: 'skin-classic-lester', type: 'skin', title: 'Classic Lester Jacket', unlock: 'starter' }),
-  Object.freeze({ id: 'skin-litecoin-silver', type: 'skin', title: 'Litecoin Silver Armor', unlock: 'score 10,000+ in paid mode' }),
+  Object.freeze({ id: 'skin-litecoin-silver', type: 'skin', title: 'Litecoin Silver Armor', unlock: 'score 10,000+ in Ranked Testnet' }),
   Object.freeze({ id: 'character-lester', type: 'character', title: 'Lester', unlock: 'clear Level 1: The Crypto Wasteland' }),
   Object.freeze({ id: 'character-lilly', type: 'character', title: 'Lilly', unlock: 'play 10 ranked matches' }),
   Object.freeze({ id: 'weapon-hashstorm', type: 'weapon', title: 'Hashstorm Permanent Loadout', unlock: 'Hashstorm Specialist achievement' }),
@@ -3452,16 +3452,16 @@ export function buildOfficialRunStatusModel({ gameTitle = 'Hard Money Heroes', c
       channel: 'official',
       state: 'guest',
       heading: 'Waiting for player...',
-      details: 'Connect wallet, select Hard Money Heroes, then choose free practice or official paid mode.',
+      details: 'Connect wallet, select Hard Money Heroes, then choose Free Practice or Ranked Testnet.',
     });
   }
 
   if (lastResult && currentSession?.isPaid) {
     return Object.freeze({
       channel: 'official',
-      state: 'paid-synced',
-      heading: 'Official paid result synced',
-      details: `${gameTitle} score ${lastResult.score.toLocaleString()} accepted for paid leaderboard, achievements, transaction history, and parent progress.`,
+      state: 'ranked-synced',
+      heading: 'Ranked Testnet result synced',
+      details: `${gameTitle} score ${lastResult.score.toLocaleString()} accepted for ranked leaderboard, achievements, transaction history, and parent progress.`,
     });
   }
 
@@ -3477,10 +3477,10 @@ export function buildOfficialRunStatusModel({ gameTitle = 'Hard Money Heroes', c
   if (currentSession) {
     return Object.freeze({
       channel: 'official',
-      state: currentSession.isPaid ? 'paid-armed' : 'free-armed',
-      heading: `${gameTitle} ${currentSession.isPaid ? 'official paid' : 'free casual'} run armed`,
+      state: currentSession.isPaid ? 'ranked-armed' : 'free-armed',
+      heading: `${gameTitle} ${currentSession.isPaid ? 'Ranked Testnet' : 'Free Practice'} run armed`,
       details: currentSession.isPaid
-        ? `${formatMicroUsdc(currentSession.entryFeeMicroUsdc)} simulated credit reserved. Syncing a result will update official leaderboard, achievements, transaction history, and parent progress.`
+        ? `${formatMicroUsdc(currentSession.entryFeeMicroUsdc)} testnet credit reserved. Syncing a result will update official leaderboard, achievements, transaction history, and parent progress.`
         : 'Free practice run armed. Completing it stays untracked: no progress, achievements, high scores, or transactions.',
     });
   }
@@ -3489,7 +3489,7 @@ export function buildOfficialRunStatusModel({ gameTitle = 'Hard Money Heroes', c
     channel: 'official',
     state: 'connected-idle',
     heading: 'Parent account online.',
-    details: 'Choose Free Play for untracked practice or Play Ranked to publish an official, leaderboard-eligible run on-chain to LitVM. The combat sandbox can run separately for testing controls.',
+    details: 'Choose Free Practice for untracked practice or Play Ranked to publish an official, leaderboard-eligible run on-chain to LitVM. The combat sandbox can run separately for testing controls.',
   });
 }
 
@@ -3499,7 +3499,7 @@ export function buildCombatSandboxStatusModel({ running = false, elapsedSeconds 
       channel: 'sandbox',
       state: 'idle',
       heading: 'Local combat sandbox idle',
-      details: 'Start the 60fps Canvas sandbox to practice movement, shooting, blade attacks, throwables, pickups, and boss locks without changing official paid-run state.',
+      details: 'Start the 60fps Canvas sandbox to practice movement, shooting, blade attacks, throwables, pickups, and boss locks without changing ranked testnet state.',
     });
   }
 
@@ -3507,7 +3507,7 @@ export function buildCombatSandboxStatusModel({ running = false, elapsedSeconds 
     channel: 'sandbox',
     state: 'running',
     heading: 'Local combat sandbox running',
-    details: `${Math.round(fps)}fps preview · ${Math.floor(elapsedSeconds)}s accelerated ${activeMode} combat · this does not overwrite official paid-run state.`,
+    details: `${Math.round(fps)}fps preview · ${Math.floor(elapsedSeconds)}s accelerated ${activeMode} combat · this does not overwrite ranked testnet state.`,
   });
 }
 
@@ -4034,7 +4034,7 @@ export function buildLoginMenuModel({ connected = false, selectedGameId = 'leste
       primaryAction: 'Connect Wallet',
       wallet: null,
       walletShort: null,
-      copy: 'Connect an EVM wallet to activate official paid runs, achievements, transactions, and leaderboard identity.',
+      copy: 'Connect an EVM wallet to activate Ranked Testnet runs, achievements, transactions, and leaderboard identity.',
     };
 
   const menuItems = LESTER_BLASTER_MENU_OPTIONS.main.map((item) => ({
@@ -4066,12 +4066,12 @@ export function buildLeaderboardModel(state, { gameId = 'lester-blaster', wallet
     playerBest,
     playerRank: playerBest?.rank ?? null,
     scoreFormula: 'survival + distance + kills + boss clears + coins + power-up bonuses + difficulty tier',
-    eligibility: 'official leaderboard requires paid session and future verifier-signed score summary',
+    eligibility: 'official leaderboard requires Ranked Testnet session and future verifier-signed score summary',
     season: {
-      id: 'prototype-season-00',
+      id: 'ranked-testnet-season-00',
       cadences: [...HARD_MONEY_HEROES_CANON.leaderboards.cadences],
-      resetCadence: 'daily-weekly-monthly-yearly-all-time-prototype',
-      prizeNotes: 'future tournament pool; no real prizes in local prototype',
+      resetCadence: 'daily-weekly-monthly-yearly-all-time-testnet',
+      prizeNotes: 'future tournament pool; no real prizes in local practice',
     },
   };
 }

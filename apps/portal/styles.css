@@ -1398,6 +1398,78 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   .gameplay-view .gameplay-topbar { margin-bottom: 4px; }
 }
 
+@media (max-width: 390px) and (orientation: portrait) {
+  .official-app,
+  .arcade-shell {
+    width: 100%;
+    max-width: 100vw;
+    padding-left: max(8px, env(safe-area-inset-left));
+    padding-right: max(8px, env(safe-area-inset-right));
+    overflow-x: hidden;
+  }
+
+  .wallet-splash-view {
+    justify-items: stretch;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .splash-copy,
+  .splash-marquee,
+  .splash-cta-row,
+  .splash-featured-cabinet-mini {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .official-mode-grid,
+  .mode-row,
+  .gameplay-control-bar,
+  .roguelike-stat-bar {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .official-mode-grid,
+  .mode-row,
+  .gameplay-control-bar {
+    gap: 8px;
+  }
+
+  .mode-card,
+  .mode-banner-button,
+  .gameplay-control-bar button,
+  .roguelike-stat-bar > * {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .mode-card {
+    padding: 14px 14px 16px;
+  }
+
+  .mode-card strong,
+  .mode-card span,
+  .mode-banner-title,
+  .mode-banner-desc,
+  .splash-copy .eyebrow,
+  .splash-copy .tagline,
+  .splash-copy .tiny-note {
+    box-sizing: border-box;
+    width: auto;
+    max-width: calc(100vw - 34px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+}
+
 .primary-button {
   background: linear-gradient(135deg, var(--neon-yellow), var(--neon-green));
   box-shadow: 0 0 18px rgba(69, 255, 138, 0.3);

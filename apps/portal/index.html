@@ -242,7 +242,7 @@
               <p class="eyebrow">Hard Money Heroes</p>
               <h2 id="officialGameModeTitle">Level 1: The Crypto Wasteland // Free Mode</h2>
             </div>
-            <p id="officialGameStateCopy" class="tiny-note">Local sandbox state is separate from official paid-run sync.</p>
+            <p id="officialGameStateCopy" class="tiny-note">Free practice stays local. Ranked testnet runs submit only from the game-over screen.</p>
           </div>
           <div id="roguelikeStatBar" class="roguelike-stat-bar" aria-label="Run stats" aria-live="polite" hidden></div>
           <div id="officialGameplayControls" class="gameplay-control-bar" aria-label="Hard Money Heroes gameplay menu controls">
@@ -309,7 +309,7 @@
         <span>ISOMETRIC ROGUELITE SURVIVAL</span>
         <span>TWIN-STICK AUTO-AIM</span>
         <span>FREE = PRACTICE ONLY</span>
-        <span>PAID MODE = OFFICIAL BOARD</span>
+        <span>RANKED TESTNET = OFFICIAL BOARD</span>
       </section>
 
       <section class="panel generated-art-panel" aria-label="Generated Hard Money Heroes art pack">
@@ -476,9 +476,9 @@
           <div class="run-terminal">
             <p class="label">Official Run State</p>
             <h3 id="runStatus">Waiting for player...</h3>
-            <p id="runDetails">Connect wallet, select Hard Money Heroes, then choose free practice or official paid mode.</p>
+            <p id="runDetails">Connect wallet, select Hard Money Heroes, then choose Free Practice or Ranked Testnet.</p>
           </div>
-          <button id="simulateRunButton" class="play-button">Complete Prototype Run + Sync Parent System</button>
+          <button id="simulateRunButton" class="play-button">Complete Sample Run + Sync Parent System</button>
           <div id="leaderboardPanel" class="leaderboard-list"></div>
         </article>
 
@@ -490,9 +490,9 @@
             </div>
             <span id="fpsPill" class="system-pill">60fps target</span>
           </div>
-          <canvas id="combatCanvas" width="760" height="340" aria-label="Hard Money Heroes isometric roguelite combat prototype"></canvas>
+          <canvas id="combatCanvas" width="760" height="340" aria-label="Hard Money Heroes isometric roguelite combat viewport"></canvas>
           <div class="combat-controls" aria-label="Combat controls">
-            <button id="startCombatButton" class="primary-button">Start Combat Test</button>
+            <button id="startCombatButton" class="primary-button">Start Practice Run</button>
             <button id="jumpButton" class="secondary-button">Dash</button>
             <button id="shootButton" class="secondary-button">Auto-Fire</button>
 

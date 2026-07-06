@@ -2953,10 +2953,10 @@ async function restartCombatRun() {
   playSfxCue('level-start');
   const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
   if (wasPaid) {
-    dom.combatStatus.textContent = 'Ranked restart selected: this starts a fresh local ranked attempt and represents a new testnet credit in the official flow. Prior paid-run state is not silently resubmitted.';
+    dom.combatStatus.textContent = 'Ranked restart selected: this starts a fresh local ranked attempt and represents a new testnet credit in the official flow. Prior ranked state is not silently resubmitted.';
     currentSession = beginTrackedSession({ mode: 'paid' });
   } else {
-    dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or paid-run state is written.';
+    dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or ranked state is written.';
     currentSession = startPlaySession({ wallet: connectedWallet ?? MOCK_WALLET, gameId: selectedGameId, mode: 'free' });
   }
   await startCombat();
@@ -3112,8 +3112,8 @@ function exitToArcade() {
     dom.combatGameOverSummary.replaceChildren();
   }
   dom.combatStatus.textContent = connectedWallet
-    ? 'Exited Hard Money Heroes back to the Lester’s Arcade cabinet row. No hidden paid-run sync occurred.'
-    : 'Exited Hard Money Heroes back to the Lester’s Arcade splash. No hidden paid-run sync occurred.';
+    ? 'Exited Hard Money Heroes back to the Lester’s Arcade cabinet row. No hidden ranked submit occurred.'
+    : 'Exited Hard Money Heroes back to the Lester’s Arcade splash. No hidden ranked submit occurred.';
   renderOfficialApp();
   syncCombatOverlay();
 }
@@ -3449,8 +3449,8 @@ function renderFlowSteps() {
   const steps = [
     ['01', 'Wallet login', 'Use an injected EVM wallet when available; fallback to a local mock account for offline QA.'],
     ['02', 'Parent account', 'One Lester profile stores progress, loadout unlocks, badges, transactions, and official high scores.'],
-    ['03', 'Cabinet dapp', 'Hard Money Heroes runs as the first child game that reads profile state and writes official paid-run packets back.'],
-    ['04', 'LitVM rails', 'dappit.io can help move profile, paid-session, score, achievement, and tournament contracts toward LitVM.'],
+    ['03', 'Cabinet dapp', 'Hard Money Heroes runs as the first child game that reads profile state and writes ranked testnet packets back.'],
+    ['04', 'LitVM rails', 'dappit.io can help move profile, ranked-session, score, achievement, and tournament contracts toward LitVM.'],
   ];
   dom.accountFlowSteps.replaceChildren();
   for (const [number, title, copy] of steps) {
@@ -5552,8 +5552,8 @@ function renderUiQualityGuide() {
 
   applyTooltipAttributes(guide);
   dom.guideIntro.textContent = guide.connected
-    ? 'Parent account is online. Follow the lit path from cabinet selection into paid/free play, combat controls, scoring, and official run sync.'
-    : 'Start here: connect the mock wallet, pick a cabinet, choose free or paid mode, then use the combat guide to practice controls.';
+    ? 'Parent account is online. Follow the lit path from cabinet selection into Free Practice or Ranked Testnet, combat controls, scoring, and official run sync.'
+    : 'Start here: connect the mock wallet, pick a cabinet, choose Free Practice or Ranked Testnet, then use the combat guide to practice controls.';
 
   dom.quickStartGuide.replaceChildren();
   for (const step of guide.quickStart) {
@@ -5767,8 +5767,10 @@ function renderCartridges() {
 function renderSelectedGame() {
   const game = selectedGame();
   dom.selectedGameTitle.textContent = game.title;
-  dom.selectedGameStatus.textContent = game.status;
-  dom.selectedGameTagline.textContent = `${game.tagline} Parent system: ${game.parentSystem}. Role: ${game.systemRole}.`;
+  dom.selectedGameStatus.textContent = game.status === 'playable' ? 'Playable now' : 'Coming soon';
+  dom.selectedGameTagline.textContent = game.status === 'playable'
+    ? `${game.tagline} Free Practice is local. Ranked Testnet can submit official state after game over.`
+    : `${game.tagline} Locked on the public floor until this cabinet is ready.`;
   dom.freePlayButton.disabled = game.status !== 'playable';
   dom.paidPlayButton.disabled = game.status !== 'playable';
   dom.simulateRunButton.disabled = game.status !== 'playable';
@@ -5777,10 +5779,10 @@ function renderSelectedGame() {
 function renderLeaderboard() {
   const model = buildLeaderboardModel(state, { gameId: selectedGameId, wallet: connectedWallet });
   dom.leaderboardPanel.replaceChildren();
-  appendText(dom.leaderboardPanel, 'h3', 'Official Paid Leaderboard');
+  appendText(dom.leaderboardPanel, 'h3', 'Official Ranked Leaderboard');
   appendText(dom.leaderboardPanel, 'p', model.scoreFormula, 'tiny-note');
   if (model.topEntries.length === 0) {
-    dom.leaderboardPanel.append(emptyMini('No paid scores yet. Complete a paid prototype run to sync here.'));
+    dom.leaderboardPanel.append(emptyMini('No ranked scores yet. Finish a Ranked Testnet run to sync here.'));
   } else {
     for (const entry of model.topEntries.slice(0, 4)) {
       const item = el('article', { className: 'leaderboard-entry' });
@@ -7054,7 +7056,7 @@ function damagePlayer(damage, source = 'hit', attackerTitle = null) {
       ? 'Lester was defeated. Ranked run ended; submit only from game-over, and Play Again requires a new testnet credit.'
       : 'Lester was defeated. Free practice can restart from the beginning at no cost.';
     dom.combatRunStatus.textContent = 'Local combat sandbox game over';
-    dom.combatStatus.textContent = `Game Over: ${combat.score.toLocaleString()} score, ${combat.kills} kills, ${formatSeconds(combat.elapsedGameSeconds)} survived. Official paid-run state remains separated until explicit game-over submission.`;
+    dom.combatStatus.textContent = `Run complete: ${combat.score.toLocaleString()} score, ${combat.kills} kills, ${formatSeconds(combat.elapsedGameSeconds)} survived. Ranked Testnet state remains separated until explicit game-over submission.`;
     playSfxCue('game-over', 0.08);
     ensureCombatMusic('game-over');
     syncCombatOverlay();

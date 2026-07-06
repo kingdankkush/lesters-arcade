@@ -379,7 +379,7 @@ test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteFor
   assert.equal(guest.connectors.some((connector) => connector.id === 'mock-wallet' && connector.safeForPrototype), true);
   assert.equal(guest.connectors.some((connector) => connector.id === 'injected-evm' && connector.available === false), true);
   assert.equal(ready.connectors.some((connector) => connector.id === 'injected-evm' && connector.recommended), true);
-  assert.deepEqual(guest.permissions.writeScopes, ['paid sessions', 'profile progress', 'achievements', 'official scores', 'transaction receipts']);
+  assert.deepEqual(guest.permissions.writeScopes, ['ranked testnet sessions', 'profile progress', 'achievements', 'official scores', 'transaction receipts']);
   assert.equal(connectedRightChain.status, 'connected-valid-chain');
   assert.equal(connectedRightChain.wallet, '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd');
   assert.equal(connectedRightChain.walletShort, '0xabcdef…efabcd');
@@ -2046,13 +2046,13 @@ test('official run and combat sandbox status models stay visually separate', () 
   });
   const combat = buildCombatSandboxStatusModel({ running: true, elapsedSeconds: 42, fps: 59, activeMode: 'free' });
 
-  assert.equal(official.heading, 'Official paid result synced');
+  assert.equal(official.heading, 'Ranked Testnet result synced');
   assert.equal(official.channel, 'official');
   assert.equal(official.details.includes('leaderboard'), true);
   assert.equal(official.details.includes('Combat test running'), false);
   assert.equal(combat.heading, 'Local combat sandbox running');
   assert.equal(combat.channel, 'sandbox');
-  assert.equal(combat.details.includes('does not overwrite official paid-run state'), true);
+  assert.equal(combat.details.includes('does not overwrite ranked testnet state'), true);
 });
 
 test('public experience loop gives players a clean arcade entry, game over, and exit path without hidden Web3 writes', () => {
@@ -2065,7 +2065,7 @@ test('public experience loop gives players a clean arcade entry, game over, and 
   assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.modeBoundaries.free.tracks, false);
   assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.modeBoundaries.ranked.submissionTrigger, 'explicit-game-over-submit');
   assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.some((ramp) => ramp.id === 'return-to-arcade' && ramp.target === 'cabinet-select'), true);
-  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.some((ramp) => ramp.copy.includes('No hidden paid-run sync')), true);
+  assert.equal(LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.some((ramp) => ramp.copy.includes('No hidden ranked submit')), true);
 });
 
 test('game-over summary model separates free practice from ranked submit, replay, and arcade-exit actions', () => {
@@ -2312,7 +2312,7 @@ test('runtime exposes tactical HUD overlay, options popup, player-led camera, an
   assert.equal(mainSource.includes('buildGameOverSummaryModel'), true);
   assert.equal(mainSource.includes('submitCombatGameOver'), true);
   assert.equal(mainSource.includes('renderGameOverSummary'), true);
-  assert.equal(mainSource.includes('No hidden paid-run sync'), true);
+  assert.equal(mainSource.includes('No hidden ranked submit'), true);
   assert.equal(mainSource.includes('advanceTacticalCameraModel'), true);
   assert.equal(mainSource.includes('applyPlayerLedCameraMovement'), true);
   assert.equal(mainSource.includes('isoToScreen'), true);

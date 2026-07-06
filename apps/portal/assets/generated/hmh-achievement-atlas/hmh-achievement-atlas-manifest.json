@@ -322,7 +322,7 @@
     },
     {
       "runtimeId": "first-paid-run",
-      "title": "First Paid Run",
+      "title": "First Ranked Run",
       "tier": "bronze",
       "unlockType": "paid-run",
       "src": "./assets/generated/achievement-badges/first-paid-run.png",
@@ -1008,7 +1008,7 @@
     },
     "first-paid-run": {
       "runtimeId": "first-paid-run",
-      "title": "First Paid Run",
+      "title": "First Ranked Run",
       "tier": "bronze",
       "unlockType": "paid-run",
       "src": "./assets/generated/achievement-badges/first-paid-run.png",

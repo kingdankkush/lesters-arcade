@@ -323,7 +323,7 @@ export const HMH_ACHIEVEMENT_ATLAS = Object.freeze({
     },
     {
       "runtimeId": "first-paid-run",
-      "title": "First Paid Run",
+      "title": "First Ranked Run",
       "tier": "bronze",
       "unlockType": "paid-run",
       "src": "./assets/generated/achievement-badges/first-paid-run.png",
@@ -1009,7 +1009,7 @@ export const HMH_ACHIEVEMENT_ATLAS = Object.freeze({
     },
     "first-paid-run": {
       "runtimeId": "first-paid-run",
-      "title": "First Paid Run",
+      "title": "First Ranked Run",
       "tier": "bronze",
       "unlockType": "paid-run",
       "src": "./assets/generated/achievement-badges/first-paid-run.png",
