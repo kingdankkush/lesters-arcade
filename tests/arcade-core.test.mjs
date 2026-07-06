@@ -1030,6 +1030,32 @@ test('Level 1 late-swarm budget keeps rewards collectible while capping visual s
   assert.ok(reducedMotionBudget.maxParticles < wallBudget.maxParticles, 'reduce-motion should further lower particle budget');
 });
 
+test('WO-71 minute-12 performance budget applies justified render LOD without touching opening fidelity', () => {
+  const openingDirector = levelOneRoguelikeSpawnDirectorAt(0);
+  const minute12Director = levelOneRoguelikeSpawnDirectorAt(12 * 60);
+  const openingBudget = levelOneRoguelikePerformanceBudgetAt({
+    elapsedSeconds: 0,
+    activeEnemies: openingDirector.maxEnemiesOnMap,
+  });
+  const minute12Budget = levelOneRoguelikePerformanceBudgetAt({
+    elapsedSeconds: 12 * 60,
+    activeEnemies: minute12Director.maxEnemiesOnMap,
+  });
+
+  assert.equal(openingBudget.lodStage, 'full-fidelity');
+  assert.equal(openingBudget.enemyAnimationFps, 12);
+  assert.ok(openingBudget.maxAnimatedEnemies >= openingDirector.maxEnemiesOnMap);
+  assert.equal(openingBudget.obstacleRenderRadiusWindowed, 18);
+  assert.equal(openingBudget.groundOverscanFullscreenTiles, 20);
+
+  assert.equal(minute12Director.maxEnemiesOnMap >= 110, true, `minute 12 should be a heavy swarm profile, got ${minute12Director.maxEnemiesOnMap}`);
+  assert.equal(minute12Budget.lodStage, 'pressure-lod');
+  assert.ok(minute12Budget.maxAnimatedEnemies < minute12Director.maxEnemiesOnMap, 'late swarms should animate only the nearest/readable enemies');
+  assert.ok(minute12Budget.enemyAnimationFps <= 10, `late enemy animation fps should drop, got ${minute12Budget.enemyAnimationFps}`);
+  assert.ok(minute12Budget.obstacleRenderRadiusWindowed <= 16);
+  assert.ok(minute12Budget.groundOverscanFullscreenTiles <= 14);
+});
+
 test('main.js routes all roguelike death paths through the final-boss extraction gate', () => {
   const source = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const nukeBlock = source.slice(source.indexOf("case 'screenNuke'"), source.indexOf("case 'screenNuke'") + 1100);

@@ -1849,6 +1849,14 @@ function currentLevelOnePerformanceBudget() {
       maxFloatingTexts: 96,
       hitSparkEveryNthHit: 1,
       deathBurstScale: 1,
+      lodPressure: 0,
+      lodStage: 'full-fidelity',
+      maxAnimatedEnemies: 96,
+      enemyAnimationFps: 12,
+      obstacleRenderRadiusWindowed: 18,
+      obstacleRenderRadiusFullscreen: 45,
+      groundOverscanWindowedTiles: 6,
+      groundOverscanFullscreenTiles: 20,
     };
   }
   return levelOneRoguelikePerformanceBudgetAt({
@@ -10257,11 +10265,12 @@ function buildObstacleRenderEntries(ctx) {
   if (!worldProps.length) return [];
   const entries = [];
   for (const o of currentObstacles()) {
-    // Draw obstacles within a GENEROUS window. In fullscreen (2560x1440), the
-    // visible area is ~±35 tiles wide, so render obstacles out to ±45 tiles for
-    // zero pop-in. In windowed mode, ±18 tiles is sufficient.
+    // Draw obstacles inside the current performance-budget window. WO-71 keeps
+    // opening fidelity at the original generous radius, then trims late swarms
+    // where the minute-12 profile shows the budget is spent on actor pressure.
     const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
-    const renderRadius = isFullscreen ? 45 : 18;
+    const perfBudget = currentLevelOnePerformanceBudget();
+    const renderRadius = isFullscreen ? perfBudget.obstacleRenderRadiusFullscreen : perfBudget.obstacleRenderRadiusWindowed;
     if (Math.abs(o.worldX - combat.playerMapX) > renderRadius || Math.abs(o.worldY - combat.playerMapY) > renderRadius) continue;
     const resolved = resolveObstacleProp(o, worldProps);
     if (!resolved || !imageReady(resolved.img)) continue;
@@ -10419,9 +10428,10 @@ function drawRoguelikeScene(ctx, width, height) {
     screenToIso(0, renderHeight),
     screenToIso(renderWidth, renderHeight),
   ];
-  // Generous overscan: ~20 tiles (each tile ~36px wide) = ~720px buffer on each side.
-  // This covers the full 2560x1440 render distance plus biome transition zones.
-  const OVERSCAN = isFullscreen ? 20 : 6;
+  // Budgeted overscan: opening keeps the original generous buffer; late swarms
+  // trim unseen tile work while preserving on-screen biome transitions.
+  const perfBudget = currentLevelOnePerformanceBudget();
+  const OVERSCAN = isFullscreen ? perfBudget.groundOverscanFullscreenTiles : perfBudget.groundOverscanWindowedTiles;
   const minX = Math.floor(Math.min(...corners.map((c) => c.x))) - OVERSCAN;
   const maxX = Math.ceil(Math.max(...corners.map((c) => c.x))) + OVERSCAN;
   const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - OVERSCAN;
@@ -10647,8 +10657,25 @@ function drawRoguelikeScene(ctx, width, height) {
       },
     });
   }
+  const enemyRenderBudget = currentLevelOnePerformanceBudget();
+  const maxAnimatedEnemies = Math.max(0, enemyRenderBudget.maxAnimatedEnemies ?? combat.enemies.length);
+  const animatedEnemies = new Set(combat.enemies
+    .map((enemy) => ({
+      enemy,
+      priority: (enemy.miniBoss || enemy.finalBossProxy ? -10000 : 0)
+        + Math.hypot((enemy.mapX ?? 0) - combat.playerMapX, (enemy.mapY ?? 0) - combat.playerMapY),
+    }))
+    .sort((a, b) => a.priority - b.priority)
+    .slice(0, maxAnimatedEnemies)
+    .map((entry) => entry.enemy));
   for (const enemy of combat.enemies) {
-    renderList.push({ depth: enemy.y, draw: () => drawSingleEnemy(ctx, enemy) });
+    renderList.push({
+      depth: enemy.y,
+      draw: () => drawSingleEnemy(ctx, enemy, {
+        animate: animatedEnemies.has(enemy),
+        enemyAnimationFps: enemyRenderBudget.enemyAnimationFps,
+      }),
+    });
   }
   if (combat.boss) {
     renderList.push({ depth: (combat.boss.y ?? GROUND_Y) + 200, draw: () => drawBoss(ctx) });
@@ -11410,8 +11437,8 @@ function enemyAnimState(enemy) {
   return moving ? ['run', 'walk', 'idle'] : ['idle', 'walk'];
 }
 
-function roguelikeEnemyAnimatedFrame(enemy) {
-  if (!combat.roguelikeRun) return null;
+function roguelikeEnemyAnimatedFrame(enemy, { fps = 12, animate = true } = {}) {
+  if (!combat.roguelikeRun || !animate) return null;
   const role = enemy.miniBoss ? 'boss' : 'enemy';
   const key = rosterKeyForEntity(enemy, role);
   const roster = hmh('HMH_ANIMATED_ROSTER')?.[key];
@@ -11421,7 +11448,7 @@ function roguelikeEnemyAnimatedFrame(enemy) {
     (combat.playerMapX ?? 0) - (enemy.mapX ?? 0),
     (combat.playerMapY ?? 0) - (enemy.mapY ?? 0),
   );
-  return animatedRosterFrame(roster, enemyAnimState(enemy), { fps: 12, phase, facing });
+  return animatedRosterFrame(roster, enemyAnimState(enemy), { fps, phase, facing });
 }
 
 // Hero (Lester) animation state -> roster animation name priority.
@@ -11664,7 +11691,7 @@ function drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderPr
   ctx.restore();
 }
 
-function drawSingleEnemy(ctx, enemy) {
+function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
     const isMini = enemy.miniBoss;
     const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
     const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
@@ -11677,7 +11704,10 @@ function drawSingleEnemy(ctx, enemy) {
     // Contact shadows are disabled here too; keep enemies grounded via art only.
 
     // Canonical actor art first, then animated roster, then biome stills.
-    const animFrame = roguelikeEnemyAnimatedFrame(enemy);
+    const animFrame = roguelikeEnemyAnimatedFrame(enemy, {
+      animate: renderOptions.animate !== false || Boolean(enemy.miniBoss || enemy.finalBossProxy),
+      fps: renderOptions.enemyAnimationFps ?? 12,
+    });
     const waveFrame = isLevelOneCuratedRuntime() ? null : (isMini ? null : roguelikeEnemyWaveArt(enemy));
     const pipelineFrame = pipelineActorFrame(enemy);
     const overlayFrame = pipelineActorOverlayFrame(enemy);

@@ -49,6 +49,9 @@ test('WO-26 difficulty knobs are continuous over a 30-minute simulation', () => 
   assert.ok(levelOneRoguelikeDropChance({ elapsedSeconds: 20 * 60, rare: false }) > levelOneRoguelikeDropChance({ elapsedSeconds: 60, rare: false }));
   assert.ok(levelOneRoguelikePickupAssistAt({ elapsedSeconds: 20 * 60, activeEnemies: 130 }).xpAttractRadiusMultiplier > 1);
   assert.ok(levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds: 20 * 60, activeEnemies: 130 }).maxParticles <= 180);
+  assert.ok(mainSource.includes('groundOverscanFullscreenTiles'), 'runtime should use the Level 1 budget for fullscreen ground overscan');
+  assert.ok(mainSource.includes('maxAnimatedEnemies'), 'runtime should cap animated enemy sprites during late swarms');
+  assert.ok(mainSource.includes('enemyAnimationFps'), 'runtime should lower off-peak enemy animation fps under pressure');
 });
 
 test('WO-26 approved faster arcade boss beat schedule is data-only and has no 8-minute trigger', () => {

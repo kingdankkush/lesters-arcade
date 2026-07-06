@@ -1,0 +1,260 @@
+{
+  "workOrder": "WO-71",
+  "title": "Minute-12 render/profile budget and justified LOD policy",
+  "generatedBy": "scripts/hmh-minute12-profile.mjs",
+  "target": "60fps / 16.7ms frame budget; preserve full fidelity in opening, apply render LOD only under late-swarm pressure.",
+  "checkpoints": [
+    {
+      "minute": 0,
+      "elapsedSeconds": 0,
+      "director": {
+        "elapsedMinutes": 0,
+        "pressure": 0,
+        "spawnIntervalSeconds": 2.45,
+        "maxEnemiesOnMap": 14,
+        "chaseEnemyShare": 0.62,
+        "rangedEnemyShare": 0.18,
+        "eliteEnemyShare": 0.02,
+        "projectileSpeedMultiplier": 1,
+        "archetypeMixCount": 2,
+        "packCohesion": 0.12,
+        "patternDensity": 1,
+        "currentThreatBeat": null,
+        "healthMultiplier": 1,
+        "damageMultiplier": 1,
+        "difficultyLabel": "opening"
+      },
+      "budget": {
+        "pressure": 0,
+        "swarmPressure": 0.1,
+        "lodPressure": 0,
+        "lodStage": "full-fidelity",
+        "maxParticles": 208,
+        "maxFloatingTexts": 83,
+        "hitSparkEveryNthHit": 1,
+        "deathBurstScale": 0.99,
+        "maxAnimatedEnemies": 72,
+        "enemyAnimationFps": 12,
+        "obstacleRenderRadiusWindowed": 18,
+        "obstacleRenderRadiusFullscreen": 45,
+        "groundOverscanWindowedTiles": 6,
+        "groundOverscanFullscreenTiles": 20
+      },
+      "baseline": {
+        "animatedEnemies": 14,
+        "enemyAnimationFps": 12,
+        "enemyAnimationSampleUnits": 168,
+        "obstacleWindowedCells": 1369,
+        "obstacleFullscreenCells": 8281,
+        "groundWindowedTileEstimate": 2496,
+        "groundFullscreenTileEstimate": 13440
+      },
+      "lod": {
+        "animatedEnemies": 14,
+        "enemyAnimationFps": 12,
+        "enemyAnimationSampleUnits": 168,
+        "obstacleWindowedCells": 1369,
+        "obstacleFullscreenCells": 8281,
+        "groundWindowedTileEstimate": 2496,
+        "groundFullscreenTileEstimate": 13440
+      },
+      "reductions": {
+        "enemyAnimationSampleUnitsPct": 0,
+        "obstacleWindowedCellsPct": 0,
+        "obstacleFullscreenCellsPct": 0,
+        "groundWindowedTileEstimatePct": 0,
+        "groundFullscreenTileEstimatePct": 0
+      }
+    },
+    {
+      "minute": 8,
+      "elapsedSeconds": 480,
+      "director": {
+        "elapsedMinutes": 8,
+        "pressure": 0.589,
+        "spawnIntervalSeconds": 1.013,
+        "maxEnemiesOnMap": 94,
+        "chaseEnemyShare": 0.716,
+        "rangedEnemyShare": 0.255,
+        "eliteEnemyShare": 0.232,
+        "projectileSpeedMultiplier": 1.396,
+        "archetypeMixCount": 5,
+        "packCohesion": 0.505,
+        "patternDensity": 1.844,
+        "currentThreatBeat": null,
+        "healthMultiplier": 1.413,
+        "damageMultiplier": 1.193,
+        "difficultyLabel": "market-crash"
+      },
+      "budget": {
+        "pressure": 0.589,
+        "swarmPressure": 0.671,
+        "lodPressure": 0.182,
+        "lodStage": "full-fidelity",
+        "maxParticles": 173,
+        "maxFloatingTexts": 72,
+        "hitSparkEveryNthHit": 2,
+        "deathBurstScale": 0.77,
+        "maxAnimatedEnemies": 68,
+        "enemyAnimationFps": 11,
+        "obstacleRenderRadiusWindowed": 17,
+        "obstacleRenderRadiusFullscreen": 43,
+        "groundOverscanWindowedTiles": 6,
+        "groundOverscanFullscreenTiles": 18
+      },
+      "baseline": {
+        "animatedEnemies": 94,
+        "enemyAnimationFps": 12,
+        "enemyAnimationSampleUnits": 1128,
+        "obstacleWindowedCells": 1369,
+        "obstacleFullscreenCells": 8281,
+        "groundWindowedTileEstimate": 2496,
+        "groundFullscreenTileEstimate": 13440
+      },
+      "lod": {
+        "animatedEnemies": 68,
+        "enemyAnimationFps": 11,
+        "enemyAnimationSampleUnits": 748,
+        "obstacleWindowedCells": 1225,
+        "obstacleFullscreenCells": 7569,
+        "groundWindowedTileEstimate": 2496,
+        "groundFullscreenTileEstimate": 12528
+      },
+      "reductions": {
+        "enemyAnimationSampleUnitsPct": 33.7,
+        "obstacleWindowedCellsPct": 10.5,
+        "obstacleFullscreenCellsPct": 8.6,
+        "groundWindowedTileEstimatePct": 0,
+        "groundFullscreenTileEstimatePct": 6.8
+      }
+    },
+    {
+      "minute": 12,
+      "elapsedSeconds": 720,
+      "director": {
+        "elapsedMinutes": 12,
+        "pressure": 0.736,
+        "spawnIntervalSeconds": 0.72,
+        "maxEnemiesOnMap": 112,
+        "chaseEnemyShare": 0.74,
+        "rangedEnemyShare": 0.274,
+        "eliteEnemyShare": 0.285,
+        "projectileSpeedMultiplier": 1.503,
+        "archetypeMixCount": 6,
+        "packCohesion": 0.609,
+        "patternDensity": 2.049,
+        "currentThreatBeat": null,
+        "healthMultiplier": 1.551,
+        "damageMultiplier": 1.245,
+        "difficultyLabel": "pincer-pressure"
+      },
+      "budget": {
+        "pressure": 0.736,
+        "swarmPressure": 0.8,
+        "lodPressure": 0.587,
+        "lodStage": "pressure-lod",
+        "maxParticles": 165,
+        "maxFloatingTexts": 69,
+        "hitSparkEveryNthHit": 3,
+        "deathBurstScale": 0.71,
+        "maxAnimatedEnemies": 58,
+        "enemyAnimationFps": 10,
+        "obstacleRenderRadiusWindowed": 16,
+        "obstacleRenderRadiusFullscreen": 39,
+        "groundOverscanWindowedTiles": 5,
+        "groundOverscanFullscreenTiles": 14
+      },
+      "baseline": {
+        "animatedEnemies": 112,
+        "enemyAnimationFps": 12,
+        "enemyAnimationSampleUnits": 1344,
+        "obstacleWindowedCells": 1369,
+        "obstacleFullscreenCells": 8281,
+        "groundWindowedTileEstimate": 2496,
+        "groundFullscreenTileEstimate": 13440
+      },
+      "lod": {
+        "animatedEnemies": 58,
+        "enemyAnimationFps": 10,
+        "enemyAnimationSampleUnits": 580,
+        "obstacleWindowedCells": 1089,
+        "obstacleFullscreenCells": 6241,
+        "groundWindowedTileEstimate": 2300,
+        "groundFullscreenTileEstimate": 10800
+      },
+      "reductions": {
+        "enemyAnimationSampleUnitsPct": 56.8,
+        "obstacleWindowedCellsPct": 20.5,
+        "obstacleFullscreenCellsPct": 24.6,
+        "groundWindowedTileEstimatePct": 7.9,
+        "groundFullscreenTileEstimatePct": 19.6
+      }
+    },
+    {
+      "minute": 20,
+      "elapsedSeconds": 1200,
+      "director": {
+        "elapsedMinutes": 20,
+        "pressure": 0.892,
+        "spawnIntervalSeconds": 0.461,
+        "maxEnemiesOnMap": 130,
+        "chaseEnemyShare": 0.764,
+        "rangedEnemyShare": 0.295,
+        "eliteEnemyShare": 0.341,
+        "projectileSpeedMultiplier": 1.623,
+        "archetypeMixCount": 7,
+        "packCohesion": 0.725,
+        "patternDensity": 2.261,
+        "currentThreatBeat": null,
+        "healthMultiplier": 1.736,
+        "damageMultiplier": 1.303,
+        "difficultyLabel": "elite-band"
+      },
+      "budget": {
+        "pressure": 0.892,
+        "swarmPressure": 0.929,
+        "lodPressure": 1,
+        "lodStage": "pressure-lod",
+        "maxParticles": 156,
+        "maxFloatingTexts": 66,
+        "hitSparkEveryNthHit": 3,
+        "deathBurstScale": 0.66,
+        "maxAnimatedEnemies": 48,
+        "enemyAnimationFps": 8,
+        "obstacleRenderRadiusWindowed": 15,
+        "obstacleRenderRadiusFullscreen": 34,
+        "groundOverscanWindowedTiles": 4,
+        "groundOverscanFullscreenTiles": 10
+      },
+      "baseline": {
+        "animatedEnemies": 130,
+        "enemyAnimationFps": 12,
+        "enemyAnimationSampleUnits": 1560,
+        "obstacleWindowedCells": 1369,
+        "obstacleFullscreenCells": 8281,
+        "groundWindowedTileEstimate": 2496,
+        "groundFullscreenTileEstimate": 13440
+      },
+      "lod": {
+        "animatedEnemies": 48,
+        "enemyAnimationFps": 8,
+        "enemyAnimationSampleUnits": 384,
+        "obstacleWindowedCells": 961,
+        "obstacleFullscreenCells": 4761,
+        "groundWindowedTileEstimate": 2112,
+        "groundFullscreenTileEstimate": 9200
+      },
+      "reductions": {
+        "enemyAnimationSampleUnitsPct": 75.4,
+        "obstacleWindowedCellsPct": 29.8,
+        "obstacleFullscreenCellsPct": 42.5,
+        "groundWindowedTileEstimatePct": 15.4,
+        "groundFullscreenTileEstimatePct": 31.5
+      }
+    }
+  ],
+  "decision": {
+    "applyLod": true,
+    "reason": "Minute 12 reaches 112 active-enemy budget at 0.736 pressure, so LOD is justified for animation, obstacle radius, and tile overscan while opening remains full-fidelity."
+  }
+}

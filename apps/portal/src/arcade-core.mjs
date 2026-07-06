@@ -2271,6 +2271,18 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
     hitSparkEveryNthHitCap: 3,
     deathBurstStartScale: 1,
     deathBurstCapScale: 0.62,
+    maxAnimatedEnemiesStart: 72,
+    maxAnimatedEnemiesCap: 48,
+    enemyAnimationFpsStart: 12,
+    enemyAnimationFpsCap: 8,
+    obstacleRenderRadiusWindowedStart: 18,
+    obstacleRenderRadiusWindowedCap: 15,
+    obstacleRenderRadiusFullscreenStart: 45,
+    obstacleRenderRadiusFullscreenCap: 34,
+    groundOverscanWindowedStartTiles: 6,
+    groundOverscanWindowedCapTiles: 4,
+    groundOverscanFullscreenStartTiles: 20,
+    groundOverscanFullscreenCapTiles: 10,
     reduceMotionScale: 0.58,
   }),
   xpPacing: Object.freeze({
@@ -2572,13 +2584,26 @@ export function levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds = 0, activ
   const blendedSwarm = clampNumber(pressure * 0.7 + swarmPressure * 0.3, 0, 1);
   const perf = HMH_LEVEL_ONE_PLAYTEST_BALANCE.performance;
   const motionScale = reduceMotion ? perf.reduceMotionScale : 1;
+  const lodPressure = clampNumber((blendedSwarm - 0.55) / 0.35, 0, 1);
+  const lerpPerf = (startKey, capKey, digits = null) => {
+    const value = perf[startKey] + (perf[capKey] - perf[startKey]) * lodPressure;
+    return digits == null ? value : Number(value.toFixed(digits));
+  };
   return Object.freeze({
     pressure: Number(pressure.toFixed(3)),
     swarmPressure: Number(swarmPressure.toFixed(3)),
+    lodPressure: Number(lodPressure.toFixed(3)),
+    lodStage: lodPressure >= 0.45 ? 'pressure-lod' : 'full-fidelity',
     maxParticles: Math.max(48, Math.round((perf.maxParticlesStart + (perf.maxParticlesCap - perf.maxParticlesStart) * blendedSwarm) * motionScale)),
     maxFloatingTexts: Math.max(28, Math.round((perf.maxFloatingTextsStart + (perf.maxFloatingTextsCap - perf.maxFloatingTextsStart) * blendedSwarm) * motionScale)),
     hitSparkEveryNthHit: Math.max(1, Math.round(perf.hitSparkEveryNthHitStart + (perf.hitSparkEveryNthHitCap - perf.hitSparkEveryNthHitStart) * blendedSwarm)),
     deathBurstScale: Number((perf.deathBurstStartScale + (perf.deathBurstCapScale - perf.deathBurstStartScale) * blendedSwarm).toFixed(2)),
+    maxAnimatedEnemies: Math.max(24, Math.round(lerpPerf('maxAnimatedEnemiesStart', 'maxAnimatedEnemiesCap') * motionScale)),
+    enemyAnimationFps: Math.max(6, Math.round(lerpPerf('enemyAnimationFpsStart', 'enemyAnimationFpsCap'))),
+    obstacleRenderRadiusWindowed: Math.max(12, Math.round(lerpPerf('obstacleRenderRadiusWindowedStart', 'obstacleRenderRadiusWindowedCap'))),
+    obstacleRenderRadiusFullscreen: Math.max(28, Math.round(lerpPerf('obstacleRenderRadiusFullscreenStart', 'obstacleRenderRadiusFullscreenCap'))),
+    groundOverscanWindowedTiles: Math.max(3, Math.round(lerpPerf('groundOverscanWindowedStartTiles', 'groundOverscanWindowedCapTiles'))),
+    groundOverscanFullscreenTiles: Math.max(8, Math.round(lerpPerf('groundOverscanFullscreenStartTiles', 'groundOverscanFullscreenCapTiles'))),
   });
 }
 
