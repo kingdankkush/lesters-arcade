@@ -177,6 +177,7 @@ import {
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
   buildLevelOneBoundaryObstaclesNear,
   buildLevelOneMinimapModel,
+  updateLevelOneExplorationTrail,
   buildLevelOneRunWorldDimensions,
   clampLevelOneWorldPoint,
   calculateRoguelikeKillXp,
@@ -1519,6 +1520,7 @@ const combat = {
   playerY: GROUND_Y,
   playerMapX: 0,
   playerMapY: 0,
+  explorationVisitedCells: [],
   aimMapX: 1,
   aimMapY: 0,
   manualAim: { x: 1, y: 0, active: false, source: 'initial' },
@@ -5990,6 +5992,12 @@ async function startCombat(options = {}) {
   combat.roadNetwork = campaignWorld.roadNetwork;
   combat.worldWidth = worldWidth;
   combat.worldHeight = worldHeight;
+  combat.explorationVisitedCells = updateLevelOneExplorationTrail({
+    world: buildLevelOneRunWorldDimensions({ width: worldWidth, height: worldHeight }),
+    player: { x: combat.playerMapX, y: combat.playerMapY },
+    cellSize: 8,
+    revealRadius: 1,
+  });
   // Index road tiles for O(1) per-tile lookups during rendering. The generator
   // anchors its grid at (0,0)..(2000,2000) but the hero spawns at world (0,0),
   // so shift everything by half the world to center the network on the player.
@@ -10354,6 +10362,17 @@ function buildObstacleRenderEntries(ctx) {
 }
 
 
+function currentLevelOneExplorationLayer(world) {
+  combat.explorationVisitedCells = updateLevelOneExplorationTrail({
+    world,
+    player: { x: combat.playerMapX, y: combat.playerMapY },
+    visitedCells: combat.explorationVisitedCells,
+    cellSize: 8,
+    revealRadius: 1,
+  });
+  return { visitedCells: combat.explorationVisitedCells, cellSize: 8, revealRadius: 1 };
+}
+
 function drawRoguelikeMinimap(ctx, width, height) {
   if (!combat.roguelikeRun || (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) !== DEFAULT_CAMPAIGN_LEVEL_ID) return;
   const world = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
@@ -10364,6 +10383,7 @@ function drawRoguelikeMinimap(ctx, width, height) {
     enemies: combat.enemies,
     pois: activePoi ? [activePoi] : [],
     extractionPoint: combat.extractionPoint,
+    exploration: currentLevelOneExplorationLayer(world),
   });
   const w = Math.min(190, Math.max(144, width * 0.16));
   const h = Math.round(w * (model.bounds.height / Math.max(1, model.bounds.width)));
@@ -10379,6 +10399,14 @@ function drawRoguelikeMinimap(ctx, width, height) {
   if (!ctx.roundRect) ctx.rect(x, y, w, h);
   ctx.fill();
   ctx.stroke();
+  if (model.exploration?.fogCells?.length) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(1, 3, 10, 0.68)';
+    for (const cell of model.exploration.fogCells) {
+      ctx.fillRect(x + cell.x * w, y + cell.y * h, Math.ceil(cell.w * w) + 0.5, Math.ceil(cell.h * h) + 0.5);
+    }
+    ctx.restore();
+  }
   const plot = (marker, radius = 3) => {
     if (!marker) return;
     const px = x + marker.x * w;

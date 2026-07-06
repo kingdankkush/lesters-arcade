@@ -2454,16 +2454,136 @@ function levelOneMinimapMarker({ x = 0, y = 0, world = buildLevelOneRunWorldDime
   });
 }
 
+function levelOneExplorationGrid({ world = buildLevelOneRunWorldDimensions(), cellSize = 8 } = {}) {
+  const safeWorld = world ?? buildLevelOneRunWorldDimensions();
+  const safeCellSize = Math.max(2, Math.round(Number(cellSize) || 8));
+  const width = Math.max(1, safeWorld.width ?? (safeWorld.maxX - safeWorld.minX) ?? 1);
+  const height = Math.max(1, safeWorld.height ?? (safeWorld.maxY - safeWorld.minY) ?? 1);
+  return Object.freeze({
+    cellSize: safeCellSize,
+    columns: Math.max(1, Math.ceil(width / safeCellSize)),
+    rows: Math.max(1, Math.ceil(height / safeCellSize)),
+    minX: Number.isFinite(safeWorld.minX) ? safeWorld.minX : -width / 2,
+    minY: Number.isFinite(safeWorld.minY) ? safeWorld.minY : -height / 2,
+  });
+}
+
+function levelOneExplorationCellForPoint({ x = 0, y = 0, world = buildLevelOneRunWorldDimensions(), cellSize = 8 } = {}) {
+  const grid = levelOneExplorationGrid({ world, cellSize });
+  const clamped = clampLevelOneWorldPoint({ x, y, world });
+  const col = Math.max(0, Math.min(grid.columns - 1, Math.floor((clamped.x - grid.minX) / grid.cellSize)));
+  const row = Math.max(0, Math.min(grid.rows - 1, Math.floor((clamped.y - grid.minY) / grid.cellSize)));
+  return Object.freeze({ col, row, key: `${col},${row}` });
+}
+
+function normalizedVisitedCellSet(visitedCells = []) {
+  const raw = visitedCells instanceof Set ? [...visitedCells] : Array.isArray(visitedCells) ? visitedCells : [];
+  return new Set(raw.filter((value) => /^\d+,\d+$/.test(String(value))).map(String));
+}
+
+export function updateLevelOneExplorationTrail({
+  world = buildLevelOneRunWorldDimensions(),
+  player = { x: 0, y: 0 },
+  visitedCells = [],
+  cellSize = 8,
+  revealRadius = 1,
+} = {}) {
+  const grid = levelOneExplorationGrid({ world, cellSize });
+  const playerCell = levelOneExplorationCellForPoint({ x: player.x, y: player.y, world, cellSize: grid.cellSize });
+  const revealed = normalizedVisitedCellSet(visitedCells);
+  const radius = Math.max(0, Math.round(Number(revealRadius) || 0));
+  for (let col = playerCell.col - radius; col <= playerCell.col + radius; col += 1) {
+    for (let row = playerCell.row - radius; row <= playerCell.row + radius; row += 1) {
+      if (col < 0 || row < 0 || col >= grid.columns || row >= grid.rows) continue;
+      revealed.add(`${col},${row}`);
+    }
+  }
+  return Object.freeze([...revealed].sort((a, b) => {
+    const [ac, ar] = a.split(',').map(Number);
+    const [bc, br] = b.split(',').map(Number);
+    return ar - br || ac - bc;
+  }));
+}
+
+export function buildLevelOneExplorationFogModel({
+  world = buildLevelOneRunWorldDimensions(),
+  player = { x: 0, y: 0 },
+  visitedCells = [],
+  cellSize = 8,
+  revealRadius = 1,
+} = {}) {
+  const safeWorld = world ?? buildLevelOneRunWorldDimensions();
+  const grid = levelOneExplorationGrid({ world: safeWorld, cellSize });
+  const trail = updateLevelOneExplorationTrail({ world: safeWorld, player, visitedCells, cellSize: grid.cellSize, revealRadius });
+  const revealedKeys = normalizedVisitedCellSet(trail);
+  const playerCell = levelOneExplorationCellForPoint({ x: player.x, y: player.y, world: safeWorld, cellSize: grid.cellSize });
+  const revealedCells = [];
+  const fogCells = [];
+  for (let row = 0; row < grid.rows; row += 1) {
+    for (let col = 0; col < grid.columns; col += 1) {
+      const key = `${col},${row}`;
+      const cell = Object.freeze({
+        key,
+        col,
+        row,
+        x: Number((col / grid.columns).toFixed(4)),
+        y: Number((row / grid.rows).toFixed(4)),
+        w: Number((1 / grid.columns).toFixed(4)),
+        h: Number((1 / grid.rows).toFixed(4)),
+      });
+      if (revealedKeys.has(key)) revealedCells.push(cell);
+      else fogCells.push(cell);
+    }
+  }
+  const total = Math.max(1, grid.columns * grid.rows);
+  return Object.freeze({
+    version: 'wo-69-level-one-exploration-v1',
+    grid,
+    playerCell,
+    visitedCells: trail,
+    revealedKeys,
+    revealedCells: Object.freeze(revealedCells),
+    fogCells: Object.freeze(fogCells),
+    coveragePct: Number((revealedCells.length / total).toFixed(3)),
+  });
+}
+
+function levelOneExplorationRevealsPoint(explorationModel, { x = 0, y = 0, world = buildLevelOneRunWorldDimensions() } = {}) {
+  if (!explorationModel?.revealedKeys) return true;
+  const cell = levelOneExplorationCellForPoint({ x, y, world, cellSize: explorationModel.grid?.cellSize ?? 8 });
+  return explorationModel.revealedKeys.has(cell.key);
+}
+
 export function buildLevelOneMinimapModel({
   world = buildLevelOneRunWorldDimensions(),
   player = { x: 0, y: 0 },
   enemies = [],
   pois = [],
   extractionPoint = null,
+  exploration = null,
 } = {}) {
   const safeWorld = world ?? buildLevelOneRunWorldDimensions();
+  const explorationModel = exploration
+    ? buildLevelOneExplorationFogModel({
+        world: safeWorld,
+        player,
+        visitedCells: exploration.visitedCells ?? [],
+        cellSize: exploration.cellSize ?? 8,
+        revealRadius: exploration.revealRadius ?? 1,
+      })
+    : null;
+  const visibleEnemies = (Array.isArray(enemies) ? enemies : []).filter((enemy) => levelOneExplorationRevealsPoint(explorationModel, {
+    x: enemy.mapX ?? enemy.x ?? 0,
+    y: enemy.mapY ?? enemy.y ?? 0,
+    world: safeWorld,
+  }));
+  const visiblePois = (Array.isArray(pois) ? pois : []).filter((poi) => levelOneExplorationRevealsPoint(explorationModel, {
+    x: poi.worldX ?? poi.x ?? 0,
+    y: poi.worldY ?? poi.y ?? 0,
+    world: safeWorld,
+  }));
   return Object.freeze({
-    version: 'wo-21-finite-level-one-minimap-v1',
+    version: explorationModel ? 'wo-69-exploration-minimap-v2' : 'wo-21-finite-level-one-minimap-v1',
     bounds: Object.freeze({
       width: safeWorld.width,
       height: safeWorld.height,
@@ -2472,15 +2592,17 @@ export function buildLevelOneMinimapModel({
       minY: safeWorld.minY,
       maxY: safeWorld.maxY,
     }),
+    exploration: explorationModel ?? Object.freeze({ fogCells: Object.freeze([]), revealedCells: Object.freeze([]), coveragePct: 1 }),
+    legend: Object.freeze({ explorationLabel: explorationModel ? `${Math.round(explorationModel.coveragePct * 100)}% explored` : 'Fully explored' }),
     player: levelOneMinimapMarker({ x: player.x, y: player.y, world: safeWorld, id: 'player', tone: 'green' }),
-    enemies: Object.freeze((Array.isArray(enemies) ? enemies : []).slice(0, 24).map((enemy, index) => levelOneMinimapMarker({
+    enemies: Object.freeze(visibleEnemies.slice(0, 24).map((enemy, index) => levelOneMinimapMarker({
       x: enemy.mapX ?? enemy.x ?? 0,
       y: enemy.mapY ?? enemy.y ?? 0,
       world: safeWorld,
       id: enemy.id ?? `enemy-${index}`,
       tone: enemy.finalBossProxy || enemy.boss ? 'red' : enemy.elite || enemy.miniBoss ? 'orange' : 'magenta',
     }))),
-    pois: Object.freeze((Array.isArray(pois) ? pois : []).slice(0, 12).map((poi, index) => levelOneMinimapMarker({
+    pois: Object.freeze(visiblePois.slice(0, 12).map((poi, index) => levelOneMinimapMarker({
       x: poi.worldX ?? poi.x ?? 0,
       y: poi.worldY ?? poi.y ?? 0,
       world: safeWorld,
@@ -2488,7 +2610,7 @@ export function buildLevelOneMinimapModel({
       label: poi.label ?? poi.title ?? null,
       tone: 'cyan',
     }))),
-    extraction: extractionPoint ? levelOneMinimapMarker({
+    extraction: extractionPoint && levelOneExplorationRevealsPoint(explorationModel, { x: extractionPoint.worldX ?? extractionPoint.x ?? 0, y: extractionPoint.worldY ?? extractionPoint.y ?? 0, world: safeWorld }) ? levelOneMinimapMarker({
       x: extractionPoint.worldX ?? extractionPoint.x ?? 0,
       y: extractionPoint.worldY ?? extractionPoint.y ?? 0,
       world: safeWorld,
