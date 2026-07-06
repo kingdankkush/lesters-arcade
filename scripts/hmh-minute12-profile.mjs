@@ -1,8 +1,12 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 
 import {
+  buildLevelOneMinimapModel,
+  buildLevelOneRunWorldDimensions,
+  buildLevelOneVisionFogModel,
   levelOneRoguelikePerformanceBudgetAt,
   levelOneRoguelikeSpawnDirectorAt,
+  updateLevelOneExplorationTrail,
 } from '../apps/portal/src/arcade-core.mjs';
 
 const OUT_DIR = 'docs/testing';
@@ -76,6 +80,21 @@ function profileAt(minute) {
   };
 }
 
+function integrationProfile() {
+  const world = buildLevelOneRunWorldDimensions();
+  const player = { x: 0, y: 0 };
+  const visitedCells = updateLevelOneExplorationTrail({ world, player, cellSize: 8, revealRadius: 1 });
+  const visionFog = buildLevelOneVisionFogModel({ world, player, visitedCells, cellSize: 8, visibleRadius: 1 });
+  const minimap = buildLevelOneMinimapModel({ world, player, exploration: { visitedCells, cellSize: 8, revealRadius: 1 } });
+  return {
+    sharedExplorationCache: 'runtime updates the exploration trail once per frame, then shares it with vision fog and minimap',
+    visionFogDrawCells: visionFog.layers.reduce((sum, layer) => sum + layer.cells.length, 0),
+    visionFogVisibleCells: visionFog.states.visible.length,
+    minimapFogCells: minimap.exploration.fogCells.length,
+    minimapRevealedCells: minimap.exploration.revealedCells.length,
+  };
+}
+
 const checkpoints = [0, 8, 12, 20].map(profileAt);
 const minute12 = checkpoints.find((entry) => entry.minute === 12);
 const report = {
@@ -84,6 +103,7 @@ const report = {
   generatedBy: 'scripts/hmh-minute12-profile.mjs',
   target: '60fps / 16.7ms frame budget; preserve full fidelity in opening, apply render LOD only under late-swarm pressure.',
   checkpoints,
+  integration: integrationProfile(),
   decision: {
     applyLod: minute12.budget.lodStage === 'pressure-lod' && minute12.director.maxEnemiesOnMap >= 110,
     reason: `Minute 12 reaches ${minute12.director.maxEnemiesOnMap} active-enemy budget at ${minute12.budget.pressure} pressure, so LOD is justified for animation, obstacle radius, and tile overscan while opening remains ${checkpoints[0].budget.lodStage}.`,
@@ -107,6 +127,12 @@ ${checkpoints.map((entry) => `| ${entry.minute} | ${entry.director.maxEnemiesOnM
 - Fullscreen obstacle candidate cells: ${minute12.baseline.obstacleFullscreenCells} → ${minute12.lod.obstacleFullscreenCells} (**${minute12.reductions.obstacleFullscreenCellsPct}% less**)
 - Windowed ground tile estimate: ${minute12.baseline.groundWindowedTileEstimate} → ${minute12.lod.groundWindowedTileEstimate} (**${minute12.reductions.groundWindowedTileEstimatePct}% less**)
 - Fullscreen ground tile estimate: ${minute12.baseline.groundFullscreenTileEstimate} → ${minute12.lod.groundFullscreenTileEstimate} (**${minute12.reductions.groundFullscreenTileEstimatePct}% less**)
+
+## Fog/minimap integration re-verification
+
+- Vision fog draw cells: ${report.integration.visionFogDrawCells} (${report.integration.visionFogVisibleCells} visible cells skipped by the draw layers)
+- Minimap fog cells: ${report.integration.minimapFogCells}; revealed cells: ${report.integration.minimapRevealedCells}
+- Shared exploration cache: ${report.integration.sharedExplorationCache}.
 
 ## Policy
 

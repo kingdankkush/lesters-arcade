@@ -1522,6 +1522,8 @@ const combat = {
   playerMapX: 0,
   playerMapY: 0,
   explorationVisitedCells: [],
+  explorationLayerFrame: -1,
+  explorationLayerCache: null,
   aimMapX: 1,
   aimMapY: 0,
   manualAim: { x: 1, y: 0, active: false, source: 'initial' },
@@ -5999,6 +6001,8 @@ async function startCombat(options = {}) {
     cellSize: 8,
     revealRadius: 1,
   });
+  combat.explorationLayerFrame = -1;
+  combat.explorationLayerCache = null;
   // Index road tiles for O(1) per-tile lookups during rendering. The generator
   // anchors its grid at (0,0)..(2000,2000) but the hero spawns at world (0,0),
   // so shift everything by half the world to center the network on the player.
@@ -10364,6 +10368,9 @@ function buildObstacleRenderEntries(ctx) {
 
 
 function currentLevelOneExplorationLayer(world) {
+  if (combat.explorationLayerFrame === combat.frame && combat.explorationLayerCache) {
+    return combat.explorationLayerCache;
+  }
   combat.explorationVisitedCells = updateLevelOneExplorationTrail({
     world,
     player: { x: combat.playerMapX, y: combat.playerMapY },
@@ -10371,7 +10378,9 @@ function currentLevelOneExplorationLayer(world) {
     cellSize: 8,
     revealRadius: 1,
   });
-  return { visitedCells: combat.explorationVisitedCells, cellSize: 8, revealRadius: 1 };
+  combat.explorationLayerFrame = combat.frame;
+  combat.explorationLayerCache = { visitedCells: combat.explorationVisitedCells, cellSize: 8, revealRadius: 1 };
+  return combat.explorationLayerCache;
 }
 
 function drawLevelOneVisionFog(ctx, width, height) {

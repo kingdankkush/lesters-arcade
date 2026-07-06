@@ -253,6 +253,13 @@
       }
     }
   ],
+  "integration": {
+    "sharedExplorationCache": "runtime updates the exploration trail once per frame, then shares it with vision fog and minimap",
+    "visionFogDrawCells": 14907,
+    "visionFogVisibleCells": 9,
+    "minimapFogCells": 14907,
+    "minimapRevealedCells": 9
+  },
   "decision": {
     "applyLod": true,
     "reason": "Minute 12 reaches 112 active-enemy budget at 0.736 pressure, so LOD is justified for animation, obstacle radius, and tile overscan while opening remains full-fidelity."
