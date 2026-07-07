@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "ui-chrome-sample",
+  "slotNumber": "10",
+  "slotTitle": "UI chrome sample, draft card frame plus HP bar segment",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/ui-chrome-sample.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass-rerolls/ui-chrome-sample-reroll-02.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ed1/hLMY1nKcYsCihglg-irn7_yJZMe5el.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor reroll, slot 10 ui-chrome-sample alternate. Textless pixel-art game HUD components on dark transparent-like background: ornate blank card frame, empty health bar frame, small blank button, empty item socket. Absolutely no text, no logo badge, no letters, no numerals, no icon drawings, no watermark. High-bit pixel art, brass/silver Deco bevels, cyan neon edge lights, dark navy panels, painterly pixel clusters, crisp readable UI.",
+  "approvalRationale": "Reroll 10B is clean and textless, with high-bit brass/silver Deco UI framing and no logo badge.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}

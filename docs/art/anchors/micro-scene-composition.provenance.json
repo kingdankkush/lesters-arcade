@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "micro-scene-composition",
+  "slotNumber": "09",
+  "slotTitle": "Micro-scene composition, tipped delivery cart plus spilled crates plus rat",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/micro-scene-composition.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass/micro-scene-composition.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ece/dKeXCCFSyND2iSYSnM1H6_84EKV9r7.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor candidate, slot 09 micro-scene-composition. High-bit pixel art environmental storytelling vignette for Hard Money Heroes: tipped delivery cart, spilled crates, scattered noodles/coins-like generic round tokens without logos, tiny rat silhouette, wet asphalt puddles, blue neon reflection, brass curb trim, night-noir lighting, readable isometric 2:1 prop composition, painterly pixel clusters, clean dark outline, no text, no logos, no watermark, no people. Match approved storefront/bank anchors.",
+  "approvalRationale": "Strong authored micro-scene with cart, crates, spill, rat silhouettes, wet reflections, and no readable text/logo.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}

@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "streetlamp-light-cone",
+  "slotNumber": "05",
+  "slotTitle": "Streetlamp plus pooled light cone prop",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/streetlamp-light-cone.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass/streetlamp-light-cone.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ebe/N5INgIfNZWgBoZQ73HdVC_uTVHxgC6.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor candidate, slot 05 streetlamp-light-cone. High-bit pixel art prop: Art Deco streetlamp with brass base and silver pole, warm bulb, visible cone of pooled light on wet asphalt, blue neon rim and magenta reflection, top-left key light, painterly pixel clusters, clean dark outline, isolated game prop, no text, no logos, no watermark, no people. Match approved rainy Litecoin City noir storefront and bank anchors.",
+  "approvalRationale": "Clean readable lamp prop with strong warm cone, wet ground pool, and Deco brass/silver material read.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}

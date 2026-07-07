@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "signature-street-tree",
+  "slotNumber": "03",
+  "slotTitle": "Signature street tree, night-lit in planter",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/signature-street-tree.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass/signature-street-tree.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ebd/B-lYixdpOBIJkzdSI12IJ_hlFAOnGv.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor candidate, slot 03 signature-street-tree. Hard Money Heroes high-bit pixel art, Litecoin City night-noir street tree in square brass planter, rain-wet roots and curb, blue neon rim light, magenta edge bounce, top-left key light, painterly dense pixel clusters, clean dark navy selective outline, readable game prop silhouette, no text, no logos, no watermark, no people. Match the approved storefront and bank Deco anchors: rainy high-bit noir, brass/silver/blue palette, handcrafted pixel-art quality.",
+  "approvalRationale": "Strong high-bit noir street-tree prop with square planter, wet street context, blue/magenta rim light, and readable handcrafted foliage silhouette.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}

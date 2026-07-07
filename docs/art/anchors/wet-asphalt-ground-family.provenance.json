@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "wet-asphalt-ground-family",
+  "slotNumber": "04",
+  "slotTitle": "Wet-asphalt ground family, base plus two wear variants",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/wet-asphalt-ground-family.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass-rerolls/wet-asphalt-ground-family-reroll-01.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ecf/0--s-YqoDX_G12eTc54UJ_ZIyf0dOs.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor reroll, slot 04 wet-asphalt-ground-family. High-bit pixel art asset sheet on plain dark background with exactly THREE separate isometric 2:1 wet asphalt tiles arranged left-to-right: 1 clean base tile, 2 cracked wear variant, 3 oil-puddle plus pale road-stripe variant. Rainy Litecoin City night-noir pavement, blue neon reflections, brass curb hints, painterly pixel clusters, crisp tile edges. Absolutely no text, no logos, no watermark, no people. Match approved HMH high-bit rainy noir anchors.",
+  "approvalRationale": "Reroll 04A best matches the required three-tile family: base, cracked wear, and oil/stripe variant with clean high-bit wet-asphalt readability.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}

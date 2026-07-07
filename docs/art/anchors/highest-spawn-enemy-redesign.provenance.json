@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "highest-spawn-enemy-redesign",
+  "slotNumber": "07",
+  "slotTitle": "Highest-spawn enemy redesign, key pose plus attack-tell pose",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/highest-spawn-enemy-redesign.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass/highest-spawn-enemy-redesign.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ec2/CCOb-8n2pZjI13cWGXdgi_WeriJEEe.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor candidate, slot 07 highest-spawn-enemy-redesign. Original high-bit pixel art enemy key-pose plus attack-tell pose in one clean sheet: crypto scam-bot street thug, short hunched silhouette, glowing blue visor, brass scrap armor, one idle pose and one clear raised-arm attack tell, rainy night-noir rim light, painterly pixel clusters, clean dark outline, no text, no logos, no watermark. Readable at gameplay scale, match approved HMH storefront/bank noir anchors.",
+  "approvalRationale": "Readable small enemy silhouette with blue visor, hunched body, and attack-tell gesture direction for future animation polish.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}

@@ -1,68 +1,48 @@
 # Hard Money Heroes WO-76 Anchor Set
 
-**Full anchor set status: UNAPPROVED — 2/10 slots approved.**
+**Full anchor set status: APPROVED — 10/10 slots approved.**
 
-This document is the style-lock registry for WO-76. Two anchors are approved, but the complete anchor set is not locked until all ten slots have approved winners and provenance.
+This document is the style-lock registry for WO-76. All ten anchors have approved winners and provenance. These are style/reference anchors only; runtime integration still requires crop/alpha/palette cleanup, manifests, and per-work-order QA.
 
 ## Approved anchors
 
-### 1. Storefront facade — APPROVED
+| # | Slot | Anchor | Provenance |
+|---|---|---|---|
+| 01 | Storefront facade | `docs/art/anchors/storefront-facade.png` | `docs/art/anchors/storefront-facade.provenance.json` |
+| 02 | Bank-district Deco corner facade | `docs/art/anchors/bank-deco-corner.png` | `docs/art/anchors/bank-deco-corner.provenance.json` |
+| 03 | Signature street tree, night-lit in planter | `docs/art/anchors/signature-street-tree.png` | `docs/art/anchors/signature-street-tree.provenance.json` |
+| 04 | Wet-asphalt ground family, base plus two wear variants | `docs/art/anchors/wet-asphalt-ground-family.png` | `docs/art/anchors/wet-asphalt-ground-family.provenance.json` |
+| 05 | Streetlamp plus pooled light cone prop | `docs/art/anchors/streetlamp-light-cone.png` | `docs/art/anchors/streetlamp-light-cone.provenance.json` |
+| 06 | Lit Commando repaint, single idle key pose | `docs/art/anchors/lit-commando-idle-key-pose.png` | `docs/art/anchors/lit-commando-idle-key-pose.provenance.json` |
+| 07 | Highest-spawn enemy redesign, key pose plus attack-tell pose | `docs/art/anchors/highest-spawn-enemy-redesign.png` | `docs/art/anchors/highest-spawn-enemy-redesign.provenance.json` |
+| 08 | Major boss key pose at true boss scale | `docs/art/anchors/major-boss-key-pose.png` | `docs/art/anchors/major-boss-key-pose.provenance.json` |
+| 09 | Micro-scene composition, tipped delivery cart plus spilled crates plus rat | `docs/art/anchors/micro-scene-composition.png` | `docs/art/anchors/micro-scene-composition.provenance.json` |
+| 10 | UI chrome sample, draft card frame plus HP bar segment | `docs/art/anchors/ui-chrome-sample.png` | `docs/art/anchors/ui-chrome-sample.provenance.json` |
 
-- **Winner:** candidate `14`
-- **Anchor image:** `docs/art/anchors/storefront-facade.png`
-- **Provenance:** `docs/art/anchors/storefront-facade.provenance.json`
-- **Tool:** FAL.ai FLUX 2 Klein 9B via Hermes `image_generate`
-- **Source URL:** `https://v3b.fal.media/files/b/0aa13cc3/4waD2VR748wOb3UScQKnI_c0orgKyb.png`
-- **Runners-up:** `19`, `08`, `13`
-- **Approval rationale:** strongest high-bit rainy noir facade, best wet-street atmosphere, painterly cluster density, and blank-sign storefront read.
-- **Caveat:** anchor reference only. Runtime integration still needs crop/alpha/palette cleanup and manifest work in a later approved art-substitution task.
+![WO-76 approved anchor set](wo76/wo76-approved-anchor-set.png)
 
-Exact prompt:
+## Quality decisions
 
-```text
-WO-76 storefront-facade candidate 14. Textless blank-sign storefront only: no alphabet, no numerals, no logos, no icons, no readable markings. Hi-bit pixel art, rainy night-city noir, compact isometric 2:1 noodle bar building facade, blank cyan lightbox, deco brass corner ribs, silver vents, steam pipe, puddled pavement reflection, top-left key light and blue-magenta neon rim, painterly pixel clusters, clean selective outline, no characters, candidate only.
-```
-
-### 2. Bank-district Deco corner facade — APPROVED
-
-- **Winner:** candidate `09`
-- **Anchor image:** `docs/art/anchors/bank-deco-corner.png`
-- **Provenance:** `docs/art/anchors/bank-deco-corner.provenance.json`
-- **Tool:** FAL.ai FLUX 2 Klein 9B via Hermes `image_generate`
-- **Source URL:** `https://v3b.fal.media/files/b/0aa13e79/3ZYqnjqsRU9rwXfF-msbn_sCBaF95s.png`
-- **Reference anchor:** approved storefront facade source URL was passed as image reference.
-- **Runners-up:** `12`, `10`, `05`
-- **Approval rationale:** best high-bit/noir bank-district read from the batch; the circular vault door and stepped Deco crown communicate financial landmark better than the more storefront-like variants.
-- **Caveat:** anchor reference only. Runtime integration still needs crop/alpha/palette cleanup and manifest work in a later approved art-substitution task.
-
-Exact prompt:
-
-```text
-WO-76 bank-deco-corner candidate 09. Hi-bit pixel art, high-quality bank landmark facade for Litecoin City noir. Isometric 2:1 corner with stepped Art Deco crown, blank cyan signage, brass trim, silver stone, glowing vault doorway, rain-puddled pavement, top-left key, neon rim, painterly pixel clusters, selective dark outline. Absolutely no readable text, no numbers, no symbols, no logos, no people, no watermark. Candidate only.
-```
-
-## Remaining required slots
-
-3. Signature street tree, night-lit in planter.
-4. Wet-asphalt ground family, base plus two wear variants.
-5. Streetlamp plus pooled light cone prop.
-6. Lit Commando repaint, single idle key pose.
-7. Highest-spawn enemy redesign, key pose plus attack-tell pose.
-8. Major boss key pose at true boss scale.
-9. Micro-scene composition, tipped delivery cart plus spilled crates plus rat.
-10. UI chrome sample, draft card frame plus HP bar segment.
+- Justin directed the agent to use the best-looking high-quality high-bit pixel-art options and continue.
+- Slots 01 and 02 were selected from contact-sheet batches.
+- Slots 03-10 were generated from the approved storefront/bank references, then visually QAed as a final anchor pass.
+- Slot 04 was rerolled because the first pass did not clearly show the requested base plus two wear variants.
+- Slot 10 was rerolled because the first pass contained a readable/logo-like badge.
 
 ## Current evidence
 
-See `docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.md` for the seed-candidate audit and `docs/art/wo76/` for candidate sheets/review reports.
+- Seed audit: `docs/art/WO76_ANCHOR_CANDIDATE_AUDIT.md`
+- Approved 10-anchor summary: `docs/art/wo76/wo76-approved-anchor-set.json`
+- Approved anchor contact sheet: `docs/art/wo76/wo76-approved-anchor-set.png`
+- Storefront candidate/review artifacts: `docs/art/wo76/wo76-storefront-*`
+- Bank candidate/review artifacts: `docs/art/wo76/wo76-bank-deco-corner-*`
+- Final pass/reroll QA artifacts: `docs/art/wo76/wo76-final-anchor-pass-slots-03-10.png`, `docs/art/wo76/wo76-reroll-qa-slots-04-10.png`
 
 ## Approval checklist
 
-- [ ] 10 numbered slot contact sheets reviewed. Current: 2/10.
-- [ ] Justin/agent-with-direction selects one winner per slot or requests rerolls. Current: storefront facade and bank Deco corner approved.
-- [x] Storefront winner copied to `docs/art/anchors/`.
-- [x] Bank Deco winner copied to `docs/art/anchors/`.
-- [x] Storefront exact winning prompt, tool, settings, and seed/reference provenance recorded.
-- [x] Bank Deco exact winning prompt, tool, settings, and seed/reference provenance recorded.
-- [ ] Pipeline prompt preamble in `docs/art/PIPELINE.md` updated to reference the complete approved anchor set.
-- [ ] Anchor-similarity QA calibrated so all approved anchors pass and known-bad placeholder art fails.
+- [x] 10 numbered slot contact sheets or QA sheets reviewed.
+- [x] Agent selected one winner per slot under Justin's “best-looking high-quality high-bit pixel art” direction.
+- [x] All winners copied to `docs/art/anchors/`.
+- [x] Exact winning prompts, tool, settings, and seed/reference provenance recorded.
+- [x] Pipeline prompt preamble in `docs/art/PIPELINE.md` updated to reference the approved anchors.
+- [ ] Anchor-similarity QA calibrated so all approved anchors pass and known-bad placeholder art fails. This belongs to the follow-up QA/tooling pass, not runtime art integration.

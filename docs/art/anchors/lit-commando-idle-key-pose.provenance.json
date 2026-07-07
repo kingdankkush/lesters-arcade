@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "lit-commando-idle-key-pose",
+  "slotNumber": "06",
+  "slotTitle": "Lit Commando repaint, single idle key pose",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/lit-commando-idle-key-pose.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass/lit-commando-idle-key-pose.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ebf/wKxkBxVttmQbObh3ldRZ7_HAMueeNJ.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor candidate, slot 06 Lit Commando idle key pose. Original high-bit pixel art hero character, not using any copyrighted character. Litecoin City commando in dark navy tactical coat and brass/silver armor accents, compact idle stance facing three-quarter right, glowing blue edge light, small blockchain blaster held low, readable silhouette at gameplay scale, painterly pixel clusters, clean dark outline, no text, no logos, no watermark, no gore. Match approved rainy HMH noir anchors.",
+  "approvalRationale": "Strong readable hero-scale idle pose with navy/brass/silver palette and blue rim light. Needs later sprite cleanup, but works as a key-pose anchor.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}

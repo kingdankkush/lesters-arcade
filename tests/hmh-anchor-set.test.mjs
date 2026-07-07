@@ -17,10 +17,10 @@ function repoText(path) {
 
 test('WO-76 declares exactly ten approval-gated anchor slots in the required order', () => {
   assert.equal(HMH_ANCHOR_SET_STATUS.workOrder, 'WO-76');
-  assert.equal(HMH_ANCHOR_SET_STATUS.status, 'PARTIAL_ANCHOR_APPROVAL_2_OF_10');
-  assert.equal(HMH_ANCHOR_SET_STATUS.approvedAnchorCount, 2);
+  assert.equal(HMH_ANCHOR_SET_STATUS.status, 'APPROVED_10_OF_10');
+  assert.equal(HMH_ANCHOR_SET_STATUS.approvedAnchorCount, 10);
   assert.equal(HMH_ANCHOR_SET_STATUS.runtimeIntegrationAllowed, false);
-  assert.equal(HMH_ANCHOR_SET_STATUS.requiresHumanApproval, true);
+  assert.equal(HMH_ANCHOR_SET_STATUS.requiresHumanApproval, false);
   assert.deepEqual(HMH_ANCHOR_SLOTS.map((slot) => slot.id), [
     'storefront-facade',
     'bank-deco-corner',
@@ -70,14 +70,14 @@ test('WO-76 markdown is a contact-sheet style approval artifact, not an integrat
   assert.doesNotMatch(markdown, /runtimeIntegrationAllowed:\s*true/);
 });
 
-test('WO-76 draft docs track partial approval while keeping full set blocked', () => {
+test('WO-76 docs track the complete approved anchor set while keeping runtime integration separate', () => {
   const pipeline = repoText('docs/art/PIPELINE.md');
   const anchorSet = repoText('docs/art/ANCHOR_SET.md');
   assert.match(pipeline, /Universal WO-76 prompt preamble/);
-  assert.match(pipeline, /match the approved WO-76 storefront-facade anchor/);
-  assert.match(anchorSet, /Full anchor set status: UNAPPROVED — 2\/10 slots approved/);
-  assert.match(anchorSet, /Storefront facade — APPROVED/);
-  assert.match(anchorSet, /Bank-district Deco corner facade — APPROVED/);
+  assert.match(pipeline, /Approved anchor references/);
+  assert.match(anchorSet, /Full anchor set status: APPROVED — 10\/10 slots approved/);
+  assert.match(anchorSet, /UI chrome sample/);
+  assert.match(anchorSet, /runtime integration still requires crop\/alpha\/palette cleanup/);
 });
 
 test('WO-76 approved storefront anchor has image and prompt provenance', () => {
@@ -102,6 +102,22 @@ test('WO-76 approved bank Deco anchor has image and prompt provenance', () => {
   assert.equal(provenance.status, 'APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06');
   assert.match(provenance.exactPrompt, /high-quality bank landmark facade/);
   assert.equal(existsSync(anchorPath), true);
+});
+
+test('WO-76 approved 10-anchor summary has every anchor image and provenance file', () => {
+  const summary = JSON.parse(repoText('docs/art/wo76/wo76-approved-anchor-set.json'));
+  assert.equal(summary.status, 'APPROVED_10_OF_10');
+  assert.equal(summary.approvedAnchorCount, 10);
+  for (const anchor of summary.anchors) {
+    const imagePath = fileURLToPath(new URL(`../${anchor.anchor}`, import.meta.url));
+    const provenancePath = fileURLToPath(new URL(`../${anchor.provenance}`, import.meta.url));
+    assert.equal(existsSync(imagePath), true, `${anchor.slot} image exists`);
+    assert.equal(existsSync(provenancePath), true, `${anchor.slot} provenance exists`);
+    const provenance = JSON.parse(readFileSync(provenancePath, 'utf8'));
+    assert.equal(provenance.workOrder, 'WO-76');
+    assert.equal(provenance.slot, anchor.slot);
+    assert.match(provenance.exactPrompt, /WO-76/);
+  }
 });
 
 test('WO-76 storefront survivor sheet is approval-gated and raw outputs stay ignored', () => {

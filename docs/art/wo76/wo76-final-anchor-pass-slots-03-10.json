@@ -1,0 +1,107 @@
+{
+  "workOrder": "WO-76",
+  "status": "QA_PENDING",
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "sheet": "docs/art/wo76/wo76-final-anchor-pass-slots-03-10.png",
+  "slots": [
+    {
+      "slotNumber": "03",
+      "slot": "signature-street-tree",
+      "title": "Signature street tree",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ebd/B-lYixdpOBIJkzdSI12IJ_hlFAOnGv.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/signature-street-tree.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "slotNumber": "04",
+      "slot": "wet-asphalt-ground-family",
+      "title": "Wet asphalt ground family",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ebd/5OhyIp8tQrA-h6WI4CJQA_WNU5mhx8.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/wet-asphalt-ground-family.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "slotNumber": "05",
+      "slot": "streetlamp-light-cone",
+      "title": "Streetlamp light cone",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ebe/N5INgIfNZWgBoZQ73HdVC_uTVHxgC6.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/streetlamp-light-cone.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "slotNumber": "06",
+      "slot": "lit-commando-idle-key-pose",
+      "title": "Lit Commando idle key pose",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ebf/wKxkBxVttmQbObh3ldRZ7_HAMueeNJ.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/lit-commando-idle-key-pose.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "slotNumber": "07",
+      "slot": "highest-spawn-enemy-redesign",
+      "title": "Highest-spawn enemy redesign",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ec2/CCOb-8n2pZjI13cWGXdgi_WeriJEEe.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/highest-spawn-enemy-redesign.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "slotNumber": "08",
+      "slot": "major-boss-key-pose",
+      "title": "Major boss key pose",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ece/WhIqDFckAk4M8YxRMoq0c_V0zd5fX5.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/major-boss-key-pose.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "slotNumber": "09",
+      "slot": "micro-scene-composition",
+      "title": "Micro-scene composition",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ece/dKeXCCFSyND2iSYSnM1H6_84EKV9r7.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/micro-scene-composition.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    {
+      "slotNumber": "10",
+      "slot": "ui-chrome-sample",
+      "title": "UI chrome sample",
+      "candidate": 1,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ec4/C_mu83XOXc4mu66dT43EP_s2Mc2YNm.png",
+      "rawStagingPath": ".art-staging/wo76/final-anchor-pass/ui-chrome-sample.png",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      }
+    }
+  ]
+}

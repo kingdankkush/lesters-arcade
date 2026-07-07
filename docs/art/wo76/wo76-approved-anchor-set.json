@@ -1,0 +1,78 @@
+{
+  "workOrder": "WO-76",
+  "status": "APPROVED_10_OF_10",
+  "approvedAnchorCount": 10,
+  "sheet": "docs/art/wo76/wo76-approved-anchor-set.png",
+  "anchors": [
+    {
+      "slotNumber": "01",
+      "slot": "storefront-facade",
+      "title": "Storefront facade",
+      "anchor": "docs/art/anchors/storefront-facade.png",
+      "provenance": "docs/art/anchors/storefront-facade.provenance.json"
+    },
+    {
+      "slotNumber": "02",
+      "slot": "bank-deco-corner",
+      "title": "Bank Deco corner",
+      "anchor": "docs/art/anchors/bank-deco-corner.png",
+      "provenance": "docs/art/anchors/bank-deco-corner.provenance.json"
+    },
+    {
+      "slotNumber": "03",
+      "slot": "signature-street-tree",
+      "title": "Signature street tree, night-lit in planter",
+      "anchor": "docs/art/anchors/signature-street-tree.png",
+      "provenance": "docs/art/anchors/signature-street-tree.provenance.json"
+    },
+    {
+      "slotNumber": "04",
+      "slot": "wet-asphalt-ground-family",
+      "title": "Wet-asphalt ground family, base plus two wear variants",
+      "anchor": "docs/art/anchors/wet-asphalt-ground-family.png",
+      "provenance": "docs/art/anchors/wet-asphalt-ground-family.provenance.json"
+    },
+    {
+      "slotNumber": "05",
+      "slot": "streetlamp-light-cone",
+      "title": "Streetlamp plus pooled light cone prop",
+      "anchor": "docs/art/anchors/streetlamp-light-cone.png",
+      "provenance": "docs/art/anchors/streetlamp-light-cone.provenance.json"
+    },
+    {
+      "slotNumber": "06",
+      "slot": "lit-commando-idle-key-pose",
+      "title": "Lit Commando repaint, single idle key pose",
+      "anchor": "docs/art/anchors/lit-commando-idle-key-pose.png",
+      "provenance": "docs/art/anchors/lit-commando-idle-key-pose.provenance.json"
+    },
+    {
+      "slotNumber": "07",
+      "slot": "highest-spawn-enemy-redesign",
+      "title": "Highest-spawn enemy redesign, key pose plus attack-tell pose",
+      "anchor": "docs/art/anchors/highest-spawn-enemy-redesign.png",
+      "provenance": "docs/art/anchors/highest-spawn-enemy-redesign.provenance.json"
+    },
+    {
+      "slotNumber": "08",
+      "slot": "major-boss-key-pose",
+      "title": "Major boss key pose at true boss scale",
+      "anchor": "docs/art/anchors/major-boss-key-pose.png",
+      "provenance": "docs/art/anchors/major-boss-key-pose.provenance.json"
+    },
+    {
+      "slotNumber": "09",
+      "slot": "micro-scene-composition",
+      "title": "Micro-scene composition, tipped delivery cart plus spilled crates plus rat",
+      "anchor": "docs/art/anchors/micro-scene-composition.png",
+      "provenance": "docs/art/anchors/micro-scene-composition.provenance.json"
+    },
+    {
+      "slotNumber": "10",
+      "slot": "ui-chrome-sample",
+      "title": "UI chrome sample, draft card frame plus HP bar segment",
+      "anchor": "docs/art/anchors/ui-chrome-sample.png",
+      "provenance": "docs/art/anchors/ui-chrome-sample.provenance.json"
+    }
+  ]
+}

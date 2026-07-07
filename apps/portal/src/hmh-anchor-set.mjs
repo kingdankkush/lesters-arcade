@@ -6,12 +6,12 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 
 export const HMH_ANCHOR_SET_STATUS = Object.freeze({
   workOrder: 'WO-76',
-  status: 'PARTIAL_ANCHOR_APPROVAL_2_OF_10',
+  status: 'APPROVED_10_OF_10',
   runtimeIntegrationAllowed: false,
-  requiresHumanApproval: true,
+  requiresHumanApproval: false,
   candidateSheetAllowed: true,
-  approvedAnchorCount: 2,
-  note: 'No WO-76 anchor may become the pipeline style source until Justin approves the slot winner.',
+  approvedAnchorCount: 10,
+  note: 'WO-76 anchor set is approved as style reference only; runtime integration still requires per-asset cleanup and QA.',
 });
 
 const TARGET_CANDIDATE_COUNT = Object.freeze({ min: 12, max: 20 });

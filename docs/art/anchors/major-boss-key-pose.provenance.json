@@ -1,0 +1,24 @@
+{
+  "workOrder": "WO-76",
+  "slot": "major-boss-key-pose",
+  "slotNumber": "08",
+  "slotTitle": "Major boss key pose at true boss scale",
+  "approvedCandidate": "agent-selected-final-pass",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/major-boss-key-pose.png",
+  "sourceRawStagingPath": ".art-staging/wo76/final-anchor-pass/major-boss-key-pose.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13ece/WhIqDFckAk4M8YxRMoq0c_V0zd5fX5.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchors": [
+    "docs/art/anchors/storefront-facade.png",
+    "docs/art/anchors/bank-deco-corner.png"
+  ],
+  "exactPrompt": "WO-76 approved anchor candidate, slot 08 major-boss-key-pose. Original high-bit pixel art true boss-scale enemy, giant Art Deco crypto syndicate enforcer, bulky silhouette with brass vault armor, silver stone mask, blue neon core, huge hammer/cane, three-quarter key pose on wet noir street base, top-left key light, neon rim, painterly dense pixel clusters, clean dark outline, no text, no logos, no watermark, no gore. Match approved HMH high-bit rainy noir anchors.",
+  "approvalRationale": "Best true boss-scale read: bulky brass vault armor, blue core/visor, large weapon silhouette, strong high-bit noir presence.",
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in later approved substitution tasks."
+}
