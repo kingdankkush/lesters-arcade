@@ -28,7 +28,7 @@ Open debt:
 Status: certified-runtime-art-progress
 
 Evidence:
-  - arena-road-building-kit: 3 assets
+  - arena-road-building-kit: 8 assets
   - acceptance-tour: 6 steps
 
 Open debt:

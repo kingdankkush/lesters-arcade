@@ -1,7 +1,7 @@
 {
   "id": "hmh-wo104-106-world-kit-v1",
   "policy": "Original repo-generated transparent pixel-art sprites for WO-104 nature, WO-105 arenas/roads/buildings, and WO-106 vehicles/micro-scenes.",
-  "assetCount": 10,
+  "assetCount": 15,
   "assets": [
     {
       "key": "wo104-world/forest-canopy-sway",
@@ -64,6 +64,54 @@
       "source": "repo-generated-original-pillow-pixel-art"
     },
     {
+      "key": "wo105-world/town-bank-frontage",
+      "file": "town-bank-frontage.png",
+      "role": "landmark",
+      "routeBeat": "arena",
+      "label": "Town bank frontage",
+      "description": "False-front bank/town building row that replaces generic small building placeholders in the ghost-town arena.",
+      "src": "./assets/generated/hmh-wo104-106-world-kit/town-bank-frontage.png",
+      "width": 128,
+      "height": 128,
+      "source": "repo-generated-original-pillow-pixel-art"
+    },
+    {
+      "key": "wo105-world/forest-log-arena-ring",
+      "file": "forest-log-arena-ring.png",
+      "role": "wall",
+      "routeBeat": "forest",
+      "label": "Forest log arena ring",
+      "description": "Curved fallen-log and stone cover ring for the forest arena read.",
+      "src": "./assets/generated/hmh-wo104-106-world-kit/forest-log-arena-ring.png",
+      "width": 128,
+      "height": 128,
+      "source": "repo-generated-original-pillow-pixel-art"
+    },
+    {
+      "key": "wo105-world/second-town-building-row",
+      "file": "second-town-building-row.png",
+      "role": "landmark",
+      "routeBeat": "road",
+      "label": "Second town building row",
+      "description": "Compact second-town facade row for the road-to-extraction transition.",
+      "src": "./assets/generated/hmh-wo104-106-world-kit/second-town-building-row.png",
+      "width": 128,
+      "height": 128,
+      "source": "repo-generated-original-pillow-pixel-art"
+    },
+    {
+      "key": "wo105-world/extraction-yard-warehouse",
+      "file": "extraction-yard-warehouse.png",
+      "role": "landmark",
+      "routeBeat": "boss",
+      "label": "Extraction yard warehouse",
+      "description": "Industrial warehouse silhouette for the container/extraction arena; de-references old level-1 building art.",
+      "src": "./assets/generated/hmh-wo104-106-world-kit/extraction-yard-warehouse.png",
+      "width": 128,
+      "height": 128,
+      "source": "repo-generated-original-pillow-pixel-art"
+    },
+    {
       "key": "wo105-world/container-cover-line",
       "file": "container-cover-line.png",
       "role": "wall",
@@ -83,6 +131,18 @@
       "label": "Cracked road barricade",
       "description": "Broken asphalt apron with cones and barrier for sensible road transitions.",
       "src": "./assets/generated/hmh-wo104-106-world-kit/cracked-road-barricade.png",
+      "width": 128,
+      "height": 128,
+      "source": "repo-generated-original-pillow-pixel-art"
+    },
+    {
+      "key": "wo105-world/cracked-road-junction",
+      "file": "cracked-road-junction.png",
+      "role": "road",
+      "routeBeat": "road",
+      "label": "Cracked road junction",
+      "description": "T-junction asphalt plate with lane paint for sensible road branching into arenas.",
+      "src": "./assets/generated/hmh-wo104-106-world-kit/cracked-road-junction.png",
       "width": 128,
       "height": 128,
       "source": "repo-generated-original-pillow-pixel-art"

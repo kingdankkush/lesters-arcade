@@ -159,7 +159,7 @@ test('generated Level 1 authored stamp art resolves through the live prefab stam
 
 test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps', () => {
   assert.equal(WO104_106_WORLD_KIT_STAMPS.assetPackId, 'hmh-wo104-106-world-kit-v1');
-  assert.equal(WO104_106_WORLD_KIT_STAMPS.requiredKeys.length, 10);
+  assert.equal(WO104_106_WORLD_KIT_STAMPS.requiredKeys.length >= 15, true, 'WO-105 needs expanded building/road/arena coverage, not only the first three markers');
   for (const key of WO104_106_WORLD_KIT_STAMPS.requiredKeys) {
     const src = wo104106WorldKitAssetSrc(key);
     assert.match(src, /hmh-wo104-106-world-kit\//, `${key} should resolve through the WO-104/105/106 world-kit manifest`);
@@ -167,17 +167,31 @@ test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehic
     assert.equal(existsSync(repoPath(src.replace('./', 'apps/portal/'))), true, `${key} PNG should exist on disk`);
   }
 
+  const wo105Keys = WO104_106_WORLD_KIT_STAMPS.requiredKeys.filter((key) => key.startsWith('wo105-world/'));
+  assert.deepEqual(wo105Keys.sort(), [
+    'wo105-world/bank-plaza-kiosk',
+    'wo105-world/container-cover-line',
+    'wo105-world/cracked-road-barricade',
+    'wo105-world/cracked-road-junction',
+    'wo105-world/extraction-yard-warehouse',
+    'wo105-world/forest-log-arena-ring',
+    'wo105-world/second-town-building-row',
+    'wo105-world/town-bank-frontage',
+  ].sort(), 'WO-105 should ship the full building/road/arena replacement set');
+
   const checkpointViews = [
     { playerX: 55, playerY: 12, stampId: 'wo104-forest-canopy-cliff-checkpoint', keys: ['wo104-world/forest-canopy-sway', 'wo104-world/mossy-cliff-wall'] },
     { playerX: 84, playerY: 7, stampId: 'wo104-lakeside-firefly-bank-checkpoint', keys: ['wo104-world/reed-bank-fireflies', 'wo104-world/park-tree-bench-cluster'] },
-    { playerX: 48, playerY: 6, stampId: 'wo105-bank-plaza-arena-checkpoint', keys: ['wo105-world/bank-plaza-kiosk', 'wo105-world/container-cover-line'] },
-    { playerX: 93, playerY: 8, stampId: 'wo105-container-extraction-yard-checkpoint', keys: ['wo105-world/container-cover-line', 'wo105-world/cracked-road-barricade'] },
+    { playerX: 48, playerY: 6, stampId: 'wo105-bank-plaza-arena-checkpoint', keys: ['wo105-world/bank-plaza-kiosk', 'wo105-world/town-bank-frontage', 'wo105-world/cracked-road-junction'] },
+    { playerX: 55, playerY: 12, stampId: 'wo105-forest-log-arena-checkpoint', keys: ['wo105-world/forest-log-arena-ring', 'wo105-world/cracked-road-barricade'] },
+    { playerX: 88, playerY: 7, stampId: 'wo105-second-town-road-checkpoint', keys: ['wo105-world/second-town-building-row', 'wo105-world/cracked-road-junction'] },
+    { playerX: 93, playerY: 8, stampId: 'wo105-container-extraction-yard-checkpoint', keys: ['wo105-world/container-cover-line', 'wo105-world/cracked-road-barricade', 'wo105-world/extraction-yard-warehouse'] },
     { playerX: 74, playerY: 8, stampId: 'wo106-roadside-vehicle-micro-scenes', keys: ['wo106-world/abandoned-pickup', 'wo106-world/delivery-van-cache', 'wo106-world/critter-dust-burrow'] },
   ];
   for (const view of checkpointViews) {
     const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 });
     for (const key of view.keys) {
-      const object = objects.find((item) => item.assetKey === key);
+      const object = objects.find((item) => item.assetKey === key && item.prefabStampId === view.stampId);
       assert.ok(object, `${key} should be visible near ${view.stampId}`);
       assert.equal(object.generatedWorldKitArt, true, `${key} should be tagged as generated world-kit art`);
       assert.equal(object.sourcePolicy, 'repo-generated-wo104-106-world-kit-art');
@@ -185,6 +199,13 @@ test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehic
       assert.equal(object.prefabStampId, view.stampId);
     }
   }
+
+  const wo105StampObjects = checkpointViews
+    .filter((view) => view.stampId.startsWith('wo105-'))
+    .flatMap((view) => buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 })
+      .filter((object) => object.prefabStampId === view.stampId));
+  assert.equal(wo105StampObjects.length >= 12, true, 'WO-105 capture tour should expose dense authored arena objects');
+  assert.equal(wo105StampObjects.some((object) => object.assetKey.startsWith('level-1/building/')), false, 'WO-105 stamps should de-reference old generic level-1 building placeholders');
 });
 
 test('Level 1 art policy disables old enemy-wave/combatArt fallbacks and generic procedural scatter', () => {
