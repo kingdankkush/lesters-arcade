@@ -20,8 +20,9 @@ from pathlib import Path
 from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC_DIR = ROOT / "apps/portal/assets/generated/hmh-level-one-ground/final-paint"
-OUT_DIR = ROOT / "apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous"
+PORTAL_DIR = ROOT / "apps/portal"
+SRC_DIR = PORTAL_DIR / "assets/generated/hmh-level-one-ground/final-paint"
+OUT_DIR = PORTAL_DIR / "assets/generated/hmh-level-one-ground/wo103-continuous"
 MANIFEST_JSON = OUT_DIR / "wo103-continuous-ground-manifest.json"
 MANIFEST_MJS = OUT_DIR / "wo103-continuous-ground-manifest.mjs"
 CONTACT_SHEET = ROOT / "docs/game-design/assets/hmh-wo103-continuous-ground-contact-sheet.png"
@@ -115,7 +116,7 @@ def make_contact_sheet(assets: list[dict]) -> None:
     except Exception:
         font = ImageFont.load_default()
     for idx, asset in enumerate(assets):
-        src = ROOT / asset["src"].replace("./", "")
+        src = PORTAL_DIR / asset["src"].replace("./", "")
         img = Image.open(src).convert("RGBA")
         if asset.get("animated"):
             img = img.crop((0, 0, asset["frameWidth"], asset["frameHeight"]))
@@ -151,7 +152,7 @@ def main() -> None:
             "key": key,
             "role": role,
             "category": "terrain" if role not in {"water", "shore"} else role,
-            "src": "./" + str(out.relative_to(ROOT)).replace("\\", "/"),
+            "src": "./" + str(out.relative_to(PORTAL_DIR)).replace("\\", "/"),
             "width": frame_width,
             "height": frame_height,
             "preferred": role in ROLE_PREF_ORDER,

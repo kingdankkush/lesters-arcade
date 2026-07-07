@@ -78,7 +78,8 @@ test('WO-103 plan references approved continuous runtime textures instead of tra
     const asset = plan.textureForKey(textureKey);
     assert.ok(asset, `${textureKey} should resolve through the plan texture lookup`);
     if (textureKey.startsWith('wo103-continuous/')) {
-      assert.match(asset.src, /hmh-level-one-ground\/wo103-continuous\//);
+      assert.match(asset.src, /^\.\/assets\/generated\/hmh-level-one-ground\/wo103-continuous\//);
+      assert.doesNotMatch(asset.src, /\.\/apps\/portal\//, 'runtime texture URL must be portal-root relative for Vercel outputDirectory');
       assert.equal(asset.width, 128);
       assert.equal(asset.height, 64);
     }
