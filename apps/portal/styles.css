@@ -2612,7 +2612,11 @@ button.menu-card.menu-option.interactive:active {
 }
 
 /* ===================== Responsive + touch system ===================== */
-:root { --hud-scale: 1; }
+:root {
+  --hud-scale: 1;
+  --touch-control-idle-opacity: .4;
+  --touch-control-active-opacity: .7;
+}
 
 /* On-screen touch controls: hidden by default, shown on touch devices in-game. */
 .touch-controls { display: none; }
@@ -2632,10 +2636,17 @@ html:not([data-ingame="true"]) .touch-controls { display: none; }
   bottom: max(24px, env(safe-area-inset-bottom));
   width: 132px; height: 132px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(25,247,255,.10), rgba(8,12,22,.55));
-  border: 2px solid rgba(25,247,255,.35);
+  background: radial-gradient(circle, rgba(25,247,255,.08), rgba(8,12,22,.32));
+  border: 2px solid rgba(25,247,255,.32);
+  opacity: var(--touch-control-idle-opacity);
   pointer-events: auto;
   touch-action: none;
+  transition: opacity .12s ease, transform .12s ease, background .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.touch-stick-base.is-active,
+.touch-stick-base:active {
+  opacity: var(--touch-control-active-opacity);
 }
 .touch-stick-nub {
   position: absolute;
@@ -2643,44 +2654,81 @@ html:not([data-ingame="true"]) .touch-controls { display: none; }
   width: 58px; height: 58px;
   margin: -29px 0 0 -29px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(69,255,138,.85), rgba(25,247,255,.5));
-  box-shadow: 0 0 18px rgba(25,247,255,.4);
+  background: radial-gradient(circle, rgba(69,255,138,.72), rgba(25,247,255,.42));
+  box-shadow: 0 0 18px rgba(25,247,255,.28);
 }
 /* RIGHT aim stick (twin-stick): mirror of the move stick, bottom-right. */
 .touch-aim-base {
   left: auto;
   right: max(18px, env(safe-area-inset-right));
   bottom: max(24px, env(safe-area-inset-bottom));
-  background: radial-gradient(circle, rgba(255,90,90,.12), rgba(8,12,22,.55));
-  border-color: rgba(255,120,90,.4);
+  background: radial-gradient(circle, rgba(255,90,90,.10), rgba(8,12,22,.32));
+  border-color: rgba(255,120,90,.36);
 }
 .touch-aim-nub {
-  background: radial-gradient(circle, rgba(255,120,90,.9), rgba(255,200,80,.55));
-  box-shadow: 0 0 18px rgba(255,120,90,.45);
+  background: radial-gradient(circle, rgba(255,120,90,.74), rgba(255,200,80,.46));
+  box-shadow: 0 0 18px rgba(255,120,90,.32);
+}
+html[data-touch-handedness="left"] .touch-move-base {
+  left: auto;
+  right: max(18px, env(safe-area-inset-right));
+}
+html[data-touch-handedness="left"] .touch-aim-base {
+  left: max(18px, env(safe-area-inset-left));
+  right: auto;
 }
 .touch-action-cluster {
   position: absolute;
-  right: max(160px, calc(env(safe-area-inset-right) + 160px));
-  bottom: max(40px, calc(env(safe-area-inset-bottom) + 16px));
-  width: 80px; height: 152px;
+  right: max(156px, calc(env(safe-area-inset-right) + 156px));
+  bottom: max(126px, calc(env(safe-area-inset-bottom) + 126px));
+  width: 76px; height: 76px;
   pointer-events: none;
+}
+html[data-touch-handedness="left"] .touch-action-cluster {
+  right: auto;
+  left: max(156px, calc(env(safe-area-inset-left) + 156px));
 }
 .touch-action-button {
   position: absolute;
   width: 66px; height: 66px;
   border-radius: 50%;
   border: 2px solid rgba(255,232,77,.5);
-  background: rgba(12,18,32,.78);
+  background: rgba(12,18,32,.58);
   color: var(--neon-yellow);
   font-size: .58rem; font-weight: 700; letter-spacing: .06em;
+  opacity: var(--touch-control-idle-opacity);
   pointer-events: auto;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
+  transition: opacity .12s ease, transform .12s ease, background .12s ease;
 }
-.touch-action-button:active { transform: scale(.92); background: rgba(25,247,255,.2); }
-/* Two-button stack (left of the aim stick): Grenade on top, Power below. */
+.touch-action-button:active,
+.touch-action-button.is-active {
+  opacity: var(--touch-control-active-opacity);
+  transform: scale(.92);
+  background: rgba(25,247,255,.2);
+}
+/* Grenade lives in the right-thumb action arc. POWER is desktop sandbox-only. */
 .touch-grenade { left: 0; top: 0; border-color: rgba(255,232,77,.6); color: var(--neon-yellow); }
-.touch-powerup { left: 0; top: 84px; border-color: rgba(69,255,138,.6); color: #45ff8a; }
+.touch-grenade-cancel-zone {
+  position: absolute;
+  left: -6px;
+  top: -54px;
+  width: 78px;
+  height: 30px;
+  border: 1px dashed rgba(255,71,111,.62);
+  border-radius: 999px;
+  color: rgba(255,194,204,.86);
+  background: rgba(58,9,24,.34);
+  display: grid;
+  place-items: center;
+  font-size: .48rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  opacity: calc(var(--touch-control-idle-opacity) + .18);
+  pointer-events: none;
+}
+.touch-powerup { display: none; }
 .touch-pause-button {
   position: absolute;
   top: max(14px, env(safe-area-inset-top));
@@ -2773,17 +2821,20 @@ body.suggest-landscape.ingame::after {
     right: max(12px, env(safe-area-inset-right));
   }
   html[data-device="mobile"][data-orientation="landscape"] .touch-action-cluster {
-    right: max(132px, calc(env(safe-area-inset-right) + 132px));
-    bottom: max(14px, calc(env(safe-area-inset-bottom) + 10px));
-    width: 72px;
-    height: 140px;
+    right: max(128px, calc(env(safe-area-inset-right) + 128px));
+    bottom: max(108px, calc(env(safe-area-inset-bottom) + 108px));
+    width: 68px;
+    height: 68px;
+  }
+  html[data-touch-handedness="left"][data-device="mobile"][data-orientation="landscape"] .touch-action-cluster {
+    right: auto;
+    left: max(128px, calc(env(safe-area-inset-left) + 128px));
   }
   html[data-device="mobile"][data-orientation="landscape"] .touch-action-button {
     width: 60px;
     height: 60px;
     font-size: 0.54rem;
   }
-  html[data-device="mobile"][data-orientation="landscape"] .touch-powerup { top: 76px; }
   html[data-device="mobile"][data-orientation="landscape"] .touch-pause-button {
     top: max(10px, env(safe-area-inset-top));
     right: max(10px, env(safe-area-inset-right));

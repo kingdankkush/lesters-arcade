@@ -11,6 +11,8 @@ import {
   pointerToManualAim,
   buildManualGrenadeTarget,
   buildManualAimInputModel,
+  buildTouchControlLayout,
+  TOUCH_CONTROL_INVENTORY,
   TOUCH_CONTROL_MAP,
   shouldMirrorMovementIntoAim,
 } from '../apps/portal/src/device-model.mjs';
@@ -90,6 +92,35 @@ test('TOUCH_CONTROL_MAP covers movement and core actions', () => {
   assert.equal(TOUCH_CONTROL_MAP.melee, undefined); // melee removed from simplified controls
   assert.equal(TOUCH_CONTROL_MAP['move-left'].type, 'hold');
   assert.equal(TOUCH_CONTROL_MAP.fire.type, 'action');
+});
+
+test('WO-100 touch control inventory resolves the mystery POWER button as desktop-only practice helper', () => {
+  const byId = Object.fromEntries(TOUCH_CONTROL_INVENTORY.map((entry) => [entry.id, entry]));
+  assert.equal(byId['touch-move-stick'].keep, true);
+  assert.equal(byId['touch-aim-stick'].keep, true);
+  assert.equal(byId['touch-grenade'].keep, true);
+  assert.equal(byId.combatMenuIconButton.keep, true);
+  assert.equal(byId.powerUpButton.keep, false);
+  assert.match(byId.powerUpButton.resolution, /removed from #touchControls/);
+});
+
+test('WO-100 touch layout supports opacity, center dead zone, and left-handed mirroring', () => {
+  const rightHanded = buildTouchControlLayout({ leftHanded: false, opacity: 0.4 });
+  assert.equal(rightHanded.version, 'wo-100-thumb-arc-v1');
+  assert.equal(rightHanded.centerBottomDeadZone, true);
+  assert.equal(rightHanded.floatingOrigins, true);
+  assert.equal(rightHanded.moveStick.side, 'left');
+  assert.equal(rightHanded.aimStick.side, 'right');
+  assert.deepEqual([...rightHanded.actionCluster.buttons], ['grenade']);
+  assert.ok(rightHanded.actionCluster.minButtonPx >= 56);
+  assert.equal(rightHanded.idleOpacity, 0.4);
+  assert.equal(rightHanded.activeOpacity, 0.7);
+
+  const leftHanded = buildTouchControlLayout({ leftHanded: true, opacity: 0.32 });
+  assert.equal(leftHanded.moveStick.side, 'right');
+  assert.equal(leftHanded.aimStick.side, 'left');
+  assert.equal(leftHanded.actionCluster.side, 'left');
+  assert.ok(leftHanded.removedMobileControls.includes('powerUpButton'));
 });
 
 test('WO-46 pointerToManualAim normalizes desktop pointer aim without movement drift', () => {

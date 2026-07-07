@@ -8,11 +8,11 @@ export const HMH_GRENADE_TYPES = freeze({
     title: 'Crypto Bombs',
     role: 'baseline area denial',
     cost: 1,
-    maxRange: 6,
+    maxRange: 7,
     blastRadius: 2,
     fuseFrames: 42,
     damage: 34,
-    reach: 1.4,
+    reach: 2.5,
     label: 'CRYPTO BOMB',
   }),
   'launcher-rig': freeze({
@@ -20,11 +20,11 @@ export const HMH_GRENADE_TYPES = freeze({
     title: 'Launcher Rig',
     role: 'long-range skill shot',
     cost: 1,
-    maxRange: 8.5,
+    maxRange: 11,
     blastRadius: 1.65,
     fuseFrames: 32,
     damage: 42,
-    reach: 1.2,
+    reach: 3,
     label: 'LAUNCHER',
   }),
   'homing-cluster': freeze({
@@ -46,11 +46,11 @@ export const HMH_GRENADE_TYPES = freeze({
     title: 'Block Buster',
     role: 'heavy room clear',
     cost: 2,
-    maxRange: 5,
+    maxRange: 6,
     blastRadius: 3.25,
     fuseFrames: 56,
     damage: 62,
-    reach: 1.15,
+    reach: 2.5,
     label: 'BLOCK BUSTER',
   }),
 });
@@ -91,6 +91,9 @@ export function planLevelOneGrenadeThrow({
   originY = 0,
   aimX = 1,
   aimY = 0,
+  reach = null,
+  maxRange = null,
+  blastRadius = null,
   damageMultiplier = 1,
 } = {}) {
   const type = resolveGrenadeTypeForRun(run);
@@ -98,14 +101,17 @@ export function planLevelOneGrenadeThrow({
   if (available < type.cost) {
     return freeze({ throwAllowed: false, reason: 'insufficient-grenades', type, cost: type.cost, available });
   }
+  const effectiveReach = Number.isFinite(Number(reach)) ? Number(reach) : type.reach;
+  const effectiveMaxRange = Number.isFinite(Number(maxRange)) ? Number(maxRange) : type.maxRange;
+  const effectiveBlastRadius = Number.isFinite(Number(blastRadius)) ? Number(blastRadius) : type.blastRadius;
   const plan = planGrenadeThrow({
     originX,
     originY,
     aimX,
     aimY,
-    reach: type.reach,
-    maxRange: type.maxRange,
-    blastRadius: type.blastRadius,
+    reach: effectiveReach,
+    maxRange: effectiveMaxRange,
+    blastRadius: effectiveBlastRadius,
     fuseFrames: type.fuseFrames,
   });
   return freeze({

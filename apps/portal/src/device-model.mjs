@@ -86,6 +86,34 @@ export const TOUCH_CONTROL_MAP = Object.freeze({
   pause: { type: 'action', action: 'pause' },
 });
 
+export const TOUCH_CONTROL_INVENTORY = Object.freeze([
+  Object.freeze({ id: 'touch-move-stick', role: 'movement', zone: 'bottom-left thumb arc', gameplayFunction: 'WASD movement injection', keep: true }),
+  Object.freeze({ id: 'touch-aim-stick', role: 'aim', zone: 'bottom-right thumb arc', gameplayFunction: 'right-stick aim + auto-fire direction', keep: true }),
+  Object.freeze({ id: 'touch-grenade', role: 'action', zone: 'right-thumb action arc above aim stick', gameplayFunction: 'grenade tap/hold aim entrypoint', keep: true }),
+  Object.freeze({ id: 'combatMenuIconButton', role: 'hud', zone: 'top safe-area corner', gameplayFunction: 'pause/fullscreen/game menu', keep: true }),
+  Object.freeze({ id: 'powerUpButton', role: 'practice-helper', zone: 'desktop sandbox controls only', gameplayFunction: 'drops test pickups for local tuning; not a core mobile combat button', keep: false, resolution: 'removed from #touchControls to resolve the mystery POWER button near grenades' }),
+]);
+
+export function buildTouchControlLayout({ leftHanded = false, opacity = 0.4, orientation = 'landscape' } = {}) {
+  const idleOpacity = Math.max(0.2, Math.min(0.55, Number(opacity) || 0.4));
+  const activeOpacity = Math.max(idleOpacity, Math.min(0.78, idleOpacity + 0.3));
+  const moveSide = leftHanded ? 'right' : 'left';
+  const aimSide = leftHanded ? 'left' : 'right';
+  return Object.freeze({
+    version: 'wo-100-thumb-arc-v1',
+    leftHanded: Boolean(leftHanded),
+    orientation,
+    idleOpacity,
+    activeOpacity,
+    centerBottomDeadZone: true,
+    floatingOrigins: true,
+    moveStick: Object.freeze({ side: moveSide, zone: `bottom-${moveSide}`, minTouchPx: 96 }),
+    aimStick: Object.freeze({ side: aimSide, zone: `bottom-${aimSide}`, minTouchPx: 96 }),
+    actionCluster: Object.freeze({ side: aimSide, zone: `${aimSide}-thumb arc`, buttons: Object.freeze(['grenade']), minButtonPx: 56 }),
+    removedMobileControls: Object.freeze(['powerUpButton']),
+  });
+}
+
 // Convert a virtual-joystick vector (-1..1 each axis, screen space) into the
 // set of movement keys to hold. Dead-zone avoids jitter. Returns a Set of keys.
 export function joystickToKeys(dx, dy, deadZone = 0.3) {

@@ -6,6 +6,7 @@ import {
   DEVICE_INPUT_QA_CASES,
   TOUCH_CONTROL_MAP,
   buildDeviceInputQaMatrix,
+  buildTouchControlLayout,
   joystickToKeys,
   shouldMirrorMovementIntoAim,
 } from '../apps/portal/src/device-model.mjs';
@@ -46,6 +47,26 @@ test('WO-37 runtime still listens for orientation, fullscreen, pointer, touch, a
   ]) {
     assert.equal(main.includes(marker), true, `${marker} missing`);
   }
+});
+
+test('WO-100 touch controls use thumb arcs, hide POWER on mobile, and expose settings', () => {
+  const main = repoText('apps/portal/main.js');
+  const css = repoText('apps/portal/styles.css');
+  const doc = repoText('docs/game-design/hmh-touch-controls-wo100.md');
+  const left = buildTouchControlLayout({ leftHanded: true, opacity: 0.32 });
+  assert.equal(left.moveStick.side, 'right');
+  assert.equal(left.actionCluster.side, 'left');
+  assert.equal(main.includes('setFloatingTouchOrigin'), true);
+  assert.equal(main.includes('startGrenadeAimInput({ source: \'touch\''), true);
+  assert.equal(main.includes("performTouchAction('grenade')"), false);
+  assert.equal(main.includes("performTouchAction(a.action)"), false, 'old action-array handler should be gone');
+  assert.equal(main.includes('toggleTouchHandednessSetting'), true);
+  assert.equal(main.includes('cycleTouchOpacitySetting'), true);
+  assert.equal(css.includes('--touch-control-idle-opacity'), true);
+  assert.equal(css.includes('html[data-touch-handedness="left"]'), true);
+  assert.equal(css.includes('.touch-powerup { display: none; }'), true);
+  assert.match(doc, /powerUpButton/);
+  assert.match(doc, /Removed from `#touchControls`/);
 });
 
 test('WO-37 syntax gate includes device input QA report', () => {

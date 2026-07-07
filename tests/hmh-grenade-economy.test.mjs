@@ -21,8 +21,11 @@ test('WO-28 defines refillable grenade types with distinct combat roles', () => 
   assert.deepEqual(Object.keys(HMH_GRENADE_TYPES).sort(), ['block-buster', 'homing-cluster', 'launcher-rig', 'satoshi-frag'].sort());
   assert.equal(HMH_GRENADE_TYPES['satoshi-frag'].title, 'Crypto Bombs');
   assert.equal(HMH_GRENADE_TYPES['launcher-rig'].role, 'long-range skill shot');
+  assert.equal(HMH_GRENADE_TYPES['launcher-rig'].maxRange, 11);
+  assert.equal(HMH_GRENADE_TYPES['satoshi-frag'].maxRange, 7);
   assert.equal(HMH_GRENADE_TYPES['homing-cluster'].role, 'cluster-control seeker');
   assert.equal(HMH_GRENADE_TYPES['block-buster'].cost, 2);
+  assert.equal(HMH_GRENADE_TYPES['block-buster'].maxRange, 6);
   assert.ok(HMH_GRENADE_TYPES['block-buster'].blastRadius > HMH_GRENADE_TYPES['satoshi-frag'].blastRadius);
 });
 
@@ -48,10 +51,13 @@ test('WO-28 grenade unlocks switch throw plan without changing the single throwa
   assert.equal(resolveGrenadeTypeForRun(buster).id, 'block-buster');
 
   const basePlan = planLevelOneGrenadeThrow({ run: base, currentGrenades: 1, originX: 0, originY: 0, aimX: 1, aimY: 0 });
+  const aimedBasePlan = planLevelOneGrenadeThrow({ run: base, currentGrenades: 1, originX: 0, originY: 0, aimX: 1, aimY: 0, reach: 6.5, maxRange: 7, blastRadius: 2.5 });
   const launcherPlan = planLevelOneGrenadeThrow({ run: launcher, currentGrenades: 1, originX: 0, originY: 0, aimX: 1, aimY: 0 });
   const busterPlan = planLevelOneGrenadeThrow({ run: buster, currentGrenades: 1, originX: 0, originY: 0, aimX: 1, aimY: 0 });
 
   assert.equal(basePlan.throwAllowed, true);
+  assert.equal(aimedBasePlan.plan.distance, 6.5);
+  assert.equal(aimedBasePlan.plan.blastRadius, 2.5);
   assert.equal(launcherPlan.throwAllowed, true);
   assert.ok(launcherPlan.plan.maxRange > basePlan.plan.maxRange);
   assert.equal(busterPlan.throwAllowed, false, 'block-buster needs two grenades loaded');

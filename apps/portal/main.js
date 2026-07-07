@@ -2,7 +2,7 @@ import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
-import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
+import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES, canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actors.mjs';
 import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
@@ -14,6 +14,7 @@ import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollLevelOnePowerUpDrop } from './src/hmh-drop-economy.mjs';
 import { planEnemyAttackPattern } from './src/hmh-attack-patterns.mjs';
 import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow, resolveGrenadeTypeForRun } from './src/hmh-grenade-economy.mjs';
+import { buildGrenadeAimPreview, classifyGrenadeRelease, grenadeAimType, isGrenadeAimCancel } from './src/hmh-grenade-aim.mjs';
 import { buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-game-feel-tuning.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
@@ -850,6 +851,8 @@ const gameSettings = {
   reduceFlash: false,
   colorblindTags: false,
   autoAimAssist: true,
+  touchLeftHanded: false,
+  touchControlOpacity: 0.4,
 };
 (function loadGameSettings() {
   try {
@@ -863,9 +866,18 @@ function saveGameSettings() {
 }
 
 function applyGameplayAccessibilitySettings() {
-  document.documentElement.dataset.reduceMotion = gameSettings.reduceMotion ? 'true' : 'false';
-  document.documentElement.dataset.reduceFlash = gameSettings.reduceFlash ? 'true' : 'false';
-  document.documentElement.dataset.colorblindTags = gameSettings.colorblindTags ? 'true' : 'false';
+  const root = document.documentElement;
+  root.dataset.reduceMotion = gameSettings.reduceMotion ? 'true' : 'false';
+  root.dataset.reduceFlash = gameSettings.reduceFlash ? 'true' : 'false';
+  root.dataset.colorblindTags = gameSettings.colorblindTags ? 'true' : 'false';
+  const touchLayout = buildTouchControlLayout({
+    leftHanded: gameSettings.touchLeftHanded,
+    opacity: gameSettings.touchControlOpacity,
+    orientation: root.dataset.orientation ?? 'landscape',
+  });
+  root.dataset.touchHandedness = touchLayout.leftHanded ? 'left' : 'right';
+  root.style.setProperty('--touch-control-idle-opacity', String(touchLayout.idleOpacity));
+  root.style.setProperty('--touch-control-active-opacity', String(touchLayout.activeOpacity));
   if (gameSettings.reduceMotion) combat.shake = 0;
 }
 
@@ -1528,6 +1540,8 @@ const combat = {
   aimMapY: 0,
   manualAim: { x: 1, y: 0, active: false, source: 'initial' },
   grenadeTarget: null,
+  grenadeAim: null,
+  grenadeTargetKind: 'grenade-reticle',
   velocityY: 0,
   velocityX: 0,
   jumpsLeft: 2,
@@ -2893,6 +2907,23 @@ function toggleCombatAutoAimSetting() {
   syncCombatOverlay();
 }
 
+function toggleTouchHandednessSetting() {
+  gameSettings.touchLeftHanded = !gameSettings.touchLeftHanded;
+  saveGameSettings();
+  applyGameplayAccessibilitySettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
+function cycleTouchOpacitySetting() {
+  const current = Number(gameSettings.touchControlOpacity) || 0.4;
+  gameSettings.touchControlOpacity = current < 0.36 ? 0.4 : current < 0.46 ? 0.55 : 0.32;
+  saveGameSettings();
+  applyGameplayAccessibilitySettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
 function toggleCombatSettingsPanel() {
   combat.menuSettingsOpen = !combat.menuSettingsOpen;
   syncCombatOverlay();
@@ -2946,7 +2977,21 @@ function renderCombatSettingsPanel() {
     button.addEventListener('click', () => actionMap[action.id]?.());
     accessibilityGrid.append(button);
   }
-  dom.combatSettingsPanel.replaceChildren(quickTitle, quickCopy, quickGrid, accessibilityTitle, accessibilityCopy, accessibilityGrid);
+  const touchTitle = el('h4', { className: 'combat-settings-title', textContent: 'Touch Controls' });
+  const touchCopy = el('p', { className: 'combat-settings-copy', textContent: 'Thumb-arc layout options for mobile: mirror the sticks or lower overlay opacity.' });
+  const touchGrid = el('div', { className: 'combat-settings-grid combat-touch-settings-grid' });
+  const touchLayout = buildTouchControlLayout({ leftHanded: gameSettings.touchLeftHanded, opacity: gameSettings.touchControlOpacity, orientation: deviceState.profile?.orientation ?? 'landscape' });
+  const touchActions = [
+    { id: 'toggle-touch-handedness', label: touchLayout.leftHanded ? 'Left-Handed On' : 'Left-Handed Off', description: touchLayout.leftHanded ? 'Movement on right, aim/actions on left.' : 'Movement on left, aim/actions on right.', run: toggleTouchHandednessSetting },
+    { id: 'cycle-touch-opacity', label: `Opacity ${Math.round(touchLayout.idleOpacity * 100)}%`, description: `Idle ${Math.round(touchLayout.idleOpacity * 100)}%, touched ${Math.round(touchLayout.activeOpacity * 100)}%.`, run: cycleTouchOpacitySetting },
+  ];
+  for (const action of touchActions) {
+    const button = el('button', { className: 'combat-menu-action combat-settings-action combat-touch-setting-action', type: 'button', dataset: { action: action.id } });
+    button.append(el('strong', { textContent: action.label }), el('span', { className: 'combat-settings-action-desc', textContent: action.description }));
+    button.addEventListener('click', () => action.run());
+    touchGrid.append(button);
+  }
+  dom.combatSettingsPanel.replaceChildren(quickTitle, quickCopy, quickGrid, accessibilityTitle, accessibilityCopy, accessibilityGrid, touchTitle, touchCopy, touchGrid);
 }
 
 async function restartCombatRun() {
@@ -5912,6 +5957,8 @@ async function startCombat(options = {}) {
   combat.aimMapY = 0;
   combat.manualAim = { x: 1, y: 0, active: false, source: 'reset' };
   combat.grenadeTarget = null;
+  combat.grenadeAim = null;
+  combat.grenadeTargetKind = 'grenade-reticle';
   combat.velocityX = 0;
   combat.velocityY = 0;
   combat.jumpsLeft = 2;
@@ -6162,7 +6209,7 @@ function melee() {
   if (bossBox && rectsOverlap(meleeBox, bossBox)) damageBoss(LESTER_BLASTER_WEAPON_SYSTEM.melee.damage, 'knife');
 }
 
-function grenade() {
+function grenade(options = {}) {
   // Manual throwable (the player's only manual action in the roguelike).
   // SIMPLIFIED: grenades only — throwing axes were removed from the loadout
   // (they read as broken/unnoticeable in playtests). Grenades are scarce and
@@ -6179,19 +6226,22 @@ function grenade() {
     // throwable button through the unlocked grenade economy. The plan is still
     // pure/deterministic, but stats can now switch the role between Crypto Bombs,
     // Launcher Rig, Homing Cluster, and Block Buster.
-    const grenadeTarget = buildManualGrenadeTarget({
+    const type = resolveGrenadeTypeForRun(combat.roguelikeRun);
+    const typeAim = grenadeAimType(type.id);
+    const grenadeTarget = options.target ?? buildGrenadeAimPreview({
+      typeId: type.id,
+      heldMs: 0,
       playerX: combat.playerMapX,
       playerY: combat.playerMapY,
       aimX: combat.manualAim?.x ?? combat.aimMapX,
       aimY: combat.manualAim?.y ?? combat.aimMapY,
-      reach: 99,
-      maxRange: 7,
-      blastRadius: 2,
+      blastRadius: type.blastRadius,
+      radiusMultiplier: combat.roguelikeRun?.stats.grenadeRadius ?? 1,
+      enemies: combat.enemies,
     });
     combat.grenadeTarget = grenadeTarget;
     // Runtime marker contract: renderer/debug tests can identify this as the
-    // WO-46 grenade-reticle path, while the deterministic throw planner still
-    // owns grenade type, cost, fuse, damage, and true max-range tuning.
+    // grenade-reticle path, while deterministic throw planning owns cost/fuse/damage.
     combat.grenadeTargetKind = 'grenade-reticle';
     const throwPlan = planLevelOneGrenadeThrow({
       run: combat.roguelikeRun,
@@ -6200,6 +6250,9 @@ function grenade() {
       originY: combat.playerMapY,
       aimX: grenadeTarget.aimX,
       aimY: grenadeTarget.aimY,
+      reach: grenadeTarget.distance,
+      maxRange: typeAim.maxRange,
+      blastRadius: grenadeTarget.marker?.radius ?? type.blastRadius,
       damageMultiplier: combat.roguelikeRun?.stats.grenadeDamage ?? 1,
     });
     if (!throwPlan.throwAllowed) {
@@ -7363,6 +7416,73 @@ function updateAimFromPointer(event) {
     maxRange: 7,
     blastRadius: 2,
   });
+}
+
+function currentGrenadeAimPreview(heldMs = 0) {
+  const type = resolveGrenadeTypeForRun(combat.roguelikeRun);
+  return buildGrenadeAimPreview({
+    typeId: type.id,
+    heldMs,
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    aimX: combat.manualAim?.x ?? combat.aimMapX,
+    aimY: combat.manualAim?.y ?? combat.aimMapY,
+    blastRadius: type.blastRadius,
+    radiusMultiplier: combat.roguelikeRun?.stats.grenadeRadius ?? 1,
+    enemies: combat.enemies,
+  });
+}
+
+function startGrenadeAimInput({ source = 'touch', pointerId = null, clientX = 0, clientY = 0 } = {}) {
+  if (!combat.roguelikeRun || combat.paused || combat.gameOver) {
+    grenade();
+    return;
+  }
+  const now = performance.now?.() ?? Date.now();
+  combat.grenadeAim = { active: true, source, pointerId, startedAt: now, startX: clientX, startY: clientY, currentX: clientX, currentY: clientY, canceled: false };
+  combat.grenadeTarget = currentGrenadeAimPreview(0);
+  combat.grenadeTargetKind = 'grenade-reticle';
+}
+
+function updateGrenadeAimInput({ clientX = 0, clientY = 0 } = {}) {
+  if (!combat.grenadeAim?.active) return;
+  combat.grenadeAim.currentX = clientX;
+  combat.grenadeAim.currentY = clientY;
+  combat.grenadeAim.canceled = combat.grenadeAim.canceled || isGrenadeAimCancel({
+    startX: combat.grenadeAim.startX,
+    startY: combat.grenadeAim.startY,
+    currentX: clientX,
+    currentY: clientY,
+    cancelZoneY: Math.max(64, combat.grenadeAim.startY - 96),
+  });
+  const heldMs = (performance.now?.() ?? Date.now()) - combat.grenadeAim.startedAt;
+  combat.grenadeTarget = currentGrenadeAimPreview(heldMs);
+  combat.grenadeTargetKind = combat.grenadeAim.canceled ? 'grenade-cancel' : 'grenade-reticle';
+}
+
+function cancelGrenadeAimInput({ secondFingerTap = false } = {}) {
+  if (!combat.grenadeAim?.active) return;
+  combat.grenadeAim.canceled = true;
+  combat.grenadeTargetKind = 'grenade-cancel';
+}
+
+function releaseGrenadeAimInput() {
+  if (!combat.grenadeAim?.active) return;
+  const heldMs = (performance.now?.() ?? Date.now()) - combat.grenadeAim.startedAt;
+  const release = classifyGrenadeRelease({ heldMs, canceled: combat.grenadeAim.canceled });
+  const preview = currentGrenadeAimPreview(heldMs);
+  combat.grenadeAim = null;
+  if (release === 'cancel') {
+    spawnText('NADE CANCEL', combat.playerX + 20, combat.playerY - 80, '#8cf7ff');
+    combat.grenadeTargetKind = 'grenade-reticle';
+    return;
+  }
+  grenade(release === 'aimed' ? { target: preview } : {});
+}
+
+function handleGrenadePointerMove(event) {
+  if (!combat.grenadeAim?.active) return;
+  updateGrenadeAimInput({ clientX: event.clientX, clientY: event.clientY });
 }
 
 // Auto-fire: weapons fire on their own cadence (fire rate / reload), aiming in
@@ -10686,7 +10806,7 @@ function drawRoguelikeScene(ctx, width, height) {
       });
     }
   }
-  const liveGrenadeTarget = combat.grenadeTarget ?? buildManualGrenadeTarget({
+  const liveGrenadeTarget = combat.grenadeTarget ?? (combat.roguelikeRun ? currentGrenadeAimPreview(0) : buildManualGrenadeTarget({
     playerX: combat.playerMapX,
     playerY: combat.playerMapY,
     aimX: combat.manualAim?.x ?? combat.aimMapX,
@@ -10694,23 +10814,36 @@ function drawRoguelikeScene(ctx, width, height) {
     reach: 99,
     maxRange: 7,
     blastRadius: 2,
-  });
+  }));
   combat.grenadeTarget = liveGrenadeTarget;
-  combat.grenadeTargetKind = 'grenade-reticle';
+  if (!combat.grenadeAim?.active && combat.grenadeTargetKind !== 'grenade-cancel') combat.grenadeTargetKind = 'grenade-reticle';
   if (liveGrenadeTarget?.marker?.kind === 'grenade-reticle') {
     const projected = isoToScreen(liveGrenadeTarget.landX, liveGrenadeTarget.landY);
     const rx = Math.max(8, liveGrenadeTarget.marker.radius * (ISO_TILE_WIDTH / 2));
     const ry = Math.max(5, liveGrenadeTarget.marker.radius * (ISO_TILE_HEIGHT / 2));
     const pulse = 0.55 + 0.25 * Math.sin(combat.frame * 0.12);
+    const variant = liveGrenadeTarget.marker.variant ?? liveGrenadeTarget.preview ?? 'lob-ellipse';
+    const canceling = combat.grenadeTargetKind === 'grenade-cancel';
+    const lineDash = variant === 'flat-line' ? [12, 4] : variant === 'cluster-lock' ? [3, 4] : variant === 'heavy-blast-ring' ? [8, 3] : [6, 5];
+    const stroke = canceling ? `rgba(255,71,111,${0.72 + pulse * 0.18})`
+      : variant === 'flat-line' ? `rgba(140,247,255,${0.62 + pulse * 0.25})`
+        : variant === 'cluster-lock' ? `rgba(69,255,138,${0.62 + pulse * 0.25})`
+          : variant === 'heavy-blast-ring' ? `rgba(255,123,47,${0.66 + pulse * 0.24})`
+            : `rgba(255,232,77,${0.62 + pulse * 0.25})`;
+    const fill = canceling ? 'rgba(255,71,111,0.08)'
+      : variant === 'flat-line' ? 'rgba(140,247,255,0.055)'
+        : variant === 'cluster-lock' ? 'rgba(69,255,138,0.06)'
+          : variant === 'heavy-blast-ring' ? 'rgba(255,123,47,0.07)'
+            : 'rgba(255,232,77,0.055)';
     renderList.push({
       depth: projected.y - 2,
       draw: () => {
         ctx.save();
         ctx.translate(projected.x, projected.y);
-        ctx.setLineDash([6, 5]);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = `rgba(255,232,77,${0.62 + pulse * 0.25})`;
-        ctx.fillStyle = 'rgba(255,232,77,0.055)';
+        ctx.setLineDash(lineDash);
+        ctx.lineWidth = variant === 'heavy-blast-ring' ? 3 : 2;
+        ctx.strokeStyle = stroke;
+        ctx.fillStyle = fill;
         ctx.beginPath();
         ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -12474,6 +12607,12 @@ document.addEventListener('keydown', (event) => {
   if (key === 'enter' || key === 'escape') {
     // Only the in-game pause toggle should consume Enter/Escape — and only
     // while actually playing, so menus/forms keep normal behavior.
+    if (officialAppStep === 'gameplay' && combat.grenadeAim?.active && key === 'escape') {
+      event.preventDefault();
+      cancelGrenadeAimInput();
+      releaseGrenadeAimInput();
+      return;
+    }
     if (officialAppStep === 'gameplay' && (combat.active || combat.paused)) {
       event.preventDefault();
       toggleCombatPause();
@@ -12487,7 +12626,10 @@ document.addEventListener('keydown', (event) => {
     if (combat.roguelikeRun) shoot();
     else jump();
   }
-  if (key === 'f') grenade();
+  if (key === 'f' || key === 'g') {
+    event.preventDefault();
+    if (!event.repeat && !combat.grenadeAim?.active) startGrenadeAimInput({ source: 'keyboard' });
+  }
   if (key === 'e') {
     event.preventDefault();
     triggerLevelOneInteraction();
@@ -12501,6 +12643,11 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
   const key = event.key.toLowerCase();
+  if ((key === 'f' || key === 'g') && combat.grenadeAim?.active) {
+    event.preventDefault();
+    releaseGrenadeAimInput();
+    return;
+  }
   if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowright', 'arrowdown', 'control'].includes(key)) combat.keys.delete(key);
 });
 
@@ -12510,6 +12657,7 @@ dom.combatCanvas.addEventListener('contextmenu', (event) => {
 
 dom.combatCanvas.addEventListener('pointermove', (event) => {
   if (combat.roguelikeRun) updateAimFromPointer(event);
+  handleGrenadePointerMove(event);
 });
 
 dom.combatCanvas.addEventListener('mousedown', (event) => {
@@ -12522,7 +12670,7 @@ dom.combatCanvas.addEventListener('mousedown', (event) => {
     // movement + positioning.
     event.preventDefault();
     if (event.button === 0) shoot();
-    else if (event.button === 2) grenade();
+    else if (event.button === 2) startGrenadeAimInput({ source: 'mouse', clientX: event.clientX, clientY: event.clientY });
     return;
   }
   // Legacy sandbox (non-roguelike) keeps click-to-shoot / right-click grenade.
@@ -12530,6 +12678,13 @@ dom.combatCanvas.addEventListener('mousedown', (event) => {
   if (event.button === 2) {
     event.preventDefault();
     grenade();
+  }
+});
+
+document.addEventListener('mouseup', (event) => {
+  if (event.button === 2 && combat.grenadeAim?.active) {
+    event.preventDefault();
+    releaseGrenadeAimInput();
   }
 });
 
@@ -12640,6 +12795,17 @@ function performTouchAction(action) {
 }
 
 let touchControlsBuilt = false;
+function setFloatingTouchOrigin(base, clientX, clientY) {
+  const size = base.getBoundingClientRect().width || 132;
+  const half = size / 2;
+  const safeX = Math.max(half + 8, Math.min(window.innerWidth - half - 8, clientX));
+  const safeY = Math.max(half + 8, Math.min(window.innerHeight - half - 8, clientY));
+  base.style.left = `${Math.round(safeX - half)}px`;
+  base.style.right = 'auto';
+  base.style.top = `${Math.round(safeY - half)}px`;
+  base.style.bottom = 'auto';
+}
+
 function ensureTouchControls(profile) {
   if (!profile.showTouchControls) {
     document.getElementById('touchControls')?.style.setProperty('display', 'none');
@@ -12651,9 +12817,12 @@ function ensureTouchControls(profile) {
   layer.id = 'touchControls';
   layer.setAttribute('aria-label', 'On-screen touch controls');
 
-  // --- LEFT virtual joystick: drag within the base to MOVE. ---
-  const stickBase = el('div', { className: 'touch-stick-base' });
+  const layout = buildTouchControlLayout({ leftHanded: gameSettings.touchLeftHanded, opacity: gameSettings.touchControlOpacity, orientation: profile.orientation });
+
+  // --- Floating movement joystick: origin snaps to first thumb touch. ---
+  const stickBase = el('div', { className: 'touch-stick-base touch-move-base' });
   const stickNub = el('div', { className: 'touch-stick-nub' });
+  stickBase.dataset.touchRole = 'move';
   stickBase.append(stickNub);
   layer.append(stickBase);
 
@@ -12673,6 +12842,7 @@ function ensureTouchControls(profile) {
   };
   const releaseStick = () => {
     movePointer = null;
+    stickBase.classList.remove('is-active');
     stickNub.style.transform = 'translate(0,0)';
     for (const k of deviceState.touchKeys) combat.keys.delete(k);
     deviceState.touchKeys = new Set();
@@ -12680,6 +12850,8 @@ function ensureTouchControls(profile) {
   stickBase.addEventListener('pointerdown', (e) => {
     movePointer = e.pointerId;
     stickBase.setPointerCapture(e.pointerId);
+    setFloatingTouchOrigin(stickBase, e.clientX, e.clientY);
+    stickBase.classList.add('is-active');
     updateStick(e.clientX, e.clientY);
     e.preventDefault();
   });
@@ -12689,12 +12861,10 @@ function ensureTouchControls(profile) {
   stickBase.addEventListener('pointerup', releaseStick);
   stickBase.addEventListener('pointercancel', releaseStick);
 
-  // --- RIGHT virtual joystick: drag to AIM + auto-fire in that direction. ---
-  // Twin-stick: the gun auto-fires (updateAutoFire) toward combat.aimMapX/Y while
-  // the player steers aim with this stick. No jump (removed) and no manual fire
-  // button — holding the aim stick IS firing. Buttons are just Melee + Power-Up.
+  // --- Floating aim joystick: origin snaps to first thumb touch. ---
   const aimBase = el('div', { className: 'touch-stick-base touch-aim-base' });
   const aimNub = el('div', { className: 'touch-stick-nub touch-aim-nub' });
+  aimBase.dataset.touchRole = 'aim';
   aimBase.append(aimNub);
   layer.append(aimBase);
 
@@ -12708,10 +12878,7 @@ function ensureTouchControls(profile) {
     const mag = Math.hypot(dx, dy) || 1;
     if (mag > 1) { dx /= mag; dy /= mag; }
     aimNub.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
-    if (mag < 0.2) return; // dead zone: tiny nudges don't redirect fire
-    // Convert the stick vector into a world-space aim direction using the shared
-    // WO-46 pure helper so mobile right-stick, desktop pointer, and grenade
-    // targeting all agree on the same normalized manual-aim state.
+    if (mag < 0.2) return;
     const manualAim = joystickToManualAim(dx, dy, {
       tileWidth: ISO_TILE_WIDTH,
       tileHeight: ISO_TILE_HEIGHT,
@@ -12722,7 +12889,7 @@ function ensureTouchControls(profile) {
     combat.aimMapY = manualAim.y;
     combat.pointerWorldX = null;
     combat.pointerWorldY = null;
-    combat.pointerActive = manualAim.active; // steer auto-fire toward the stick
+    combat.pointerActive = manualAim.active;
     combat.grenadeTarget = buildManualGrenadeTarget({
       playerX: combat.playerMapX,
       playerY: combat.playerMapY,
@@ -12735,14 +12902,17 @@ function ensureTouchControls(profile) {
   };
   const releaseAim = () => {
     aimPointer = null;
+    aimBase.classList.remove('is-active');
     aimNub.style.transform = 'translate(0,0)';
     combat.pointerWorldX = null;
     combat.pointerWorldY = null;
-    combat.pointerActive = false; // fall back to nearest-enemy auto-aim
+    combat.pointerActive = false;
   };
   aimBase.addEventListener('pointerdown', (e) => {
     aimPointer = e.pointerId;
     aimBase.setPointerCapture(e.pointerId);
+    setFloatingTouchOrigin(aimBase, e.clientX, e.clientY);
+    aimBase.classList.add('is-active');
     updateAim(e.clientX, e.clientY);
     e.preventDefault();
   });
@@ -12752,23 +12922,47 @@ function ensureTouchControls(profile) {
   aimBase.addEventListener('pointerup', releaseAim);
   aimBase.addEventListener('pointercancel', releaseAim);
 
-  // --- Action buttons: ONLY Grenade + Power-Up (no jump, melee, or manual fire). ---
-  const actions = [
-    { id: 'grenade', label: '💣 NADE', action: 'grenade' },
-    { id: 'powerup', label: 'POWER', action: 'powerup' },
-  ];
+  // --- Action cluster: grenade only. POWER was the mystery helper button and is desktop-only now. ---
   const cluster = el('div', { className: 'touch-action-cluster' });
-  for (const a of actions) {
-    const btn = el('button', { className: `touch-action-button touch-${a.id}`, textContent: a.label });
-    btn.type = 'button';
-    btn.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      performTouchAction(a.action);
-      playSfxCue('menu-click', 0.02);
-    });
-    cluster.append(btn);
-  }
+  cluster.dataset.side = layout.actionCluster.side;
+  const btn = el('button', { className: 'touch-action-button touch-grenade', textContent: '💣 NADE' });
+  btn.type = 'button';
+  btn.setAttribute('aria-label', 'Grenade. Tap quick throw. Hold to aim.');
+  const cancelZone = el('div', { className: 'touch-grenade-cancel-zone', textContent: 'CANCEL' });
+  cancelZone.setAttribute('aria-hidden', 'true');
+  let grenadePointer = null;
+  btn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    grenadePointer = e.pointerId;
+    btn.setPointerCapture(e.pointerId);
+    btn.classList.add('is-active');
+    startGrenadeAimInput({ source: 'touch', pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY });
+    playSfxCue('menu-click', 0.02);
+  });
+  btn.addEventListener('pointermove', (e) => {
+    if (grenadePointer === e.pointerId) updateGrenadeAimInput({ clientX: e.clientX, clientY: e.clientY });
+  });
+  const releaseTouchGrenade = (e) => {
+    if (grenadePointer !== e.pointerId) return;
+    grenadePointer = null;
+    btn.classList.remove('is-active');
+    releaseGrenadeAimInput();
+  };
+  btn.addEventListener('pointerup', releaseTouchGrenade);
+  btn.addEventListener('pointercancel', (e) => {
+    if (grenadePointer !== e.pointerId) return;
+    btn.classList.remove('is-active');
+    cancelGrenadeAimInput();
+    releaseTouchGrenade(e);
+  });
+  cluster.append(cancelZone, btn);
   layer.append(cluster);
+  layer.addEventListener('pointerdown', (e) => {
+    if (combat.grenadeAim?.active && grenadePointer !== null && e.pointerId !== grenadePointer) {
+      e.preventDefault();
+      cancelGrenadeAimInput({ secondFingerTap: true });
+    }
+  });
 
   // NOTE: the persistent top-right pause/menu button (#combatMenuIconButton)
   // lives in the gameplay view markup and is shown on all viewports, so the
