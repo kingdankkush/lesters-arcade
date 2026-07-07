@@ -1,0 +1,460 @@
+{
+  "workOrder": "WO-76",
+  "slot": "storefront-facade",
+  "status": "HALT_AWAITING_JUSTIN_PICK_OR_REROLL",
+  "candidateCount": 12,
+  "targetCandidateCount": {
+    "min": 12,
+    "max": 20
+  },
+  "rawOutputPolicy": "raw candidate PNGs remain in gitignored .art-staging/; only this approval sheet/manifest is tracked",
+  "referenceSeed": "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/chrome-tower-facade.png",
+  "referenceLimitation": "FAL backend rejected local reference image paths, so this batch used text prompts plus the seed is shown in the audit, not as image-to-image input.",
+  "contactSheet": "docs/art/wo76/wo76-storefront-facade-contact-sheet.png",
+  "candidates": [
+    {
+      "id": "wo76-storefront-facade-01",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ca6/b3utVc2vhOJkNBXlWUN8__rlE643DM.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-01.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-02",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ca9/7OB1odgiRvI4SjLRW03bP_cQ4OVZRI.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-02.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            3,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-03",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13ca9/-_wJNJq5omstPYlTvGYMf_3PXzlTZY.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-03.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            9,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-04",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13caa/aw0f01UWcCUq1V4uANfwG_CzkfRF6P.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-04.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-05",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cad/rWx-x2sgSjQ7AZuDxd4tZ_BoVir2JS.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-05.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-06",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cad/VCOMemLwQlMpl78y3Vddm_9nJr8zMB.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-06.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-07",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cae/y3dk5L2rv2hCkHDPo2Uq8_ywCTa1dd.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-07.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            13,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-08",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cae/HQy46bwR7Jidur6xJ38PV_dUjbPJPk.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-08.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-09",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cb1/OuS9O_ik_lEKFifUKiaSv_ADy1ep5J.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-09.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            10,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-10",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cb2/DuDcfLI_0qhk55wa1l_Wr_0SzZaR5m.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-10.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-11",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cb3/FtJ5JrhoPzvBOkFuLeHA9_AAoY9RBN.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-11.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    },
+    {
+      "id": "wo76-storefront-facade-12",
+      "slot": "storefront-facade",
+      "status": "candidate-needs-justin-review",
+      "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa13cb3/8DneUZC2odPvSAsZygyw-_XYHB7bcP.png",
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-12.png",
+      "trackedInGit": false,
+      "promptSummary": "hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, night-city noir, top-left key light with local neon rim, painterly pixel clusters, clean 1px selective dark navy outline, no readable text/logos/watermark/people, candidate only not approved anchor art",
+      "dimensions": {
+        "width": 1024,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "basicQa": {
+        "validPng": true,
+        "alphaExtrema": [
+          255,
+          255
+        ],
+        "rgbExtrema": [
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ],
+          [
+            0,
+            255
+          ]
+        ],
+        "notes": "candidate-only square generation; not runtime-ready until Justin approval plus crop/alpha/palette cleanup"
+      }
+    }
+  ]
+}

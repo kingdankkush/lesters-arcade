@@ -1,0 +1,108 @@
+{
+  "workOrder": "WO-76",
+  "slot": "storefront-facade",
+  "status": "HALT_AWAITING_JUSTIN_PICK_OR_REROLL",
+  "generatedCandidateCount": 20,
+  "survivorCandidateCount": 12,
+  "survivors": [
+    {
+      "candidate": 2,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-02.png",
+      "qaNote": "Strong isolated prop silhouette, blank sign, good steam/vent detail; needs crop/alpha cleanup if chosen."
+    },
+    {
+      "candidate": 4,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-04.png",
+      "qaNote": "Strong simple storefront with blank neon; readable small-game prop; needs more facade/story detail if chosen."
+    },
+    {
+      "candidate": 6,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-06.png",
+      "qaNote": "Good Deco corner massing and blank lightbox; slightly less noodle-specific but strong building anchor."
+    },
+    {
+      "candidate": 8,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-08.png",
+      "qaNote": "Strong textless shop facade with shutter/vent/wet asphalt; good practical runtime silhouette."
+    },
+    {
+      "candidate": 9,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-09.png",
+      "qaNote": "Best lamp + storefront composition; good atmosphere, slightly more general shop than noodle bar."
+    },
+    {
+      "candidate": 10,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-10.png",
+      "qaNote": "Good rainy late-night shop read and warmth; may need sign cleanup/crop if chosen."
+    },
+    {
+      "candidate": 12,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-12.png",
+      "qaNote": "Strong blank-sign facade and street-level shop read; perspective more front-on than 2:1 iso."
+    },
+    {
+      "candidate": 13,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-13.png",
+      "qaNote": "Good compact blank-sign corner shop with steam and deco trim; solid anchor candidate."
+    },
+    {
+      "candidate": 14,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-14.png",
+      "qaNote": "Strongest atmospheric noir facade; great wet reflections, but includes background street context to crop/clean."
+    },
+    {
+      "candidate": 16,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-16.png",
+      "qaNote": "Clean textless compact prop with strong blank sign; less noodle-specific but good runtime readability."
+    },
+    {
+      "candidate": 18,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-18.png",
+      "qaNote": "Clean textless compact facade; good runtime prop, slightly simpler than top picks."
+    },
+    {
+      "candidate": 19,
+      "rawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-19.png",
+      "qaNote": "Strong blank sign, steam, wet street, warm interior; excellent atmosphere but needs background/crop cleanup."
+    }
+  ],
+  "rejects": [
+    {
+      "candidate": 1,
+      "reason": "Readable/fake shop text on sign; reject for no-text rule."
+    },
+    {
+      "candidate": 3,
+      "reason": "Readable/fake text/signage and too much full-street illustration context; reject."
+    },
+    {
+      "candidate": 5,
+      "reason": "Readable/fake shop text; reject for no-text rule."
+    },
+    {
+      "candidate": 7,
+      "reason": "Readable/fake city/sign text; reject for no-text rule."
+    },
+    {
+      "candidate": 11,
+      "reason": "Readable/fake shop text; reject for no-text rule."
+    },
+    {
+      "candidate": 15,
+      "reason": "Clean textless candidate, but boxy/side-wall heavy and weaker as a noodle storefront than the survivor set."
+    },
+    {
+      "candidate": 17,
+      "reason": "Clean textless candidate, but white-background render reads less night-noir/painterly than stronger options."
+    },
+    {
+      "candidate": 20,
+      "reason": "Mostly textless, but too plain/empty and less noodle-bar-specific than stronger options."
+    }
+  ],
+  "contactSheets": {
+    "all20Qa": "docs/art/wo76/wo76-storefront-facade-all-20-qa-sheet.png",
+    "survivors": "docs/art/wo76/wo76-storefront-facade-survivor-sheet.png"
+  },
+  "approvalRequest": "Justin: pick one survivor candidate number, reject all, or provide reroll notes. Do not integrate until approved."
+}

@@ -38,7 +38,8 @@ contact-sheets/
 contact-sheets/working/
 docs/testing/VISUAL_BASELINES/current/
 
-# Asset pipeline raw output — belongs in the vault, never in git
+# Asset pipeline raw output — belongs in the vault/staging, never in git
+.art-staging/
 apps/portal/assets/_staging/
 **/downloads/*.zip
 **/downloads/*.txt

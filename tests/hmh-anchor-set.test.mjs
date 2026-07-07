@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import {
@@ -76,6 +76,25 @@ test('WO-76 draft docs exist but keep anchors unapproved until Justin picks winn
   assert.match(pipeline, /match the approved WO-76 anchor set/);
   assert.match(anchorSet, /Status: UNAPPROVED/);
   assert.match(anchorSet, /No anchor winners are approved yet/);
+});
+
+test('WO-76 storefront survivor sheet is approval-gated and raw outputs stay ignored', () => {
+  const report = JSON.parse(repoText('docs/art/wo76/wo76-storefront-facade-review-report.json'));
+  const markdown = repoText('docs/art/wo76/wo76-storefront-facade-survivors.md');
+  const gitignore = repoText('.gitignore');
+  const survivorSheetPath = fileURLToPath(new URL('../docs/art/wo76/wo76-storefront-facade-survivor-sheet.png', import.meta.url));
+
+  assert.equal(report.workOrder, 'WO-76');
+  assert.equal(report.slot, 'storefront-facade');
+  assert.equal(report.status, 'HALT_AWAITING_JUSTIN_PICK_OR_REROLL');
+  assert.equal(report.generatedCandidateCount, 20);
+  assert.equal(report.survivorCandidateCount, 12);
+  assert.equal(report.survivors.length, 12);
+  assert.equal(report.rejects.some((entry) => entry.reason.includes('Readable/fake')), true);
+  assert.match(markdown, /HALT: Justin pick\/reroll required/);
+  assert.match(markdown, /Rejected before Justin review/);
+  assert.equal(existsSync(survivorSheetPath), true);
+  assert.match(gitignore, /^\.art-staging\/$/m);
 });
 
 test('WO-76 scripts and tests are wired into the project gates', () => {
