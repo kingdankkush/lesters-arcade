@@ -19,6 +19,7 @@ match the approved WO-76 storefront-facade anchor where relevant plus the WO-76 
 Currently approved anchor references:
 
 - Storefront facade: `docs/art/anchors/storefront-facade.png`
+- Bank-district Deco corner facade: `docs/art/anchors/bank-deco-corner.png`
 
 ## Tool routing
 

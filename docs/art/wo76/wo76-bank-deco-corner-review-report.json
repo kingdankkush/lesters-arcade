@@ -1,0 +1,15 @@
+{
+  "workOrder": "WO-76",
+  "slot": "bank-deco-corner",
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION",
+  "generatedCandidateCount": 12,
+  "approvedCandidate": 9,
+  "approvedAnchor": "docs/art/anchors/bank-deco-corner.png",
+  "contactSheet": "docs/art/wo76/wo76-bank-deco-corner-contact-sheet.png",
+  "qaSummary": "No obvious readable text/logo failures. Batch overfit the storefront reference; candidate 09 has the strongest bank-specific landmark read because of the vault door and Deco crown.",
+  "runnersUp": [
+    12,
+    10,
+    5
+  ]
+}

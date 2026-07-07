@@ -17,8 +17,8 @@ function repoText(path) {
 
 test('WO-76 declares exactly ten approval-gated anchor slots in the required order', () => {
   assert.equal(HMH_ANCHOR_SET_STATUS.workOrder, 'WO-76');
-  assert.equal(HMH_ANCHOR_SET_STATUS.status, 'PARTIAL_ANCHOR_APPROVAL_1_OF_10');
-  assert.equal(HMH_ANCHOR_SET_STATUS.approvedAnchorCount, 1);
+  assert.equal(HMH_ANCHOR_SET_STATUS.status, 'PARTIAL_ANCHOR_APPROVAL_2_OF_10');
+  assert.equal(HMH_ANCHOR_SET_STATUS.approvedAnchorCount, 2);
   assert.equal(HMH_ANCHOR_SET_STATUS.runtimeIntegrationAllowed, false);
   assert.equal(HMH_ANCHOR_SET_STATUS.requiresHumanApproval, true);
   assert.deepEqual(HMH_ANCHOR_SLOTS.map((slot) => slot.id), [
@@ -75,8 +75,9 @@ test('WO-76 draft docs track partial approval while keeping full set blocked', (
   const anchorSet = repoText('docs/art/ANCHOR_SET.md');
   assert.match(pipeline, /Universal WO-76 prompt preamble/);
   assert.match(pipeline, /match the approved WO-76 storefront-facade anchor/);
-  assert.match(anchorSet, /Full anchor set status: UNAPPROVED — 1\/10 slots approved/);
+  assert.match(anchorSet, /Full anchor set status: UNAPPROVED — 2\/10 slots approved/);
   assert.match(anchorSet, /Storefront facade — APPROVED/);
+  assert.match(anchorSet, /Bank-district Deco corner facade — APPROVED/);
 });
 
 test('WO-76 approved storefront anchor has image and prompt provenance', () => {
@@ -88,6 +89,18 @@ test('WO-76 approved storefront anchor has image and prompt provenance', () => {
   assert.equal(provenance.approvedCandidate, 14);
   assert.equal(provenance.status, 'APPROVED_BY_JUSTIN_2026-07-06');
   assert.match(provenance.exactPrompt, /Textless blank-sign storefront only/);
+  assert.equal(existsSync(anchorPath), true);
+});
+
+test('WO-76 approved bank Deco anchor has image and prompt provenance', () => {
+  const provenance = JSON.parse(repoText('docs/art/anchors/bank-deco-corner.provenance.json'));
+  const anchorPath = fileURLToPath(new URL('../docs/art/anchors/bank-deco-corner.png', import.meta.url));
+
+  assert.equal(provenance.workOrder, 'WO-76');
+  assert.equal(provenance.slot, 'bank-deco-corner');
+  assert.equal(provenance.approvedCandidate, 9);
+  assert.equal(provenance.status, 'APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06');
+  assert.match(provenance.exactPrompt, /high-quality bank landmark facade/);
   assert.equal(existsSync(anchorPath), true);
 });
 

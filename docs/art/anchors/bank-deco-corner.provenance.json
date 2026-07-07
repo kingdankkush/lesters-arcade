@@ -1,0 +1,26 @@
+{
+  "workOrder": "WO-76",
+  "slot": "bank-deco-corner",
+  "slotTitle": "Bank-district Deco corner facade",
+  "approvedCandidate": 9,
+  "status": "APPROVED_BY_AGENT_PER_JUSTIN_DIRECTION_2026-07-06",
+  "anchorImage": "docs/art/anchors/bank-deco-corner.png",
+  "sourceRawStagingPath": ".art-staging/wo76/bank-deco-corner/bank-deco-corner-candidate-09.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13e79/3ZYqnjqsRU9rwXfF-msbn_sCBaF95s.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "image-to-image/reference-guided",
+    "referenceImageUsed": true
+  },
+  "referenceAnchor": "docs/art/anchors/storefront-facade.png",
+  "referenceSourceUrl": "https://v3b.fal.media/files/b/0aa13cc3/4waD2VR748wOb3UScQKnI_c0orgKyb.png",
+  "exactPrompt": "WO-76 bank-deco-corner candidate 09. Hi-bit pixel art, high-quality bank landmark facade for Litecoin City noir. Isometric 2:1 corner with stepped Art Deco crown, blank cyan signage, brass trim, silver stone, glowing vault doorway, rain-puddled pavement, top-left key, neon rim, painterly pixel clusters, selective dark outline. Absolutely no readable text, no numbers, no symbols, no logos, no people, no watermark. Candidate only.",
+  "approvalRationale": "Best high-bit/noir bank-district read from the batch: the circular vault door and stepped Deco crown communicate financial landmark better than the more storefront-like variants.",
+  "runnersUp": [
+    12,
+    10,
+    5
+  ],
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and manifest work in a later approved art-substitution task."
+}

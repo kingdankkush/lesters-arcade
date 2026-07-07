@@ -6,11 +6,11 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 
 export const HMH_ANCHOR_SET_STATUS = Object.freeze({
   workOrder: 'WO-76',
-  status: 'PARTIAL_ANCHOR_APPROVAL_1_OF_10',
+  status: 'PARTIAL_ANCHOR_APPROVAL_2_OF_10',
   runtimeIntegrationAllowed: false,
   requiresHumanApproval: true,
   candidateSheetAllowed: true,
-  approvedAnchorCount: 1,
+  approvedAnchorCount: 2,
   note: 'No WO-76 anchor may become the pipeline style source until Justin approves the slot winner.',
 });
 
