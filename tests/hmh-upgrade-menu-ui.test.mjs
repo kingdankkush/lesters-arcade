@@ -24,16 +24,18 @@ test('WO-73 upgrade menu presentation labels the two-card continuation/new draft
     colorblindTags: true,
   });
 
-  assert.equal(model.version, 'wo-73-upgrade-menu-ui-v2');
-  assert.equal(model.title, 'Choose One Augment');
+  assert.equal(model.version, 'compact-upgrade-menu-ui-v3');
+  assert.equal(model.title, 'Choose One Upgrade');
   assert.equal(model.cards.length, 2);
-  assert.equal(model.shell.layout, 'two-card-guided-draft');
+  assert.equal(model.shell.layout, 'compact-two-card-tooltip-draft');
   assert.equal(model.reroll.enabled, true);
   assert.equal(model.reroll.label, 'Reroll Both (2)');
   assert.equal(model.cards[0].slotLabel, 'CONTINUE YOUR BUILD');
   assert.equal(model.cards[1].slotLabel, 'NEW TREE');
   assert.equal(model.cards[0].category.label, 'Offense');
   assert.equal(model.cards[0].category.colorblindTag, 'TONE RED');
+  assert.equal(model.cards[0].tooltip, 'Bullets hit harder.');
+  assert.match(model.cards[0].ariaLabel, /Bullets hit harder/);
   assert.deepEqual(model.cards[0].rankPips.map((pip) => pip.state), ['filled', 'next', 'empty', 'empty', 'empty']);
 });
 
@@ -57,8 +59,8 @@ test('WO-40 upgrade menu supports locked previews and mobile-safe shell metadata
   });
 
   assert.equal(model.reroll.enabled, false);
-  assert.equal(model.shell.layout, 'two-card-guided-draft');
-  assert.ok(model.shell.accessibility.includes('44px'));
+  assert.equal(model.shell.layout, 'compact-two-card-tooltip-draft');
+  assert.ok(model.shell.accessibility.includes('tooltip/ARIA'));
   assert.equal(model.lockedPreviewRail.length, 2);
   assert.match(model.lockedPreviewRail[0].gateHint, /LEVEL 10/);
 });
@@ -72,9 +74,15 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(main.includes('buildUpgradeMenuPresentation({'), true);
   assert.equal(main.includes('level-up-shell'), true);
   assert.equal(main.includes('level-up-slot-label'), true);
+  assert.equal(main.includes('upgrade-card-tooltip'), true);
+  assert.equal(main.includes("appendText(button, 'p', card.description, 'upgrade-card-desc')"), false);
+  assert.equal(main.includes('upgrade-locked-preview-rail'), false);
   assert.equal(css.includes('.level-up-shell'), true);
   assert.equal(css.includes('.level-up-slot-label'), true);
   assert.equal(css.includes('.upgrade-card-meter'), true);
+  assert.equal(css.includes('.upgrade-card-tooltip'), true);
+  assert.equal(css.includes('minmax(230px, 1fr)'), true);
+  assert.equal(css.includes('min-height: 104px'), true);
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-upgrade-menu-ui.mjs'), true);
   assert.equal(syntaxCheck.includes('tests/hmh-upgrade-menu-ui.test.mjs'), true);
 });

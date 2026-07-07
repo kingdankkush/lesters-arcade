@@ -1021,22 +1021,21 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   }
   .combat-menu-panel h3 { font-size: clamp(1.2rem, 5vw, 1.7rem); margin: 2px 0 6px; }
   .level-up-overlay {
-    width: min(94vw, 480px);
-    max-height: min(58dvh, calc(100dvh - 150px));
+    width: min(92vw, 420px);
+    max-height: min(48dvh, calc(100dvh - 150px));
   }
-  /* Stack the upgrade choices vertically — full width per card gives room for
-     the title, description, icon, and rank pips. */
+  /* Stack compact upgrade choices vertically so the gameplay window stays visible. */
   .combat-menu-action-grid {
     grid-template-columns: 1fr;
-    gap: 8px;
-    margin-top: 12px;
+    gap: 6px;
+    margin-top: 8px;
   }
-  .level-up-card-stack { grid-template-columns: 1fr; }
-  .level-up-shell { width: 100%; padding: 10px; }
-  .level-up-upgrade-card { min-height: 0; padding: 10px 12px; }
+  .level-up-card-stack { grid-template-columns: 1fr; gap: 8px; }
+  .level-up-shell { width: 100%; padding: 8px; gap: 8px; }
+  .level-up-upgrade-card { min-height: 0; padding: 9px 10px; gap: 6px; }
   .upgrade-card-title { font-size: 0.82rem; -webkit-line-clamp: 2; }
-  .upgrade-card-desc { font-size: 0.7rem; -webkit-line-clamp: 2; }
-  .upgrade-card-cat { font-size: 0.52rem; }
+  .upgrade-card-desc { display: none; }
+  .upgrade-card-cat { font-size: 0.5rem; }
 }
 
 .game-over-summary {
@@ -2448,11 +2447,11 @@ button.menu-card.menu-option.interactive:active {
 .level-up-subtitle {
   margin: 0;
   color: #b9c6e0;
-  font-size: 0.72rem;
-  line-height: 1.35;
+  font-size: 0.66rem;
+  line-height: 1.25;
 }
-.level-up-card-stack { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 14px; }
-.level-up-slot { display: grid; gap: 6px; align-content: stretch; }
+.level-up-card-stack { display: grid; grid-template-columns: repeat(2, minmax(230px, 1fr)); gap: 10px; }
+.level-up-slot { display: grid; gap: 4px; align-content: stretch; }
 .level-up-slot-label {
   color: var(--neon-cyan);
   font-family: var(--mono);
@@ -2488,19 +2487,19 @@ button.menu-card.menu-option.interactive:active {
 }
 
 .level-up-upgrade-card {
-  /* Override the base action's centered inline-flex so the card lays out as a
-     left-aligned, contained info card with readable, aligned text. */
+  /* Compact, playfield-safe decision card: visible title/gain/ranks only;
+     details live in tooltip/ARIA so the overlay fits inside gameplay. */
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
   text-align: left;
   text-transform: none;
   letter-spacing: normal;
-  min-height: 148px;
-  padding: 14px 16px;
+  min-height: 104px;
+  padding: 10px 12px;
   /* Unified magenta-accent chrome for all cards (the design the user approved
      on the weapon-branch variant). Per-tone category badge color is preserved
      below via `[data-tone="..."] .upgrade-card-badge`. */
@@ -2514,10 +2513,10 @@ button.menu-card.menu-option.interactive:active {
   border-color: rgba(255, 95, 162, 0.92);
   box-shadow: 0 0 32px rgba(255, 95, 162, 0.45), inset 0 0 16px rgba(255, 95, 162, 0.14);
 }
-.upgrade-card-head { display: flex; align-items: center; gap: 9px; }
+.upgrade-card-head { display: flex; align-items: center; gap: 7px; }
 .upgrade-card-badge {
-  flex: 0 0 auto; width: 32px; height: 32px; display: grid; place-items: center;
-  font-size: 1rem; border-radius: 9px;
+  flex: 0 0 auto; width: 28px; height: 28px; display: grid; place-items: center;
+  font-size: 0.92rem; border-radius: 8px;
   background: rgba(8, 14, 32, 0.7); border: 1px solid rgba(25, 247, 255, 0.35);
 }
 .upgrade-card-titlewrap { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1 1 auto; }
@@ -2542,12 +2541,23 @@ button.menu-card.menu-option.interactive:active {
 }
 .upgrade-rank-pip.is-filled { background: rgba(255, 95, 162, 0.75); border-color: rgba(255,95,162,0.8); }
 .upgrade-rank-pip.is-next { background: #ffc2da; border-color: #ffc2da; box-shadow: 0 0 10px rgba(255,95,162,0.85); }
-.upgrade-card-ranklabel { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; color: #ffb3d1; }
+.upgrade-card-ranklabel { display: none; }
+.upgrade-card-tooltip {
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(25,247,255,0.42);
+  color: var(--neon-cyan);
+  background: rgba(25,247,255,0.08);
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1;
+}
 .upgrade-card-desc {
-  margin: 2px 0 0; font-size: 0.72rem; font-weight: 500; line-height: 1.35;
-  letter-spacing: normal; text-transform: none; color: #c2cfe6;
-  /* Contain the description within the card (clamp to 3 lines). */
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  display: none;
 }
 /* Per-category accent on the badge + title. */
 .level-up-upgrade-card[data-tone="red"] .upgrade-card-badge { border-color: rgba(255,93,108,0.55); }

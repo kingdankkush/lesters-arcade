@@ -1005,15 +1005,18 @@ test('Level 1 ship focus is open-ended survival with no timer extraction target'
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('100%-scale enemy hit detection'), true);
 });
 
-test('Level 1 world dimensions target 50-65% unique traversal within an 8 minute run', () => {
+test('Level 1 world dimensions use the compact half-size playtest footprint', () => {
   const world = buildLevelOneRunWorldDimensions();
 
   assert.equal(world.width, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width);
   assert.equal(world.height, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height);
+  assert.equal(world.width, 525);
+  assert.equal(world.height, 450);
+  assert.equal(world.targetSessionSeconds, 4 * 60);
   assert.ok(world.traversalTargetPct >= 0.5 && world.traversalTargetPct <= 0.65);
   assert.ok(world.expectedUniqueTraversalPct >= 0.5, `expected at least half-map traversal, got ${world.expectedUniqueTraversalPct}`);
   assert.ok(world.expectedUniqueTraversalPct <= 0.65, `expected no more than 65% map traversal, got ${world.expectedUniqueTraversalPct}`);
-  assert.ok(world.width < 2000 && world.height < 2000, 'playtest found the old 2000x2000 world too large for Level 1 learning');
+  assert.ok(world.width <= 1050 / 2 && world.height <= 900 / 2, 'playtest found the previous 1050x900 world too large for Level 1 learning');
 });
 
 test('Level 1 temporarily assigns curated humanoid enemies as mini-boss and boss proxies', () => {

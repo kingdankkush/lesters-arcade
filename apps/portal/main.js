@@ -2369,21 +2369,21 @@ function applyLevelUpOverlayLayout(levelUpContainer) {
   const mobile = profile.deviceClass === 'mobile';
   Object.assign(levelUpContainer.style, {
     position: mobile ? 'fixed' : 'absolute',
-    top: mobile ? 'auto' : '10%',
+    top: mobile ? 'auto' : '8%',
     left: '50%',
     bottom: mobile ? 'calc(10px + env(safe-area-inset-bottom))' : 'auto',
     transform: 'translateX(-50%)',
     zIndex: '9999',
-    width: mobile ? 'min(94vw, 480px)' : 'min(86%, 520px)',
-    maxHeight: mobile ? 'min(56dvh, calc(100dvh - 132px))' : '82vh',
+    width: mobile ? 'min(92vw, 420px)' : 'min(74%, 560px)',
+    maxHeight: mobile ? 'min(48dvh, calc(100dvh - 150px))' : '58vh',
     overflow: 'auto',
     display: 'flex',
     flexDirection: 'column',
-    gap: mobile ? '10px' : '14px',
-    background: 'rgba(12,14,24,0.88)',
-    border: '3px solid rgba(255,95,162,0.55)',
+    gap: mobile ? '7px' : '10px',
+    background: 'rgba(12,14,24,0.9)',
+    border: '2px solid rgba(255,95,162,0.55)',
     borderRadius: '14px',
-    padding: mobile ? '14px 14px 16px' : '20px 22px',
+    padding: mobile ? '10px 10px 12px' : '14px 16px',
     boxShadow: '0 0 48px rgba(255,95,162,0.25), inset 0 0 18px rgba(255,95,162,0.08)',
     backdropFilter: 'blur(2px)',
     WebkitOverflowScrolling: 'touch',
@@ -2443,9 +2443,15 @@ function renderLevelUpActionGrid() {
     appendText(head, 'span', card.gainLabel, 'upgrade-card-gain');
     button.append(head);
 
+    // Compact playfield-safe card: keep the readable decision data visible and
+    // move the explanatory description into tooltip/ARIA instead of rendering a
+    // paragraph below every card.
     const meta = el('div', { className: 'upgrade-card-meta' });
     appendText(meta, 'span', card.completionLabel, 'upgrade-card-completion');
     appendText(meta, 'span', card.rankLabel, 'upgrade-card-ranklabel');
+    const tooltip = el('span', { className: 'upgrade-card-tooltip', textContent: 'ⓘ', title: card.tooltip || card.ariaLabel });
+    tooltip.setAttribute('aria-label', `Upgrade details: ${card.tooltip || card.ariaLabel}`);
+    meta.append(tooltip);
     button.append(meta);
 
     const ranks = el('div', { className: 'upgrade-card-ranks upgrade-card-meter' });
@@ -2454,22 +2460,17 @@ function renderLevelUpActionGrid() {
       ranks.append(pipEl);
     }
     button.append(ranks);
-    appendText(button, 'p', card.description, 'upgrade-card-desc');
     button.setAttribute('title', card.ariaLabel);
+    button.setAttribute('aria-label', card.ariaLabel);
     button.addEventListener('click', () => selectLevelUpUpgrade(card.id));
     cardWrap.append(button);
     cardStack.append(cardWrap);
   }
   shell.append(cardStack);
 
-  if (presentation.lockedPreviewRail.length) {
-    const lockedRail = el('div', { className: 'upgrade-locked-preview-rail' });
-    for (const preview of presentation.lockedPreviewRail) {
-      const chip = el('span', { className: 'upgrade-locked-preview', textContent: `${preview.title} // ${preview.gateHint}` });
-      lockedRail.append(chip);
-    }
-    shell.append(lockedRail);
-  }
+  // Locked previews remain in the presentation model for future tooltip/help
+  // surfaces, but they no longer render as a keyword rail under the cards; that
+  // rail made the level-up screen too tall for the gameplay window.
 
   const reroll = el('button', { className: 'combat-menu-action upgrade-reroll-button', type: 'button', dataset: { action: 'level-up-reroll' } });
   reroll.disabled = !presentation.reroll.enabled;

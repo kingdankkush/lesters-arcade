@@ -2194,11 +2194,14 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
   mode: 'open-ended-survival',
   eliteBandSeconds: Object.freeze({ start: 20 * 60, end: 25 * 60 }),
   world: Object.freeze({
-    width: 1050,
-    height: 900,
+    // User playtest note: the previous 1050x900 finite map felt too large.
+    // Keep the authored route dense and halve the runtime footprint for faster
+    // loading, better framerate, and less empty traversal.
+    width: 525,
+    height: 450,
     traversalTargetPct: 0.58,
     traversalEfficiency: 0.32,
-    traversalBudgetSeconds: 8 * 60,
+    traversalBudgetSeconds: 4 * 60,
   }),
   player: Object.freeze({
     baseMoveSpeedTilesPerSecond: 4.15,

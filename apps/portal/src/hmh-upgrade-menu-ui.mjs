@@ -74,6 +74,7 @@ function buildCard(choice, index, options) {
     slotLabel: choice.slotLabel ?? (index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'),
     slotReason: choice.slotReason ?? null,
     dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity, slot: choice.slotRole ?? (index === 0 ? 'continuation' : 'new') }),
+    tooltip: choice.description ?? '',
     ariaLabel: `${choice.title}. ${branchLabel}. ${choice.description ?? ''}`.trim(),
   });
 }
@@ -93,12 +94,12 @@ export function buildUpgradeMenuPresentation({
   })));
   const remaining = Math.max(0, Number(rerollsRemaining ?? 0) || 0);
   return Object.freeze({
-    version: 'wo-73-upgrade-menu-ui-v2',
-    title: 'Choose One Augment',
-    subtitle: level ? `Level ${level} upgrade draft` : 'Ranked tree draft',
+    version: 'compact-upgrade-menu-ui-v3',
+    title: 'Choose One Upgrade',
+    subtitle: level ? `Level ${level} draft` : 'Upgrade draft',
     shell: Object.freeze({
-      layout: 'two-card-guided-draft',
-      accessibility: 'Two 44px-minimum tap targets with slot labels, larger type, and mobile-safe stacking.',
+      layout: 'compact-two-card-tooltip-draft',
+      accessibility: 'Compact 44px-minimum tap targets with icons, rank pips, and tooltip/ARIA details instead of visible description clutter.',
       cardCount: cards.length,
     }),
     cards,
