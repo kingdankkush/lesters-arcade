@@ -35,7 +35,8 @@ test('WO-17 global art census calls out incomplete roster coverage instead of pr
 
 test('runtime actor census repair resolves strict zero-animation blockers into repaired or deferred rulings', () => {
   const repairPlan = buildArtPurgeRepairPlan();
-  assert.equal(repairPlan.summary.autoRepairCount, 5, 'default repair plan should use the real animated roster');
+  assert.equal(repairPlan.summary.keptRenderableCount, 4, 'WO-109 batch-one actors should now render directly');
+  assert.equal(repairPlan.summary.autoRepairCount, 1, 'only warren-spear-rider remains an auto-repair runtime candidate');
   assert.equal(repairPlan.summary.deferOrPurgeCount, 3);
   assert.equal(repairPlan.summary.unresolvedCount, 0);
 
@@ -43,7 +44,7 @@ test('runtime actor census repair resolves strict zero-animation blockers into r
   const strict = census.scorecard.categories.strictRuntimeActors;
   assert.ok(strict, 'strict runtime actor score should exist');
   assert.equal(strict.summary.unresolvedZeroAnimationActorCount, 0);
-  assert.equal(strict.summary.autoRepairedZeroAnimationActorCount, 5);
+  assert.equal(strict.summary.autoRepairedZeroAnimationActorCount, 1);
   assert.equal(strict.summary.deferredOrPurgedZeroAnimationActorCount, 3);
   assert.equal(strict.score, 100);
   assert.equal(census.summary.runtimeStrictRenderableActorCount, census.summary.runtimeActorCount - 3);

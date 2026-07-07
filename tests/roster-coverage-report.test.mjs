@@ -20,7 +20,10 @@ test('roster coverage report inventories every actor and flags known Wave 3 gaps
 
   assert.ok(report.summary.actorCount >= 37, `expected current animated roster actor count, got ${report.summary.actorCount}`);
   assert.equal(report.actors.lester.states.dash.status, 'missing');
-  assert.equal(report.actors['gas-beast-tank'].summary.status, 'zero-animation');
+  assert.equal(report.actors['gas-beast-tank'].summary.status, 'complete');
+  assert.equal(report.actors['crypto-bro-rusher'].summary.status, 'complete');
+  assert.equal(report.actors['liquidation-cascade-golem'].summary.status, 'complete');
+  assert.equal(report.actors['chain-reaper-boss'].summary.status, 'zero-animation');
   assert.equal(report.actors['fud-goblin'].states['attack-tell'].directionCount, 8);
   assert.equal(report.actors['fud-goblin'].states['attack-tell'].status, 'complete');
 });

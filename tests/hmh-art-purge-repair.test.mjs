@@ -15,24 +15,34 @@ function repoText(relativePath) {
   return readFileSync(new URL(`../${relativePath}`, import.meta.url), 'utf8');
 }
 
-test('WO-18 auto-repair map redirects zero-animation runtime actors to renderable replacements', () => {
-  const zeroKeys = [
-    'crypto-bro-rusher',
-    'evil-banker-ranged',
-    'gas-beast-tank',
-    'liquidation-cascade-golem',
-    'warren-spear-rider',
-  ];
+const WO109_FIXED_ACTORS = Object.freeze([
+  'crypto-bro-rusher',
+  'evil-banker-ranged',
+  'gas-beast-tank',
+  'liquidation-cascade-golem',
+]);
 
-  for (const key of zeroKeys) {
-    assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[key]), false, `${key} should be a real zero-animation input`);
+test('WO-109 redesigned runtime actors now render directly instead of through WO-18 auto-repair', () => {
+  for (const key of WO109_FIXED_ACTORS) {
+    assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[key]), true, `${key} should now be renderable`);
+    const resolved = repairRuntimeActorKey(key, HMH_ANIMATED_ROSTER);
+    assert.equal(resolved.key, key);
+    assert.equal(resolved.repaired, false);
+    assert.equal(resolved.action, 'keep');
+  }
+
+  assert.equal(Object.keys(HMH_ART_AUTO_REPAIR_MAP).includes('liquidation-cascade-golem'), true, 'legacy repair map keeps provenance until the full purge pass removes it deliberately');
+});
+
+test('WO-18 auto-repair still protects remaining zero-animation runtime/deferred actors', () => {
+  const remainingRepairKeys = ['warren-spear-rider', 'chain-reaper-boss', 'bit-whale-boss', 'rugpull-summoner'];
+  for (const key of remainingRepairKeys) {
+    assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[key]), false, `${key} should still be a real zero-animation input`);
     const repaired = repairRuntimeActorKey(key, HMH_ANIMATED_ROSTER);
-    assert.equal(repaired.repaired, true, `${key} should auto-repair`);
+    assert.equal(repaired.repaired, true, `${key} should still resolve to a renderable fallback/deferred actor`);
     assert.notEqual(repaired.key, key);
     assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[repaired.key]), true, `${key} replacement should render`);
   }
-
-  assert.equal(Object.keys(HMH_ART_AUTO_REPAIR_MAP).includes('liquidation-cascade-golem'), true);
 });
 
 test('WO-18 bespoke enemy visual kits no longer point runtime-spawnable Level 1 enemies at zero-animation actor keys', () => {
@@ -41,17 +51,20 @@ test('WO-18 bespoke enemy visual kits no longer point runtime-spawnable Level 1 
     const kit = BESPOKE_ENEMY_VISUAL_KITS[id];
     assert.ok(kit, `${id} should still have a visual kit`);
     assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[kit.rosterKey]), true, `${id} should resolve to renderable ${kit.rosterKey}`);
-    assert.ok(kit.autoRepair?.from || kit.rosterKey !== id, `${id} should retain repair provenance or a non-self mapped kit`);
+    assert.ok(kit.autoRepair?.from || kit.rosterKey !== id || WO109_FIXED_ACTORS.includes(kit.rosterKey), `${id} should retain repair provenance, map to a distinct actor, or point at a WO-109 fixed actor`);
   }
 });
 
-test('WO-18 purge/repair plan separates runtime repairs from deferred purge candidates', () => {
+test('WO-18 purge/repair plan separates fixed actors, runtime repairs, and deferred purge candidates', () => {
   const plan = buildArtPurgeRepairPlan({ roster: HMH_ANIMATED_ROSTER });
 
   assert.equal(plan.version, 'wo-18-art-purge-repair-v1');
-  assert.ok(plan.summary.autoRepairCount >= 5);
-  assert.ok(plan.summary.deferOrPurgeCount >= 1);
-  assert.ok(plan.repairs.some((entry) => entry.from === 'liquidation-cascade-golem' && entry.action === 'auto-repair'));
+  assert.equal(plan.summary.keptRenderableCount, 4);
+  assert.equal(plan.summary.autoRepairCount, 1);
+  assert.equal(plan.summary.deferOrPurgeCount, 3);
+  assert.equal(plan.summary.unresolvedCount, 0);
+  assert.ok(plan.repairs.some((entry) => entry.from === 'liquidation-cascade-golem' && entry.action === 'keep'));
+  assert.ok(plan.repairs.some((entry) => entry.from === 'warren-spear-rider' && entry.action === 'auto-repair'));
   assert.ok(plan.repairs.some((entry) => entry.from === 'bit-whale-boss' && /defer|purge/.test(entry.action)));
   assert.ok(plan.runtimeGuardrails.every((entry) => actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[entry.resolvedKey])));
 });

@@ -85,11 +85,13 @@ export function buildWo103114ContinuationCertification() {
     ], [
       'DPS retune remains a post-capture balance pass only if playtest feel regresses; collision math now targets sprite-derived hurt cores.',
     ]),
-    workOrder('WO-109', 'Enemy redesign batches', 'certified-roster-progress', [
+    workOrder('WO-109', 'Enemy redesign batches', 'batch-one-runtime-integrated', [
       { kind: 'animated-roster', actorCount: roster.actorCount, actorsWithFrames: roster.actorsWithFrames, enemiesWithFrames: roster.enemiesWithFrames },
-      { kind: 'proof-sheet', path: 'docs/game-design/wo109-enemy-animation-proof/wo109-clean-enemy-animation-proof-sheet.png' },
+      { kind: 'batch-one-8dir-matrix', actors: ['crypto-bro-rusher', 'gas-beast-tank', 'evil-banker-ranged', 'liquidation-cascade-golem', 'scorpion-ambusher'], states: ['idle', 'walk', 'run', 'attack-tell', 'attack', 'hit', 'death', 'spawn-in'], directions: 8 },
+      { kind: 'proof-sheet', path: 'docs/game-design/wo109-enemy-redesign-batch/wo109-enemy-redesign-batch1-proof.png' },
+      { kind: 'coverage-report', path: 'docs/art/ROSTER_COVERAGE.md', zeroAnimationActorsAfterBatch: 4 },
     ], [
-      'Not every enemy has full 8-dir state coverage yet; the roster intentionally preserves partial/zero-frame debt rows.',
+      'Batch one removes five high-priority Level-1 runtime gaps; remaining zero-animation rows are boss/deferred actors outside this batch.',
     ]),
     workOrder('WO-110', 'Boss redo checkpoint 3', 'certified-boss-pack-progress', [
       { kind: 'true-scale-boss-pack', id: HMH_FINAL_BOSS_ANIMATION_PACK.id, actorCount: HMH_FINAL_BOSS_ANIMATION_PACK.actorCount, stateCount: HMH_FINAL_BOSS_ANIMATION_PACK.states.length, assetCount: HMH_FINAL_BOSS_ANIMATION_PACK.assetCount },

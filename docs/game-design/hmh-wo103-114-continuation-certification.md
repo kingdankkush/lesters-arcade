@@ -69,14 +69,16 @@ Open debt:
   - DPS retune remains a post-capture balance pass only if playtest feel regresses; collision math now targets sprite-derived hurt cores.
 
 ### WO-109: Enemy redesign batches
-Status: certified-roster-progress
+Status: batch-one-runtime-integrated
 
 Evidence:
   - animated-roster: 37 actors
+  - batch-one-8dir-matrix: tracked
   - proof-sheet: tracked
+  - coverage-report: tracked
 
 Open debt:
-  - Not every enemy has full 8-dir state coverage yet; the roster intentionally preserves partial/zero-frame debt rows.
+  - Batch one removes five high-priority Level-1 runtime gaps; remaining zero-animation rows are boss/deferred actors outside this batch.
 
 ### WO-110: Boss redo checkpoint 3
 Status: certified-boss-pack-progress
