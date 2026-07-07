@@ -1,0 +1,340 @@
+{
+  "workOrder": "WO-76",
+  "status": "HALT_AWAITING_JUSTIN_ANCHOR_APPROVAL",
+  "runtimeIntegrationAllowed": false,
+  "generatedAt": "1970-01-01T00:00:00.000Z",
+  "sourcePolicy": {
+    "placeholderPacksAllowedAsAnchorCandidates": false,
+    "rawGenerationRepoPolicy": "raw outputs stay in the vault/staging; only approved winners, manifests, provenance, QA reports, and contact sheets enter git",
+    "toolVerdict": "Use the existing noir ground bake-off verdict: repo final-paint/post-process first; use PixelLab or ComfyUI only for failures or uncovered categories after approval.",
+    "placeholderScriptDenylist": [
+      "generate-hmh-pickup-icons.py",
+      "generate-hmh-vfx-ui-chrome.py",
+      "generate-hmh-level-one-authored-stamp-art.py",
+      "generate-hmh-achievement-atlas.py"
+    ]
+  },
+  "candidateSources": [
+    {
+      "id": "hmh-production-art-pass",
+      "label": "HMH production art pass",
+      "kind": "real-generation",
+      "tool": "PixelLab + derivative animation pass",
+      "manifest": "apps/portal/assets/generated/hmh-production-art-pass/hmh-production-art-pass.mjs",
+      "contactSheet": "apps/portal/assets/generated/hmh-isometric-pixellab/contact-sheets/hmh-isometric-pixellab-wave-1-contact-sheet.png",
+      "reason": "Fable Rev 2 explicitly calls this genuine generated art and requires auditing it as candidate input.",
+      "manifestExists": true,
+      "contactSheetExists": true
+    },
+    {
+      "id": "pixellab-calibration",
+      "label": "PixelLab Lester calibration",
+      "kind": "real-generation",
+      "tool": "PixelLab MCP/API",
+      "manifest": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/manifest.json",
+      "contactSheet": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/hmh-pixellab-lester-calibration-contact-sheet.png",
+      "reason": "Fable Rev 2 calls this genuine generated art; useful for the hero bar and prompt provenance.",
+      "manifestExists": true,
+      "contactSheetExists": true
+    },
+    {
+      "id": "level-one-final-paint-ground",
+      "label": "Level 1 final-paint ground",
+      "kind": "repo-owned-final-paint",
+      "tool": "repo final-paint/post-process",
+      "manifest": "apps/portal/assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.json",
+      "contactSheet": "docs/game-design/assets/hmh-level-1-final-paint-ground-contact-sheet.png",
+      "reason": "Matches the bake-off speed verdict for zero-credit ground candidates.",
+      "manifestExists": true,
+      "contactSheetExists": true
+    },
+    {
+      "id": "level-two-final-city",
+      "label": "Level 2 final city world art",
+      "kind": "repo-owned-generated-world-art",
+      "tool": "repo-owned generated spritesheet pass",
+      "manifest": "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/level2-final-city-manifest.json",
+      "contactSheet": "docs/game-design/assets/hmh-level2-final-city-contact-sheet.png",
+      "reason": "Best current city/noir-ish authored world-art pool for facade/lamp/landmark seed candidates.",
+      "manifestExists": true,
+      "contactSheetExists": true
+    },
+    {
+      "id": "final-setpiece-kit",
+      "label": "Final setpiece kit",
+      "kind": "repo-owned-generated-setpiece-art",
+      "tool": "repo-owned generated setpiece pass",
+      "manifest": "apps/portal/assets/generated/hmh-final-setpiece-kit/hmh-final-setpiece-kit-manifest.json",
+      "contactSheet": "docs/game-design/assets/hmh-final-setpiece-kit-contact-sheet.png",
+      "reason": "Useful seed pool for tree, lamp, prop, and micro-scene composition bars.",
+      "manifestExists": true,
+      "contactSheetExists": true
+    }
+  ],
+  "placeholderDebt": [
+    {
+      "script": "generate-hmh-pickup-icons.py",
+      "anchorCandidateEligible": false,
+      "disposition": "WO-90 redo queue; scaffolding only until regenerated through approved anchors"
+    },
+    {
+      "script": "generate-hmh-vfx-ui-chrome.py",
+      "anchorCandidateEligible": false,
+      "disposition": "WO-90 redo queue; scaffolding only until regenerated through approved anchors"
+    },
+    {
+      "script": "generate-hmh-level-one-authored-stamp-art.py",
+      "anchorCandidateEligible": false,
+      "disposition": "WO-90 redo queue; scaffolding only until regenerated through approved anchors"
+    },
+    {
+      "script": "generate-hmh-achievement-atlas.py",
+      "anchorCandidateEligible": false,
+      "disposition": "WO-90 redo queue; scaffolding only until regenerated through approved anchors"
+    }
+  ],
+  "slots": [
+    {
+      "id": "storefront-facade",
+      "title": "Storefront facade",
+      "bar": "building bar",
+      "brief": "Noodle bar facade with neon, steam vent detail, wet noir street read, no text/logos.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "level-two-final-city",
+          "label": "level2-final-city/chrome-tower-facade",
+          "src": "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/chrome-tower-facade.png",
+          "notes": "Closest existing city facade seed; needs noodle-bar/neon/steam rerolls.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 11,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "bank-deco-corner",
+      "title": "Bank-district Deco corner facade",
+      "bar": "landmark bar",
+      "brief": "Art Deco financial corner facade, brass/silver/Litecoin blue, night-city rim light.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "level-two-final-city",
+          "label": "level2-final-city/ltc-monument-fountain",
+          "src": "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/ltc-monument-fountain.png",
+          "notes": "Financial district material/lighting seed; not yet a corner facade.",
+          "exists": true
+        },
+        {
+          "sourceId": "level-two-final-city",
+          "label": "level2-final-city/chrome-tower-facade",
+          "src": "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/chrome-tower-facade.png",
+          "notes": "Best existing bank-tower surface seed.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 10,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "signature-street-tree",
+      "title": "Signature street tree",
+      "bar": "vegetation bar",
+      "brief": "Night-lit street tree in planter with neon spill and a distinct silhouette.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "final-setpiece-kit",
+          "label": "level-final-setpiece/pine-wall-shadow",
+          "src": "apps/portal/assets/generated/hmh-coherent-world/level-final-setpiece/pine-wall-shadow.png",
+          "notes": "Existing vegetation silhouette seed; not yet a city planter tree.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 11,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "wet-asphalt-ground-family",
+      "title": "Wet-asphalt ground family",
+      "bar": "ground bar",
+      "brief": "Seamless wet asphalt base plus two wear variants; painterly dense noir ground.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "level-one-final-paint-ground",
+          "label": "final-paint/road-asphalt-handpaint-01",
+          "src": "apps/portal/assets/generated/hmh-level-one-ground/final-paint/road-asphalt-handpaint-01.png",
+          "notes": "Zero-credit final-paint asphalt seed from the bake-off-preferred path.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 11,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "streetlamp-light-cone",
+      "title": "Streetlamp + pooled light cone prop",
+      "bar": "lighting-in-sprite bar",
+      "brief": "Streetlamp sprite with baked cone/pool of light, top-left key plus local neon rim.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "level-two-final-city",
+          "label": "level2-final-city/plaza-streetlight-line",
+          "src": "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/plaza-streetlight-line.png",
+          "notes": "Best existing streetlight seed; needs single-prop light-pool version.",
+          "exists": true
+        },
+        {
+          "sourceId": "final-setpiece-kit",
+          "label": "level-final-setpiece/lantern-string",
+          "src": "apps/portal/assets/generated/hmh-coherent-world/level-final-setpiece/lantern-string.png",
+          "notes": "Lighting mood seed for local glow language.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 10,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "lit-commando-idle-key-pose",
+      "title": "Lit Commando repaint, idle key pose",
+      "bar": "hero bar",
+      "brief": "Current chunky-head hero quality preserved/elevated; no restyle, single idle key pose.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "hmh-production-art-pass",
+          "label": "lester-iso-hero idle frame 00",
+          "src": "apps/portal/assets/generated/hmh-production-art-pass/characters/lester-iso-hero/idle/frame-00.png",
+          "notes": "Current hero-quality seed; must preserve chunky-head hero proportions.",
+          "exists": true
+        },
+        {
+          "sourceId": "pixellab-calibration",
+          "label": "lester calibration east rotation",
+          "src": "apps/portal/assets/generated/pixellab-calibration/lester-hero-6d6e53e2/rotations/east.png",
+          "notes": "PixelLab prompt/provenance seed for hero bar.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 10,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "highest-spawn-enemy-redesign",
+      "title": "One enemy full redesign",
+      "bar": "enemy bar",
+      "brief": "Highest-spawn-weight enemy archetype, key pose plus attack-tell pose, fiat corruption language.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "hmh-production-art-pass",
+          "label": "evil-banker-ranged idle frame 00",
+          "src": "apps/portal/assets/generated/hmh-production-art-pass/characters/evil-banker-ranged/idle/frame-00.png",
+          "notes": "Readable enemy seed; still requires highest-spawn-weight confirmation and redesign brief.",
+          "exists": true
+        },
+        {
+          "sourceId": "hmh-production-art-pass",
+          "label": "trench-degen-chaser idle frame 00",
+          "src": "apps/portal/assets/generated/hmh-production-art-pass/characters/trench-degen-chaser/idle/frame-00.png",
+          "notes": "Alternate enemy seed for silhouette/faction review.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 10,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "major-boss-key-pose",
+      "title": "Major boss key pose",
+      "bar": "boss bar",
+      "brief": "Major boss at true boss scale; readable event-scale silhouette and phase-ready identity.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "hmh-production-art-pass",
+          "label": "chain-reaper-boss idle frame 00",
+          "src": "apps/portal/assets/generated/hmh-production-art-pass/characters/chain-reaper-boss/idle/frame-00.png",
+          "notes": "Existing boss seed; likely underscaled vs true WO-76 boss bar.",
+          "exists": true
+        },
+        {
+          "sourceId": "hmh-production-art-pass",
+          "label": "bit-whale-boss idle frame 00",
+          "src": "apps/portal/assets/generated/hmh-production-art-pass/characters/bit-whale-boss/idle/frame-00.png",
+          "notes": "Existing major boss seed for scale/identity comparison.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 10,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "micro-scene-composition",
+      "title": "Micro-scene composition",
+      "bar": "storytelling bar",
+      "brief": "Tipped delivery cart, spilled crates, rat: authored 2-4 prop story composition.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [
+        {
+          "sourceId": "final-setpiece-kit",
+          "label": "level-final-setpiece/wagon-circle",
+          "src": "apps/portal/assets/generated/hmh-coherent-world/level-final-setpiece/wagon-circle.png",
+          "notes": "Compositional setpiece seed; not the required delivery-cart/crates/rat micro-scene.",
+          "exists": true
+        }
+      ],
+      "generationDeficit": 11,
+      "status": "seeded-needs-generation"
+    },
+    {
+      "id": "ui-chrome-sample",
+      "title": "UI chrome sample",
+      "bar": "interface bar",
+      "brief": "Draft card frame plus HP bar segment, retro-arcade-Deco, not script-placeholder chrome.",
+      "targetCandidateCount": {
+        "min": 12,
+        "max": 20
+      },
+      "existingCandidates": [],
+      "generationDeficit": 12,
+      "status": "needs-generation"
+    }
+  ],
+  "manifestFacts": {
+    "levelOneFinalPaintGround": 21,
+    "levelTwoFinalCity": 24,
+    "finalSetpieceKit": 25
+  }
+}

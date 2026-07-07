@@ -246,9 +246,12 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/boss-phase-controller.mjs",
   "tests/boss-phase-controller.test.mjs",
   "apps/portal/src/hmh-level-one-boss.mjs",
+  "apps/portal/src/hmh-anchor-set.mjs",
   "tests/hmh-level-one-boss.test.mjs",
+  "tests/hmh-anchor-set.test.mjs",
   "tests/roster-coverage-report.test.mjs",
   "tests/sprite-qa.test.mjs",
+  "scripts/hmh-anchor-candidate-audit.mjs",
   "scripts/syntax-check.mjs"
 ];
 
