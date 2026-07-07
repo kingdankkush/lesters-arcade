@@ -68,13 +68,20 @@ test('borderInfo is present exactly on cardinal zone boundaries', () => {
   assert.ok(interiorTiles > boundaryTiles, 'the plan should still have broad zone interiors');
 });
 
-test('WO-4 plan references only approved final-paint keep-list textures', () => {
+test('WO-103 plan references approved continuous runtime textures instead of transparent slab candidates', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   const textureKeys = new Set(plan.zones.map((zone) => zone.textureKey));
   assert.ok(textureKeys.size > 0, 'expected plan textures to be present');
+  assert.ok([...textureKeys].some((key) => key.startsWith('wo103-continuous/')), 'expected WO-103 continuous runtime textures in the ground plan');
   for (const textureKey of textureKeys) {
-    assert.match(textureKey, /^final-paint\//, `${textureKey} should be a final-paint keep-list texture`);
-    assert.ok(plan.textureForKey(textureKey), `${textureKey} should resolve through the plan texture lookup`);
+    assert.doesNotMatch(textureKey, /^pixellab-surface\//, `${textureKey} should not use transparent legacy slab candidates for broad ground fill`);
+    const asset = plan.textureForKey(textureKey);
+    assert.ok(asset, `${textureKey} should resolve through the plan texture lookup`);
+    if (textureKey.startsWith('wo103-continuous/')) {
+      assert.match(asset.src, /hmh-level-one-ground\/wo103-continuous\//);
+      assert.equal(asset.width, 128);
+      assert.equal(asset.height, 64);
+    }
   }
 });
 

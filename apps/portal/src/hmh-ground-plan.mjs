@@ -10,6 +10,10 @@ import {
   finalPaintGroundAssetByKey,
 } from '../assets/generated/hmh-level-one-ground/final-paint/final-paint-level-one-ground-manifest.mjs';
 import {
+  HMH_WO103_CONTINUOUS_GROUND,
+  wo103ContinuousGroundAssetByKey,
+} from '../assets/generated/hmh-level-one-ground/wo103-continuous/wo103-continuous-ground-manifest.mjs';
+import {
   HMH_LEVEL_ONE_SBS_GROUND,
   sbsGroundAssetByKey,
 } from '../assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
@@ -22,6 +26,18 @@ const ROLE_ALIASES = Object.freeze({
   route: 'road',
   pavement: 'road',
   rocky: 'rocky',
+});
+
+const WO103_ROLE_PREFERENCES = Object.freeze({
+  grass: 'wo103-continuous/grass',
+  dirt: 'wo103-continuous/dirt',
+  sand: 'wo103-continuous/sand',
+  rocky: 'wo103-continuous/rocky',
+  road: 'wo103-continuous/asphalt',
+  shore: 'wo103-continuous/shore-grass-water',
+  water: 'wo103-continuous/water-ripple',
+  'grass-to-dirt': 'wo103-continuous/grass-dirt-transition',
+  'dirt-to-sand': 'wo103-continuous/dirt-sand-transition',
 });
 
 const CURATED_RADIUS_BY_BEAT = Object.freeze({
@@ -44,6 +60,8 @@ function normalizeRole(role) {
 
 function manifestKeysForRole(role) {
   const normalized = normalizeRole(role);
+  const continuousKeys = HMH_WO103_CONTINUOUS_GROUND.roles?.[normalized] ?? [];
+  if (continuousKeys.length) return { keys: continuousKeys, lookup: wo103ContinuousGroundAssetByKey };
   const finalKeys = HMH_LEVEL_ONE_FINAL_PAINT_GROUND.roles?.[normalized] ?? [];
   if (finalKeys.length) return { keys: finalKeys, lookup: finalPaintGroundAssetByKey };
   const sbsKeys = HMH_LEVEL_ONE_SBS_GROUND.roles?.[normalized] ?? [];
@@ -53,9 +71,22 @@ function manifestKeysForRole(role) {
 }
 
 function preferredTextureKeyForRole(role) {
+  const normalized = normalizeRole(role);
+  if (wo103ContinuousGroundAssetByKey(WO103_ROLE_PREFERENCES[normalized])) return WO103_ROLE_PREFERENCES[normalized];
   const { keys, lookup } = manifestKeysForRole(role);
   if (!keys.length) return 'final-paint/dirt-handpaint-01';
   return keys.find((key) => lookup(key)?.preferred) ?? keys[0];
+}
+
+function wo103TextureKeyForLegacySurface(asset, role) {
+  const key = String(asset?.key ?? '').toLowerCase();
+  if (key.includes('asphalt') || key.includes('cobble')) return 'wo103-continuous/asphalt';
+  if (key.includes('scorched') || key.includes('boss')) return 'wo103-continuous/scorched-yard';
+  if (key.includes('field') || key.includes('stubble')) return 'wo103-continuous/field-stubble';
+  if (key.includes('forest')) return 'wo103-continuous/forest-floor';
+  if (key.includes('sand')) return 'wo103-continuous/sand';
+  if (key.includes('water')) return 'wo103-continuous/water-ripple';
+  return preferredTextureKeyForRole(role);
 }
 
 function roleFromAssetKey(assetKey) {
@@ -122,10 +153,12 @@ function buildPixellabZones() {
       source: 'pixellab-surface-zones',
       zoneId: zone.id,
       role,
-      // WO-4 approval: PixelLab candidate swatches are killed/de-referenced from
-      // the runtime ground plan until square seamless replacements are generated.
-      textureKey: preferredTextureKeyForRole(role),
-      priority: 500 + (zone.priority ?? 0),
+      // WO-103: legacy PixelLab "ground texture" candidates were transparent
+      // isometric slabs. They stay as decal references, while broad runtime fill
+      // uses the opaque continuous WO-103 variants so the canvas no longer
+      // checkerboards through transparent pattern corners.
+      textureKey: wo103TextureKeyForLegacySurface(asset, role),
+      priority: 2000 + (zone.priority ?? 0),
       xMin: zone.xMin,
       xMax: zone.xMax,
       yMin: zone.yMin,
@@ -150,7 +183,8 @@ function connectiveZone() {
 }
 
 function textureAssetByKey(textureKey) {
-  return levelOnePixellabSurfaceAssetByKey(textureKey)
+  return wo103ContinuousGroundAssetByKey(textureKey)
+    ?? levelOnePixellabSurfaceAssetByKey(textureKey)
     ?? finalPaintGroundAssetByKey(textureKey)
     ?? sbsGroundAssetByKey(textureKey)
     ?? null;

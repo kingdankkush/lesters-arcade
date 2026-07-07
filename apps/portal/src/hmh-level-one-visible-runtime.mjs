@@ -32,6 +32,60 @@ const SOLID_FOR_USE = Object.freeze({
   vfx: false,
 });
 
+export const WO102_MEGA_PROP_ASSETS = Object.freeze([
+  Object.freeze({
+    id: 'wo102-megaprop/noodle-bar-storefront',
+    src: './assets/generated/hmh-wo102-megaprops/processed/wo102-noodle-bar-storefront/candidate-01.png',
+    candidate: 'wo102-noodle-bar-storefront/candidate-01',
+    bodyKind: 'building',
+    canvas: Object.freeze({ w: 384, h: 384 }),
+    density: 1,
+    groundContactY: 340,
+    shadowDirection: 'south-east',
+    bakedShadow: true,
+    footprintTiles: Object.freeze({ w: 5.8, h: 2.2 }),
+    collisionPolygons: Object.freeze([Object.freeze([[0.8, 0.4], [5.1, 0.4], [5.4, 1.8], [0.4, 1.9]])]),
+    overSlice: Object.freeze({ x: 0, y: 70, w: 384, h: 110, anchor: 'awning' }),
+    r1Observation: 'At seed 1337 near grid 40,2, a neon storefront block with baked wet-ground shadow replaces the old small storefront cluster.',
+  }),
+  Object.freeze({
+    id: 'wo102-megaprop/forest-rock-outcrop',
+    src: './assets/generated/hmh-wo102-megaprops/processed/wo102-forest-rock-outcrop/candidate-09.png',
+    candidate: 'wo102-forest-rock-outcrop/candidate-09',
+    bodyKind: 'cliff',
+    canvas: Object.freeze({ w: 384, h: 384 }),
+    density: 1,
+    groundContactY: 344,
+    shadowDirection: 'south-east',
+    bakedShadow: true,
+    footprintTiles: Object.freeze({ w: 5.2, h: 2.8 }),
+    collisionPolygons: Object.freeze([Object.freeze([[0.5, 0.2], [4.8, 0.2], [5.1, 2.4], [0.2, 2.5]])]),
+    overSlice: Object.freeze({ x: 0, y: 20, w: 384, h: 130, anchor: 'cliff-lip' }),
+    r1Observation: 'At seed 1337 near grid 57,2, the forest boundary reads as one authored cliff wall rather than scattered small rocks.',
+  }),
+  Object.freeze({
+    id: 'wo102-megaprop/farm-barn-silo-cluster',
+    src: './assets/generated/hmh-wo102-megaprops/processed/wo102-farm-barn-silo-cluster/candidate-09.png',
+    candidate: 'wo102-farm-barn-silo-cluster/candidate-09',
+    bodyKind: 'farmstead',
+    canvas: Object.freeze({ w: 384, h: 384 }),
+    density: 1,
+    groundContactY: 344,
+    shadowDirection: 'south-east',
+    bakedShadow: true,
+    footprintTiles: Object.freeze({ w: 6.2, h: 3.0 }),
+    collisionPolygons: Object.freeze([Object.freeze([[0.7, 0.5], [5.6, 0.5], [5.9, 2.4], [0.3, 2.5]])]),
+    overSlice: null,
+    r1Observation: 'At seed 1337 near grid 83,4, a barn and silo cluster with fence apron and SE baked shadow anchors the farm zone.',
+  }),
+]);
+
+const WO102_MEGA_PROP_ASSETS_BY_KEY = new Map(WO102_MEGA_PROP_ASSETS.map((asset) => [asset.id, asset]));
+
+export function wo102MegaPropAssetByKey(assetKey) {
+  return WO102_MEGA_PROP_ASSETS_BY_KEY.get(assetKey) ?? null;
+}
+
 function routeTile(id, x, y, role = 'road') {
   return Object.freeze({ id, x, y, role, layer: 'ground' });
 }
@@ -125,6 +179,7 @@ function prefabStamp(id, districtId, objects, data = {}) {
       dy: object.dy ?? 0,
       solid: object.solid,
       notes: object.notes ?? data.routeRead ?? '',
+      metadata: object.metadata ?? {},
     }))),
   });
 }
@@ -138,13 +193,16 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/prop/bus-stop-sign', use: 'dressing', dx: 0, dy: -1, solid: false },
   ], { label: 'Broken road salvage wall', routeBeat: 'spawn', anchor: { x: 18, y: 5 }, routeRead: 'desert road edges and salvage silhouettes break up empty sand' }),
   prefabStamp('ghost-town-frontage-pocket', 'ghost-town', [
-    { assetKey: 'level-1/building/ghost-boarded-storefront', use: 'landmark', dx: -5, dy: -4, solid: true },
+    { assetKey: 'wo102-megaprop/noodle-bar-storefront', use: 'landmark', dx: -2, dy: -4, solid: true, notes: 'WO-102 replacement: alpha-clean PixelLab mega-prop storefront replaces small boarded storefront card art' },
     { assetKey: 'level-1/building/ghost-saloon-front', use: 'landmark', dx: 3, dy: -4, solid: true },
     { assetKey: 'level-1/prop/street-lamp', use: 'dressing', dx: -1, dy: -1, solid: false },
     { assetKey: 'level-1/building/wooden-crate', use: 'dressing', dx: 5, dy: 2, solid: false },
     { assetKey: 'level-1/prop/town-01', use: 'boundary', dx: -4, dy: 3, solid: true },
     { assetKey: 'level-1/prop/trash-can', use: 'dressing', dx: 2, dy: 3, solid: false },
   ], { label: 'Ghost town street frontage', routeBeat: 'arena', anchor: { x: 42, y: 6 }, routeRead: 'false-front silhouettes and curb dressing make the street read authored' }),
+  prefabStamp('wo102-forest-cliff-proof', 'country-road', [
+    { assetKey: 'wo102-megaprop/forest-rock-outcrop', use: 'boundary', dx: 0, dy: 0, solid: true, notes: 'WO-102 proof: selected alpha-clean forest cliff mega-prop replaces scattered small rock/tree boundary art' },
+  ], { label: 'WO-102 forest cliff proof', routeBeat: 'loop', anchor: { x: 57, y: 2 }, routeRead: 'one composed cliff wall reads as authored forest boundary' }),
   prefabStamp('forest-mushroom-ring', 'dead-forest-loop', [
     { assetKey: 'level-1/flora/broken-tree3', use: 'boundary', dx: -4, dy: -3, solid: true },
     { assetKey: 'level-1/flora/burned-tree2', use: 'boundary', dx: 5, dy: -2, solid: true },
@@ -161,7 +219,7 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level1-authored-stamp/river-bridge-arrow-sign', use: 'dressing', dx: 1, dy: -2, solid: false, notes: 'new generated arrow marker clarifies the bridge/ford route direction' },
   ], { label: 'Shoreline ford bank', routeBeat: 'chokepoint', anchor: { x: 64, y: 7 }, routeRead: 'waterline, rocks, and small shore reads make bridge/ford traversal legible' }),
   prefabStamp('farmstead-fence-pocket', 'residential-edge', [
-    { assetKey: 'level-1/building/town-10', use: 'landmark', dx: -4, dy: -3, solid: true },
+    { assetKey: 'wo102-megaprop/farm-barn-silo-cluster', use: 'landmark', dx: 0, dy: -2, solid: true, notes: 'WO-102 replacement: alpha-clean PixelLab barn and silo mega-prop replaces generic town-10 farm placeholder' },
     { assetKey: 'level-1/prop/park-bench', use: 'dressing', dx: 3, dy: -1, solid: false },
     { assetKey: 'level-1/flora/oak-tree', use: 'boundary', dx: 5, dy: 2, solid: true },
     { assetKey: 'level-1/prop/mailbox', use: 'dressing', dx: -2, dy: 3, solid: false },
@@ -225,7 +283,10 @@ export function levelOneAuthoredStampAssetSrc(assetKey) {
 }
 
 export function levelOneCuratedAssetSrc(assetKey) {
-  return curatedLevelKitAssetByKey(assetKey)?.src ?? levelOneAuthoredStampAssetSrc(assetKey);
+  return curatedLevelKitAssetByKey(assetKey)?.src
+    ?? levelOneAuthoredStampAssetSrc(assetKey)
+    ?? wo102MegaPropAssetByKey(assetKey)?.src
+    ?? null;
 }
 
 export function levelOneOpeningGroundRoleForTile({ worldX = 0, worldY = 0 } = {}) {
@@ -259,18 +320,24 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
   // renderer. Drawing them as props is what made the corrected runtime look like
   // repeated grey block clutter instead of a clean authored route.
   if (use === 'terrain') return null;
-  const record = curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey);
+  const record = curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey) ?? wo102MegaPropAssetByKey(assetKey);
   if (!record) return null;
   const generatedStampArt = Boolean(authoredStampAssetByKey(assetKey));
+  const generatedMegaPropArt = Boolean(wo102MegaPropAssetByKey(assetKey));
   const sceneRole = ROLE_FOR_USE[use] ?? 'smallprop';
   return Object.freeze({
     id,
     assetKey,
     curatedAssetKey: assetKey,
     imageSrc: record.src,
-    curated: !generatedStampArt,
+    curated: !generatedStampArt && !generatedMegaPropArt,
     generatedStampArt,
-    sourcePolicy: generatedStampArt ? 'repo-generated-authored-stamp-art' : 'Justin-curated-level-kit-only',
+    generatedMegaPropArt,
+    sourcePolicy: generatedMegaPropArt
+      ? 'repo-generated-wo102-megaprop-art'
+      : generatedStampArt
+        ? 'repo-generated-authored-stamp-art'
+        : 'Justin-curated-level-kit-only',
     role: sceneRole,
     sceneRole,
     use,
@@ -282,6 +349,10 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
     text: notes,
     sourceZoneId: zoneId,
     propIndex: index,
+    footprintTiles: record.footprintTiles ?? metadata.footprintTiles ?? null,
+    collisionPolygons: record.collisionPolygons ?? metadata.collisionPolygons ?? null,
+    overSlice: record.overSlice ?? metadata.overSlice ?? null,
+    r1Observation: record.r1Observation ?? metadata.r1Observation ?? null,
     ...metadata,
   });
 }

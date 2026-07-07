@@ -11,13 +11,15 @@ import {
   levelOneCuratedAssetSrc,
   levelOneAuthoredStampAssetSrc,
   levelOneOpeningGroundRoleForTile,
+  WO102_MEGA_PROP_ASSETS,
+  wo102MegaPropAssetByKey,
 } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 import { curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
 import { authoredStampAssetByKey, HMH_LEVEL_ONE_AUTHORED_STAMP_ART } from '../apps/portal/assets/generated/hmh-level-one-authored-stamp-art/hmh-level-one-authored-stamp-art-manifest.mjs';
 import { HMH_LEVEL_ONE_SPAWN_GATE_REDRESS } from '../apps/portal/src/hmh-level-one-curated-world-contract.mjs';
 
 function levelOneVisibleAssetByKey(assetKey) {
-  return curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey);
+  return curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey) ?? wo102MegaPropAssetByKey(assetKey);
 }
 
 function repoPath(relativePath) {
@@ -90,6 +92,35 @@ test('Level 1 curated visible runtime maps approved asset keys to direct runtime
   assert.equal(saloon, './assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png');
   const road = levelOneCuratedAssetSrc('level-1/road/road1-ground');
   assert.match(road, /hmh-curated-level-kit\/source\/level-1-crypto-wasteland\//);
+});
+
+test('WO-102 mega-props are real alpha-clean runtime assets and emit visible Level 1 objects', () => {
+  assert.equal(WO102_MEGA_PROP_ASSETS.length, 3);
+  for (const asset of WO102_MEGA_PROP_ASSETS) {
+    assert.equal(asset.bakedShadow, true, `${asset.id} should carry baked shadow metadata`);
+    assert.equal(asset.shadowDirection, 'south-east');
+    assert.equal(asset.footprintTiles.w > 5, true, `${asset.id} must be a large footprint mega-prop`);
+    assert.equal(levelOneCuratedAssetSrc(asset.id), asset.src, `${asset.id} must resolve through the live image resolver`);
+    assert.equal(existsSync(repoPath(asset.src.replace('./', 'apps/portal/'))), true, `${asset.id} PNG should exist on disk`);
+  }
+
+  const proofViews = [
+    { key: 'wo102-megaprop/noodle-bar-storefront', playerX: 40, playerY: 8, stampId: 'ghost-town-frontage-pocket' },
+    { key: 'wo102-megaprop/forest-rock-outcrop', playerX: 57, playerY: 8, stampId: 'wo102-forest-cliff-proof' },
+    { key: 'wo102-megaprop/farm-barn-silo-cluster', playerX: 83, playerY: 10, stampId: 'farmstead-fence-pocket' },
+  ];
+  for (const view of proofViews) {
+    const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 });
+    const object = objects.find((item) => item.assetKey === view.key);
+    assert.ok(object, `${view.key} should be visible near its R1 proof coordinate`);
+    assert.equal(object.generatedMegaPropArt, true);
+    assert.equal(object.sourcePolicy, 'repo-generated-wo102-megaprop-art');
+    assert.equal(object.authoredPrefabStamp, true);
+    assert.equal(object.prefabStampId, view.stampId);
+    assert.ok(object.footprintTiles?.w >= 5, `${view.key} should carry runtime footprint metadata`);
+    assert.ok(object.collisionPolygons?.length >= 1, `${view.key} should carry collision metadata`);
+    assert.match(object.r1Observation, /seed 1337/);
+  }
 });
 
 test('generated Level 1 authored stamp art resolves through the live prefab stamp path for exposed tour gaps', () => {

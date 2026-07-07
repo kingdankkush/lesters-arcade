@@ -1,0 +1,137 @@
+{
+  "portalUrl": "http://127.0.0.1:8892/?devCabinets=1&wo102Capture=1&cachebust=1783451220536",
+  "captures": [
+    {
+      "id": "01-noodle-storefront",
+      "label": "WO-102 noodle-bar storefront mega-prop",
+      "targetKey": "wo102-megaprop/noodle-bar-storefront",
+      "x": 40,
+      "y": 8,
+      "filePath": "C:\\Users\\just_\\lesters-arcade\\docs\\game-design\\wo102-megaprop-proof\\01-noodle-storefront.png",
+      "state": {
+        "seed": 1337,
+        "player": {
+          "x": 40,
+          "y": 8
+        },
+        "canvas": {
+          "width": 1180,
+          "height": 528,
+          "clientWidth": 1180,
+          "clientHeight": 528
+        },
+        "objects": [
+          {
+            "key": "wo102-megaprop/noodle-bar-storefront",
+            "x": 40,
+            "y": 2,
+            "footprintTiles": null
+          },
+          {
+            "key": "wo102-megaprop/forest-rock-outcrop",
+            "x": 57,
+            "y": 2,
+            "footprintTiles": null
+          },
+          {
+            "key": "wo102-megaprop/farm-barn-silo-cluster",
+            "x": 82,
+            "y": 4,
+            "footprintTiles": null
+          }
+        ],
+        "resources": []
+      },
+      "targetVisible": true,
+      "targetResource": false
+    },
+    {
+      "id": "02-forest-rock-outcrop",
+      "label": "WO-102 forest rock/cliff outcrop mega-prop",
+      "targetKey": "wo102-megaprop/forest-rock-outcrop",
+      "x": 57,
+      "y": 8,
+      "filePath": "C:\\Users\\just_\\lesters-arcade\\docs\\game-design\\wo102-megaprop-proof\\02-forest-rock-outcrop.png",
+      "state": {
+        "seed": 1337,
+        "player": {
+          "x": 57,
+          "y": 8
+        },
+        "canvas": {
+          "width": 1180,
+          "height": 528,
+          "clientWidth": 1180,
+          "clientHeight": 528
+        },
+        "objects": [
+          {
+            "key": "wo102-megaprop/noodle-bar-storefront",
+            "x": 40,
+            "y": 2,
+            "footprintTiles": null
+          },
+          {
+            "key": "wo102-megaprop/forest-rock-outcrop",
+            "x": 57,
+            "y": 2,
+            "footprintTiles": null
+          },
+          {
+            "key": "wo102-megaprop/farm-barn-silo-cluster",
+            "x": 82,
+            "y": 4,
+            "footprintTiles": null
+          }
+        ],
+        "resources": []
+      },
+      "targetVisible": true,
+      "targetResource": false
+    },
+    {
+      "id": "03-farm-barn-silo",
+      "label": "WO-102 farm barn+silo cluster mega-prop",
+      "targetKey": "wo102-megaprop/farm-barn-silo-cluster",
+      "x": 76,
+      "y": 7,
+      "filePath": "C:\\Users\\just_\\lesters-arcade\\docs\\game-design\\wo102-megaprop-proof\\03-farm-barn-silo.png",
+      "state": {
+        "seed": 1337,
+        "player": {
+          "x": 76,
+          "y": 7
+        },
+        "canvas": {
+          "width": 1180,
+          "height": 528,
+          "clientWidth": 1180,
+          "clientHeight": 528
+        },
+        "objects": [
+          {
+            "key": "wo102-megaprop/noodle-bar-storefront",
+            "x": 40,
+            "y": 2,
+            "footprintTiles": null
+          },
+          {
+            "key": "wo102-megaprop/forest-rock-outcrop",
+            "x": 57,
+            "y": 2,
+            "footprintTiles": null
+          },
+          {
+            "key": "wo102-megaprop/farm-barn-silo-cluster",
+            "x": 82,
+            "y": 4,
+            "footprintTiles": null
+          }
+        ],
+        "resources": []
+      },
+      "targetVisible": true,
+      "targetResource": false
+    }
+  ]
+}

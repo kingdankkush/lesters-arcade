@@ -19,6 +19,11 @@ function pixellabSurface(key, manifestKey, role, data = {}) {
 }
 
 export const LEVEL_1_PIXELLAB_SURFACE_ASSETS = Object.freeze([
+  pixellabSurface('packed-dirt', 'ground-textures/ground-textures__packed-dirt', 'dirt', { width: 128, height: 128, notes: 'WO-103 route-wide packed-dirt surface to replace checkerboard filler.' }),
+  pixellabSurface('dusty-sand', 'ground-textures/ground-textures__dusty-sand', 'sand', { width: 128, height: 128, notes: 'WO-103 route-wide dusty sand surface for desert approach.' }),
+  pixellabSurface('cracked-asphalt', 'ground-textures/ground-textures__cracked-asphalt', 'road', { width: 128, height: 128, notes: 'WO-103 route-wide cracked asphalt surface for ghost-town/city roads.' }),
+  pixellabSurface('mossy-cobble', 'ground-textures/ground-textures__mossy-cobble', 'road', { width: 128, height: 128, notes: 'WO-103 town plaza cobble surface with painterly grime.' }),
+  pixellabSurface('worn-grass', 'ground-textures/ground-textures__worn-grass', 'grass', { width: 128, height: 128, notes: 'WO-103 broad grass surface for farm and nature route reads.' }),
   pixellabSurface('broken-highway-lane', 'roads-and-paths/roads-and-paths__broken-highway-lane', 'road', { width: 128, height: 128 }),
   pixellabSurface('gas-station-forecourt-concrete', 'roads-and-paths/roads-and-paths__gas-station-forecourt-concrete', 'road', { width: 128, height: 128 }),
   pixellabSurface('ghost-town-cobble-dirt', 'roads-and-paths/roads-and-paths__ghost-town-main-street-cobble-dirt-blend', 'road', { width: 128, height: 128 }),
@@ -48,6 +53,11 @@ function surfaceZone(id, assetKey, xMin, xMax, yMin, yMax, data = {}) {
 }
 
 export const LEVEL_1_PIXELLAB_SURFACE_ZONES = Object.freeze([
+  surfaceZone('wo103-desert-approach-dusty-sand', 'pixellab-surface/dusty-sand', -12, 18, -4, 14, { districtId: 'desert-approach', routeBeat: 'spawn', priority: 4 }),
+  surfaceZone('wo103-route-packed-dirt-spine', 'pixellab-surface/packed-dirt', 8, 104, 3, 10, { districtId: 'main-route', routeBeat: 'critical-loop', priority: 5 }),
+  surfaceZone('wo103-ghost-town-cracked-asphalt-field', 'pixellab-surface/cracked-asphalt', 28, 54, -1, 12, { districtId: 'ghost-town', routeBeat: 'arena', priority: 6 }),
+  surfaceZone('wo103-ghost-town-mossy-cobble-plaza', 'pixellab-surface/mossy-cobble', 36, 46, 3, 9, { districtId: 'ghost-town', routeBeat: 'arena', priority: 7 }),
+  surfaceZone('wo103-country-worn-grass-field', 'pixellab-surface/worn-grass', 52, 88, -2, 13, { districtId: 'country-road', routeBeat: 'loop', priority: 4 }),
   surfaceZone('spawn-broken-highway-patch', 'pixellab-surface/broken-highway-lane', 4, 7, 4, 6, { districtId: 'desert-approach', routeBeat: 'spawn', priority: 20 }),
   surfaceZone('gas-station-forecourt-pad', 'pixellab-surface/gas-station-forecourt-concrete', 8, 13, 4, 7, { districtId: 'desert-approach', routeBeat: 'arena', priority: 18 }),
   surfaceZone('ghost-town-mainstreet-cobble', 'pixellab-surface/ghost-town-cobble-dirt', 37, 44, 5, 7, { districtId: 'ghost-town', routeBeat: 'arena', priority: 18 }),
@@ -195,10 +205,19 @@ export function selectLevelOneGroundTile({
   neighbors = [],
 } = {}) {
   if (levelId !== HMH_LEVEL_ONE_ID) return null;
-  const pixellabSurface = levelOnePixellabSurfaceAssetForTile({ worldX, worldY });
-  if (pixellabSurface) return pixellabSurface;
-
   const role = levelOneGroundRoleForTile({ biome, theme, neighbors });
+  const pixellabSurface = levelOnePixellabSurfaceAssetForTile({ worldX, worldY });
+  const compatibleSurface = pixellabSurface
+    && (pixellabSurface.role === role
+      || (role === 'dirt' && ['dirt', 'road'].includes(pixellabSurface.role))
+      || (role === 'sand' && ['sand', 'dirt', 'road'].includes(pixellabSurface.role))
+      || (role === 'road' && ['road', 'dirt'].includes(pixellabSurface.role))
+      || (role === 'grass' && pixellabSurface.role === 'grass')
+      || (role === 'rocky' && ['rocky', 'dirt', 'road'].includes(pixellabSurface.role))
+      || (role === 'shore' && ['shore', 'water'].includes(pixellabSurface.role))
+      || (role === 'water' && pixellabSurface.role === 'water'));
+  if (compatibleSurface) return pixellabSurface;
+
   const finalKeys = finalPaintRoleKeys(role);
   const fallbackKeys = sbsRoleKeys(role);
   const keys = finalKeys.length ? finalKeys : fallbackKeys;

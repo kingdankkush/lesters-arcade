@@ -6012,7 +6012,7 @@ async function startCombat(options = {}) {
   combat.levelUpLockedPreviews = [];
   combat.levelUpPaused = false;
   combat.roguelikeRun = createRoguelikeRunState({
-    seed: Date.now(),
+    seed: options.seed ?? Date.now(),
     mode: currentSession?.mode ?? 'free',
     characterId: combat.characterId,
     campaignLevelId: level.id,
@@ -10346,7 +10346,8 @@ function resolveObstacleProp(obstacle, worldProps) {
         ? 'bigprop'
         : SCENE_ROLE_TO_STYLE[obstacle.sceneRole] ?? 'smallprop';
     const style = PROP_ROLE_STYLE[styleKey] ?? PROP_ROLE_STYLE.smallprop;
-    return { prop: { role: obstacle.sceneRole, src: obstacle.curatedAssetKey, curated: true }, img, style };
+    const footprint = obstacle.footprintTiles ?? null;
+    return { prop: { role: obstacle.sceneRole, src: obstacle.curatedAssetKey, curated: true }, img, style, footprint };
   }
   // Coherent scene-template object: draw the exact art the template chose
   // (street lamp, arcade cabinet, TV-on-table, tree, fountain, etc.) at the

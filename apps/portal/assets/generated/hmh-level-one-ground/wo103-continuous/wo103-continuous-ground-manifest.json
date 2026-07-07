@@ -1,0 +1,271 @@
+{
+  "id": "hmh-wo103-continuous-ground-v1",
+  "source": "WO-103 post-process of repo-owned final-paint terrain",
+  "sourcePolicy": "Derived from approved repo-owned final-paint ground; transparent pattern holes removed for runtime CanvasPattern use. No placeholder/script-drawn art.",
+  "tileWidth": 128,
+  "tileHeights": [
+    64
+  ],
+  "assetCount": 16,
+  "roles": {
+    "grass": [
+      "wo103-continuous/grass",
+      "wo103-continuous/forest-floor"
+    ],
+    "dirt": [
+      "wo103-continuous/dirt",
+      "wo103-continuous/field-stubble"
+    ],
+    "sand": [
+      "wo103-continuous/sand"
+    ],
+    "rocky": [
+      "wo103-continuous/rocky",
+      "wo103-continuous/scorched-yard"
+    ],
+    "road": [
+      "wo103-continuous/asphalt",
+      "wo103-continuous/dirt-road"
+    ],
+    "grass-to-dirt": [
+      "wo103-continuous/grass-dirt-transition"
+    ],
+    "dirt-to-sand": [
+      "wo103-continuous/dirt-sand-transition"
+    ],
+    "water": [
+      "wo103-continuous/water-ripple",
+      "wo103-continuous/water-glint"
+    ],
+    "shore": [
+      "wo103-continuous/shore-grass-water",
+      "wo103-continuous/shore-dirt-water",
+      "wo103-continuous/shore-sand-water"
+    ]
+  },
+  "contactSheet": "docs/game-design/assets/hmh-wo103-continuous-ground-contact-sheet.png",
+  "assets": [
+    {
+      "key": "wo103-continuous/grass",
+      "role": "grass",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/grass.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous meadow/park grass fill from final-paint grass",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/forest-floor",
+      "role": "grass",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/forest-floor.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous forest floor/leafy grass fill from final-paint grass variant",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/dirt",
+      "role": "dirt",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/dirt.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous packed dirt route fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/field-stubble",
+      "role": "dirt",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/field-stubble.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous field stubble and rural dirt fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/sand",
+      "role": "sand",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/sand.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous lakeshore/desert sand fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/rocky",
+      "role": "rocky",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/rocky.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous rocky cliff-foot fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/asphalt",
+      "role": "road",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/asphalt.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous wet asphalt / ghost town road fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/dirt-road",
+      "role": "road",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/dirt-road.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous rural dirt road fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/scorched-yard",
+      "role": "rocky",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/scorched-yard.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous scorched boss yard fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/grass-dirt-transition",
+      "role": "grass-to-dirt",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/grass-dirt-transition.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous torn grass-to-dirt transition",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/dirt-sand-transition",
+      "role": "dirt-to-sand",
+      "category": "terrain",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/dirt-sand-transition.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": false,
+      "description": "continuous dirt-to-sand transition",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use."
+    },
+    {
+      "key": "wo103-continuous/water-ripple",
+      "role": "water",
+      "category": "water",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/water-ripple.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": true,
+      "description": "continuous six-frame animated water ripple fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameDuration": 8,
+      "frameMs": 120
+    },
+    {
+      "key": "wo103-continuous/water-glint",
+      "role": "water",
+      "category": "water",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/water-glint.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": true,
+      "description": "continuous six-frame moonlight/glint water fill",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameDuration": 8,
+      "frameMs": 120
+    },
+    {
+      "key": "wo103-continuous/shore-grass-water",
+      "role": "shore",
+      "category": "shore",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/shore-grass-water.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": true,
+      "description": "continuous grass shoreline foam transition",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameDuration": 8,
+      "frameMs": 120
+    },
+    {
+      "key": "wo103-continuous/shore-dirt-water",
+      "role": "shore",
+      "category": "shore",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/shore-dirt-water.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": true,
+      "description": "continuous dirt shoreline foam transition",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameDuration": 8,
+      "frameMs": 120
+    },
+    {
+      "key": "wo103-continuous/shore-sand-water",
+      "role": "shore",
+      "category": "shore",
+      "src": "./apps/portal/assets/generated/hmh-level-one-ground/wo103-continuous/shore-sand-water.png",
+      "width": 128,
+      "height": 64,
+      "preferred": true,
+      "animated": true,
+      "description": "continuous sand shoreline foam transition",
+      "sourcePolicy": "WO-103 post-process of approved repo-owned final-paint terrain; alpha-composited for CanvasPattern runtime use.",
+      "frames": 6,
+      "frameWidth": 128,
+      "frameHeight": 64,
+      "sheetWidth": 768,
+      "frameDuration": 8,
+      "frameMs": 120
+    }
+  ]
+}
