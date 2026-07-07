@@ -10,11 +10,15 @@ Use this preamble for every WO-76 candidate prompt and, after approval, for ever
 hi-bit pixel art, litecoin-city-after-dark-neon-noir-deco-v1, palette #0B0E1A #10162A #1A2138 #2B3A5C #173B72 #345D9D #4E82D8 #8CB7FF #E8ECF2 #C9D2DE #A8B4C4 #5C6B80 #2E3A4D #F1D37A #C9A34E #8C6724 #4A3514 #C9FF6A #7FE84A #3FAE3B #1F5C2E #FF78D1 #E040A0 #992B78 #4B1844 #F8FBFF #C7D0E0 #6F7B91 #11151F, night-city noir, top-left key light with local neon rim light, painterly pixel clusters, clean 1px selective dark navy outline, transparent background where applicable, readable silhouette at gameplay zoom, no text, no logos, no watermark, match the approved WO-76 anchor set
 ```
 
-Until the winners are approved, replace the final clause with:
+Until all ten winners are approved, replace the final clause with:
 
 ```text
-match the WO-76 candidate direction and the attached seed references; this is a candidate only, not approved anchor art
+match the approved WO-76 storefront-facade anchor where relevant plus the WO-76 candidate direction and attached seed references; this is a candidate only, not approved anchor art
 ```
+
+Currently approved anchor references:
+
+- Storefront facade: `docs/art/anchors/storefront-facade.png`
 
 ## Tool routing
 

@@ -1,0 +1,26 @@
+{
+  "workOrder": "WO-76",
+  "slot": "storefront-facade",
+  "slotTitle": "Storefront facade",
+  "approvedCandidate": 14,
+  "status": "APPROVED_BY_JUSTIN_2026-07-06",
+  "anchorImage": "docs/art/anchors/storefront-facade.png",
+  "sourceRawStagingPath": ".art-staging/wo76/storefront-facade/storefront-facade-candidate-14.png",
+  "sourceUrl": "https://v3b.fal.media/files/b/0aa13cc3/4waD2VR748wOb3UScQKnI_c0orgKyb.png",
+  "tool": "FAL.ai FLUX 2 Klein 9B via Hermes image_generate",
+  "settings": {
+    "aspect_ratio": "square",
+    "modality": "text-to-image",
+    "referenceImageUsed": false
+  },
+  "referenceSeed": "apps/portal/assets/generated/hmh-coherent-world/level2-final-city/chrome-tower-facade.png",
+  "referenceLimitation": "FAL rejected local reference image paths, so this approved batch used text-only prompts. The repo seed remained in the audit/contact-sheet context.",
+  "exactPrompt": "WO-76 storefront-facade candidate 14. Textless blank-sign storefront only: no alphabet, no numerals, no logos, no icons, no readable markings. Hi-bit pixel art, rainy night-city noir, compact isometric 2:1 noodle bar building facade, blank cyan lightbox, deco brass corner ribs, silver vents, steam pipe, puddled pavement reflection, top-left key light and blue-magenta neon rim, painterly pixel clusters, clean selective outline, no characters, candidate only.",
+  "approvalRationale": "Chosen by agent per Justin direction to use the best-looking high-quality high-bit pixel art option. Candidate 14 had the strongest atmospheric noir facade and wet-street high-bit painterly read.",
+  "runnersUp": [
+    19,
+    8,
+    13
+  ],
+  "postApprovalNotes": "Anchor reference only. Runtime integration still requires crop/alpha/palette cleanup and code/manifest work in a later approved art substitution task."
+}

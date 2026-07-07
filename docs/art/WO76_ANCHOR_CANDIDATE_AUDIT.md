@@ -3,7 +3,7 @@
 **HALT: Justin approval required before any anchor is committed as approved or used for runtime integration.**
 
 - Work order: WO-76
-- Status: HALT_AWAITING_JUSTIN_ANCHOR_APPROVAL
+- Status: PARTIAL_ANCHOR_APPROVAL_1_OF_10
 - Runtime integration allowed: false
 - Tool verdict: Use the existing noir ground bake-off verdict: repo final-paint/post-process first; use PixelLab or ComfyUI only for failures or uncovered categories after approval.
 
