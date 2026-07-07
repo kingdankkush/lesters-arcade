@@ -50,10 +50,11 @@ Status: checkpoint-ready-with-verdict-open
 
 Evidence:
   - six-biome-tour: 6 steps
+  - lighting-checkpoint-module: tracked
   - checkpoint-gate: Playtest Checkpoint 2
 
 Open debt:
-  - Playtest Checkpoint 2 notice is generated in docs, but Justin verdict remains open until reviewed.
+  - Justin verdict remains open until reviewed.
 
 ### WO-108: Sprite-derived hurtbox truth
 Status: implemented-runtime-policy

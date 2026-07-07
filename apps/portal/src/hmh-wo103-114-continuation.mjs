@@ -72,9 +72,10 @@ export function buildWo103114ContinuationCertification() {
     ]),
     workOrder('WO-107', 'Full world assembly and lighting checkpoint 2', 'checkpoint-ready-with-verdict-open', [
       { kind: 'six-biome-tour', id: tour.id, stepCount: tour.steps.length, placedObjectCount: tour.summary.placedObjectCount },
-      { kind: 'checkpoint-gate', label: 'Playtest Checkpoint 2', verdict: 'Justin verdict gate remains open' },
+      { kind: 'lighting-checkpoint-module', path: 'apps/portal/src/hmh-wo107-checkpoint2.mjs', passes: ['dynamic-noir-lighting', 'vision-fog', 'readability-rim'] },
+      { kind: 'checkpoint-gate', label: 'Playtest Checkpoint 2', notice: 'docs/game-design/PLAYTEST_CHECKPOINT_2_NOTICE.md', verdict: 'Justin verdict gate remains open' },
     ], [
-      'Playtest Checkpoint 2 notice is generated in docs, but Justin verdict remains open until reviewed.',
+      'Justin verdict remains open until reviewed.',
     ]),
     workOrder('WO-108', 'Sprite-derived hurtbox truth', 'implemented-runtime-policy', [
       { kind: 'hurtbox-policy', id: HMH_HURTBOX_TRUTH_POLICY.id, status: 'implemented', scalePolicy: HMH_HURTBOX_TRUTH_POLICY.scalePolicy },
