@@ -1,3 +1,7 @@
+// Initialize Vercel Web Analytics
+import { inject } from '@vercel/analytics';
+inject();
+
 import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
