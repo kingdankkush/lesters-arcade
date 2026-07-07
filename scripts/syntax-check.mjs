@@ -247,11 +247,14 @@ const NODE_CHECK_FILES = [
   "tests/boss-phase-controller.test.mjs",
   "apps/portal/src/hmh-level-one-boss.mjs",
   "apps/portal/src/hmh-anchor-set.mjs",
+  "apps/portal/src/hmh-post-anchor-work-orders.mjs",
   "tests/hmh-level-one-boss.test.mjs",
   "tests/hmh-anchor-set.test.mjs",
+  "tests/hmh-post-anchor-work-orders.test.mjs",
   "tests/roster-coverage-report.test.mjs",
   "tests/sprite-qa.test.mjs",
   "scripts/hmh-anchor-candidate-audit.mjs",
+  "scripts/hmh-post-anchor-work-orders.mjs",
   "scripts/syntax-check.mjs"
 ];
 

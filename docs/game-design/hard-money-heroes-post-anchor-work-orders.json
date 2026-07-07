@@ -1,0 +1,562 @@
+{
+  "status": {
+    "wave": "WO-91-to-WO-89-post-anchor-production",
+    "anchorSet": "WO-76 APPROVED_10_OF_10",
+    "runtimeIntegrationPolicy": "No generated art or audio is runtime-swapped without cleanup, manifest wiring, tests, and visual/audio QA."
+  },
+  "wo91": [
+    {
+      "oldDistrict": "litecoin-plaza",
+      "noirZone": "civic-neon-square",
+      "action": "keep as hub",
+      "ruling": "approved",
+      "rationale": "Central orientation space remains the readable hub, now dressed with wet plaza stone, blank neon civic signage, and the WO-76 streetlamp/tree language."
+    },
+    {
+      "oldDistrict": "financial-core",
+      "noirZone": "bank-and-exchange-canyon",
+      "action": "merge and intensify",
+      "ruling": "approved",
+      "rationale": "Financial Downtown and Hashrate District share vertical bank, server, and trading-floor language. Merge them into one dense Deco canyon family using the WO-76 bank anchor."
+    },
+    {
+      "oldDistrict": "waterfront",
+      "noirZone": "rain-harbor-and-bridge-yards",
+      "action": "keep as risk spoke",
+      "ruling": "approved",
+      "rationale": "DeFi Harbor needs its own wet container, crane, bridge, and knockback-edge read."
+    },
+    {
+      "oldDistrict": "luxury-neighborhoods",
+      "noirZone": "privacy-grove-and-gallery-hills",
+      "action": "split by mood pockets",
+      "ruling": "approved",
+      "rationale": "MimbleWimble Grove, Artisan District, and Parks remain separate authored pockets under one green/fog/gallery surface family."
+    },
+    {
+      "oldDistrict": "outer-boulevard",
+      "noirZone": "service-boulevard",
+      "action": "use as connector",
+      "ruling": "approved",
+      "rationale": "Wide road segments become readable connectors between dense POIs and carry streetlamp/tree/ground anchors."
+    },
+    {
+      "oldDistrict": "penthouse-rim",
+      "noirZone": "rooftop-rain-final-approach",
+      "action": "defer to boss seam",
+      "ruling": "approved",
+      "rationale": "Rooftop rain is a final approach seam rather than general district coverage."
+    }
+  ],
+  "wo90": [
+    {
+      "pack": "pickup-icons",
+      "script": "generate-hmh-pickup-icons.py",
+      "currentRisk": "script-drawn symbols",
+      "replacementAnchor": "ui-chrome-sample",
+      "action": "redo pickup icons as textless blank-symbol-free silhouettes with UI chrome trim before runtime replacement"
+    },
+    {
+      "pack": "vfx-ui-chrome",
+      "script": "generate-hmh-vfx-ui-chrome.py",
+      "currentRisk": "procedural chrome and VFX packs drift from high-bit anchor style",
+      "replacementAnchor": "ui-chrome-sample",
+      "action": "redo card frames, HP bars, hit flashes, and rarity frames against the approved UI anchor"
+    },
+    {
+      "pack": "level-one-authored-stamp-art",
+      "script": "generate-hmh-level-one-authored-stamp-art.py",
+      "currentRisk": "stamp-pack placeholders read flatter than approved anchors",
+      "replacementAnchor": "micro-scene-composition",
+      "action": "redo stamps as authored micro-scenes and painterly ground/prop composites"
+    },
+    {
+      "pack": "achievement-atlas",
+      "script": "generate-hmh-achievement-atlas.py",
+      "currentRisk": "badge atlas is script-drawn and text/symbol heavy",
+      "replacementAnchor": "ui-chrome-sample",
+      "action": "redo achievement badge frames as textless high-bit medal/chrome shapes"
+    }
+  ],
+  "wo81": [
+    {
+      "gate": "anticipation",
+      "requiredOn": [
+        "hero attacks",
+        "enemy attacks",
+        "boss slams"
+      ],
+      "failExample": "instant hit frame with no wind-up",
+      "acceptance": "2 to 5 readable frames before contact, with silhouette or VFX pullback"
+    },
+    {
+      "gate": "smear",
+      "requiredOn": [
+        "fast melee",
+        "dash",
+        "projectile launch"
+      ],
+      "failExample": "teleporting limb or weapon",
+      "acceptance": "one directional smear or stretched accent frame during the fastest motion"
+    },
+    {
+      "gate": "impact",
+      "requiredOn": [
+        "enemy hit",
+        "boss impact",
+        "player hurt"
+      ],
+      "failExample": "damage number without body or VFX response",
+      "acceptance": "hit flash plus body offset plus particles or ground spark in the contact frame"
+    },
+    {
+      "gate": "follow-through",
+      "requiredOn": [
+        "weapon swings",
+        "cape/coat/steam props"
+      ],
+      "failExample": "pose snaps straight back to idle",
+      "acceptance": "secondary motion resolves after contact before returning to idle"
+    },
+    {
+      "gate": "loop-bob",
+      "requiredOn": [
+        "idle loops",
+        "hover enemies",
+        "ambient props"
+      ],
+      "failExample": "static standing sprite",
+      "acceptance": "subtle two-axis bob or breath cycle that does not affect hitbox scale"
+    }
+  ],
+  "wo83": [
+    {
+      "enemy": "fud-goblin",
+      "anchor": "highest-spawn-enemy-redesign",
+      "priority": 1,
+      "brief": "Short hunched scam-bot goblin with blue visor, oversized tell hand, readable idle and raised-arm attack silhouette."
+    },
+    {
+      "enemy": "claim-jumper",
+      "anchor": "bank-deco-corner",
+      "priority": 2,
+      "brief": "Ranged outlaw banker hybrid with rifle raise anticipation and brass/silver shoulder read."
+    },
+    {
+      "enemy": "wild-boar",
+      "anchor": "wet-asphalt-ground-family",
+      "priority": 3,
+      "brief": "Low charger with hoof-scrape anticipation, dust/wet skid smear, and heavy head-down silhouette."
+    },
+    {
+      "enemy": "scam-cult-zealot",
+      "anchor": "streetlamp-light-cone",
+      "priority": 4,
+      "brief": "Lantern-lit cult elite with robe flare, chant anticipation, and fan-shot impact particles."
+    },
+    {
+      "enemy": "mev-reaper",
+      "anchor": "major-boss-key-pose",
+      "priority": 5,
+      "brief": "Tall mini-boss silhouette with scythe/cane wind-up, blue core, and delayed follow-through."
+    }
+  ],
+  "wo77": [
+    {
+      "id": "tipped-noodle-cart",
+      "anchor": "micro-scene-composition",
+      "recipe": "tipped delivery cart, spilled crates, rat trail, wet asphalt reflection",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "bank-run-line",
+      "anchor": "micro-scene-composition",
+      "recipe": "abandoned queue ropes, torn deposit slips as blank paper shapes, coin scatter",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "bridge-fee-booth",
+      "anchor": "micro-scene-composition",
+      "recipe": "empty toll booth, broken barrier, puddled tire tracks",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "server-vent-alley",
+      "anchor": "micro-scene-composition",
+      "recipe": "steam vent, cables, fallen crate, blue neon puddle",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "privacy-grove-cache",
+      "anchor": "micro-scene-composition",
+      "recipe": "hedge gap, blank lanterns, concealed cache footprint",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "gallery-shutter",
+      "anchor": "micro-scene-composition",
+      "recipe": "closed gallery shutter, paint tins, tarp corner",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "harbor-crate-spill",
+      "anchor": "micro-scene-composition",
+      "recipe": "container corner, rope coil, wet plank edge",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "fountain-shortout",
+      "anchor": "micro-scene-composition",
+      "recipe": "sparking fountain pump, water ripple, bench shadow",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "rig-cooling-leak",
+      "anchor": "micro-scene-composition",
+      "recipe": "coolant puddle, fan grate, warning cone with no text",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "rooftop-tar-splash",
+      "anchor": "micro-scene-composition",
+      "recipe": "tar patch, dropped cable, rain-slick roof tile",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "atm-spark",
+      "anchor": "micro-scene-composition",
+      "recipe": "blank ATM shell, sparks, scattered generic chips",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "backdoor-delivery",
+      "anchor": "micro-scene-composition",
+      "recipe": "half-open service door, stacked boxes, steam pipe",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "neon-tree-planter",
+      "anchor": "micro-scene-composition",
+      "recipe": "street tree planter, fallen leaves, small light cone",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "pawn-window-glow",
+      "anchor": "micro-scene-composition",
+      "recipe": "blank display window, broken glass sparkle, coin-like props",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "alley-barricade",
+      "anchor": "micro-scene-composition",
+      "recipe": "folding barricade, trash bags, blue rim shadow",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "rain-gutter-overflow",
+      "anchor": "micro-scene-composition",
+      "recipe": "downspout, puddle ripple, cracked curb",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "courier-bike-down",
+      "anchor": "micro-scene-composition",
+      "recipe": "fallen delivery bike, spilled bag, tire skid",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "vault-service-cart",
+      "anchor": "micro-scene-composition",
+      "recipe": "vault cart, empty tray, brass wheel marks",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "park-bench-cache",
+      "anchor": "micro-scene-composition",
+      "recipe": "wet bench, hidden crate, leaf clusters",
+      "placement": "street-edge cluster",
+      "collision": "soft unless explicitly marked cover"
+    },
+    {
+      "id": "helipad-cable-snag",
+      "anchor": "micro-scene-composition",
+      "recipe": "cable coil, roof light, rain puddle",
+      "placement": "POI pocket",
+      "collision": "soft unless explicitly marked cover"
+    }
+  ],
+  "wo78": {
+    "layerId": "noir-overhang-draw-over-v1",
+    "anchors": [
+      "storefront-facade",
+      "bank-deco-corner",
+      "streetlamp-light-cone"
+    ],
+    "elements": [
+      {
+        "element": "awnings",
+        "quota": "1 to 2 per dense storefront block",
+        "rule": "cast soft top-edge shadow without hiding player lane"
+      },
+      {
+        "element": "canopies",
+        "quota": "hub and bank entries only",
+        "rule": "use z-height and fade when player crosses below"
+      },
+      {
+        "element": "bridges",
+        "quota": "harbor/service-boulevard seams",
+        "rule": "draw above ground but below tall skyline silhouettes"
+      },
+      {
+        "element": "skyline parallax",
+        "quota": "one skyline band per district family",
+        "rule": "no WebGL; canvas 2D or static parallax only"
+      }
+    ]
+  },
+  "wo79": {
+    "reducedMotion": "disable non-critical loops, keep gameplay tells and hit feedback",
+    "quotas": [
+      {
+        "class": "hero landmark",
+        "quota": "one animated landmark per district screen",
+        "examples": [
+          "bank neon hum",
+          "harbor crane light",
+          "privacy fog lantern"
+        ]
+      },
+      {
+        "class": "critters",
+        "quota": "0 to 2 per calm pocket, never in boss lock",
+        "examples": [
+          "rat",
+          "pigeon silhouette",
+          "moth in light cone"
+        ]
+      },
+      {
+        "class": "weather",
+        "quota": "rain streaks and puddle ripples capped by perf budget",
+        "examples": [
+          "rain line pass",
+          "steam vent loop",
+          "puddle ripple"
+        ]
+      },
+      {
+        "class": "signage",
+        "quota": "blank light panels only",
+        "examples": [
+          "cyan glow pulse",
+          "broken flicker"
+        ]
+      }
+    ]
+  },
+  "wo85": {
+    "anchor": "wet-asphalt-ground-family",
+    "replaceFirst": [
+      "flat asphalt fills",
+      "procedural gray road tiles",
+      "unlit plaza stone",
+      "generic wet puddles"
+    ],
+    "rules": [
+      "preserve collision grid",
+      "separate visual tile from footprint",
+      "keep readability under enemy swarm",
+      "author at least base, cracked, puddled, and curb variants"
+    ]
+  },
+  "wo80": {
+    "target": "placement imperfection and wear states",
+    "variants": [
+      {
+        "family": "storefronts",
+        "variants": [
+          "clean",
+          "rain-streaked",
+          "shutter-dented",
+          "neon-flicker"
+        ]
+      },
+      {
+        "family": "bank facades",
+        "variants": [
+          "clean marble",
+          "chipped corner",
+          "puddle-reflective",
+          "steam-stained"
+        ]
+      },
+      {
+        "family": "street props",
+        "variants": [
+          "upright",
+          "slightly tilted",
+          "wet base",
+          "damaged cap"
+        ]
+      },
+      {
+        "family": "ground",
+        "variants": [
+          "base",
+          "cracked",
+          "oil-puddled",
+          "stripe-worn"
+        ]
+      }
+    ]
+  },
+  "wo82": [
+    {
+      "hero": "Lit Commando",
+      "anchor": "lit-commando-idle-key-pose",
+      "work": "idle, run, shoot, hurt, KO and victory repaint with coat follow-through and blaster anticipation"
+    },
+    {
+      "hero": "Lit Valkyrie",
+      "anchor": "lit-commando-idle-key-pose",
+      "work": "matching high-bit silhouette pass, readable wing/cape secondary motion, non-overlapping hitbox source scale"
+    }
+  ],
+  "wo84": [
+    {
+      "boss": "Rugpull Boss proxy",
+      "anchor": "major-boss-key-pose",
+      "beats": [
+        "spawn warning",
+        "vault armor glow",
+        "slam anticipation",
+        "impact ring",
+        "death burst"
+      ]
+    },
+    {
+      "boss": "The Whale",
+      "anchor": "major-boss-key-pose",
+      "beats": [
+        "margin-call wind-up",
+        "market crash AoE",
+        "adds callout",
+        "puddle shockwave",
+        "loot-rain death tail"
+      ]
+    },
+    {
+      "boss": "Bridge Exploiter",
+      "anchor": "major-boss-key-pose",
+      "beats": [
+        "chain hook tell",
+        "bridge rupture",
+        "container shake",
+        "waterline shock ring",
+        "reward reveal"
+      ]
+    }
+  ],
+  "wo86": {
+    "verdict": "use existing repo WebAudio plus CC0 sample manifest first; use AI audio only for replacement candidates that beat the synth/sample fallback in A/B review",
+    "reviewPipeline": [
+      "inventory cue",
+      "generate or source 3 candidates",
+      "normalize loudness",
+      "A/B in combat moment",
+      "commit only final ogg plus provenance"
+    ]
+  },
+  "wo87": [
+    {
+      "cue": "pickup",
+      "batch": "economy",
+      "status": "existing-sample-plus-synth"
+    },
+    {
+      "cue": "enemy-hit",
+      "batch": "combat",
+      "status": "existing-sample-plus-synth"
+    },
+    {
+      "cue": "player-hit",
+      "batch": "combat",
+      "status": "existing-sample-plus-synth"
+    },
+    {
+      "cue": "boss-warning",
+      "batch": "boss",
+      "status": "existing-sample-plus-synth"
+    },
+    {
+      "cue": "game-over",
+      "batch": "state",
+      "status": "existing-sample-plus-synth"
+    },
+    {
+      "cue": "dash",
+      "batch": "movement",
+      "status": "needs-candidate"
+    },
+    {
+      "cue": "weapon-fire",
+      "batch": "combat",
+      "status": "needs-candidate"
+    },
+    {
+      "cue": "level-clear",
+      "batch": "state",
+      "status": "needs-candidate"
+    }
+  ],
+  "wo88": {
+    "mode": "pressure-layered score with fallback mix",
+    "stems": [
+      "base rain pulse",
+      "combat arpeggio",
+      "boss brass hit layer",
+      "low-health filtered layer",
+      "victory release sting"
+    ],
+    "fallback": "continue current music bed and duck against SFX until generated stems pass A/B review"
+  },
+  "wo89": {
+    "reel": "60 second showcase path from hub to bank corner to boss beat",
+    "syncMoments": [
+      "pickup sparkle on beat",
+      "enemy hit freeze plus transient",
+      "boss warning swell",
+      "death burst tail",
+      "victory UI settle"
+    ],
+    "acceptance": "video capture has no missing sprites, no text/logo artifacts, balanced SFX/music, and clear touch/keyboard interaction read"
+  },
+  "deviceQa": {
+    "status": "blocked-on-this-host",
+    "blockers": [
+      "no adb/scrcpy toolchain detected",
+      "no iOS device bridge/xcrun on this Windows host",
+      "no connected enumerable mobile devices"
+    ],
+    "desktopFallback": "smoke:portal:interactions and visual:regression remain the verified local gates until real devices are attached"
+  }
+}

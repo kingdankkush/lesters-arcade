@@ -47,6 +47,7 @@
     "design:weekly": "node scripts/write-hmh-weekly-design-review.mjs",
     "design:animation-prompts": "node scripts/write-hmh-animation-production-requests.mjs",
     "design:anchor-candidates": "node scripts/hmh-anchor-candidate-audit.mjs",
+    "design:post-anchor-work-orders": "node scripts/hmh-post-anchor-work-orders.mjs",
     "contracts:check": "node scripts/contract-structure-check.mjs",
     "contracts:deploy": "node scripts/deploy-contracts.mjs",
     "build": "node build.mjs",
