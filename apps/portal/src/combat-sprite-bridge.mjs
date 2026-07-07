@@ -17,6 +17,16 @@ export function buildActorRegistry(manifests, imageLoader) {
   return registry;
 }
 
+export function prewarmActorRegistry(registry, actorIds = []) {
+  let count = 0;
+  for (const actorId of actorIds) {
+    const actor = registry?.get?.(actorId);
+    if (!actor || typeof actor.prewarm !== 'function') continue;
+    count += actor.prewarm();
+  }
+  return count;
+}
+
 // Map the hero's live combat state to a canonical animation state name.
 // Mirrors the legacy selectHeroFrame() priority order so behavior is preserved.
 export function heroStateFromCombat(combat, groundY) {

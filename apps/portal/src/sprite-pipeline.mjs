@@ -95,10 +95,12 @@ export class SpriteActor {
     this.frameSize = manifest?.frameSize ?? [64, 64];
     this.anchor = manifest?.anchor ?? 'bottom-center';
     this._cache = new Map(); // src -> image
-    // Precompute per-state frame counts (max across directions for stability).
-    for (const def of Object.values(manifest?.states ?? {})) {
+    this._frameCounts = new Map();
+    // Precompute per-state frame counts (max across directions for stability)
+    // without mutating imported manifests, which may be frozen generated modules.
+    for (const [state, def] of Object.entries(manifest?.states ?? {})) {
       const counts = Object.values(def.frames ?? {}).map((arr) => arr?.length ?? 0);
-      def.__frameCount = counts.length ? Math.max(...counts) : 0;
+      this._frameCounts.set(state, counts.length ? Math.max(...counts) : 0);
     }
   }
 
@@ -131,7 +133,8 @@ export class SpriteActor {
     let src = null;
     let frameIndex = 0;
     if (stateDef) {
-      frameIndex = frameIndexFor(stateDef, clock, this.manifest.targetFps ?? 60);
+      const indexedDef = { ...stateDef, __frameCount: this._frameCounts.get(resolvedState) ?? 0 };
+      frameIndex = frameIndexFor(indexedDef, clock, this.manifest.targetFps ?? 60);
       const dirFrames = stateDef.frames?.[dir]
         ?? stateDef.frames?.[this.defaultDirection]
         ?? Object.values(stateDef.frames ?? {})[0]
@@ -154,6 +157,40 @@ export class SpriteActor {
   hasState(state) {
     return Boolean(resolveState(this.manifest, state));
   }
+
+  frameSources({ states = null } = {}) {
+    const wanted = states ? new Set(states) : null;
+    const sources = [];
+    for (const [state, def] of Object.entries(this.manifest?.states ?? {})) {
+      if (wanted && !wanted.has(state)) continue;
+      for (const frames of Object.values(def.frames ?? {})) {
+        for (const src of frames ?? []) {
+          if (src) sources.push(src);
+        }
+      }
+    }
+    return [...new Set(sources)];
+  }
+
+  prewarm(options = {}) {
+    const sources = this.frameSources(options);
+    for (const src of sources) this._img(src);
+    return sources.length;
+  }
+}
+
+export function collectSpriteManifestFrameSources(manifest, { states = null } = {}) {
+  const wanted = states ? new Set(states) : null;
+  const sources = [];
+  for (const [state, def] of Object.entries(manifest?.states ?? {})) {
+    if (wanted && !wanted.has(state)) continue;
+    for (const frames of Object.values(def.frames ?? {})) {
+      for (const src of frames ?? []) {
+        if (src) sources.push(src);
+      }
+    }
+  }
+  return [...new Set(sources)];
 }
 
 // Validate a manifest shape early so bad art drops fail loudly in tests/CI

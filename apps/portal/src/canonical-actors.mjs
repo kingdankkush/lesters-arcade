@@ -5,8 +5,8 @@
 // Source: Justin's hand-made art, ingested by scripts/ingest-hmh-canonical-art.py.
 // Generation tools only ADD frames/tilesets/VFX; they never redesign characters.
 
-import { HMH_CANON_LESTER } from '../assets/generated/hmh-canonical-art/lester/lester.mjs';
-import { HMH_CANON_LILLY } from '../assets/generated/hmh-canonical-art/lilly/lilly.mjs';
+import { HMH_WO93_LESTER_MATRIX } from '../assets/generated/hmh-hero-matrix/wo93-v1/lester/lester.mjs';
+import { HMH_WO93_LILLY_MATRIX } from '../assets/generated/hmh-hero-matrix/wo93-v1/lilly/lilly.mjs';
 import { HMH_CANON_TRENCH_DEGEN } from '../assets/generated/hmh-canonical-art/trench-degen/trench-degen.mjs';
 import { HMH_CANON_EVIL_BANKER } from '../assets/generated/hmh-canonical-art/evil-banker/evil-banker.mjs';
 import { HMH_CANON_CRYPTO_BRO } from '../assets/generated/hmh-canonical-art/crypto-bro/crypto-bro.mjs';
@@ -248,8 +248,8 @@ export function manifestEnemyArtKeyForRuntimeEntity(entity = {}) {
 }
 
 export const CANONICAL_ACTOR_MANIFESTS = Object.freeze({
-  lester: HMH_CANON_LESTER,
-  lilly: HMH_CANON_LILLY,
+  lester: HMH_WO93_LESTER_MATRIX,
+  lilly: HMH_WO93_LILLY_MATRIX,
   'trench-degen': withDerivedCombatReadability(HMH_CANON_TRENCH_DEGEN),
   'evil-banker': withDerivedCombatReadability(HMH_CANON_EVIL_BANKER),
   'crypto-bro': withDerivedCombatReadability(HMH_CANON_CRYPTO_BRO),

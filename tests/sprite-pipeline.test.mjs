@@ -7,6 +7,7 @@ import {
   resolveState,
   frameIndexFor,
   SpriteActor,
+  collectSpriteManifestFrameSources,
   validateSpriteManifest,
 } from '../apps/portal/src/sprite-pipeline.mjs';
 
@@ -100,6 +101,25 @@ test('SpriteActor.hasState honors aliases', () => {
   const actor = new SpriteActor(demoManifest(), fakeLoader);
   assert.equal(actor.hasState('walk'), true);
   assert.equal(actor.hasState('idle'), true);
+});
+
+test('SpriteActor frameSources and prewarm enumerate unique manifest frames', () => {
+  const loaded = [];
+  const actor = new SpriteActor(demoManifest(), (src) => {
+    loaded.push(src);
+    return { __src: src };
+  });
+  assert.deepEqual(actor.frameSources({ states: ['idle'] }).sort(), ['idle-e-0.png', 'idle-s-0.png', 'idle-s-1.png'].sort());
+  const count = actor.prewarm({ states: ['idle'] });
+  assert.equal(count, 3);
+  assert.deepEqual(loaded.sort(), ['idle-e-0.png', 'idle-s-0.png', 'idle-s-1.png'].sort());
+});
+
+test('collectSpriteManifestFrameSources supports manifest-level preload audits', () => {
+  assert.deepEqual(
+    collectSpriteManifestFrameSources(demoManifest(), { states: ['shoot'] }),
+    ['shoot-s-0.png', 'shoot-s-1.png'],
+  );
 });
 
 test('validateSpriteManifest accepts a good manifest and rejects bad ones', () => {

@@ -4,7 +4,7 @@ import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES, canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actors.mjs';
-import { buildActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+import { buildActorRegistry, prewarmActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
@@ -310,6 +310,8 @@ const HMH_ACTOR_REGISTRY = buildActorRegistry({
   'bonus-gas-fee-wisp': HMH_BONUS_GAS_FEE_WISP,
   'bonus-whale-dumper': HMH_BONUS_WHALE_DUMPER,
 }, loadImageAsset);
+const HMH_PREWARMED_HERO_FRAME_COUNT = prewarmActorRegistry(HMH_ACTOR_REGISTRY, CANONICAL_ACTOR_ROLES.heroes);
+if (DEBUG_ARCADE_RUNTIME) console.info('[HMH] prewarmed hero sprite frames', HMH_PREWARMED_HERO_FRAME_COUNT);
 
 // Map a runtime enemy/boss entity to its registry actor id. Canonical art first.
 function registryActorIdFor(entity) {

@@ -7,6 +7,9 @@ import {
   manifestEnemyArtKeyForRuntimeEntity,
 } from '../apps/portal/src/canonical-actors.mjs';
 
+const WO93_STATES = ['idle', 'walk', 'run', 'shoot-pistol', 'shoot-shotgun', 'shoot-mg', 'melee', 'throw-grenade', 'hurt', 'death', 'dash', 'victory'];
+const WO93_DIRECTIONS = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west'];
+
 test('canonicalActorIdForRuntimeEntity returns null for enemies with their own PixelLab sprite kits', () => {
   // These enemies now have their own harvested animation kits on PixelLab,
   // so canonicalActorIdForRuntimeEntity returns null to let the renderer
@@ -47,4 +50,22 @@ test('manifestEnemyArtKeyForRuntimeEntity returns null for enemies with own kits
   assert.equal(manifestEnemyArtKeyForRuntimeEntity(coyote), null);
   assert.equal(manifestEnemyArtKeyForRuntimeEntity(scorpion), null);
   assert.equal(manifestEnemyArtKeyForRuntimeEntity(claim), null);
+});
+
+test('WO-94 canonical hero actors use complete WO-93 matrix manifests with anchors and prewarm atlas metadata', () => {
+  for (const hero of ['lester', 'lilly']) {
+    const manifest = CANONICAL_ACTOR_MANIFESTS[hero];
+    assert.equal(manifest.id, `${hero}-wo93-hero-matrix`);
+    assert.deepEqual(Object.keys(manifest.states), WO93_STATES);
+    assert.deepEqual(manifest.directions, WO93_DIRECTIONS);
+    assert.equal(manifest.atlas?.prewarm, true);
+    assert.equal(manifest.atlas?.mode, 'loose-png-frames');
+    assert.equal(Boolean(manifest.eventAnchors?.south?.muzzle), true, `${hero} needs south muzzle anchor`);
+    assert.equal(Boolean(manifest.eventAnchors?.east?.muzzle), true, `${hero} needs east muzzle anchor`);
+    assert.equal(Boolean(manifest.eventAnchors?.west?.muzzle), true, `${hero} needs west muzzle anchor`);
+    assert.equal(Boolean(manifest.stateEvents?.['shoot-mg']?.some((event) => event.event === 'muzzle-flash-auto')), true);
+    assert.equal(manifest.states['shoot-mg'].frames.east.length > 0, true);
+    assert.equal(manifest.states['throw-grenade'].frames['south-west'].length > 0, true);
+    assert.equal(manifest.states.dash.frames.north.length > 0, true);
+  }
 });
