@@ -1,0 +1,49 @@
+{
+  "id": "wo104-106-world-kit-proof-v1",
+  "source": "runtime prefab stamps + generated world-kit manifest",
+  "views": [
+    {
+      "stampId": "wo104-forest-canopy-cliff-checkpoint",
+      "title": "Forest canopy + cliff checkpoint",
+      "files": [
+        "forest-canopy-sway.png",
+        "mossy-cliff-wall.png"
+      ]
+    },
+    {
+      "stampId": "wo104-lakeside-firefly-bank-checkpoint",
+      "title": "Lakeside firefly bank",
+      "files": [
+        "reed-bank-fireflies.png",
+        "park-tree-bench-cluster.png"
+      ]
+    },
+    {
+      "stampId": "wo105-bank-plaza-arena-checkpoint",
+      "title": "Bank plaza arena",
+      "files": [
+        "bank-plaza-kiosk.png",
+        "cracked-road-barricade.png",
+        "container-cover-line.png"
+      ]
+    },
+    {
+      "stampId": "wo105-container-extraction-yard-checkpoint",
+      "title": "Container extraction yard",
+      "files": [
+        "container-cover-line.png",
+        "cracked-road-barricade.png"
+      ]
+    },
+    {
+      "stampId": "wo106-roadside-vehicle-micro-scenes",
+      "title": "Vehicle micro-scenes",
+      "files": [
+        "abandoned-pickup.png",
+        "delivery-van-cache.png",
+        "critter-dust-burrow.png"
+      ]
+    }
+  ],
+  "assetCount": 10
+}

@@ -21,8 +21,8 @@ test('roster coverage report inventories every actor and flags known Wave 3 gaps
   assert.ok(report.summary.actorCount >= 37, `expected current animated roster actor count, got ${report.summary.actorCount}`);
   assert.equal(report.actors.lester.states.dash.status, 'missing');
   assert.equal(report.actors['gas-beast-tank'].summary.status, 'zero-animation');
-  assert.equal(report.actors['fud-goblin'].states['attack-tell'].directionCount, 7);
-  assert.equal(report.actors['fud-goblin'].states['attack-tell'].status, 'partial-direction');
+  assert.equal(report.actors['fud-goblin'].states['attack-tell'].directionCount, 8);
+  assert.equal(report.actors['fud-goblin'].states['attack-tell'].status, 'complete');
 });
 
 test('Level 1 ship-scope rows are derived from runtime catalog and boss proxy data', () => {

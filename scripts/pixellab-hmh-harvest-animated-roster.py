@@ -78,8 +78,12 @@ ROSTER = {
     "influencer-camera-drone": ("fb7ee889-51e7-4eb2-a897-2aeaef6e20dc", "enemy"),
     "nft-valet": ("eddc9f33-7ebb-42c2-8436-9f3e043612f3", "enemy"),
     "stablecoin-socialite": ("75206fcf-6c8c-4230-8283-fab97d19a8c9", "enemy"),
-    "coyote-pack-runner": ("92611a02-7a89-4c99-a6c5-43a58019a2a4", "enemy"),
-    "wild-boar": ("400567e7-710b-4940-bf41-460128772fc4", "enemy"),
+    # AAA pass: prefer the newer high-detail animal recreations that already have
+    # dozens of animation entries on the PixelLab account instead of the older
+    # static/low-detail turnaround IDs. These are harvest-only swaps; no secret
+    # material is persisted and no generation is spent by this change.
+    "coyote-pack-runner": ("f4b8d117-c9f8-4d5d-87b7-9241d5b6b167", "enemy"),
+    "wild-boar": ("57c9c13a-1a25-4142-b614-88a19dca50b6", "enemy"),
     "buzzard": ("bf8c1cb2-a133-47e3-b060-969ab6f6cb68", "enemy"),
     "rattlesnake": ("76702029-90eb-4ce9-b113-f6d9eb8721b0", "enemy"),
     "scorpion-ambusher": ("ca55115c-5744-4af0-97d8-64f44d004a8c", "enemy"),

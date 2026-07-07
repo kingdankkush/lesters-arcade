@@ -5,6 +5,10 @@ import {
 } from './hmh-level-one-curated-world-contract.mjs';
 import { curatedLevelKitAssetByKey } from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
 import { authoredStampAssetByKey } from '../assets/generated/hmh-level-one-authored-stamp-art/hmh-level-one-authored-stamp-art-manifest.mjs';
+import {
+  HMH_WO104_106_WORLD_KIT,
+  wo104106WorldKitAssetByKey,
+} from '../assets/generated/hmh-wo104-106-world-kit/hmh-wo104-106-world-kit-manifest.mjs';
 
 const ROLE_FOR_USE = Object.freeze({
   landmark: 'landmark',
@@ -17,6 +21,11 @@ const ROLE_FOR_USE = Object.freeze({
   enemy: 'smallprop',
   hero: 'smallprop',
   vfx: 'smallprop',
+  canopy: 'canopy-occluder',
+  ambient: 'ambient-hazard',
+  vehicle: 'vehicle',
+  plaza: 'landmark',
+  container: 'wall',
 });
 
 const SOLID_FOR_USE = Object.freeze({
@@ -30,6 +39,11 @@ const SOLID_FOR_USE = Object.freeze({
   enemy: false,
   hero: false,
   vfx: false,
+  canopy: true,
+  ambient: false,
+  vehicle: false,
+  plaza: true,
+  container: true,
 });
 
 export const WO102_MEGA_PROP_ASSETS = Object.freeze([
@@ -82,8 +96,18 @@ export const WO102_MEGA_PROP_ASSETS = Object.freeze([
 
 const WO102_MEGA_PROP_ASSETS_BY_KEY = new Map(WO102_MEGA_PROP_ASSETS.map((asset) => [asset.id, asset]));
 
+export const WO104_106_WORLD_KIT_STAMPS = Object.freeze({
+  assetPackId: HMH_WO104_106_WORLD_KIT.id,
+  acceptance: 'WO-104/105/106 original repo-generated transparent pixel-art assets are wired through exact-key prefab stamps; no random scatter or unresolved placeholders.',
+  requiredKeys: Object.freeze(HMH_WO104_106_WORLD_KIT.assets.map((asset) => asset.key)),
+});
+
 export function wo102MegaPropAssetByKey(assetKey) {
   return WO102_MEGA_PROP_ASSETS_BY_KEY.get(assetKey) ?? null;
+}
+
+export function wo104106WorldKitAssetSrc(assetKey) {
+  return wo104106WorldKitAssetByKey(assetKey)?.src ?? null;
 }
 
 function routeTile(id, x, y, role = 'road') {
@@ -225,6 +249,36 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/prop/mailbox', use: 'dressing', dx: -2, dy: 3, solid: false },
     { assetKey: 'level-1/prop/oval-rock1-grass-shadow', use: 'boundary', dx: -5, dy: 2, solid: true },
   ], { label: 'Farmstead fence pocket', routeBeat: 'pressure', anchor: { x: 82, y: 6 }, routeRead: 'farm edge reads as a lived-in loop rather than blank grass' }),
+  prefabStamp('wo104-forest-canopy-cliff-checkpoint', 'dead-forest-loop', [
+    { assetKey: 'wo104-world/forest-canopy-sway', use: 'canopy', dx: -4, dy: -4, solid: true, notes: 'WO-104: swaying canopy occluder frames the dry forest loop without random scatter' },
+    { assetKey: 'wo104-world/mossy-cliff-wall', use: 'boundary', dx: 5, dy: -5, solid: true, notes: 'WO-104: mossy cliff wall turns the forest/cave edge into an authored blocker while staying outside the immediate fight lane' },
+    { assetKey: 'level-1/prop/orange-mushrooms1-ground-shadow', use: 'dressing', dx: -1, dy: 1, solid: false },
+    { assetKey: 'level-1/flora/broken-tree2', use: 'boundary', dx: 5, dy: 2, solid: true },
+  ], { label: 'WO-104 forest canopy/cliff checkpoint', routeBeat: 'forest', anchor: { x: 55, y: 12 }, routeRead: 'canopy, cliff, and mushroom accents make the forest pocket read authored before Checkpoint 1' }),
+  prefabStamp('wo104-lakeside-firefly-bank-checkpoint', 'country-road', [
+    { assetKey: 'wo104-world/reed-bank-fireflies', use: 'ambient', dx: -4, dy: 1, solid: false, notes: 'WO-104: ambient firefly/reed-bank prop adds life to the lakeside edge' },
+    { assetKey: 'level-1/water/water-02', use: 'water', dx: -1, dy: 2, solid: false },
+    { assetKey: 'level-1/water/water-03', use: 'water', dx: 2, dy: 2, solid: false },
+    { assetKey: 'wo104-world/park-tree-bench-cluster', use: 'landmark', dx: 7, dy: -5, solid: true, notes: 'WO-104: small park/bench cluster differentiates the lakeside rest pocket while staying outside the combat lane' },
+  ], { label: 'WO-104 lakeside firefly bank', routeBeat: 'chokepoint', anchor: { x: 84, y: 7 }, routeRead: 'water edge now has reeds, fireflies, and a park read instead of bare shoreline' }),
+  prefabStamp('wo105-bank-plaza-arena-checkpoint', 'ghost-town', [
+    { assetKey: 'wo105-world/bank-plaza-kiosk', use: 'plaza', dx: 0, dy: -8, solid: true, notes: 'WO-105: bank/ATM kiosk anchors the plaza arena as a concrete place while staying above the combat lane' },
+    { assetKey: 'wo105-world/cracked-road-barricade', use: 'route', dx: -4, dy: 1, solid: false, notes: 'WO-105: cracked asphalt road apron makes the street transition sensible' },
+    { assetKey: 'wo105-world/container-cover-line', use: 'container', dx: 7, dy: 3, solid: true, notes: 'WO-105: container cover creates a deliberate arena flank blocker outside the player lane' },
+    { assetKey: 'level-1/prop/street-lamp', use: 'dressing', dx: -2, dy: -3, solid: false },
+  ], { label: 'WO-105 bank plaza arena', routeBeat: 'arena', anchor: { x: 48, y: 6 }, routeRead: 'bank kiosk, road apron, and container cover define a readable town arena' }),
+  prefabStamp('wo105-container-extraction-yard-checkpoint', 'inner-city-threshold', [
+    { assetKey: 'wo105-world/container-cover-line', use: 'container', dx: -6, dy: 4, solid: true, notes: 'WO-105: container wall stages the extraction-yard arena edge without blocking the center lane' },
+    { assetKey: 'wo105-world/cracked-road-barricade', use: 'route', dx: 2, dy: 1, solid: false, notes: 'WO-105: road barricade points the lane toward the extraction pad' },
+    { assetKey: 'level1-authored-stamp/boss-yard-warning-pylon', use: 'dressing', dx: 4, dy: -2, solid: false },
+    { assetKey: 'level-1/building/industrial-warehouse-facade', use: 'landmark', dx: -6, dy: -4, solid: true },
+  ], { label: 'WO-105 container extraction yard', routeBeat: 'boss', anchor: { x: 93, y: 8 }, routeRead: 'warehouse silhouette, containers, and cracked road describe the boss/extraction arena' }),
+  prefabStamp('wo106-roadside-vehicle-micro-scenes', 'residential-edge', [
+    { assetKey: 'wo106-world/abandoned-pickup', use: 'vehicle', dx: -4, dy: 1, solid: false, notes: 'WO-106: abandoned pickup adds roadside life without becoming a hard blocker' },
+    { assetKey: 'wo106-world/delivery-van-cache', use: 'vehicle', dx: 3, dy: 2, solid: false, notes: 'WO-106: delivery van/cache micro-scene reinforces loot-route storytelling' },
+    { assetKey: 'wo106-world/critter-dust-burrow', use: 'ambient', dx: 0, dy: -2, solid: false, notes: 'WO-106: burrow/dust puffs telegraph critter life before flee AI ships' },
+    { assetKey: 'level-1/prop/bus-stop-sign', use: 'dressing', dx: -1, dy: 3, solid: false },
+  ], { label: 'WO-106 roadside vehicle micro-scenes', routeBeat: 'micro-scene', anchor: { x: 74, y: 8 }, routeRead: 'vehicles, cache, and critter burrow make the route feel inhabited' }),
   prefabStamp('innercity-gate-barricade', 'inner-city-threshold', [
     { assetKey: 'level-1/building/industrial-warehouse-facade', use: 'landmark', dx: -5, dy: -4, solid: true },
     { assetKey: 'level-1/building/innercity-billboard-frame', use: 'landmark', dx: 4, dy: -4, solid: true },
@@ -286,6 +340,7 @@ export function levelOneCuratedAssetSrc(assetKey) {
   return curatedLevelKitAssetByKey(assetKey)?.src
     ?? levelOneAuthoredStampAssetSrc(assetKey)
     ?? wo102MegaPropAssetByKey(assetKey)?.src
+    ?? wo104106WorldKitAssetSrc(assetKey)
     ?? null;
 }
 
@@ -320,24 +375,31 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
   // renderer. Drawing them as props is what made the corrected runtime look like
   // repeated grey block clutter instead of a clean authored route.
   if (use === 'terrain') return null;
-  const record = curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey) ?? wo102MegaPropAssetByKey(assetKey);
+  const record = curatedLevelKitAssetByKey(assetKey)
+    ?? authoredStampAssetByKey(assetKey)
+    ?? wo102MegaPropAssetByKey(assetKey)
+    ?? wo104106WorldKitAssetByKey(assetKey);
   if (!record) return null;
   const generatedStampArt = Boolean(authoredStampAssetByKey(assetKey));
   const generatedMegaPropArt = Boolean(wo102MegaPropAssetByKey(assetKey));
+  const generatedWorldKitArt = Boolean(wo104106WorldKitAssetByKey(assetKey));
   const sceneRole = ROLE_FOR_USE[use] ?? 'smallprop';
   return Object.freeze({
     id,
     assetKey,
     curatedAssetKey: assetKey,
     imageSrc: record.src,
-    curated: !generatedStampArt && !generatedMegaPropArt,
+    curated: !generatedStampArt && !generatedMegaPropArt && !generatedWorldKitArt,
     generatedStampArt,
     generatedMegaPropArt,
+    generatedWorldKitArt,
     sourcePolicy: generatedMegaPropArt
       ? 'repo-generated-wo102-megaprop-art'
-      : generatedStampArt
-        ? 'repo-generated-authored-stamp-art'
-        : 'Justin-curated-level-kit-only',
+      : generatedWorldKitArt
+        ? 'repo-generated-wo104-106-world-kit-art'
+        : generatedStampArt
+          ? 'repo-generated-authored-stamp-art'
+          : 'Justin-curated-level-kit-only',
     role: sceneRole,
     sceneRole,
     use,

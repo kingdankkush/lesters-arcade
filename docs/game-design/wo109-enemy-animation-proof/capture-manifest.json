@@ -1,0 +1,204 @@
+{
+  "id": "wo109-clean-enemy-animation-proof-v1",
+  "actors": [
+    "buzzard",
+    "fud-goblin",
+    "rattlesnake"
+  ],
+  "animations": [
+    "idle",
+    "walk",
+    "attack-tell",
+    "attack",
+    "hit",
+    "death"
+  ],
+  "directions": [
+    "south",
+    "east",
+    "north",
+    "west"
+  ],
+  "samples": [
+    {
+      "actor": "buzzard",
+      "animation": "idle",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/idle/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/idle/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/idle/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/idle/west/00.png"
+      ]
+    },
+    {
+      "actor": "buzzard",
+      "animation": "walk",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/walk/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/walk/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/walk/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/walk/west/00.png"
+      ]
+    },
+    {
+      "actor": "buzzard",
+      "animation": "attack-tell",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack-tell/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack-tell/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack-tell/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack-tell/west/00.png"
+      ]
+    },
+    {
+      "actor": "buzzard",
+      "animation": "attack",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/attack/west/00.png"
+      ]
+    },
+    {
+      "actor": "buzzard",
+      "animation": "hit",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/hit/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/hit/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/hit/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/hit/west/00.png"
+      ]
+    },
+    {
+      "actor": "buzzard",
+      "animation": "death",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/death/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/death/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/death/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/buzzard/death/west/00.png"
+      ]
+    },
+    {
+      "actor": "fud-goblin",
+      "animation": "idle",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/idle/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/idle/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/idle/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/idle/west/00.png"
+      ]
+    },
+    {
+      "actor": "fud-goblin",
+      "animation": "walk",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/walk/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/walk/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/walk/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/walk/west/00.png"
+      ]
+    },
+    {
+      "actor": "fud-goblin",
+      "animation": "attack-tell",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack-tell/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack-tell/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack-tell/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack-tell/west/00.png"
+      ]
+    },
+    {
+      "actor": "fud-goblin",
+      "animation": "attack",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/attack/west/00.png"
+      ]
+    },
+    {
+      "actor": "fud-goblin",
+      "animation": "hit",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/hit/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/hit/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/hit/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/hit/west/00.png"
+      ]
+    },
+    {
+      "actor": "fud-goblin",
+      "animation": "death",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/death/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/death/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/death/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/fud-goblin/death/west/00.png"
+      ]
+    },
+    {
+      "actor": "rattlesnake",
+      "animation": "idle",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/idle/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/idle/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/idle/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/idle/west/00.png"
+      ]
+    },
+    {
+      "actor": "rattlesnake",
+      "animation": "walk",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/walk/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/walk/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/walk/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/walk/west/00.png"
+      ]
+    },
+    {
+      "actor": "rattlesnake",
+      "animation": "attack-tell",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack-tell/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack-tell/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack-tell/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack-tell/west/00.png"
+      ]
+    },
+    {
+      "actor": "rattlesnake",
+      "animation": "attack",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/attack/west/00.png"
+      ]
+    },
+    {
+      "actor": "rattlesnake",
+      "animation": "hit",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/hit/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/hit/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/hit/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/hit/west/00.png"
+      ]
+    },
+    {
+      "actor": "rattlesnake",
+      "animation": "death",
+      "sampleFrames": [
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/death/south/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/death/east/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/death/north/00.png",
+        "apps/portal/assets/generated/hmh-animated-roster/rattlesnake/death/west/00.png"
+      ]
+    }
+  ]
+}

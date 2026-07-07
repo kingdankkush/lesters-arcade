@@ -10189,6 +10189,7 @@ const SCENE_ROLE_TO_STYLE = Object.freeze({
   cactus: 'tree', pole: 'smallprop', post: 'smallprop',
   gate: 'smallprop', water: 'smallprop', log: 'smallprop',
   edge: 'smallprop', road: 'smallprop', bush: 'smallprop', barn: 'building', crop: 'smallprop',
+  vehicle: 'bigprop', 'canopy-occluder': 'tree', 'ambient-hazard': 'smallprop', container: 'bigprop',
 });
 
 function currentObstacles() {
@@ -10246,6 +10247,10 @@ function currentObstacles() {
     prefabStampId: o.prefabStampId ?? null,
     routeBeat: o.routeBeat ?? null,
     exactAssetKey: o.exactAssetKey ?? o.assetKey,
+    footprintTiles: o.footprintTiles ?? null,
+    collisionPolygons: o.collisionPolygons ?? null,
+    overSlice: o.overSlice ?? null,
+    generatedWorldKitArt: o.generatedWorldKitArt === true,
   }));
   const encounterSceneObjects = combat.activePoiEncounterVisualPlan
     ? buildEncounterSceneObjects({

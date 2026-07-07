@@ -12,14 +12,19 @@ import {
   levelOneAuthoredStampAssetSrc,
   levelOneOpeningGroundRoleForTile,
   WO102_MEGA_PROP_ASSETS,
+  WO104_106_WORLD_KIT_STAMPS,
   wo102MegaPropAssetByKey,
+  wo104106WorldKitAssetSrc,
 } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 import { curatedLevelKitAssetByKey } from '../apps/portal/assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
 import { authoredStampAssetByKey, HMH_LEVEL_ONE_AUTHORED_STAMP_ART } from '../apps/portal/assets/generated/hmh-level-one-authored-stamp-art/hmh-level-one-authored-stamp-art-manifest.mjs';
 import { HMH_LEVEL_ONE_SPAWN_GATE_REDRESS } from '../apps/portal/src/hmh-level-one-curated-world-contract.mjs';
 
 function levelOneVisibleAssetByKey(assetKey) {
-  return curatedLevelKitAssetByKey(assetKey) ?? authoredStampAssetByKey(assetKey) ?? wo102MegaPropAssetByKey(assetKey);
+  return curatedLevelKitAssetByKey(assetKey)
+    ?? authoredStampAssetByKey(assetKey)
+    ?? wo102MegaPropAssetByKey(assetKey)
+    ?? (wo104106WorldKitAssetSrc(assetKey) ? { src: wo104106WorldKitAssetSrc(assetKey) } : null);
 }
 
 function repoPath(relativePath) {
@@ -149,6 +154,36 @@ test('generated Level 1 authored stamp art resolves through the live prefab stam
     assert.equal(object.generatedStampArt, true);
     assert.equal(object.sourcePolicy, 'repo-generated-authored-stamp-art');
     assert.equal(object.authoredPrefabStamp, true);
+  }
+});
+
+test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehicle, and micro-scene stamps', () => {
+  assert.equal(WO104_106_WORLD_KIT_STAMPS.assetPackId, 'hmh-wo104-106-world-kit-v1');
+  assert.equal(WO104_106_WORLD_KIT_STAMPS.requiredKeys.length, 10);
+  for (const key of WO104_106_WORLD_KIT_STAMPS.requiredKeys) {
+    const src = wo104106WorldKitAssetSrc(key);
+    assert.match(src, /hmh-wo104-106-world-kit\//, `${key} should resolve through the WO-104/105/106 world-kit manifest`);
+    assert.equal(levelOneCuratedAssetSrc(key), src, `${key} should route through the combined visible-runtime resolver`);
+    assert.equal(existsSync(repoPath(src.replace('./', 'apps/portal/'))), true, `${key} PNG should exist on disk`);
+  }
+
+  const checkpointViews = [
+    { playerX: 55, playerY: 12, stampId: 'wo104-forest-canopy-cliff-checkpoint', keys: ['wo104-world/forest-canopy-sway', 'wo104-world/mossy-cliff-wall'] },
+    { playerX: 84, playerY: 7, stampId: 'wo104-lakeside-firefly-bank-checkpoint', keys: ['wo104-world/reed-bank-fireflies', 'wo104-world/park-tree-bench-cluster'] },
+    { playerX: 48, playerY: 6, stampId: 'wo105-bank-plaza-arena-checkpoint', keys: ['wo105-world/bank-plaza-kiosk', 'wo105-world/container-cover-line'] },
+    { playerX: 93, playerY: 8, stampId: 'wo105-container-extraction-yard-checkpoint', keys: ['wo105-world/container-cover-line', 'wo105-world/cracked-road-barricade'] },
+    { playerX: 74, playerY: 8, stampId: 'wo106-roadside-vehicle-micro-scenes', keys: ['wo106-world/abandoned-pickup', 'wo106-world/delivery-van-cache', 'wo106-world/critter-dust-burrow'] },
+  ];
+  for (const view of checkpointViews) {
+    const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 });
+    for (const key of view.keys) {
+      const object = objects.find((item) => item.assetKey === key);
+      assert.ok(object, `${key} should be visible near ${view.stampId}`);
+      assert.equal(object.generatedWorldKitArt, true, `${key} should be tagged as generated world-kit art`);
+      assert.equal(object.sourcePolicy, 'repo-generated-wo104-106-world-kit-art');
+      assert.equal(object.authoredPrefabStamp, true);
+      assert.equal(object.prefabStampId, view.stampId);
+    }
   }
 });
 

@@ -148,5 +148,285 @@
       "job_ids": [],
       "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
     }
+  },
+  "fud-goblin": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: d0470066-7d2b-4195-bcb6-9e7c6f4638d8\nanimation: v3 custom (standing idle menacingly, ready to attack)\ndirections: south, south-east, east, north-east"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: d0470066-7d2b-4195-bcb6-9e7c6f4638d8\nanimation: v3 custom (walking forward toward the player)\ndirections: south, south-east, east, north-east, north,"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    }
+  },
+  "gas-fee-wisp": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    }
+  },
+  "crypto-bro-rusher": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 7 available (13/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    }
+  },
+  "trench-degen": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: 9e591394-caf5-498c-886b-1161e1a64043\nanimation: v3 custom (standing idle menacingly, ready to attack)\ndirections: south, south-east, east, north-east"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    }
+  },
+  "whale-dumper-boss": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "character: 6b17f44f-4c87-48a4-8df3-d8f15a40d2c0\nanimation: v3 custom (standing idle menacingly, powerful, looming)\ndirections: south, south-east, east, north-ea"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack-ranged": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack-slam": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 1 available (19/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 2 available (18/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    }
+  },
+  "chain-reaper-boss": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 4 available (16/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 5 available (15/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack-ranged": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: need 8 job slots but only 6 available (14/20 used)\n\nhint: wait for jobs to finish (~30-60s each), then retry"
+    },
+    "attack-slam": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    }
+  },
+  "evil-banker-ranged": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    }
+  },
+  "gas-beast-tank": {
+    "idle": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "walk": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "attack": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "hurt": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    },
+    "death": {
+      "status": "queued",
+      "directions": 8,
+      "job_ids": [],
+      "raw": "error: 404: Character rotation image not found for direction: south"
+    }
   }
 }
