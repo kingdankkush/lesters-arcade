@@ -5150,6 +5150,8 @@ function cloneProgress(progress) {
 
 export function buildPlayerArcadeSnapshot(state, wallet) {
   const profile = ensureProfile(state, wallet);
+  ensureAllGameProgress(profile);
+  syncConfiguredCharacterUnlocks(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
   const identity = normalizeProfileIdentity({ wallet: profile.wallet, localProfile: profile });
   const progress = cloneProgress(profile.progress);
   const highScores = [];

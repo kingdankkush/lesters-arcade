@@ -1809,6 +1809,18 @@ function renderOfficialCharacterSelect() {
     const statBox = el('div', { className: 'hero-stats' });
     renderHeroStatBars(statBox, hero.stats);
     info.append(statBox);
+    if (hero.locked && hero.unlockProgress) {
+      const progress = hero.unlockProgress;
+      const progressWrap = el('div', { className: 'hero-unlock-progress' });
+      const label = el('span', { className: 'hero-unlock-progress-label', textContent: progress.meterText });
+      const bar = el('div', { className: 'hero-unlock-progress-track' });
+      const fill = el('div', { className: 'hero-unlock-progress-fill' });
+      fill.style.width = `${Math.max(0, Math.min(100, progress.percent))}%`;
+      bar.append(fill);
+      const note = el('span', { className: 'hero-unlock-progress-note', textContent: progress.note });
+      progressWrap.append(label, bar, note);
+      info.append(progressWrap);
+    }
     appendText(info, 'span', hero.cta, 'hero-cta');
     card.append(info);
     if (!hero.locked) {

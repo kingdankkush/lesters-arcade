@@ -630,6 +630,61 @@ export const LEVEL_1_AUTHORED_ROUTE = Object.freeze([
   routeNode('ltc-extraction-pad', 'inner-city-threshold', 98, 5, 'Litecoin Extraction Pad', 'post-boss cyan/gold flare path that cleanly hands the player to extraction or the next level', { assetKey: 'level-final-setpiece/cohesive-extraction-flare-road', beat: 'extract' }),
 ]);
 
+function macroBiome(id, label, grid, routeBeats, connectors, pois) {
+  return Object.freeze({
+    id,
+    label,
+    grid: Object.freeze(grid),
+    routeBeats: Object.freeze(routeBeats),
+    connectors: Object.freeze(connectors),
+    pois: Object.freeze(pois.map((poi) => Object.freeze(poi))),
+  });
+}
+
+export const LEVEL_1_WO96_MACRO_MAP_PLAN = Object.freeze({
+  id: 'wo96-level1-six-biome-macro-map-v1',
+  levelId: 'level-1-crypto-wasteland',
+  status: 'approval-required-before-asset-generation',
+  approvalGate: 'Justin must approve this macro map/overlay before WO-97 world asset generation or runtime map replacement.',
+  overlayDocument: 'docs/game-design/hmh-wo96-level1-macro-map.md',
+  acceptanceSeed: 1337,
+  dimensions: Object.freeze({ columns: 12, rows: 7, tileScale: 'macro-cell' }),
+  criticalPath: Object.freeze(['neon-city-core', 'industrial-yard', 'old-canal-riverfront', 'lakeside-park-old-growth', 'farmstead-outskirts', 'extraction-plaza']),
+  connectorTypes: Object.freeze(['road', 'trail', 'water']),
+  biomes: Object.freeze([
+    macroBiome('neon-city-core', 'Neon City Core', { x: 0, y: 2, w: 2, h: 3 }, ['spawn', 'arena'], ['road:industrial-yard', 'water:old-canal-riverfront'], [
+      { id: 'ltc-bus-stop', role: 'spawn', approval: 'plan-only' },
+      { id: 'neon-fountain-sign', role: 'animated-poi', approval: 'plan-only' },
+      { id: 'market-alley-cache', role: 'cache', approval: 'plan-only' },
+    ]),
+    macroBiome('industrial-yard', 'Industrial Yard', { x: 2, y: 1, w: 3, h: 4 }, ['arena', 'pressure'], ['road:neon-city-core', 'road:old-canal-riverfront', 'trail:farmstead-outskirts'], [
+      { id: 'dock-crane-yard', role: 'animated-poi', approval: 'plan-only' },
+      { id: 'container-maze', role: 'cover-arena', approval: 'plan-only' },
+      { id: 'breaker-substation', role: 'hazard', approval: 'plan-only' },
+    ]),
+    macroBiome('old-canal-riverfront', 'Old Canal & Riverfront', { x: 4, y: 0, w: 3, h: 3 }, ['chokepoint'], ['water:neon-city-core', 'road:industrial-yard', 'water:lakeside-park-old-growth'], [
+      { id: 'lock-bridge', role: 'bridge-choke', approval: 'plan-only' },
+      { id: 'boathouse-dock', role: 'water-poi', approval: 'plan-only' },
+      { id: 'canal-sluice-gate', role: 'animated-poi', approval: 'plan-only' },
+    ]),
+    macroBiome('lakeside-park-old-growth', 'Lakeside Park & Old-Growth Forest', { x: 6, y: 1, w: 3, h: 4 }, ['loop', 'breather'], ['water:old-canal-riverfront', 'trail:farmstead-outskirts', 'trail:extraction-plaza'], [
+      { id: 'lookout-tower', role: 'animated-poi', approval: 'plan-only' },
+      { id: 'ranger-cabin', role: 'safe-cache', approval: 'plan-only' },
+      { id: 'moonlit-lake-band', role: 'water-read', approval: 'plan-only' },
+    ]),
+    macroBiome('farmstead-outskirts', 'Farmstead Outskirts', { x: 7, y: 4, w: 3, h: 2 }, ['loop', 'pressure'], ['trail:industrial-yard', 'trail:lakeside-park-old-growth', 'road:extraction-plaza'], [
+      { id: 'windmill-field', role: 'animated-poi', approval: 'plan-only' },
+      { id: 'barn-silo-loop', role: 'risk-reward-loop', approval: 'plan-only' },
+      { id: 'irrigation-ditch', role: 'water-obstacle', approval: 'plan-only' },
+    ]),
+    macroBiome('extraction-plaza', 'Extraction Plaza', { x: 10, y: 2, w: 2, h: 3 }, ['boss', 'extract'], ['road:farmstead-outskirts', 'trail:lakeside-park-old-growth'], [
+      { id: 'extraction-arch', role: 'animated-poi', approval: 'plan-only' },
+      { id: 'boss-gate-roundabout', role: 'boss-arena', approval: 'plan-only' },
+      { id: 'ltc-beacon-pad', role: 'extract', approval: 'plan-only' },
+    ]),
+  ]),
+});
+
 export const LEVEL_2_AUTHORED_ROUTE = Object.freeze([
   routeNode('tram-stop', 'outer-boulevard', 4, 6, 'Outer Boulevard Tram Stop', 're-enter from Level 1 with clear street-grid orientation', { beat: 'spawn' }),
   routeNode('service-yard-cut', 'outer-boulevard', 14, 5, 'Service Yard Cut-through', 'teach alleys and flanking through shop clutter', { assetKey: 'street/street-lamp', beat: 'loop' }),

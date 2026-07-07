@@ -1,36 +1,39 @@
 export const HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG = Object.freeze({
-  rosterDecisionStatus: 'resolved-commando-valkyrie-starters-lester-lilly-unlockables',
+  rosterDecisionStatus: 'resolved-commando-valkyrie-starters-lester-lilly-ranked-unlockables',
   directionMode: '8-direction-backbone',
   starterLegacyId: 'lit-commando',
   startersLegacyIds: Object.freeze(['lit-commando', 'lit-valkyrie']),
   starterCharacterIds: Object.freeze(['lit-commando', 'lit-valkyrie']),
+  // Legacy fields stay present for older saved profiles/tests. WO-95 no longer
+  // grants fresh Lester unlocks for Level 1 clears, but existing players who
+  // earned `getaway-clear` keep Lester through `legacyMigrationAchievementId`.
   levelOneUnlockLegacyId: 'lester-original',
   levelOneUnlockAchievementId: 'getaway-clear',
   levelOneUnlockCharacterId: 'lester-original',
   levelOneUnlockTitle: 'Lester',
-  levelOneUnlockDescription: 'Unlock Lester by completing Level 1: The Crypto Wasteland.',
+  levelOneUnlockDescription: 'Legacy migration only: existing Level 1 clear profiles keep Lester.',
   tenRankedUnlockCharacterId: 'lilly',
   tenRankedUnlockLegacyId: 'lilly',
   tenRankedUnlockAchievementId: 'ten-paid-runs',
   tenRankedUnlockTitle: 'Lilly',
-  tenRankedUnlockDescription: 'Unlock Lilly after completing 10 ranked Hard Money Heroes matches.',
+  tenRankedUnlockDescription: 'Legacy achievement only; WO-95 unlocks Lilly after 20 settled Ranked matches.',
   unlockableCharacters: Object.freeze([
     Object.freeze({
       id: 'lester-original',
       legacyId: 'lester-original',
       title: 'Lester',
-      achievementId: 'getaway-clear',
-      cta: 'CLEAR LEVEL 1 TO UNLOCK',
-      description: 'Unlock Lester by completing Level 1: The Crypto Wasteland.',
+      gate: Object.freeze({ type: 'ranked-matches-played', count: 10 }),
+      legacyMigrationAchievementId: 'getaway-clear',
+      cta: 'LESTER — The original. Survive 10 Ranked runs to recruit him.',
+      description: 'Unlock Lester after 10 Ranked Hard Money Heroes matches. Free mode does not count. Existing Level 1 clear profiles keep him.',
     }),
     Object.freeze({
       id: 'lilly',
       legacyId: 'lilly',
       title: 'Lilly',
-      achievementId: 'ten-paid-runs',
-      paidRunsRequired: 10,
-      cta: 'PLAY 10 RANKED MATCHES TO UNLOCK',
-      description: 'Unlock Lilly after completing 10 ranked Hard Money Heroes matches.',
+      gate: Object.freeze({ type: 'ranked-matches-played', count: 20 }),
+      cta: 'LILLY — Precision and poise. 20 Ranked runs earn her trust.',
+      description: 'Unlock Lilly after 20 Ranked Hard Money Heroes matches. Free mode does not count.',
     }),
   ]),
 });
@@ -60,7 +63,7 @@ export const HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES = Object.freeze({
     id: 'lester-original',
     name: 'Lester',
     tagline: 'Original Commando',
-    bio: 'The blue-masked original arcade commando. Balanced stats across the board. Unlock by completing Level 1: The Crypto Wasteland.',
+    bio: 'The blue-masked original arcade commando. Balanced stats across the board. Unlock after 10 Ranked Hard Money Heroes matches; legacy Level 1 clear profiles keep him.',
     stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 3]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 3])]),
     simMultipliers: Object.freeze({ maxHealth: 1.0, damage: 1.0, armor: 1.0, movementSpeed: 1.0 }),
     combatStats: Object.freeze({ maxHealth: 100, speed: 1.0, jump: 1.0, melee: 1.0, luck: 1.0 }),
@@ -70,7 +73,7 @@ export const HMH_PLAYABLE_CHARACTER_STAT_IDENTITIES = Object.freeze({
     id: 'lilly',
     name: 'Lilly',
     tagline: 'Ranked Veteran',
-    bio: 'Teal-haired tactical companion with glasses and gold/teal armor. Unlock by playing 10 ranked Hard Money Heroes matches.',
+    bio: 'Teal-haired tactical companion with glasses and gold/teal armor. Unlock after 20 Ranked Hard Money Heroes matches.',
     stats: Object.freeze([Object.freeze(['Power', 3]), Object.freeze(['Speed', 4]), Object.freeze(['Armor', 3]), Object.freeze(['Luck', 4])]),
     simMultipliers: Object.freeze({ movementSpeed: 1.08, rateOfFire: 1.05, criticalChance: 1.08, maxHealth: 0.96 }),
     combatStats: Object.freeze({ maxHealth: 96, speed: 1.08, jump: 1.0, melee: 1.05, luck: 1.08 }),
@@ -180,10 +183,33 @@ function profileRankedRuns(profile = {}) {
   return Math.max(topLevel, progressMax);
 }
 
+function gateProgress(unlock = {}, profile = {}) {
+  const gate = unlock.gate ?? (Number.isFinite(Number(unlock.paidRunsRequired))
+    ? { type: 'ranked-matches-played', count: Number(unlock.paidRunsRequired) }
+    : null);
+  if (!gate || gate.type !== 'ranked-matches-played') return null;
+  const required = Math.max(0, Math.floor(Number(gate.count) || 0));
+  const current = Math.min(required, profileRankedRuns(profile));
+  return Object.freeze({
+    type: gate.type,
+    current,
+    required,
+    remaining: Math.max(0, required - current),
+    percent: required > 0 ? Math.round((current / required) * 100) : 100,
+    meterText: `RANKED MATCHES: ${current} / ${required}`,
+    note: 'Ranked matches only. Free mode does not count.',
+  });
+}
+
 function unlockEarned(unlock = {}, profile = {}, earned = new Set()) {
+  const legacyMigrationAchievementId = normalizeId(unlock.legacyMigrationAchievementId);
+  const existing = profile.unlocks?.characters?.[normalizeId(unlock.id)] === true;
+  if (existing) return true;
+  if (legacyMigrationAchievementId && earned.has(legacyMigrationAchievementId)) return true;
   const achievementId = normalizeId(unlock.achievementId);
   if (achievementId && earned.has(achievementId)) return true;
-  if (Number.isFinite(Number(unlock.paidRunsRequired)) && profileRankedRuns(profile) >= Number(unlock.paidRunsRequired)) return true;
+  const progress = gateProgress(unlock, profile);
+  if (progress && progress.current >= progress.required) return true;
   return false;
 }
 
@@ -241,6 +267,7 @@ export function buildCharacterSelectEntries(baseRoster = [], profile = {}, confi
     const identity = characterStatIdentityEntry(lookupId);
     const unlock = unlockById.get(lookupId);
     const unlocked = Boolean(unlocks[lookupId]);
+    const unlockProgress = unlock ? gateProgress(unlock, profile) : null;
     const displayName = identity?.name ?? entry.name ?? entry.title ?? lookupId;
     const cta = unlocked
       ? `SELECT — PLAY AS ${String(displayName).toUpperCase()}`
@@ -263,6 +290,7 @@ export function buildCharacterSelectEntries(baseRoster = [], profile = {}, confi
       unlocked,
       selected: selectedCharacterId === lookupId,
       unlockDescription: unlock?.description ?? entry.unlockDescription,
+      unlockProgress,
       cta,
     });
   });

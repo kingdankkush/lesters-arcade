@@ -309,35 +309,53 @@ test('player profiles initialize configurable character unlocks and selected-cha
   assert.equal(profile.preferences.selectedCharacterId, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.starterLegacyId);
 });
 
-test('clearing the Level 1 finale preserves the starter roster and unlocks Lester', () => {
+test('WO-95 settled ranked matches unlock Lester at 10 and Lilly at 20 while free runs do not count', () => {
   const state = createInitialArcadeState();
   const wallet = '0x' + 'b'.repeat(40);
-  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
-  recordScore(state, session, 4200, { elapsedSeconds: 620, bossId: 'rug-pull-tank', stageIndexReached: 13 });
-  const snapshot = buildPlayerArcadeSnapshot(state, wallet);
-  for (const starterId of HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.startersLegacyIds) {
-    assert.equal(snapshot.profile.unlocks.characters[starterId], true);
+
+  for (let index = 0; index < 30; index += 1) {
+    const freeSession = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'free' });
+    recordScore(state, freeSession, 900 + index, { elapsedSeconds: 90, bossId: null, stageIndexReached: 1 });
   }
-  // Lester is now the Level 1 unlock — config must point to it.
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockCharacterId, 'lester-original');
-  assert.equal(HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG.levelOneUnlockAchievementId, 'getaway-clear');
-  assert.equal(snapshot.profile.unlocks.characters['lester-original'], true);
-  assert.equal(snapshot.profile.unlocks.characters.lilly, false);
-});
+  assert.equal(state.profiles[wallet].unlocks.characters['lester-original'], false);
+  assert.equal(state.profiles[wallet].unlocks.characters.lilly, false);
 
-test('ten ranked matches unlock Lilly as a playable character', () => {
-  const state = createInitialArcadeState();
-  const wallet = '0x' + 'c'.repeat(40);
-
-  for (let index = 0; index < 10; index += 1) {
+  for (let index = 0; index < 9; index += 1) {
     const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
     recordScore(state, session, 1000 + index, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
   }
+  assert.equal(state.profiles[wallet].unlocks.characters['lester-original'], false);
+  assert.equal(state.profiles[wallet].unlocks.characters.lilly, false);
 
-  buildPlayerArcadeSnapshot(state, wallet);
-  const profile = state.profiles[wallet];
-  assert.equal(profile.achievements.includes('ten-paid-runs'), true);
-  assert.equal(profile.unlocks.characters.lilly, true);
+  let session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  recordScore(state, session, 2000, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
+  assert.equal(state.profiles[wallet].unlocks.characters['lester-original'], true);
+  assert.equal(state.profiles[wallet].unlocks.characters.lilly, false);
+
+  for (let index = 10; index < 19; index += 1) {
+    session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+    recordScore(state, session, 2000 + index, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
+  }
+  assert.equal(state.profiles[wallet].unlocks.characters.lilly, false);
+
+  session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  recordScore(state, session, 3000, { elapsedSeconds: 120, bossId: null, stageIndexReached: 2 });
+  const snapshot = buildPlayerArcadeSnapshot(state, wallet);
+  assert.equal(snapshot.profile.totalPaidRuns, 20);
+  assert.equal(snapshot.profile.unlocks.characters['lester-original'], true);
+  assert.equal(snapshot.profile.unlocks.characters.lilly, true);
+});
+
+test('WO-95 old Level 1 clear profiles keep Lester unlocked through migration', () => {
+  const state = createInitialArcadeState();
+  const wallet = '0x' + 'c'.repeat(40);
+  const profile = createPlayerProfile(wallet);
+  profile.achievements.push('getaway-clear');
+  profile.unlocks.characters['lester-original'] = false;
+  state.profiles[wallet] = profile;
+  const snapshot = buildPlayerArcadeSnapshot(state, wallet);
+  assert.equal(snapshot.profile.unlocks.characters['lester-original'], true);
+  assert.equal(snapshot.profile.unlocks.characters.lilly, false);
 });
 
 test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteForge target, and parent-account sync permissions', () => {

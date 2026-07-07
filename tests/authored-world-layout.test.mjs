@@ -11,6 +11,7 @@ import {
   LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS,
   LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES,
   LEVEL_1_NOIR_CITY_PREFAB_STAMPS,
+  LEVEL_1_WO96_MACRO_MAP_PLAN,
   buildLevelOneNoirPlacementAcceptanceTour,
   getAuthoredRouteNodes,
   getAuthoredDistrictRouteNodes,
@@ -338,4 +339,40 @@ test('Level 1 districts expose AAA critical-path signposts and farm/river/desert
   assert.equal(country.some((obj) => obj.role === 'bridge' || obj.role === 'water-strip'), true, 'country-road should include river/wash crossing staging');
   assert.equal(desert.some((obj) => obj.id.includes('boulder-road') || obj.role === 'rock'), true, 'desert approach should include boulder/mesa road staging');
   assert.equal(innerCity.some((obj) => obj.role === 'gate' || /extraction/i.test(obj.text ?? '')), true, 'inner-city threshold should include extraction-yard staging');
+});
+
+test('WO-96 Level 1 macro map defines six approved-plan biomes and a full critical path', () => {
+  const plan = LEVEL_1_WO96_MACRO_MAP_PLAN;
+  assert.equal(plan.status, 'approval-required-before-asset-generation');
+  assert.equal(plan.approvalGate.includes('Justin must approve'), true);
+  assert.equal(plan.acceptanceSeed, 1337);
+  assert.deepEqual(plan.criticalPath, [
+    'neon-city-core',
+    'industrial-yard',
+    'old-canal-riverfront',
+    'lakeside-park-old-growth',
+    'farmstead-outskirts',
+    'extraction-plaza',
+  ]);
+  assert.deepEqual(plan.biomes.map((biome) => biome.id), plan.criticalPath);
+  assert.equal(plan.biomes.length, 6);
+  assert.equal(new Set(plan.biomes.flatMap((biome) => biome.routeBeats)).has('boss'), true);
+  assert.equal(new Set(plan.biomes.flatMap((biome) => biome.routeBeats)).has('extract'), true);
+});
+
+test('WO-96 macro map has road trail water connectivity and plan-only POIs', () => {
+  const plan = LEVEL_1_WO96_MACRO_MAP_PLAN;
+  const connectorTypes = new Set(plan.biomes.flatMap((biome) => biome.connectors.map((connector) => connector.split(':')[0])));
+  assert.deepEqual([...connectorTypes].sort(), ['road', 'trail', 'water']);
+  const biomeIds = new Set(plan.biomes.map((biome) => biome.id));
+  for (const biome of plan.biomes) {
+    assert.equal(biome.pois.length >= 3, true, `${biome.id} should include at least three POIs`);
+    assert.equal(biome.pois.every((poi) => poi.approval === 'plan-only'), true, `${biome.id} POIs must not imply asset generation approval`);
+    assert.equal(biome.connectors.length >= 2, true, `${biome.id} should have multiple readable connectors`);
+    for (const connector of biome.connectors) {
+      const [, target] = connector.split(':');
+      assert.equal(biomeIds.has(target), true, `${connector} should target a known biome`);
+    }
+  }
+  assert.equal(existsSync(repoPath(LEVEL_1_WO96_MACRO_MAP_PLAN.overlayDocument)), true);
 });
