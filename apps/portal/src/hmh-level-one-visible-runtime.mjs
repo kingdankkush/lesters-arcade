@@ -1,3 +1,4 @@
+import { ambientLifeCueForVisibleObject } from './hmh-ambient-life.mjs';
 import {
   HMH_LEVEL_ONE_CURATED_WORLD_CONTRACT,
   HMH_LEVEL_ONE_SPAWN_GATE_REDRESS,
@@ -471,7 +472,7 @@ function contractZoneObjects() {
   return objects;
 }
 
-function worldDressingObjects({ playerX = 0, playerY = 5, window = 18 } = {}) {
+function worldDressingObjects({ playerX = 0, playerY = 5, window = 18, frame = 0 } = {}) {
   const pad = 10;
   const objects = [];
   for (const stamp of LEVEL_ONE_AUTHORED_PREFAB_STAMPS) {
@@ -484,6 +485,12 @@ function worldDressingObjects({ playerX = 0, playerY = 5, window = 18 } = {}) {
       // Keep a generous fight lane immediately around the player; silhouettes
       // frame the screen instead of spawning directly underfoot.
       if (Math.hypot(x - playerX, y - playerY) < 5.5 && spec.solid !== false) return;
+      const ambientLife = ambientLifeCueForVisibleObject({ assetKey: spec.assetKey, gridX: x, gridY: y }, {
+        playerX,
+        playerY,
+        frame,
+        biome: stamp.districtId,
+      });
       const object = objectFromAsset({
         id: `curated-prefab-${stamp.id}-${index}`,
         assetKey: spec.assetKey,
@@ -500,6 +507,7 @@ function worldDressingObjects({ playerX = 0, playerY = 5, window = 18 } = {}) {
           districtId: stamp.districtId,
           routeBeat: stamp.routeBeat,
           exactAssetKey: spec.assetKey,
+          ...(ambientLife ? { ambientLife } : {}),
         },
       });
       if (object) objects.push(object);
@@ -518,8 +526,8 @@ function isForbiddenInsideSpawnGate(object) {
   return tallSolid || water;
 }
 
-export function buildLevelOneCuratedVisibleSceneObjects({ playerX = 0, playerY = 5, window = 18 } = {}) {
-  const objects = [...openingObjects(), ...contractZoneObjects(), ...worldDressingObjects({ playerX, playerY, window })];
+export function buildLevelOneCuratedVisibleSceneObjects({ playerX = 0, playerY = 5, window = 18, frame = 0 } = {}) {
+  const objects = [...openingObjects(), ...contractZoneObjects(), ...worldDressingObjects({ playerX, playerY, window, frame })];
   const visible = objects.filter((object) =>
     !isForbiddenInsideSpawnGate(object)
     && Math.abs(object.gridX - playerX) <= window + 6

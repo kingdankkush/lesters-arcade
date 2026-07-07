@@ -10222,7 +10222,7 @@ function currentObstacles() {
   let curatedVisibleObjects = [];
   let scene = [];
   if (isLevelOneCuratedRuntime()) {
-    curatedVisibleObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: combat.playerMapX, playerY: combat.playerMapY, window: sceneWindow });
+    curatedVisibleObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: combat.playerMapX, playerY: combat.playerMapY, window: sceneWindow, frame: combat.frame });
   } else {
     scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, sceneWindow, biomeAt, {
       reserveRadius: 6,
@@ -10264,6 +10264,7 @@ function currentObstacles() {
     collisionPolygons: o.collisionPolygons ?? null,
     overSlice: o.overSlice ?? null,
     generatedWorldKitArt: o.generatedWorldKitArt === true,
+    ambientLife: o.ambientLife ?? null,
   }));
   const encounterSceneObjects = combat.activePoiEncounterVisualPlan
     ? buildEncounterSceneObjects({
@@ -10444,7 +10445,10 @@ function buildObstacleRenderEntries(ctx) {
     const resolved = resolveObstacleProp(o, worldProps);
     if (!resolved || !imageReady(resolved.img)) continue;
     const { img, style, footprint } = resolved;
-    const projected = isoToScreen(o.worldX, o.worldY);
+    const motion = o.ambientLife?.motion ?? null;
+    const renderWorldX = o.worldX + (Number(motion?.worldOffsetX) || 0);
+    const renderWorldY = o.worldY + (Number(motion?.worldOffsetY) || 0);
+    const projected = isoToScreen(renderWorldX, renderWorldY);
     const { drawWidth: w, drawHeight: drawH, radius } = resolveDrawMetricsForFootprint(img, footprint, style);
     const rect = propDrawRectForGroundContact({
       projected,

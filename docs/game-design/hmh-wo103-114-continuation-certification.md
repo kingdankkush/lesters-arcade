@@ -35,14 +35,15 @@ Open debt:
   - Full bank/forest/container/extraction arena capture tour still needs screenshots from a played run.
 
 ### WO-106: Vehicles, micro-scenes, and ambient life
-Status: certified-runtime-art-progress
+Status: runtime-flee-behavior-integrated
 
 Evidence:
   - vehicle-microscene-life-kit: 3 assets
   - ambient-quota-plan: tracked
+  - critter-flee-behavior: tracked
 
 Open debt:
-  - True flee behaviors for critters are still gameplay debt beyond the static burrow cue.
+  - Integrated runtime captures still need periodic refresh after later lighting/UI changes.
 
 ### WO-107: Full world assembly and lighting checkpoint 2
 Status: checkpoint-ready-with-verdict-open

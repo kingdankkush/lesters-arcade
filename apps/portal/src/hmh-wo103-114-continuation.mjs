@@ -63,11 +63,12 @@ export function buildWo103114ContinuationCertification() {
     ], [
       'Full bank/forest/container/extraction arena capture tour still needs screenshots from a played run.',
     ]),
-    workOrder('WO-106', 'Vehicles, micro-scenes, and ambient life', 'certified-runtime-art-progress', [
+    workOrder('WO-106', 'Vehicles, micro-scenes, and ambient life', 'runtime-flee-behavior-integrated', [
       { kind: 'vehicle-microscene-life-kit', id: HMH_WO104_106_WORLD_KIT.id, assetCount: countWorldKitAssets('wo106-world/'), roles: ['vehicle', 'ambient-hazard'] },
       { kind: 'ambient-quota-plan', calmPocketRule: 'vehicles and critter burrows are visual life only; no boss-lock clutter' },
+      { kind: 'critter-flee-behavior', policyId: 'wo106-level-one-ambient-life-v1', runtimePath: 'apps/portal/src/hmh-ambient-life.mjs' },
     ], [
-      'True flee behaviors for critters are still gameplay debt beyond the static burrow cue.',
+      'Integrated runtime captures still need periodic refresh after later lighting/UI changes.',
     ]),
     workOrder('WO-107', 'Full world assembly and lighting checkpoint 2', 'checkpoint-ready-with-verdict-open', [
       { kind: 'six-biome-tour', id: tour.id, stepCount: tour.steps.length, placedObjectCount: tour.summary.placedObjectCount },
