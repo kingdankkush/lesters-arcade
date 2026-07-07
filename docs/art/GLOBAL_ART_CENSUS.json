@@ -2,7 +2,7 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 9321,
+    "totalAssets": 9448,
     "totalActors": 72,
     "layerCount": 8,
     "runtimeActorCount": 37,
@@ -22,7 +22,7 @@
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 37,
-      "assetCount": 7857,
+      "assetCount": 7984,
       "animationStateCount": 140,
       "completeActorCount": 0,
       "partialActorCount": 29,
@@ -227,8 +227,8 @@
         ]
       },
       "sourcePolicy": {
-        "score": 16,
-        "summary": "1464/9321 counted assets carry repo-owned/original/curated policy text",
+        "score": 15,
+        "summary": "1464/9448 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {
