@@ -1,13 +1,13 @@
 # WO-52 — Enemy Visual Redesign Queue + Top-5 Exposure HALT
 
-**Status:** HALT awaiting Justin top-5 contact-sheet approval.  
-**Rule:** Do not generate, commit, or integrate a full enemy art redesign batch until Justin approves the top-5 exposure sheet below.
+**Status:** SUPERSEDED by WO-99 approval.  
+**Rule:** Justin approved PixelLab usage for the WO-99 enemy/boss canon uplift. Keep this page as historical exposure context; current runtime decisions live in `docs/game-design/hmh-wo99-enemy-canon-uplift.md`.
 
 ## Contact sheet
 
 - Artifact: `docs/game-design/assets/hmh-wo52-top5-enemy-exposure-contact-sheet.png`
 - Builder: `python scripts/build-hmh-wo52-enemy-contact-sheet.py`
-- Source policy: current runtime/completion art only; no PixelLab, ComfyUI, or paid generation used.
+- Source policy: historical current runtime/completion art only. WO-99 now allows PixelLab usage and uses repo-local generated/certified assets.
 
 ## Top-5 exposure targets
 
@@ -17,19 +17,11 @@
 | 2 | Coyote Pack Runner | `coyote-pack-runner` | Early melee pack pressure appears often; lunge tell must read in dust/noir lighting. | Is the animal silhouette strong enough? |
 | 3 | Wild Boar | `wild-boar` | Charger counterplay depends on hoof-scrape and head-down commitment. | Does it read distinct from coyote at 1x? |
 | 4 | Rattlesnake | `rattlesnake` | Low-profile ambusher can disappear against ground/noir treatment. | Does coil/rattle read clearly enough? |
-| 5 | Buzzard | `crypto-bro-rusher` proxy | Current exposure sheet intentionally shows proxy-like art because buzzard needs a true flyer silhouette. | Generate true buzzard variants or defer flyer redesign? |
+| 5 | Buzzard | `buzzard` true kit | WO-99 found and wired the real 8-direction buzzard kit instead of the old `crypto-bro-rusher` proxy. | Monitor flyer readability at 1x while boss/enemy polish continues. |
 
-## Required decision before full batch
+## WO-99 resolution
 
-Justin must choose one of these outcomes for each top-5 row:
-
-1. **Approve current direction** — proceed to a small approved redesign batch for that enemy.
-2. **Reject direction** — rewrite the brief before any generation.
-3. **Defer** — keep current runtime/proxy art for now and do not spend generation credits.
-
-Until that happens:
-
-- `fullBatchAllowed: false`
-- `approvalState: HALT_AWAITING_JUSTIN_TOP5_CONTACT_SHEET_APPROVAL`
-- no enemy replacement art is integrated into runtime
-- no credit-spending generation is started
+- `fullBatchAllowed: true`
+- `approvalState: SUPERSEDED_BY_WO99_USER_APPROVED_PIXELLAB_UPLIFT`
+- PixelLab subscription confirmed active with 10,000 generations remaining during WO-99.
+- Runtime integration still requires manifest/test/contact-sheet coverage before any specific enemy or boss is claimed as complete.

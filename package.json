@@ -41,6 +41,7 @@
     "design:third-party-security": "node --test tests/arcade-sandbox-security.test.mjs",
     "design:fable-crosswalk": "node scripts/hmh-fable-markdown-crosswalk.mjs",
     "design:roster": "node scripts/roster-coverage-report.mjs",
+    "design:wo99-enemy-canon": "python scripts/build-hmh-wo99-enemy-canon-uplift.py",
     "design:wave3-art": "node scripts/write-wave3-art-matrix-report.mjs",
     "design:balance": "node scripts/write-hmh-balance-snapshot.mjs",
     "design:session-analytics": "node scripts/write-session-analytics-report.mjs",

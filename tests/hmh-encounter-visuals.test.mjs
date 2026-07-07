@@ -279,6 +279,8 @@ test('bespoke authored enemy visual kits are registered with roster-key referenc
   assert.equal(captain.id, 'bandit-captain');
   assert.equal(boar.id, 'wild-boar');
   assert.equal(buzzard.id, 'buzzard');
+  assert.equal(buzzard.rosterKey, 'buzzard');
+  assert.equal(buzzard.autoRepair, null);
   assert.equal(rattlesnake.id, 'rattlesnake');
   // Each kit now has a rosterKey pointing to the animated roster directory
   assert.equal(typeof coyote.rosterKey, 'string');
@@ -292,12 +294,12 @@ test('bespoke authored enemy visual kits are registered with roster-key referenc
   assert.equal(coyote.states.includes('death'), true);
 });
 
-test('WO-52 enemy visual redesign queue ranks top-5 exposed Level 1 enemies and halts before generation', () => {
+test('WO-52 enemy visual redesign queue is superseded by WO-99 approved PixelLab uplift', () => {
   const queue = buildEnemyVisualRedesignQueue();
   assert.equal(queue.id, 'hmh-enemy-visual-redesign-queue-wo52');
-  assert.equal(queue.approvalState, 'HALT_AWAITING_JUSTIN_TOP5_CONTACT_SHEET_APPROVAL');
-  assert.equal(queue.fullBatchAllowed, false);
-  assert.equal(queue.sourcePolicy, 'current-runtime-art-only-no-new-generation');
+  assert.equal(queue.approvalState, 'SUPERSEDED_BY_WO99_USER_APPROVED_PIXELLAB_UPLIFT');
+  assert.equal(queue.fullBatchAllowed, true);
+  assert.match(queue.sourcePolicy, /WO-99 user-approved PixelLab/);
   assert.deepEqual(queue.topFive.map((item) => item.enemyId), [
     'claim-jumper',
     'coyote-pack-runner',
@@ -308,11 +310,11 @@ test('WO-52 enemy visual redesign queue ranks top-5 exposed Level 1 enemies and 
   assert.deepEqual(queue.topFive.map((item) => item.exposureRank), [1, 2, 3, 4, 5]);
   assert.equal(queue.topFive.every((item) => item.exposureScore > 0 && item.currentRosterKey && item.redesignBrief.length > 40), true);
   assert.equal(queue.topFive.every((item) => item.contactSheetRequired === true && item.approvalState === queue.approvalState), true);
-  assert.equal(queue.topFive.some((item) => item.enemyId === 'buzzard' && item.currentRosterKey === 'crypto-bro-rusher' && /proxy/i.test(item.currentArtIssue)), true);
+  assert.equal(queue.topFive.some((item) => item.enemyId === 'buzzard' && item.currentRosterKey === 'buzzard' && /true 8-direction buzzard/i.test(item.currentArtIssue)), true);
   assert.equal(HMH_ENEMY_VISUAL_REDESIGN_QUEUE, queue);
 });
 
-test('WO-52 top-5 exposure contact-sheet plan uses real current-art sources and docs a HALT', () => {
+test('WO-52 top-5 exposure contact-sheet plan is superseded by WO-99 approval', () => {
   const plan = buildTopEnemyExposureContactSheetPlan();
   assert.equal(plan.id, 'hmh-wo52-top5-enemy-exposure-contact-sheet');
   assert.equal(plan.outputPath, 'docs/game-design/assets/hmh-wo52-top5-enemy-exposure-contact-sheet.png');
@@ -322,7 +324,7 @@ test('WO-52 top-5 exposure contact-sheet plan uses real current-art sources and 
   assert.equal(plan.rows.length, 5);
   assert.equal(plan.rows.every((row) => row.frames.length === plan.states.length), true);
   assert.equal(plan.rows.every((row) => row.frames.every((frame) => frame.src.endsWith('.png'))), true);
-  assert.equal(plan.rows.some((row) => row.enemyId === 'buzzard' && row.currentActorId === 'crypto-bro-rusher'), true);
-  assert.equal(plan.haltCopy.includes('Justin'), true);
-  assert.equal(plan.haltCopy.includes('full enemy art batch'), true);
+  assert.equal(plan.rows.some((row) => row.enemyId === 'buzzard' && row.currentActorId === 'buzzard'), true);
+  assert.equal(plan.haltCopy.includes('SUPERSEDED'), true);
+  assert.equal(plan.haltCopy.includes('WO-99'), true);
 });

@@ -194,6 +194,7 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-level-one-aaa-slices.mjs",
   "apps/portal/src/hmh-art-repair.mjs",
   "apps/portal/src/hmh-upgrade-menu-ui.mjs",
+  "apps/portal/assets/generated/hmh-wo99-enemy-canon-uplift/hmh-wo99-enemy-canon-uplift.mjs",
   "apps/portal/src/hmh-combat-feedback.mjs",
   "apps/portal/src/hmh-boss-balance-pass.mjs",
   "apps/portal/src/hmh-copy-sheet.mjs",
@@ -233,6 +234,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-hero-animation-certification.test.mjs",
   "tests/hmh-art-redo-queue.test.mjs",
   "tests/hmh-upgrade-menu-ui.test.mjs",
+  "tests/hmh-wo99-enemy-canon-uplift.test.mjs",
   "tests/hmh-combat-feedback.test.mjs",
   "tests/hmh-boss-balance-pass.test.mjs",
   "tests/hmh-copy-sheet.test.mjs",
@@ -290,7 +292,8 @@ const PY_COMPILE_FILES = [
   "scripts/generate-hmh-final-vfx-and-ambient.py",
   "scripts/generate-hmh-final-boss-and-level2-city.py",
   "scripts/generate-hmh-level3-getaway-art.py",
-  "scripts/pixellab-hmh-level1-asset-wave.py"
+  "scripts/pixellab-hmh-level1-asset-wave.py",
+  "scripts/build-hmh-wo99-enemy-canon-uplift.py"
 ];
 
 let failures = 0;
