@@ -21,6 +21,7 @@ import { buildActorRegistry, prewarmActorRegistry, heroStateFromCombat, heroDire
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
+import { runtimeBossHitbox, runtimeEnemyHitbox } from './src/hmh-hurtbox-runtime.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
 import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
@@ -267,8 +268,10 @@ const DEFAULT_VIEWPORT_MODE = LESTER_BLASTER_TACTICAL_COMBAT_V2.viewportModes.de
 const DEFAULT_CAMPAIGN_LEVEL_ID = getInitialHmhCampaignLevelId();
 const WAVE2_GAME_FEEL_PROFILE = buildWave2GameFeelProfile({ hero: 'lester' });
 const DEBUG_BALANCE_QUERY = 'hmhDebug=balance';
+const DEBUG_HITBOX_QUERY = 'hmhDebug=hitboxes';
 const debugSearchParams = new URLSearchParams(window.location.search);
 let tacticalBalanceDebugEnabled = debugSearchParams.get('hmhDebug') === 'balance';
+let debugHitboxesEnabled = debugSearchParams.get('hmhDebug') === 'hitboxes' || debugSearchParams.get('debugHitboxes') === 'true';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -3292,9 +3295,32 @@ function playerHitbox() {
 }
 
 function enemyHitbox(enemy) {
-  const w = enemy.miniBoss ? 70 : enemy.class === 'armored' ? 46 : enemy.class?.includes('flying') ? 38 : 34;
-  const h = enemy.miniBoss ? 66 : enemy.class?.includes('flying') ? 34 : 42;
-  return { x: enemy.x, y: enemy.y - h, w, h };
+  return runtimeEnemyHitbox(enemy).collisionBox;
+}
+
+function bossHitbox() {
+  return combat.boss ? runtimeBossHitbox(combat.boss, { groundY: GROUND_Y }).collisionBox : null;
+}
+
+function drawRuntimeHitboxOverlay(ctx, overlay) {
+  if (!overlay?.enabled || !overlay.layers?.length) return;
+  ctx.save();
+  ctx.setLineDash([4, 3]);
+  for (const layer of overlay.layers) {
+    ctx.strokeStyle = layer.stroke;
+    ctx.fillStyle = layer.fill;
+    ctx.lineWidth = layer.lineWidth ?? 1;
+    if (layer.rect) {
+      ctx.fillRect(layer.rect.x, layer.rect.y, layer.rect.w, layer.rect.h);
+      ctx.strokeRect(layer.rect.x + 0.5, layer.rect.y + 0.5, layer.rect.w, layer.rect.h);
+    } else if (layer.capsule) {
+      ctx.beginPath();
+      ctx.ellipse(layer.capsule.x, layer.capsule.y, layer.capsule.radius, Math.max(layer.capsule.radius, layer.capsule.h / 2), 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
 }
 
 function bulletHitbox(bullet) {
@@ -3305,9 +3331,6 @@ function enemyShotHitbox(shot) {
   return { x: shot.x, y: shot.y - 2, w: 16, h: 9 };
 }
 
-function bossHitbox() {
-  return combat.boss ? { x: combat.boss.x, y: GROUND_Y - 130, w: 96, h: 116 } : null;
-}
 
 function powerUpHitbox(power) {
   return { x: power.x, y: power.y - 18, w: 26, h: 28 };
@@ -11973,6 +11996,8 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
       // Enemy draw size is fixed; silhouette scale is authored in the sprite canvas.
       const drawSize = Math.round(((isAnim || isWave) ? 88 : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78) * drawScaleMul);
+      enemy.runtimeDrawSize = drawSize;
+      enemy.runtimeDrawHeight = drawSize;
       ctx.save();
       ctx.imageSmoothingEnabled = false;
       const ex = Math.round(enemy.x + w / 2 - drawSize / 2);
@@ -12008,6 +12033,9 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
       ctx.fillRect(enemy.x, enemy.y - h, w, h);
       ctx.fillStyle = '#080616';
       ctx.fillRect(enemy.x + 6, enemy.y - h + 9, 7, 7);
+    }
+    if (debugHitboxesEnabled) {
+      drawRuntimeHitboxOverlay(ctx, runtimeEnemyHitbox(enemy, { debugHitboxes: true }).overlay);
     }
     ctx.fillStyle = '#45ff8a';
     const hpBarW = Math.round(w * drawScaleMul);
@@ -12091,6 +12119,9 @@ function drawBoss(ctx) {
     ctx.fillRect(x, GROUND_Y - 108, 94, 90);
     ctx.fillStyle = '#ffe84d';
     ctx.fillRect(x + 12, GROUND_Y - 130, 68, 18);
+  }
+  if (debugHitboxesEnabled) {
+    drawRuntimeHitboxOverlay(ctx, runtimeBossHitbox(combat.boss, { groundY: GROUND_Y, debugHitboxes: true })?.overlay);
   }
   ctx.fillStyle = '#45ff8a';
   ctx.fillRect(x, GROUND_Y - 143, 94 * Math.max(0, combat.boss.hp / combat.boss.maxHp), 6);

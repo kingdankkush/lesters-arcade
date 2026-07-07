@@ -57,14 +57,16 @@ Open debt:
   - Justin verdict remains open until reviewed.
 
 ### WO-108: Sprite-derived hurtbox truth
-Status: implemented-runtime-policy
+Status: runtime-integrated-with-overlay-proof
 
 Evidence:
   - hurtbox-policy: implemented
+  - runtime-adapter: tracked
   - boss-multi-capsules: implemented
+  - overlay-capture: tracked
 
 Open debt:
-  - Large enemy overlay captures and DPS retune remain balance/capture follow-up after runtime overlay is wired visually.
+  - DPS retune remains a post-capture balance pass only if playtest feel regresses; collision math now targets sprite-derived hurt cores.
 
 ### WO-109: Enemy redesign batches
 Status: certified-roster-progress

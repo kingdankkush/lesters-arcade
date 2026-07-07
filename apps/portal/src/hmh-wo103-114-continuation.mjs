@@ -77,11 +77,13 @@ export function buildWo103114ContinuationCertification() {
     ], [
       'Justin verdict remains open until reviewed.',
     ]),
-    workOrder('WO-108', 'Sprite-derived hurtbox truth', 'implemented-runtime-policy', [
+    workOrder('WO-108', 'Sprite-derived hurtbox truth', 'runtime-integrated-with-overlay-proof', [
       { kind: 'hurtbox-policy', id: HMH_HURTBOX_TRUTH_POLICY.id, status: 'implemented', scalePolicy: HMH_HURTBOX_TRUTH_POLICY.scalePolicy },
+      { kind: 'runtime-adapter', path: 'apps/portal/src/hmh-hurtbox-runtime.mjs', collisionTarget: 'hurtBox', debugOverlay: 'debugHitboxes' },
       { kind: 'boss-multi-capsules', status: 'implemented', capsuleCount: bossSample.bossCapsules.length, debugOverlay: 'debugHitboxes' },
+      { kind: 'overlay-capture', path: 'docs/game-design/wo108-hurtbox-proof/wo108-hitbox-overlay-proof.png', actors: ['armored-claim-jumper', 'coyote-pack-runner-mini', 'whale-dumper-boss'] },
     ], [
-      'Large enemy overlay captures and DPS retune remain balance/capture follow-up after runtime overlay is wired visually.',
+      'DPS retune remains a post-capture balance pass only if playtest feel regresses; collision math now targets sprite-derived hurt cores.',
     ]),
     workOrder('WO-109', 'Enemy redesign batches', 'certified-roster-progress', [
       { kind: 'animated-roster', actorCount: roster.actorCount, actorsWithFrames: roster.actorsWithFrames, enemiesWithFrames: roster.enemiesWithFrames },
