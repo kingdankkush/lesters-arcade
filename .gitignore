@@ -4,8 +4,9 @@ node_modules/
 # Local Vercel/project state
 .vercel/
 
-# Hermes local agent planning/session files
+# Hermes/local agent planning/session files
 .hermes/
+.firecrawl/
 
 # Environment / secrets
 .env
