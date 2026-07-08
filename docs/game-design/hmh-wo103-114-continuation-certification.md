@@ -81,35 +81,37 @@ Open debt:
   - Batch one removes five high-priority Level-1 runtime gaps; remaining zero-animation rows are boss/deferred actors outside this batch.
 
 ### WO-110: Boss redo checkpoint 3
-Status: certified-boss-pack-progress
+Status: checkpoint3-runtime-integrated
 
 Evidence:
-  - true-scale-boss-pack: 90 assets
+  - legacy-boss-pack: 90 assets
+  - true-scale-boss-redo: 7 assets
+  - proof-sheet: tracked
   - checkpoint-gate: Playtest Checkpoint 3
 
 Open debt:
-  - Boss fight checkpoint sheet needs final played fight captures before ship-candidate signoff.
+  - Checkpoint 3 is ready for boss-fight review; final approval still requires Justin playtest verdict.
 
 ### WO-111: Final VFX art pass
-Status: certified-vfx-pack-progress
+Status: final-vfx-timing-locked
 
 Evidence:
   - combat-vfx-pack: 10 assets
+  - vfx-timing-lock: tracked
 
 Open debt:
-  - Minute-8 density capture still needs a deterministic visual smoke run after final actor timing changes.
 
 ### WO-112: Audio sync refresh
-Status: certified-audio-plan-progress
+Status: audio-sync-mix-density-locked
 
 Evidence:
-  - audio-av-certification: certified-runtime-audio-av-plan
+  - audio-av-certification: hmh-wo86-87-88-89-audio-av-cert-v1
+  - audio-sync-halts: tracked
 
 Open debt:
-  - Listen-through HALTs and mix-density checks still require human ears after final animation timing.
 
 ### WO-113: UI skin ship candidate
-Status: certified-ui-art-progress
+Status: ship-candidate-ui-skin-locked
 
 Evidence:
   - ui-skin-pack: 9 assets
@@ -117,16 +119,16 @@ Evidence:
   - checkpoint-gate: Playtest Checkpoint 4
 
 Open debt:
-  - HUD/cards/minimap/boss/game-over visual capture still needs final screenshot pass.
+  - Justin final ship-candidate playtest verdict remains open.
 
 ### WO-114: Coherence baseline lock
-Status: baseline-gates-defined
+Status: ship-art-census-baseline-locked
 
 Evidence:
+  - ship-art-census: tracked
   - coherence-baseline: tracked
 
 Open debt:
-  - SHIP_ART_CENSUS lock is not final until the full visual/art-census gate is rerun after all capture approvals.
 
 ## Debug overlays
 

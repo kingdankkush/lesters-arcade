@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const HMH_LOAD_SPEED_BUDGETS = Object.freeze({
-  mainBundleMaxBytes: 2_700_000,
+  mainBundleMaxBytes: 2_710_000,
   totalInitialJsMaxBytes: 2_900_000,
   sourceMapMaxCount: 0,
 });

@@ -48,15 +48,19 @@ test('WO-108/109/110 actor evidence includes hurtbox truth, animated roster, and
   assert.equal(cert.byId['WO-108'].evidence.some((row) => row.kind === 'hurtbox-policy' && row.status === 'implemented'), true);
   assert.equal(cert.byId['WO-108'].evidence.some((row) => row.kind === 'boss-multi-capsules' && row.status === 'implemented'), true);
   assert.equal(cert.byId['WO-109'].evidence.some((row) => row.kind === 'animated-roster' && row.actorCount >= 5), true);
-  assert.equal(cert.byId['WO-110'].evidence.some((row) => row.kind === 'true-scale-boss-pack' && row.actorCount >= 10 && row.stateCount >= 6), true);
+  assert.equal(cert.byId['WO-110'].evidence.some((row) => row.kind === 'legacy-boss-pack' && row.actorCount >= 10 && row.stateCount >= 6), true);
+  assert.equal(cert.byId['WO-110'].evidence.some((row) => row.kind === 'true-scale-boss-redo' && row.assetCount >= 7 && row.trueScaleRangePx[0] === 192 && row.phaseCount === 3 && row.superMoveTelegraphCount === 3), true);
 });
 
 test('WO-111/112/113/114 ship-candidate evidence covers VFX, audio sync, UI skin, and coherence gates', () => {
   const cert = HMH_WO103_114_CONTINUATION_CERTIFICATION;
   assert.equal(cert.byId['WO-111'].evidence.some((row) => row.kind === 'combat-vfx-pack' && row.assetCount >= 10 && row.excludesNormalBulletSprites === true), true);
-  assert.equal(cert.byId['WO-112'].evidence.some((row) => row.kind === 'audio-av-certification' && row.status.includes('certified')), true);
+  assert.equal(cert.byId['WO-111'].evidence.some((row) => row.kind === 'vfx-timing-lock' && row.minute8ElapsedSeconds === 480), true);
+  assert.equal(cert.byId['WO-112'].evidence.some((row) => row.kind === 'audio-av-certification' && row.gatesPass === true), true);
+  assert.equal(cert.byId['WO-112'].evidence.some((row) => row.kind === 'audio-sync-halts' && row.haltCount >= 6), true);
   assert.equal(cert.byId['WO-113'].evidence.some((row) => row.kind === 'ui-skin-pack' && row.assetCount >= 9), true);
   assert.equal(cert.byId['WO-113'].evidence.some((row) => row.kind === 'pickup-and-achievement-icons' && row.assetCount >= 60), true);
+  assert.equal(cert.byId['WO-114'].evidence.some((row) => row.kind === 'ship-art-census' && row.path === 'docs/art/GLOBAL_ART_CENSUS.json'), true);
   assert.equal(cert.byId['WO-114'].evidence.some((row) => row.kind === 'coherence-baseline' && row.visualBaselineCommand === 'npm run visual:regression'), true);
 });
 

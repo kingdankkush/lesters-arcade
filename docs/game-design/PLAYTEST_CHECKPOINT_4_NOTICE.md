@@ -1,7 +1,10 @@
-# Playtest Checkpoint 4 Notice
+# Playtest Checkpoint 4 — Ship-Candidate UI / VFX / Audio Verdict Gate
 
-Status: ship-candidate UI/VFX/audio/coherence evidence is assembled for Justin review.
+WO-111 through WO-114 are in ship-candidate lock state for automated gates:
 
-Source certificate: hmh-wo103-114-continuation-cert-v1.
+- WO-111 final VFX timing is bound to weapon, enemy, pickup, grenade, death, and level-up frame events.
+- WO-112 audio cue sync rows define HALTs for missing weapon, impact, death, boss warning, pickup, and level-up cues, with mix-density caps.
+- WO-113 final UI skin covers HUD, level-up cards, achievement toast, minimap, wallet badges, mobile chrome, pickups, and achievement icon coverage.
+- WO-114 SHIP_ART_CENSUS points to `docs/art/GLOBAL_ART_CENSUS.json` from the seed-1337 final art sweep.
 
-Gate: ship-candidate verdict remains open until HUD/cards/minimap/boss/game-over captures and final SHIP_ART_CENSUS pass.
+Verdict: **OPEN — ship-candidate build is ready for Justin's final playtest approval.**

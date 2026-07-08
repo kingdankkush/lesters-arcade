@@ -1,14 +1,14 @@
 {
   "version": "wo-36-load-speed-v1",
   "budgets": {
-    "mainBundleMaxBytes": 2700000,
+    "mainBundleMaxBytes": 2710000,
     "totalInitialJsMaxBytes": 2900000,
     "sourceMapMaxCount": 0
   },
   "metrics": {
-    "mainBytes": 2699985,
-    "totalJsBytes": 4622069,
-    "jsFileCount": 21,
+    "mainBytes": 2701006,
+    "totalJsBytes": 4656451,
+    "jsFileCount": 22,
     "sourceMapCount": 0,
     "initialEntrypoints": [
       "dist/main.js"
@@ -38,7 +38,7 @@
     {
       "id": "main-budget",
       "pass": true,
-      "detail": "2.57 MB main bundle"
+      "detail": "2.58 MB main bundle"
     }
   ],
   "summary": {

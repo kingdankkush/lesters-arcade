@@ -2,6 +2,7 @@ import { HMH_WO103_CONTINUOUS_GROUND } from '../assets/generated/hmh-level-one-g
 import { HMH_WO104_106_WORLD_KIT } from '../assets/generated/hmh-wo104-106-world-kit/hmh-wo104-106-world-kit-manifest.mjs';
 import { HMH_ANIMATED_ROSTER } from '../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { HMH_FINAL_BOSS_ANIMATION_PACK } from '../assets/generated/hmh-final-boss-animations/hmh-final-boss-animations-manifest.mjs';
+import { HMH_WO110_BOSS_REDO } from '../assets/generated/hmh-wo110-boss-redo/hmh-wo110-boss-redo-manifest.mjs';
 import { HMH_FINAL_COMBAT_VFX_PACK } from '../assets/generated/hmh-final-combat-vfx/hmh-final-combat-vfx-manifest.mjs';
 import { HMH_VFX_UI_CHROME_PACK } from '../assets/generated/hmh-vfx-ui-chrome/hmh-vfx-ui-chrome-manifest.mjs';
 import { HMH_PICKUP_ICON_PACK } from '../assets/generated/hmh-pickup-icons/hmh-pickup-icons-manifest.mjs';
@@ -9,6 +10,7 @@ import { HMH_ACHIEVEMENT_ATLAS } from '../assets/generated/hmh-achievement-atlas
 import { buildLevelOneWo98AcceptanceTour } from './hmh-wo98-world-assembly.mjs';
 import { HMH_WO86_87_88_89_AUDIO_AV_CERTIFICATION } from './hmh-wo86-89-audio-av.mjs';
 import { HMH_HURTBOX_TRUTH_POLICY, deriveSpriteHitProfile } from './hmh-hurtbox-truth.mjs';
+import { HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION } from './hmh-wo111-114-ship-candidate.mjs';
 
 const freeze = (items) => Object.freeze(items.map((item) => Object.freeze(item)));
 
@@ -93,33 +95,32 @@ export function buildWo103114ContinuationCertification() {
     ], [
       'Batch one removes five high-priority Level-1 runtime gaps; remaining zero-animation rows are boss/deferred actors outside this batch.',
     ]),
-    workOrder('WO-110', 'Boss redo checkpoint 3', 'certified-boss-pack-progress', [
-      { kind: 'true-scale-boss-pack', id: HMH_FINAL_BOSS_ANIMATION_PACK.id, actorCount: HMH_FINAL_BOSS_ANIMATION_PACK.actorCount, stateCount: HMH_FINAL_BOSS_ANIMATION_PACK.states.length, assetCount: HMH_FINAL_BOSS_ANIMATION_PACK.assetCount },
+    workOrder('WO-110', 'Boss redo checkpoint 3', 'checkpoint3-runtime-integrated', [
+      { kind: 'legacy-boss-pack', id: HMH_FINAL_BOSS_ANIMATION_PACK.id, actorCount: HMH_FINAL_BOSS_ANIMATION_PACK.actorCount, stateCount: HMH_FINAL_BOSS_ANIMATION_PACK.states.length, assetCount: HMH_FINAL_BOSS_ANIMATION_PACK.assetCount },
+      { kind: 'true-scale-boss-redo', id: HMH_WO110_BOSS_REDO.id, actorId: HMH_WO110_BOSS_REDO.actor.id, assetCount: HMH_WO110_BOSS_REDO.assetCount, trueScaleRangePx: HMH_WO110_BOSS_REDO.trueScaleRangePx, phaseCount: HMH_WO110_BOSS_REDO.phaseCount, superMoveTelegraphCount: HMH_WO110_BOSS_REDO.superMoveTelegraphCount, deathSpectacleCount: HMH_WO110_BOSS_REDO.deathSpectacleCount },
+      { kind: 'proof-sheet', path: 'docs/game-design/wo110-boss-redo-checkpoint3/wo110-boss-checkpoint3-proof.png' },
       { kind: 'checkpoint-gate', label: 'Playtest Checkpoint 3', verdict: 'Justin verdict gate remains open' },
     ], [
-      'Boss fight checkpoint sheet needs final played fight captures before ship-candidate signoff.',
+      'Checkpoint 3 is ready for boss-fight review; final approval still requires Justin playtest verdict.',
     ]),
-    workOrder('WO-111', 'Final VFX art pass', 'certified-vfx-pack-progress', [
-      { kind: 'combat-vfx-pack', id: HMH_FINAL_COMBAT_VFX_PACK.id, assetCount: HMH_FINAL_COMBAT_VFX_PACK.assetCount, excludesNormalBulletSprites: HMH_FINAL_COMBAT_VFX_PACK.excludesNormalBulletSprites },
-    ], [
-      'Minute-8 density capture still needs a deterministic visual smoke run after final actor timing changes.',
+    workOrder('WO-111', 'Final VFX art pass', HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo111.status, [
+      { kind: 'combat-vfx-pack', id: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo111.vfxPackId, assetCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo111.assetCount, excludesNormalBulletSprites: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo111.excludesNormalBulletSprites },
+      { kind: 'vfx-timing-lock', timingRowCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo111.timingRows.length, minute8ElapsedSeconds: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo111.minute8DensityCapture.elapsedSeconds, command: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo111.minute8DensityCapture.command },
     ]),
-    workOrder('WO-112', 'Audio sync refresh', 'certified-audio-plan-progress', [
-      { kind: 'audio-av-certification', id: HMH_WO86_87_88_89_AUDIO_AV_CERTIFICATION.id, status: HMH_WO86_87_88_89_AUDIO_AV_CERTIFICATION.status, gateCount: HMH_WO86_87_88_89_AUDIO_AV_CERTIFICATION.gates.length },
-    ], [
-      'Listen-through HALTs and mix-density checks still require human ears after final animation timing.',
+    workOrder('WO-112', 'Audio sync refresh', HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo112.status, [
+      { kind: 'audio-av-certification', id: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo112.audioCertId, gateCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo112.gateCount, gatesPass: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo112.gatesPass },
+      { kind: 'audio-sync-halts', syncRowCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo112.syncRows.length, haltCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo112.mixDensity.haltCount, bossWarningExclusive: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo112.mixDensity.bossWarningExclusive },
     ]),
-    workOrder('WO-113', 'UI skin ship candidate', 'certified-ui-art-progress', [
-      { kind: 'ui-skin-pack', id: HMH_VFX_UI_CHROME_PACK.id, assetCount: HMH_VFX_UI_CHROME_PACK.assetCount },
-      { kind: 'pickup-and-achievement-icons', assetCount: HMH_PICKUP_ICON_PACK.assetCount + HMH_ACHIEVEMENT_ATLAS.achievementCount, pickupCount: HMH_PICKUP_ICON_PACK.assetCount, achievementCount: HMH_ACHIEVEMENT_ATLAS.achievementCount },
-      { kind: 'checkpoint-gate', label: 'Playtest Checkpoint 4', verdict: 'ship-candidate gate remains open' },
+    workOrder('WO-113', 'UI skin ship candidate', HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.status, [
+      { kind: 'ui-skin-pack', id: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.uiChromePackId, assetCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.uiChromeAssetCount },
+      { kind: 'pickup-and-achievement-icons', assetCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.pickupIconCount + HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.achievementIconCount, pickupCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.pickupIconCount, achievementCount: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.achievementIconCount },
+      { kind: 'checkpoint-gate', label: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.checkpoint4.label, notice: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.checkpoint4.noticePath, verdict: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo113.checkpoint4.verdict },
     ], [
-      'HUD/cards/minimap/boss/game-over visual capture still needs final screenshot pass.',
+      'Justin final ship-candidate playtest verdict remains open.',
     ]),
-    workOrder('WO-114', 'Coherence baseline lock', 'baseline-gates-defined', [
-      { kind: 'coherence-baseline', seed: 1337, visualBaselineCommand: 'npm run visual:regression', artCensusCommand: 'npm run design:art-census', placeholderPolicy: 'zero placeholders/legacy draw-set claim requires final census output' },
-    ], [
-      'SHIP_ART_CENSUS lock is not final until the full visual/art-census gate is rerun after all capture approvals.',
+    workOrder('WO-114', 'Coherence baseline lock', HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.status, [
+      { kind: 'ship-art-census', seed: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.seed, path: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.artCensusPath, markdownPath: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.artCensusMarkdownPath },
+      { kind: 'coherence-baseline', seed: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.seed, visualBaselineCommand: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.visualBaselineCommand, artCensusCommand: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.artCensusCommand, placeholderPolicy: HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.wo114.placeholderPolicy },
     ]),
   ]);
   const byId = Object.freeze(Object.fromEntries(workOrders.map((row) => [row.id, row])));
@@ -135,6 +136,7 @@ export function buildWo103114ContinuationCertification() {
       HMH_FINAL_COMBAT_VFX_PACK.id,
       HMH_VFX_UI_CHROME_PACK.id,
       HMH_WO86_87_88_89_AUDIO_AV_CERTIFICATION.id,
+      HMH_WO111_114_SHIP_CANDIDATE_CERTIFICATION.id,
       HMH_HURTBOX_TRUTH_POLICY.id,
     ]),
     workOrders,

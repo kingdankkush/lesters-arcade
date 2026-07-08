@@ -1,7 +1,5 @@
-# Playtest Checkpoint 3 Notice
+# Playtest Checkpoint 3 — Boss Fight Verdict Gate
 
-Status: boss redo evidence is ready for Justin review.
+WO-110 is ready for boss-fight review. The Rug Pull Baron now has true-scale 216px phase forms, three super-move telegraphs, and a death spectacle proof sheet.
 
-Source certificate: hmh-wo103-114-continuation-cert-v1.
-
-Gate: Justin verdict gate remains open until the boss fight checkpoint sheet and played fight captures are accepted.
+Verdict: **OPEN — awaiting Justin playtest approval.**

@@ -691,6 +691,32 @@ function productionImage(collection, slug) {
   return combatArt.production?.[collection]?.[slug]?.image ?? null;
 }
 
+const WO110_TRUE_SCALE_MAX_PX = 256;
+const wo110BossImageCache = new Map();
+function wo110BossImage(asset) {
+  if (!asset?.src) return null;
+  if (!wo110BossImageCache.has(asset.key)) wo110BossImageCache.set(asset.key, loadImageAsset(asset.src));
+  return wo110BossImageCache.get(asset.key);
+}
+function wo110BossAssetForRuntime({ phase, superMove, deathSpectacle }) {
+  const state = deathSpectacle ? 'death-spectacle' : superMove ? 'super-telegraph' : 'phase-form';
+  return hmh('HMH_WO110_BOSS_REDO')?.assets?.find((asset) => asset.phase === (deathSpectacle ? 3 : phase) && asset.state === state && (!superMove || asset.superMove === superMove)) ?? null;
+}
+function wo110BossRuntimeFrame(boss, frame = combat.frame) {
+  if (!boss) return null;
+  const id = `${boss.id ?? ''} ${boss.title ?? ''}`.toLowerCase();
+  if (!id.includes('rug') && !id.includes('baron')) return null;
+  const phase = clamp(Math.round(Number(boss.phase) || 1), 1, 3);
+  const attackTimer = Number(boss.attackTimer) || 0;
+  const hp = Number(boss.hp ?? 1);
+  const superMove = attackTimer > 0 && attackTimer < 34
+    ? (phase === 3 ? 'liquidation-wave' : phase === 2 ? 'rug-pull-chain' : 'whale-dump')
+    : null;
+  const asset = wo110BossAssetForRuntime({ phase, superMove, deathSpectacle: hp <= 0 || boss.deathSpectacle });
+  const image = wo110BossImage(asset);
+  return image ? { image, asset } : null;
+}
+
 function productionSpriteFrame(sprite, frame = combat.frame, fpsFallback = 8) {
   const frames = sprite?.frames ?? [];
   if (!frames.length) return sprite?.image ?? null;
@@ -12089,12 +12115,14 @@ function drawBoss(ctx) {
   if (!combat.boss) return;
   const x = combat.boss.x;
   const bossFrame = bossArtFor(combat.boss);
-  if (imageReady(bossFrame)) {
+  const wo110Frame = wo110BossRuntimeFrame(combat.boss);
+  const drawFrame = wo110Frame?.image ?? bossFrame;
+  if (imageReady(drawFrame)) {
     const bossOverlayFrame = pipelineActorOverlayFrame(combat.boss);
     const phaseScale = 1 + (combat.boss.phase - 1) * 0.08;
-    const drawWidth = Math.round(150 * phaseScale);
-    const drawHeight = Math.round(150 * phaseScale);
-    const drawX = x - 28;
+    const drawWidth = wo110Frame?.asset?.renderWidth ? Math.min(wo110Frame.asset.renderWidth, WO110_TRUE_SCALE_MAX_PX) : Math.round(150 * phaseScale);
+    const drawHeight = wo110Frame?.asset?.renderHeight ? Math.min(wo110Frame.asset.renderHeight, WO110_TRUE_SCALE_MAX_PX) : Math.round(150 * phaseScale);
+    const drawX = wo110Frame ? x - Math.round(drawWidth * 0.28) : x - 28;
     const drawY = GROUND_Y - drawHeight - 2;
     ctx.save();
     ctx.imageSmoothingEnabled = false;
@@ -12102,7 +12130,7 @@ function drawBoss(ctx) {
       const telegraph = productionVfxFrame('boss-telegraph-ring');
       if (imageReady(telegraph)) ctx.drawImage(telegraph, x - 26, GROUND_Y - 92, 178, 112);
     }
-    drawSpriteImage(ctx, bossFrame, drawX, drawY, drawWidth);
+    drawSpriteImage(ctx, drawFrame, drawX, drawY, drawWidth);
     const overlayAlpha = Math.min(0.55, Math.max((combat.boss.goreFrames ?? 0) / 20, (combat.boss.hitFlash ?? 0) / 14));
     if (imageReady(bossOverlayFrame) && overlayAlpha > 0) {
       drawSpriteImage(ctx, bossOverlayFrame, drawX, drawY, drawWidth);

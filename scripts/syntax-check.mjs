@@ -57,6 +57,7 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-hurtbox-truth.mjs",
   "apps/portal/src/hmh-hurtbox-runtime.mjs",
   "apps/portal/src/hmh-wo107-checkpoint2.mjs",
+  "apps/portal/src/hmh-wo111-114-ship-candidate.mjs",
   "apps/portal/src/hmh-world-scale.mjs",
   "apps/portal/src/hmh-level-one-quality.mjs",
   "apps/portal/src/hmh-level-one-balance-pass.mjs",
@@ -86,6 +87,8 @@ const NODE_CHECK_FILES = [
   "tests/hmh-hurtbox-runtime.test.mjs",
   "tests/hmh-wo107-checkpoint2.test.mjs",
   "tests/hmh-wo109-enemy-redesign-batch.test.mjs",
+  "tests/hmh-wo110-boss-redo.test.mjs",
+  "tests/hmh-wo111-114-ship-candidate.test.mjs",
   "tests/hmh-world-scale.test.mjs",
   "tests/hmh-asset-footprints.test.mjs",
   "tests/hmh-footprint-runtime.test.mjs",
@@ -308,6 +311,7 @@ const PY_COMPILE_FILES = [
   "scripts/generate-hmh-final-boss-and-level2-city.py",
   "scripts/generate-hmh-level3-getaway-art.py",
   "scripts/generate-wo109-enemy-redesign-batch.py",
+  "scripts/generate-wo110-boss-redo.py",
   "scripts/pixellab-hmh-level1-asset-wave.py",
   "scripts/build-hmh-wo99-enemy-canon-uplift.py"
 ];
