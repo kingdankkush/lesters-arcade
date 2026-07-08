@@ -89,6 +89,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-wo109-enemy-redesign-batch.test.mjs",
   "tests/hmh-wo110-boss-redo.test.mjs",
   "tests/hmh-wo111-114-ship-candidate.test.mjs",
+  "tests/hmh-wo115-enemy-readability-batch.test.mjs",
   "tests/hmh-world-scale.test.mjs",
   "tests/hmh-asset-footprints.test.mjs",
   "tests/hmh-footprint-runtime.test.mjs",
@@ -312,6 +313,7 @@ const PY_COMPILE_FILES = [
   "scripts/generate-hmh-level3-getaway-art.py",
   "scripts/generate-wo109-enemy-redesign-batch.py",
   "scripts/generate-wo110-boss-redo.py",
+  "scripts/generate-wo115-enemy-readability-batch.py",
   "scripts/pixellab-hmh-level1-asset-wave.py",
   "scripts/build-hmh-wo99-enemy-canon-uplift.py"
 ];

@@ -2,18 +2,18 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 9760,
+    "totalAssets": 9164,
     "totalActors": 72,
     "layerCount": 8,
     "runtimeActorCount": 37,
-    "runtimeCompleteActorCount": 5,
-    "runtimePartialActorCount": 28,
+    "runtimeCompleteActorCount": 10,
+    "runtimePartialActorCount": 23,
     "runtimeZeroAnimationActorCount": 4,
     "runtimeStrictRenderableActorCount": 34,
     "runtimeAutoRepairedZeroAnimationActorCount": 1,
     "runtimeDeferredOrPurgedZeroAnimationActorCount": 3,
     "runtimeUnresolvedZeroAnimationActorCount": 0,
-    "complianceScore": 67
+    "complianceScore": 70
   },
   "layers": {
     "runtimeAnimatedRoster": {
@@ -22,10 +22,10 @@
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 37,
-      "assetCount": 8296,
-      "animationStateCount": 179,
-      "completeActorCount": 5,
-      "partialActorCount": 28,
+      "assetCount": 7700,
+      "animationStateCount": 203,
+      "completeActorCount": 10,
+      "partialActorCount": 23,
       "zeroAnimationActorCount": 4,
       "levelOneShipEnemyCount": 23,
       "sampleKeys": [
@@ -194,11 +194,11 @@
     }
   },
   "scorecard": {
-    "overallScore": 67,
+    "overallScore": 70,
     "categories": {
       "animationCoverage": {
-        "score": 36,
-        "summary": "5/37 actors complete; 4 zero-animation actors",
+        "score": 46,
+        "summary": "10/37 actors complete; 4 zero-animation actors",
         "gaps": [
           "bit-whale-boss: zero-animation",
           "chain-reaper-boss: zero-animation",
@@ -207,11 +207,9 @@
           "bitcoin-maximalist-riot-cop: partial coverage",
           "bridge-exploiter: partial coverage",
           "buzzard: partial coverage",
-          "claim-jumper: partial coverage",
           "coyote-pack-runner: partial coverage",
           "fud-goblin: partial coverage",
           "gas-fee-wisp: partial coverage",
-          "honeypot-turret: partial coverage",
           "influencer-camera-drone: partial coverage",
           "lester: partial coverage",
           "lilly: partial coverage",
@@ -219,12 +217,14 @@
           "lit-valkyrie: partial coverage",
           "mev-reaper: partial coverage",
           "nft-valet: partial coverage",
-          "paper-hand: partial coverage"
+          "paper-hand: partial coverage",
+          "phishing-angler: partial coverage",
+          "plaza-warden: partial coverage"
         ]
       },
       "sourcePolicy": {
-        "score": 15,
-        "summary": "1464/9760 counted assets carry repo-owned/original/curated policy text",
+        "score": 16,
+        "summary": "1464/9164 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {
