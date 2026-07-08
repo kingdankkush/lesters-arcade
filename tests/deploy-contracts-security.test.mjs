@@ -4,6 +4,12 @@ import assert from 'node:assert/strict';
 
 const deployScript = readFileSync('scripts/deploy-contracts.mjs', 'utf8');
 
+test('contract deploy script never logs private-key substrings', () => {
+  assert.equal(deployScript.includes('DEPLOYER_PRIVATE_KEY.slice'), false, 'must not print a private-key prefix or suffix');
+  assert.equal(deployScript.includes('private key'), false, 'deploy logs should not mention private-key material');
+  assert.equal(deployScript.includes('Deployer address:'), true, 'safe deploy log should print the derived address only');
+});
+
 test('contract deploy script excludes the deprecated LestersArcadeCore wrapper', () => {
   assert.equal(deployScript.includes("'LestersArcadeCore.json'"), false, 'wrapper artifact must not be required for deploy');
   assert.equal(deployScript.includes("loadArtifact('LestersArcadeCore')"), false, 'wrapper artifact must not be loaded');

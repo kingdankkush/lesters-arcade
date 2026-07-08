@@ -19,6 +19,12 @@ test('enemyStateFromEntity maps authored ambush verbs into readable telegraph, s
   assert.equal(enemyStateFromEntity({ reloading: true }), 'melee-counter');
 });
 
+test('enemyStateFromEntity gives newly spawned enemies a visible spawn-in before movement or telegraphing', () => {
+  assert.equal(enemyStateFromEntity({ spawnFrames: 12, moving: true }), 'spawn-in');
+  assert.equal(enemyStateFromEntity({ spawning: true, telegraphing: true }), 'spawn-in');
+  assert.equal(enemyStateFromEntity({ spawnFrames: 12, hitFrames: 1 }), 'hit');
+});
+
 test('prewarmActorRegistry caches requested actor frame sources only', () => {
   const loaded = [];
   const registry = buildActorRegistry({

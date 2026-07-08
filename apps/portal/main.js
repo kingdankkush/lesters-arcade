@@ -360,6 +360,7 @@ function healthTierState(actor, entity) {
 
 function enemyAnimationIntent(entity = {}) {
   const state = entity.state ?? '';
+  const spawning = (entity.spawnFrames ?? 0) > 0 || entity.spawning === true;
   const telegraphing = (entity.tellFrames ?? 0) > 0
     || entity.burrowing
     || entity.windingUp
@@ -384,7 +385,7 @@ function enemyAnimationIntent(entity = {}) {
     && !recovering
     || Math.abs(entity.vx ?? 0) > 0.05
     || Math.abs(entity.vy ?? 0) > 0.05;
-  return { telegraphing, attacking, recovering, moving };
+  return { spawning, telegraphing, attacking, recovering, moving };
 }
 
 // Resolve a generated/canonical-art frame image for an entity, or null for legacy art.
@@ -401,6 +402,7 @@ function pipelineActorFrame(entity, { boss = false } = {}) {
     telegraphing: intent.telegraphing,
     recovering: intent.recovering,
     moving: intent.moving,
+    spawning: intent.spawning,
   });
   // When idle and damaged, prefer the hand-drawn health-tier still if present.
   if (!dying && (state === 'idle' || state === 'walk')) {
@@ -6773,6 +6775,7 @@ function updateEnemies(difficulty) {
   for (const enemy of combat.enemies) {
     if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
     if ((enemy.goreFrames ?? 0) > 0) enemy.goreFrames -= 1;
+    if ((enemy.spawnFrames ?? 0) > 0) enemy.spawnFrames -= 1;
     // Apply knockback from hits (satisfying hit feedback).
     if (enemy._knockback && enemy._knockback.frames > 0) {
       enemy.x += enemy._knockback.vx;
@@ -7968,6 +7971,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     balanceCard,
     speedLaw: balanceCard.speedLaw,
     attackTimer: Math.max(options.attackTimer ?? (ranged ? 110 + (combat.frame % 50) : 90), ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES),
+    spawnFrames: Math.max(0, options.spawnFrames ?? 18),
     tellFrames: 0,
     recoveryFrames: Math.max(balanceCard.readability.recoveryFrames, miniBoss ? Math.max(spawn.ai?.recoveryFrames ?? 20, 28) : (spawn.ai?.recoveryFrames ?? 20)),
     recoveryFramesRemaining: 0,
@@ -11732,6 +11736,7 @@ function enemyAnimState(enemy) {
   if (enemy.hp <= 0) return ['death'];
   if ((enemy.hitFlash ?? 0) > 0) return ['hit', 'attack', 'walk', 'idle'];
   const intent = enemyAnimationIntent(enemy);
+  if (intent.spawning) return ['spawn-in', 'idle', 'walk', 'run'];
   if (intent.telegraphing) return ['attack-tell', 'attack', 'walk', 'idle'];
   if (intent.attacking) return ['attack', 'melee-counter', 'walk', 'idle'];
   if (intent.recovering) return ['melee-counter', 'walk', 'idle'];

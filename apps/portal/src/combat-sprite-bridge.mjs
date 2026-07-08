@@ -62,6 +62,7 @@ export function heroDirectionFromCombat(combat) {
 export function enemyStateFromEntity(enemy) {
   if (enemy.dying || enemy.dead) return 'death';
   if (enemy.hitFrames > 0) return 'hit';
+  if (enemy.spawning || (enemy.spawnFrames ?? 0) > 0) return 'spawn-in';
   if (enemy.attacking || enemy.lunging || enemy.unburrowing || enemy.pouncing) return 'attack';
   if (enemy.telegraphing || enemy.burrowing || enemy.aiming || enemy.windingUp) return 'attack-tell';
   if (enemy.recovering || enemy.countering || enemy.reloading || enemy.postVolley) return 'melee-counter';

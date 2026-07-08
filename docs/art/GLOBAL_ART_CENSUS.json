@@ -6,14 +6,14 @@
     "totalActors": 72,
     "layerCount": 8,
     "runtimeActorCount": 37,
-    "runtimeCompleteActorCount": 14,
-    "runtimePartialActorCount": 19,
+    "runtimeCompleteActorCount": 21,
+    "runtimePartialActorCount": 12,
     "runtimeZeroAnimationActorCount": 4,
     "runtimeStrictRenderableActorCount": 34,
     "runtimeAutoRepairedZeroAnimationActorCount": 1,
     "runtimeDeferredOrPurgedZeroAnimationActorCount": 3,
     "runtimeUnresolvedZeroAnimationActorCount": 0,
-    "complianceScore": 71
+    "complianceScore": 74
   },
   "layers": {
     "runtimeAnimatedRoster": {
@@ -24,8 +24,8 @@
       "actorCount": 37,
       "assetCount": 8670,
       "animationStateCount": 221,
-      "completeActorCount": 14,
-      "partialActorCount": 19,
+      "completeActorCount": 21,
+      "partialActorCount": 12,
       "zeroAnimationActorCount": 4,
       "levelOneShipEnemyCount": 23,
       "sampleKeys": [
@@ -194,11 +194,11 @@
     }
   },
   "scorecard": {
-    "overallScore": 71,
+    "overallScore": 74,
     "categories": {
       "animationCoverage": {
-        "score": 53,
-        "summary": "14/37 actors complete; 4 zero-animation actors",
+        "score": 66,
+        "summary": "21/37 actors complete; 4 zero-animation actors",
         "gaps": [
           "bit-whale-boss: zero-animation",
           "chain-reaper-boss: zero-animation",
@@ -206,10 +206,6 @@
           "warren-spear-rider: zero-animation",
           "bitcoin-maximalist-riot-cop: partial coverage",
           "bridge-exploiter: partial coverage",
-          "buzzard: partial coverage",
-          "coyote-pack-runner: partial coverage",
-          "fud-goblin: partial coverage",
-          "gas-fee-wisp: partial coverage",
           "influencer-camera-drone: partial coverage",
           "lester: partial coverage",
           "lilly: partial coverage",
@@ -217,9 +213,9 @@
           "lit-valkyrie: partial coverage",
           "nft-valet: partial coverage",
           "plaza-warden: partial coverage",
-          "rattlesnake: partial coverage",
-          "slippage-skater: partial coverage",
-          "stablecoin-socialite: partial coverage"
+          "stablecoin-socialite: partial coverage",
+          "the-obfuscator: partial coverage",
+          "whale-dumper-boss: partial coverage"
         ]
       },
       "sourcePolicy": {

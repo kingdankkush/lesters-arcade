@@ -306,7 +306,7 @@ export const BESPOKE_ENEMY_VISUAL_KITS = Object.freeze(
       Object.freeze(repairRuntimeVisualKitSpec(Object.freeze({
         id,
         rosterKey: spec.rosterKey,
-        states: Object.freeze(['idle', 'walk', 'run', 'attack', 'hit', 'death']),
+        states: Object.freeze(['idle', 'walk', 'run', 'spawn-in', 'attack-tell', 'attack', 'hit', 'death']),
         drawScaleMul: 1,
         runtimeScale: 1,
         spriteAuthoringScale: spec.drawScaleMul ?? 1,

@@ -2,7 +2,7 @@
 //
 // Deploys the Lester's Arcade contract suite to LitVM LiteForge testnet (chain ID 4441).
 // Requires:
-//   - DEPLOYER_PRIVATE_KEY env var (the wallet that deploys + becomes contract owner)
+//   - DEPLOYER_PRIVATE_KEY env var (the deployer signing secret; never logged)
 //   - RPC_URL env var (defaults to LitVM LiteForge testnet RPC)
 //   - Compiled contract ABIs + bytecodes (run `npm run contracts:compile` first)
 //
@@ -26,7 +26,7 @@ const CHAIN_ID = 4441;
 
 if (!DEPLOYER_PRIVATE_KEY) {
   console.error('ERROR: DEPLOYER_PRIVATE_KEY env var is required.');
-  console.error('Set it to the private key of the wallet that will deploy + own the contracts.');
+  console.error('Set it to the deployer wallet signing secret. The script only logs the derived address.');
   console.error('Example: DEPLOYER_PRIVATE_KEY=0x... npm run contracts:deploy');
   process.exit(1);
 }

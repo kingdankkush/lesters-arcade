@@ -28,6 +28,22 @@ test('roster coverage report inventories every actor and flags known Wave 3 gaps
   assert.equal(report.actors['fud-goblin'].states['attack-tell'].status, 'complete');
 });
 
+test('runtime-derived readability covers spawn-ins and missing telegraphs without fake placeholder art', () => {
+  const report = buildReport();
+
+  for (const actorKey of ['fud-goblin', 'gas-fee-wisp', 'coyote-pack-runner', 'wild-boar', 'buzzard', 'rattlesnake']) {
+    const spawn = report.actors[actorKey].states['spawn-in'];
+    assert.equal(spawn.status, 'complete', `${actorKey} should have a complete runtime spawn-in state`);
+    assert.equal(spawn.derived, true, `${actorKey} spawn-in should be explicitly marked as derived runtime readability`);
+    assert.match(spawn.matchedState, /^derived:/, `${actorKey} should not pretend derived spawn art is native`);
+  }
+
+  const slippageTell = report.actors['slippage-skater'].states['attack-tell'];
+  assert.equal(slippageTell.status, 'complete');
+  assert.equal(slippageTell.derived, true);
+  assert.match(slippageTell.matchedState, /^derived:/);
+});
+
 test('Level 1 ship-scope rows are derived from runtime catalog and boss proxy data', () => {
   const report = buildReport();
   const ids = new Set(report.levelOneShipScope.map((row) => row.enemyId));
