@@ -12,6 +12,8 @@
 //   - the third-party intake + security-review pipeline (audit §5.2)
 //   - the on-chain registry (manifest checksum)
 
+import { id as keccakUtf8 } from '../vendor/ethers.min.js';
+
 // The SDK contract version this platform implements. A manifest must target a
 // compatible major. Bumping the major means breaking SDK changes.
 export const ARCADE_SDK_VERSION = '1.0.0';
@@ -156,31 +158,41 @@ export function validateGameManifest(input) {
   return { valid: true, errors: [], manifest };
 }
 
-// Deterministic, dependency-free checksum of a manifest's load-bearing fields.
-// Used to detect drift and (eventually) anchor the manifest on-chain. Not a
-// cryptographic hash — a stable 32-bit FNV-1a over the canonical field order so
-// the same manifest always yields the same checksum across runs/machines.
+// Canonical load-bearing manifest fields. This is intentionally smaller than
+// the full JSON file: display-only prose can change without invalidating a
+// cabinet's executable/security contract, while entry/capabilities/endpoints
+// and wallet/ranked metadata must produce a new digest.
+export function canonicalManifestPayload(manifest) {
+  return JSON.stringify({
+    id: manifest.id,
+    name: manifest.name,
+    version: manifest.version,
+    sdkVersion: manifest.sdkVersion,
+    status: manifest.status,
+    aspectSupport: [...manifest.aspectSupport].sort(),
+    controlScheme: manifest.controlScheme,
+    capabilities: [...manifest.capabilities].sort(),
+    rankedEligible: manifest.rankedEligible,
+    entry: manifest.entry,
+    endpoints: [...manifest.endpoints].sort(),
+    devWallet: manifest.devWallet ?? null,
+  });
+}
+
+// Cryptographic bytes32 digest for registry anchoring. Uses the same keccak-256
+// primitive as Solidity/Ethers, so the digest can be recorded beside a
+// GameRegistry gameId without lossy 32-bit checksums.
 export function manifestChecksum(manifest) {
-  const canonical = [
-    manifest.id,
-    manifest.name,
-    manifest.version,
-    manifest.sdkVersion,
-    manifest.status,
-    [...manifest.aspectSupport].sort().join(','),
-    manifest.controlScheme,
-    [...manifest.capabilities].sort().join(','),
-    String(manifest.rankedEligible),
-    manifest.entry,
-    [...manifest.endpoints].sort().join(','),
-    manifest.devWallet ?? '',
-  ].join('|');
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < canonical.length; i += 1) {
-    hash ^= canonical.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return `m_${(hash >>> 0).toString(16).padStart(8, '0')}`;
+  return keccakUtf8(canonicalManifestPayload(manifest));
+}
+
+export function manifestRegistryAnchor(manifest) {
+  return Object.freeze({
+    id: manifest.id,
+    gameId: keccakUtf8(manifest.id),
+    manifestChecksum: manifestChecksum(manifest),
+    canonicalPayload: canonicalManifestPayload(manifest),
+  });
 }
 
 // A registry that ingests manifests once and answers the questions the shell +
@@ -202,8 +214,9 @@ export function createGameRegistry() {
         rejections.push({ input, errors: dupe });
         return { ok: false, errors: dupe };
       }
-      games.set(manifest.id, { manifest, checksum: manifestChecksum(manifest) });
-      return { ok: true, errors: [], manifest, checksum: manifestChecksum(manifest) };
+      const anchor = manifestRegistryAnchor(manifest);
+      games.set(manifest.id, { manifest, checksum: anchor.manifestChecksum, anchor });
+      return { ok: true, errors: [], manifest, checksum: anchor.manifestChecksum, anchor };
     },
     get(id) {
       return games.get(id) ?? null;

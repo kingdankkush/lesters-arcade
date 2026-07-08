@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   validateGameManifest,
   manifestChecksum,
+  manifestRegistryAnchor,
   createGameRegistry,
   ARCADE_SDK_VERSION,
   REQUIRED_ASPECTS,
@@ -103,13 +104,27 @@ test('manifestChecksum is deterministic and changes when a field changes', () =>
   assert.equal(manifestChecksum(a), manifestChecksum(b));
   const c = validateGameManifest(baseManifest({ version: '1.0.1' })).manifest;
   assert.notEqual(manifestChecksum(a), manifestChecksum(c));
-  assert.match(manifestChecksum(a), /^m_[0-9a-f]{8}$/);
+  assert.match(manifestChecksum(a), /^0x[0-9a-f]{64}$/);
+});
+
+test('manifestRegistryAnchor exposes GameRegistry-compatible bytes32 ids and manifest digest', async () => {
+  const { id: keccakUtf8 } = await import('../apps/portal/vendor/ethers.min.js');
+  const manifest = validateGameManifest(baseManifest()).manifest;
+  const anchor = manifestRegistryAnchor(manifest);
+  assert.equal(anchor.id, 'sample-game');
+  assert.equal(anchor.gameId, keccakUtf8('sample-game'));
+  assert.equal(anchor.manifestChecksum, manifestChecksum(manifest));
+  assert.match(anchor.gameId, /^0x[0-9a-f]{64}$/);
+  assert.match(anchor.manifestChecksum, /^0x[0-9a-f]{64}$/);
+  assert.equal(JSON.parse(anchor.canonicalPayload).id, 'sample-game');
 });
 
 test('createGameRegistry registers valid manifests and rejects invalid/duplicate', () => {
   const reg = createGameRegistry();
   const ok = reg.register(baseManifest());
   assert.equal(ok.ok, true);
+  assert.match(ok.checksum, /^0x[0-9a-f]{64}$/);
+  assert.equal(ok.anchor.manifestChecksum, ok.checksum);
   assert.equal(reg.size(), 1);
   assert.equal(reg.has('sample-game'), true);
 

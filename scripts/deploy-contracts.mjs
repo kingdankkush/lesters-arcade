@@ -41,7 +41,6 @@ const requiredContracts = [
   'SessionLedger.json',
   'AchievementRegistry.json',
   'TournamentPool.json',
-  'LestersArcadeCore.json',
 ];
 
 for (const file of requiredContracts) {
@@ -75,7 +74,6 @@ const artifacts = {
   ScoreSubmissionRegistry: loadArtifact('ScoreSubmissionRegistry'),
   AchievementRegistry: loadArtifact('AchievementRegistry'),
   TournamentPool: loadArtifact('TournamentPool'),
-  LestersArcadeCore: loadArtifact('LestersArcadeCore'),
   SessionLedger: loadArtifact('SessionLedger'),
 };
 
@@ -133,7 +131,7 @@ async function deploy() {
   const addresses = {};
 
   // 1. Deploy PlayerProfileRegistry
-  console.log('1/8: PlayerProfileRegistry...');
+  console.log('1/7: PlayerProfileRegistry...');
   const playerProfileFactory = new ethers.ContractFactory(
     artifacts.PlayerProfileRegistry.abi,
     artifacts.PlayerProfileRegistry.bytecode,
@@ -145,7 +143,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.playerProfileRegistry}`);
 
   // 2. Deploy GameRegistry
-  console.log('2/8: GameRegistry...');
+  console.log('2/7: GameRegistry...');
   const gameRegistryFactory = new ethers.ContractFactory(
     artifacts.GameRegistry.abi,
     artifacts.GameRegistry.bytecode,
@@ -157,7 +155,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.gameRegistry}`);
 
   // 3. Deploy ArcadePaymentRouter (registry-derived routing; entry fees disabled by default)
-  console.log('3/8: ArcadePaymentRouter...');
+  console.log('3/7: ArcadePaymentRouter...');
   const paymentRouterFactory = new ethers.ContractFactory(
     artifacts.ArcadePaymentRouter.abi,
     artifacts.ArcadePaymentRouter.bytecode,
@@ -173,7 +171,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.arcadePaymentRouter}`);
 
   // 4. Deploy ScoreSubmissionRegistry (needs deployer as trustedVerifier)
-  console.log('4/8: ScoreSubmissionRegistry...');
+  console.log('4/7: ScoreSubmissionRegistry...');
   const scoreSubmissionFactory = new ethers.ContractFactory(
     artifacts.ScoreSubmissionRegistry.abi,
     artifacts.ScoreSubmissionRegistry.bytecode,
@@ -185,7 +183,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.scoreSubmissionRegistry}`);
 
   // 5. Deploy SessionLedger (needs gameRegistry + paymentRouter + entryToken)
-  console.log('5/8: SessionLedger...');
+  console.log('5/7: SessionLedger...');
   const sessionLedgerFactory = new ethers.ContractFactory(
     artifacts.SessionLedger.abi,
     artifacts.SessionLedger.bytecode,
@@ -201,7 +199,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.sessionLedger}`);
 
   // 6. Deploy AchievementRegistry (needs sessionLedger)
-  console.log('6/8: AchievementRegistry...');
+  console.log('6/7: AchievementRegistry...');
   const achievementFactory = new ethers.ContractFactory(
     artifacts.AchievementRegistry.abi,
     artifacts.AchievementRegistry.bytecode,
@@ -213,7 +211,7 @@ async function deploy() {
   console.log(`   Deployed at: ${addresses.achievementRegistry}`);
 
   // 7. Deploy TournamentPool
-  console.log('7/8: TournamentPool...');
+  console.log('7/7: TournamentPool...');
   const tournamentFactory = new ethers.ContractFactory(
     artifacts.TournamentPool.abi,
     artifacts.TournamentPool.bytecode,
@@ -223,18 +221,6 @@ async function deploy() {
   await tournaments.waitForDeployment();
   addresses.tournamentPool = await tournaments.getAddress();
   console.log(`   Deployed at: ${addresses.tournamentPool}`);
-
-  // 7. Deploy LestersArcadeCore (composition wrapper)
-  console.log('8/8: LestersArcadeCore...');
-  const coreFactory = new ethers.ContractFactory(
-    artifacts.LestersArcadeCore.abi,
-    artifacts.LestersArcadeCore.bytecode,
-    deployer,
-  );
-  const core = await coreFactory.deploy(deployer.address);
-  await core.waitForDeployment();
-  addresses.lestersArcadeCore = await core.getAddress();
-  console.log(`   Deployed at: ${addresses.lestersArcadeCore}`);
 
   console.log('');
   console.log('=== DEPLOYMENT COMPLETE ===');
@@ -273,7 +259,6 @@ async function deploy() {
       `  scoreSubmissionRegistry: '${addresses.scoreSubmissionRegistry}',\n` +
       `  achievementRegistry: '${addresses.achievementRegistry}',\n` +
       `  arcadePaymentRouter: '${addresses.arcadePaymentRouter}',\n` +
-      `  lestersArcadeCore: '${addresses.lestersArcadeCore}',\n` +
       `});`;
     settlementSrc = settlementSrc.replace(
       /export const LITVM_CONTRACT_ADDRESSES = Object\.freeze\(\{[\s\S]*?\}\);/,
