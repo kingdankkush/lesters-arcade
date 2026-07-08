@@ -3,21 +3,18 @@ pragma solidity ^0.8.24;
 
 /// @title GameRegistry
 /// @author Lester's Arcade Core
-/// @notice Cabinet registry for Lester's Arcade. Only approved games can
-///         participate in shared identity + ranked sessions. The platform
-///         operator approves games that integrate the submitRun adapter.
-/// @dev Fee splits are stored on-chain so PaymentRouter.sol can split entry
-///      fees + settlement gas automatically when a ranked session closes.
+/// @notice Cabinet registry for Lester's Arcade. Only approved and confirmed games can participate in shared identity + ranked sessions.
 contract GameRegistry {
     struct Game {
-        bytes32 gameId;        // stable keccak identifier
-        string title;          // human-readable name
-        address devWallet;     // receives dev share of revenue
-        uint16 devBps;         // dev cut (bps out of 10_000)
-        uint16 platformBps;    // platform cut
-        uint16 liquidityBps;   // liquidity pool cut
-        uint16 treasuryBps;    // community treasury cut
-        uint256 entryFeeMicroUsdc; // min entry fee ($0.25 = 250_000)
+        bytes32 gameId;
+        string title;
+        address devWallet;
+        uint16 devBps;
+        uint16 platformBps;
+        uint16 liquidityBps;
+        uint16 treasuryBps;
+        uint256 entryFeeMicroUsdc;
+        bool devWalletConfirmed;
         bool playable;
         bool exists;
         uint256 registeredAt;
@@ -28,10 +25,16 @@ contract GameRegistry {
     mapping(bytes32 => Game) public games;
     bytes32[] public registeredGameIds;
     address public operator;
+    address public pendingOperator;
+    address public trustedVerifier;
 
     event GameRegistered(bytes32 indexed gameId, string title, address devWallet);
+    event DevWalletConfirmed(bytes32 indexed gameId, address indexed devWallet);
     event GameStatusChanged(bytes32 indexed gameId, bool playable);
     event FeeSplitUpdated(bytes32 indexed gameId, uint16 dev, uint16 platform, uint16 liquidity, uint16 treasury);
+    event TrustedVerifierUpdated(address indexed trustedVerifier);
+    event OperatorTransferStarted(address indexed currentOperator, address indexed pendingOperator);
+    event OperatorTransferred(address indexed previousOperator, address indexed newOperator);
 
     modifier onlyOperator() {
         require(msg.sender == operator, "Only platform operator");
@@ -39,10 +42,11 @@ contract GameRegistry {
     }
 
     constructor(address _operator) {
+        require(_operator != address(0), "Invalid operator");
         operator = _operator;
+        trustedVerifier = _operator;
     }
 
-    /// @notice Register a new cabinet. Operator-only.
     function registerGame(
         string calldata idString,
         string calldata title,
@@ -67,6 +71,7 @@ contract GameRegistry {
             liquidityBps: liquidityBps,
             treasuryBps: treasuryBps,
             entryFeeMicroUsdc: entryFeeMicroUsdc,
+            devWalletConfirmed: false,
             playable: false,
             exists: true,
             registeredAt: block.timestamp
@@ -75,14 +80,24 @@ contract GameRegistry {
         emit GameRegistered(gameId, title, devWallet);
     }
 
-    /// @notice Mark a game playable (operator sign-off after integration review).
+    function confirmDevWallet(bytes32 gameId) external {
+        Game storage game = games[gameId];
+        require(game.exists, "Not registered");
+        require(msg.sender == game.devWallet, "Only dev wallet");
+        game.devWalletConfirmed = true;
+        emit DevWalletConfirmed(gameId, msg.sender);
+    }
+
     function setPlayable(bytes32 gameId, bool playable) external onlyOperator {
-        require(games[gameId].exists, "Not registered");
-        games[gameId].playable = playable;
+        Game storage game = games[gameId];
+        require(game.exists, "Not registered");
+        if (playable) {
+            require(game.devWalletConfirmed, "Dev wallet unconfirmed");
+        }
+        game.playable = playable;
         emit GameStatusChanged(gameId, playable);
     }
 
-    /// @notice Adjust fee split. Operator-only, still must total 10_000.
     function updateFeeSplit(
         bytes32 gameId,
         uint16 devBps,
@@ -100,7 +115,26 @@ contract GameRegistry {
         emit FeeSplitUpdated(gameId, devBps, platformBps, liquidityBps, treasuryBps);
     }
 
-    /// @notice Read path for the catalog.
+    function setTrustedVerifier(address verifier) external onlyOperator {
+        require(verifier != address(0), "Invalid verifier");
+        trustedVerifier = verifier;
+        emit TrustedVerifierUpdated(verifier);
+    }
+
+    function transferOperator(address newOperator) external onlyOperator {
+        require(newOperator != address(0), "Invalid operator");
+        pendingOperator = newOperator;
+        emit OperatorTransferStarted(operator, newOperator);
+    }
+
+    function acceptOperator() external {
+        require(msg.sender == pendingOperator, "Only pending operator");
+        address previous = operator;
+        operator = pendingOperator;
+        pendingOperator = address(0);
+        emit OperatorTransferred(previous, operator);
+    }
+
     function getGame(bytes32 gameId) external view returns (Game memory) {
         return games[gameId];
     }

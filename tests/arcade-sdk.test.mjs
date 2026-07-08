@@ -8,6 +8,8 @@ import {
   WALLET_ACTION_KINDS,
   buildInitContext,
   buildArcadeMessage,
+  parsePostMessageEvent,
+  resolveParentTargetOrigin,
   validateEventPayload,
   parseInboundMessage,
   createMessageRateLimiter,
@@ -95,6 +97,41 @@ test('parseInboundMessage is the parent security gate', () => {
   assert.equal(parseInboundMessage({ ...badPayload, payload: { score: -5 } }, { expectedGameId: 'hmh' }).valid, false);
   // non-object rejected
   assert.equal(parseInboundMessage('nope').valid, false);
+});
+
+test('parsePostMessageEvent rejects spoofed frame source and origin before payload parsing', () => {
+  const expectedSourceWindow = { frame: 'real-cabinet' };
+  const rogueSourceWindow = { frame: 'rogue' };
+  const good = buildArcadeMessage('arcade.statUpdate', { score: 10 }, { gameId: 'hmh', seq: 1 });
+
+  assert.equal(parsePostMessageEvent({ source: expectedSourceWindow, origin: 'https://lestersarcade.io', data: good }, {
+    expectedSourceWindow,
+    expectedOrigin: 'https://lestersarcade.io',
+    expectedGameId: 'hmh',
+  }).valid, true);
+
+  const spoofedSource = parsePostMessageEvent({ source: rogueSourceWindow, origin: 'https://lestersarcade.io', data: good }, {
+    expectedSourceWindow,
+    expectedOrigin: 'https://lestersarcade.io',
+    expectedGameId: 'hmh',
+  });
+  assert.equal(spoofedSource.valid, false);
+  assert.ok(spoofedSource.errors.some((error) => error.includes('source')));
+
+  const spoofedOrigin = parsePostMessageEvent({ source: expectedSourceWindow, origin: 'https://evil.example', data: good }, {
+    expectedSourceWindow,
+    expectedOrigin: 'https://lestersarcade.io',
+    expectedGameId: 'hmh',
+  });
+  assert.equal(spoofedOrigin.valid, false);
+  assert.ok(spoofedOrigin.errors.some((error) => error.includes('origin')));
+});
+
+test('resolveParentTargetOrigin prefers handshake origin over wildcard posting', () => {
+  assert.equal(resolveParentTargetOrigin({ handshakeOrigin: 'https://lestersarcade.io' }), 'https://lestersarcade.io');
+  assert.equal(resolveParentTargetOrigin({ referrer: 'https://lestersarcade.io/play/hard-money-heroes' }), 'https://lestersarcade.io');
+  assert.equal(resolveParentTargetOrigin({ fallbackOrigin: 'http://localhost:5173' }), 'http://localhost:5173');
+  assert.equal(resolveParentTargetOrigin({}), null);
 });
 
 test('createMessageRateLimiter throttles floods within a fixed window', () => {

@@ -4076,6 +4076,13 @@ export function buildLeaderboardModel(state, { gameId = 'lester-blaster', wallet
       resetCadence: 'daily-weekly-monthly-yearly-all-time-testnet',
       prizeNotes: 'future tournament pool; no real prizes in local practice',
     },
+    testnetDisclosure: {
+      title: 'Ranked Testnet Beta',
+      body: 'Scores are player-submitted and not yet cheat-proof on-chain. The client integrity gate catches obvious junk, but official anti-cheat verification is still in progress.',
+      valueAttached: false,
+      leaderboardResetNotice: 'Leaderboards may reset at the security redeploy; no token, prize, or cash value is attached to testnet rows.',
+    },
+    resetPolicy: 'Testnet leaderboards may reset during the WO-131 security redeploy. Pre-reset boards should be archived before any approved redeploy.',
   };
 }
 
@@ -4984,6 +4991,10 @@ export function recordScore(state, session, score, runStats = {}) {
   };
 
   state.leaderboards[game.id] ??= [];
+  if (entry.sessionId) {
+    const existingIndex = state.leaderboards[game.id].findIndex((row) => row.sessionId === entry.sessionId);
+    if (existingIndex !== -1) state.leaderboards[game.id].splice(existingIndex, 1);
+  }
   state.leaderboards[game.id].push(entry);
   state.leaderboards[game.id].sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
   state.leaderboards[game.id] = state.leaderboards[game.id].slice(0, 10);
@@ -5085,14 +5096,24 @@ export function applySettlement(state, settlement) {
   if (!settlement?.sessionId) throw new Error('settlement with sessionId is required');
 
   state.settlements ??= [];
-  state.settlements.push({ ...settlement, receipts: [...(settlement.receipts ?? [])] });
+  const storedSettlement = { ...settlement, receipts: [...(settlement.receipts ?? [])] };
+  const existingSettlementIndex = state.settlements.findIndex((row) => row.sessionId === settlement.sessionId);
+  if (existingSettlementIndex === -1) {
+    state.settlements.push(storedSettlement);
+  } else {
+    state.settlements[existingSettlementIndex] = storedSettlement;
+  }
 
   const txHash = settlement.primaryTxHash ?? null;
+  const simulatedTxHash = settlement.primarySimulatedTxHash ?? null;
   const gameId = settlement.gameId;
 
   // stamp flat board
   for (const e of state.leaderboards?.[gameId] ?? []) {
-    if (e.sessionId === settlement.sessionId) e.settlementTxHash = txHash;
+    if (e.sessionId === settlement.sessionId) {
+      e.settlementTxHash = txHash;
+      e.settlementSimulatedTxHash = simulatedTxHash;
+    }
   }
   // stamp cadence buckets
   const cadenceStore = state.cadenceLeaderboards?.[gameId];
@@ -5100,14 +5121,22 @@ export function applySettlement(state, settlement) {
     for (const cadence of Object.keys(cadenceStore)) {
       for (const periodKey of Object.keys(cadenceStore[cadence])) {
         for (const row of cadenceStore[cadence][periodKey]) {
-          if (row.sessionId === settlement.sessionId) row.settlementTxHash = txHash;
+          if (row.sessionId === settlement.sessionId) {
+            row.settlementTxHash = txHash;
+            row.settlementSimulatedTxHash = simulatedTxHash;
+          }
         }
       }
     }
   }
   // stamp official session
   if (state.sessions?.[settlement.sessionId]) {
-    state.sessions[settlement.sessionId].settlement = { mode: settlement.mode, primaryTxHash: txHash, settledAt: settlement.settledAt };
+    state.sessions[settlement.sessionId].settlement = {
+      mode: settlement.mode,
+      primaryTxHash: txHash,
+      primarySimulatedTxHash: simulatedTxHash,
+      settledAt: settlement.settledAt,
+    };
     // Persist the run-integrity verdict (if the caller attached one) so a
     // 'suspicious' ranked run is durably auditable in state instead of only
     // being a transient console.warn. 'ok' verdicts are not stored (noise).
@@ -5242,6 +5271,7 @@ export function buildPlayerArcadeSnapshot(state, wallet) {
         score: settlement.score,
         mode: settlement.mode,
         primaryTxHash: settlement.primaryTxHash,
+        primarySimulatedTxHash: settlement.primarySimulatedTxHash,
         settledAt: settlement.settledAt,
         cadenceKeys: { ...(settlement.cadenceKeys ?? {}) },
       })),
@@ -5295,6 +5325,7 @@ export function buildProfileExperienceV2Model(state, wallet, { selectedGameId = 
       runStats: { ...(session.runStats ?? {}) },
       recordedAt: session.syncedAt ?? session.recordedAt ?? null,
       settlementTxHash: session.settlement?.primaryTxHash ?? settlementsBySessionId.get(session.sessionId)?.primaryTxHash ?? null,
+      settlementSimulatedTxHash: session.settlement?.primarySimulatedTxHash ?? settlementsBySessionId.get(session.sessionId)?.primarySimulatedTxHash ?? null,
     };
     const trust = leaderboardRowTrust(state, session.gameId, row);
     const detail = leaderboardDetailFor(state, session.gameId, row);

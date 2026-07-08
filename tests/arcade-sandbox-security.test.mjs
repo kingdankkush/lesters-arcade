@@ -57,6 +57,7 @@ test('mock-parent harness exposes deterministic third-party validation scenarios
   assert.equal(html.includes('sandbox="allow-scripts"'), true);
   assert.equal(html.includes('arcade.ready'), true);
   assert.equal(html.includes('rate-limit-flood-drop'), true);
+  assert.equal(html.includes('event.source !== frame.contentWindow'), true, 'browser harness rejects rogue frame sources before parsing');
   assert.equal(html.includes('window.ethereum'), false, 'mock parent must not inject a wallet provider into the cabinet');
 });
 

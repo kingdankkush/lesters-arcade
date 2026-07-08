@@ -1,0 +1,92 @@
+{
+  "sourcePath": "contracts/src/ScoreSubmissionRegistry.sol",
+  "contractName": "IScoreGameRegistry",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "gameId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getGame",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes32",
+              "name": "gameId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "internalType": "address",
+              "name": "devWallet",
+              "type": "address"
+            },
+            {
+              "internalType": "uint16",
+              "name": "devBps",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "platformBps",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "liquidityBps",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint16",
+              "name": "treasuryBps",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint256",
+              "name": "entryFeeMicroUsdc",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "devWalletConfirmed",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "playable",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "exists",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "registeredAt",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct IScoreGameRegistry.Game",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "evm": {
+    "bytecode": {
+      "object": ""
+    }
+  }
+}

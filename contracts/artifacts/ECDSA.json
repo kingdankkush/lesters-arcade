@@ -1,0 +1,38 @@
+{
+  "sourcePath": "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
+  "contractName": "ECDSA",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "ECDSAInvalidSignature",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "length",
+          "type": "uint256"
+        }
+      ],
+      "name": "ECDSAInvalidSignatureLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "s",
+          "type": "bytes32"
+        }
+      ],
+      "name": "ECDSAInvalidSignatureS",
+      "type": "error"
+    }
+  ],
+  "evm": {
+    "bytecode": {
+      "object": "60556032600b8282823980515f1a607314602657634e487b7160e01b5f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f5ffdfea2646970667358221220ff66ef1f4edd5365f34a7b9085d79e41ca2d01799a083f9b97449e845d3c9e3364736f6c63430008230033"
+    }
+  }
+}

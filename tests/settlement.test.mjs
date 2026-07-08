@@ -96,7 +96,7 @@ test('profile change uses the idempotent setProfile method', () => {
   assert.ok(methods.indexOf('setProfile') < methods.indexOf('submitSession'));
 });
 
-test('paid entry fee produces a startPaidSession router call matching the SplitConfig ABI', () => {
+test('paid entry fee produces a registry-derived startPaidSession router call without caller split/token args', () => {
   const plan = buildSettlementPlan({
     wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-paid', score: 10,
     entryFeeMicroUnits: 250_000, paymentToken: 'zkLTC',
@@ -109,16 +109,11 @@ test('paid entry fee produces a startPaidSession router call matching the SplitC
   const { args } = routeCall;
   assert.equal(args.sessionId, 'sess-paid');
   assert.equal(args.gameId, 'lester-blaster');
-  assert.equal(args.paymentToken, 'zkLTC');
   assert.equal(args.amount, 250_000);
-  // SplitConfig struct: four treasury addresses + four bps values.
-  assert.ok(args.split);
-  for (const key of ['settlementTreasury', 'devWallet', 'tournamentTreasury', 'communityTreasury']) {
-    assert.ok(/^0x[0-9a-fA-F]{40}$/.test(args.split[key]), `${key} must be an address`);
-  }
-  const totalBps = args.split.settlementBps + args.split.devBps
-    + args.split.tournamentBps + args.split.communityBps;
-  assert.equal(totalBps, 10_000, 'SplitConfig bps must total 10000');
+  assert.deepEqual(Object.keys(args).sort(), ['amount', 'gameId', 'sessionId']);
+  assert.equal('paymentToken' in args, false);
+  assert.equal('settlementGasUsed' in args, false);
+  assert.equal('split' in args, false);
 });
 
 test('zero entry fee (free ranked testnet) emits no router call', () => {
@@ -133,7 +128,7 @@ test('buildSettlementPlan requires wallet/gameId/sessionId', () => {
   assert.throws(() => buildSettlementPlan({ wallet: WALLET, gameId: 'g' }));
 });
 
-test('settleRun (simulated) returns deterministic receipts and no live send', async () => {
+test('settleRun (simulated) returns deterministic simulated receipts without explorer tx hashes', async () => {
   const plan = buildSettlementPlan({
     wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-3', score: 777,
     unlockedAchievements: ['first-paid-run'],
@@ -142,21 +137,30 @@ test('settleRun (simulated) returns deterministic receipts and no live send', as
   const r2 = await settleRun(plan, { live: false });
   assert.equal(r1.mode, 'simulated');
   assert.equal(r1.settled, true);
-  assert.ok(r1.primaryTxHash.startsWith('0x'));
-  assert.equal(r1.primaryTxHash, r2.primaryTxHash); // deterministic
+  assert.equal(r1.primaryTxHash, null);
+  assert.ok(r1.primarySimulatedTxHash.startsWith('sim:'));
+  assert.equal(r1.primarySimulatedTxHash, r2.primarySimulatedTxHash); // deterministic
   assert.ok(r1.receipts.every((rcpt) => rcpt.simulated === true));
   // primaryTxHash resolves off the submitSession receipt.
   const submitReceipt = r1.receipts.find((rcpt) => rcpt.method === 'submitSession');
-  assert.equal(r1.primaryTxHash, submitReceipt.txHash);
+  assert.equal(submitReceipt.txHash, null);
+  assert.equal(r1.primarySimulatedTxHash, submitReceipt.simulatedTxHash);
 });
 
-test('settleRun live path broadcasts via injected sendTransaction', async () => {
+test('settleRun generic live path is dev-flagged and re-checks chain id before every broadcast', async () => {
   const plan = buildSettlementPlan({
     wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-4', score: 10,
   });
   const sent = [];
+  await assert.rejects(
+    () => settleRun(plan, { live: true, sendTransaction: async () => '0x' }),
+    /generic live settlement path is disabled/,
+  );
+
   const result = await settleRun(plan, {
     live: true,
+    allowGenericLiveSettlement: true,
+    getChainId: async () => 4441,
     contractAddresses: {
       scoreSubmissionRegistry: '0x' + 'c'.repeat(40),
       achievementRegistry: '0x' + 'd'.repeat(40),
@@ -174,6 +178,22 @@ test('settleRun live path broadcasts via injected sendTransaction', async () => 
   // every broadcast call names a method that exists on the deployed contracts
   const validMethods = new Set(['submitSession', 'setProfile', 'startPaidSession']);
   assert.ok(sent.every((c) => validMethods.has(c.method)), 'only deployed methods may be broadcast');
+});
+
+test('settleRun generic live path aborts when fresh chain id is wrong', async () => {
+  const plan = buildSettlementPlan({
+    wallet: WALLET, gameId: 'lester-blaster', sessionId: 'sess-4-wrong-chain', score: 10,
+  });
+  await assert.rejects(
+    () => settleRun(plan, {
+      live: true,
+      allowGenericLiveSettlement: true,
+      getChainId: async () => 1,
+      contractAddresses: { scoreSubmissionRegistry: '0x' + 'c'.repeat(40) },
+      sendTransaction: async () => '0xlive',
+    }),
+    /wrong chain before broadcast/,
+  );
 });
 
 test('settleRun live path is blocked when contract addresses are missing', async () => {

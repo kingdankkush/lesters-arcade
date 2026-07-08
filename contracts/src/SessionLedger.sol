@@ -1,47 +1,66 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IERC20} from "./interfaces/IERC20.sol";
+
+interface ISessionGameRegistry {
+    struct Game {
+        bytes32 gameId;
+        string title;
+        address devWallet;
+        uint16 devBps;
+        uint16 platformBps;
+        uint16 liquidityBps;
+        uint16 treasuryBps;
+        uint256 entryFeeMicroUsdc;
+        bool devWalletConfirmed;
+        bool playable;
+        bool exists;
+        uint256 registeredAt;
+    }
+
+    function getGame(bytes32 gameId) external view returns (Game memory);
+}
+
+interface IPaymentRouter {
+    function splitAndDisburse(bytes32 gameId, address player, uint256 amount) external;
+}
 
 /// @title SessionLedger
 /// @author Lester's Arcade Core
-/// @notice Creates and finalizes ranked paid-run sessions on LitVM. Players
-///         pay an entry fee at session open; the fee is held in escrow until
-///         session close, at which point PlayerScore is committed and the fee
-///         is forwarded to PaymentRouter.sol for split disbursement.
-/// @dev    EIP-712 signature from the cabinet's adapter proves the player
-///         actually played; the ledger validates it before committing score.
-contract SessionLedger {
+/// @notice Creates and finalizes ranked paid-run sessions on LitVM.
+contract SessionLedger is ReentrancyGuard {
+    using ECDSA for bytes32;
+
     struct Session {
         address player;
         bytes32 gameId;
-        uint256 entryFee;            // micro USDC paid at open
+        uint256 entryFee;
         uint256 openedAt;
         uint256 closedAt;
         uint256 finalScore;
         uint256 kills;
         uint256 survivalSeconds;
         bool closed;
-        bool settled;                // true once PaymentRouter has disbursed
+        bool settled;
     }
 
-    // EIP-712 domain + types
     bytes32 public constant DOMAIN_TYPEHASH = keccak256(
         "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
     );
     bytes32 public constant SESSION_TYPEHASH = keccak256(
         "SessionCommit(bytes32 gameId,address player,uint256 openedAt,uint256 finalScore,uint256 kills,uint256 survivalSeconds)"
     );
-    bytes32 public DOMAIN_SEPARATOR;
+    bytes32 public immutable DOMAIN_SEPARATOR;
 
-    // Per-game registered adapter signers (the server-side wallet that signs commits).
-    // Cabinet adapters register via GameRegistry; this contract pulls from
-    // GameRegistry.getGame(gameId).devWallet as the authorized signer.
-    address public gameRegistry;
-    address public paymentRouter;
-    address public entryToken;          // USDC on LitVM (18 or 6 decimals — matches token)
-    uint256 public chainId;
-    mapping(bytes32 => Session) public sessions; // sessionId => Session
+    address public immutable gameRegistry;
+    address public immutable paymentRouter;
+    address public immutable entryToken;
+    uint256 public immutable chainId;
+    mapping(bytes32 => Session) public sessions;
+    mapping(address => uint256) public playerNonces;
     bytes32[] public sessionIds;
 
     event SessionOpened(bytes32 indexed sessionId, address indexed player, bytes32 indexed gameId, uint256 entryFee);
@@ -49,6 +68,9 @@ contract SessionLedger {
     event SessionSettled(bytes32 indexed sessionId);
 
     constructor(address _gameRegistry, address _paymentRouter, address _entryToken) {
+        require(_gameRegistry != address(0), "Invalid registry");
+        require(_paymentRouter != address(0), "Invalid router");
+        require(_entryToken != address(0), "Invalid token");
         gameRegistry = _gameRegistry;
         paymentRouter = _paymentRouter;
         entryToken = _entryToken;
@@ -62,13 +84,14 @@ contract SessionLedger {
         ));
     }
 
-    /// @notice Open a ranked session. Pulls `entryFee` of the entry token from player.
-    function openSession(bytes32 gameId, uint256 entryFee) external returns (bytes32 sessionId) {
+    function openSession(bytes32 gameId, uint256 entryFee) external nonReentrant returns (bytes32 sessionId) {
         require(entryFee > 0, "Entry fee required");
-        IERC20(entryToken).transferFrom(msg.sender, address(this), entryFee);
+        ISessionGameRegistry.Game memory game = ISessionGameRegistry(gameRegistry).getGame(gameId);
+        require(game.exists && game.playable, "Game not playable");
 
-        sessionId = keccak256(abi.encodePacked(msg.sender, gameId, block.timestamp, block.number));
-        require(!sessions[sessionId].closed, "Session collision");
+        uint256 nonce = playerNonces[msg.sender]++;
+        sessionId = keccak256(abi.encodePacked(block.chainid, address(this), msg.sender, gameId, nonce));
+
 
         sessions[sessionId] = Session({
             player: msg.sender,
@@ -79,28 +102,33 @@ contract SessionLedger {
             finalScore: 0,
             kills: 0,
             survivalSeconds: 0,
-            closed: true,  // placeholder to mark the slot as allocated; flipped by closeSession
+            closed: false,
             settled: false
         });
-        sessions[sessionId].closed = false;
         sessionIds.push(sessionId);
+
+        require(IERC20(entryToken).transferFrom(msg.sender, address(this), entryFee), "Entry transfer failed");
 
         emit SessionOpened(sessionId, msg.sender, gameId, entryFee);
     }
 
-    /// @notice Close session with EIP-712 signed score commit from the game adapter.
     function closeSession(
         bytes32 sessionId,
         uint256 finalScore,
         uint256 kills,
         uint256 survivalSeconds,
-        uint8 v, bytes32 r, bytes32 s
+        uint8 v,
+        bytes32 r,
+        bytes32 s
     ) external {
         Session storage sess = sessions[sessionId];
         require(sess.openedAt > 0, "Unknown session");
+        require(msg.sender == sess.player, "Not the session owner");
         require(!sess.closed, "Already closed");
 
-        // Recover the adapter signer. Must match the game's registered devWallet.
+        ISessionGameRegistry.Game memory game = ISessionGameRegistry(gameRegistry).getGame(sess.gameId);
+        require(game.exists && game.playable, "Game not playable");
+
         bytes32 structHash = keccak256(abi.encode(
             SESSION_TYPEHASH,
             sess.gameId,
@@ -111,10 +139,8 @@ contract SessionLedger {
             survivalSeconds
         ));
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, structHash));
-        address signer = ecrecover(digest, v, r, s);
-        require(signer != address(0), "Invalid signature");
-        // TODO: lookup gameRegistry.games[sess.gameId].devWallet == signer
-        //       (GameRegistry.sol is not yet wired — stub for the integration phase).
+        address signer = ECDSA.recover(digest, v, r, s);
+        require(signer == game.devWallet, "Unauthorized signer");
 
         sess.closed = true;
         sess.closedAt = block.timestamp;
@@ -125,17 +151,17 @@ contract SessionLedger {
         emit SessionClosed(sessionId, finalScore, kills, survivalSeconds);
     }
 
-    /// @notice After close, disburse the entry fee via PaymentRouter based on the
-    ///         game's on-chain fee split (read from GameRegistry at settlement time).
-    function settle(bytes32 sessionId) external {
+    function settle(bytes32 sessionId) external nonReentrant {
         Session storage sess = sessions[sessionId];
+        require(sess.openedAt > 0, "Unknown session");
         require(sess.closed, "Not closed yet");
         require(!sess.settled, "Already settled");
 
-        // Forward the entry token to the payment router which splits per-game.
-        IERC20(entryToken).transfer(paymentRouter, sess.entryFee);
         sess.settled = true;
         emit SessionSettled(sessionId);
+
+        require(IERC20(entryToken).transfer(paymentRouter, sess.entryFee), "Router transfer failed");
+        IPaymentRouter(paymentRouter).splitAndDisburse(sess.gameId, sess.player, sess.entryFee);
     }
 
     function getSession(bytes32 sessionId) external view returns (Session memory) {

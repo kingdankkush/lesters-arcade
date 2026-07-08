@@ -176,6 +176,31 @@ export function parseInboundMessage(raw, { expectedGameId = null } = {}) {
   return { valid: true, errors: [], message: Object.freeze({ ...raw }) };
 }
 
+export function parsePostMessageEvent(event, { expectedSourceWindow = null, expectedOrigin = null, expectedGameId = null } = {}) {
+  const errors = [];
+  if (expectedSourceWindow && event?.source !== expectedSourceWindow) {
+    errors.push('postMessage source does not match the sandboxed cabinet frame');
+  }
+  if (expectedOrigin && event?.origin !== expectedOrigin) {
+    errors.push(`postMessage origin "${event?.origin}" does not match expected origin "${expectedOrigin}"`);
+  }
+  if (errors.length > 0) return { valid: false, errors, message: null };
+  return parseInboundMessage(event?.data, { expectedGameId });
+}
+
+export function resolveParentTargetOrigin({ handshakeOrigin = null, referrer = null, fallbackOrigin = null } = {}) {
+  for (const candidate of [handshakeOrigin, referrer, fallbackOrigin]) {
+    if (typeof candidate !== 'string' || candidate.trim() === '') continue;
+    try {
+      return new URL(candidate).origin;
+    } catch {
+      // A bare origin such as http://localhost:5173 is already accepted by URL;
+      // malformed strings are ignored so callers can fail closed.
+    }
+  }
+  return null;
+}
+
 // Fixed-window rate limiter for inbound cabinet messages (audit §4.3: "rate
 // limiting on postMessage"). A hostile/buggy cabinet flooding the parent gets
 // throttled. Pure + clock-injectable so it's deterministic in tests.

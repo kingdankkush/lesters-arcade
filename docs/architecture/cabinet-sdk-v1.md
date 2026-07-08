@@ -28,6 +28,13 @@
 
 A cabinet never receives a provider, signer, private key, full wallet write access, or direct official-state writer. The parent passes display-only identity in `buildInitContext()` and validates every `arcade.*` message through `parseInboundMessage()` before acting.
 
+WO-129 postMessage hardening is two-layered:
+
+1. **Browser transport gate:** parent shells should call `parsePostMessageEvent(event, { expectedSourceWindow, expectedOrigin, expectedGameId })` or perform the same checks before parsing. `event.source` must be the sandboxed iframe's `contentWindow`; `event.origin` must match the known embedding/cabinet origin when known.
+2. **SDK payload gate:** after source/origin pass, the payload still must pass source-tag, SDK-major, game-id, event-name, and schema validation through `parseInboundMessage()`.
+
+Cabinets must avoid wildcard posting once the parent origin is known. First-party cabinets resolve an explicit target origin from the parent handshake/referrer via `resolveParentTargetOrigin()` and fail closed if no origin is available.
+
 ## Template cabinet
 
 Reference files:

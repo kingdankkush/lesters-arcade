@@ -74,6 +74,10 @@
       write('rate-limit-flood-drop fixture sent 80 messages');
     });
     window.addEventListener('message', (event) => {
+      if (event.source !== frame.contentWindow) {
+        write('rejected rogue-frame postMessage before parsing', 'bad');
+        return;
+      }
       const msg = event.data ?? {};
       count += 1;
       const ok = msg.source === 'lesters-arcade-sdk' && typeof msg.type === 'string';

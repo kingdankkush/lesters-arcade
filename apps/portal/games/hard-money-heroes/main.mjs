@@ -1,11 +1,13 @@
-import { buildArcadeMessage } from '../../src/arcade-sdk.mjs';
+import { buildArcadeMessage, resolveParentTargetOrigin } from '../../src/arcade-sdk.mjs';
 
 const GAME_ID = 'hard-money-heroes';
 let seq = 0;
+let parentOrigin = resolveParentTargetOrigin({ referrer: document.referrer });
 
 function post(type, payload = {}) {
   const message = buildArcadeMessage(type, payload, { gameId: GAME_ID, seq: seq++ });
-  window.parent?.postMessage(message, '*');
+  const targetOrigin = parentOrigin ?? resolveParentTargetOrigin({ fallbackOrigin: window.location.origin });
+  if (targetOrigin) window.parent?.postMessage(message, targetOrigin);
   return message;
 }
 
@@ -19,6 +21,10 @@ async function boot() {
 }
 
 window.addEventListener('message', (event) => {
+  const observedOrigin = resolveParentTargetOrigin({ handshakeOrigin: event.origin });
+  if (!parentOrigin && observedOrigin) parentOrigin = observedOrigin;
+  if (parentOrigin && observedOrigin !== parentOrigin) return;
+
   const command = event.data?.command ?? event.data?.type;
   if (command === 'arcade.start') post('arcade.sessionStart', { mode: event.data?.mode === 'ranked' ? 'ranked' : 'free' });
   if (command === 'arcade.pause') document.documentElement.dataset.paused = 'true';

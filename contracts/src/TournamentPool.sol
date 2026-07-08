@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
 /// @title TournamentPool
 /// @notice Tournament records and prize-pool accounting shell for Lester's Arcade.
-contract TournamentPool {
+contract TournamentPool is ReentrancyGuard {
     struct Tournament {
         bytes32 tournamentId;
         bytes32 gameId;
@@ -14,11 +16,12 @@ contract TournamentPool {
         bool exists;
     }
 
-    address public owner;
+    address public immutable owner;
     mapping(bytes32 => Tournament) public tournaments;
 
     event TournamentCreated(bytes32 indexed tournamentId, bytes32 indexed gameId, string title, uint256 startsAt, uint256 endsAt);
     event TournamentFunded(bytes32 indexed tournamentId, uint256 amount);
+    event TournamentPrizeWithdrawn(bytes32 indexed tournamentId, address indexed recipient, uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "ONLY_OWNER");
@@ -54,11 +57,23 @@ contract TournamentPool {
         emit TournamentCreated(tournamentId, gameId, title, startsAt, endsAt);
     }
 
-    function fundTournament(bytes32 tournamentId) external payable {
+    function fundTournament(bytes32 tournamentId) external payable nonReentrant {
         require(tournaments[tournamentId].exists, "TOURNAMENT_MISSING");
         require(msg.value > 0, "EMPTY_VALUE");
 
         tournaments[tournamentId].prizePool += msg.value;
         emit TournamentFunded(tournamentId, msg.value);
+    }
+
+    function withdrawTournamentPrize(bytes32 tournamentId, address payable recipient, uint256 amount) external onlyOwner nonReentrant {
+        require(tournaments[tournamentId].exists, "TOURNAMENT_MISSING");
+        require(recipient != address(0), "EMPTY_RECIPIENT");
+        require(amount > 0, "EMPTY_AMOUNT");
+        require(tournaments[tournamentId].prizePool >= amount, "INSUFFICIENT_PRIZE_POOL");
+
+        tournaments[tournamentId].prizePool -= amount;
+        emit TournamentPrizeWithdrawn(tournamentId, recipient, amount);
+        (bool sent, ) = recipient.call{value: amount}("");
+        require(sent, "WITHDRAW_FAILED");
     }
 }

@@ -2,18 +2,18 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 9228,
+    "totalAssets": 9758,
     "totalActors": 72,
     "layerCount": 8,
     "runtimeActorCount": 37,
-    "runtimeCompleteActorCount": 11,
-    "runtimePartialActorCount": 22,
+    "runtimeCompleteActorCount": 13,
+    "runtimePartialActorCount": 20,
     "runtimeZeroAnimationActorCount": 4,
     "runtimeStrictRenderableActorCount": 34,
     "runtimeAutoRepairedZeroAnimationActorCount": 1,
     "runtimeDeferredOrPurgedZeroAnimationActorCount": 3,
     "runtimeUnresolvedZeroAnimationActorCount": 0,
-    "complianceScore": 70
+    "complianceScore": 71
   },
   "layers": {
     "runtimeAnimatedRoster": {
@@ -22,10 +22,10 @@
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 37,
-      "assetCount": 7764,
-      "animationStateCount": 205,
-      "completeActorCount": 11,
-      "partialActorCount": 22,
+      "assetCount": 8294,
+      "animationStateCount": 214,
+      "completeActorCount": 13,
+      "partialActorCount": 20,
       "zeroAnimationActorCount": 4,
       "levelOneShipEnemyCount": 23,
       "sampleKeys": [
@@ -194,11 +194,11 @@
     }
   },
   "scorecard": {
-    "overallScore": 70,
+    "overallScore": 71,
     "categories": {
       "animationCoverage": {
-        "score": 48,
-        "summary": "11/37 actors complete; 4 zero-animation actors",
+        "score": 51,
+        "summary": "13/37 actors complete; 4 zero-animation actors",
         "gaps": [
           "bit-whale-boss: zero-animation",
           "chain-reaper-boss: zero-animation",
@@ -217,14 +217,14 @@
           "lit-valkyrie: partial coverage",
           "mev-reaper: partial coverage",
           "nft-valet: partial coverage",
-          "phishing-angler: partial coverage",
           "plaza-warden: partial coverage",
-          "rattlesnake: partial coverage"
+          "rattlesnake: partial coverage",
+          "slippage-skater: partial coverage"
         ]
       },
       "sourcePolicy": {
-        "score": 16,
-        "summary": "1464/9228 counted assets carry repo-owned/original/curated policy text",
+        "score": 15,
+        "summary": "1464/9758 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {

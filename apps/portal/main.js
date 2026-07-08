@@ -952,6 +952,7 @@ function loadArcadeMusicTrack(track = currentArcadeMusicTrack()) {
 
 function renderArcadeMusicPlayer() {
   if (!dom.arcadeMusicPlayer) return;
+  dom.arcadeMusicPlayer.hidden = officialAppStep === 'gameplay';
   const track = currentArcadeMusicTrack();
   const audio = arcadeMusicAudio();
   if (audio && track && audio.dataset.trackId !== track.id) loadArcadeMusicTrack(track);
@@ -4738,6 +4739,7 @@ function renderOfficialGameplay() {
 function renderOfficialApp() {
   if (!dom.officialApp) return;
   dom.officialApp.dataset.step = officialAppStep;
+  if (dom.arcadeMusicPlayer) dom.arcadeMusicPlayer.hidden = officialAppStep === 'gameplay';
   // Drive the responsive touch-control overlay: only visible during gameplay.
   document.documentElement.dataset.ingame = officialAppStep === 'gameplay' ? 'true' : 'false';
   dom.developerBackstage.hidden = !developerBackstageOpen;
@@ -5902,6 +5904,8 @@ function renderLeaderboard() {
   const model = buildLeaderboardModel(state, { gameId: selectedGameId, wallet: connectedWallet });
   dom.leaderboardPanel.replaceChildren();
   appendText(dom.leaderboardPanel, 'h3', 'Official Ranked Leaderboard');
+  appendText(dom.leaderboardPanel, 'p', `${model.testnetDisclosure.title}: ${model.testnetDisclosure.body}`, 'tiny-note');
+  appendText(dom.leaderboardPanel, 'p', model.testnetDisclosure.leaderboardResetNotice, 'tiny-note');
   appendText(dom.leaderboardPanel, 'p', model.scoreFormula, 'tiny-note');
   if (model.topEntries.length === 0) {
     dom.leaderboardPanel.append(emptyMini('No ranked scores yet. Finish a Ranked Testnet run to sync here.'));

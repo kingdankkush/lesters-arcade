@@ -482,9 +482,9 @@ test('settlement plan routes the dev share to the dev wallet', async () => {
   });
   const route = plan.calls.find((c) => c.method === 'startPaidSession');
   assert.ok(route, 'plan should include a startPaidSession routing call');
-  // Deployed ArcadePaymentRouter.startPaidSession takes a SplitConfig struct.
-  assert.equal(route.args.split.devWallet, '0x' + 'd'.repeat(40));
-  assert.equal(route.args.paymentToken, 'zkLTC');
+  // Hardened ArcadePaymentRouter derives the dev wallet/splits from GameRegistry;
+  // the client plan may not inject routing destinations anymore.
+  assert.deepEqual(Object.keys(route.args).sort(), ['amount', 'gameId', 'sessionId']);
   assert.equal(route.args.amount, 250_000);
   assert.equal(plan.revenueSplit.dev, 137_500);
   assert.equal(plan.devWallet, '0x' + 'd'.repeat(40));
@@ -577,8 +577,25 @@ test('ranked score is filed into all five cadence boards and returns a settlemen
   applySettlement(state, settlement);
   const snapshot = buildPlayerArcadeSnapshot(state, wallet);
   assert.equal(snapshot.settlements[0].mode, 'simulated');
-  assert.ok(snapshot.settlements[0].primaryTxHash.startsWith('0x'));
-  assert.equal(state.leaderboards['lester-blaster'][0].settlementTxHash, settlement.primaryTxHash);
+  assert.equal(snapshot.settlements[0].primaryTxHash, null);
+  assert.ok(snapshot.settlements[0].primarySimulatedTxHash.startsWith('sim:'));
+  assert.equal(state.leaderboards['lester-blaster'][0].settlementTxHash, null);
+  assert.equal(state.leaderboards['lester-blaster'][0].settlementSimulatedTxHash, settlement.primarySimulatedTxHash);
+});
+
+test('applySettlement dedupes settlement retries by sessionId', async () => {
+  const { applySettlement } = await import('../apps/portal/src/arcade-core.mjs');
+  const { buildSettlementPlan, settleRun } = await import('../apps/portal/src/settlement.mjs');
+  const state = createInitialArcadeState();
+  const wallet = '0x9999999999999999999999999999999999999999';
+  const session = startPlaySession({ wallet, gameId: 'lester-blaster', mode: 'paid' });
+  recordScore(state, session, 2222, { elapsedSeconds: 99 });
+
+  const settlement = await settleRun(buildSettlementPlan({ wallet, gameId: 'lester-blaster', sessionId: session.sessionId, score: 2222 }), { live: false });
+  applySettlement(state, settlement);
+  applySettlement(state, settlement);
+
+  assert.equal(state.settlements.filter((row) => row.sessionId === session.sessionId).length, 1);
 });
 
 test('applySettlement persists a suspicious integrity verdict onto the session and flaggedSessions', async () => {
@@ -1327,6 +1344,10 @@ test('leaderboard model exposes top scores, player rank, score formula, and seas
   assert.equal(model.playerBest.score, 5000);
   assert.equal(model.scoreFormula.includes('survival'), true);
   assert.deepEqual(model.season.cadences, ['daily', 'weekly', 'monthly', 'yearly', 'all-time']);
+  assert.match(model.testnetDisclosure.title, /testnet beta/i);
+  assert.match(model.testnetDisclosure.body, /player-submitted/i);
+  assert.equal(model.testnetDisclosure.valueAttached, false);
+  assert.match(model.resetPolicy, /may reset/i);
 });
 
 test('achievement resolver adds refined unlockables for bosses, weapon mastery, no-damage, and long runs', () => {
@@ -1864,10 +1885,15 @@ test('Lester Arcade music player overlay is wired into the public UI without for
   // Level/game start picks a random opening track rather than forcing track 0.
   assert.equal(mainSource.includes('chooseArcadeMusicStartIndex'), true);
   assert.equal(mainSource.includes('normalizedIndex'), true);
+  assert.equal(mainSource.includes('dom.arcadeMusicPlayer.hidden = officialAppStep === \'gameplay\''), true, 'global jukebox must be hidden while the HMH canvas is active');
+  assert.equal(mainSource.includes('renderOfficialApp()'), true);
+  assert.equal(styleSource.includes('html[data-ingame="true"] .arcade-music-player'), true, 'global jukebox must be suppressed while root ingame mode is active');
+  assert.equal(styleSource.includes('.arcade-music-player[hidden]'), true, 'hidden music player needs explicit CSS because class display overrides user-agent hidden');
   assert.equal(styleSource.includes('.arcade-music-player'), true);
   assert.equal(styleSource.includes('.arcade-music-progress-fill'), true);
   assert.equal(styleSource.includes('[data-expanded="true"]'), true);
   assert.equal(styleSource.includes('[data-shuffle="true"]'), true);
+  assert.equal(styleSource.includes('#officialApp[data-step="officialGameplay"] .arcade-music-player'), true, 'global jukebox must not overlay the HMH spawn/combat canvas');
   assert.equal(smokeScript.includes('arcadeMusicPlayer'), true);
   assert.equal(smokeScript.includes('arcadeMusicShuffleButton'), true);
   assert.equal(smokeScript.includes('Hard Money Heroes — Main Theme'), true);

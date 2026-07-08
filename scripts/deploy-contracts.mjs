@@ -54,7 +54,7 @@ for (const file of requiredContracts) {
 console.log('=== Lester\'s Arcade Contract Deployment ===');
 console.log(`Network: LitVM LiteForge Testnet (chain ID ${CHAIN_ID})`);
 console.log(`RPC: ${RPC_URL}`);
-console.log(`Deployer: ${DEPLOYER_PRIVATE_KEY.slice(0, 6)}...${DEPLOYER_PRIVATE_KEY.slice(-4)}`);
+console.log('Deployer: resolved after wallet initialization');
 console.log('');
 
 // Load compiled contract artifacts
@@ -156,14 +156,18 @@ async function deploy() {
   addresses.gameRegistry = await gameRegistry.getAddress();
   console.log(`   Deployed at: ${addresses.gameRegistry}`);
 
-  // 3. Deploy ArcadePaymentRouter (no constructor args — needed by SessionLedger)
+  // 3. Deploy ArcadePaymentRouter (registry-derived routing; entry fees disabled by default)
   console.log('3/8: ArcadePaymentRouter...');
   const paymentRouterFactory = new ethers.ContractFactory(
     artifacts.ArcadePaymentRouter.abi,
     artifacts.ArcadePaymentRouter.bytecode,
     deployer,
   );
-  const paymentRouter = await paymentRouterFactory.deploy();
+  const paymentRouter = await paymentRouterFactory.deploy(
+    addresses.gameRegistry,
+    deployer.address,
+    deployer.address, // placeholder allowed payment token; WO-131 config replaces before approved deploy
+  );
   await paymentRouter.waitForDeployment();
   addresses.arcadePaymentRouter = await paymentRouter.getAddress();
   console.log(`   Deployed at: ${addresses.arcadePaymentRouter}`);
@@ -175,7 +179,7 @@ async function deploy() {
     artifacts.ScoreSubmissionRegistry.bytecode,
     deployer,
   );
-  const scoreSubmissions = await scoreSubmissionFactory.deploy();
+  const scoreSubmissions = await scoreSubmissionFactory.deploy(addresses.gameRegistry);
   await scoreSubmissions.waitForDeployment();
   addresses.scoreSubmissionRegistry = await scoreSubmissions.getAddress();
   console.log(`   Deployed at: ${addresses.scoreSubmissionRegistry}`);

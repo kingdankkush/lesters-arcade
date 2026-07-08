@@ -10,6 +10,7 @@ const contractFiles = [
   'contracts/src/ArcadePaymentRouter.sol',
   'contracts/src/ScoreSubmissionRegistry.sol',
   'contracts/src/SessionLedger.sol',
+  'contracts/src/PaymentRouter.sol',
   'contracts/src/AchievementRegistry.sol',
   'contracts/src/TournamentPool.sol',
   'contracts/src/LestersArcadeCore.sol',
@@ -41,13 +42,19 @@ const input = {
 
 function findImports(importPath) {
   const normalized = importPath.startsWith('./') ? importPath.slice(2) : importPath;
-  const candidate = join(root, 'contracts/src', normalized);
+  const candidates = importPath.startsWith('@openzeppelin/')
+    ? [join(root, 'node_modules', importPath)]
+    : [join(root, 'contracts/src', normalized), join(root, 'node_modules', importPath)];
 
-  try {
-    return { contents: readFileSync(candidate, 'utf8') };
-  } catch (error) {
-    return { error: `Import not found: ${importPath} (${error.message})` };
+  for (const candidate of candidates) {
+    try {
+      return { contents: readFileSync(candidate, 'utf8') };
+    } catch {
+      // Try the next import candidate.
+    }
   }
+
+  return { error: `Import not found: ${importPath}` };
 }
 
 const output = JSON.parse(solc.compile(JSON.stringify(input), { import: findImports }));

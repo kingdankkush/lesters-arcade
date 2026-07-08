@@ -96,6 +96,10 @@ export function recordCadenceScore(state, gameId, entry, { limitPerPeriod = 100 
   for (const cadence of LEADERBOARD_CADENCES) {
     const key = keys[cadence];
     const bucket = (store[cadence][key] ??= []);
+    if (baseRow.sessionId) {
+      const existing = bucket.findIndex((row) => row.sessionId === baseRow.sessionId);
+      if (existing !== -1) bucket.splice(existing, 1);
+    }
     bucket.push({ ...baseRow });
     bucket.sort((a, b) => b.score - a.score || a.recordedAt.localeCompare(b.recordedAt));
     if (bucket.length > limitPerPeriod) bucket.length = limitPerPeriod;

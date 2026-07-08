@@ -151,15 +151,10 @@ export function buildSettlementPlan({
     profileChanged: Boolean(profileChanged && username),
   });
 
-  // Split the Ranked fee: reserve settlement gas, route the rest. The dev bucket
-  // (biggest share + any unused settlement-gas remainder) goes to the dev wallet
-  // and funds future game dev + community building. Tournament/community pools
-  // get their slices. paymentToken is whatever the player paid in (LTC/zkLTC/ETH/USDC).
-  //
-  // The deployed ArcadePaymentRouter exposes `startPaidSession(sessionId,
-  // gameId, paymentToken, amount, settlementGasUsed, SplitConfig)` where
-  // SplitConfig carries the four treasury addresses + four bps values. The plan
-  // mirrors that struct exactly so a live broadcast maps 1:1 onto the ABI.
+  // Ranked is currently free on testnet. If/when paid entry is re-enabled, the
+  // hardened ArcadePaymentRouter derives token, split bps, and vaults from
+  // trusted operator/registry state. The client-side plan can only name the
+  // session, game, and amount; it cannot supply caller-controlled routing.
   let revenueSplit = null;
   let routeCall = null;
   if (Number.isInteger(entryFeeMicroUnits) && entryFeeMicroUnits > 0) {
@@ -170,19 +165,7 @@ export function buildSettlementPlan({
       args: Object.freeze({
         sessionId,
         gameId,
-        paymentToken,
         amount: entryFeeMicroUnits,
-        settlementGasUsed: revenueSplit.settlement,
-        split: Object.freeze({
-          settlementTreasury: devWalletAddress,
-          devWallet: devWalletAddress,
-          tournamentTreasury: devWalletAddress,
-          communityTreasury: devWalletAddress,
-          settlementBps: splitBps.settlement,
-          devBps: splitBps.dev,
-          tournamentBps: splitBps.tournament,
-          communityBps: splitBps.community,
-        }),
       }),
       gas: ZKLTC_SETTLEMENT_GAS.profileUpdate,
     });
@@ -220,6 +203,8 @@ export function buildSettlementPlan({
 export async function settleRun(plan, {
   live = SETTLEMENT_LIVE,
   sendTransaction = null,
+  getChainId = null,
+  allowGenericLiveSettlement = false,
   contractAddresses = LITVM_CONTRACT_ADDRESSES,
 } = {}) {
   if (!plan?.calls?.length) {
@@ -235,9 +220,20 @@ export async function settleRun(plan, {
     if (missing.length) {
       throw new Error(`live settlement blocked: missing deployed contract addresses for ${missing.join(', ')}`);
     }
+    if (!allowGenericLiveSettlement) {
+      throw new Error('generic live settlement path is disabled; use litvm-chain-client.mjs for production writes');
+    }
+    if (typeof getChainId !== 'function') {
+      throw new Error('generic live settlement requires a fresh getChainId check before broadcast');
+    }
 
     const receipts = [];
     for (const call of plan.calls) {
+      // eslint-disable-next-line no-await-in-loop
+      const freshChainId = await getChainId();
+      if (Number(freshChainId) !== Number(plan.network.chainId)) {
+        throw new Error(`wrong chain before broadcast: wallet is on ${freshChainId}, expected ${plan.network.chainId}`);
+      }
       // eslint-disable-next-line no-await-in-loop
       const txHash = await sendTransaction({
         to: contractAddresses[call.contract],
@@ -266,9 +262,14 @@ export async function settleRun(plan, {
   const receipts = plan.calls.map((call, index) => ({
     contract: call.contract,
     method: call.method,
-    txHash: hexHash([plan.sessionId, plan.wallet, plan.gameId, call.method, index]),
+    txHash: null,
+    simulatedTxHash: `sim:${hexHash([plan.sessionId, plan.wallet, plan.gameId, call.method, index]).slice(2)}`,
     simulated: true,
   }));
+
+  const primarySimulatedTxHash = receipts.find((r) => r.method === 'submitSession')?.simulatedTxHash
+    ?? receipts[0]?.simulatedTxHash
+    ?? null;
 
   return {
     mode: 'simulated',
@@ -279,7 +280,8 @@ export async function settleRun(plan, {
     score: plan.score,
     cadenceKeys: { ...plan.cadenceKeys },
     receipts,
-    primaryTxHash: receipts.find((r) => r.method === 'submitSession')?.txHash ?? receipts[0]?.txHash ?? null,
+    primaryTxHash: null,
+    primarySimulatedTxHash,
     settledAt: new Date().toISOString(),
     note: 'Simulated settlement. No on-chain transaction was sent. Enable SETTLEMENT_LIVE after contract deploy + approval.',
   };

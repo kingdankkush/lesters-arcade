@@ -2208,6 +2208,15 @@ button.menu-card.menu-option.interactive:active {
 
 .arcade-music-player audio { display: none; }
 
+html[data-ingame="true"] .arcade-music-player,
+.arcade-music-player[hidden] {
+  display: none !important;
+}
+
+#officialApp[data-step="officialGameplay"] .arcade-music-player {
+  display: none;
+}
+
 .arcade-music-now {
   display: grid;
   grid-template-columns: 1fr auto;

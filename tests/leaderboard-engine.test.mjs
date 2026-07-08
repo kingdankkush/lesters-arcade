@@ -39,6 +39,19 @@ test('a recorded run files into all five buckets', () => {
   }
 });
 
+test('recordCadenceScore dedupes retries by sessionId in every cadence bucket', () => {
+  const state = {};
+  const t = '2026-03-15T12:00:00Z';
+  recordCadenceScore(state, GAME, { wallet: W1, sessionId: 'session-dedupe-1', score: 500, recordedAt: t });
+  recordCadenceScore(state, GAME, { wallet: W1, sessionId: 'session-dedupe-1', score: 500, recordedAt: t });
+
+  for (const cadence of LEADERBOARD_CADENCES) {
+    const board = getLeaderboard(state, GAME, cadence, { now: '2026-03-15T13:00:00Z' });
+    assert.equal(board.topEntries.length, 1, `${cadence} should contain one row for the session`);
+    assert.equal(board.topEntries[0].sessionId, 'session-dedupe-1');
+  }
+});
+
 test('daily board only shows scores from the current day', () => {
   const state = {};
   recordCadenceScore(state, GAME, { wallet: W1, score: 100, recordedAt: '2026-03-14T10:00:00Z' });

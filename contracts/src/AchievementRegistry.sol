@@ -22,7 +22,7 @@ contract AchievementRegistry {
     mapping(bytes32 => Achievement) public achievements;      // id => Achievement definition
     mapping(address => mapping(bytes32 => uint256)) public unlockedAt; // wallet => achievementId => block.timestamp
     bytes32[] public achievementIds;
-    address public sessionLedger;  // authorized submitter
+    address public immutable sessionLedger;  // authorized submitter
 
     event AchievementDefined(bytes32 indexed id, string title, string category);
     event AchievementUnlocked(address indexed wallet, bytes32 indexed achievementId, uint256 when);
@@ -33,6 +33,7 @@ contract AchievementRegistry {
     }
 
     constructor(address _sessionLedger) {
+        require(_sessionLedger != address(0), "Invalid ledger");
         sessionLedger = _sessionLedger;
     }
 

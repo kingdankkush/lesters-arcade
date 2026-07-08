@@ -46,7 +46,7 @@ contract PlayerProfileRegistry {
     }
 
     function _writeProfile(string calldata displayName, string calldata avatarUri) private {
-        bytes32 handle = keccak256(abi.encodePacked(displayName));
+        bytes32 handle = _normalizedHandle(displayName);
         if (handleOwners[handle] != address(0) && handleOwners[handle] != msg.sender) {
             revert("Handle taken");
         }
@@ -78,6 +78,49 @@ contract PlayerProfileRegistry {
         profiles[msg.sender].avatarUri = avatarUri;
         profiles[msg.sender].lastUpdated = block.timestamp;
         emit ProfileUpdated(msg.sender, displayName, avatarUri);
+    }
+
+    function _normalizedHandle(string calldata displayName) private pure returns (bytes32) {
+        bytes memory raw = bytes(displayName);
+        uint256 start = 0;
+        while (start < raw.length && raw[start] == 0x20) start++;
+
+        uint256 end = raw.length;
+        while (end > start && raw[end - 1] == 0x20) end--;
+
+        bytes memory normalized = new bytes(end - start);
+        uint256 length = 0;
+        bool lastWasSpace = false;
+        for (uint256 i = start; i < end; i++) {
+            bytes1 ch = raw[i];
+            if (ch >= 0x41 && ch <= 0x5A) {
+                ch = bytes1(uint8(ch) + 32);
+            }
+
+            bool valid = (ch >= 0x61 && ch <= 0x7A)
+                || (ch >= 0x30 && ch <= 0x39)
+                || ch == 0x20
+                || ch == 0x5f
+                || ch == 0x2d
+                || ch == 0x2e;
+            require(valid, "Invalid handle char");
+
+            if (ch == 0x20) {
+                if (lastWasSpace) continue;
+                lastWasSpace = true;
+            } else {
+                lastWasSpace = false;
+            }
+
+            normalized[length++] = ch;
+        }
+
+        require(length >= 3, "Handle too short");
+        require(length <= 18, "Handle too long");
+
+        bytes memory compact = new bytes(length);
+        for (uint256 i = 0; i < length; i++) compact[i] = normalized[i];
+        return keccak256(compact);
     }
 
     /// @notice Gas-free read path.
