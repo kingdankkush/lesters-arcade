@@ -76,6 +76,30 @@ test('playable hero manifests do not carry QA-green placeholder identity or tiny
   }
 });
 
+test('no playable hero frame keeps the tiny QA triangle/robot placeholder signature', () => {
+  for (const key of PLAYABLE_ROSTERS) {
+    const entry = HMH_ANIMATED_ROSTER[key];
+    for (const [state, dirs] of Object.entries(entry.animations ?? {})) {
+      for (const [direction, frames] of Object.entries(dirs ?? {})) {
+        for (const frame of frames ?? []) {
+          const resolved = resolveRuntimeAsset(frame);
+          const dims = pngDimensions(resolved);
+          assert.ok(dims.bytes >= 950, `${key}/${state}/${direction}/${path.basename(frame)} is still a tiny placeholder-like frame (${dims.bytes} bytes)`);
+        }
+      }
+    }
+  }
+});
+
+test('character-select rotation display scales normalize Lester and Lilly without shrinking them', () => {
+  const src = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  assert.equal(src.includes("'lit-commando': 1.1"), true);
+  assert.equal(src.includes("'lit-valkyrie': 1.1"), true);
+  assert.equal(src.includes("lester: 1.23"), true);
+  assert.equal(src.includes("'lester-original': 1.23"), true);
+  assert.equal(src.includes("lilly: 1.23"), true);
+});
+
 test('Commando and Valkyrie are DISTINCT designs (no shared roster)', () => {
   assert.notEqual(HERO_LOCKED_ROSTER['lit-commando'], HERO_LOCKED_ROSTER['lit-valkyrie']);
 });

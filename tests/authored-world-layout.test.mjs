@@ -183,7 +183,7 @@ test('Level 1 PixelLab candidate upgrades replace generic route reads in the aut
 
   const districtUpgrades = Object.entries(LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES);
   assert.equal(districtUpgrades.length, 5, 'each Level 1 district should get a PixelLab map-art upgrade set');
-  assert.equal(districtUpgrades.every(([, objects]) => objects.length >= 3), true, 'each district should receive multiple route-readable art upgrades');
+  assert.equal(districtUpgrades.every(([, objects]) => objects.length >= 8), true, 'each district should receive dense, route-readable art upgrades instead of barren map scatter');
 
   const desert = getAllAuthoredSceneObjects('desert-approach', 'level-1-crypto-wasteland');
   assert.equal(desert.some((obj) => obj.assetKey === LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS.gasStationCanopy && obj.pixelLabRuntimeUpgrade), true);

@@ -1770,14 +1770,15 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
 // Order directions clockwise (E → NE → N → NW → W → SW → S → SE) for a natural spin.
 const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
 const HERO_ROTATION_DISPLAY_SCALE = Object.freeze({
-  // Lester/Lilly source frames are cropped tighter than the 136px starter canvases;
-  // scale the display only so all four heroes read as the same on-card size while
-  // preserving their restored original pixels and gameplay hitboxes.
-  lester: 0.98,
-  'lester-original': 0.98,
-  lilly: 1.02,
-  'lit-commando': 1,
-  'lit-valkyrie': 1,
+  // Measured from restored idle nontransparent bounds after the art repair pass:
+  // Commando/Valkyrie max height ≈107px; Lester/Lilly max height ≈96px. These
+  // are display-only card scales so character-select rotations read at the same
+  // size without touching gameplay pixels, hitboxes, or source sprite files.
+  'lit-commando': 1.1,
+  'lit-valkyrie': 1.1,
+  lester: 1.23,
+  'lester-original': 1.23,
+  lilly: 1.23,
 });
 function heroRotationSprite(characterId) {
   // USE THE SAME ROSTER KEY AS GAMEPLAY so the character-select spinning sprite

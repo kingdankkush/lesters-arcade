@@ -80,3 +80,28 @@ test('WO-18 runtime and CLI are wired for the purge/auto-repair pass', () => {
   assert.equal(syntaxCheck.includes('scripts/art-purge-repair.mjs'), true, 'repair CLI should be syntax checked');
   assert.equal(syntaxCheck.includes('tests/hmh-art-purge-repair.test.mjs'), true, 'WO-18 tests should be syntax checked');
 });
+
+test('runtime roster does not ship known QA-green triangle enemy kits after art repair', () => {
+  for (const key of ['fud-goblin', 'gas-fee-wisp', 'gas-beast-tank', 'claim-jumper']) {
+    const actor = HMH_ANIMATED_ROSTER[key];
+    assert.ok(actor, `${key} should exist`);
+    assert.equal(String(actor.character_id ?? '').startsWith('qa-green-native-'), false, `${key} still has QA-green metadata`);
+    for (const [state, dirs] of Object.entries(actor.animations ?? {})) {
+      for (const [direction, frames] of Object.entries(dirs ?? {})) {
+        for (const src of frames ?? []) {
+          const path = new URL(`../apps/portal/${src.replace(/^\.\//, '')}`, import.meta.url);
+          const bytes = readFileSync(path).byteLength;
+          assert.ok(bytes >= 950, `${key}/${state}/${direction}/${src} is still a tiny triangle-placeholder-like PNG`);
+        }
+      }
+    }
+  }
+});
+
+test('Gas Fee Wisp stays quarantined from normal Level 1 spawn pools until bespoke art exists', () => {
+  const core = repoText('apps/portal/src/arcade-core.mjs');
+  assert.equal(core.includes("id: 'gas-fee-wisp'"), true);
+  assert.equal(core.includes("artStatus: 'quarantined-until-bespoke-wisp-art-replaces-gas-beast-proxy'"), true);
+  assert.equal(core.includes("id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 9999"), true);
+  assert.equal(core.includes("id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 35"), false);
+});

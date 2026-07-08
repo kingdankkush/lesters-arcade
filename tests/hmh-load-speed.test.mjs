@@ -11,13 +11,13 @@ function repoText(relativePath) {
 
 test('WO-36 index boots through optimized dist bundle with first-screen preload hints', () => {
   const index = repoText('apps/portal/index.html');
-  assert.equal(index.includes('src="./dist/main.js?v=hmh-aaa-art-v25"'), true);
-  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-aaa-art-v25"'), true);
+  assert.equal(index.includes('src="./dist/main.js?v=hmh-aaa-art-v26"'), true);
+  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-aaa-art-v26"'), true);
   assert.equal(index.includes('hard-money-heroes-keyart-bg.jpg'), true);
   assert.equal(index.includes('fetchpriority="high"'), true);
   const sw = repoText('apps/portal/sw.js');
   assert.equal(sw.includes("'/dist/main.js'"), true);
-  assert.equal(sw.includes('v2-dist-bundle'), true);
+  assert.equal(sw.includes('v3-hmh-art-v26'), true);
 });
 
 test('WO-36 Vercel build generates the optimized dist bundle before deploy', () => {

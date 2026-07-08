@@ -1697,7 +1697,7 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
   },
   "gas-fee-wisp": {
     "role": "enemy",
-    "character_id": "qa-green-native-gas-fee-wisp-v1",
+    "character_id": "gas-fee-wisp-quarantined-gas-beast-proxy-v2",
     "animations": {
       "attack": {
         "south": [
@@ -2377,7 +2377,7 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
   },
   "fud-goblin": {
     "role": "enemy",
-    "character_id": "qa-green-native-fud-goblin-v1",
+    "character_id": "fud-goblin-bonus-promoted-v2",
     "animations": {
       "attack": {
         "south": [
@@ -5969,7 +5969,7 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
   },
   "gas-beast-tank": {
     "role": "enemy",
-    "character_id": "qa-green-native-gas-beast-tank-v1",
+    "character_id": "gas-beast-canonical-promoted-v2",
     "animations": {
       "attack": {
         "south": [
@@ -12015,7 +12015,7 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
   },
   "claim-jumper": {
     "role": "enemy",
-    "character_id": "qa-green-native-claim-jumper-v1",
+    "character_id": "claim-jumper-cowboy-promoted-v2",
     "animations": {
       "attack": {
         "south": [
