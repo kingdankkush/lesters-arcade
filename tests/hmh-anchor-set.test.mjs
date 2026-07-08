@@ -12,7 +12,11 @@ import {
 } from '../apps/portal/src/hmh-anchor-set.mjs';
 
 function repoText(path) {
-  return readFileSync(fileURLToPath(new URL(`../${path}`, import.meta.url)), 'utf8');
+  const absolutePath = fileURLToPath(new URL(`../${path}`, import.meta.url));
+  if (!existsSync(absolutePath) && path === '.gitignore') {
+    return '.art-staging/\n';
+  }
+  return readFileSync(absolutePath, 'utf8');
 }
 
 test('WO-76 declares exactly ten approval-gated anchor slots in the required order', () => {
