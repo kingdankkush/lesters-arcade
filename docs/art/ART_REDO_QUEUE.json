@@ -3,7 +3,7 @@
   "generatedBy": "scripts/art-redo-queue.mjs",
   "sourceCensus": {
     "version": "wo-17-global-art-census-v1",
-    "complianceScore": 74,
+    "complianceScore": 80,
     "path": "docs/art/GLOBAL_ART_CENSUS.json"
   },
   "summary": {

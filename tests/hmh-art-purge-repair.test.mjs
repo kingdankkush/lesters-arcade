@@ -34,14 +34,14 @@ test('WO-109 redesigned runtime actors now render directly instead of through WO
   assert.equal(Object.keys(HMH_ART_AUTO_REPAIR_MAP).includes('liquidation-cascade-golem'), true, 'legacy repair map keeps provenance until the full purge pass removes it deliberately');
 });
 
-test('WO-18 auto-repair still protects remaining zero-animation runtime/deferred actors', () => {
+test('WO-18 auto-repair has no remaining zero-animation runtime/deferred actors after the native critical pass', () => {
   const remainingRepairKeys = ['warren-spear-rider', 'chain-reaper-boss', 'bit-whale-boss', 'rugpull-summoner'];
   for (const key of remainingRepairKeys) {
-    assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[key]), false, `${key} should still be a real zero-animation input`);
-    const repaired = repairRuntimeActorKey(key, HMH_ANIMATED_ROSTER);
-    assert.equal(repaired.repaired, true, `${key} should still resolve to a renderable fallback/deferred actor`);
-    assert.notEqual(repaired.key, key);
-    assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[repaired.key]), true, `${key} replacement should render`);
+    assert.equal(actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[key]), true, `${key} should now be a renderable native actor`);
+    const resolved = repairRuntimeActorKey(key, HMH_ANIMATED_ROSTER);
+    assert.equal(resolved.key, key);
+    assert.equal(resolved.repaired, false, `${key} should no longer require a repair fallback`);
+    assert.equal(resolved.action, 'keep');
   }
 });
 
@@ -59,13 +59,13 @@ test('WO-18 purge/repair plan separates fixed actors, runtime repairs, and defer
   const plan = buildArtPurgeRepairPlan({ roster: HMH_ANIMATED_ROSTER });
 
   assert.equal(plan.version, 'wo-18-art-purge-repair-v1');
-  assert.equal(plan.summary.keptRenderableCount, 4);
-  assert.equal(plan.summary.autoRepairCount, 1);
-  assert.equal(plan.summary.deferOrPurgeCount, 3);
+  assert.equal(plan.summary.keptRenderableCount, 8);
+  assert.equal(plan.summary.autoRepairCount, 0);
+  assert.equal(plan.summary.deferOrPurgeCount, 0);
   assert.equal(plan.summary.unresolvedCount, 0);
   assert.ok(plan.repairs.some((entry) => entry.from === 'liquidation-cascade-golem' && entry.action === 'keep'));
-  assert.ok(plan.repairs.some((entry) => entry.from === 'warren-spear-rider' && entry.action === 'auto-repair'));
-  assert.ok(plan.repairs.some((entry) => entry.from === 'bit-whale-boss' && /defer|purge/.test(entry.action)));
+  assert.ok(plan.repairs.some((entry) => entry.from === 'warren-spear-rider' && entry.action === 'keep'));
+  assert.ok(plan.repairs.some((entry) => entry.from === 'bit-whale-boss' && entry.action === 'keep'));
   assert.ok(plan.runtimeGuardrails.every((entry) => actorHasRenderableAnimations(HMH_ANIMATED_ROSTER[entry.resolvedKey])));
 });
 

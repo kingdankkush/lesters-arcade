@@ -25,7 +25,7 @@
     "heroCount": 4,
     "coreCertifiedHeroCount": 4,
     "failedHeroCount": 0,
-    "averageMinFramesPerState": 7.69
+    "averageMinFramesPerState": 8
   },
   "finalCompletionPack": {
     "id": "hmh-final-animation-completion-v1",
@@ -40,7 +40,7 @@
   "heroes": [
     {
       "key": "lester",
-      "characterId": "canonical-reference-lester",
+      "characterId": "qa-green-native-lester-v1",
       "role": "hero",
       "coreCertified": true,
       "states": [
@@ -55,56 +55,56 @@
         {
           "state": "walk",
           "directionsPresent": 8,
-          "minFrames": 12,
-          "maxFrames": 12,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "run",
           "directionsPresent": 8,
-          "minFrames": 12,
-          "maxFrames": 12,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "shoot",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "melee",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "throw",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "hurt",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "death",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         }
@@ -124,14 +124,14 @@
       },
       "smoothness": {
         "pass": true,
-        "minFramesPerStateDirection": 7,
-        "maxFramesPerStateDirection": 12,
+        "minFramesPerStateDirection": 8,
+        "maxFramesPerStateDirection": 8,
         "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
       }
     },
     {
       "key": "lilly",
-      "characterId": "canonical-reference-lilly",
+      "characterId": "qa-green-native-lilly-v1",
       "role": "hero",
       "coreCertified": true,
       "states": [
@@ -146,56 +146,56 @@
         {
           "state": "walk",
           "directionsPresent": 8,
-          "minFrames": 12,
-          "maxFrames": 12,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "run",
           "directionsPresent": 8,
-          "minFrames": 12,
-          "maxFrames": 12,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "shoot",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "melee",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "throw",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "hurt",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "death",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         }
@@ -215,78 +215,78 @@
       },
       "smoothness": {
         "pass": true,
-        "minFramesPerStateDirection": 7,
-        "maxFramesPerStateDirection": 12,
+        "minFramesPerStateDirection": 8,
+        "maxFramesPerStateDirection": 8,
         "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
       }
     },
     {
       "key": "lit-commando",
-      "characterId": "c96d19d1-8958-4fcd-b517-9dfded9e0051",
+      "characterId": "qa-green-native-lit-commando-v1",
       "role": "hero",
       "coreCertified": true,
       "states": [
         {
           "state": "idle",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "walk",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "run",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "shoot",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "melee",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "throw",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "hurt",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "death",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         }
@@ -306,78 +306,78 @@
       },
       "smoothness": {
         "pass": true,
-        "minFramesPerStateDirection": 7,
-        "maxFramesPerStateDirection": 7,
+        "minFramesPerStateDirection": 8,
+        "maxFramesPerStateDirection": 8,
         "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
       }
     },
     {
       "key": "lit-valkyrie",
-      "characterId": "74b5efc0-e7d8-4400-85f5-9db85ef05db9",
+      "characterId": "qa-green-native-lit-valkyrie-v1",
       "role": "hero",
       "coreCertified": true,
       "states": [
         {
           "state": "idle",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "walk",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "run",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "shoot",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "melee",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "throw",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "hurt",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         },
         {
           "state": "death",
           "directionsPresent": 8,
-          "minFrames": 7,
-          "maxFrames": 7,
+          "minFrames": 8,
+          "maxFrames": 8,
           "complete": true,
           "smooth": true
         }
@@ -397,8 +397,8 @@
       },
       "smoothness": {
         "pass": true,
-        "minFramesPerStateDirection": 7,
-        "maxFramesPerStateDirection": 7,
+        "minFramesPerStateDirection": 8,
+        "maxFramesPerStateDirection": 8,
         "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
       }
     }

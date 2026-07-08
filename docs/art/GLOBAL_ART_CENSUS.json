@@ -2,18 +2,18 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 10134,
+    "totalAssets": 16299,
     "totalActors": 72,
     "layerCount": 8,
     "runtimeActorCount": 37,
-    "runtimeCompleteActorCount": 21,
-    "runtimePartialActorCount": 12,
-    "runtimeZeroAnimationActorCount": 4,
-    "runtimeStrictRenderableActorCount": 34,
-    "runtimeAutoRepairedZeroAnimationActorCount": 1,
-    "runtimeDeferredOrPurgedZeroAnimationActorCount": 3,
+    "runtimeCompleteActorCount": 33,
+    "runtimePartialActorCount": 4,
+    "runtimeZeroAnimationActorCount": 0,
+    "runtimeStrictRenderableActorCount": 37,
+    "runtimeAutoRepairedZeroAnimationActorCount": 0,
+    "runtimeDeferredOrPurgedZeroAnimationActorCount": 0,
     "runtimeUnresolvedZeroAnimationActorCount": 0,
-    "complianceScore": 74
+    "complianceScore": 80
   },
   "layers": {
     "runtimeAnimatedRoster": {
@@ -22,11 +22,11 @@
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 37,
-      "assetCount": 8670,
-      "animationStateCount": 221,
-      "completeActorCount": 21,
-      "partialActorCount": 12,
-      "zeroAnimationActorCount": 4,
+      "assetCount": 14835,
+      "animationStateCount": 288,
+      "completeActorCount": 33,
+      "partialActorCount": 4,
+      "zeroAnimationActorCount": 0,
       "levelOneShipEnemyCount": 23,
       "sampleKeys": [
         "lester",
@@ -194,33 +194,21 @@
     }
   },
   "scorecard": {
-    "overallScore": 74,
+    "overallScore": 80,
     "categories": {
       "animationCoverage": {
-        "score": 66,
-        "summary": "21/37 actors complete; 4 zero-animation actors",
+        "score": 92,
+        "summary": "33/37 actors complete; 0 zero-animation actors",
         "gaps": [
-          "bit-whale-boss: zero-animation",
-          "chain-reaper-boss: zero-animation",
-          "rugpull-summoner: zero-animation",
-          "warren-spear-rider: zero-animation",
           "bitcoin-maximalist-riot-cop: partial coverage",
-          "bridge-exploiter: partial coverage",
           "influencer-camera-drone: partial coverage",
-          "lester: partial coverage",
-          "lilly: partial coverage",
-          "lit-commando: partial coverage",
-          "lit-valkyrie: partial coverage",
           "nft-valet: partial coverage",
-          "plaza-warden: partial coverage",
-          "stablecoin-socialite: partial coverage",
-          "the-obfuscator: partial coverage",
-          "whale-dumper-boss: partial coverage"
+          "stablecoin-socialite: partial coverage"
         ]
       },
       "sourcePolicy": {
-        "score": 14,
-        "summary": "1464/10134 counted assets carry repo-owned/original/curated policy text",
+        "score": 9,
+        "summary": "1464/16299 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {
@@ -237,14 +225,14 @@
         "score": 100,
         "summary": {
           "runtimeActorCount": 37,
-          "rawZeroAnimationActorCount": 4,
-          "autoRepairedZeroAnimationActorCount": 1,
-          "deferredOrPurgedZeroAnimationActorCount": 3,
-          "ruledZeroAnimationActorCount": 4,
+          "rawZeroAnimationActorCount": 0,
+          "autoRepairedZeroAnimationActorCount": 0,
+          "deferredOrPurgedZeroAnimationActorCount": 0,
+          "ruledZeroAnimationActorCount": 0,
           "unresolvedZeroAnimationActorCount": 0,
-          "strictRenderableActorCount": 34
+          "strictRenderableActorCount": 37
         },
-        "text": "4/4 zero-animation actor(s) have runtime repair or defer/purge rulings; 34/37 actors remain strict-runtime renderable.",
+        "text": "0/0 zero-animation actor(s) have runtime repair or defer/purge rulings; 37/37 actors remain strict-runtime renderable.",
         "gaps": []
       }
     }

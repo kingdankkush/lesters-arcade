@@ -2,61 +2,14 @@
   "version": "wo-18-art-purge-repair-v1",
   "generatedBy": "scripts/art-purge-repair.mjs",
   "summary": {
-    "inspectedZeroAnimationActorCount": 4,
+    "inspectedZeroAnimationActorCount": 0,
     "keptRenderableCount": 0,
-    "autoRepairCount": 1,
-    "deferOrPurgeCount": 3,
+    "autoRepairCount": 0,
+    "deferOrPurgeCount": 0,
     "unresolvedCount": 0
   },
-  "repairs": [
-    {
-      "from": "bit-whale-boss",
-      "to": "whale-dumper-boss",
-      "resolvedKey": "whale-dumper-boss",
-      "action": "defer-or-purge",
-      "repaired": true,
-      "sourceRenderable": false,
-      "targetRenderable": true,
-      "reason": "Not proven in current Level 1 runtime scope; existing whale-dumper-boss is the renderable boss fallback."
-    },
-    {
-      "from": "chain-reaper-boss",
-      "to": "whale-dumper-boss",
-      "resolvedKey": "whale-dumper-boss",
-      "action": "defer-or-purge",
-      "repaired": true,
-      "sourceRenderable": false,
-      "targetRenderable": true,
-      "reason": "Not proven in current Level 1 runtime scope; keep out of live selection unless a future boss beat explicitly needs it."
-    },
-    {
-      "from": "rugpull-summoner",
-      "to": "scam-cult-zealot",
-      "resolvedKey": "scam-cult-zealot",
-      "action": "defer-or-purge",
-      "repaired": true,
-      "sourceRenderable": false,
-      "targetRenderable": true,
-      "reason": "Not proven in current Level 1 runtime scope; defer until a summoner encounter is authored."
-    },
-    {
-      "from": "warren-spear-rider",
-      "to": "coyote-pack-runner",
-      "resolvedKey": "coyote-pack-runner",
-      "action": "auto-repair",
-      "repaired": true,
-      "sourceRenderable": false,
-      "targetRenderable": true,
-      "reason": "Handoff keep candidate has zero frames; coyote-pack-runner preserves fast pressure readability."
-    }
-  ],
-  "runtimeGuardrails": [
-    {
-      "originalKey": "warren-spear-rider",
-      "resolvedKey": "coyote-pack-runner",
-      "reason": "Handoff keep candidate has zero frames; coyote-pack-runner preserves fast pressure readability."
-    }
-  ],
+  "repairs": [],
+  "runtimeGuardrails": [],
   "purgePolicy": [
     "Auto-repair only runtime-spawnable actor keys that would otherwise render invisible.",
     "Defer-or-purge zero-animation actors that are not proven in the current Level 1 runtime scope.",
@@ -64,8 +17,8 @@
   ],
   "approvedCensus": {
     "version": "wo-17-global-art-census-v1",
-    "complianceScore": 74,
-    "zeroAnimationActorCount": 4,
+    "complianceScore": 80,
+    "zeroAnimationActorCount": 0,
     "source": "docs/art/GLOBAL_ART_CENSUS.json"
   }
 }

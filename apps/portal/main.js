@@ -113,7 +113,7 @@ import HMH_ASSET_FOOTPRINTS from './assets/hmh-asset-footprints.json' with { typ
 function animatedSceneAssetByKey(key) {
   return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key) ?? levelThreeFinalGetawayAssetByKey(key);
 }
-import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles } from './src/combat-vfx.mjs';
+import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles, getFinalCombatVfxPack } from './src/combat-vfx.mjs';
 import { buildUpgradeMenuPresentation } from './src/hmh-upgrade-menu-ui.mjs';
 import { buildCombatFeedbackPlan } from './src/hmh-combat-feedback.mjs';
 import { HMH_COPY_SHEET } from './src/hmh-copy-sheet.mjs';
@@ -660,6 +660,16 @@ function buildVfxUiChromeSpriteIndex(items = []) {
   }]));
 }
 
+function buildFinalCombatVfxSpriteIndex(items = []) {
+  return Object.fromEntries(items.map((item) => [item.key, {
+    slug: item.key,
+    ...item,
+    frameCount: item.frames ?? item.frameCount ?? 1,
+    image: item.src ? loadImageAsset(item.src) : null,
+    frames: [],
+  }]));
+}
+
 function buildProductionArtPass() {
   return {
     sourceAssetCount: hmh('HMH_ISOMETRIC_PIXELLAB_WAVE_1')?.assets?.length ?? 0,
@@ -672,6 +682,7 @@ function buildProductionArtPass() {
     weapons: buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.weapons),
     vfx: {
       ...buildProductionSpriteIndex(hmh('HMH_PRODUCTION_ART_PASS')?.vfx),
+      ...buildFinalCombatVfxSpriteIndex(getFinalCombatVfxPack()?.assets),
       ...buildVfxUiChromeSpriteIndex(hmh('HMH_VFX_UI_CHROME_PACK')?.vfx),
     },
     ui: {
@@ -2717,7 +2728,7 @@ function renderRoguelikeStatBar() {
   if (bar.dataset.signature === signature) return;
   bar.dataset.signature = signature;
   bar.replaceChildren();
-  const heroChip = el('span', { className: 'stat-hero' });
+  const heroChip = el('span', { className: 'stat-hero', dataset: { uiChrome: 'combat-hud-frame' } });
   heroChip.textContent = heroName;
   bar.append(heroChip);
   const chips = el('div', { className: 'stat-chips' });
@@ -7264,6 +7275,7 @@ function collectCombatPowerUp(power) {
     combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
   }
   if (power.effect === 'scoreMultiplier') spawnText('2X SCORE', power.x, power.y - 20, '#ffe84d');
+  spawnSpriteParticle('coin-pickup-pop', power.x + 12, power.y - 10, { color: '#ffe84d', size: 62, life: 0.58 });
   playSfxCue('pickup', 0.055);
   spawnText(power.title, power.x, power.y - 28, '#45ff8a');
 }
@@ -7370,8 +7382,9 @@ function spawnExplosion(x, y, color) {
 function spawnGrenadeExplosion(x, y) {
   if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(14, (combat.shake ?? 0) + 8);
   const palette = ['#ffe84d', '#ffb347', '#ff5f1f', '#dc143c', '#fff3a0'];
-  // Bright white-hot core flash — short lived but huge.
+  // Bright white-hot core flash plus the manifest-backed P0 grenade ring.
   spawnSpriteParticle('explosion-core', x, y, { color: '#fff5cc', size: 200, life: 0.28, scaleFrom: 0.5, scaleTo: 1.4 });
+  spawnSpriteParticle('grenade-explosion-ring', x, y, { color: '#ffe84d', size: 148, life: 0.62 });
   // Secondary fireball sprite for punch.
   spawnFxImage('fireball', x, y, 140, 0.55);
   // Main warm-color spray
@@ -12399,22 +12412,43 @@ function drawParticleSprite(ctx, particle) {
     return true;
   }
   const sprite = combatArt.production?.vfx?.[particle.type];
-  if (!sprite?.frames?.length) return false;
+  if (!sprite) return false;
   const lifeRatio = 1 - Math.max(0, Math.min(1, particle.life / Math.max(0.01, particle.maxLife ?? particle.life ?? 1)));
-  const frameIndex = Math.min(sprite.frames.length - 1, Math.floor(lifeRatio * sprite.frames.length));
-  const image = sprite.frames[frameIndex]?.image;
+  const sheetFrameCount = Math.max(0, Math.round(Number(sprite.frames?.length || sprite.frames || sprite.frameCount || 0)));
+  const frameIndex = Math.max(0, Math.min(Math.max(0, sheetFrameCount - 1), Math.floor(lifeRatio * Math.max(1, sheetFrameCount))));
+  const frameMeta = Array.isArray(sprite.frames) && sprite.frames.length ? sprite.frames[frameIndex] : null;
+  const image = frameMeta?.image ?? sprite.image;
   if (!imageReady(image)) return false;
-  const size = particle.size ?? Math.max(sprite.frames[frameIndex]?.width ?? 32, sprite.frames[frameIndex]?.height ?? 32);
+  const nativeWidth = frameMeta?.width ?? sprite.frameWidth ?? sprite.width ?? 32;
+  const nativeHeight = frameMeta?.height ?? sprite.frameHeight ?? sprite.height ?? nativeWidth;
+  const size = particle.size ?? Math.max(nativeWidth, nativeHeight);
+  const drawW = particle.drawWidth ?? size;
+  const drawH = particle.drawHeight ?? Math.round(size * (nativeHeight / Math.max(1, nativeWidth)));
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   ctx.globalAlpha = Math.max(0.25, Math.min(1, (particle.life / Math.max(0.01, particle.maxLife ?? particle.life ?? 1)) + 0.1));
-  if (particle.rotation) {
-    ctx.translate(particle.x, particle.y);
-    ctx.rotate(particle.rotation);
-    ctx.drawImage(image, -size / 2, -size / 2, size, size);
-  } else {
-    ctx.drawImage(image, Math.round(particle.x - size / 2), Math.round(particle.y - size / 2), size, size);
-  }
+  const drawAtOrigin = () => {
+    if (frameMeta?.image) {
+      ctx.drawImage(image, Math.round(-drawW / 2), Math.round(-drawH / 2), drawW, drawH);
+    } else if (sprite.animated && sheetFrameCount > 1 && sprite.frameWidth && sprite.frameHeight) {
+      ctx.drawImage(
+        image,
+        frameIndex * sprite.frameWidth,
+        0,
+        sprite.frameWidth,
+        sprite.frameHeight,
+        Math.round(-drawW / 2),
+        Math.round(-drawH / 2),
+        drawW,
+        drawH,
+      );
+    } else {
+      ctx.drawImage(image, Math.round(-drawW / 2), Math.round(-drawH / 2), drawW, drawH);
+    }
+  };
+  ctx.translate(Math.round(particle.x), Math.round(particle.y));
+  if (particle.rotation) ctx.rotate(particle.rotation);
+  drawAtOrigin();
   ctx.restore();
   return true;
 }

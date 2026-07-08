@@ -2,33 +2,33 @@
   "actorKey": "gas-fee-wisp",
   "role": "enemy",
   "summary": {
-    "status": "fail",
+    "status": "pass",
     "sampledFrameCount": 16
   },
   "checks": [
     {
       "id": "transparency",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "id": "palette",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "id": "completeness",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "id": "dimensions",
       "status": "pass",
       "canvases": {
-        "92x92": 16
+        "96x96": 16
       }
     },
     {
       "id": "pivot-stability",
-      "status": "fail",
-      "maxDelta": 20.26
+      "status": "pass",
+      "maxDelta": 0
     },
     {
       "id": "tell-duration",
@@ -36,18 +36,9 @@
     }
   ],
   "completeness": {
-    "status": "fail",
-    "missingStates": [
-      "spawn-in"
-    ],
-    "partialDirections": {
-      "run": {
-        "matchedState": "run",
-        "missingDirections": [
-          "north-east"
-        ]
-      }
-    },
+    "status": "pass",
+    "missingStates": [],
+    "partialDirections": {},
     "tooShortStates": {}
   },
   "tellDuration": {
@@ -55,14 +46,14 @@
     "tellFrames": 22,
     "fps": 12,
     "coverageFrames": {
-      "south": 25,
-      "south-east": 25,
-      "east": 25,
-      "north-east": 25,
-      "north": 25,
-      "north-west": 25,
-      "west": 25,
-      "south-west": 25
+      "south": 50,
+      "south-east": 50,
+      "east": 50,
+      "north-east": 50,
+      "north": 50,
+      "north-west": 50,
+      "west": 50,
+      "south-west": 50
     },
     "shortDirections": []
   },
@@ -80,66 +71,17 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1190,
-        "offPaletteCount": 1104,
-        "offPaletteRatio": 0.9277,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 574,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 275,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#f27c39",
-            "count": 71,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 45,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#b93736",
-            "count": 43,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#eb6840",
-            "count": 37,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#db5543",
-            "count": 31,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#f9c04e",
-            "count": 17,
-            "nearest": "#f1d37a",
-            "distance": 48.59
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "south",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/south/04.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/south/07.png",
       "transparency": {
         "status": "pass",
         "failures": [],
@@ -149,60 +91,11 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1536,
-        "offPaletteCount": 1430,
-        "offPaletteRatio": 0.931,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 606,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 464,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#db5543",
-            "count": 184,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#f27c39",
-            "count": 58,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#b93736",
-            "count": 41,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 18,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#eb6840",
-            "count": 18,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 9,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
@@ -215,69 +108,20 @@
         "opaqueCornerCount": 0,
         "haloPixelCount": 0,
         "strayIslandCount": 0,
-        "componentCount": 2
+        "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1043,
-        "offPaletteCount": 972,
-        "offPaletteRatio": 0.9319,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 532,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 258,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#b93736",
-            "count": 45,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 40,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f27c39",
-            "count": 35,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#eb6840",
-            "count": 25,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#f9c04e",
-            "count": 13,
-            "nearest": "#f1d37a",
-            "distance": 48.59
-          },
-          {
-            "hex": "#db5543",
-            "count": 13,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "south-east",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/south-east/06.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/south-east/07.png",
       "transparency": {
         "status": "pass",
         "failures": [],
@@ -287,60 +131,11 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1406,
-        "offPaletteCount": 1183,
-        "offPaletteRatio": 0.8414,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 649,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 271,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#fc7c26",
-            "count": 51,
-            "nearest": "#c9a34e",
-            "distance": 75.64
-          },
-          {
-            "hex": "#b93736",
-            "count": 38,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 26,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f69828",
-            "count": 26,
-            "nearest": "#c9a34e",
-            "distance": 59.92
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 16,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          },
-          {
-            "hex": "#e7712e",
-            "count": 14,
-            "nearest": "#b07a3d",
-            "distance": 57.71
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
@@ -356,129 +151,31 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1036,
-        "offPaletteCount": 1004,
-        "offPaletteRatio": 0.9691,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 505,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 361,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#b93736",
-            "count": 32,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f27c39",
-            "count": 29,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#eb6840",
-            "count": 25,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 19,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 15,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          },
-          {
-            "hex": "#db5543",
-            "count": 13,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "east",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/east/06.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/east/07.png",
       "transparency": {
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
         "haloPixelCount": 0,
         "strayIslandCount": 0,
-        "componentCount": 2
+        "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1360,
-        "offPaletteCount": 1311,
-        "offPaletteRatio": 0.964,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 863,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 273,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#b93736",
-            "count": 42,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#eb6840",
-            "count": 28,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#f27c39",
-            "count": 20,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 18,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#db5543",
-            "count": 16,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#fe7a22",
-            "count": 14,
-            "nearest": "#c9a34e",
-            "distance": 80.16
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
@@ -494,131 +191,31 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1134,
-        "offPaletteCount": 1107,
-        "offPaletteRatio": 0.9762,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 498,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 412,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#eb6840",
-            "count": 67,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#b93736",
-            "count": 47,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 32,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f27c39",
-            "count": 23,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#db5543",
-            "count": 16,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 9,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "north-east",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/north-east/06.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/north-east/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "stray-islands"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
         "haloPixelCount": 0,
-        "strayIslandCount": 1,
-        "componentCount": 2
+        "strayIslandCount": 0,
+        "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1205,
-        "offPaletteCount": 1138,
-        "offPaletteRatio": 0.9444,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 551,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 297,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#eb6840",
-            "count": 63,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#b93736",
-            "count": 60,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 26,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#db5543",
-            "count": 26,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#fb9820",
-            "count": 21,
-            "nearest": "#c9a34e",
-            "distance": 68.83
-          },
-          {
-            "hex": "#f56b2d",
-            "count": 21,
-            "nearest": "#b07a3d",
-            "distance": 72.4
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
@@ -634,66 +231,17 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1259,
-        "offPaletteCount": 1258,
-        "offPaletteRatio": 0.9992,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 813,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 261,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#b93736",
-            "count": 46,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#db5543",
-            "count": 43,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#f27c39",
-            "count": 32,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 24,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#eb6840",
-            "count": 23,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#f9c04e",
-            "count": 7,
-            "nearest": "#f1d37a",
-            "distance": 48.59
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "north",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/north/06.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/north/07.png",
       "transparency": {
         "status": "pass",
         "failures": [],
@@ -703,60 +251,11 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1477,
-        "offPaletteCount": 1453,
-        "offPaletteRatio": 0.9838,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 962,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 178,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#b93736",
-            "count": 99,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#fb7d1f",
-            "count": 41,
-            "nearest": "#c9a34e",
-            "distance": 78.44
-          },
-          {
-            "hex": "#f27c39",
-            "count": 32,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 27,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 24,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f16c27",
-            "count": 12,
-            "nearest": "#b07a3d",
-            "distance": 70.04
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
@@ -772,66 +271,17 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1103,
-        "offPaletteCount": 1078,
-        "offPaletteRatio": 0.9773,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 503,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 401,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#eb6840",
-            "count": 51,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#b93736",
-            "count": 46,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f27c39",
-            "count": 35,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 20,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 8,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          },
-          {
-            "hex": "#db5543",
-            "count": 6,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/north-west/06.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/north-west/07.png",
       "transparency": {
         "status": "pass",
         "failures": [],
@@ -841,60 +291,11 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1107,
-        "offPaletteCount": 856,
-        "offPaletteRatio": 0.7733,
-        "offendingHexes": [
-          {
-            "hex": "#eb6840",
-            "count": 309,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#fab535",
-            "count": 224,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 181,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 38,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f27c39",
-            "count": 33,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#b93736",
-            "count": 23,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#a23734",
-            "count": 19,
-            "nearest": "#8c6724",
-            "distance": 55.17
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 12,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
@@ -910,66 +311,17 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1089,
-        "offPaletteCount": 1013,
-        "offPaletteRatio": 0.9302,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 519,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 357,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#b93736",
-            "count": 26,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 25,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f27c39",
-            "count": 25,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#db5543",
-            "count": 22,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#eb6840",
-            "count": 14,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#f9c04e",
-            "count": 11,
-            "nearest": "#f1d37a",
-            "distance": 48.59
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/west/06.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/west/07.png",
       "transparency": {
         "status": "pass",
         "failures": [],
@@ -979,60 +331,11 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1588,
-        "offPaletteCount": 1333,
-        "offPaletteRatio": 0.8394,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 522,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 369,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#fe8020",
-            "count": 102,
-            "nearest": "#c9a34e",
-            "distance": 78.42
-          },
-          {
-            "hex": "#b93736",
-            "count": 58,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#fe8918",
-            "count": 25,
-            "nearest": "#c9a34e",
-            "distance": 80.01
-          },
-          {
-            "hex": "#ffd134",
-            "count": 24,
-            "nearest": "#f1d37a",
-            "distance": 71.41
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 20,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#fea81e",
-            "count": 19,
-            "nearest": "#c9a34e",
-            "distance": 71.68
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
@@ -1048,66 +351,17 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1206,
-        "offPaletteCount": 1005,
-        "offPaletteRatio": 0.8333,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 570,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 264,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#b93736",
-            "count": 52,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f27c39",
-            "count": 39,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#eb6840",
-            "count": 26,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 23,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#db5543",
-            "count": 17,
-            "nearest": "#b07a3d",
-            "distance": 57.04
-          },
-          {
-            "hex": "#f9c04e",
-            "count": 7,
-            "nearest": "#f1d37a",
-            "distance": 48.59
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
       "state": "attack",
       "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/south-west/06.png",
+      "file": "./assets/generated/hmh-animated-roster/gas-fee-wisp/attack/south-west/07.png",
       "transparency": {
         "status": "pass",
         "failures": [],
@@ -1117,60 +371,11 @@
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 1480,
-        "offPaletteCount": 1209,
-        "offPaletteRatio": 0.8169,
-        "offendingHexes": [
-          {
-            "hex": "#fab535",
-            "count": 434,
-            "nearest": "#c9a34e",
-            "distance": 57.88
-          },
-          {
-            "hex": "#f98932",
-            "count": 431,
-            "nearest": "#c9a34e",
-            "distance": 61.35
-          },
-          {
-            "hex": "#f9e9aa",
-            "count": 147,
-            "nearest": "#f4f0d8",
-            "distance": 46.8
-          },
-          {
-            "hex": "#b93736",
-            "count": 86,
-            "nearest": "#b07a3d",
-            "distance": 67.96
-          },
-          {
-            "hex": "#f7a63a",
-            "count": 28,
-            "nearest": "#c9a34e",
-            "distance": 50.25
-          },
-          {
-            "hex": "#f27c39",
-            "count": 19,
-            "nearest": "#c9a34e",
-            "distance": 60.36
-          },
-          {
-            "hex": "#fa9b2a",
-            "count": 15,
-            "nearest": "#c9a34e",
-            "distance": 61.33
-          },
-          {
-            "hex": "#eb6840",
-            "count": 12,
-            "nearest": "#b07a3d",
-            "distance": 61.76
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1641,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     }
   ]

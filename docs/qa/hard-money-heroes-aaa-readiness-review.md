@@ -1,7 +1,7 @@
 # Hard Money Heroes AAA Readiness Review
 
 Generated: 2026-07-08T18:11:56Z  
-Repository baseline: `cc9e85e6` (`web3-security-v22` production cache token)
+Repository baseline: `cc9e85e6` (`hmh-aaa-art-v23` production cache token)
 
 ## Verdict
 
@@ -12,7 +12,7 @@ The shipped production site is serving the latest wallet/security frontend and t
 ## Live/pushed status
 
 - Live domain: `https://lestersarcade.io/`
-- Production HTML cache token verified: `web3-security-v22`
+- Production HTML cache token verified: `hmh-aaa-art-v23`
 - Old token absent: `ui-chrome-v21`
 - Stable live wallet markers verified in split chunk:
   - `user-cancelled`

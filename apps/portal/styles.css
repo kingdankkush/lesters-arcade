@@ -1207,6 +1207,88 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .hud-widget[data-tone="warning"] { border-color: rgba(255, 232, 77, 0.58); }
 .hud-widget[data-widget="status"] { grid-column: span 2; }
 
+.roguelike-stat-bar {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(130px, 0.34fr);
+  gap: 8px;
+  align-items: stretch;
+  width: min(1180px, calc(100vw - 48px));
+  margin: 8px auto 6px;
+  padding: 6px;
+  border: 1px solid rgba(25, 247, 255, 0.18);
+  border-radius: 18px;
+  background:
+    url('./assets/generated/hmh-vfx-ui-chrome/combat-hud-frame.png'),
+    linear-gradient(90deg, rgba(25, 247, 255, 0.08), transparent 18%, transparent 82%, rgba(255, 95, 162, 0.08)),
+    linear-gradient(180deg, rgba(4, 10, 24, 0.52), rgba(4, 10, 24, 0.22));
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 24px rgba(25, 247, 255, 0.08), inset 0 0 18px rgba(255, 255, 255, 0.025);
+  pointer-events: none;
+}
+
+.stat-hero,
+.stat-chip,
+.stat-xp,
+.stat-fx span {
+  border: 1px solid rgba(25, 247, 255, 0.24);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(3, 9, 22, 0.82), rgba(21, 7, 34, 0.68)),
+    radial-gradient(circle at top right, rgba(25, 247, 255, 0.14), transparent 7rem);
+  box-shadow: inset 0 0 18px rgba(25, 247, 255, 0.05), 0 0 18px rgba(0, 0, 0, 0.22);
+}
+
+.stat-hero {
+  display: grid;
+  align-content: center;
+  min-width: 92px;
+  padding: 9px 10px;
+  color: white;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-left-color: rgba(69, 255, 138, 0.62);
+}
+
+.stat-chips {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(76px, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.stat-chip {
+  min-height: 42px;
+  padding: 7px 8px;
+  text-align: left;
+}
+.stat-chip span,
+.stat-chip strong,
+.stat-chip small { display: block; }
+.stat-chip span { color: var(--muted); font-size: 0.52rem; letter-spacing: 0.13em; }
+.stat-chip strong { color: white; font-size: clamp(0.66rem, 1.08vw, 0.86rem); line-height: 1.1; }
+.stat-chip[data-tone="red"] { border-color: rgba(255, 71, 111, 0.58); }
+.stat-chip[data-tone="gold"] { border-color: rgba(255, 232, 77, 0.54); }
+.stat-chip[data-tone="green"] { border-color: rgba(69, 255, 138, 0.54); }
+.stat-chip[data-tone="orange"] { border-color: rgba(255, 123, 47, 0.54); }
+.stat-chip[data-tone="cyan"] { border-color: rgba(25, 247, 255, 0.52); }
+
+.stat-xp { display: grid; align-content: center; gap: 5px; padding: 8px; border-right-color: rgba(255, 95, 162, 0.55); }
+.stat-xp span { color: var(--neon-yellow); font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.stat-xp-track { height: 6px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,0.1); }
+.stat-xp-fill { height: 100%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green), var(--neon-yellow)); }
+.stat-fx { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.stat-fx span { padding: 4px 7px; color: var(--neon-cyan); font-size: 0.56rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+@media (max-width: 900px) {
+  .roguelike-stat-bar { grid-template-columns: 1fr; }
+  .stat-chips { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 .hmh-combat-hud-frame {
   padding: 6px;
   border: 1px solid rgba(25, 247, 255, 0.18);

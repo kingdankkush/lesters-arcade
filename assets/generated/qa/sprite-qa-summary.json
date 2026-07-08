@@ -1,55 +1,55 @@
 {
   "generatedBy": "scripts/sprite-qa.mjs",
   "actorCount": 8,
-  "passCount": 0,
+  "passCount": 8,
   "warnCount": 0,
-  "failCount": 8,
+  "failCount": 0,
   "reports": [
     {
       "actorKey": "lester",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/lester-qa.json",
       "pngPath": "assets/generated/qa/lester-qa.png"
     },
     {
       "actorKey": "lilly",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/lilly-qa.json",
       "pngPath": "assets/generated/qa/lilly-qa.png"
     },
     {
       "actorKey": "lit-commando",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/lit-commando-qa.json",
       "pngPath": "assets/generated/qa/lit-commando-qa.png"
     },
     {
       "actorKey": "lit-valkyrie",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/lit-valkyrie-qa.json",
       "pngPath": "assets/generated/qa/lit-valkyrie-qa.png"
     },
     {
       "actorKey": "fud-goblin",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/fud-goblin-qa.json",
       "pngPath": "assets/generated/qa/fud-goblin-qa.png"
     },
     {
       "actorKey": "gas-fee-wisp",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/gas-fee-wisp-qa.json",
       "pngPath": "assets/generated/qa/gas-fee-wisp-qa.png"
     },
     {
       "actorKey": "claim-jumper",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/claim-jumper-qa.json",
       "pngPath": "assets/generated/qa/claim-jumper-qa.png"
     },
     {
       "actorKey": "gas-beast-tank",
-      "status": "fail",
+      "status": "pass",
       "jsonPath": "assets/generated/qa/gas-beast-tank-qa.json",
       "pngPath": "assets/generated/qa/gas-beast-tank-qa.png"
     }

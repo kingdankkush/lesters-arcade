@@ -19,8 +19,9 @@ MANIFEST = ROSTER / "hmh-animated-roster.mjs"
 DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
 CANONICAL_ANIMS = [
     "idle", "walk", "run",
-    "shoot", "shoot-shotgun", "melee", "throw", "levelup",
-    "attack-tell", "attack", "attack-ranged", "hit", "hurt", "death", "spawn", "special",
+    "shoot", "shoot-shotgun", "melee", "throw", "levelup", "dash", "victory",
+    "attack-tell", "attack", "attack-ranged", "hit", "hurt", "death",
+    "spawn", "spawn-in", "enrage", "special", "phase-transition",
 ]
 
 
@@ -57,11 +58,11 @@ def main() -> None:
     for actor_dir in sorted([p for p in ROSTER.iterdir() if p.is_dir()]):
         animations = build_actor_animations(actor_dir)
         previous = prior.get(actor_dir.name, {})
-        rebuilt[actor_dir.name] = {
-            "role": previous.get("role", "enemy"),
-            "character_id": previous.get("character_id"),
-            "animations": animations if animations else previous.get("animations", {}),
-        }
+        updated = dict(previous)
+        updated["role"] = previous.get("role", "enemy")
+        updated["character_id"] = previous.get("character_id")
+        updated["animations"] = animations if animations else previous.get("animations", {})
+        rebuilt[actor_dir.name] = updated
     LEDGER.write_text(json.dumps(rebuilt, indent=2), encoding="utf-8")
     body = json.dumps(rebuilt, indent=2)
     MANIFEST.write_text(

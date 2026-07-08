@@ -15,23 +15,34 @@ function buildReport() {
   return buildRosterCoverageReport({ repoRoot: ROOT });
 }
 
-test('roster coverage report inventories every actor and flags known Wave 3 gaps', () => {
+test('roster coverage report inventories every actor and reflects the native critical animation pass', () => {
   const report = buildReport();
 
   assert.ok(report.summary.actorCount >= 37, `expected current animated roster actor count, got ${report.summary.actorCount}`);
-  assert.equal(report.actors.lester.states.dash.status, 'missing');
+  assert.equal(report.summary.zeroAnimationActorCount, 0);
+  assert.equal(report.actors.lester.states.dash.status, 'complete');
+  assert.equal(report.actors.lester.states.victory.status, 'complete');
   assert.equal(report.actors['gas-beast-tank'].summary.status, 'complete');
   assert.equal(report.actors['crypto-bro-rusher'].summary.status, 'complete');
   assert.equal(report.actors['liquidation-cascade-golem'].summary.status, 'complete');
-  assert.equal(report.actors['chain-reaper-boss'].summary.status, 'zero-animation');
+  assert.equal(report.actors['chain-reaper-boss'].summary.status, 'complete');
+  assert.equal(report.actors['bit-whale-boss'].summary.status, 'complete');
+  assert.equal(report.actors['warren-spear-rider'].summary.status, 'complete');
   assert.equal(report.actors['fud-goblin'].states['attack-tell'].directionCount, 8);
   assert.equal(report.actors['fud-goblin'].states['attack-tell'].status, 'complete');
 });
 
-test('runtime-derived readability covers spawn-ins and missing telegraphs without fake placeholder art', () => {
+test('runtime-derived readability remains marked for actors that are not yet native-promoted', () => {
   const report = buildReport();
 
-  for (const actorKey of ['fud-goblin', 'gas-fee-wisp', 'coyote-pack-runner', 'wild-boar', 'buzzard', 'rattlesnake']) {
+  for (const actorKey of ['fud-goblin', 'gas-fee-wisp']) {
+    const spawn = report.actors[actorKey].states['spawn-in'];
+    assert.equal(spawn.status, 'complete', `${actorKey} should have a complete native spawn-in state`);
+    assert.equal(spawn.derived, false, `${actorKey} spawn-in should now be native, not derived`);
+    assert.doesNotMatch(spawn.matchedState, /^derived:/, `${actorKey} should not report native art as derived`);
+  }
+
+  for (const actorKey of ['coyote-pack-runner', 'wild-boar', 'buzzard', 'rattlesnake']) {
     const spawn = report.actors[actorKey].states['spawn-in'];
     assert.equal(spawn.status, 'complete', `${actorKey} should have a complete runtime spawn-in state`);
     assert.equal(spawn.derived, true, `${actorKey} spawn-in should be explicitly marked as derived runtime readability`);

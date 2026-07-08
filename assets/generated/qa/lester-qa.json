@@ -2,34 +2,33 @@
   "actorKey": "lester",
   "role": "hero",
   "summary": {
-    "status": "fail",
+    "status": "pass",
     "sampledFrameCount": 16
   },
   "checks": [
     {
       "id": "transparency",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "id": "palette",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "id": "completeness",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "id": "dimensions",
-      "status": "warn",
+      "status": "pass",
       "canvases": {
-        "50x96": 8,
-        "52x96": 8
+        "96x96": 16
       }
     },
     {
       "id": "pivot-stability",
       "status": "pass",
-      "maxDelta": 0.5
+      "maxDelta": 0
     },
     {
       "id": "tell-duration",
@@ -37,11 +36,8 @@
     }
   ],
   "completeness": {
-    "status": "fail",
-    "missingStates": [
-      "dash",
-      "victory"
-    ],
+    "status": "pass",
+    "missingStates": [],
     "partialDirections": {},
     "tooShortStates": {}
   },
@@ -52,856 +48,323 @@
   },
   "frameChecks": [
     {
-      "state": "death",
+      "state": "dash",
       "direction": "south",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/south/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/south/00.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 3264,
-        "offPaletteCount": 296,
-        "offPaletteRatio": 0.0907,
-        "offendingHexes": [
-          {
-            "hex": "#2642c0",
-            "count": 76,
-            "nearest": "#345d9d",
-            "distance": 46.37
-          },
-          {
-            "hex": "#2744c4",
-            "count": 71,
-            "nearest": "#345d9d",
-            "distance": 48.11
-          },
-          {
-            "hex": "#2645c2",
-            "count": 37,
-            "nearest": "#345d9d",
-            "distance": 46.27
-          },
-          {
-            "hex": "#2946c4",
-            "count": 26,
-            "nearest": "#345d9d",
-            "distance": 46.59
-          },
-          {
-            "hex": "#2844c8",
-            "count": 20,
-            "nearest": "#345d9d",
-            "distance": 51.17
-          },
-          {
-            "hex": "#2a46c7",
-            "count": 9,
-            "nearest": "#345d9d",
-            "distance": 48.92
-          },
-          {
-            "hex": "#a3989b",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 49.9
-          },
-          {
-            "hex": "#9a8f90",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 65.34
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "south",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/south/06.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/south/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 3,
-        "componentCount": 4
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3353,
-        "offPaletteCount": 86,
-        "offPaletteRatio": 0.0256,
-        "offendingHexes": [
-          {
-            "hex": "#88807e",
-            "count": 31,
-            "nearest": "#5c6b80",
-            "distance": 48.8
-          },
-          {
-            "hex": "#868083",
-            "count": 30,
-            "nearest": "#5c6b80",
-            "distance": 47.05
-          },
-          {
-            "hex": "#888181",
-            "count": 19,
-            "nearest": "#5c6b80",
-            "distance": 49.2
-          },
-          {
-            "hex": "#8b8483",
-            "count": 6,
-            "nearest": "#5c6b80",
-            "distance": 53.32
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "south-east",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/south-east/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/south-east/00.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 3264,
-        "offPaletteCount": 296,
-        "offPaletteRatio": 0.0907,
-        "offendingHexes": [
-          {
-            "hex": "#2642c0",
-            "count": 76,
-            "nearest": "#345d9d",
-            "distance": 46.37
-          },
-          {
-            "hex": "#2744c4",
-            "count": 71,
-            "nearest": "#345d9d",
-            "distance": 48.11
-          },
-          {
-            "hex": "#2645c2",
-            "count": 37,
-            "nearest": "#345d9d",
-            "distance": 46.27
-          },
-          {
-            "hex": "#2946c4",
-            "count": 26,
-            "nearest": "#345d9d",
-            "distance": 46.59
-          },
-          {
-            "hex": "#2844c8",
-            "count": 20,
-            "nearest": "#345d9d",
-            "distance": 51.17
-          },
-          {
-            "hex": "#2a46c7",
-            "count": 9,
-            "nearest": "#345d9d",
-            "distance": 48.92
-          },
-          {
-            "hex": "#a3989b",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 49.9
-          },
-          {
-            "hex": "#9a8f90",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 65.34
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "south-east",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/south-east/06.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/south-east/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 3,
-        "componentCount": 4
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3353,
-        "offPaletteCount": 86,
-        "offPaletteRatio": 0.0256,
-        "offendingHexes": [
-          {
-            "hex": "#88807e",
-            "count": 31,
-            "nearest": "#5c6b80",
-            "distance": 48.8
-          },
-          {
-            "hex": "#868083",
-            "count": 30,
-            "nearest": "#5c6b80",
-            "distance": 47.05
-          },
-          {
-            "hex": "#888181",
-            "count": 19,
-            "nearest": "#5c6b80",
-            "distance": 49.2
-          },
-          {
-            "hex": "#8b8483",
-            "count": 6,
-            "nearest": "#5c6b80",
-            "distance": 53.32
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "east",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/east/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/east/00.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3264,
-        "offPaletteCount": 154,
-        "offPaletteRatio": 0.0472,
-        "offendingHexes": [
-          {
-            "hex": "#2743c1",
-            "count": 71,
-            "nearest": "#345d9d",
-            "distance": 46.27
-          },
-          {
-            "hex": "#2843c4",
-            "count": 20,
-            "nearest": "#345d9d",
-            "distance": 48.38
-          },
-          {
-            "hex": "#2a45c3",
-            "count": 9,
-            "nearest": "#345d9d",
-            "distance": 46.04
-          },
-          {
-            "hex": "#a19598",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 54.28
-          },
-          {
-            "hex": "#988d8e",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 68.51
-          },
-          {
-            "hex": "#6971ac",
-            "count": 8,
-            "nearest": "#5c6b80",
-            "distance": 46.27
-          },
-          {
-            "hex": "#8b8183",
-            "count": 6,
-            "nearest": "#5c6b80",
-            "distance": 51.98
-          },
-          {
-            "hex": "#81784e",
-            "count": 6,
-            "nearest": "#8c6724",
-            "distance": 46.63
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "east",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/east/06.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/east/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 3,
-        "componentCount": 4
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3353,
-        "offPaletteCount": 25,
-        "offPaletteRatio": 0.0075,
-        "offendingHexes": [
-          {
-            "hex": "#87807f",
-            "count": 19,
-            "nearest": "#5c6b80",
-            "distance": 47.86
-          },
-          {
-            "hex": "#888181",
-            "count": 6,
-            "nearest": "#5c6b80",
-            "distance": 49.2
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "north-east",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/north-east/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/north-east/00.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3264,
-        "offPaletteCount": 45,
-        "offPaletteRatio": 0.0138,
-        "offendingHexes": [
-          {
-            "hex": "#a09493",
-            "count": 14,
-            "nearest": "#a8b4c4",
-            "distance": 59.07
-          },
-          {
-            "hex": "#95898c",
-            "count": 9,
-            "nearest": "#5c6b80",
-            "distance": 65.52
-          },
-          {
-            "hex": "#8c8182",
-            "count": 9,
-            "nearest": "#5c6b80",
-            "distance": 52.84
-          },
-          {
-            "hex": "#888795",
-            "count": 4,
-            "nearest": "#5c6b80",
-            "distance": 56.22
-          },
-          {
-            "hex": "#897e5a",
-            "count": 3,
-            "nearest": "#b07a3d",
-            "distance": 48.76
-          },
-          {
-            "hex": "#8184a9",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 60.62
-          },
-          {
-            "hex": "#817f96",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 47.47
-          },
-          {
-            "hex": "#817850",
-            "count": 2,
-            "nearest": "#8c6724",
-            "distance": 48.44
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "north-east",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/north-east/06.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/north-east/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 3,
-        "componentCount": 4
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3353,
+        "opaqueCount": 1609,
         "offPaletteCount": 0,
         "offPaletteRatio": 0,
         "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "north",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/north/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/north/00.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3264,
-        "offPaletteCount": 45,
-        "offPaletteRatio": 0.0138,
-        "offendingHexes": [
-          {
-            "hex": "#a09493",
-            "count": 14,
-            "nearest": "#a8b4c4",
-            "distance": 59.07
-          },
-          {
-            "hex": "#95898c",
-            "count": 9,
-            "nearest": "#5c6b80",
-            "distance": 65.52
-          },
-          {
-            "hex": "#8c8182",
-            "count": 9,
-            "nearest": "#5c6b80",
-            "distance": 52.84
-          },
-          {
-            "hex": "#888795",
-            "count": 4,
-            "nearest": "#5c6b80",
-            "distance": 56.22
-          },
-          {
-            "hex": "#897e5a",
-            "count": 3,
-            "nearest": "#b07a3d",
-            "distance": 48.76
-          },
-          {
-            "hex": "#8184a9",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 60.62
-          },
-          {
-            "hex": "#817f96",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 47.47
-          },
-          {
-            "hex": "#817850",
-            "count": 2,
-            "nearest": "#8c6724",
-            "distance": 48.44
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "north",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/north/06.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/north/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 3,
-        "componentCount": 4
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3353,
+        "opaqueCount": 1609,
         "offPaletteCount": 0,
         "offPaletteRatio": 0,
         "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/north-west/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/north-west/00.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3264,
-        "offPaletteCount": 45,
-        "offPaletteRatio": 0.0138,
-        "offendingHexes": [
-          {
-            "hex": "#a09493",
-            "count": 14,
-            "nearest": "#a8b4c4",
-            "distance": 59.07
-          },
-          {
-            "hex": "#8c8182",
-            "count": 9,
-            "nearest": "#5c6b80",
-            "distance": 52.84
-          },
-          {
-            "hex": "#95898c",
-            "count": 9,
-            "nearest": "#5c6b80",
-            "distance": 65.52
-          },
-          {
-            "hex": "#888795",
-            "count": 4,
-            "nearest": "#5c6b80",
-            "distance": 56.22
-          },
-          {
-            "hex": "#897e5a",
-            "count": 3,
-            "nearest": "#b07a3d",
-            "distance": 48.76
-          },
-          {
-            "hex": "#817f96",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 47.47
-          },
-          {
-            "hex": "#8184a9",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 60.62
-          },
-          {
-            "hex": "#817850",
-            "count": 2,
-            "nearest": "#8c6724",
-            "distance": 48.44
-          }
-        ]
-      }
-    },
-    {
-      "state": "death",
-      "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/north-west/06.png",
-      "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 4,
-        "componentCount": 5
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 3353,
+        "opaqueCount": 1609,
         "offPaletteCount": 0,
         "offPaletteRatio": 0,
         "offendingHexes": []
       }
     },
     {
-      "state": "death",
-      "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/west/00.png",
+      "state": "dash",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/north-west/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3264,
-        "offPaletteCount": 154,
-        "offPaletteRatio": 0.0472,
-        "offendingHexes": [
-          {
-            "hex": "#2743c1",
-            "count": 71,
-            "nearest": "#345d9d",
-            "distance": 46.27
-          },
-          {
-            "hex": "#2843c4",
-            "count": 20,
-            "nearest": "#345d9d",
-            "distance": 48.38
-          },
-          {
-            "hex": "#2a45c3",
-            "count": 9,
-            "nearest": "#345d9d",
-            "distance": 46.04
-          },
-          {
-            "hex": "#988d8e",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 68.51
-          },
-          {
-            "hex": "#a19598",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 54.28
-          },
-          {
-            "hex": "#6971ac",
-            "count": 8,
-            "nearest": "#5c6b80",
-            "distance": 46.27
-          },
-          {
-            "hex": "#8b8183",
-            "count": 6,
-            "nearest": "#5c6b80",
-            "distance": 51.98
-          },
-          {
-            "hex": "#81784e",
-            "count": 6,
-            "nearest": "#8c6724",
-            "distance": 46.63
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
+      "state": "dash",
       "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/west/06.png",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/west/00.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 4,
-        "componentCount": 5
-      },
-      "palette": {
         "status": "pass",
-        "opaqueCount": 3353,
-        "offPaletteCount": 25,
-        "offPaletteRatio": 0.0075,
-        "offendingHexes": [
-          {
-            "hex": "#87807f",
-            "count": 19,
-            "nearest": "#5c6b80",
-            "distance": 47.86
-          },
-          {
-            "hex": "#888181",
-            "count": 6,
-            "nearest": "#5c6b80",
-            "distance": 49.2
-          }
-        ]
-      }
-    },
-    {
-      "state": "death",
-      "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/south-west/00.png",
-      "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 94,
+        "haloPixelCount": 0,
         "strayIslandCount": 0,
         "componentCount": 1
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 3264,
-        "offPaletteCount": 296,
-        "offPaletteRatio": 0.0907,
-        "offendingHexes": [
-          {
-            "hex": "#2642c0",
-            "count": 76,
-            "nearest": "#345d9d",
-            "distance": 46.37
-          },
-          {
-            "hex": "#2744c4",
-            "count": 71,
-            "nearest": "#345d9d",
-            "distance": 48.11
-          },
-          {
-            "hex": "#2645c2",
-            "count": 37,
-            "nearest": "#345d9d",
-            "distance": 46.27
-          },
-          {
-            "hex": "#2946c4",
-            "count": 26,
-            "nearest": "#345d9d",
-            "distance": 46.59
-          },
-          {
-            "hex": "#2844c8",
-            "count": 20,
-            "nearest": "#345d9d",
-            "distance": 51.17
-          },
-          {
-            "hex": "#2a46c7",
-            "count": 9,
-            "nearest": "#345d9d",
-            "distance": 48.92
-          },
-          {
-            "hex": "#9a8f90",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 65.34
-          },
-          {
-            "hex": "#a3989b",
-            "count": 9,
-            "nearest": "#a8b4c4",
-            "distance": 49.9
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "death",
-      "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/lester/death/south-west/06.png",
+      "state": "dash",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/west/07.png",
       "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo",
-          "stray-islands"
-        ],
+        "status": "pass",
+        "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 109,
-        "strayIslandCount": 4,
-        "componentCount": 5
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 3353,
-        "offPaletteCount": 86,
-        "offPaletteRatio": 0.0256,
-        "offendingHexes": [
-          {
-            "hex": "#88807e",
-            "count": 31,
-            "nearest": "#5c6b80",
-            "distance": 48.8
-          },
-          {
-            "hex": "#868083",
-            "count": 30,
-            "nearest": "#5c6b80",
-            "distance": 47.05
-          },
-          {
-            "hex": "#888181",
-            "count": 19,
-            "nearest": "#5c6b80",
-            "distance": 49.2
-          },
-          {
-            "hex": "#8b8483",
-            "count": 6,
-            "nearest": "#5c6b80",
-            "distance": 53.32
-          }
-        ]
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
+      }
+    },
+    {
+      "state": "dash",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/south-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
+      }
+    },
+    {
+      "state": "dash",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lester/dash/south-west/07.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 1609,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     }
   ]
