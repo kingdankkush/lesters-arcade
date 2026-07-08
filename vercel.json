@@ -4,6 +4,29 @@
   "installCommand": "npm install",
   "buildCommand": "npm run vercel:build",
   "outputDirectory": "apps/portal",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://lestersarcade.io; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https://liteforge.rpc.caldera.xyz wss://liteforge.rpc.caldera.xyz https://liteforge.explorer.caldera.xyz https://liteforge.hub.caldera.xyz https://testnet.litvm.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=(), payment=()"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/",
