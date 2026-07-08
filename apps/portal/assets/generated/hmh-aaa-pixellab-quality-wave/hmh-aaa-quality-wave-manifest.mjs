@@ -1798,6 +1798,302 @@ export const HMH_AAA_QUALITY_WAVE = Object.freeze({
     "role": "enemy",
     "character_id": "18b038b4-c84a-4f32-b725-fc7a083eba62",
     "animations": {
+      "attack-tell": {
+        "west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/west/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/06.png"
+        ]
+      },
+      "attack": {
+        "north-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-east/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/06.png"
+        ]
+      },
+      "run": {
+        "east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/east/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/06.png"
+        ]
+      },
+      "idle": {
+        "south-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-east/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/06.png"
+        ],
+        "south": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/00.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/01.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/02.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/03.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/04.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/05.png",
+          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/06.png"
+        ]
+      },
       "spawn-in": {
         "north": [
           "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/spawn-in/north/00.png",
@@ -1870,71 +2166,6 @@ export const HMH_AAA_QUALITY_WAVE = Object.freeze({
           "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/spawn-in/south-east/04.png",
           "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/spawn-in/south-east/05.png",
           "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/spawn-in/south-east/06.png"
-        ]
-      },
-      "attack": {
-        "north-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north-west/06.png"
-        ],
-        "south-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-west/06.png"
-        ],
-        "south-east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south-east/06.png"
-        ],
-        "west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/west/06.png"
-        ],
-        "east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/east/06.png"
-        ],
-        "north": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/north/06.png"
-        ],
-        "south": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack/south/06.png"
         ]
       },
       "death": {
@@ -2083,201 +2314,6 @@ export const HMH_AAA_QUALITY_WAVE = Object.freeze({
           "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/hit/north-west/04.png",
           "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/hit/north-west/05.png",
           "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/hit/north-west/06.png"
-        ]
-      },
-      "attack-tell": {
-        "north-east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-east/06.png"
-        ],
-        "north": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north/06.png"
-        ],
-        "south-east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-east/06.png"
-        ],
-        "south-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south-west/06.png"
-        ],
-        "south": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/south/06.png"
-        ],
-        "north-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/north-west/06.png"
-        ],
-        "east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/attack-tell/east/06.png"
-        ]
-      },
-      "idle": {
-        "south-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south-west/06.png"
-        ],
-        "north-east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-east/06.png"
-        ],
-        "north": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north/06.png"
-        ],
-        "north-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/north-west/06.png"
-        ],
-        "east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/east/06.png"
-        ],
-        "south": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/south/06.png"
-        ],
-        "west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/idle/west/06.png"
-        ]
-      },
-      "run": {
-        "south-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-west/06.png"
-        ],
-        "south-east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south-east/06.png"
-        ],
-        "north-east": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-east/06.png"
-        ],
-        "west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/west/06.png"
-        ],
-        "north-west": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north-west/06.png"
-        ],
-        "north": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/north/06.png"
-        ],
-        "south": [
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/00.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/01.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/02.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/03.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/04.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/05.png",
-          "./assets/generated/hmh-aaa-pixellab-quality-wave/actors/mev-reaper/run/south/06.png"
         ]
       },
       "walk": {

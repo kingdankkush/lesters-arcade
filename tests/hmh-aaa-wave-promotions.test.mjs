@@ -28,12 +28,8 @@ function assertCompleteAaaEnemy(actorKey) {
   }
 }
 
-test('complete PixelLab AAA wave enemies replace the old partial Trench and Phishing runtime kits', () => {
+test('complete PixelLab AAA wave enemies replace old partial runtime kits', () => {
   assertCompleteAaaEnemy('trench-degen');
   assertCompleteAaaEnemy('phishing-angler');
-});
-
-test('incomplete MEV Reaper candidate is not promoted live until every direction exists', () => {
-  const actor = HMH_ANIMATED_ROSTER['mev-reaper'];
-  assert.notEqual(actor?.source, 'pixellab-aaa-quality-wave-v2');
+  assertCompleteAaaEnemy('mev-reaper');
 });
