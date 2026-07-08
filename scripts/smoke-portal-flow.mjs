@@ -99,7 +99,7 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=ui-chrome-v21`);
+  const main = await fetchText(`${portalUrl}main.js?v=web3-security-v22`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
   const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
@@ -122,7 +122,7 @@ try {
     'arcadeMusicShuffleButton',
     'combatMenuPanel',
     'splashFeaturedCabinet',
-    'ui-chrome-v21',
+    'web3-security-v22',
   ]) {
     assertIncludes('portal html', html, marker);
   }
