@@ -3270,4 +3270,8 @@ body.suggest-landscape.ingame::after {
 .achievement-badge-frame.tier-mythic { border-color: rgba(255, 95, 162, 0.68); }
 .achievement-unlock-boss { box-shadow: 0 0 22px rgba(255, 95, 162, 0.14), inset 0 0 12px rgba(255, 232, 77, 0.05); }
 .achievement-unlock-level-clear { box-shadow: 0 0 22px rgba(25, 247, 255, 0.14), inset 0 0 12px rgba(69, 255, 138, 0.05); }
-
+/* Keep modal overlays truly hidden even when later component display rules set flex/grid. */
+.ranked-entry-overlay[hidden],
+.wallet-confirm-overlay[hidden] {
+  display: none !important;
+}
