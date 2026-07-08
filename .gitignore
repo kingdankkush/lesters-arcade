@@ -60,3 +60,4 @@ apps/portal/dist/
 # Foundry contract test output/cache
 cache/
 contracts/out/
+.vercel
