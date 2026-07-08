@@ -50,6 +50,12 @@ apps/portal/assets/**/*.txt
 # PixelLab demo-wave work-in-progress (committed once collected)
 apps/portal/assets/generated/hmh-demo-wave/demo-wave-ledger.json
 
+# WO-102 PixelLab raw/proof-candidate clutter. Runtime winners and curated proof sheets stay tracked explicitly.
+apps/portal/assets/generated/hmh-wo102-megaprops/candidates/
+apps/portal/assets/generated/hmh-wo102-megaprops/processed/**/*.png
+apps/portal/assets/generated/hmh-wo102-megaprops/wo102-megaprops-ledger.json
+apps/portal/assets/generated/hmh-wo102-megaprops/wo102-megaprops-candidate-sheet.png
+apps/portal/assets/generated/hmh-wo102-megaprops/wo102-alpha-postprocess-report.json
 
 .vercel
 
