@@ -70,14 +70,7 @@ contract SecurityBaselineTest {
         registry = new GameRegistry(operator);
         vm.prank(operator);
         registry.registerGame(
-            "hard-money-heroes",
-            "Hard Money Heroes",
-            vm.addr(DEV_SIGNER_PK),
-            6000,
-            2000,
-            1000,
-            1000,
-            0
+            "hard-money-heroes", "Hard Money Heroes", vm.addr(DEV_SIGNER_PK), 6000, 2000, 1000, 1000, 0
         );
         vm.prank(vm.addr(DEV_SIGNER_PK));
         registry.confirmDevWallet(gameId);
@@ -128,15 +121,17 @@ contract SecurityBaselineTest {
         vm.stopPrank();
 
         SessionLedger.Session memory sess = ledger.getSession(sessionId);
-        bytes32 structHash = keccak256(abi.encode(
-            ledger.SESSION_TYPEHASH(),
-            sess.gameId,
-            sess.player,
-            sess.openedAt,
-            uint256(12345),
-            uint256(12),
-            uint256(90)
-        ));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                ledger.SESSION_TYPEHASH(),
+                sess.gameId,
+                sess.player,
+                sess.openedAt,
+                uint256(12345),
+                uint256(12),
+                uint256(90)
+            )
+        );
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", ledger.DOMAIN_SEPARATOR(), structHash));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(DEV_SIGNER_PK, digest);
 
@@ -156,15 +151,17 @@ contract SecurityBaselineTest {
         vm.stopPrank();
 
         SessionLedger.Session memory sess = ledger.getSession(sessionId);
-        bytes32 structHash = keccak256(abi.encode(
-            ledger.SESSION_TYPEHASH(),
-            sess.gameId,
-            sess.player,
-            sess.openedAt,
-            uint256(12345),
-            uint256(12),
-            uint256(90)
-        ));
+        bytes32 structHash = keccak256(
+            abi.encode(
+                ledger.SESSION_TYPEHASH(),
+                sess.gameId,
+                sess.player,
+                sess.openedAt,
+                uint256(12345),
+                uint256(12),
+                uint256(90)
+            )
+        );
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", ledger.DOMAIN_SEPARATOR(), structHash));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(0xBAD5A11, digest);
 
@@ -196,29 +193,113 @@ contract SecurityBaselineTest {
 
         vm.expectRevert(bytes("TOO_MANY_ACHIEVEMENTS"));
         scores.submitSession(
-            keccak256(abi.encodePacked("session-too-many")),
-            gameId,
-            100,
-            1,
-            1,
-            60,
-            bytes32(0),
-            achievements
+            keccak256(abi.encodePacked("session-too-many")), gameId, 100, 1, 1, 60, bytes32(0), achievements
         );
 
         bytes32 missingGameId = keccak256(abi.encodePacked("missing-game"));
         bytes32[] memory none = new bytes32[](0);
         vm.expectRevert(bytes("GAME_NOT_PLAYABLE"));
         scores.submitSession(
-            keccak256(abi.encodePacked("session-missing")),
-            missingGameId,
-            100,
-            1,
-            1,
-            60,
-            bytes32(0),
-            none
+            keccak256(abi.encodePacked("session-missing")), missingGameId, 100, 1, 1, 60, bytes32(0), none
         );
+    }
+
+    function testPaymentRouterSessionLedgerCanOnlyBeSetOnce() public {
+        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
+        address firstLedger = address(0xCAFE);
+        address secondLedger = address(0xB0B0);
+
+        vm.prank(operator);
+        router.setSessionLedger(firstLedger);
+
+        vm.prank(operator);
+        vm.expectRevert(bytes("ALREADY_SET"));
+        router.setSessionLedger(secondLedger);
+    }
+
+    function testPaymentRouterOperatorTransferRequiresPendingOperatorAccept() public {
+        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
+        address nextOperator = address(0x2222);
+
+        vm.prank(operator);
+        router.transferOperator(nextOperator);
+
+        vm.prank(attacker);
+        vm.expectRevert(bytes("Only pending operator"));
+        router.acceptOperator();
+
+        vm.prank(nextOperator);
+        router.acceptOperator();
+
+        assert(router.operator() == nextOperator);
+        assert(router.pendingOperator() == address(0));
+    }
+
+    function testSessionLedgerSettleBeforeCloseReverts() public {
+        address player = vm.addr(PLAYER_PK);
+        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
+        SessionLedger ledger = new SessionLedger(address(registry), address(router), address(token));
+        vm.prank(operator);
+        router.setSessionLedger(address(ledger));
+
+        token.mint(player, 100);
+        vm.startPrank(player);
+        token.approve(address(ledger), 100);
+        bytes32 sessionId = ledger.openSession(gameId, 100);
+        vm.expectRevert(bytes("Not closed yet"));
+        ledger.settle(sessionId);
+        vm.stopPrank();
+    }
+
+    function testSessionLedgerSettleAtomicallyRoutesVaultBalancesAndLeavesRouterEmpty() public {
+        address player = vm.addr(PLAYER_PK);
+        address devVault = vm.addr(DEV_SIGNER_PK);
+        address platformVault = address(0x2000);
+        address liquidityVault = address(0x3000);
+        address treasuryVault = address(0x4000);
+        uint256 entryFee = 1000;
+
+        PaymentRouter router = new PaymentRouter(address(registry), operator, address(token));
+        SessionLedger ledger = new SessionLedger(address(registry), address(router), address(token));
+        vm.startPrank(operator);
+        router.setSessionLedger(address(ledger));
+        router.setDefaultVaults(devVault, platformVault, liquidityVault, treasuryVault);
+        vm.stopPrank();
+
+        token.mint(player, entryFee);
+        vm.startPrank(player);
+        token.approve(address(ledger), entryFee);
+        bytes32 sessionId = ledger.openSession(gameId, entryFee);
+        vm.stopPrank();
+
+        SessionLedger.Session memory sess = ledger.getSession(sessionId);
+        bytes32 structHash = keccak256(
+            abi.encode(
+                ledger.SESSION_TYPEHASH(),
+                sess.gameId,
+                sess.player,
+                sess.openedAt,
+                uint256(98765),
+                uint256(44),
+                uint256(180)
+            )
+        );
+        bytes32 digest = keccak256(abi.encodePacked("\x19\x01", ledger.DOMAIN_SEPARATOR(), structHash));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(DEV_SIGNER_PK, digest);
+
+        vm.startPrank(player);
+        ledger.closeSession(sessionId, 98765, 44, 180, v, r, s);
+        ledger.settle(sessionId);
+        vm.expectRevert(bytes("Already settled"));
+        ledger.settle(sessionId);
+        vm.stopPrank();
+
+        assert(token.balanceOf(devVault) == 600);
+        assert(token.balanceOf(platformVault) == 200);
+        assert(token.balanceOf(liquidityVault) == 100);
+        assert(token.balanceOf(treasuryVault) == 100);
+        assert(token.balanceOf(address(router)) == 0);
+        assert(token.balanceOf(address(ledger)) == 0);
     }
 
     function testPlayerProfileRegistryNormalizesHandles() public {
@@ -264,7 +345,7 @@ contract SecurityBaselineTest {
         pool.withdrawTournamentPrize(tournamentId, payable(address(this)), 0.4 ether);
 
         assert(address(this).balance == beforeBalance + 0.4 ether);
-        (, , , , , uint256 prizePool, ) = pool.tournaments(tournamentId);
+        (,,,,, uint256 prizePool,) = pool.tournaments(tournamentId);
         assert(prizePool == 0.6 ether);
     }
 }

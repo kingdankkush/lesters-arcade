@@ -9,6 +9,7 @@ import {
   isValidLogin,
   normalizeProviderDetail,
   createProviderRegistry,
+  classifyWalletError,
 } from '../apps/portal/src/wallet-auth.mjs';
 
 const ADDR = '0x1e57e21e57e21e57e21e57e21e57e21e57e21e57';
@@ -106,4 +107,22 @@ test('createProviderRegistry falls back to first when no MetaMask/Rabby', () => 
   assert.equal(reg.preferred().name, 'Coinbase Wallet');
   // empty registry -> null
   assert.equal(createProviderRegistry().preferred(), null);
+});
+
+test('classifyWalletError treats user rejection as cancellation, not failure', () => {
+  const rejected = classifyWalletError({ code: 4001, message: 'User rejected the request.' });
+  assert.equal(rejected.kind, 'user-cancelled');
+  assert.equal(rejected.userCancelled, true);
+  assert.equal(rejected.recoverable, true);
+  assert.equal(rejected.severity, 'info');
+
+  const ethersRejected = classifyWalletError({ code: 'ACTION_REJECTED', shortMessage: 'user rejected action' });
+  assert.equal(ethersRejected.kind, 'user-cancelled');
+});
+
+test('classifyWalletError exposes wrong-network, missing-wallet, and funds states for UI copy', () => {
+  assert.equal(classifyWalletError(new Error('Wrong network: wallet is on chain 1, expected 4441')).kind, 'wrong-network');
+  assert.equal(classifyWalletError(new Error('A connected wallet is required.')).kind, 'missing-wallet');
+  assert.equal(classifyWalletError(new Error('insufficient funds for intrinsic transaction cost')).kind, 'insufficient-funds');
+  assert.equal(classifyWalletError(new Error('replacement transaction underpriced')).kind, 'wallet-error');
 });

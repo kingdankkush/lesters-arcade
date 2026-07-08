@@ -18,6 +18,7 @@
 
 import { LITVM_LITEFORGE_NETWORK } from './arcade-core.mjs';
 import { LITVM_CONTRACT_ADDRESSES } from './settlement.mjs';
+import { classifyWalletError } from './wallet-auth.mjs';
 
 // Lazy-load the vendored ethers ESM bundle so the heavy lib only loads when a
 // chain call actually happens (keeps first paint fast). Cached after first use.
@@ -233,9 +234,14 @@ export function explorerTxUrl(txHash) {
 export async function checkRankedReadiness(walletProvider, { minGasWei = null } = {}) {
   const result = {
     ok: false, onChain: false, chainId: null,
-    hasFunds: false, balanceWei: 0n, balanceEth: '0', needWei: 0n, error: null,
+    hasFunds: false, balanceWei: 0n, balanceEth: '0', needWei: 0n, error: null, errorKind: null,
   };
-  if (!walletProvider?.request) { result.error = 'No wallet connected.'; return result; }
+  if (!walletProvider?.request) {
+    const classified = classifyWalletError(new Error('No wallet connected.'));
+    result.error = classified.message;
+    result.errorKind = classified.kind;
+    return result;
+  }
   try {
     const ethers = await loadEthers();
     const browserProvider = new ethers.BrowserProvider(walletProvider);
@@ -261,7 +267,9 @@ export async function checkRankedReadiness(walletProvider, { minGasWei = null } 
     result.ok = result.onChain && result.hasFunds;
     return result;
   } catch (err) {
-    result.error = err?.message || String(err);
+    const classified = classifyWalletError(err);
+    result.error = classified.message;
+    result.errorKind = classified.kind;
     return result;
   }
 }

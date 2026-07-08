@@ -146,3 +146,25 @@ export function createProviderRegistry() {
     },
   };
 }
+
+// Normalize wallet/provider errors into UI states. In particular, EIP-1193
+// user rejection (4001) is cancellation, not a security or system failure.
+export function classifyWalletError(error) {
+  const code = error?.code ?? error?.error?.code ?? null;
+  const message = String(error?.shortMessage || error?.reason || error?.message || error || '').trim();
+  const lower = message.toLowerCase();
+
+  if (code === 4001 || code === 'ACTION_REJECTED' || /user (rejected|denied|cancelled|canceled)/i.test(message)) {
+    return Object.freeze({ kind: 'user-cancelled', userCancelled: true, recoverable: true, severity: 'info', message });
+  }
+  if (lower.includes('wrong network') || lower.includes('expected') && lower.includes('chain')) {
+    return Object.freeze({ kind: 'wrong-network', userCancelled: false, recoverable: true, severity: 'warning', message });
+  }
+  if (lower.includes('no wallet') || lower.includes('connected wallet is required')) {
+    return Object.freeze({ kind: 'missing-wallet', userCancelled: false, recoverable: true, severity: 'warning', message });
+  }
+  if (lower.includes('insufficient funds') || lower.includes('insufficient balance')) {
+    return Object.freeze({ kind: 'insufficient-funds', userCancelled: false, recoverable: true, severity: 'warning', message });
+  }
+  return Object.freeze({ kind: 'wallet-error', userCancelled: false, recoverable: false, severity: 'error', message });
+}
