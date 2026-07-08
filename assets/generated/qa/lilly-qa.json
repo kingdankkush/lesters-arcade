@@ -12,7 +12,7 @@
     },
     {
       "id": "palette",
-      "status": "fail"
+      "status": "pass"
     },
     {
       "id": "completeness",
@@ -29,7 +29,7 @@
     {
       "id": "pivot-stability",
       "status": "fail",
-      "maxDelta": 3
+      "maxDelta": 4
     },
     {
       "id": "tell-duration",
@@ -52,1139 +52,769 @@
   },
   "frameChecks": [
     {
-      "state": "idle",
+      "state": "death",
       "direction": "south",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/south/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
         "componentCount": 3
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2674,
-        "offPaletteCount": 262,
-        "offPaletteRatio": 0.098,
+        "status": "pass",
+        "opaqueCount": 2675,
+        "offPaletteCount": 200,
+        "offPaletteRatio": 0.0748,
         "offendingHexes": [
           {
-            "hex": "#137260",
-            "count": 25,
-            "nearest": "#1f5c2e",
-            "distance": 55.93
-          },
-          {
-            "hex": "#1e927b",
+            "hex": "#2b8671",
             "count": 19,
-            "nearest": "#345d9d",
-            "distance": 66.7
+            "nearest": "#5c6b80",
+            "distance": 57.92
           },
           {
-            "hex": "#167967",
+            "hex": "#247060",
             "count": 16,
-            "nearest": "#173b72",
-            "distance": 62.98
+            "nearest": "#3a465c",
+            "distance": 47.58
           },
           {
-            "hex": "#136d5c",
+            "hex": "#267563",
             "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 50.49
+            "nearest": "#3a465c",
+            "distance": 51.56
           },
           {
-            "hex": "#187e6b",
+            "hex": "#287d6a",
             "count": 15,
-            "nearest": "#345d9d",
-            "distance": 66.13
+            "nearest": "#5c6b80",
+            "distance": 59.26
           },
           {
-            "hex": "#1a8773",
-            "count": 15,
-            "nearest": "#345d9d",
-            "distance": 64.84
-          },
-          {
-            "hex": "#1f9980",
+            "hex": "#2c8d76",
             "count": 14,
-            "nearest": "#345d9d",
-            "distance": 69.87
+            "nearest": "#5c6b80",
+            "distance": 59.67
           },
           {
-            "hex": "#1d8c77",
+            "hex": "#2a816e",
             "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.67
+            "nearest": "#5c6b80",
+            "distance": 57.52
+          },
+          {
+            "hex": "#369a81",
+            "count": 10,
+            "nearest": "#5c6b80",
+            "distance": 60.45
+          },
+          {
+            "hex": "#30937b",
+            "count": 9,
+            "nearest": "#5c6b80",
+            "distance": 59.67
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "south",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south/07.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/south/06.png",
       "transparency": {
         "status": "fail",
         "failures": [
-          "matte-halo"
+          "matte-halo",
+          "stray-islands"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
-        "strayIslandCount": 0,
-        "componentCount": 1
+        "haloPixelCount": 116,
+        "strayIslandCount": 3,
+        "componentCount": 4
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 333,
-        "offPaletteRatio": 0.1222,
-        "offendingHexes": [
-          {
-            "hex": "#0e6958",
-            "count": 36,
-            "nearest": "#1f5c2e",
-            "distance": 47.14
-          },
-          {
-            "hex": "#106e5d",
-            "count": 33,
-            "nearest": "#1f5c2e",
-            "distance": 52.52
-          },
-          {
-            "hex": "#1c947f",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 67.09
-          },
-          {
-            "hex": "#137766",
-            "count": 24,
-            "nearest": "#173b72",
-            "distance": 61.32
-          },
-          {
-            "hex": "#1b8976",
-            "count": 18,
-            "nearest": "#345d9d",
-            "distance": 63.89
-          },
-          {
-            "hex": "#187d6b",
-            "count": 15,
-            "nearest": "#345d9d",
-            "distance": 65.64
-          },
-          {
-            "hex": "#127261",
-            "count": 12,
-            "nearest": "#1f5c2e",
-            "distance": 57.04
-          },
-          {
-            "hex": "#209c84",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 70.67
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "south-east",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-east/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/south-east/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
         "componentCount": 3
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2674,
-        "offPaletteCount": 262,
-        "offPaletteRatio": 0.098,
+        "status": "pass",
+        "opaqueCount": 2675,
+        "offPaletteCount": 200,
+        "offPaletteRatio": 0.0748,
         "offendingHexes": [
           {
-            "hex": "#137260",
-            "count": 25,
-            "nearest": "#1f5c2e",
-            "distance": 55.93
-          },
-          {
-            "hex": "#1e927b",
+            "hex": "#2b8671",
             "count": 19,
-            "nearest": "#345d9d",
-            "distance": 66.7
+            "nearest": "#5c6b80",
+            "distance": 57.92
           },
           {
-            "hex": "#167967",
+            "hex": "#247060",
             "count": 16,
-            "nearest": "#173b72",
-            "distance": 62.98
+            "nearest": "#3a465c",
+            "distance": 47.58
           },
           {
-            "hex": "#136d5c",
+            "hex": "#267563",
             "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 50.49
+            "nearest": "#3a465c",
+            "distance": 51.56
           },
           {
-            "hex": "#187e6b",
+            "hex": "#287d6a",
             "count": 15,
-            "nearest": "#345d9d",
-            "distance": 66.13
+            "nearest": "#5c6b80",
+            "distance": 59.26
           },
           {
-            "hex": "#1a8773",
-            "count": 15,
-            "nearest": "#345d9d",
-            "distance": 64.84
-          },
-          {
-            "hex": "#1f9980",
+            "hex": "#2c8d76",
             "count": 14,
-            "nearest": "#345d9d",
-            "distance": 69.87
+            "nearest": "#5c6b80",
+            "distance": 59.67
           },
           {
-            "hex": "#1d8c77",
+            "hex": "#2a816e",
             "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.67
+            "nearest": "#5c6b80",
+            "distance": 57.52
+          },
+          {
+            "hex": "#369a81",
+            "count": 10,
+            "nearest": "#5c6b80",
+            "distance": 60.45
+          },
+          {
+            "hex": "#30937b",
+            "count": 9,
+            "nearest": "#5c6b80",
+            "distance": 59.67
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "south-east",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-east/07.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/south-east/06.png",
       "transparency": {
         "status": "fail",
         "failures": [
-          "matte-halo"
+          "matte-halo",
+          "stray-islands"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
-        "strayIslandCount": 0,
-        "componentCount": 1
+        "haloPixelCount": 116,
+        "strayIslandCount": 3,
+        "componentCount": 4
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 333,
-        "offPaletteRatio": 0.1222,
-        "offendingHexes": [
-          {
-            "hex": "#0e6958",
-            "count": 36,
-            "nearest": "#1f5c2e",
-            "distance": 47.14
-          },
-          {
-            "hex": "#106e5d",
-            "count": 33,
-            "nearest": "#1f5c2e",
-            "distance": 52.52
-          },
-          {
-            "hex": "#1c947f",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 67.09
-          },
-          {
-            "hex": "#137766",
-            "count": 24,
-            "nearest": "#173b72",
-            "distance": 61.32
-          },
-          {
-            "hex": "#1b8976",
-            "count": 18,
-            "nearest": "#345d9d",
-            "distance": 63.89
-          },
-          {
-            "hex": "#187d6b",
-            "count": 15,
-            "nearest": "#345d9d",
-            "distance": 65.64
-          },
-          {
-            "hex": "#127261",
-            "count": 12,
-            "nearest": "#1f5c2e",
-            "distance": 57.04
-          },
-          {
-            "hex": "#209c84",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 70.67
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "east",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/east/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/east/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
         "componentCount": 3
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2674,
-        "offPaletteCount": 247,
-        "offPaletteRatio": 0.0924,
+        "status": "pass",
+        "opaqueCount": 2675,
+        "offPaletteCount": 178,
+        "offPaletteRatio": 0.0665,
         "offendingHexes": [
           {
-            "hex": "#13705f",
-            "count": 25,
-            "nearest": "#1f5c2e",
-            "distance": 54.27
-          },
-          {
-            "hex": "#1e9079",
+            "hex": "#2b8570",
             "count": 19,
-            "nearest": "#345d9d",
-            "distance": 66.19
+            "nearest": "#5c6b80",
+            "distance": 57.73
           },
           {
-            "hex": "#167765",
-            "count": 16,
-            "nearest": "#173b72",
-            "distance": 61.4
-          },
-          {
-            "hex": "#136b5b",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 48.93
-          },
-          {
-            "hex": "#187c69",
+            "hex": "#267361",
             "count": 15,
             "nearest": "#3a465c",
-            "distance": 65.12
+            "distance": 49.5
           },
           {
-            "hex": "#1a8571",
+            "hex": "#287b68",
             "count": 15,
-            "nearest": "#345d9d",
-            "distance": 64.9
+            "nearest": "#3a465c",
+            "distance": 57.25
           },
           {
-            "hex": "#1f967e",
+            "hex": "#2c8a74",
             "count": 14,
-            "nearest": "#345d9d",
-            "distance": 68.2
+            "nearest": "#5c6b80",
+            "distance": 58.39
           },
           {
-            "hex": "#1d8a75",
+            "hex": "#2a7f6c",
             "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.45
+            "nearest": "#5c6b80",
+            "distance": 57.45
+          },
+          {
+            "hex": "#369780",
+            "count": 10,
+            "nearest": "#5c6b80",
+            "distance": 58.14
+          },
+          {
+            "hex": "#309079",
+            "count": 9,
+            "nearest": "#5c6b80",
+            "distance": 57.91
+          },
+          {
+            "hex": "#726356",
+            "count": 9,
+            "nearest": "#5c6b80",
+            "distance": 48.08
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "east",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/east/07.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/east/06.png",
       "transparency": {
         "status": "fail",
         "failures": [
-          "matte-halo"
+          "matte-halo",
+          "stray-islands"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
-        "strayIslandCount": 0,
-        "componentCount": 1
+        "haloPixelCount": 116,
+        "strayIslandCount": 3,
+        "componentCount": 4
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 272,
-        "offPaletteRatio": 0.0999,
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 4,
+        "offPaletteRatio": 0.0015,
         "offendingHexes": [
           {
-            "hex": "#106c5c",
-            "count": 33,
-            "nearest": "#1f5c2e",
-            "distance": 50.96
-          },
-          {
-            "hex": "#1c927d",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 66.4
-          },
-          {
-            "hex": "#137564",
-            "count": 24,
-            "nearest": "#173b72",
-            "distance": 59.8
-          },
-          {
-            "hex": "#1b8774",
-            "count": 18,
-            "nearest": "#345d9d",
-            "distance": 63.8
-          },
-          {
-            "hex": "#187b69",
-            "count": 15,
-            "nearest": "#3a465c",
-            "distance": 64.3
-          },
-          {
-            "hex": "#127060",
-            "count": 12,
-            "nearest": "#1f5c2e",
-            "distance": 55.4
-          },
-          {
-            "hex": "#209982",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 68.77
-          },
-          {
-            "hex": "#1c816e",
-            "count": 11,
-            "nearest": "#345d9d",
-            "distance": 63.88
+            "hex": "#6f6248",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 46.5
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "north-east",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-east/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/north-east/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
         "componentCount": 3
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 2674,
-        "offPaletteCount": 185,
-        "offPaletteRatio": 0.0692,
+        "opaqueCount": 2675,
+        "offPaletteCount": 148,
+        "offPaletteRatio": 0.0553,
         "offendingHexes": [
           {
-            "hex": "#1b846f",
+            "hex": "#297a67",
             "count": 19,
-            "nearest": "#345d9d",
-            "distance": 65.28
+            "nearest": "#3a465c",
+            "distance": 55.8
           },
           {
-            "hex": "#146d5c",
-            "count": 16,
-            "nearest": "#1f5c2e",
-            "distance": 50.26
-          },
-          {
-            "hex": "#167260",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 55.36
-          },
-          {
-            "hex": "#177a67",
+            "hex": "#257160",
             "count": 15,
             "nearest": "#3a465c",
-            "distance": 63.64
+            "distance": 48.02
           },
           {
-            "hex": "#1c8a73",
+            "hex": "#297f6a",
             "count": 14,
-            "nearest": "#345d9d",
-            "distance": 66.07
+            "nearest": "#5c6b80",
+            "distance": 59.03
           },
           {
-            "hex": "#1a7e6b",
+            "hex": "#287563",
             "count": 12,
-            "nearest": "#345d9d",
-            "distance": 65.31
+            "nearest": "#3a465c",
+            "distance": 50.81
           },
           {
-            "hex": "#26977f",
+            "hex": "#328b75",
             "count": 10,
-            "nearest": "#345d9d",
-            "distance": 66.78
+            "nearest": "#5c6b80",
+            "distance": 53.94
           },
           {
-            "hex": "#209079",
+            "hex": "#2d8570",
             "count": 9,
-            "nearest": "#345d9d",
-            "distance": 65.55
+            "nearest": "#5c6b80",
+            "distance": 56.04
+          },
+          {
+            "hex": "#695b4f",
+            "count": 9,
+            "nearest": "#3a465c",
+            "distance": 53.09
+          },
+          {
+            "hex": "#469d87",
+            "count": 6,
+            "nearest": "#5c6b80",
+            "distance": 55.07
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "north-east",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-east/07.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/north-east/06.png",
       "transparency": {
         "status": "fail",
         "failures": [
-          "matte-halo"
+          "matte-halo",
+          "stray-islands"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
-        "strayIslandCount": 0,
-        "componentCount": 1
+        "haloPixelCount": 116,
+        "strayIslandCount": 3,
+        "componentCount": 4
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 231,
-        "offPaletteRatio": 0.0848,
-        "offendingHexes": [
-          {
-            "hex": "#198673",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 64.61
-          },
-          {
-            "hex": "#116b5c",
-            "count": 24,
-            "nearest": "#1f5c2e",
-            "distance": 50.37
-          },
-          {
-            "hex": "#187c6a",
-            "count": 18,
-            "nearest": "#3a465c",
-            "distance": 65.33
-          },
-          {
-            "hex": "#167160",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 54.97
-          },
-          {
-            "hex": "#1d8c77",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.67
-          },
-          {
-            "hex": "#197665",
-            "count": 11,
-            "nearest": "#3a465c",
-            "distance": 58.94
-          },
-          {
-            "hex": "#20927c",
-            "count": 11,
-            "nearest": "#345d9d",
-            "distance": 65.56
-          },
-          {
-            "hex": "#2fa18a",
-            "count": 10,
-            "nearest": "#345d9d",
-            "distance": 70.78
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "north",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/north/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
         "componentCount": 3
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 2674,
-        "offPaletteCount": 185,
-        "offPaletteRatio": 0.0692,
+        "opaqueCount": 2675,
+        "offPaletteCount": 148,
+        "offPaletteRatio": 0.0553,
         "offendingHexes": [
           {
-            "hex": "#1b846f",
+            "hex": "#297a67",
             "count": 19,
-            "nearest": "#345d9d",
-            "distance": 65.28
+            "nearest": "#3a465c",
+            "distance": 55.8
           },
           {
-            "hex": "#146d5c",
-            "count": 16,
-            "nearest": "#1f5c2e",
-            "distance": 50.26
-          },
-          {
-            "hex": "#167260",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 55.36
-          },
-          {
-            "hex": "#177a67",
+            "hex": "#257160",
             "count": 15,
             "nearest": "#3a465c",
-            "distance": 63.64
+            "distance": 48.02
           },
           {
-            "hex": "#1c8a73",
+            "hex": "#297f6a",
             "count": 14,
-            "nearest": "#345d9d",
-            "distance": 66.07
+            "nearest": "#5c6b80",
+            "distance": 59.03
           },
           {
-            "hex": "#1a7e6b",
+            "hex": "#287563",
             "count": 12,
-            "nearest": "#345d9d",
-            "distance": 65.31
+            "nearest": "#3a465c",
+            "distance": 50.81
           },
           {
-            "hex": "#26977f",
+            "hex": "#328b75",
             "count": 10,
-            "nearest": "#345d9d",
-            "distance": 66.78
+            "nearest": "#5c6b80",
+            "distance": 53.94
           },
           {
-            "hex": "#209079",
+            "hex": "#2d8570",
             "count": 9,
-            "nearest": "#345d9d",
-            "distance": 65.55
+            "nearest": "#5c6b80",
+            "distance": 56.04
+          },
+          {
+            "hex": "#695b4f",
+            "count": 9,
+            "nearest": "#3a465c",
+            "distance": 53.09
+          },
+          {
+            "hex": "#469d87",
+            "count": 6,
+            "nearest": "#5c6b80",
+            "distance": 55.07
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "north",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north/07.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/north/06.png",
       "transparency": {
         "status": "fail",
         "failures": [
-          "matte-halo"
+          "matte-halo",
+          "stray-islands"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
-        "strayIslandCount": 0,
-        "componentCount": 1
+        "haloPixelCount": 116,
+        "strayIslandCount": 3,
+        "componentCount": 4
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 231,
-        "offPaletteRatio": 0.0848,
-        "offendingHexes": [
-          {
-            "hex": "#198673",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 64.61
-          },
-          {
-            "hex": "#116b5c",
-            "count": 24,
-            "nearest": "#1f5c2e",
-            "distance": 50.37
-          },
-          {
-            "hex": "#187c6a",
-            "count": 18,
-            "nearest": "#3a465c",
-            "distance": 65.33
-          },
-          {
-            "hex": "#167160",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 54.97
-          },
-          {
-            "hex": "#1d8c77",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.67
-          },
-          {
-            "hex": "#197665",
-            "count": 11,
-            "nearest": "#3a465c",
-            "distance": 58.94
-          },
-          {
-            "hex": "#20927c",
-            "count": 11,
-            "nearest": "#345d9d",
-            "distance": 65.56
-          },
-          {
-            "hex": "#2fa18a",
-            "count": 10,
-            "nearest": "#345d9d",
-            "distance": 70.78
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-west/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/north-west/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
         "componentCount": 3
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 2674,
-        "offPaletteCount": 185,
-        "offPaletteRatio": 0.0692,
+        "opaqueCount": 2675,
+        "offPaletteCount": 148,
+        "offPaletteRatio": 0.0553,
         "offendingHexes": [
           {
-            "hex": "#1b846f",
+            "hex": "#297a67",
             "count": 19,
-            "nearest": "#345d9d",
-            "distance": 65.28
+            "nearest": "#3a465c",
+            "distance": 55.8
           },
           {
-            "hex": "#146d5c",
-            "count": 16,
-            "nearest": "#1f5c2e",
-            "distance": 50.26
-          },
-          {
-            "hex": "#167260",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 55.36
-          },
-          {
-            "hex": "#177a67",
+            "hex": "#257160",
             "count": 15,
             "nearest": "#3a465c",
-            "distance": 63.64
+            "distance": 48.02
           },
           {
-            "hex": "#1c8a73",
+            "hex": "#297f6a",
             "count": 14,
-            "nearest": "#345d9d",
-            "distance": 66.07
+            "nearest": "#5c6b80",
+            "distance": 59.03
           },
           {
-            "hex": "#1a7e6b",
+            "hex": "#287563",
             "count": 12,
-            "nearest": "#345d9d",
-            "distance": 65.31
+            "nearest": "#3a465c",
+            "distance": 50.81
           },
           {
-            "hex": "#26977f",
+            "hex": "#328b75",
             "count": 10,
-            "nearest": "#345d9d",
-            "distance": 66.78
+            "nearest": "#5c6b80",
+            "distance": 53.94
           },
           {
-            "hex": "#209079",
+            "hex": "#2d8570",
             "count": 9,
-            "nearest": "#345d9d",
-            "distance": 65.55
+            "nearest": "#5c6b80",
+            "distance": 56.04
+          },
+          {
+            "hex": "#695b4f",
+            "count": 9,
+            "nearest": "#3a465c",
+            "distance": 53.09
+          },
+          {
+            "hex": "#469d87",
+            "count": 6,
+            "nearest": "#5c6b80",
+            "distance": 55.07
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/north-west/07.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/north-west/06.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo",
+          "stray-islands"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 117,
+        "strayIslandCount": 4,
+        "componentCount": 6
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
+      }
+    },
+    {
+      "state": "death",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/west/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 3
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 231,
-        "offPaletteRatio": 0.0848,
+        "status": "pass",
+        "opaqueCount": 2675,
+        "offPaletteCount": 178,
+        "offPaletteRatio": 0.0665,
         "offendingHexes": [
           {
-            "hex": "#116b5c",
-            "count": 24,
-            "nearest": "#1f5c2e",
-            "distance": 50.37
+            "hex": "#2b8570",
+            "count": 19,
+            "nearest": "#5c6b80",
+            "distance": 57.73
           },
           {
-            "hex": "#198673",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 64.61
-          },
-          {
-            "hex": "#187c6a",
-            "count": 18,
-            "nearest": "#3a465c",
-            "distance": 65.33
-          },
-          {
-            "hex": "#167160",
+            "hex": "#267361",
             "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 54.97
-          },
-          {
-            "hex": "#1d8c77",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.67
-          },
-          {
-            "hex": "#197665",
-            "count": 11,
             "nearest": "#3a465c",
-            "distance": 58.94
+            "distance": 49.5
           },
           {
-            "hex": "#20927c",
-            "count": 11,
-            "nearest": "#345d9d",
-            "distance": 65.56
+            "hex": "#287b68",
+            "count": 15,
+            "nearest": "#3a465c",
+            "distance": 57.25
           },
           {
-            "hex": "#2fa18a",
+            "hex": "#2c8a74",
+            "count": 14,
+            "nearest": "#5c6b80",
+            "distance": 58.39
+          },
+          {
+            "hex": "#2a7f6c",
+            "count": 12,
+            "nearest": "#5c6b80",
+            "distance": 57.45
+          },
+          {
+            "hex": "#369780",
             "count": 10,
-            "nearest": "#345d9d",
-            "distance": 70.78
+            "nearest": "#5c6b80",
+            "distance": 58.14
+          },
+          {
+            "hex": "#309079",
+            "count": 9,
+            "nearest": "#5c6b80",
+            "distance": 57.91
+          },
+          {
+            "hex": "#726356",
+            "count": 9,
+            "nearest": "#5c6b80",
+            "distance": 48.08
           }
         ]
       }
     },
     {
-      "state": "idle",
+      "state": "death",
       "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/west/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/west/06.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "matte-halo",
+          "stray-islands"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 117,
+        "strayIslandCount": 4,
+        "componentCount": 6
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 4,
+        "offPaletteRatio": 0.0015,
+        "offendingHexes": [
+          {
+            "hex": "#6f6248",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 46.5
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/south-west/00.png",
       "transparency": {
         "status": "fail",
         "failures": [
           "matte-halo"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
+        "haloPixelCount": 105,
         "strayIslandCount": 0,
         "componentCount": 3
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2674,
-        "offPaletteCount": 247,
-        "offPaletteRatio": 0.0924,
+        "status": "pass",
+        "opaqueCount": 2675,
+        "offPaletteCount": 200,
+        "offPaletteRatio": 0.0748,
         "offendingHexes": [
           {
-            "hex": "#13705f",
-            "count": 25,
-            "nearest": "#1f5c2e",
-            "distance": 54.27
-          },
-          {
-            "hex": "#1e9079",
+            "hex": "#2b8671",
             "count": 19,
-            "nearest": "#345d9d",
-            "distance": 66.19
+            "nearest": "#5c6b80",
+            "distance": 57.92
           },
           {
-            "hex": "#167765",
+            "hex": "#247060",
             "count": 16,
-            "nearest": "#173b72",
-            "distance": 61.4
+            "nearest": "#3a465c",
+            "distance": 47.58
           },
           {
-            "hex": "#136b5b",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 48.93
-          },
-          {
-            "hex": "#187c69",
+            "hex": "#267563",
             "count": 15,
             "nearest": "#3a465c",
-            "distance": 65.12
+            "distance": 51.56
           },
           {
-            "hex": "#1a8571",
+            "hex": "#287d6a",
             "count": 15,
-            "nearest": "#345d9d",
-            "distance": 64.9
+            "nearest": "#5c6b80",
+            "distance": 59.26
           },
           {
-            "hex": "#1f967e",
+            "hex": "#2c8d76",
             "count": 14,
-            "nearest": "#345d9d",
-            "distance": 68.2
+            "nearest": "#5c6b80",
+            "distance": 59.67
           },
           {
-            "hex": "#1d8a75",
+            "hex": "#2a816e",
             "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.45
+            "nearest": "#5c6b80",
+            "distance": 57.52
+          },
+          {
+            "hex": "#369a81",
+            "count": 10,
+            "nearest": "#5c6b80",
+            "distance": 60.45
+          },
+          {
+            "hex": "#30937b",
+            "count": 9,
+            "nearest": "#5c6b80",
+            "distance": 59.67
           }
         ]
       }
     },
     {
-      "state": "idle",
-      "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/west/07.png",
-      "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 272,
-        "offPaletteRatio": 0.0999,
-        "offendingHexes": [
-          {
-            "hex": "#106c5c",
-            "count": 33,
-            "nearest": "#1f5c2e",
-            "distance": 50.96
-          },
-          {
-            "hex": "#137564",
-            "count": 24,
-            "nearest": "#173b72",
-            "distance": 59.8
-          },
-          {
-            "hex": "#1c927d",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 66.4
-          },
-          {
-            "hex": "#1b8774",
-            "count": 18,
-            "nearest": "#345d9d",
-            "distance": 63.8
-          },
-          {
-            "hex": "#187b69",
-            "count": 15,
-            "nearest": "#3a465c",
-            "distance": 64.3
-          },
-          {
-            "hex": "#127060",
-            "count": 12,
-            "nearest": "#1f5c2e",
-            "distance": 55.4
-          },
-          {
-            "hex": "#209982",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 68.77
-          },
-          {
-            "hex": "#1c816e",
-            "count": 11,
-            "nearest": "#345d9d",
-            "distance": 63.88
-          }
-        ]
-      }
-    },
-    {
-      "state": "idle",
+      "state": "death",
       "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-west/00.png",
+      "file": "./assets/generated/hmh-animated-roster/lilly/death/south-west/06.png",
       "transparency": {
         "status": "fail",
         "failures": [
-          "matte-halo"
+          "matte-halo",
+          "stray-islands"
         ],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 108,
-        "strayIslandCount": 0,
-        "componentCount": 3
+        "haloPixelCount": 117,
+        "strayIslandCount": 4,
+        "componentCount": 6
       },
       "palette": {
-        "status": "fail",
-        "opaqueCount": 2674,
-        "offPaletteCount": 262,
-        "offPaletteRatio": 0.098,
-        "offendingHexes": [
-          {
-            "hex": "#137260",
-            "count": 25,
-            "nearest": "#1f5c2e",
-            "distance": 55.93
-          },
-          {
-            "hex": "#1e927b",
-            "count": 19,
-            "nearest": "#345d9d",
-            "distance": 66.7
-          },
-          {
-            "hex": "#167967",
-            "count": 16,
-            "nearest": "#173b72",
-            "distance": 62.98
-          },
-          {
-            "hex": "#136d5c",
-            "count": 15,
-            "nearest": "#1f5c2e",
-            "distance": 50.49
-          },
-          {
-            "hex": "#187e6b",
-            "count": 15,
-            "nearest": "#345d9d",
-            "distance": 66.13
-          },
-          {
-            "hex": "#1a8773",
-            "count": 15,
-            "nearest": "#345d9d",
-            "distance": 64.84
-          },
-          {
-            "hex": "#1f9980",
-            "count": 14,
-            "nearest": "#345d9d",
-            "distance": 69.87
-          },
-          {
-            "hex": "#1d8c77",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 64.67
-          }
-        ]
-      }
-    },
-    {
-      "state": "idle",
-      "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/lilly/idle/south-west/07.png",
-      "transparency": {
-        "status": "fail",
-        "failures": [
-          "matte-halo"
-        ],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 83,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 2724,
-        "offPaletteCount": 333,
-        "offPaletteRatio": 0.1222,
-        "offendingHexes": [
-          {
-            "hex": "#0e6958",
-            "count": 36,
-            "nearest": "#1f5c2e",
-            "distance": 47.14
-          },
-          {
-            "hex": "#106e5d",
-            "count": 33,
-            "nearest": "#1f5c2e",
-            "distance": 52.52
-          },
-          {
-            "hex": "#137766",
-            "count": 24,
-            "nearest": "#173b72",
-            "distance": 61.32
-          },
-          {
-            "hex": "#1c947f",
-            "count": 24,
-            "nearest": "#345d9d",
-            "distance": 67.09
-          },
-          {
-            "hex": "#1b8976",
-            "count": 18,
-            "nearest": "#345d9d",
-            "distance": 63.89
-          },
-          {
-            "hex": "#187d6b",
-            "count": 15,
-            "nearest": "#345d9d",
-            "distance": 65.64
-          },
-          {
-            "hex": "#127261",
-            "count": 12,
-            "nearest": "#1f5c2e",
-            "distance": 57.04
-          },
-          {
-            "hex": "#209c84",
-            "count": 12,
-            "nearest": "#345d9d",
-            "distance": 70.67
-          }
-        ]
+        "status": "pass",
+        "opaqueCount": 2689,
+        "offPaletteCount": 0,
+        "offPaletteRatio": 0,
+        "offendingHexes": []
       }
     }
   ]

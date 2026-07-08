@@ -742,6 +742,144 @@
     },
     {
       "state": "death",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2696,
+        "offPaletteCount": 1118,
+        "offPaletteRatio": 0.4147,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 304,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#066b8f",
+            "count": 243,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#046c64",
+            "count": 198,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#52bed8",
+            "count": 136,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 81,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 56,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#66c2d6",
+            "count": 26,
+            "nearest": "#8cb7ff",
+            "distance": 56.97
+          },
+          {
+            "hex": "#c38d7c",
+            "count": 14,
+            "nearest": "#c9a34e",
+            "distance": 51.34
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-west/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2105,
+        "offPaletteCount": 887,
+        "offPaletteRatio": 0.4214,
+        "offendingHexes": [
+          {
+            "hex": "#03695d",
+            "count": 328,
+            "nearest": "#173b72",
+            "distance": 54.38
+          },
+          {
+            "hex": "#52bed8",
+            "count": 169,
+            "nearest": "#4e82d8",
+            "distance": 60.13
+          },
+          {
+            "hex": "#4cb6ce",
+            "count": 85,
+            "nearest": "#4e82d8",
+            "distance": 52.99
+          },
+          {
+            "hex": "#046c64",
+            "count": 65,
+            "nearest": "#173b72",
+            "distance": 54.39
+          },
+          {
+            "hex": "#066b8f",
+            "count": 36,
+            "nearest": "#345d9d",
+            "distance": 50.08
+          },
+          {
+            "hex": "#edc6b5",
+            "count": 24,
+            "nearest": "#d8c28a",
+            "distance": 48.02
+          },
+          {
+            "hex": "#006776",
+            "count": 19,
+            "nearest": "#173b72",
+            "distance": 49.81
+          },
+          {
+            "hex": "#37bcc5",
+            "count": 18,
+            "nearest": "#4e82d8",
+            "distance": 65.22
+          }
+        ]
+      }
+    },
+    {
+      "state": "death",
       "direction": "west",
       "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/west/00.png",
       "transparency": {
@@ -1012,144 +1150,6 @@
             "count": 13,
             "nearest": "#4e82d8",
             "distance": 76.92
-          }
-        ]
-      }
-    },
-    {
-      "state": "death",
-      "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-west/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 2696,
-        "offPaletteCount": 1118,
-        "offPaletteRatio": 0.4147,
-        "offendingHexes": [
-          {
-            "hex": "#03695d",
-            "count": 304,
-            "nearest": "#173b72",
-            "distance": 54.38
-          },
-          {
-            "hex": "#066b8f",
-            "count": 243,
-            "nearest": "#345d9d",
-            "distance": 50.08
-          },
-          {
-            "hex": "#046c64",
-            "count": 198,
-            "nearest": "#173b72",
-            "distance": 54.39
-          },
-          {
-            "hex": "#52bed8",
-            "count": 136,
-            "nearest": "#4e82d8",
-            "distance": 60.13
-          },
-          {
-            "hex": "#4cb6ce",
-            "count": 81,
-            "nearest": "#4e82d8",
-            "distance": 52.99
-          },
-          {
-            "hex": "#edc6b5",
-            "count": 56,
-            "nearest": "#d8c28a",
-            "distance": 48.02
-          },
-          {
-            "hex": "#66c2d6",
-            "count": 26,
-            "nearest": "#8cb7ff",
-            "distance": 56.97
-          },
-          {
-            "hex": "#c38d7c",
-            "count": 14,
-            "nearest": "#c9a34e",
-            "distance": 51.34
-          }
-        ]
-      }
-    },
-    {
-      "state": "death",
-      "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/lit-valkyrie/death/north-west/06.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 2105,
-        "offPaletteCount": 887,
-        "offPaletteRatio": 0.4214,
-        "offendingHexes": [
-          {
-            "hex": "#03695d",
-            "count": 328,
-            "nearest": "#173b72",
-            "distance": 54.38
-          },
-          {
-            "hex": "#52bed8",
-            "count": 169,
-            "nearest": "#4e82d8",
-            "distance": 60.13
-          },
-          {
-            "hex": "#4cb6ce",
-            "count": 85,
-            "nearest": "#4e82d8",
-            "distance": 52.99
-          },
-          {
-            "hex": "#046c64",
-            "count": 65,
-            "nearest": "#173b72",
-            "distance": 54.39
-          },
-          {
-            "hex": "#066b8f",
-            "count": 36,
-            "nearest": "#345d9d",
-            "distance": 50.08
-          },
-          {
-            "hex": "#edc6b5",
-            "count": 24,
-            "nearest": "#d8c28a",
-            "distance": 48.02
-          },
-          {
-            "hex": "#006776",
-            "count": 19,
-            "nearest": "#173b72",
-            "distance": 49.81
-          },
-          {
-            "hex": "#37bcc5",
-            "count": 18,
-            "nearest": "#4e82d8",
-            "distance": 65.22
           }
         ]
       }

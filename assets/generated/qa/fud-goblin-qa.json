@@ -28,7 +28,7 @@
     {
       "id": "pivot-stability",
       "status": "fail",
-      "maxDelta": 7.028
+      "maxDelta": 19.433
     },
     {
       "id": "tell-duration",
@@ -40,14 +40,7 @@
     "missingStates": [
       "spawn-in"
     ],
-    "partialDirections": {
-      "attack-tell": {
-        "matchedState": "attack-tell",
-        "missingDirections": [
-          "north"
-        ]
-      }
-    },
+    "partialDirections": {},
     "tooShortStates": {}
   },
   "tellDuration": {
@@ -56,916 +49,20 @@
     "fps": 12,
     "coverageFrames": {
       "south": 25,
-      "south-east": 25,
-      "east": 25,
-      "north-east": 25,
+      "south-east": 35,
+      "east": 35,
+      "north-east": 35,
+      "north": 35,
       "north-west": 25,
-      "west": 25,
-      "south-west": 25
+      "west": 35,
+      "south-west": 35
     },
     "shortDirections": [
       "south",
-      "south-east",
-      "east",
-      "north-east",
-      "north-west",
-      "west",
-      "south-west"
+      "north-west"
     ]
   },
   "frameChecks": [
-    {
-      "state": "attack-tell",
-      "direction": "south",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/south/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1231,
-        "offPaletteCount": 197,
-        "offPaletteRatio": 0.16,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 67,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 58,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#427d40",
-            "count": 57,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#7ab178",
-            "count": 7,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 6,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#82866d",
-            "count": 1,
-            "nearest": "#5c6b80",
-            "distance": 50.34
-          },
-          {
-            "hex": "#a2211e",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 62.74
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "south",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/south/04.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1404,
-        "offPaletteCount": 214,
-        "offPaletteRatio": 0.1524,
-        "offendingHexes": [
-          {
-            "hex": "#427d40",
-            "count": 68,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#5a9557",
-            "count": 64,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 42,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#6aae61",
-            "count": 13,
-            "nearest": "#3fae3b",
-            "distance": 57.38
-          },
-          {
-            "hex": "#7a6c50",
-            "count": 6,
-            "nearest": "#8c6724",
-            "distance": 47.8
-          },
-          {
-            "hex": "#e21304",
-            "count": 4,
-            "nearest": "#8c6724",
-            "distance": 124.4
-          },
-          {
-            "hex": "#82030c",
-            "count": 3,
-            "nearest": "#6a3d22",
-            "distance": 66.51
-          },
-          {
-            "hex": "#5b0006",
-            "count": 3,
-            "nearest": "#4a3514",
-            "distance": 57.39
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "south-east",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/south-east/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1118,
-        "offPaletteCount": 180,
-        "offPaletteRatio": 0.161,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 67,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 58,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#427d40",
-            "count": 50,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 3,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#7ab178",
-            "count": 1,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          },
-          {
-            "hex": "#82866d",
-            "count": 1,
-            "nearest": "#5c6b80",
-            "distance": 50.34
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "south-east",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/south-east/04.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1255,
-        "offPaletteCount": 180,
-        "offPaletteRatio": 0.1434,
-        "offendingHexes": [
-          {
-            "hex": "#427d40",
-            "count": 65,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#5a9557",
-            "count": 55,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 48,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#6bae66",
-            "count": 3,
-            "nearest": "#3fae3b",
-            "distance": 61.52
-          },
-          {
-            "hex": "#c02812",
-            "count": 2,
-            "nearest": "#8c6724",
-            "distance": 83.65
-          },
-          {
-            "hex": "#527448",
-            "count": 2,
-            "nearest": "#3a465c",
-            "distance": 55.61
-          },
-          {
-            "hex": "#80a760",
-            "count": 1,
-            "nearest": "#7fe84a",
-            "distance": 68.63
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "east",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/east/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 955,
-        "offPaletteCount": 164,
-        "offPaletteRatio": 0.1717,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 92,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 37,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#427d40",
-            "count": 28,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#7ab178",
-            "count": 4,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 3,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "east",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/east/04.png",
-      "transparency": {
-        "status": "fail",
-        "failures": [
-          "stray-islands"
-        ],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 3,
-        "componentCount": 4
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1163,
-        "offPaletteCount": 211,
-        "offPaletteRatio": 0.1814,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 122,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#427d40",
-            "count": 53,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#659f5e",
-            "count": 19,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#73a16c",
-            "count": 3,
-            "nearest": "#5c6b80",
-            "distance": 62.01
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 3,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#5e7a46",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 59.94
-          },
-          {
-            "hex": "#a08a78",
-            "count": 2,
-            "nearest": "#b07a3d",
-            "distance": 63.19
-          },
-          {
-            "hex": "#7ab178",
-            "count": 2,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "north-east",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/north-east/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1051,
-        "offPaletteCount": 146,
-        "offPaletteRatio": 0.1389,
-        "offendingHexes": [
-          {
-            "hex": "#427d40",
-            "count": 69,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#5a9557",
-            "count": 38,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 27,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#7ab178",
-            "count": 7,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          },
-          {
-            "hex": "#a2211e",
-            "count": 2,
-            "nearest": "#6a3d22",
-            "distance": 62.74
-          },
-          {
-            "hex": "#ef5c51",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 72.59
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#b79b7d",
-            "count": 1,
-            "nearest": "#c9a34e",
-            "distance": 50.96
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "north-east",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/north-east/04.png",
-      "transparency": {
-        "status": "fail",
-        "failures": [
-          "stray-islands"
-        ],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 3,
-        "componentCount": 13
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1121,
-        "offPaletteCount": 119,
-        "offPaletteRatio": 0.1062,
-        "offendingHexes": [
-          {
-            "hex": "#427d40",
-            "count": 69,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#5a9557",
-            "count": 28,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 13,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#73ab65",
-            "count": 4,
-            "nearest": "#3fae3b",
-            "distance": 66.91
-          },
-          {
-            "hex": "#a71210",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 76.77
-          },
-          {
-            "hex": "#f4462c",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 87.28
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#a2211e",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 62.74
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/north-west/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1058,
-        "offPaletteCount": 125,
-        "offPaletteRatio": 0.1181,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 49,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#427d40",
-            "count": 43,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#659f5e",
-            "count": 23,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#7ab178",
-            "count": 6,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          },
-          {
-            "hex": "#82866d",
-            "count": 2,
-            "nearest": "#5c6b80",
-            "distance": 50.34
-          },
-          {
-            "hex": "#a2211e",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 62.74
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/north-west/04.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1332,
-        "offPaletteCount": 242,
-        "offPaletteRatio": 0.1817,
-        "offendingHexes": [
-          {
-            "hex": "#427d40",
-            "count": 45,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#5a9557",
-            "count": 40,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 27,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#79989a",
-            "count": 16,
-            "nearest": "#5c6b80",
-            "distance": 59.51
-          },
-          {
-            "hex": "#7e9495",
-            "count": 12,
-            "nearest": "#5c6b80",
-            "distance": 57.25
-          },
-          {
-            "hex": "#799da0",
-            "count": 10,
-            "nearest": "#a8b4c4",
-            "distance": 63.51
-          },
-          {
-            "hex": "#6da6a5",
-            "count": 8,
-            "nearest": "#a8b4c4",
-            "distance": 68.1
-          },
-          {
-            "hex": "#71a19d",
-            "count": 8,
-            "nearest": "#5c6b80",
-            "distance": 64.79
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/west/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 966,
-        "offPaletteCount": 139,
-        "offPaletteRatio": 0.1439,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 56,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#659f5e",
-            "count": 48,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#427d40",
-            "count": 31,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 2,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#dd4e2f",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 64.47
-          },
-          {
-            "hex": "#7ab178",
-            "count": 1,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/west/04.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1006,
-        "offPaletteCount": 147,
-        "offPaletteRatio": 0.1461,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 55,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#427d40",
-            "count": 48,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#659f5e",
-            "count": 36,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#df2e1d",
-            "count": 3,
-            "nearest": "#b07a3d",
-            "distance": 94.92
-          },
-          {
-            "hex": "#6cb064",
-            "count": 2,
-            "nearest": "#3fae3b",
-            "distance": 60.91
-          },
-          {
-            "hex": "#4f7a2d",
-            "count": 1,
-            "nearest": "#3fae3b",
-            "distance": 56.18
-          },
-          {
-            "hex": "#40020d",
-            "count": 1,
-            "nearest": "#4a3514",
-            "distance": 52.44
-          },
-          {
-            "hex": "#a6412f",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 47.34
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/south-west/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1174,
-        "offPaletteCount": 181,
-        "offPaletteRatio": 0.1542,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 71,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#427d40",
-            "count": 59,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#659f5e",
-            "count": 45,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 3,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#b79b7d",
-            "count": 2,
-            "nearest": "#c9a34e",
-            "distance": 50.96
-          },
-          {
-            "hex": "#7ab178",
-            "count": 1,
-            "nearest": "#7fe84a",
-            "distance": 71.87
-          }
-        ]
-      }
-    },
-    {
-      "state": "attack-tell",
-      "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack-tell/south-west/04.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "fail",
-        "opaqueCount": 1236,
-        "offPaletteCount": 166,
-        "offPaletteRatio": 0.1343,
-        "offendingHexes": [
-          {
-            "hex": "#5a9557",
-            "count": 74,
-            "nearest": "#3fae3b",
-            "distance": 46.24
-          },
-          {
-            "hex": "#427d40",
-            "count": 56,
-            "nearest": "#3fae3b",
-            "distance": 49.35
-          },
-          {
-            "hex": "#659f5e",
-            "count": 29,
-            "nearest": "#3fae3b",
-            "distance": 53.8
-          },
-          {
-            "hex": "#d51e1a",
-            "count": 3,
-            "nearest": "#8c6724",
-            "distance": 103.72
-          },
-          {
-            "hex": "#9daf7d",
-            "count": 2,
-            "nearest": "#d8c28a",
-            "distance": 63.33
-          },
-          {
-            "hex": "#577535",
-            "count": 2,
-            "nearest": "#8c6724",
-            "distance": 57.39
-          }
-        ]
-      }
-    },
     {
       "state": "attack",
       "direction": "south",
@@ -1094,6 +191,850 @@
             "count": 1,
             "nearest": "#6a3d22",
             "distance": 97.9
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/south-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1118,
+        "offPaletteCount": 180,
+        "offPaletteRatio": 0.161,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 67,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 58,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#427d40",
+            "count": 50,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 3,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          },
+          {
+            "hex": "#7ab178",
+            "count": 1,
+            "nearest": "#7fe84a",
+            "distance": 71.87
+          },
+          {
+            "hex": "#82866d",
+            "count": 1,
+            "nearest": "#5c6b80",
+            "distance": 50.34
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/south-east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1269,
+        "offPaletteCount": 178,
+        "offPaletteRatio": 0.1403,
+        "offendingHexes": [
+          {
+            "hex": "#427d40",
+            "count": 64,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#5a9557",
+            "count": 58,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 49,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#bf3011",
+            "count": 4,
+            "nearest": "#8c6724",
+            "distance": 77.38
+          },
+          {
+            "hex": "#8f250d",
+            "count": 2,
+            "nearest": "#6a3d22",
+            "distance": 48.85
+          },
+          {
+            "hex": "#92ba79",
+            "count": 1,
+            "nearest": "#7fe84a",
+            "distance": 68.45
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 955,
+        "offPaletteCount": 164,
+        "offPaletteRatio": 0.1717,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 92,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 37,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#427d40",
+            "count": 28,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#7ab178",
+            "count": 4,
+            "nearest": "#7fe84a",
+            "distance": 71.87
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 3,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/east/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1334,
+        "offPaletteCount": 210,
+        "offPaletteRatio": 0.1574,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 91,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#427d40",
+            "count": 60,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#659f5e",
+            "count": 45,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#133e0b",
+            "count": 7,
+            "nearest": "#141a2a",
+            "distance": 47.52
+          },
+          {
+            "hex": "#bd2417",
+            "count": 2,
+            "nearest": "#8c6724",
+            "distance": 84.02
+          },
+          {
+            "hex": "#7b544b",
+            "count": 2,
+            "nearest": "#8c6724",
+            "distance": 46.59
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          },
+          {
+            "hex": "#54090a",
+            "count": 1,
+            "nearest": "#4a3514",
+            "distance": 46.22
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/north-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1051,
+        "offPaletteCount": 146,
+        "offPaletteRatio": 0.1389,
+        "offendingHexes": [
+          {
+            "hex": "#427d40",
+            "count": 69,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#5a9557",
+            "count": 38,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 27,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#7ab178",
+            "count": 7,
+            "nearest": "#7fe84a",
+            "distance": 71.87
+          },
+          {
+            "hex": "#a2211e",
+            "count": 2,
+            "nearest": "#6a3d22",
+            "distance": 62.74
+          },
+          {
+            "hex": "#ef5c51",
+            "count": 1,
+            "nearest": "#b07a3d",
+            "distance": 72.59
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          },
+          {
+            "hex": "#b79b7d",
+            "count": 1,
+            "nearest": "#c9a34e",
+            "distance": 50.96
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/north-east/08.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 843,
+        "offPaletteCount": 123,
+        "offPaletteRatio": 0.1459,
+        "offendingHexes": [
+          {
+            "hex": "#427d40",
+            "count": 56,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#5a9557",
+            "count": 43,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 14,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#780e0c",
+            "count": 2,
+            "nearest": "#6a3d22",
+            "distance": 53.75
+          },
+          {
+            "hex": "#4a0102",
+            "count": 2,
+            "nearest": "#4a3514",
+            "distance": 55.03
+          },
+          {
+            "hex": "#72be66",
+            "count": 2,
+            "nearest": "#7fe84a",
+            "distance": 52.12
+          },
+          {
+            "hex": "#ef5c51",
+            "count": 1,
+            "nearest": "#b07a3d",
+            "distance": 72.59
+          },
+          {
+            "hex": "#da4c27",
+            "count": 1,
+            "nearest": "#b07a3d",
+            "distance": 66.06
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/north/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1105,
+        "offPaletteCount": 246,
+        "offPaletteRatio": 0.2226,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 116,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#427d40",
+            "count": 93,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#659f5e",
+            "count": 35,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#82866d",
+            "count": 2,
+            "nearest": "#5c6b80",
+            "distance": 50.34
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/north/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 979,
+        "offPaletteCount": 181,
+        "offPaletteRatio": 0.1849,
+        "offendingHexes": [
+          {
+            "hex": "#427d40",
+            "count": 87,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#5a9557",
+            "count": 63,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 31,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/north-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1058,
+        "offPaletteCount": 125,
+        "offPaletteRatio": 0.1181,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 49,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#427d40",
+            "count": 43,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#659f5e",
+            "count": 23,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#7ab178",
+            "count": 6,
+            "nearest": "#7fe84a",
+            "distance": 71.87
+          },
+          {
+            "hex": "#82866d",
+            "count": 2,
+            "nearest": "#5c6b80",
+            "distance": 50.34
+          },
+          {
+            "hex": "#a2211e",
+            "count": 1,
+            "nearest": "#6a3d22",
+            "distance": 62.74
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/north-west/06.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1402,
+        "offPaletteCount": 136,
+        "offPaletteRatio": 0.097,
+        "offendingHexes": [
+          {
+            "hex": "#427d40",
+            "count": 59,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#5a9557",
+            "count": 55,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 12,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#7ab178",
+            "count": 4,
+            "nearest": "#7fe84a",
+            "distance": 71.87
+          },
+          {
+            "hex": "#90af74",
+            "count": 2,
+            "nearest": "#c9a34e",
+            "distance": 69.55
+          },
+          {
+            "hex": "#c63a2b",
+            "count": 2,
+            "nearest": "#b07a3d",
+            "distance": 70.03
+          },
+          {
+            "hex": "#8dbe87",
+            "count": 1,
+            "nearest": "#a8b4c4",
+            "distance": 67.45
+          },
+          {
+            "hex": "#a2211e",
+            "count": 1,
+            "nearest": "#6a3d22",
+            "distance": 62.74
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 966,
+        "offPaletteCount": 139,
+        "offPaletteRatio": 0.1439,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 56,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 48,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#427d40",
+            "count": 31,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 2,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          },
+          {
+            "hex": "#dd4e2f",
+            "count": 1,
+            "nearest": "#b07a3d",
+            "distance": 64.47
+          },
+          {
+            "hex": "#7ab178",
+            "count": 1,
+            "nearest": "#7fe84a",
+            "distance": 71.87
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/west/06.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "stray-islands"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 1,
+        "componentCount": 3
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1314,
+        "offPaletteCount": 157,
+        "offPaletteRatio": 0.1195,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 65,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 43,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#427d40",
+            "count": 37,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#f3eb4d",
+            "count": 4,
+            "nearest": "#f1d37a",
+            "distance": 51.04
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 2,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          },
+          {
+            "hex": "#78a95e",
+            "count": 2,
+            "nearest": "#7fe84a",
+            "distance": 66.47
+          },
+          {
+            "hex": "#f8f850",
+            "count": 1,
+            "nearest": "#c9ff6a",
+            "distance": 54.17
+          },
+          {
+            "hex": "#f5e83c",
+            "count": 1,
+            "nearest": "#f1d37a",
+            "distance": 65.58
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/south-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1174,
+        "offPaletteCount": 181,
+        "offPaletteRatio": 0.1542,
+        "offendingHexes": [
+          {
+            "hex": "#5a9557",
+            "count": 71,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#427d40",
+            "count": 59,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#659f5e",
+            "count": 45,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 3,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          },
+          {
+            "hex": "#b79b7d",
+            "count": 2,
+            "nearest": "#c9a34e",
+            "distance": 50.96
+          },
+          {
+            "hex": "#7ab178",
+            "count": 1,
+            "nearest": "#7fe84a",
+            "distance": 71.87
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/fud-goblin/attack/south-west/06.png",
+      "transparency": {
+        "status": "fail",
+        "failures": [
+          "stray-islands"
+        ],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 4,
+        "componentCount": 8
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 1771,
+        "offPaletteCount": 179,
+        "offPaletteRatio": 0.1011,
+        "offendingHexes": [
+          {
+            "hex": "#427d40",
+            "count": 65,
+            "nearest": "#3fae3b",
+            "distance": 49.35
+          },
+          {
+            "hex": "#5a9557",
+            "count": 61,
+            "nearest": "#3fae3b",
+            "distance": 46.24
+          },
+          {
+            "hex": "#659f5e",
+            "count": 31,
+            "nearest": "#3fae3b",
+            "distance": 53.8
+          },
+          {
+            "hex": "#f5daac",
+            "count": 12,
+            "nearest": "#f4f0d8",
+            "distance": 49.2
+          },
+          {
+            "hex": "#9fb277",
+            "count": 5,
+            "nearest": "#c9a34e",
+            "distance": 60.58
+          },
+          {
+            "hex": "#d51e1a",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 103.72
+          },
+          {
+            "hex": "#6d914b",
+            "count": 1,
+            "nearest": "#3fae3b",
+            "distance": 56.68
+          },
+          {
+            "hex": "#5c5d45",
+            "count": 1,
+            "nearest": "#3a465c",
+            "distance": 47.05
           }
         ]
       }

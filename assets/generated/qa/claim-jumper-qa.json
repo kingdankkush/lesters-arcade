@@ -20,15 +20,16 @@
     },
     {
       "id": "dimensions",
-      "status": "pass",
+      "status": "warn",
       "canvases": {
-        "188x188": 16
+        "96x96": 8,
+        "188x188": 8
       }
     },
     {
       "id": "pivot-stability",
       "status": "fail",
-      "maxDelta": 14.18
+      "maxDelta": 5.002
     },
     {
       "id": "tell-duration",
@@ -37,30 +38,54 @@
   ],
   "completeness": {
     "status": "fail",
-    "missingStates": [
-      "idle",
-      "walk",
-      "run",
-      "hit",
-      "death",
-      "spawn-in"
-    ],
+    "missingStates": [],
     "partialDirections": {},
-    "tooShortStates": {}
+    "tooShortStates": {
+      "attack-tell": {
+        "south": 1,
+        "south-east": 1,
+        "east": 1,
+        "north-east": 1,
+        "north": 1,
+        "north-west": 1,
+        "west": 1,
+        "south-west": 1
+      },
+      "death": {
+        "south": 1,
+        "south-east": 1,
+        "east": 1,
+        "north-east": 1,
+        "north": 1,
+        "north-west": 1,
+        "west": 1,
+        "south-west": 1
+      },
+      "spawn-in": {
+        "south": 1,
+        "south-east": 1,
+        "east": 1,
+        "north-east": 1,
+        "north": 1,
+        "north-west": 1,
+        "west": 1,
+        "south-west": 1
+      }
+    }
   },
   "tellDuration": {
     "status": "fail",
     "tellFrames": 42,
     "fps": 12,
     "coverageFrames": {
-      "south": 25,
-      "south-east": 25,
-      "east": 25,
-      "north-east": 25,
-      "north": 25,
-      "north-west": 25,
-      "west": 25,
-      "south-west": 25
+      "south": 5,
+      "south-east": 5,
+      "east": 5,
+      "north-east": 5,
+      "north": 5,
+      "north-west": 5,
+      "west": 5,
+      "south-west": 5
     },
     "shortDirections": [
       "south",
@@ -74,6 +99,222 @@
     ]
   },
   "frameChecks": [
+    {
+      "state": "attack-tell",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack-tell",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack-tell",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack-tell",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack-tell",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack-tell",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/north-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack-tell",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
+    {
+      "state": "attack-tell",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/claim-jumper/attack-tell/south-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "pass",
+        "opaqueCount": 2249,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.048,
+        "offendingHexes": [
+          {
+            "hex": "#ff4669",
+            "count": 108,
+            "nearest": "#e040a0",
+            "distance": 63.42
+          }
+        ]
+      }
+    },
     {
       "state": "shoot",
       "direction": "south",
@@ -624,560 +865,6 @@
             "count": 1,
             "nearest": "#c9a34e",
             "distance": 50.01
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "north",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 2911,
-        "offPaletteCount": 53,
-        "offPaletteRatio": 0.0182,
-        "offendingHexes": [
-          {
-            "hex": "#a92c27",
-            "count": 2,
-            "nearest": "#6a3d22",
-            "distance": 65.44
-          },
-          {
-            "hex": "#701110",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 47.92
-          },
-          {
-            "hex": "#7b160f",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 46.59
-          },
-          {
-            "hex": "#79140d",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 48.45
-          },
-          {
-            "hex": "#bd502c",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 47.14
-          },
-          {
-            "hex": "#c1502a",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 49.13
-          },
-          {
-            "hex": "#9a3423",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 48.85
-          },
-          {
-            "hex": "#be4f2e",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 47.64
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "north",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north/06.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 2756,
-        "offPaletteCount": 98,
-        "offPaletteRatio": 0.0356,
-        "offendingHexes": [
-          {
-            "hex": "#6b0d10",
-            "count": 3,
-            "nearest": "#6a3d22",
-            "distance": 51.27
-          },
-          {
-            "hex": "#7b100e",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 52.1
-          },
-          {
-            "hex": "#6f0e0f",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 50.94
-          },
-          {
-            "hex": "#7f0b0c",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 58.52
-          },
-          {
-            "hex": "#b7472c",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 54.19
-          },
-          {
-            "hex": "#c3502a",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 49.86
-          },
-          {
-            "hex": "#d88e26",
-            "count": 1,
-            "nearest": "#c9a34e",
-            "distance": 47.6
-          },
-          {
-            "hex": "#db9026",
-            "count": 1,
-            "nearest": "#c9a34e",
-            "distance": 47.8
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 3288,
-        "offPaletteCount": 19,
-        "offPaletteRatio": 0.0058,
-        "offendingHexes": [
-          {
-            "hex": "#c44a26",
-            "count": 2,
-            "nearest": "#b07a3d",
-            "distance": 56.86
-          },
-          {
-            "hex": "#9b2e11",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 53.99
-          },
-          {
-            "hex": "#b84323",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 56.86
-          },
-          {
-            "hex": "#bc4621",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 58.33
-          },
-          {
-            "hex": "#b84325",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 56.86
-          },
-          {
-            "hex": "#bb4523",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 58.02
-          },
-          {
-            "hex": "#be4722",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 59.38
-          },
-          {
-            "hex": "#736d52",
-            "count": 1,
-            "nearest": "#5c6b80",
-            "distance": 51.47
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "north-west",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/north-west/06.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 3372,
-        "offPaletteCount": 103,
-        "offPaletteRatio": 0.0305,
-        "offendingHexes": [
-          {
-            "hex": "#fbf300",
-            "count": 2,
-            "nearest": "#c9ff6a",
-            "distance": 117.81
-          },
-          {
-            "hex": "#f3f800",
-            "count": 2,
-            "nearest": "#c9ff6a",
-            "distance": 114.23
-          },
-          {
-            "hex": "#741307",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 50.92
-          },
-          {
-            "hex": "#64090a",
-            "count": 1,
-            "nearest": "#4a3514",
-            "distance": 52.08
-          },
-          {
-            "hex": "#9e3116",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 54.7
-          },
-          {
-            "hex": "#b33c22",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 58.09
-          },
-          {
-            "hex": "#982f1e",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 48.25
-          },
-          {
-            "hex": "#8d220c",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 49.38
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 3062,
-        "offPaletteCount": 23,
-        "offPaletteRatio": 0.0075,
-        "offendingHexes": [
-          {
-            "hex": "#c04e33",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 47.87
-          },
-          {
-            "hex": "#c25131",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 46.36
-          },
-          {
-            "hex": "#ba4b30",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 49.78
-          },
-          {
-            "hex": "#c24f35",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 47.3
-          },
-          {
-            "hex": "#bd4c2f",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 49.81
-          },
-          {
-            "hex": "#b99e84",
-            "count": 1,
-            "nearest": "#d8c28a",
-            "distance": 47.89
-          },
-          {
-            "hex": "#8c948d",
-            "count": 1,
-            "nearest": "#5c6b80",
-            "distance": 64.45
-          },
-          {
-            "hex": "#8c918d",
-            "count": 1,
-            "nearest": "#5c6b80",
-            "distance": 62.59
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "west",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/west/06.png",
-      "transparency": {
-        "status": "fail",
-        "failures": [
-          "stray-islands"
-        ],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 1,
-        "componentCount": 2
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 3394,
-        "offPaletteCount": 187,
-        "offPaletteRatio": 0.0551,
-        "offendingHexes": [
-          {
-            "hex": "#faff94",
-            "count": 2,
-            "nearest": "#f1d37a",
-            "distance": 51.89
-          },
-          {
-            "hex": "#f8ff9b",
-            "count": 2,
-            "nearest": "#f1d37a",
-            "distance": 55.44
-          },
-          {
-            "hex": "#faffa5",
-            "count": 2,
-            "nearest": "#f4f0d8",
-            "distance": 53.5
-          },
-          {
-            "hex": "#f9ffa2",
-            "count": 2,
-            "nearest": "#f4f0d8",
-            "distance": 56.27
-          },
-          {
-            "hex": "#faffa6",
-            "count": 2,
-            "nearest": "#f4f0d8",
-            "distance": 52.55
-          },
-          {
-            "hex": "#320000",
-            "count": 2,
-            "nearest": "#0b0f1a",
-            "distance": 49.21
-          },
-          {
-            "hex": "#625648",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 46.18
-          },
-          {
-            "hex": "#919095",
-            "count": 1,
-            "nearest": "#a8b4c4",
-            "distance": 63.51
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/00.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 1
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 2255,
-        "offPaletteCount": 10,
-        "offPaletteRatio": 0.0044,
-        "offendingHexes": [
-          {
-            "hex": "#972a1b",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 49.35
-          },
-          {
-            "hex": "#97301c",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 47.22
-          },
-          {
-            "hex": "#9c3621",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 50.5
-          },
-          {
-            "hex": "#58724b",
-            "count": 1,
-            "nearest": "#5c6b80",
-            "distance": 53.61
-          },
-          {
-            "hex": "#be8f79",
-            "count": 1,
-            "nearest": "#c9a34e",
-            "distance": 48.68
-          },
-          {
-            "hex": "#9f8971",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 56.73
-          },
-          {
-            "hex": "#93896b",
-            "count": 1,
-            "nearest": "#b07a3d",
-            "distance": 56.41
-          },
-          {
-            "hex": "#f09e71",
-            "count": 1,
-            "nearest": "#d8c28a",
-            "distance": 49.97
-          }
-        ]
-      }
-    },
-    {
-      "state": "shoot",
-      "direction": "south-west",
-      "file": "./assets/generated/hmh-animated-roster/claim-jumper/shoot/south-west/06.png",
-      "transparency": {
-        "status": "pass",
-        "failures": [],
-        "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
-        "strayIslandCount": 0,
-        "componentCount": 3
-      },
-      "palette": {
-        "status": "pass",
-        "opaqueCount": 2624,
-        "offPaletteCount": 37,
-        "offPaletteRatio": 0.0141,
-        "offendingHexes": [
-          {
-            "hex": "#a72113",
-            "count": 1,
-            "nearest": "#6a3d22",
-            "distance": 68.77
-          },
-          {
-            "hex": "#b44a2a",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 49.77
-          },
-          {
-            "hex": "#e87f44",
-            "count": 1,
-            "nearest": "#c9a34e",
-            "distance": 48.55
-          },
-          {
-            "hex": "#ba4224",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 59.03
-          },
-          {
-            "hex": "#b84022",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 58.83
-          },
-          {
-            "hex": "#a6371c",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 55.17
-          },
-          {
-            "hex": "#b44719",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 52.39
-          },
-          {
-            "hex": "#b34628",
-            "count": 1,
-            "nearest": "#8c6724",
-            "distance": 51.24
           }
         ]
       }

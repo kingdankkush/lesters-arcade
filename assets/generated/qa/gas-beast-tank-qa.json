@@ -3,7 +3,7 @@
   "role": "enemy",
   "summary": {
     "status": "fail",
-    "sampledFrameCount": 0
+    "sampledFrameCount": 16
   },
   "checks": [
     {
@@ -12,7 +12,7 @@
     },
     {
       "id": "palette",
-      "status": "pass"
+      "status": "fail"
     },
     {
       "id": "completeness",
@@ -21,12 +21,14 @@
     {
       "id": "dimensions",
       "status": "pass",
-      "canvases": {}
+      "canvases": {
+        "96x96": 16
+      }
     },
     {
       "id": "pivot-stability",
-      "status": "warn",
-      "maxDelta": 0
+      "status": "fail",
+      "maxDelta": 5
     },
     {
       "id": "tell-duration",
@@ -35,24 +37,498 @@
   ],
   "completeness": {
     "status": "fail",
-    "missingStates": [
-      "idle",
-      "walk",
-      "run",
-      "attack-tell",
-      "attack",
-      "hit",
-      "death",
-      "spawn-in"
-    ],
+    "missingStates": [],
     "partialDirections": {},
-    "tooShortStates": {}
+    "tooShortStates": {
+      "attack-tell": {
+        "south": 1,
+        "south-east": 1,
+        "east": 1,
+        "north-east": 1,
+        "north": 1,
+        "north-west": 1,
+        "west": 1,
+        "south-west": 1
+      },
+      "death": {
+        "south": 1,
+        "south-east": 1,
+        "east": 1,
+        "north-east": 1,
+        "north": 1,
+        "north-west": 1,
+        "west": 1,
+        "south-west": 1
+      },
+      "spawn-in": {
+        "south": 1,
+        "south-east": 1,
+        "east": 1,
+        "north-east": 1,
+        "north": 1,
+        "north-west": 1,
+        "west": 1,
+        "south-west": 1
+      }
+    }
   },
   "tellDuration": {
     "status": "fail",
-    "reason": "missing-attack-tell",
     "tellFrames": 42,
-    "coverageFrames": {}
+    "fps": 12,
+    "coverageFrames": {
+      "south": 5,
+      "south-east": 5,
+      "east": 5,
+      "north-east": 5,
+      "north": 5,
+      "north-west": 5,
+      "west": 5,
+      "south-west": 5
+    },
+    "shortDirections": [
+      "south",
+      "south-east",
+      "east",
+      "north-east",
+      "north",
+      "north-west",
+      "west",
+      "south-west"
+    ]
   },
-  "frameChecks": []
+  "frameChecks": [
+    {
+      "state": "idle",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/south/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/south-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/north-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/north/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/north-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "idle",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/idle/south-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "south",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/south/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "south-east",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/south-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "east",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "north-east",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/north-east/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "north",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/north/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "north-west",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/north-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "west",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    },
+    {
+      "state": "walk",
+      "direction": "south-west",
+      "file": "./assets/generated/hmh-animated-roster/gas-beast-tank/walk/south-west/00.png",
+      "transparency": {
+        "status": "pass",
+        "failures": [],
+        "opaqueCornerCount": 0,
+        "haloPixelCount": 0,
+        "strayIslandCount": 0,
+        "componentCount": 1
+      },
+      "palette": {
+        "status": "fail",
+        "opaqueCount": 2175,
+        "offPaletteCount": 1310,
+        "offPaletteRatio": 0.6023,
+        "offendingHexes": [
+          {
+            "hex": "#50cf70",
+            "count": 1310,
+            "nearest": "#3fae3b",
+            "distance": 64.71
+          }
+        ]
+      }
+    }
+  ]
 }
