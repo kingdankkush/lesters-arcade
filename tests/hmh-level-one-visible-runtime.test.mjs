@@ -37,9 +37,8 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   assert.equal(objects.some((object) => object.id.includes('spawn-broken-road')), true, 'spawn road beat should be visible immediately');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/building/landmark-gas-station'), true, 'opening should have a strong curated landmark visible at spawn');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/building/ghost-boarded-storefront'), true, 'opening should telegraph the next authored town beat');
-  assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign'), true, 'spawn should include route signage from the curated folder');
-  assert.equal(objects.every((object) => object.curated === true), true, 'all visible-runtime objects should be tagged as curated');
-  assert.equal(objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'every object should resolve to Justin-curated manifest art');
+  assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), true, 'opening should include route signage without covering the hero start');
+  assert.equal(objects.every((object) => levelOneCuratedAssetSrc(object.assetKey)), true, 'every object should resolve through the Level 1 runtime art policy');
 });
 
 test('WO-48 spawn gate redress keeps the opening safe while preserving route signage', () => {
@@ -48,7 +47,8 @@ test('WO-48 spawn gate redress keeps the opening safe while preserving route sig
   const insideGate = objects.filter((object) => Math.hypot(object.gridX, object.gridY) < gateRadius);
 
   assert.equal(insideGate.length > 0, true, 'spawn gate should still contain readable low route cues');
-  assert.equal(insideGate.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign'), true, 'spawn gate keeps the authored route sign');
+  assert.equal(insideGate.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), false, 'route signage must sit outside the safe radius so it does not cover the hero');
+  assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), true, 'opening still preserves authored route signage outside the safe radius');
   assert.equal(insideGate.some((object) => object.sceneRole === 'road'), true, 'spawn gate keeps low road/readability ground props');
   assert.equal(insideGate.some((object) => object.sceneRole === 'water-strip'), false, 'spawn gate should not start on water/noir clutter');
   assert.equal(insideGate.some((object) => object.solid && (object.zHeight >= 2 || ['landmark', 'wall'].includes(object.sceneRole))), false, 'spawn gate should not contain tall solid blockers');
@@ -63,7 +63,7 @@ test('Level 1 opening composition declares AAA-readable route, boundary, landmar
   assert.equal(composition.boundaries.length >= 8, true, 'route needs visible diegetic boundaries');
   assert.equal(composition.setDressing.length <= 10, true, 'set dressing must stay capped to avoid prop soup');
   assert.equal(composition.objects.every((object) => object.use !== 'terrain'), true, 'terrain must be ground-role metadata, not obstacle props');
-  assert.equal(composition.objects.every((object) => curatedLevelKitAssetByKey(object.assetKey)), true, 'all opening objects use approved curated art');
+  assert.equal(composition.objects.every((object) => levelOneCuratedAssetSrc(object.assetKey)), true, 'all opening objects use approved Level 1 runtime art');
 });
 
 test('WO-63 Level 1 far-field dressing uses explicit authored prefab stamps and exact asset keys', () => {

@@ -27,6 +27,16 @@ function resolveRuntimeAsset(src) {
   return path.resolve(ROOT, 'apps/portal', String(src).replace(/^\.\//, ''));
 }
 
+function pngDimensions(filePath) {
+  const buffer = readFileSync(filePath);
+  assert.equal(buffer.toString('ascii', 1, 4), 'PNG', `${filePath} must be a PNG`);
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20),
+    bytes: buffer.length,
+  };
+}
+
 test('every hero locks to one roster that exists', () => {
   for (const [hero, key] of Object.entries(HERO_LOCKED_ROSTER)) {
     const roster = HMH_ANIMATED_ROSTER[key];
@@ -46,6 +56,23 @@ test('all playable rosters carry full 8-direction required animation coverage wi
         assert.ok(first.endsWith('.png'), `${key}/${state}/${direction} first frame should be a PNG: ${frames[0]}`);
       }
     }
+  }
+});
+
+test('playable hero manifests do not carry QA-green placeholder identity or tiny sprite artifacts', () => {
+  const minimumBytes = {
+    'lit-commando': 3000,
+    'lit-valkyrie': 3500,
+    lester: 7000,
+    lilly: 7000,
+  };
+  for (const key of PLAYABLE_ROSTERS) {
+    const entry = HMH_ANIMATED_ROSTER[key];
+    assert.ok(!String(entry?.character_id ?? '').startsWith('qa-green-native-'), `${key} is still labeled as QA-green placeholder art`);
+    const firstSouthIdle = resolveRuntimeAsset(entry.animations?.idle?.south?.[0]);
+    const dims = pngDimensions(firstSouthIdle);
+    assert.ok(dims.width >= 45 && dims.height >= 90, `${key} idle/south canvas is too small for production hero art: ${dims.width}x${dims.height}`);
+    assert.ok(dims.bytes >= minimumBytes[key], `${key} idle/south PNG is too tiny/simple and likely placeholder art: ${dims.bytes} bytes`);
   }
 });
 

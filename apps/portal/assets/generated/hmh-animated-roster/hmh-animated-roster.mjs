@@ -4,7 +4,7 @@
 export const HMH_ANIMATED_ROSTER = Object.freeze({
   "lester": {
     "role": "hero",
-    "character_id": "qa-green-native-lester-v1",
+    "character_id": "lester",
     "animations": {
       "dash": {
         "south": [
@@ -425,7 +425,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/south/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/south/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/south/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/south/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/south/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south/11.png"
         ],
         "south-east": [
           "./assets/generated/hmh-animated-roster/lester/run/south-east/00.png",
@@ -435,7 +439,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/south-east/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/south-east/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/south-east/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/south-east/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-east/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-east/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-east/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-east/11.png"
         ],
         "east": [
           "./assets/generated/hmh-animated-roster/lester/run/east/00.png",
@@ -445,7 +453,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/east/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/east/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/east/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/east/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/east/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/east/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/east/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/east/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/east/11.png"
         ],
         "north-east": [
           "./assets/generated/hmh-animated-roster/lester/run/north-east/00.png",
@@ -455,7 +467,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/north-east/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/north-east/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/north-east/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/north-east/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-east/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-east/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-east/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-east/11.png"
         ],
         "north": [
           "./assets/generated/hmh-animated-roster/lester/run/north/00.png",
@@ -465,7 +481,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/north/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/north/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/north/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/north/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/north/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north/11.png"
         ],
         "north-west": [
           "./assets/generated/hmh-animated-roster/lester/run/north-west/00.png",
@@ -475,7 +495,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/north-west/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/north-west/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/north-west/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/north-west/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-west/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-west/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-west/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/north-west/11.png"
         ],
         "west": [
           "./assets/generated/hmh-animated-roster/lester/run/west/00.png",
@@ -485,7 +509,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/west/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/west/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/west/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/west/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/west/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/west/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/west/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/west/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/west/11.png"
         ],
         "south-west": [
           "./assets/generated/hmh-animated-roster/lester/run/south-west/00.png",
@@ -495,7 +523,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/run/south-west/04.png",
           "./assets/generated/hmh-animated-roster/lester/run/south-west/05.png",
           "./assets/generated/hmh-animated-roster/lester/run/south-west/06.png",
-          "./assets/generated/hmh-animated-roster/lester/run/south-west/07.png"
+          "./assets/generated/hmh-animated-roster/lester/run/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-west/08.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-west/09.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-west/10.png",
+          "./assets/generated/hmh-animated-roster/lester/run/south-west/11.png"
         ]
       },
       "shoot": {
@@ -753,7 +785,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/south/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/south/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/south/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/south/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/south/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south/11.png"
         ],
         "south-east": [
           "./assets/generated/hmh-animated-roster/lester/walk/south-east/00.png",
@@ -763,7 +799,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/south-east/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/south-east/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/south-east/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/south-east/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-east/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-east/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-east/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-east/11.png"
         ],
         "east": [
           "./assets/generated/hmh-animated-roster/lester/walk/east/00.png",
@@ -773,7 +813,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/east/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/east/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/east/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/east/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/east/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/east/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/east/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/east/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/east/11.png"
         ],
         "north-east": [
           "./assets/generated/hmh-animated-roster/lester/walk/north-east/00.png",
@@ -783,7 +827,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/north-east/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/north-east/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/north-east/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/north-east/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-east/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-east/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-east/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-east/11.png"
         ],
         "north": [
           "./assets/generated/hmh-animated-roster/lester/walk/north/00.png",
@@ -793,7 +841,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/north/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/north/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/north/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/north/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/north/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north/11.png"
         ],
         "north-west": [
           "./assets/generated/hmh-animated-roster/lester/walk/north-west/00.png",
@@ -803,7 +855,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/north-west/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/north-west/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/north-west/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/north-west/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-west/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-west/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-west/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/north-west/11.png"
         ],
         "west": [
           "./assets/generated/hmh-animated-roster/lester/walk/west/00.png",
@@ -813,7 +869,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/west/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/west/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/west/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/west/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/west/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/west/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/west/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/west/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/west/11.png"
         ],
         "south-west": [
           "./assets/generated/hmh-animated-roster/lester/walk/south-west/00.png",
@@ -823,7 +883,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lester/walk/south-west/04.png",
           "./assets/generated/hmh-animated-roster/lester/walk/south-west/05.png",
           "./assets/generated/hmh-animated-roster/lester/walk/south-west/06.png",
-          "./assets/generated/hmh-animated-roster/lester/walk/south-west/07.png"
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/08.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/09.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/10.png",
+          "./assets/generated/hmh-animated-roster/lester/walk/south-west/11.png"
         ]
       }
     },
@@ -7613,7 +7677,7 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
   },
   "lilly": {
     "role": "hero",
-    "character_id": "qa-green-native-lilly-v1",
+    "character_id": "lilly",
     "animations": {
       "dash": {
         "south": [
@@ -8034,7 +8098,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/south/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/south/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/south/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/south/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/south/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south/11.png"
         ],
         "south-east": [
           "./assets/generated/hmh-animated-roster/lilly/run/south-east/00.png",
@@ -8044,7 +8112,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/south-east/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/south-east/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/south-east/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/south-east/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-east/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-east/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-east/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-east/11.png"
         ],
         "east": [
           "./assets/generated/hmh-animated-roster/lilly/run/east/00.png",
@@ -8054,7 +8126,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/east/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/east/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/east/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/east/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/east/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/east/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/east/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/east/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/east/11.png"
         ],
         "north-east": [
           "./assets/generated/hmh-animated-roster/lilly/run/north-east/00.png",
@@ -8064,7 +8140,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/north-east/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/north-east/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/north-east/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/north-east/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-east/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-east/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-east/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-east/11.png"
         ],
         "north": [
           "./assets/generated/hmh-animated-roster/lilly/run/north/00.png",
@@ -8074,7 +8154,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/north/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/north/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/north/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/north/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/north/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north/11.png"
         ],
         "north-west": [
           "./assets/generated/hmh-animated-roster/lilly/run/north-west/00.png",
@@ -8084,7 +8168,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/north-west/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/north-west/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/north-west/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/north-west/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-west/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-west/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-west/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/north-west/11.png"
         ],
         "west": [
           "./assets/generated/hmh-animated-roster/lilly/run/west/00.png",
@@ -8094,7 +8182,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/west/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/west/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/west/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/west/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/west/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/west/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/west/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/west/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/west/11.png"
         ],
         "south-west": [
           "./assets/generated/hmh-animated-roster/lilly/run/south-west/00.png",
@@ -8104,7 +8196,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/run/south-west/04.png",
           "./assets/generated/hmh-animated-roster/lilly/run/south-west/05.png",
           "./assets/generated/hmh-animated-roster/lilly/run/south-west/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/run/south-west/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/run/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-west/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-west/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-west/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/run/south-west/11.png"
         ]
       },
       "shoot": {
@@ -8362,7 +8458,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/south/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/south/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/south/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/south/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/south/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south/11.png"
         ],
         "south-east": [
           "./assets/generated/hmh-animated-roster/lilly/walk/south-east/00.png",
@@ -8372,7 +8472,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/south-east/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/south-east/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/south-east/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/south-east/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-east/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-east/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-east/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-east/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-east/11.png"
         ],
         "east": [
           "./assets/generated/hmh-animated-roster/lilly/walk/east/00.png",
@@ -8382,7 +8486,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/east/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/east/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/east/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/east/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/east/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/east/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/east/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/east/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/east/11.png"
         ],
         "north-east": [
           "./assets/generated/hmh-animated-roster/lilly/walk/north-east/00.png",
@@ -8392,7 +8500,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/north-east/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/north-east/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/north-east/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/north-east/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-east/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-east/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-east/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-east/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-east/11.png"
         ],
         "north": [
           "./assets/generated/hmh-animated-roster/lilly/walk/north/00.png",
@@ -8402,7 +8514,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/north/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/north/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/north/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/north/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/north/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north/11.png"
         ],
         "north-west": [
           "./assets/generated/hmh-animated-roster/lilly/walk/north-west/00.png",
@@ -8412,7 +8528,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/north-west/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/north-west/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/north-west/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/north-west/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-west/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-west/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-west/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-west/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/north-west/11.png"
         ],
         "west": [
           "./assets/generated/hmh-animated-roster/lilly/walk/west/00.png",
@@ -8422,7 +8542,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/west/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/west/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/west/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/west/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/west/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/west/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/west/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/west/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/west/11.png"
         ],
         "south-west": [
           "./assets/generated/hmh-animated-roster/lilly/walk/south-west/00.png",
@@ -8432,7 +8556,11 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
           "./assets/generated/hmh-animated-roster/lilly/walk/south-west/04.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/south-west/05.png",
           "./assets/generated/hmh-animated-roster/lilly/walk/south-west/06.png",
-          "./assets/generated/hmh-animated-roster/lilly/walk/south-west/07.png"
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-west/07.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-west/08.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-west/09.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-west/10.png",
+          "./assets/generated/hmh-animated-roster/lilly/walk/south-west/11.png"
         ]
       }
     },
@@ -8441,7 +8569,7 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
   },
   "lit-commando": {
     "role": "hero",
-    "character_id": "qa-green-native-lit-commando-v1",
+    "character_id": "lit-commando",
     "animations": {
       "dash": {
         "south": [
@@ -9417,7 +9545,7 @@ export const HMH_ANIMATED_ROSTER = Object.freeze({
   },
   "lit-valkyrie": {
     "role": "hero",
-    "character_id": "qa-green-native-lit-valkyrie-v1",
+    "character_id": "lit-valkyrie",
     "animations": {
       "dash": {
         "south": [

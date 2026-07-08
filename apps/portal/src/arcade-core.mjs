@@ -2722,12 +2722,34 @@ export function buildLevelOneBoundaryObstaclesNear({
   const px = Number(playerX) || 0;
   const py = Number(playerY) || 0;
   const segments = [];
+  const boundaryVisualForSide = (side, index) => {
+    const rotation = Math.abs(index) % 3;
+    if (side === 'north') {
+      return rotation === 0
+        ? { key: 'wo102-megaprop/forest-rock-outcrop', role: 'wall', footprintTiles: { w: 5.2, h: 2.8 }, drawOrderBias: -4 }
+        : { key: rotation === 1 ? 'level-1/prop/oval-rock4-ground-shadow' : 'level-1/prop/desert-09', role: 'wall', footprintTiles: { w: 2.4, h: 1.4 }, drawOrderBias: -3 };
+    }
+    if (side === 'south') {
+      return rotation === 0
+        ? { key: 'level-1/flora/broken-tree3', role: 'tree', footprintTiles: { w: 2.2, h: 2.8 }, drawOrderBias: 4 }
+        : { key: rotation === 1 ? 'level-1/prop/dragon-bones-body-ground-shadow' : 'level-1/prop/oval-rock5-ground-shadow', role: 'wall', footprintTiles: { w: 2.8, h: 1.5 }, drawOrderBias: 3 };
+    }
+    if (side === 'west') {
+      return rotation === 0
+        ? { key: 'level-1/water/water-02', role: 'water-strip', footprintTiles: { w: 3.8, h: 1.2 }, drawOrderBias: 1 }
+        : { key: 'level-1/prop/water-ruins2', role: 'wall', footprintTiles: { w: 2.6, h: 1.7 }, drawOrderBias: 2 };
+    }
+    return rotation === 0
+      ? { key: 'wo105-world/container-cover-line', role: 'container', footprintTiles: { w: 3.6, h: 1.6 }, drawOrderBias: 3 }
+      : { key: rotation === 1 ? 'level-1/prop/blue-gray-ruins1' : 'level-1/prop/brown-ruins2', role: 'wall', footprintTiles: { w: 2.6, h: 1.5 }, drawOrderBias: 3 };
+  };
   const add = (side, x, y, index) => {
     if (Math.abs(x - px) > reach || Math.abs(y - py) > reach) return;
     const naturalEdgeType = side === 'north' ? 'ridge'
       : side === 'south' ? 'ravine'
         : side === 'west' ? 'riverbank'
           : 'fence';
+    const visual = boundaryVisualForSide(side, index);
     segments.push(Object.freeze({
       id: `level-one-boundary-${side}-${index}`,
       worldX: Number(x.toFixed(3)),
@@ -2735,10 +2757,12 @@ export function buildLevelOneBoundaryObstaclesNear({
       radius: side === 'north' || side === 'south' ? 1.65 : 1.35,
       solid: true,
       kind: 'boundary-edge',
-      sceneRole: 'edge',
+      sceneRole: visual.role,
+      curatedAssetKey: visual.key,
+      footprintTiles: Object.freeze(visual.footprintTiles),
       boundarySide: side,
       naturalEdgeType,
-      drawOrderBias: side === 'north' ? -2 : 2,
+      drawOrderBias: visual.drawOrderBias,
     }));
   };
   let index = 0;

@@ -6,6 +6,10 @@ import { inflateSync } from 'node:zlib';
 
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../apps/portal/assets/generated/hmh-hd-sprite-atlas.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../apps/portal/src/hmh-character-config.mjs';
+import {
+  buildLevelOneCuratedVisibleSceneObjects,
+  levelOneCuratedAssetSrc,
+} from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -105,6 +109,7 @@ import {
   HMH_LEVEL_ONE_SHIP_FOCUS,
   buildLevelOnePlaytestBalanceModel,
   buildLevelOneRunWorldDimensions,
+  buildLevelOneBoundaryObstaclesNear,
   levelOneRoguelikeSpawnDirectorAt,
   levelOneThreatBeatSchedule,
   levelOneRoguelikeDropChance,
@@ -1094,6 +1099,31 @@ test('WO-71 minute-12 performance budget applies justified render LOD without to
   assert.ok(minute12Budget.groundOverscanFullscreenTiles <= 14);
 });
 
+test('Level 1 opening keeps the hero lane clear while resolving authored POI props', () => {
+  const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 24 });
+  const ids = new Set(objects.map((object) => object.id));
+  assert.equal([...ids].some((id) => id.includes('spawn-bus-stop-sign')), false, 'old spawn bus-stop clutter should not cover the hero start');
+  assert.ok([...ids].some((id) => id.includes('opening-abandoned-pickup')), 'opening should include roadside vehicle staging');
+  assert.ok([...ids].some((id) => id.includes('opening-delivery-cache')), 'opening should include delivery/cache micro-scene staging');
+  for (const object of objects) {
+    const src = levelOneCuratedAssetSrc(object.assetKey);
+    assert.ok(src, `${object.id} must resolve ${object.assetKey} through the Level 1 asset manifests`);
+    const nearHeroLane = Math.abs(object.gridX) <= 4 && object.gridY >= 3 && object.gridY <= 7;
+    assert.equal(nearHeroLane && object.solid, false, `${object.id} should not create a solid blocker over the starting hero lane`);
+  }
+});
+
+test('Level 1 world-boundary blockers carry visible natural edge art', () => {
+  const world = buildLevelOneRunWorldDimensions({ width: 120, height: 64 });
+  const boundaries = buildLevelOneBoundaryObstaclesNear({ world, playerX: world.minX, playerY: 0, window: 72, segmentSpacingTiles: 24 });
+  assert.ok(boundaries.length > 0, 'boundary obstacles should exist near world edges');
+  for (const boundary of boundaries) {
+    assert.ok(boundary.curatedAssetKey, `${boundary.id} needs visible art instead of an invisible collision edge`);
+    assert.ok(levelOneCuratedAssetSrc(boundary.curatedAssetKey), `${boundary.id} asset ${boundary.curatedAssetKey} must resolve`);
+    assert.ok(boundary.footprintTiles?.w > 0 && boundary.footprintTiles?.h > 0, `${boundary.id} needs a visible footprint`);
+  }
+});
+
 test('main.js routes all roguelike death paths through the final-boss extraction gate', () => {
   const source = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const nukeBlock = source.slice(source.indexOf("case 'screenNuke'"), source.indexOf("case 'screenNuke'") + 1100);
@@ -1692,7 +1722,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-aaa-art-v24'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-aaa-art-v25'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2514,7 +2544,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-aaa-art-v24'), true);
+  assert.equal(smokeScript.includes('hmh-aaa-art-v25'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

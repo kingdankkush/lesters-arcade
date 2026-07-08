@@ -17,6 +17,7 @@ ROSTER = ROOT / "apps/portal/assets/generated/hmh-animated-roster"
 LEDGER = ROSTER / "roster-ledger.json"
 MANIFEST = ROSTER / "hmh-animated-roster.mjs"
 DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
+PLAYABLE_ROSTER_IDS = {"lit-commando", "lit-valkyrie", "lester", "lilly"}
 CANONICAL_ANIMS = [
     "idle", "walk", "run",
     "shoot", "shoot-shotgun", "melee", "throw", "levelup", "dash", "victory",
@@ -60,7 +61,11 @@ def main() -> None:
         previous = prior.get(actor_dir.name, {})
         updated = dict(previous)
         updated["role"] = previous.get("role", "enemy")
-        updated["character_id"] = previous.get("character_id")
+        previous_character_id = previous.get("character_id")
+        if actor_dir.name in PLAYABLE_ROSTER_IDS and str(previous_character_id or "").startswith("qa-green-native-"):
+            updated["character_id"] = actor_dir.name
+        else:
+            updated["character_id"] = previous_character_id
         updated["animations"] = animations if animations else previous.get("animations", {})
         rebuilt[actor_dir.name] = updated
     LEDGER.write_text(json.dumps(rebuilt, indent=2), encoding="utf-8")

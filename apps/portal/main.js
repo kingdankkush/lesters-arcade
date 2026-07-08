@@ -1739,7 +1739,7 @@ function renderAchievementIcon({ iconSrc = null, icon = '🏅', label = 'Achieve
 
 function renderRotatingCabinetSprite(sprite, variant = 'splash') {
   const rotator = el('div', {
-    className: `hmh-cabinet-rotator ${variant === 'card' ? 'cabinet-card-rotator' : 'splash-cabinet-rotator'}`,
+    className: `hmh-cabinet-rotator ${variant === 'card' ? 'cabinet-card-rotator' : 'splash-cabinet-rotator'} ${sprite?.className ?? ''}`.trim(),
     ariaLabel: `${sprite?.id ?? 'Hard Money Heroes cabinet'} rotating sprite`,
     role: 'img',
   });
@@ -1747,6 +1747,7 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
   const frameDuration = Math.max(240, Number(sprite?.frameDurationMs ?? frames[0]?.durationMs ?? 720));
   rotator.style.setProperty('--cabinet-frame-count', String(Math.max(1, frames.length)));
   rotator.style.setProperty('--cabinet-loop-duration', `${frameDuration * Math.max(1, frames.length)}ms`);
+  if (Number.isFinite(sprite?.displayScale)) rotator.style.setProperty('--hero-rotation-scale', String(sprite.displayScale));
   frames.forEach((frame, index) => {
     const image = el('img', {
       className: 'cabinet-rotation-frame',
@@ -1768,14 +1769,23 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
 // (hmh('HMH_ANIMATED_ROSTER')), so the character select screen matches in-game appearance.
 // Order directions clockwise (E → NE → N → NW → W → SW → S → SE) for a natural spin.
 const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
+const HERO_ROTATION_DISPLAY_SCALE = Object.freeze({
+  // Lester/Lilly source frames are cropped tighter than the 136px starter canvases;
+  // scale the display only so all four heroes read as the same on-card size while
+  // preserving their restored original pixels and gameplay hitboxes.
+  lester: 0.98,
+  'lester-original': 0.98,
+  lilly: 1.02,
+  'lit-commando': 1,
+  'lit-valkyrie': 1,
+});
 function heroRotationSprite(characterId) {
   // USE THE SAME ROSTER KEY AS GAMEPLAY so the character-select spinning sprite
   // matches exactly what the player controls in-game. Gameplay locks the hero
   // art to `HERO_LOCKED_ROSTER[characterId]` via `heroRosterKey()` — using any
-  // other key (e.g. 'lit-commando' for lester, 'lit-valkyrie' for lilly) causes
-  // the select card to display a DIFFERENT character design than what spawns.
-  // Also handles the empty-animations case for lit-valkyrie by falling through
-  // to the `lilly` legacy key that ships all 8 actions.
+  // other key causes the select card to display a DIFFERENT character design than
+  // what spawns. Do not fall Lit Valkyrie through to Lilly or any hero through to
+  // QA/generated placeholders.
   const rosterKey = HERO_LOCKED_ROSTER[characterId] ?? characterId;
   const entry = hmh('HMH_ANIMATED_ROSTER')?.[rosterKey] ?? hmh('HMH_ANIMATED_ROSTER')?.[characterId];
   const animations = entry?.animations ?? {};
@@ -1805,7 +1815,14 @@ function heroRotationSprite(characterId) {
   }
   if (!frames.length) return null;
   const frameDurationMs = Math.max(180, Math.round(1000 / (entry?.targetFps ?? 10)));
-  return { id: characterId, animation: chosenName, frames, frameDurationMs };
+  return {
+    id: characterId,
+    animation: chosenName,
+    frames,
+    frameDurationMs,
+    className: 'hero-character-rotator',
+    displayScale: HERO_ROTATION_DISPLAY_SCALE[rosterKey] ?? HERO_ROTATION_DISPLAY_SCALE[characterId] ?? 1,
+  };
 }
 const HERO_ROSTER_BASE = buildCharacterStatIdentityRoster();
 
@@ -2500,9 +2517,10 @@ function renderLevelUpActionGrid() {
     appendText(head, 'span', card.gainLabel, 'upgrade-card-gain');
     button.append(head);
 
-    // Compact playfield-safe card: keep the readable decision data visible and
-    // move the explanatory description into tooltip/ARIA instead of rendering a
-    // paragraph below every card.
+    // Mobile-safe card: the upgrade effect must be visible on the card itself.
+    // Tooltip/ARIA remains secondary; tapping the info glyph on mobile used to
+    // select the card before the player could read the effect.
+    if (card.description) appendText(button, 'p', card.description, 'upgrade-card-description');
     const meta = el('div', { className: 'upgrade-card-meta' });
     appendText(meta, 'span', card.completionLabel, 'upgrade-card-completion');
     appendText(meta, 'span', card.rankLabel, 'upgrade-card-ranklabel');
