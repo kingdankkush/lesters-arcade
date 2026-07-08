@@ -947,6 +947,13 @@ export const LESTER_BLASTER_HUD_OVERLAY_MODEL = Object.freeze({
   purpose: 'Always-visible browser HUD overlay for player health, score, timer, throwables/power-ups, weapon state, stage progress, and current lock/status.',
   requiredWidgets: Object.freeze(['health', 'score', 'timer', 'power-ups', 'weapon', 'stage', 'status']),
   refresh: 'every fixed-step HUD sync and every pause/options state change',
+  chrome: Object.freeze({
+    id: 'combat-hud-frame',
+    priority: 'P0',
+    assetPath: './assets/generated/hmh-vfx-ui-chrome/combat-hud-frame.png',
+    className: 'combat-hud-overlay hmh-combat-hud-frame',
+    rule: 'Diegetic LitVM arcade rail: compact, high-contrast stat chips that leave combat space visible.',
+  }),
   readabilityRules: Object.freeze([
     'Use short labels and high contrast so players do not read a dashboard mid-fight.',
     'Keep official/free sync copy outside the combat HUD; the HUD is moment-to-moment gameplay only.',
@@ -1327,6 +1334,8 @@ function achievementBadgeFor(id) {
 
 function defineAchievement({ key, id, title, description, tier, difficulty, unlockType, icon, requirement }) {
   const badge = achievementBadgeFor(id);
+  const tierId = tier ?? 'bronze';
+  const unlockId = unlockType ?? 'score';
   return Object.freeze({
     key,
     id,
@@ -1339,8 +1348,16 @@ function defineAchievement({ key, id, title, description, tier, difficulty, unlo
     requirement: Object.freeze({ ...(requirement ?? {}) }),
     badgeSrc: badge.src,
     lockedBadgeSrc: badge.lockedSrc,
-    tierBadgeSrc: HMH_ACHIEVEMENT_ATLAS.tiersById?.[tier]?.src ?? null,
-    unlockTypeIconSrc: HMH_ACHIEVEMENT_ATLAS.unlockTypesById?.[unlockType]?.src ?? null,
+    tierBadgeSrc: HMH_ACHIEVEMENT_ATLAS.tiersById?.[tierId]?.src ?? null,
+    unlockTypeIconSrc: HMH_ACHIEVEMENT_ATLAS.unlockTypesById?.[unlockId]?.src ?? null,
+    uiChrome: Object.freeze({
+      toastFrameId: 'achievement-toast-frame',
+      badgeFrameId: `achievement-tier-${tierId}`,
+      unlockTypeFrameId: `achievement-unlock-${unlockId}`,
+      assetPath: './assets/generated/hmh-vfx-ui-chrome/achievement-toast-frame.png',
+      toastClassName: `hmh-achievement-toast-frame achievement-toast-tier-${tierId} achievement-toast-type-${unlockId}`,
+      badgeClassName: `achievement-badge tier-${tierId} achievement-badge-frame achievement-unlock-${unlockId}`,
+    }),
   });
 }
 
@@ -3571,21 +3588,40 @@ export function buildCombatHudOverlayModel({
   status = 'TRAVEL',
   fps = 60,
 } = {}) {
+  const chromeSlotByWidget = Object.freeze({
+    health: 'hud-left-rail',
+    score: 'hud-left-rail',
+    timer: 'hud-center-rail',
+    'power-ups': 'hud-center-rail',
+    weapon: 'hud-right-rail',
+    stage: 'hud-right-rail',
+    status: 'hud-status-rail',
+  });
+  const widget = (item) => {
+    const chromeSlot = chromeSlotByWidget[item.id] ?? 'hud-center-rail';
+    return Object.freeze({
+      ...item,
+      chromeSlot,
+      dataset: Object.freeze({ uiChrome: LESTER_BLASTER_HUD_OVERLAY_MODEL.chrome.id, chromeSlot }),
+    });
+  };
   const healthValue = `${clampNumber(Math.round(Number(health) || 0), 0, 100)}%`;
   const scoreValue = Math.max(0, Math.round(Number(score) || 0)).toLocaleString();
   const ammoValue = ammo === Infinity || ammo === '∞' ? '∞' : Math.max(0, Math.round(Number(ammo) || 0)).toLocaleString();
   const widgets = Object.freeze([
-    Object.freeze({ id: 'health', label: 'HP', value: healthValue, tone: healthValue === '0%' ? 'danger' : 'vital' }),
-    Object.freeze({ id: 'score', label: 'Score', value: scoreValue, tone: 'score' }),
-    Object.freeze({ id: 'timer', label: 'Time', value: formatClock(elapsedSeconds), tone: 'time' }),
-    Object.freeze({ id: 'power-ups', label: 'Power', value: `THROW ${Math.max(0, Math.round(Number(grenades) || 0))} // PICKUPS ${Math.max(0, Math.round(Number(powerUpsCollected) || 0))}`, tone: 'power' }),
-    Object.freeze({ id: 'weapon', label: 'Weapon', value: `${String(weaponTitle).toUpperCase()} // AMMO ${ammoValue}`, tone: 'weapon' }),
-    Object.freeze({ id: 'stage', label: 'Stage', value: `${Math.max(1, Math.round(Number(stageIndex) || 1))}/${Math.max(1, Math.round(Number(stageCount) || 1))} // ${Math.round(Number(fps) || 60)}FPS`, tone: 'stage' }),
-    Object.freeze({ id: 'status', label: 'Status', value: String(status || 'TRAVEL'), tone: String(status || '').includes('LOCK') ? 'warning' : 'status' }),
+    widget({ id: 'health', label: 'HP', value: healthValue, tone: healthValue === '0%' ? 'danger' : 'vital' }),
+    widget({ id: 'score', label: 'Score', value: scoreValue, tone: 'score' }),
+    widget({ id: 'timer', label: 'Time', value: formatClock(elapsedSeconds), tone: 'time' }),
+    widget({ id: 'power-ups', label: 'Power', value: `THROW ${Math.max(0, Math.round(Number(grenades) || 0))} // PICKUPS ${Math.max(0, Math.round(Number(powerUpsCollected) || 0))}`, tone: 'power' }),
+    widget({ id: 'weapon', label: 'Weapon', value: `${String(weaponTitle).toUpperCase()} // AMMO ${ammoValue}`, tone: 'weapon' }),
+    widget({ id: 'stage', label: 'Stage', value: `${Math.max(1, Math.round(Number(stageIndex) || 1))}/${Math.max(1, Math.round(Number(stageCount) || 1))} // ${Math.round(Number(fps) || 60)}FPS`, tone: 'stage' }),
+    widget({ id: 'status', label: 'Status', value: String(status || 'TRAVEL'), tone: String(status || '').includes('LOCK') ? 'warning' : 'status' }),
   ]);
 
   return Object.freeze({
     model: LESTER_BLASTER_HUD_OVERLAY_MODEL.purpose,
+    chrome: LESTER_BLASTER_HUD_OVERLAY_MODEL.chrome,
+    className: LESTER_BLASTER_HUD_OVERLAY_MODEL.chrome.className,
     widgets,
     widgetMap: Object.freeze(Object.fromEntries(widgets.map((widget) => [widget.id, widget]))),
   });

@@ -242,7 +242,7 @@ export function buildArtRedoQueue({ repoRoot = repoRootFromHere() } = {}) {
       id: 'ui-chrome',
       title: 'UI chrome',
       summary: categorySummary(uiChrome),
-      coverage: Object.freeze({ brandTokenCount: LESTER_ARCADE_BRAND_SYSTEM?.tokens?.length ?? 0 }),
+      coverage: Object.freeze({ brandTokenCount: LESTER_ARCADE_BRAND_SYSTEM?.tokens?.length ?? 0, manifestId: HMH_VFX_UI_CHROME_PACK.id, manifestAssetCount: HMH_VFX_UI_CHROME_PACK.uiChrome?.length ?? 0 }),
       items: uiChrome,
     },
   ]);

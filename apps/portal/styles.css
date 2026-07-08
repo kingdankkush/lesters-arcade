@@ -1207,6 +1207,30 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .hud-widget[data-tone="warning"] { border-color: rgba(255, 232, 77, 0.58); }
 .hud-widget[data-widget="status"] { grid-column: span 2; }
 
+.hmh-combat-hud-frame {
+  padding: 6px;
+  border: 1px solid rgba(25, 247, 255, 0.18);
+  border-radius: 18px;
+  background:
+    url('./assets/generated/hmh-vfx-ui-chrome/combat-hud-frame.png'),
+    linear-gradient(90deg, rgba(25, 247, 255, 0.08), transparent 18%, transparent 82%, rgba(255, 95, 162, 0.08)),
+    linear-gradient(180deg, rgba(4, 10, 24, 0.38), rgba(4, 10, 24, 0.12));
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 24px rgba(25, 247, 255, 0.08), inset 0 0 18px rgba(255, 255, 255, 0.025);
+}
+
+.hmh-combat-hud-frame .hud-widget[data-chrome-slot="hud-left-rail"] { border-left-color: rgba(69, 255, 138, 0.6); }
+.hmh-combat-hud-frame .hud-widget[data-chrome-slot="hud-center-rail"] { border-top-color: rgba(25, 247, 255, 0.55); }
+.hmh-combat-hud-frame .hud-widget[data-chrome-slot="hud-right-rail"] { border-right-color: rgba(255, 95, 162, 0.55); }
+.hmh-combat-hud-frame .hud-widget[data-chrome-slot="hud-status-rail"] {
+  border-color: rgba(255, 232, 77, 0.55);
+  background:
+    linear-gradient(135deg, rgba(35, 23, 6, 0.78), rgba(21, 7, 34, 0.68)),
+    radial-gradient(circle at top right, rgba(255, 232, 77, 0.14), transparent 7rem);
+}
+
 .tactical-debug-overlay {
   position: absolute;
   right: 18px;
@@ -2437,6 +2461,36 @@ html[data-ingame="true"] .arcade-music-player,
     linear-gradient(180deg, rgba(7, 12, 28, 0.94), rgba(22, 10, 34, 0.92));
   box-shadow: 0 0 30px rgba(255, 95, 162, 0.16), inset 0 0 18px rgba(25, 247, 255, 0.06);
 }
+.hmh-level-up-card-frame {
+  position: relative;
+  isolation: isolate;
+  border-color: rgba(25, 247, 255, 0.42);
+  background:
+    url('./assets/generated/hmh-vfx-ui-chrome/level-up-card-frame.png'),
+    linear-gradient(90deg, rgba(25, 247, 255, 0.12), transparent 18%, transparent 82%, rgba(255, 95, 162, 0.12)),
+    radial-gradient(circle at 50% -12%, rgba(255, 232, 77, 0.14), transparent 36%),
+    linear-gradient(180deg, rgba(7, 12, 28, 0.96), rgba(22, 10, 34, 0.94));
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 34px rgba(25, 247, 255, 0.18), 0 0 30px rgba(255, 95, 162, 0.14), inset 0 0 22px rgba(255, 255, 255, 0.035);
+}
+.hmh-level-up-card-frame::before,
+.hmh-level-up-card-frame::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  z-index: -1;
+}
+.hmh-level-up-card-frame::after {
+  inset: auto 14px 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(25, 247, 255, 0.72), rgba(255, 95, 162, 0.72), transparent);
+  border: 0;
+}
 .level-up-shell-head { display: grid; gap: 3px; text-align: left; }
 .level-up-kicker {
   color: var(--neon-cyan);
@@ -2518,6 +2572,43 @@ html[data-ingame="true"] .arcade-music-player,
     rgba(24, 12, 38, 0.82);
   box-shadow: 0 0 22px rgba(255, 95, 162, 0.22), inset 0 0 12px rgba(255, 95, 162, 0.08);
 }
+.hmh-upgrade-card-frame {
+  position: relative;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.hmh-upgrade-card-frame::before,
+.hmh-upgrade-card-frame::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  opacity: 0.82;
+}
+.hmh-upgrade-card-frame::before {
+  top: 6px;
+  left: 6px;
+  border-top: 2px solid rgba(25, 247, 255, 0.66);
+  border-left: 2px solid rgba(25, 247, 255, 0.66);
+}
+.hmh-upgrade-card-frame::after {
+  right: 6px;
+  bottom: 6px;
+  border-right: 2px solid rgba(255, 95, 162, 0.66);
+  border-bottom: 2px solid rgba(255, 95, 162, 0.66);
+}
+.hmh-upgrade-card-rarity-rare { border-color: rgba(25, 247, 255, 0.72); }
+.hmh-upgrade-card-rarity-golden,
+.hmh-upgrade-card-tone-gold {
+  border-color: rgba(255, 232, 77, 0.86);
+  box-shadow: 0 0 30px rgba(255, 232, 77, 0.22), inset 0 0 16px rgba(255, 232, 77, 0.09);
+}
+.hmh-upgrade-card-tone-red { border-color: rgba(255, 71, 111, 0.7); }
+.hmh-upgrade-card-tone-cyan { border-color: rgba(25, 247, 255, 0.72); }
+.hmh-upgrade-card-tone-green { border-color: rgba(69, 255, 138, 0.72); }
 .level-up-upgrade-card:hover, .level-up-upgrade-card:focus-visible {
   border-color: rgba(255, 95, 162, 0.92);
   box-shadow: 0 0 32px rgba(255, 95, 162, 0.45), inset 0 0 16px rgba(255, 95, 162, 0.14);
@@ -2530,6 +2621,19 @@ html[data-ingame="true"] .arcade-music-player,
 }
 .upgrade-card-titlewrap { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1 1 auto; }
 .upgrade-card-cat { font-size: 0.56rem; font-weight: 800; letter-spacing: 0.14em; color: #7f93b8; }
+.upgrade-card-rarity {
+  width: max-content;
+  max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 1px 6px;
+  color: #f9fbff;
+  background: rgba(255, 255, 255, 0.055);
+  font-size: 0.5rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .upgrade-card-title {
   font-size: 0.86rem; font-weight: 800; color: #f4f7ff; line-height: 1.12;
   /* Wrap to two lines instead of ellipsis-truncating longer ability names
@@ -3046,4 +3150,42 @@ body.suggest-landscape.ingame::after {
   grid-column: 1 / -1;
   width: 100%;
 }
+
+/* Manifest-backed P0 achievement badge/toast chrome */
+.hmh-achievement-toast-frame,
+.achievement-badge-frame {
+  position: relative;
+  border: 1px solid rgba(255, 232, 77, 0.34);
+  border-radius: 14px;
+  background:
+    url('./assets/generated/hmh-vfx-ui-chrome/achievement-toast-frame.png'),
+    linear-gradient(135deg, rgba(255, 232, 77, 0.08), rgba(25, 247, 255, 0.045)),
+    rgba(7, 12, 28, 0.78);
+  background-size: 100% 100%, 100% 100%, 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 18px rgba(255, 232, 77, 0.11), inset 0 0 12px rgba(25, 247, 255, 0.04);
+}
+.achievement-badge-frame::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  pointer-events: none;
+}
+.achievement-badge-frame.unlocked {
+  border-color: rgba(69, 255, 138, 0.44);
+  box-shadow: 0 0 20px rgba(69, 255, 138, 0.12), inset 0 0 12px rgba(25, 247, 255, 0.05);
+}
+.achievement-toast-tier-gold,
+.achievement-badge-frame.tier-gold { border-color: rgba(255, 232, 77, 0.58); }
+.achievement-toast-tier-platinum,
+.achievement-badge-frame.tier-platinum { border-color: rgba(225, 244, 255, 0.58); }
+.achievement-toast-tier-diamond,
+.achievement-badge-frame.tier-diamond { border-color: rgba(25, 247, 255, 0.62); }
+.achievement-toast-tier-mythic,
+.achievement-badge-frame.tier-mythic { border-color: rgba(255, 95, 162, 0.68); }
+.achievement-unlock-boss { box-shadow: 0 0 22px rgba(255, 95, 162, 0.14), inset 0 0 12px rgba(255, 232, 77, 0.05); }
+.achievement-unlock-level-clear { box-shadow: 0 0 22px rgba(25, 247, 255, 0.14), inset 0 0 12px rgba(69, 255, 138, 0.05); }
 

@@ -55,6 +55,17 @@ test('WO-20 achievement and VFX queues are tied to runtime definitions and final
   assert.equal(vfx.items.some((item) => /missing/i.test(item.status)), false, 'VFX missing-item list should now be manifest-backed by final VFX or chrome pack');
 });
 
+test('WO-20 UI chrome P0 items are manifest-backed by the generated VFX/UI pack', () => {
+  const queue = buildArtRedoQueue();
+  const uiChrome = queue.categories.find((category) => category.id === 'ui-chrome');
+  const p0Items = uiChrome.items.filter((item) => item.priority === 'P0');
+
+  assert.deepEqual(p0Items.map((item) => item.runtimeId), ['combat-hud-frame', 'level-up-card-frame', 'achievement-toast-frame']);
+  assert.equal(p0Items.every((item) => item.status === 'manifest-backed-ui-chrome'), true);
+  assert.equal(p0Items.every((item) => item.iconSrc?.includes('hmh-vfx-ui-chrome')), true);
+  assert.equal(uiChrome.coverage.manifestId, 'hmh-vfx-ui-chrome-v1');
+});
+
 test('WO-20 markdown and scripts are wired into verification', () => {
   const queue = buildArtRedoQueue();
   const markdown = renderArtRedoQueueMarkdown(queue);

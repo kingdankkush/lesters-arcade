@@ -3,7 +3,7 @@
   "generatedBy": "scripts/art-redo-queue.mjs",
   "sourceCensus": {
     "version": "wo-17-global-art-census-v1",
-    "complianceScore": 43,
+    "complianceScore": 74,
     "path": "docs/art/GLOBAL_ART_CENSUS.json"
   },
   "summary": {
@@ -774,7 +774,9 @@
         "missingCount": 0
       },
       "coverage": {
-        "brandTokenCount": 0
+        "brandTokenCount": 0,
+        "manifestId": "hmh-vfx-ui-chrome-v1",
+        "manifestAssetCount": 6
       },
       "items": [
         {

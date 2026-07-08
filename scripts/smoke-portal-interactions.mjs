@@ -74,7 +74,7 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=cabinet-leaderboard-v20`);
+  const main = await fetchText(`${portalUrl}main.js?v=ui-chrome-v21`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const overlayProbe = buildTacticalBalanceDebugOverlayModel({
     debugEnabled: true,

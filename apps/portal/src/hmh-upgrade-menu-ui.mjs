@@ -12,6 +12,23 @@ const CATEGORY_STYLES = Object.freeze({
   fallback: Object.freeze({ icon: '▲', tone: 'cyan', label: 'Augment' }),
 });
 
+const LEVEL_UP_CARD_CHROME = Object.freeze({
+  id: 'level-up-card-frame',
+  priority: 'P0',
+  assetPath: './assets/generated/hmh-vfx-ui-chrome/level-up-card-frame.png',
+  className: 'level-up-shell hmh-level-up-card-frame',
+  cardClassName: 'level-up-upgrade-card hmh-upgrade-card-frame',
+});
+
+const RARITY_CORNER_PIPS = Object.freeze({
+  common: 2,
+  uncommon: 2,
+  rare: 3,
+  golden: 4,
+  'super-rare': 4,
+  'post-cap': 3,
+});
+
 function freezeArray(items) {
   return Object.freeze(items.map((item) => Object.freeze(item)));
 }
@@ -55,6 +72,7 @@ function buildCard(choice, index, options) {
   const rarity = choice.rarity ?? 'common';
   const branchLabel = choice.category === 'weapon' ? 'Weapon Branch' : category.label;
   const tone = choice.presentation?.tone ?? (rarity === 'golden' ? 'gold' : category.tone);
+  const rarityLabel = choice.presentation?.label ?? String(rarity).toUpperCase();
   return Object.freeze({
     id: choice.id,
     title: choice.title,
@@ -65,6 +83,14 @@ function buildCard(choice, index, options) {
     rarity,
     presentation: choice.presentation ?? Object.freeze({ tone, label: rarity.toUpperCase() }),
     tone,
+    chrome: Object.freeze({
+      id: LEVEL_UP_CARD_CHROME.id,
+      priority: LEVEL_UP_CARD_CHROME.priority,
+      assetPath: LEVEL_UP_CARD_CHROME.assetPath,
+      className: `${LEVEL_UP_CARD_CHROME.cardClassName} hmh-upgrade-card-tone-${tone} hmh-upgrade-card-rarity-${rarity}`,
+      rarityLabel,
+      cornerPips: RARITY_CORNER_PIPS[rarity] ?? 2,
+    }),
     icon: choice.presentation?.icon ?? category.icon,
     gainLabel: choiceGainLabel(choice),
     rankLabel: `Rank ${choice.currentLevel ?? 0} → ${choice.nextLevel ?? 1}`,
@@ -73,7 +99,7 @@ function buildCard(choice, index, options) {
     slotRole: choice.slotRole ?? (index === 0 ? 'continuation' : 'new'),
     slotLabel: choice.slotLabel ?? (index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'),
     slotReason: choice.slotReason ?? null,
-    dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity, slot: choice.slotRole ?? (index === 0 ? 'continuation' : 'new') }),
+    dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity, slot: choice.slotRole ?? (index === 0 ? 'continuation' : 'new'), uiChrome: LEVEL_UP_CARD_CHROME.id, chromeTone: tone }),
     tooltip: choice.description ?? '',
     ariaLabel: `${choice.title}. ${branchLabel}. ${choice.description ?? ''}`.trim(),
   });
@@ -99,8 +125,10 @@ export function buildUpgradeMenuPresentation({
     subtitle: level ? `Level ${level} draft` : 'Upgrade draft',
     shell: Object.freeze({
       layout: 'compact-two-card-tooltip-draft',
-      accessibility: 'Compact 44px-minimum tap targets with icons, rank pips, and tooltip/ARIA details instead of visible description clutter.',
+      accessibility: 'Compact 44px-minimum tap targets with icons, rarity labels, rank pips, and tooltip/ARIA details instead of visible description clutter.',
       cardCount: cards.length,
+      chrome: LEVEL_UP_CARD_CHROME,
+      className: LEVEL_UP_CARD_CHROME.className,
     }),
     cards,
     lockedPreviewRail,

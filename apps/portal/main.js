@@ -2464,7 +2464,7 @@ function renderLevelUpActionGrid() {
   targetGrid.dataset.signature = signature;
   targetGrid.replaceChildren();
 
-  const shell = el('div', { className: 'level-up-shell' });
+  const shell = el('div', { className: presentation.shell.className ?? 'level-up-shell', dataset: { uiChrome: presentation.shell.chrome?.id ?? 'level-up-card-frame' } });
   const shellHead = el('div', { className: 'level-up-shell-head' });
   appendText(shellHead, 'span', `LEVEL ${combat.roguelikeRun?.level ?? 1} DRAFT`, 'level-up-kicker');
   appendText(shellHead, 'strong', presentation.title, 'level-up-title');
@@ -2475,12 +2475,13 @@ function renderLevelUpActionGrid() {
   for (const card of presentation.cards) {
     const cardWrap = el('div', { className: `level-up-slot level-up-slot-${card.slotRole ?? 'draft'}` });
     appendText(cardWrap, 'span', card.slotLabel ?? (card.index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'), 'level-up-slot-label');
-    const button = el('button', { className: `combat-menu-action level-up-upgrade-card ${card.rarity === 'golden' ? 'is-golden-card' : ''}`, type: 'button', dataset: { ...card.dataset, rarity: card.rarity ?? 'common' } });
+    const button = el('button', { className: `combat-menu-action ${card.chrome?.className ?? 'level-up-upgrade-card'} ${card.rarity === 'golden' ? 'is-golden-card' : ''}`, type: 'button', dataset: { ...card.dataset, rarity: card.rarity ?? 'common' } });
     const head = el('div', { className: 'upgrade-card-head' });
     const badge = el('span', { className: 'upgrade-card-badge', textContent: card.icon });
     badge.setAttribute('aria-hidden', 'true');
     const titleWrap = el('div', { className: 'upgrade-card-titlewrap' });
     appendText(titleWrap, 'span', card.branchLabel.toUpperCase(), 'upgrade-card-cat');
+    appendText(titleWrap, 'span', card.chrome?.rarityLabel ?? card.presentation?.label ?? String(card.rarity ?? 'common').toUpperCase(), 'upgrade-card-rarity');
     if (card.rarity === 'golden') appendText(titleWrap, 'span', 'POWER MOMENT // GOLDEN CARD', 'upgrade-card-tone-tag');
     if (card.category.colorblindTag) appendText(titleWrap, 'span', card.category.colorblindTag, 'upgrade-card-tone-tag');
     appendText(titleWrap, 'strong', card.title, 'upgrade-card-title');
@@ -2610,12 +2611,14 @@ function renderCombatHudOverlay() {
     status: combatHudStatus(),
     fps: combat.fps,
   });
-  const signature = hud.widgets.map((widget) => `${widget.id}:${widget.value}`).join('|');
+  const signature = `${hud.chrome.id}:` + hud.widgets.map((widget) => `${widget.id}:${widget.value}`).join('|');
   if (dom.combatHudOverlay.dataset.signature === signature) return;
   dom.combatHudOverlay.dataset.signature = signature;
+  dom.combatHudOverlay.className = hud.className;
+  dom.combatHudOverlay.dataset.uiChrome = hud.chrome.id;
   dom.combatHudOverlay.replaceChildren();
   for (const widget of hud.widgets) {
-    const card = el('article', { className: 'hud-widget', dataset: { tone: widget.tone, widget: widget.id } });
+    const card = el('article', { className: 'hud-widget', dataset: { tone: widget.tone, widget: widget.id, ...(widget.dataset ?? {}) } });
     appendText(card, 'span', widget.label);
     appendText(card, 'strong', widget.value);
     dom.combatHudOverlay.append(card);
@@ -4320,8 +4323,9 @@ function renderOfficialProfile() {
   const grid = el('div', { className: 'achievements-grid' });
   for (const a of achievements) {
     const badge = el('div', {
-      className: `achievement-badge tier-${a.tier ?? 'bronze'} ${a.unlocked ? 'unlocked' : 'locked'}`,
+      className: `${a.uiChrome?.badgeClassName ?? `achievement-badge tier-${a.tier ?? 'bronze'}`} ${a.unlocked ? 'unlocked' : 'locked'}`,
       title: `${a.title} — ${a.description}`,
+      dataset: { uiChrome: a.uiChrome?.toastFrameId ?? 'achievement-toast-frame', badgeFrame: a.uiChrome?.badgeFrameId ?? `achievement-tier-${a.tier ?? 'bronze'}` },
     });
     badge.tabIndex = 0;
     badge.setAttribute('aria-label', `${a.title}. ${a.description}`);
