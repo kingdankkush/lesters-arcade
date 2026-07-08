@@ -59,6 +59,7 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-wo107-checkpoint2.mjs",
   "apps/portal/src/hmh-wo111-114-ship-candidate.mjs",
   "apps/portal/src/hmh-wo117-polish-pack.mjs",
+  "apps/portal/src/hmh-wo119-pixellab-aaa-wave.mjs",
   "apps/portal/src/hmh-world-scale.mjs",
   "apps/portal/src/hmh-level-one-quality.mjs",
   "apps/portal/src/hmh-level-one-balance-pass.mjs",
@@ -92,6 +93,7 @@ const NODE_CHECK_FILES = [
   "tests/hmh-wo111-114-ship-candidate.test.mjs",
   "tests/hmh-wo115-enemy-readability-batch.test.mjs",
   "tests/hmh-wo117-world-audio-vfx-ui-polish.test.mjs",
+  "tests/hmh-wo119-pixellab-aaa-wave.test.mjs",
   "tests/hmh-world-scale.test.mjs",
   "tests/hmh-asset-footprints.test.mjs",
   "tests/hmh-footprint-runtime.test.mjs",
@@ -317,6 +319,8 @@ const PY_COMPILE_FILES = [
   "scripts/generate-wo110-boss-redo.py",
   "scripts/generate-wo115-enemy-readability-batch.py",
   "scripts/generate-wo117-polish-pack.py",
+  "scripts/pixellab-hmh-aaa-quality-wave.py",
+  "scripts/write-wo119-pixellab-aaa-wave.py",
   "scripts/pixellab-hmh-level1-asset-wave.py",
   "scripts/build-hmh-wo99-enemy-canon-uplift.py"
 ];

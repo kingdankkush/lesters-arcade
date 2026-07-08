@@ -2,12 +2,12 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 9164,
+    "totalAssets": 9228,
     "totalActors": 72,
     "layerCount": 8,
     "runtimeActorCount": 37,
-    "runtimeCompleteActorCount": 10,
-    "runtimePartialActorCount": 23,
+    "runtimeCompleteActorCount": 11,
+    "runtimePartialActorCount": 22,
     "runtimeZeroAnimationActorCount": 4,
     "runtimeStrictRenderableActorCount": 34,
     "runtimeAutoRepairedZeroAnimationActorCount": 1,
@@ -22,10 +22,10 @@
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 37,
-      "assetCount": 7700,
-      "animationStateCount": 203,
-      "completeActorCount": 10,
-      "partialActorCount": 23,
+      "assetCount": 7764,
+      "animationStateCount": 205,
+      "completeActorCount": 11,
+      "partialActorCount": 22,
       "zeroAnimationActorCount": 4,
       "levelOneShipEnemyCount": 23,
       "sampleKeys": [
@@ -197,8 +197,8 @@
     "overallScore": 70,
     "categories": {
       "animationCoverage": {
-        "score": 46,
-        "summary": "10/37 actors complete; 4 zero-animation actors",
+        "score": 48,
+        "summary": "11/37 actors complete; 4 zero-animation actors",
         "gaps": [
           "bit-whale-boss: zero-animation",
           "chain-reaper-boss: zero-animation",
@@ -217,14 +217,14 @@
           "lit-valkyrie: partial coverage",
           "mev-reaper: partial coverage",
           "nft-valet: partial coverage",
-          "paper-hand: partial coverage",
           "phishing-angler: partial coverage",
-          "plaza-warden: partial coverage"
+          "plaza-warden: partial coverage",
+          "rattlesnake: partial coverage"
         ]
       },
       "sourcePolicy": {
         "score": 16,
-        "summary": "1464/9164 counted assets carry repo-owned/original/curated policy text",
+        "summary": "1464/9228 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {

@@ -1,0 +1,116 @@
+{
+  "id": "hmh-wo119-pixellab-aaa-wave-v1",
+  "goal": "PixelLab-led AAA-quality runtime art upgrade for characters, enemy animation readability, terrain, tiles, props, and authored Level 1 route design.",
+  "enemyReplacement": {
+    "actorKey": "paper-hand",
+    "characterId": "a6f9e4d5-98c4-454a-890f-f41e8c1ca0af",
+    "source": "pixellab-aaa-quality-wave-v1",
+    "qualityTarget": "AAA isometric pixel-art replacement inspired by Hades / Dead Cells / AoE2-DE readability",
+    "states": [
+      "idle",
+      "walk",
+      "run",
+      "attack-tell",
+      "attack",
+      "hit",
+      "death",
+      "spawn-in"
+    ],
+    "directions": [
+      "south",
+      "south-east",
+      "east",
+      "north-east",
+      "north",
+      "north-west",
+      "west",
+      "south-west"
+    ],
+    "frameCount": 448,
+    "runtimeManifest": "./assets/generated/hmh-animated-roster/hmh-animated-roster.mjs"
+  },
+  "levelDesignRuntimeWorldAssets": [
+    {
+      "key": "buildings-and-walls/buildings-and-walls__gas-station-canopy",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__gas-station-canopy.png",
+      "width": 192,
+      "height": 192,
+      "alphaClean": true,
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "landmark",
+      "runtimeRouteBeat": "arena"
+    },
+    {
+      "key": "buildings-and-walls/buildings-and-walls__saloon-false-front",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__saloon-false-front.png",
+      "width": 192,
+      "height": 192,
+      "alphaClean": true,
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "ghost-town",
+      "runtimeRole": "landmark",
+      "runtimeRouteBeat": "arena"
+    },
+    {
+      "key": "trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__pine-oak-clusters",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/trees-rocks-and-natural-blockers/trees-rocks-and-natural-blockers__pine-oak-clusters.png",
+      "width": 160,
+      "height": 160,
+      "alphaClean": true,
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "country-road",
+      "runtimeRole": "tree",
+      "runtimeRouteBeat": "loop"
+    },
+    {
+      "key": "roads-and-paths/roads-and-paths__broken-highway-lane",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/roads-and-paths/roads-and-paths__broken-highway-lane.png",
+      "width": 64,
+      "height": 64,
+      "alphaClean": true,
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "desert-approach",
+      "runtimeRole": "road",
+      "runtimeRouteBeat": "spawn"
+    },
+    {
+      "key": "regenerated-terrain/bridge-planks-regenerated",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/regenerated-terrain/bridge-planks-regenerated.png",
+      "width": 64,
+      "height": 64,
+      "alphaClean": true,
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "country-road",
+      "runtimeRole": "bridge",
+      "runtimeRouteBeat": "chokepoint"
+    },
+    {
+      "key": "buildings-and-walls/buildings-and-walls__litecoin-extraction-arch",
+      "src": "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/buildings-and-walls/buildings-and-walls__litecoin-extraction-arch.png",
+      "width": 192,
+      "height": 192,
+      "alphaClean": true,
+      "runtimeIntegrated": true,
+      "runtimeDistrict": "inner-city-threshold",
+      "runtimeRole": "landmark",
+      "runtimeRouteBeat": "extract"
+    }
+  ],
+  "proofSheet": "docs/game-design/wo119-pixellab-aaa-wave/wo119-pixellab-aaa-wave-proof.png",
+  "gates": {
+    "paperHandFull8DirectionStateMatrix": true,
+    "paperHandReplacesWeakerPartialRuntimeKit": true,
+    "worldAssetsRuntimeIntegrated": true,
+    "worldAssetsAlphaClean": true,
+    "noDirectMainJsHeavyManifestImport": true
+  },
+  "continuation": {
+    "queuedButNotYetRuntimePromoted": [
+      "trench-degen",
+      "phishing-angler",
+      "mev-reaper"
+    ],
+    "promotionRule": "Only promote to hmh-animated-roster after all 8 states and 8 directions are harvested and visually reviewed."
+  }
+}
