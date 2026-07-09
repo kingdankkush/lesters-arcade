@@ -95,7 +95,7 @@ test('spawn road uses blended shoulders and keeps the player start clear', () =>
   assert.equal(plan.zoneAt(0, 5).zoneId, 'spawn-clear-blacktop-centerline');
   assert.equal(plan.zoneAt(0, 5).role, 'road');
   assert.equal(plan.zoneAt(0, 3).zoneId, 'spawn-grass-road-north-shoulder');
-  assert.equal(plan.zoneAt(0, 8).zoneId, 'spawn-sand-road-south-shoulder');
+  assert.equal(plan.zoneAt(0, 8).zoneId, 'spawn-muddy-road-south-shoulder');
   assert.match(plan.zoneAt(0, 5).textureKey, /^chatgpt-terrain\//);
   assert.match(plan.zoneAt(0, 3).textureKey, /^chatgpt-terrain\//);
   assert.match(plan.zoneAt(0, 8).textureKey, /^chatgpt-terrain\//);

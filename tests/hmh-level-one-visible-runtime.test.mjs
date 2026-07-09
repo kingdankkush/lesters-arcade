@@ -35,6 +35,9 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-buildings-landmarks-00-roadside-store'), true, 'opening should have a strong Jul 9 shoulder landmark visible at spawn without covering the hero');
   assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-buildings-landmarks-04-loan-office-front'), true, 'opening should telegraph the next authored town beat with the new building sheet');
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-rocks-boulders-')), true, 'opening should use the new rock/boulder prop sheet');
+  assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-fences-barricades-')), true, 'opening should use the new fence/barricade sheet for authored route boundaries');
+  assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-industrial-mining-')), true, 'opening should use the new crypto-industrial sheet as roadside dressing');
+  assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-landmark-microscene-')), true, 'opening should use the new micro-scene sheet for authored POI flavor');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), true, 'opening should include route signage without covering the hero start');
   assert.equal(objects.every((object) => levelOneCuratedAssetSrc(object.assetKey)), true, 'every object should resolve through the Level 1 runtime art policy');
 });
@@ -95,6 +98,30 @@ test('Level 1 curated visible runtime maps approved asset keys to direct runtime
   assert.equal(saloon, './assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png');
   const jul9Rock = levelOneCuratedAssetSrc('curated/jul9-rocks-boulders-07-stacked-rocks');
   assert.match(jul9Rock, /hmh-curated-level-art\/props\/environment\/jul9-rocks-boulders/);
+  const jul9Industrial = levelOneCuratedAssetSrc('curated/jul9-industrial-mining-03-small-generator');
+  assert.match(jul9Industrial, /hmh-curated-level-art\/props\/environment\/jul9-industrial-mining/);
+  const jul9Fence = levelOneCuratedAssetSrc('curated/jul9-fences-barricades-14-roadblock-cluster');
+  assert.match(jul9Fence, /hmh-curated-level-art\/props\/environment\/jul9-fences-barricades/);
+  const jul9MicroScene = levelOneCuratedAssetSrc('curated/jul9-landmark-microscene-12-drainage-culvert');
+  assert.match(jul9MicroScene, /hmh-curated-level-art\/props\/environment\/jul9-landmark-microscene/);
+});
+
+test('Jul 9 10:19 fences, industrial props, and micro-scenes are visible in authored Level 1 route beats', () => {
+  const sampleViews = [
+    { playerX: 18, playerY: 5, stampId: 'desert-road-salvage-wall', prefixes: ['curated/jul9-fences-barricades-'] },
+    { playerX: 64, playerY: 7, stampId: 'shoreline-ford-bank', prefixes: ['curated/jul9-landmark-microscene-'] },
+    { playerX: 82, playerY: 6, stampId: 'farmstead-fence-pocket', prefixes: ['curated/jul9-fences-barricades-'] },
+    { playerX: 94, playerY: 0, stampId: 'innercity-gate-barricade', prefixes: ['curated/jul9-industrial-mining-', 'curated/jul9-fences-barricades-'] },
+  ];
+
+  for (const view of sampleViews) {
+    const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 });
+    const stampObjects = objects.filter((object) => object.prefabStampId === view.stampId);
+    assert.ok(stampObjects.length, `${view.stampId} should emit authored objects`);
+    for (const prefix of view.prefixes) {
+      assert.ok(stampObjects.some((object) => object.assetKey.startsWith(prefix)), `${view.stampId} should include ${prefix}`);
+    }
+  }
 });
 
 test('WO-102 mega-props are real alpha-clean runtime assets and emit visible Level 1 objects', () => {

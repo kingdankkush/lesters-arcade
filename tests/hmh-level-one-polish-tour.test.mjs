@@ -35,7 +35,8 @@ test('WO-66 tour expected cue keys are concrete curated or authored-route keys',
   const tour = buildLevelOnePolishAcceptanceTour();
   const concreteKeys = tour.steps.flatMap((step) => step.expectedAssetKeys);
   assert.equal(concreteKeys.some((key) => key === 'level-1/water/water-02'), true, 'chokepoint should check exact shoreline water cue');
-  assert.equal(concreteKeys.some((key) => key === 'level-1/building/industrial-warehouse-facade'), true, 'boss yard should check exact city gate facade cue');
+  assert.equal(concreteKeys.some((key) => key === 'curated/jul9-industrial-mining-00-mining-rig-rack'), true, 'boss yard should check exact crypto-industrial gate cue');
+  assert.equal(concreteKeys.some((key) => key === 'curated/jul9-fences-barricades-18-retaining-wall'), true, 'boss yard should check exact barricade wall cue');
   assert.equal(concreteKeys.filter((key) => curatedLevelKitAssetByKey(key)).length >= 24, true, 'most expected cues should resolve to curated runtime art');
 });
 

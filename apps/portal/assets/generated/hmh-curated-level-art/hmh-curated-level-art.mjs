@@ -4,9 +4,9 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
   "gridCounts": {
     "treeIdleFrames": 18,
     "forestProps": 32,
-    "environmentProps": 69,
-    "groundTiles": 475,
-    "groundTextures": 475
+    "environmentProps": 126,
+    "groundTiles": 525,
+    "groundTextures": 525
   },
   "runtime": {
     "coherentWorldRoot": "./assets/generated/hmh-coherent-world/curated",
@@ -1103,6 +1103,405 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "id": "jul9-rocks-boulders-24-bone-rock-pile",
       "sheet": "jul9-rocks-boulders",
       "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/24-bone-rock-pile.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-00-dry-forest-cave",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/00-dry-forest-cave.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-01-ruined-camp",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/01-ruined-camp.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-02-roadside-checkpoint",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/02-roadside-checkpoint.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-03-broken-picnic-area",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/03-broken-picnic-area.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-04-atm-kiosk-wreck",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/04-atm-kiosk-wreck.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-05-vending-nook",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/05-vending-nook.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-06-toll-booth",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/06-toll-booth.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-07-payphone-shelter",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/07-payphone-shelter.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-08-coin-pile-shrine",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/08-coin-pile-shrine.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-09-broken-arcade-cabinet",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/09-broken-arcade-cabinet.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-10-trader-stall",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/10-trader-stall.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-11-generator-camp",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/11-generator-camp.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-12-drainage-culvert",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/12-drainage-culvert.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-13-ditch-bridge-crossing",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/13-ditch-bridge-crossing.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-14-cracked-concrete-pad",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/14-cracked-concrete-pad.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-landmark-microscene-15-water-pump-station",
+      "sheet": "jul9-landmark-microscene",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-landmark-microscene/15-water-pump-station.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-00-mining-rig-rack",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/00-mining-rig-rack.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-01-server-rack-wreck",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/01-server-rack-wreck.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-02-cooling-fan-unit",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/02-cooling-fan-unit.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-03-small-generator",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/03-small-generator.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-04-cable-spool",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/04-cable-spool.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-05-tangled-cables",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/05-tangled-cables.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-06-transformer-box",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/06-transformer-box.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-07-battery-bank",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/07-battery-bank.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-08-shipping-crate",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/08-shipping-crate.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-09-metal-pallet",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/09-metal-pallet.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-10-coolant-barrels",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/10-coolant-barrels.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-11-scrap-electronics",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/11-scrap-electronics.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-12-antenna-mast",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/12-antenna-mast.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-13-solar-panel-wreck",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/13-solar-panel-wreck.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-14-satellite-dish",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/14-satellite-dish.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-industrial-mining-15-utility-transformer",
+      "sheet": "jul9-industrial-mining",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-industrial-mining/15-utility-transformer.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-00-wood-fence-straight",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/00-wood-fence-straight.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-01-short-wood-fence",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/01-short-wood-fence.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-02-broken-wood-fence",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/02-broken-wood-fence.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-03-wood-fence-corner",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/03-wood-fence-corner.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-04-wood-gate",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/04-wood-gate.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-05-chainlink-straight",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/05-chainlink-straight.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-06-broken-chainlink",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/06-broken-chainlink.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-07-chainlink-corner",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/07-chainlink-corner.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-08-open-chainlink-gate",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/08-open-chainlink-gate.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-09-fallen-chainlink-panel",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/09-fallen-chainlink-panel.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-10-concrete-barrier",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/10-concrete-barrier.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-11-cracked-jersey-barrier",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/11-cracked-jersey-barrier.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-12-sandbag-barrier",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/12-sandbag-barrier.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-13-metal-road-barricade",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/13-metal-road-barricade.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-14-roadblock-cluster",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/14-roadblock-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-15-ruined-wall-chunk",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/15-ruined-wall-chunk.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-16-brick-wall-segment",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/16-brick-wall-segment.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-17-collapsed-wall",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/17-collapsed-wall.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-18-retaining-wall",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/18-retaining-wall.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-19-burned-wall-panel",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/19-burned-wall-panel.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-20-crate-fence-cluster",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/20-crate-fence-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-21-barrel-barricade-cluster",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/21-barrel-barricade-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-22-rubble-barricade",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/22-rubble-barricade.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-23-broken-gate-post",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/23-broken-gate-post.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-fences-barricades-24-warning-post",
+      "sheet": "jul9-fences-barricades",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-fences-barricades/24-warning-post.png",
       "width": 256,
       "height": 256
     }
@@ -10642,6 +11041,981 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r1-c1",
+      "slug": "jul9-street-asphalt-parking-a-r1-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r1-c2",
+      "slug": "jul9-street-asphalt-parking-a-r1-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r1-c3",
+      "slug": "jul9-street-asphalt-parking-a-r1-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r1-c4",
+      "slug": "jul9-street-asphalt-parking-a-r1-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r1-c5",
+      "slug": "jul9-street-asphalt-parking-a-r1-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r2-c1",
+      "slug": "jul9-street-asphalt-parking-a-r2-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r2-c2",
+      "slug": "jul9-street-asphalt-parking-a-r2-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r2-c3",
+      "slug": "jul9-street-asphalt-parking-a-r2-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r2-c4",
+      "slug": "jul9-street-asphalt-parking-a-r2-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r2-c5",
+      "slug": "jul9-street-asphalt-parking-a-r2-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r3-c1",
+      "slug": "jul9-street-asphalt-parking-a-r3-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r3-c2",
+      "slug": "jul9-street-asphalt-parking-a-r3-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r3-c3",
+      "slug": "jul9-street-asphalt-parking-a-r3-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r3-c4",
+      "slug": "jul9-street-asphalt-parking-a-r3-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r3-c5",
+      "slug": "jul9-street-asphalt-parking-a-r3-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r4-c1",
+      "slug": "jul9-street-asphalt-parking-a-r4-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r4-c2",
+      "slug": "jul9-street-asphalt-parking-a-r4-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r4-c3",
+      "slug": "jul9-street-asphalt-parking-a-r4-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r4-c4",
+      "slug": "jul9-street-asphalt-parking-a-r4-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r4-c5",
+      "slug": "jul9-street-asphalt-parking-a-r4-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r5-c1",
+      "slug": "jul9-street-asphalt-parking-a-r5-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r5-c2",
+      "slug": "jul9-street-asphalt-parking-a-r5-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r5-c3",
+      "slug": "jul9-street-asphalt-parking-a-r5-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r5-c4",
+      "slug": "jul9-street-asphalt-parking-a-r5-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-street-asphalt-parking-a-r5-c5",
+      "slug": "jul9-street-asphalt-parking-a-r5-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-street-asphalt-parking-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r1-c1",
+      "slug": "jul9-water-shore-mud-a-r1-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r1-c2",
+      "slug": "jul9-water-shore-mud-a-r1-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r1-c3",
+      "slug": "jul9-water-shore-mud-a-r1-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r1-c4",
+      "slug": "jul9-water-shore-mud-a-r1-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r1-c5",
+      "slug": "jul9-water-shore-mud-a-r1-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r2-c1",
+      "slug": "jul9-water-shore-mud-a-r2-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r2-c2",
+      "slug": "jul9-water-shore-mud-a-r2-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r2-c3",
+      "slug": "jul9-water-shore-mud-a-r2-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r2-c4",
+      "slug": "jul9-water-shore-mud-a-r2-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r2-c5",
+      "slug": "jul9-water-shore-mud-a-r2-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r3-c1",
+      "slug": "jul9-water-shore-mud-a-r3-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r3-c2",
+      "slug": "jul9-water-shore-mud-a-r3-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r3-c3",
+      "slug": "jul9-water-shore-mud-a-r3-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r3-c4",
+      "slug": "jul9-water-shore-mud-a-r3-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r3-c5",
+      "slug": "jul9-water-shore-mud-a-r3-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r4-c1",
+      "slug": "jul9-water-shore-mud-a-r4-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r4-c2",
+      "slug": "jul9-water-shore-mud-a-r4-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r4-c3",
+      "slug": "jul9-water-shore-mud-a-r4-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r4-c4",
+      "slug": "jul9-water-shore-mud-a-r4-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r4-c5",
+      "slug": "jul9-water-shore-mud-a-r4-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r5-c1",
+      "slug": "jul9-water-shore-mud-a-r5-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r5-c2",
+      "slug": "jul9-water-shore-mud-a-r5-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r5-c3",
+      "slug": "jul9-water-shore-mud-a-r5-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r5-c4",
+      "slug": "jul9-water-shore-mud-a-r5-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-water-shore-mud-a-r5-c5",
+      "slug": "jul9-water-shore-mud-a-r5-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-water-shore-mud-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ]
     }
   ],
   "groundTextures": [
@@ -20179,6 +21553,981 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass-to-dirt"
       ],
       "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c1",
+      "slug": "jul9-street-asphalt-parking-a-r1-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c2",
+      "slug": "jul9-street-asphalt-parking-a-r1-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c3",
+      "slug": "jul9-street-asphalt-parking-a-r1-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c4",
+      "slug": "jul9-street-asphalt-parking-a-r1-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c5",
+      "slug": "jul9-street-asphalt-parking-a-r1-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c1",
+      "slug": "jul9-street-asphalt-parking-a-r2-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c2",
+      "slug": "jul9-street-asphalt-parking-a-r2-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c3",
+      "slug": "jul9-street-asphalt-parking-a-r2-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c4",
+      "slug": "jul9-street-asphalt-parking-a-r2-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c5",
+      "slug": "jul9-street-asphalt-parking-a-r2-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass-to-road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c1",
+      "slug": "jul9-street-asphalt-parking-a-r3-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c2",
+      "slug": "jul9-street-asphalt-parking-a-r3-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c3",
+      "slug": "jul9-street-asphalt-parking-a-r3-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c4",
+      "slug": "jul9-street-asphalt-parking-a-r3-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c5",
+      "slug": "jul9-street-asphalt-parking-a-r3-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c1",
+      "slug": "jul9-street-asphalt-parking-a-r4-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c2",
+      "slug": "jul9-street-asphalt-parking-a-r4-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c3",
+      "slug": "jul9-street-asphalt-parking-a-r4-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c4",
+      "slug": "jul9-street-asphalt-parking-a-r4-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c5",
+      "slug": "jul9-street-asphalt-parking-a-r4-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c1",
+      "slug": "jul9-street-asphalt-parking-a-r5-c1",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c2",
+      "slug": "jul9-street-asphalt-parking-a-r5-c2",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c3",
+      "slug": "jul9-street-asphalt-parking-a-r5-c3",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c4",
+      "slug": "jul9-street-asphalt-parking-a-r5-c4",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c5",
+      "slug": "jul9-street-asphalt-parking-a-r5-c5",
+      "sheet": "jul9-street-asphalt-parking-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-street-asphalt-parking-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r1-c1",
+      "slug": "jul9-water-shore-mud-a-r1-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r1-c2",
+      "slug": "jul9-water-shore-mud-a-r1-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r1-c3",
+      "slug": "jul9-water-shore-mud-a-r1-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r1-c4",
+      "slug": "jul9-water-shore-mud-a-r1-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r1-c5",
+      "slug": "jul9-water-shore-mud-a-r1-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r2-c1",
+      "slug": "jul9-water-shore-mud-a-r2-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r2-c2",
+      "slug": "jul9-water-shore-mud-a-r2-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r2-c3",
+      "slug": "jul9-water-shore-mud-a-r2-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r2-c4",
+      "slug": "jul9-water-shore-mud-a-r2-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r2-c5",
+      "slug": "jul9-water-shore-mud-a-r2-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r3-c1",
+      "slug": "jul9-water-shore-mud-a-r3-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r3-c2",
+      "slug": "jul9-water-shore-mud-a-r3-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r3-c3",
+      "slug": "jul9-water-shore-mud-a-r3-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r3-c4",
+      "slug": "jul9-water-shore-mud-a-r3-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r3-c5",
+      "slug": "jul9-water-shore-mud-a-r3-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "water",
+        "road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r4-c1",
+      "slug": "jul9-water-shore-mud-a-r4-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r4-c2",
+      "slug": "jul9-water-shore-mud-a-r4-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r4-c3",
+      "slug": "jul9-water-shore-mud-a-r4-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r4-c4",
+      "slug": "jul9-water-shore-mud-a-r4-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r4-c5",
+      "slug": "jul9-water-shore-mud-a-r4-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r5-c1",
+      "slug": "jul9-water-shore-mud-a-r5-c1",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r5-c2",
+      "slug": "jul9-water-shore-mud-a-r5-c2",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r5-c3",
+      "slug": "jul9-water-shore-mud-a-r5-c3",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r5-c4",
+      "slug": "jul9-water-shore-mud-a-r5-c4",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-water-shore-mud-a-r5-c5",
+      "slug": "jul9-water-shore-mud-a-r5-c5",
+      "sheet": "jul9-water-shore-mud-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-water-shore-mud-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "dirt",
+        "sand",
+        "water",
+        "rocky"
+      ],
+      "preferred": true
     }
   ],
   "terrainRoles": {
@@ -20492,7 +22841,37 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c2",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c3",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c4",
-      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5"
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c5"
     ],
     "dirt-to-sand": [
       "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
@@ -20881,7 +23260,12 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c3",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4",
-      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5"
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c5"
     ],
     "grass-to-dirt": [
       "chatgpt-terrain/ground-grass-dirt-path-a-r1-c1",
@@ -21010,7 +23394,12 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c3",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c4",
-      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c5"
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c5"
     ],
     "road": [
       "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
@@ -21102,7 +23491,37 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c2",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c3",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c4",
-      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5"
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r4-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c5"
     ],
     "rocky": [
       "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
@@ -21289,7 +23708,17 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c2",
       "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c3",
       "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c4",
-      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c5"
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c5",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c1",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c2",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c3",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c4",
+      "chatgpt-terrain/jul9-street-asphalt-parking-a-r5-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c5"
     ],
     "sand": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -21396,7 +23825,12 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2",
       "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3",
       "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c4",
-      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c5"
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c5"
     ],
     "shore": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -21528,7 +23962,22 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c3",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4",
-      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5"
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c5"
     ],
     "water": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -21660,7 +24109,32 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c3",
       "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4",
-      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5"
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r1-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r2-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r3-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r4-c5",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c1",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c2",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c3",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c4",
+      "chatgpt-terrain/jul9-water-shore-mud-a-r5-c5"
     ]
   },
   "recommendedGroundSlugs": {
@@ -21669,12 +24143,14 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
     "forestFloor": "jul9-master-ground-terrain-a-r2-c1",
     "rockyAccent": "jul9-master-ground-terrain-a-r3-c3",
     "dirtPath": "jul9-master-ground-terrain-a-r2-c2",
-    "water": "jul9-transition-ground-edges-a-r4-c2",
-    "shoreGrassWater": "jul9-transition-ground-edges-a-r4-c1",
+    "water": "jul9-water-shore-mud-a-r1-c4",
+    "shoreGrassWater": "jul9-water-shore-mud-a-r2-c5",
+    "mudLowland": "jul9-water-shore-mud-a-r3-c1",
     "sand": "jul9-master-ground-terrain-a-r4-c3",
     "sandRoadBlend": "jul9-transition-ground-edges-a-r3-c2",
-    "asphalt": "jul9-transition-ground-edges-a-r2-c2",
-    "grassRoadBlend": "jul9-transition-ground-edges-a-r2-c1",
+    "asphalt": "jul9-street-asphalt-parking-a-r1-c2",
+    "parkingLot": "jul9-street-asphalt-parking-a-r3-c4",
+    "grassRoadBlend": "jul9-street-asphalt-parking-a-r2-c4",
     "megaGrassPath": "jul9-master-ground-terrain-a-r2-c1"
   }
 });

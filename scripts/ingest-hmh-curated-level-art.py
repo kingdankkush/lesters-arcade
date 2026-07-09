@@ -45,6 +45,8 @@ GROUND_SHEETS = [
     ("megatexture-shore-grass-rock-a", ATTACHMENTS / "Megatexture-groundtile-03.png", "shore", ["water", "shore", "grass", "rocky"]),
     ("jul9-master-ground-terrain-a", ATTACHMENTS / "jul9-master-ground-terrain.png", "dirt", ["grass", "dirt", "rocky", "sand", "grass-to-dirt", "dirt-to-sand"]),
     ("jul9-transition-ground-edges-a", ATTACHMENTS / "jul9-transition-ground-edges.png", "grass-to-dirt", ["grass", "dirt", "road", "shore", "water", "grass-to-dirt", "grass-to-road", "dirt-to-sand"]),
+    ("jul9-street-asphalt-parking-a", ATTACHMENTS / "jul9-street-asphalt-terrain.png", "road", ["road", "grass-to-road", "dirt"]),
+    ("jul9-water-shore-mud-a", ATTACHMENTS / "jul9-water-shore-mud-terrain.png", "shore", ["water", "shore", "dirt", "grass"]),
 ]
 
 ENVIRONMENT_PROP_SHEETS = [
@@ -72,6 +74,25 @@ ENVIRONMENT_PROP_SHEETS = [
         "tall-boulder", "two-boulder-cover", "cave-mouth-rock", "mining-outcrop", "jagged-wasteland-rock",
         "short-cliff-face", "eroded-dirt-ledge", "rocky-ridge-chunk", "gravel-mound", "broken-retaining-wall",
         "ltc-carved-stone", "mining-rubble-pile", "cracked-concrete-chunk", "warning-marker-rock", "bone-rock-pile",
+    ]),
+    ("jul9-landmark-microscene", ATTACHMENTS / "jul9-landmark-microscene-props.png", 4, 4, "landmark", [
+        "dry-forest-cave", "ruined-camp", "roadside-checkpoint", "broken-picnic-area",
+        "atm-kiosk-wreck", "vending-nook", "toll-booth", "payphone-shelter",
+        "coin-pile-shrine", "broken-arcade-cabinet", "trader-stall", "generator-camp",
+        "drainage-culvert", "ditch-bridge-crossing", "cracked-concrete-pad", "water-pump-station",
+    ]),
+    ("jul9-industrial-mining", ATTACHMENTS / "jul9-industrial-mining-props.png", 4, 4, "industrial", [
+        "mining-rig-rack", "server-rack-wreck", "cooling-fan-unit", "small-generator",
+        "cable-spool", "tangled-cables", "transformer-box", "battery-bank",
+        "shipping-crate", "metal-pallet", "coolant-barrels", "scrap-electronics",
+        "antenna-mast", "solar-panel-wreck", "satellite-dish", "utility-transformer",
+    ]),
+    ("jul9-fences-barricades", ATTACHMENTS / "jul9-fences-barricades-props.png", 5, 5, "boundary", [
+        "wood-fence-straight", "short-wood-fence", "broken-wood-fence", "wood-fence-corner", "wood-gate",
+        "chainlink-straight", "broken-chainlink", "chainlink-corner", "open-chainlink-gate", "fallen-chainlink-panel",
+        "concrete-barrier", "cracked-jersey-barrier", "sandbag-barrier", "metal-road-barricade", "roadblock-cluster",
+        "ruined-wall-chunk", "brick-wall-segment", "collapsed-wall", "retaining-wall", "burned-wall-panel",
+        "crate-fence-cluster", "barrel-barricade-cluster", "rubble-barricade", "broken-gate-post", "warning-post",
     ]),
 ]
 TREE_ROWS = [
@@ -272,6 +293,24 @@ def material_roles_for_cell(sheet_slug: str, default_roles: list[str], row: int,
             ["road", "dirt", "grass-to-dirt"],
         ]
         return by_row[row]
+    if sheet_slug == "jul9-street-asphalt-parking-a":
+        by_row = [
+            ["road"],
+            ["road", "grass-to-road", "dirt"],
+            ["road"],
+            ["road", "dirt"],
+            ["road", "rocky", "dirt"],
+        ]
+        return by_row[row]
+    if sheet_slug == "jul9-water-shore-mud-a":
+        by_row = [
+            ["water", "shore"],
+            ["dirt", "shore", "water"],
+            ["dirt", "water", "road"],
+            ["grass", "shore", "water"],
+            ["dirt", "sand", "water", "rocky"],
+        ]
+        return by_row[row]
     return default_roles
 
 
@@ -448,12 +487,14 @@ def main() -> None:
             "forestFloor": "jul9-master-ground-terrain-a-r2-c1",
             "rockyAccent": "jul9-master-ground-terrain-a-r3-c3",
             "dirtPath": "jul9-master-ground-terrain-a-r2-c2",
-            "water": "jul9-transition-ground-edges-a-r4-c2",
-            "shoreGrassWater": "jul9-transition-ground-edges-a-r4-c1",
+            "water": "jul9-water-shore-mud-a-r1-c4",
+            "shoreGrassWater": "jul9-water-shore-mud-a-r2-c5",
+            "mudLowland": "jul9-water-shore-mud-a-r3-c1",
             "sand": "jul9-master-ground-terrain-a-r4-c3",
             "sandRoadBlend": "jul9-transition-ground-edges-a-r3-c2",
-            "asphalt": "jul9-transition-ground-edges-a-r2-c2",
-            "grassRoadBlend": "jul9-transition-ground-edges-a-r2-c1",
+            "asphalt": "jul9-street-asphalt-parking-a-r1-c2",
+            "parkingLot": "jul9-street-asphalt-parking-a-r3-c4",
+            "grassRoadBlend": "jul9-street-asphalt-parking-a-r2-c4",
             "megaGrassPath": "jul9-master-ground-terrain-a-r2-c1",
         },
     }
