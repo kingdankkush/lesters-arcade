@@ -9303,26 +9303,40 @@ function currentProductionLevel() {
 // that read correctly; tiles are lazy-loaded once and cached. When a tile image
 // isn't ready yet, drawProductionIsoTile falls back to the biome-shaded gradient
 // so the floor is never blank/blue.
-const WAVE2_TILE_SRC = (() => {
+let _groundTileSourcePayload = null;
+let _groundTileSourceBySlug = null;
+function groundTileSourceBySlug() {
+  if (_groundTileSourceBySlug && _groundTileSourcePayload === HMH_PAYLOAD) return _groundTileSourceBySlug;
   const map = {};
   for (const a of hmh('HMH_ENVIRONMENT_PIXELLAB_WAVE_2')?.assets ?? []) {
     if (a.assetType === 'isometric_tile' && a.images?.[0]?.src) map[a.slug] = a.images[0].src;
   }
+  for (const tile of hmh('HMH_CURATED_LEVEL_ART')?.groundTiles ?? []) {
+    if (tile.slug && tile.src) map[tile.slug] = tile.src;
+  }
+  _groundTileSourcePayload = HMH_PAYLOAD;
+  _groundTileSourceBySlug = map;
   return map;
-})();
+}
 const BIOME_GROUND_TILES = {
   town: ['concrete-road', 'asphalt-road'],
   road: ['asphalt-road', 'asphalt-road-stripe'],
   desert: ['sand', 'gravel'],
-  forest: ['flower-grass-ground', 'ground-dirt'],
-  rocky: ['ground-rock', 'gravel'],
+  forest: ['ground-grass-dirt-path-a-r1-c1', 'ground-rock-grass-dirt-a-r2-c1'],
+  grass: ['ground-grass-dirt-path-a-r1-c1', 'ground-grass-dirt-path-a-r3-c2'],
+  rocky: ['ground-rock-grass-dirt-a-r4-c3', 'ground-rock'],
   water: ['shallow-water', 'river-bank'],
 };
 const wave2TileImages = new Map();
 function wave2TileImage(slug) {
-  if (!slug || !WAVE2_TILE_SRC[slug]) return null;
-  if (!wave2TileImages.has(slug)) wave2TileImages.set(slug, loadImageAsset(WAVE2_TILE_SRC[slug]));
-  return wave2TileImages.get(slug);
+  const src = groundTileSourceBySlug()[slug];
+  if (!slug || !src) return null;
+  const cacheKey = `${slug}::${src}`;
+  if (!wave2TileImages.has(cacheKey)) wave2TileImages.set(cacheKey, loadImageAsset(src));
+  return wave2TileImages.get(cacheKey);
+}
+function curatedGroundTileImage(slug) {
+  return wave2TileImage(slug);
 }
 
 const sbsGroundTileImages = new Map();
@@ -9471,7 +9485,7 @@ function biomeGroundTileForWorld(worldX, worldY, biome) {
 const THEME_GROUND_TILE = {
   pavement: 'concrete-road',
   carpet: 'asphalt-road',     // dark indoor-ish floor for arcade interiors
-  grass: 'flower-grass-ground',
+  grass: 'ground-grass-dirt-path-a-r1-c1',
   sand: 'sand',
 };
 // The scene theme for a world tile (rounds into the scene cell). Cached per
@@ -9521,26 +9535,35 @@ function sceneGroundThemeAt(seed, worldX, worldY) {
 // frame_NNN images (skip the 000-unknown spritesheet base). Each biome gets a
 // set of fitting animated props; placement is deterministic per run seed so the
 // world is stable, and frames cycle on combat.frame for live motion.
-const WAVE2_ANIM = (() => {
+let _ambientAnimPayload = null;
+let _ambientAnimBySlug = null;
+function ambientAnimationFramesBySlug() {
+  if (_ambientAnimBySlug && _ambientAnimPayload === HMH_PAYLOAD) return _ambientAnimBySlug;
   const bySlug = {};
   for (const a of hmh('HMH_ENVIRONMENT_PIXELLAB_WAVE_2')?.assets ?? []) {
     if (!a.slug.endsWith('-ambient')) continue;
     const frames = (a.images ?? []).filter((im) => /frame_\d+/.test(im.src));
     if (frames.length) bySlug[a.slug.replace('-ambient', '')] = frames.map((im) => im.src);
   }
+  for (const tree of hmh('HMH_CURATED_LEVEL_ART')?.treeAnimations ?? []) {
+    const frames = (tree.frames ?? []).map((frame) => frame.src).filter(Boolean);
+    if (tree.slug && frames.length) bySlug[tree.slug] = frames;
+  }
+  _ambientAnimPayload = HMH_PAYLOAD;
+  _ambientAnimBySlug = bySlug;
   return bySlug;
-})();
+}
 const BIOME_ANIM_PROPS = {
-  forest: ['leafy-tree-wind', 'flower-patch-sway'],
+  forest: ['juniper-tree-idle', 'cottonwood-tree-idle', 'leafy-tree-wind', 'flower-patch-sway'],
   desert: ['cactus-heat-shimmer', 'tumbleweed-roll', 'palm-tree-wind'],
   water: ['water-surface-ripple', 'waterfall-cascade', 'river-rapids-flow'],
   town: ['neon-sign-flicker', 'traffic-light-blink', 'parked-car-blink', 'garbage-can-wobble'],
   road: ['road-sign-sway', 'traffic-light-blink', 'wrecked-car-smoke'],
-  rocky: ['tumbleweed-roll', 'leafy-tree-wind'],
+  rocky: ['dead-tree-idle', 'tumbleweed-roll', 'leafy-tree-wind'],
 };
 const wave2AnimImages = new Map();
 function wave2AnimFrame(slug, frameIdx) {
-  const srcs = WAVE2_ANIM[slug];
+  const srcs = ambientAnimationFramesBySlug()[slug];
   if (!srcs || !srcs.length) return null;
   const i = frameIdx % srcs.length;
   const key = `${slug}#${i}`;
@@ -9552,7 +9575,8 @@ function wave2AnimFrame(slug, frameIdx) {
 // entries. Sparse lattice, biome-matched, kept clear of the player so they never
 // block combat. Frames advance ~8fps for smooth wind/flicker/water motion.
 function collectAnimatedProps(ctx) {
-  if (!Object.keys(WAVE2_ANIM).length) return [];
+  const ambientFrames = ambientAnimationFramesBySlug();
+  if (!Object.keys(ambientFrames).length) return [];
   const out = [];
   const environmentState = currentEnvironmentState();
   const readability = currentReadabilityProfile(environmentState);
@@ -9576,7 +9600,7 @@ function collectAnimatedProps(ctx) {
       const biome = biomeAt(seed, cellX, cellY);
       const pool = BIOME_ANIM_PROPS[biome] ?? BIOME_ANIM_PROPS.town;
       const slug = pool[h % pool.length];
-      if (!WAVE2_ANIM[slug]) continue;
+      if (!ambientFrames[slug]) continue;
       const worldX = cellX + ((h % 5) - 2) + environmentState.wind.x * 0.18;
       const worldY = cellY + (((h >> 4) % 5) - 2) + environmentState.wind.y * 0.12;
       if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 4) continue;
@@ -9589,6 +9613,7 @@ function collectAnimatedProps(ctx) {
       // trees/waterfalls read tall, signs/flowers/litter small.
       const ANIM_PROP_SIZE = {
         'leafy-tree-wind': 132, 'palm-tree-wind': 138, 'waterfall-cascade': 150,
+        'juniper-tree-idle': 136, 'cottonwood-tree-idle': 144, 'dead-tree-idle': 132,
         'cactus-heat-shimmer': 104, 'neon-sign-flicker': 96, 'traffic-light-blink': 88,
         'wrecked-car-smoke': 120, 'parked-car-blink': 118, 'road-sign-sway': 78,
         'flower-patch-sway': 46, 'garbage-can-wobble': 50, 'tumbleweed-roll': 54,

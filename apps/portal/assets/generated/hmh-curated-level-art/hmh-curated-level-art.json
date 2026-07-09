@@ -1,0 +1,1373 @@
+{
+  "id": "hmh-curated-level-art-chatgpt-2026-07-08",
+  "generatedFrom": "Justin-approved ChatGPT Image tree, forest, and ground tile sheets; local source paths redacted",
+  "sourceSheets": [
+    {
+      "id": "tree-idle",
+      "grid": {
+        "rows": 3,
+        "cols": 6
+      },
+      "kind": "magenta-keyed animated tree prop sheet"
+    },
+    {
+      "id": "forest-boundary-a",
+      "grid": {
+        "rows": 4,
+        "cols": 4
+      },
+      "kind": "magenta-keyed forest boundary prop sheet"
+    },
+    {
+      "id": "forest-boundary-b",
+      "grid": {
+        "rows": 4,
+        "cols": 4
+      },
+      "kind": "magenta-keyed forest boundary prop sheet"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet"
+    },
+    {
+      "id": "ground-grass-dirt-path-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet"
+    }
+  ],
+  "gridCounts": {
+    "treeIdleFrames": 18,
+    "forestProps": 32,
+    "groundTiles": 50
+  },
+  "runtime": {
+    "coherentWorldRoot": "./assets/generated/hmh-coherent-world/curated",
+    "groundRoot": "./assets/generated/hmh-curated-level-art/ground",
+    "propRoot": "./assets/generated/hmh-curated-level-art/props"
+  },
+  "treeAnimations": [
+    {
+      "slug": "juniper-tree-idle",
+      "tree": "juniper-tree",
+      "description": "dusty desert juniper / scrub pine",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "juniper-tree-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/juniper-tree/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "juniper-tree-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/juniper-tree/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "juniper-tree-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/juniper-tree/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "juniper-tree-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/juniper-tree/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "juniper-tree-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/juniper-tree/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "juniper-tree-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/juniper-tree/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated/juniper-tree-idle-00"
+    },
+    {
+      "slug": "dead-tree-idle",
+      "tree": "dead-tree",
+      "description": "dead twisted wasteland mesquite",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "dead-tree-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/dead-tree/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "dead-tree-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/dead-tree/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "dead-tree-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/dead-tree/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "dead-tree-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/dead-tree/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "dead-tree-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/dead-tree/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "dead-tree-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/dead-tree/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated/dead-tree-idle-00"
+    },
+    {
+      "slug": "cottonwood-tree-idle",
+      "tree": "cottonwood-tree",
+      "description": "roadside cottonwood / battered broadleaf",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "cottonwood-tree-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/cottonwood-tree/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "cottonwood-tree-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/cottonwood-tree/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "cottonwood-tree-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/cottonwood-tree/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "cottonwood-tree-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/cottonwood-tree/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "cottonwood-tree-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/cottonwood-tree/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "cottonwood-tree-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/cottonwood-tree/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated/cottonwood-tree-idle-00"
+    }
+  ],
+  "forestProps": [
+    {
+      "id": "forest-boundary-a-00",
+      "sheet": "forest-boundary-a",
+      "label": "single-pine",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/00-single-pine.png",
+      "coherentWorldKey": "curated/forest-boundary-a-00",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-01",
+      "sheet": "forest-boundary-a",
+      "label": "single-broadleaf",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/01-single-broadleaf.png",
+      "coherentWorldKey": "curated/forest-boundary-a-01",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-02",
+      "sheet": "forest-boundary-a",
+      "label": "dead-twisted-tree",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/02-dead-twisted-tree.png",
+      "coherentWorldKey": "curated/forest-boundary-a-02",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-03",
+      "sheet": "forest-boundary-a",
+      "label": "stump-root-debris",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/03-stump-root-debris.png",
+      "coherentWorldKey": "curated/forest-boundary-a-03",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-04",
+      "sheet": "forest-boundary-a",
+      "label": "two-tree-narrow",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/04-two-tree-narrow.png",
+      "coherentWorldKey": "curated/forest-boundary-a-04",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-05",
+      "sheet": "forest-boundary-a",
+      "label": "two-tree-wide",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/05-two-tree-wide.png",
+      "coherentWorldKey": "curated/forest-boundary-a-05",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-06",
+      "sheet": "forest-boundary-a",
+      "label": "mixed-three-tree-cluster",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/06-mixed-three-tree-cluster.png",
+      "coherentWorldKey": "curated/forest-boundary-a-06",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-07",
+      "sheet": "forest-boundary-a",
+      "label": "dense-thicket",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/07-dense-thicket.png",
+      "coherentWorldKey": "curated/forest-boundary-a-07",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-08",
+      "sheet": "forest-boundary-a",
+      "label": "left-edge",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/08-left-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-a-08",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-09",
+      "sheet": "forest-boundary-a",
+      "label": "right-edge",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/09-right-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-a-09",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-10",
+      "sheet": "forest-boundary-a",
+      "label": "back-edge",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/10-back-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-a-10",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-11",
+      "sheet": "forest-boundary-a",
+      "label": "front-edge",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/11-front-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-a-11",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-12",
+      "sheet": "forest-boundary-a",
+      "label": "dense-block",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/12-dense-block.png",
+      "coherentWorldKey": "curated/forest-boundary-a-12",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-13",
+      "sheet": "forest-boundary-a",
+      "label": "corner-cluster",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/13-corner-cluster.png",
+      "coherentWorldKey": "curated/forest-boundary-a-13",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-14",
+      "sheet": "forest-boundary-a",
+      "label": "sparse-gap",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/14-sparse-gap.png",
+      "coherentWorldKey": "curated/forest-boundary-a-14",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-a-15",
+      "sheet": "forest-boundary-a",
+      "label": "dead-accent-cluster",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-a/15-dead-accent-cluster.png",
+      "coherentWorldKey": "curated/forest-boundary-a-15",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-00",
+      "sheet": "forest-boundary-b",
+      "label": "single-pine",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/00-single-pine.png",
+      "coherentWorldKey": "curated/forest-boundary-b-00",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-01",
+      "sheet": "forest-boundary-b",
+      "label": "single-broadleaf",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/01-single-broadleaf.png",
+      "coherentWorldKey": "curated/forest-boundary-b-01",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-02",
+      "sheet": "forest-boundary-b",
+      "label": "dead-twisted-tree",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/02-dead-twisted-tree.png",
+      "coherentWorldKey": "curated/forest-boundary-b-02",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-03",
+      "sheet": "forest-boundary-b",
+      "label": "stump-root-debris",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/03-stump-root-debris.png",
+      "coherentWorldKey": "curated/forest-boundary-b-03",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-04",
+      "sheet": "forest-boundary-b",
+      "label": "two-tree-narrow",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/04-two-tree-narrow.png",
+      "coherentWorldKey": "curated/forest-boundary-b-04",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-05",
+      "sheet": "forest-boundary-b",
+      "label": "two-tree-wide",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/05-two-tree-wide.png",
+      "coherentWorldKey": "curated/forest-boundary-b-05",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-06",
+      "sheet": "forest-boundary-b",
+      "label": "mixed-three-tree-cluster",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/06-mixed-three-tree-cluster.png",
+      "coherentWorldKey": "curated/forest-boundary-b-06",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-07",
+      "sheet": "forest-boundary-b",
+      "label": "dense-thicket",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/07-dense-thicket.png",
+      "coherentWorldKey": "curated/forest-boundary-b-07",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-08",
+      "sheet": "forest-boundary-b",
+      "label": "left-edge",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/08-left-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-b-08",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-09",
+      "sheet": "forest-boundary-b",
+      "label": "right-edge",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/09-right-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-b-09",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-10",
+      "sheet": "forest-boundary-b",
+      "label": "back-edge",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/10-back-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-b-10",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-11",
+      "sheet": "forest-boundary-b",
+      "label": "front-edge",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/11-front-edge.png",
+      "coherentWorldKey": "curated/forest-boundary-b-11",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-12",
+      "sheet": "forest-boundary-b",
+      "label": "dense-block",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/12-dense-block.png",
+      "coherentWorldKey": "curated/forest-boundary-b-12",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-13",
+      "sheet": "forest-boundary-b",
+      "label": "corner-cluster",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/13-corner-cluster.png",
+      "coherentWorldKey": "curated/forest-boundary-b-13",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-14",
+      "sheet": "forest-boundary-b",
+      "label": "sparse-gap",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/14-sparse-gap.png",
+      "coherentWorldKey": "curated/forest-boundary-b-14",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    },
+    {
+      "id": "forest-boundary-b-15",
+      "sheet": "forest-boundary-b",
+      "label": "dead-accent-cluster",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/forest/forest-boundary-b/15-dead-accent-cluster.png",
+      "coherentWorldKey": "curated/forest-boundary-b-15",
+      "width": 256,
+      "height": 256,
+      "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    }
+  ],
+  "groundTiles": [
+    {
+      "id": "ground-rock-grass-dirt-a-r1-c1",
+      "slug": "ground-rock-grass-dirt-a-r1-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r1-c2",
+      "slug": "ground-rock-grass-dirt-a-r1-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r1-c3",
+      "slug": "ground-rock-grass-dirt-a-r1-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r1-c4",
+      "slug": "ground-rock-grass-dirt-a-r1-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r1-c5",
+      "slug": "ground-rock-grass-dirt-a-r1-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r2-c1",
+      "slug": "ground-rock-grass-dirt-a-r2-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r2-c2",
+      "slug": "ground-rock-grass-dirt-a-r2-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r2-c3",
+      "slug": "ground-rock-grass-dirt-a-r2-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r2-c4",
+      "slug": "ground-rock-grass-dirt-a-r2-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r2-c5",
+      "slug": "ground-rock-grass-dirt-a-r2-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r3-c1",
+      "slug": "ground-rock-grass-dirt-a-r3-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r3-c2",
+      "slug": "ground-rock-grass-dirt-a-r3-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r3-c3",
+      "slug": "ground-rock-grass-dirt-a-r3-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r3-c4",
+      "slug": "ground-rock-grass-dirt-a-r3-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r3-c5",
+      "slug": "ground-rock-grass-dirt-a-r3-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r4-c1",
+      "slug": "ground-rock-grass-dirt-a-r4-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r4-c2",
+      "slug": "ground-rock-grass-dirt-a-r4-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r4-c3",
+      "slug": "ground-rock-grass-dirt-a-r4-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r4-c4",
+      "slug": "ground-rock-grass-dirt-a-r4-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r4-c5",
+      "slug": "ground-rock-grass-dirt-a-r4-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r5-c1",
+      "slug": "ground-rock-grass-dirt-a-r5-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r5-c2",
+      "slug": "ground-rock-grass-dirt-a-r5-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r5-c3",
+      "slug": "ground-rock-grass-dirt-a-r5-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r5-c4",
+      "slug": "ground-rock-grass-dirt-a-r5-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-rock-grass-dirt-a-r5-c5",
+      "slug": "ground-rock-grass-dirt-a-r5-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r1-c1",
+      "slug": "ground-grass-dirt-path-a-r1-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r1-c2",
+      "slug": "ground-grass-dirt-path-a-r1-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r1-c3",
+      "slug": "ground-grass-dirt-path-a-r1-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r1-c4",
+      "slug": "ground-grass-dirt-path-a-r1-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r1-c5",
+      "slug": "ground-grass-dirt-path-a-r1-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r2-c1",
+      "slug": "ground-grass-dirt-path-a-r2-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r2-c2",
+      "slug": "ground-grass-dirt-path-a-r2-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r2-c3",
+      "slug": "ground-grass-dirt-path-a-r2-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r2-c4",
+      "slug": "ground-grass-dirt-path-a-r2-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r2-c5",
+      "slug": "ground-grass-dirt-path-a-r2-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r3-c1",
+      "slug": "ground-grass-dirt-path-a-r3-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r3-c2",
+      "slug": "ground-grass-dirt-path-a-r3-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r3-c3",
+      "slug": "ground-grass-dirt-path-a-r3-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r3-c4",
+      "slug": "ground-grass-dirt-path-a-r3-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r3-c5",
+      "slug": "ground-grass-dirt-path-a-r3-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r4-c1",
+      "slug": "ground-grass-dirt-path-a-r4-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r4-c2",
+      "slug": "ground-grass-dirt-path-a-r4-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r4-c3",
+      "slug": "ground-grass-dirt-path-a-r4-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r4-c4",
+      "slug": "ground-grass-dirt-path-a-r4-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r4-c5",
+      "slug": "ground-grass-dirt-path-a-r4-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r5-c1",
+      "slug": "ground-grass-dirt-path-a-r5-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r5-c2",
+      "slug": "ground-grass-dirt-path-a-r5-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r5-c3",
+      "slug": "ground-grass-dirt-path-a-r5-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r5-c4",
+      "slug": "ground-grass-dirt-path-a-r5-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    },
+    {
+      "id": "ground-grass-dirt-path-a-r5-c5",
+      "slug": "ground-grass-dirt-path-a-r5-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile"
+    }
+  ],
+  "recommendedGroundSlugs": {
+    "grassDominant": "ground-grass-dirt-path-a-r1-c1",
+    "grassAccent": "ground-grass-dirt-path-a-r3-c2",
+    "forestFloor": "ground-rock-grass-dirt-a-r2-c1",
+    "rockyAccent": "ground-rock-grass-dirt-a-r4-c3",
+    "dirtPath": "ground-grass-dirt-path-a-r3-c4"
+  }
+}

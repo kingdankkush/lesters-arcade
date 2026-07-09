@@ -195,7 +195,10 @@ const ENEMY_ROSTER_KEYS = Object.freeze({
   'scam-cult-zealot': { rosterKey: 'scam-cult-zealot', drawScaleMul: 1.08, anchorBiasY: -9 },
   'scorpion-ambusher': { rosterKey: 'scorpion-ambusher', drawScaleMul: 1.12, anchorBiasY: -8 },
   'wild-boar': { rosterKey: 'wild-boar', drawScaleMul: 1.12, anchorBiasY: -7 },
-  'paper-hand': { rosterKey: 'paper-hand', drawScaleMul: 1.0, anchorBiasY: -6 },
+  // User-approved Wasteland Debt Collector sheet replaces the old Paper Hands
+  // placeholder for early melee-grunt playtests.
+  'paper-hand': { rosterKey: 'wasteland-debt-collector', drawScaleMul: 1.08, anchorBiasY: -8 },
+  'wasteland-debt-collector': { rosterKey: 'wasteland-debt-collector', drawScaleMul: 1.08, anchorBiasY: -8 },
   'honeypot-turret': { rosterKey: 'honeypot-turret', drawScaleMul: 1.1, anchorBiasY: -4 },
   'slippage-skater': { rosterKey: 'slippage-skater', drawScaleMul: 1.06, anchorBiasY: -8 },
   'phishing-angler': { rosterKey: 'phishing-angler', drawScaleMul: 1.04, anchorBiasY: -8 },

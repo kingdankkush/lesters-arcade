@@ -20379,5 +20379,464 @@
         ]
       }
     }
+  },
+  "wasteland-debt-collector": {
+    "role": "enemy",
+    "character_id": "user-approved-wasteland-debt-collector-contact-sheets",
+    "animations": {
+      "idle": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/north-west/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/idle/south-west/06.png"
+        ]
+      },
+      "walk": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/north-west/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/walk/south-west/06.png"
+        ]
+      },
+      "attack-tell": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/north-west/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack-tell/south-west/06.png"
+        ]
+      },
+      "attack": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/north-west/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/attack/south-west/06.png"
+        ]
+      },
+      "hit": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/north-west/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/hit/south-west/06.png"
+        ]
+      },
+      "death": {
+        "south": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south/06.png"
+        ],
+        "south-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-east/06.png"
+        ],
+        "east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/east/06.png"
+        ],
+        "north-east": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-east/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-east/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-east/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-east/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-east/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-east/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-east/06.png"
+        ],
+        "north": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north/06.png"
+        ],
+        "north-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/north-west/06.png"
+        ],
+        "west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/west/06.png"
+        ],
+        "south-west": [
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-west/00.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-west/01.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-west/02.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-west/03.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-west/04.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-west/05.png",
+          "./assets/generated/hmh-animated-roster/wasteland-debt-collector/death/south-west/06.png"
+        ]
+      }
+    },
+    "metadata": {
+      "source": "user-approved-contact-sheets",
+      "layout": "8-direction x 7-frame contact sheets",
+      "chromaKey": "tolerant generated-green removal with green de-spill",
+      "frameSize": [
+        256,
+        256
+      ]
+    }
   }
 }
