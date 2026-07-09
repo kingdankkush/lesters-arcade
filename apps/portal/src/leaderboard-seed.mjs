@@ -42,10 +42,14 @@ export function summarizeVisibleLeaderboardProvenance(entries = [], profiles = {
   }
 
   const localScoreCount = Math.max(0, visibleCount - officialCount - houseScoreCount);
-  const normalizedTotal = Math.max(visibleCount, Math.floor(Number(totalRankedPlayers) || 0));
-  const visibleScope = normalizedTotal > visibleCount
+  const totalIsConsistent = typeof totalRankedPlayers === 'number'
+    && Number.isSafeInteger(totalRankedPlayers)
+    && totalRankedPlayers >= visibleCount;
+  const normalizedTotal = totalIsConsistent ? totalRankedPlayers : null;
+  const visibleScope = normalizedTotal !== null && normalizedTotal > visibleCount
     ? `${visibleCount} of ${normalizedTotal} players`
     : `${visibleCount} player${visibleCount === 1 ? '' : 's'}`;
+  const totalStatus = totalIsConsistent ? '' : ' · total unavailable';
   const sourceParts = [
     `${officialCount} official`,
     `${houseScoreCount} house score${houseScoreCount === 1 ? '' : 's'}`,
@@ -55,10 +59,11 @@ export function summarizeVisibleLeaderboardProvenance(entries = [], profiles = {
   return {
     visibleCount,
     totalRankedPlayers: normalizedTotal,
+    totalIsConsistent,
     officialCount,
     houseScoreCount,
     localScoreCount,
-    label: `Showing ${visibleScope} · ${sourceParts.join(' · ')}`,
+    label: `Showing ${visibleScope}${totalStatus} · ${sourceParts.join(' · ')}`,
   };
 }
 

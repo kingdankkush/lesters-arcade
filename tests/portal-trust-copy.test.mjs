@@ -46,10 +46,38 @@ test('leaderboard provenance summary says its counts cover only the visible rows
   ), {
     visibleCount: 3,
     totalRankedPlayers: 12,
+    totalIsConsistent: true,
     officialCount: 1,
     houseScoreCount: 1,
     localScoreCount: 1,
     label: 'Showing 3 of 12 players · 1 official · 1 house score · 1 local',
+  });
+});
+
+test('leaderboard provenance summary surfaces invalid or stale total counts', () => {
+  const rows = [
+    { wallet: '0x1111111111111111111111111111111111111111' },
+    { wallet: '0x2222222222222222222222222222222222222222' },
+    { wallet: '0x3333333333333333333333333333333333333333' },
+  ];
+
+  for (const invalidTotal of [0, null, 'not-a-number', 2, 3.5, -1]) {
+    const summary = summarizeVisibleLeaderboardProvenance(rows, {}, invalidTotal);
+    assert.equal(summary.totalRankedPlayers, null);
+    assert.equal(summary.totalIsConsistent, false);
+    assert.equal(summary.label, 'Showing 3 players · total unavailable · 0 official · 0 house scores · 3 local');
+  }
+});
+
+test('leaderboard provenance summary accepts an empty board total of zero', () => {
+  assert.deepEqual(summarizeVisibleLeaderboardProvenance([], {}, 0), {
+    visibleCount: 0,
+    totalRankedPlayers: 0,
+    totalIsConsistent: true,
+    officialCount: 0,
+    houseScoreCount: 0,
+    localScoreCount: 0,
+    label: 'Showing 0 players · 0 official · 0 house scores',
   });
 });
 
