@@ -44,17 +44,17 @@ const WO103_ROLE_PREFERENCES = Object.freeze({
 });
 
 const CHATGPT_TERRAIN_ROLE_PREFERENCES = Object.freeze({
-  grass: 'chatgpt-terrain/ground-grass-dirt-path-b-r1-c1',
-  dirt: 'chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3',
-  sand: 'chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1',
-  rocky: 'chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3',
-  road: 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2',
-  bridge: 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2',
-  shore: 'chatgpt-terrain/ground-water-grass-shore-a-r4-c4',
-  water: 'chatgpt-terrain/ground-water-grass-shore-a-r1-c2',
-  'grass-to-dirt': 'chatgpt-terrain/ground-grass-dirt-path-b-r3-c4',
-  'dirt-to-sand': 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4',
-  'grass-to-road': 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3',
+  grass: 'chatgpt-terrain/jul9-master-ground-terrain-a-r1-c1',
+  dirt: 'chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2',
+  sand: 'chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3',
+  rocky: 'chatgpt-terrain/jul9-master-ground-terrain-a-r3-c3',
+  road: 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2',
+  bridge: 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c4',
+  shore: 'chatgpt-terrain/jul9-transition-ground-edges-a-r4-c1',
+  water: 'chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2',
+  'grass-to-dirt': 'chatgpt-terrain/jul9-transition-ground-edges-a-r1-c3',
+  'dirt-to-sand': 'chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2',
+  'grass-to-road': 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c1',
 });
 
 const CURATED_RADIUS_BY_BEAT = Object.freeze({
@@ -228,21 +228,21 @@ function textureKeyForZoneCell(zone, worldX, worldY, seed) {
 
 function buildChatgptTerrainZones() {
   return Object.freeze([
-    terrainZone('spawn-clear-blacktop-centerline', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2', -16, 22, 4, 6, 3100),
-    terrainZone('spawn-grass-road-north-shoulder', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', -12, 24, 2, 3, 3095),
-    terrainZone('spawn-sand-road-south-shoulder', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', -12, 26, 7, 9, 3095),
-    terrainZone('spawn-dirt-scrub-outfield', 'dirt', 'chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3', -18, 30, -4, 12, 3000),
-    terrainZone('ghost-town-cracked-asphalt-core', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 28, 54, -1, 12, 3120),
-    terrainZone('ghost-town-mossy-curb-edge', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', 28, 54, 11, 14, 3110),
-    terrainZone('country-grass-megapath', 'grass', 'chatgpt-terrain/megatexture-grass-path-a-r3-c3', 50, 88, -2, 13, 3080),
-    terrainZone('country-puddle-lowlands', 'shore', 'chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2', 55, 74, 9, 13, 3090),
-    terrainZone('river-bridge-planks', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 60, 64, 5, 6, 3165),
-    terrainZone('blackwater-ford-water-ribbon', 'water', 'chatgpt-terrain/ground-water-grass-shore-a-r1-c2', 60, 64, 6, 9, 3150),
-    terrainZone('blackwater-ford-grass-shore', 'shore', 'chatgpt-terrain/ground-water-grass-shore-a-r4-c4', 58, 66, 4, 10, 3140),
-    terrainZone('bone-camp-open-sand', 'sand', 'chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1', 68, 92, -2, 12, 3070),
-    terrainZone('bone-camp-rocky-rim', 'rocky', 'chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3', 70, 94, 10, 15, 3080),
-    terrainZone('warehouse-oil-asphalt', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c3', 88, 104, 2, 9, 3130),
-    terrainZone('warehouse-sand-asphalt-edge', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', 86, 106, 9, 13, 3110),
+    terrainZone('spawn-clear-blacktop-centerline', 'road', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2', -16, 22, 4, 6, 3100),
+    terrainZone('spawn-grass-road-north-shoulder', 'grass-to-dirt', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c1', -12, 24, 2, 3, 3095),
+    terrainZone('spawn-sand-road-south-shoulder', 'dirt-to-sand', 'chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2', -12, 26, 7, 9, 3095),
+    terrainZone('spawn-dirt-scrub-outfield', 'dirt', 'chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2', -18, 30, -4, 12, 3000),
+    terrainZone('ghost-town-cracked-asphalt-core', 'road', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c3', 28, 54, -1, 12, 3120),
+    terrainZone('ghost-town-mossy-curb-edge', 'grass-to-dirt', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c1', 28, 54, 11, 14, 3110),
+    terrainZone('country-grass-megapath', 'grass', 'chatgpt-terrain/jul9-master-ground-terrain-a-r1-c1', 50, 88, -2, 13, 3080),
+    terrainZone('country-puddle-lowlands', 'shore', 'chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4', 55, 74, 9, 13, 3090),
+    terrainZone('river-bridge-planks', 'road', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c3', 60, 64, 5, 6, 3165),
+    terrainZone('blackwater-ford-water-ribbon', 'water', 'chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2', 60, 64, 6, 9, 3150),
+    terrainZone('blackwater-ford-grass-shore', 'shore', 'chatgpt-terrain/jul9-transition-ground-edges-a-r4-c1', 58, 66, 4, 10, 3140),
+    terrainZone('bone-camp-open-sand', 'sand', 'chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3', 68, 92, -2, 12, 3070),
+    terrainZone('bone-camp-rocky-rim', 'rocky', 'chatgpt-terrain/jul9-master-ground-terrain-a-r3-c3', 70, 94, 10, 15, 3080),
+    terrainZone('warehouse-oil-asphalt', 'road', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c4', 88, 104, 2, 9, 3130),
+    terrainZone('warehouse-sand-asphalt-edge', 'dirt-to-sand', 'chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2', 86, 106, 9, 13, 3110),
   ]);
 }
 

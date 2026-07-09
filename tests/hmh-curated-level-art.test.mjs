@@ -29,12 +29,26 @@ test('curated level art manifest exposes all approved tree, forest, and ground s
   assert.equal(HMH_CURATED_LEVEL_ART.generatedFrom, 'Justin-approved ChatGPT Image tree, forest, and ground tile sheets; local source paths redacted');
   assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.treeIdleFrames, 18);
   assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.forestProps, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 425);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTextures, 425);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.environmentProps, 69);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 475);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTextures, 475);
   assert.equal(HMH_CURATED_LEVEL_ART.treeAnimations.length, 3);
   assert.equal(HMH_CURATED_LEVEL_ART.forestProps.length, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 425);
-  assert.equal(HMH_CURATED_LEVEL_ART.groundTextures.length, 425);
+  assert.equal(HMH_CURATED_LEVEL_ART.environmentProps.length, 69);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 475);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTextures.length, 475);
+});
+
+test('Jul 9 terrain and prop sheets are sliced into semantic runtime assets', () => {
+  const propSheets = new Set(HMH_CURATED_LEVEL_ART.environmentProps.map((prop) => prop.sheet));
+  for (const sheet of ['jul9-tree-brush', 'jul9-vehicles-street-junk', 'jul9-buildings-landmarks', 'jul9-rocks-boulders']) {
+    assert.ok(propSheets.has(sheet), `${sheet} should be present`);
+  }
+  const jul9Terrain = HMH_CURATED_LEVEL_ART.groundTextures.filter((texture) => texture.sheet.startsWith('jul9-'));
+  assert.equal(jul9Terrain.length, 50);
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2'));
+  assert.ok(jul9Terrain.some((texture) => texture.materialRoles.includes('water')));
+  assert.ok(jul9Terrain.some((texture) => texture.materialRoles.includes('grass-to-road')));
 });
 
 test('curated runtime assets exist, use safe portal-relative paths, and have expected dimensions', () => {
@@ -42,6 +56,7 @@ test('curated runtime assets exist, use safe portal-relative paths, and have exp
   const propSample = [
     ...HMH_CURATED_LEVEL_ART.treeAnimations.flatMap((tree) => tree.frames.slice(0, 2)),
     ...HMH_CURATED_LEVEL_ART.forestProps.slice(0, 8),
+    ...HMH_CURATED_LEVEL_ART.environmentProps.slice(0, 8),
   ];
 
   for (const tile of tileSample) {

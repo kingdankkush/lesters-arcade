@@ -47,6 +47,11 @@ const SOLID_FOR_USE = Object.freeze({
   container: true,
 });
 
+function curatedLevelArtPropByKey(assetKey) {
+  const match = (assetKey || '').match(/^curated\/(jul9-[a-z-]+)-(\d\d-.+)$/);
+  return match ? { src: `./assets/generated/hmh-curated-level-art/props/environment/${match[1]}/${match[2]}.png` } : null;
+}
+
 export const WO102_MEGA_PROP_ASSETS = Object.freeze([
   Object.freeze({
     id: 'wo102-megaprop/noodle-bar-storefront',
@@ -135,16 +140,16 @@ const OPENING_ROUTE_TILES = Object.freeze([
 ]);
 
 const OPENING_LANDMARKS = Object.freeze([
-  openingSpec('west-storefront-shoulder-anchor', 'level-1/building/storefront-02', 'landmark', -13, 2, {
+  openingSpec('west-storefront-shoulder-anchor', 'curated/jul9-buildings-landmarks-00-roadside-store', 'landmark', -13, 2, {
     notes: 'small storefront shoulder anchor replaces the old spawn-overlap gas-station landmark',
   }),
-  openingSpec('boarded-storefront-telegraph', 'level-1/building/ghost-boarded-storefront', 'landmark', 21, 2, {
+  openingSpec('boarded-storefront-telegraph', 'curated/jul9-buildings-landmarks-04-loan-office-front', 'landmark', 21, 2, {
     notes: 'telegraphs ghost-town main street ahead instead of random desert scatter',
   }),
-  openingSpec('saloon-silhouette-telegraph', 'level-1/building/ghost-saloon-front', 'landmark', 31, 3, {
+  openingSpec('saloon-silhouette-telegraph', 'curated/jul9-buildings-landmarks-05-motel-office', 'landmark', 31, 3, {
     notes: 'distant saloon silhouette frames the next combat beat',
   }),
-  openingSpec('storefront-side-anchor', 'level-1/building/storefront-0', 'landmark', 9, 2, {
+  openingSpec('storefront-side-anchor', 'curated/jul9-buildings-landmarks-03-collapsed-mining-shack', 'landmark', 9, 2, {
     notes: 'small town-side anchor for the spawn camera composition',
   }),
   openingSpec('route-arcade-cache', 'level-1/building/arcade-cabinet', 'dressing', 12, 8, {
@@ -154,29 +159,29 @@ const OPENING_LANDMARKS = Object.freeze([
 ]);
 
 const OPENING_BOUNDARIES = Object.freeze([
-  openingSpec('north-cactus-0', 'curated-prop/cactus1-1', 'boundary', -14, 2, { solid: true }),
-  openingSpec('north-cactus-1', 'curated-prop/cactus2-1', 'boundary', -6, 2, { solid: true }),
-  openingSpec('north-rock-0', 'level-1/prop/oval-rock1-grass-shadow', 'boundary', 5, 2, { solid: true }),
-  openingSpec('north-cactus-wall', 'curated-prop/cactus2-2', 'boundary', 12, 1, { solid: true }),
-  openingSpec('north-rock-1', 'level-1/prop/oval-rock2-ground-shadow', 'boundary', 18, 2, { solid: true }),
-  openingSpec('north-desert-line-0', 'level-1/prop/desert-09', 'boundary', 26, 2, { solid: true }),
-  openingSpec('north-desert-line-1', 'level-1/prop/desert-10', 'boundary', 36, 2, { solid: true }),
-  openingSpec('south-rock-0', 'level-1/prop/oval-rock1-ground-shadow', 'boundary', -12, 10, { solid: true }),
-  openingSpec('south-cactus-0', 'curated-prop/cactus1-2', 'boundary', 2, 11, { solid: true }),
-  openingSpec('south-broken-tree', 'curated-prop/broken-tree3', 'boundary', 22, 11, { solid: true }),
-  openingSpec('south-bush-line', 'curated-prop/autumn-bush2', 'boundary', 36, 10, { solid: true }),
+  openingSpec('north-tree-0', 'curated/jul9-tree-brush-00-small-dead-tree', 'boundary', -14, 2, { solid: true }),
+  openingSpec('north-rock-0', 'curated/jul9-rocks-boulders-01-pebble-pile', 'boundary', -6, 2, { solid: true }),
+  openingSpec('north-rock-1', 'curated/jul9-rocks-boulders-07-stacked-rocks', 'boundary', 5, 2, { solid: true }),
+  openingSpec('north-tree-1', 'curated/jul9-tree-brush-06-crooked-pine', 'boundary', 12, 1, { solid: true }),
+  openingSpec('north-boulder-0', 'curated/jul9-rocks-boulders-14-jagged-wasteland-rock', 'boundary', 18, 2, { solid: true }),
+  openingSpec('north-tree-2', 'curated/jul9-tree-brush-03-burnt-sapling', 'boundary', 26, 2, { solid: true }),
+  openingSpec('north-rock-line-0', 'curated/jul9-rocks-boulders-18-gravel-mound', 'boundary', 36, 2, { solid: true }),
+  openingSpec('south-rock-0', 'curated/jul9-rocks-boulders-05-round-boulder', 'boundary', -12, 10, { solid: true }),
+  openingSpec('south-bush-0', 'curated/jul9-tree-brush-10-dense-bush', 'boundary', 2, 11, { solid: true }),
+  openingSpec('south-fallen-log', 'curated/jul9-tree-brush-14-fallen-log', 'boundary', 22, 11, { solid: true }),
+  openingSpec('south-bush-rock-line', 'curated/jul9-tree-brush-15-bush-rock-cluster', 'boundary', 36, 10, { solid: true }),
 ]);
 
 const OPENING_SET_DRESSING = Object.freeze([
   openingSpec('route-arrow-sign', 'level1-authored-stamp/river-bridge-arrow-sign', 'dressing', 14, 2, { solid: false, notes: 'moved out of spawn lane; points the player down the broken-road route' }),
-  openingSpec('dragon-bone-foreground', 'level-1/prop/dragon-bones-body-ground-shadow', 'dressing', -16, 6, { solid: false }),
-  openingSpec('small-desert-0', 'level-1/prop/desert-13', 'dressing', 4, 9, { solid: false }),
-  openingSpec('small-desert-1', 'level-1/prop/desert-14', 'dressing', 20, 8, { solid: false }),
-  openingSpec('roadside-crate', 'level-1/building/wooden-crate', 'dressing', 11, 8, { solid: false }),
-  openingSpec('opening-abandoned-pickup', 'wo106-world/abandoned-pickup', 'vehicle', 17, 9, { solid: false, notes: 'roadside vehicle storytelling without blocking the first combat lane' }),
-  openingSpec('opening-delivery-cache', 'wo106-world/delivery-van-cache', 'vehicle', 29, 8, { solid: false, notes: 'cache/van micro-scene gives the opening road a lived-in POI read' }),
-  openingSpec('opening-forecourt-cache', 'level-1/building/wooden-crate', 'dressing', 7, 8, { solid: false, notes: 'gas-station forecourt cache sits below the hero route instead of covering spawn' }),
-  openingSpec('route-soda-machine', 'level-1/building/soda-machine', 'dressing', 27, 6, { solid: false }),
+  openingSpec('bone-rock-foreground', 'curated/jul9-rocks-boulders-24-bone-rock-pile', 'dressing', -16, 6, { solid: false }),
+  openingSpec('small-rock-cluster-0', 'curated/jul9-rocks-boulders-03-cracked-stone', 'dressing', 4, 9, { solid: false }),
+  openingSpec('small-rock-cluster-1', 'curated/jul9-rocks-boulders-11-two-boulder-cover', 'dressing', 20, 8, { solid: false }),
+  openingSpec('roadside-crate', 'curated/jul9-vehicles-street-junk-09-wooden-crate-stack', 'dressing', 11, 8, { solid: false }),
+  openingSpec('opening-abandoned-pickup', 'curated/jul9-vehicles-street-junk-02-pickup-wreck', 'vehicle', 17, 9, { solid: false, notes: 'roadside vehicle storytelling without blocking the first combat lane' }),
+  openingSpec('opening-delivery-cache', 'curated/jul9-vehicles-street-junk-03-armored-cash-van-wreck', 'vehicle', 29, 8, { solid: false, notes: 'cache/van micro-scene gives the opening road a lived-in POI read' }),
+  openingSpec('opening-forecourt-cache', 'curated/jul9-vehicles-street-junk-12-gas-pump-pair', 'dressing', 7, 8, { solid: false, notes: 'gas-station forecourt cache sits below the hero route instead of covering spawn' }),
+  openingSpec('route-vending-machine', 'curated/jul9-vehicles-street-junk-07-cracked-vending-machine', 'dressing', 27, 6, { solid: false }),
 ]);
 
 const OPENING_COMPOSITION = Object.freeze({
@@ -317,7 +322,7 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/building/arcade-cabinet', use: 'landmark', dx: -3, dy: -1, solid: false },
     { assetKey: 'level-1/building/soda-machine', use: 'dressing', dx: 3, dy: -1, solid: false },
     { assetKey: 'level-1/building/wooden-crate', use: 'dressing', dx: 5, dy: 2, solid: false },
-    { assetKey: 'level-1/prop/road-03', use: 'dressing', dx: -5, dy: 2, solid: false },
+    { assetKey: 'curated/jul9-vehicles-street-junk-10-metal-barricade', use: 'dressing', dx: -5, dy: 2, solid: false },
     { assetKey: 'level-1/prop/desert-08', use: 'boundary', dx: 0, dy: 4, solid: true },
   ], { label: 'Roadside arcade cache', routeBeat: 'spawn', anchor: { x: 10, y: 8 }, routeRead: 'coin-slot fantasy and roadside props create a reward pocket' }),
   prefabStamp('litecoin-extraction-beacon-pad', 'finale-extraction', [
@@ -357,6 +362,7 @@ export function levelOneAuthoredStampAssetSrc(assetKey) {
 
 export function levelOneCuratedAssetSrc(assetKey) {
   return curatedLevelKitAssetByKey(assetKey)?.src
+    ?? curatedLevelArtPropByKey(assetKey)?.src
     ?? levelOneAuthoredStampAssetSrc(assetKey)
     ?? wo102MegaPropAssetByKey(assetKey)?.src
     ?? wo104106WorldKitAssetSrc(assetKey)
@@ -390,37 +396,20 @@ function anchorForZone(zone) {
 }
 
 function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, index = 0, solid = undefined, metadata = {} }) {
-  // Terrain and route tile sheets belong to the ground renderer, not the
-  // obstacle/prop renderer. Drawing the 240x416 road sheets as a single scene
-  // prop is what created the ugly blue/gray pathway-sheet overlap at spawn.
-  if (use === 'terrain') return null;
-  if (use === 'route' && String(assetKey || '').startsWith('level-1/road/')) return null;
+  // Terrain and routes belong to the ground renderer, not the prop renderer.
+  // Old road/path sheets and newer route plates must not sit on top of the
+  // Jul 9 terrain textures as pasted scene objects.
+  if (use === 'terrain' || use === 'route') return null;
   const record = curatedLevelKitAssetByKey(assetKey)
+    ?? curatedLevelArtPropByKey(assetKey)
     ?? authoredStampAssetByKey(assetKey)
     ?? wo102MegaPropAssetByKey(assetKey)
     ?? wo104106WorldKitAssetByKey(assetKey);
   if (!record) return null;
-  const generatedStampArt = Boolean(authoredStampAssetByKey(assetKey));
-  const generatedMegaPropArt = Boolean(wo102MegaPropAssetByKey(assetKey));
-  const generatedWorldKitArt = Boolean(wo104106WorldKitAssetByKey(assetKey));
   const sceneRole = ROLE_FOR_USE[use] ?? 'smallprop';
-  return Object.freeze({
+  return {
     id,
     assetKey,
-    curatedAssetKey: assetKey,
-    imageSrc: record.src,
-    curated: !generatedStampArt && !generatedMegaPropArt && !generatedWorldKitArt,
-    generatedStampArt,
-    generatedMegaPropArt,
-    generatedWorldKitArt,
-    sourcePolicy: generatedMegaPropArt
-      ? 'repo-generated-wo102-megaprop-art'
-      : generatedWorldKitArt
-        ? 'repo-generated-wo104-106-world-kit-art'
-        : generatedStampArt
-          ? 'repo-generated-authored-stamp-art'
-          : 'Justin-curated-level-kit-only',
-    role: sceneRole,
     sceneRole,
     use,
     gridX: x,
@@ -436,7 +425,7 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
     overSlice: record.overSlice ?? metadata.overSlice ?? null,
     r1Observation: record.r1Observation ?? metadata.r1Observation ?? null,
     ...metadata,
-  });
+  };
 }
 
 function openingObjects() {

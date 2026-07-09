@@ -10161,7 +10161,6 @@ function preloadWorldPropImages() {
   }
   for (const obj of buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 16, frame: 0 }).slice(0, 32)) {
     if (obj?.assetKey) coherentWorldImage(obj.assetKey);
-    if (obj?.imageSrc) canonicalLandmarkImage(obj.imageSrc);
   }
 }
 // --- Persistent collidable world obstacles --------------------------------

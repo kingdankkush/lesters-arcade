@@ -1,277 +1,12 @@
 export const HMH_CURATED_LEVEL_ART = Object.freeze({
   "id": "hmh-curated-level-art-chatgpt-2026-07-08",
   "generatedFrom": "Justin-approved ChatGPT Image tree, forest, and ground tile sheets; local source paths redacted",
-  "sourceSheets": [
-    {
-      "id": "tree-idle",
-      "grid": {
-        "rows": 3,
-        "cols": 6
-      },
-      "kind": "magenta-keyed animated tree prop sheet"
-    },
-    {
-      "id": "forest-boundary-a",
-      "grid": {
-        "rows": 4,
-        "cols": 4
-      },
-      "kind": "magenta-keyed forest boundary prop sheet"
-    },
-    {
-      "id": "forest-boundary-b",
-      "grid": {
-        "rows": 4,
-        "cols": 4
-      },
-      "kind": "magenta-keyed forest boundary prop sheet"
-    },
-    {
-      "id": "ground-rock-grass-dirt-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "rocky",
-      "materialRoles": [
-        "grass",
-        "dirt",
-        "rocky"
-      ]
-    },
-    {
-      "id": "ground-grass-dirt-path-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "grass",
-      "materialRoles": [
-        "grass",
-        "dirt",
-        "grass-to-dirt"
-      ]
-    },
-    {
-      "id": "ground-dirt-rock-gravel-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "dirt",
-      "materialRoles": [
-        "dirt",
-        "rocky"
-      ]
-    },
-    {
-      "id": "ground-water-grass-sand-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "shore",
-      "materialRoles": [
-        "water",
-        "shore",
-        "grass",
-        "sand"
-      ]
-    },
-    {
-      "id": "megatexture-dirt-scrub-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "dirt",
-      "materialRoles": [
-        "dirt",
-        "grass",
-        "rocky"
-      ]
-    },
-    {
-      "id": "ground-sand-gravel-road-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "sand",
-      "materialRoles": [
-        "sand",
-        "dirt-to-sand",
-        "road"
-      ]
-    },
-    {
-      "id": "ground-asphalt-moss-grass-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "road",
-      "materialRoles": [
-        "road",
-        "grass",
-        "grass-to-dirt"
-      ]
-    },
-    {
-      "id": "ground-cracked-asphalt-concrete-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "road",
-      "materialRoles": [
-        "road",
-        "dirt"
-      ]
-    },
-    {
-      "id": "ground-sand-dune-dirt-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "sand",
-      "materialRoles": [
-        "sand",
-        "dirt-to-sand",
-        "dirt"
-      ]
-    },
-    {
-      "id": "ground-water-grass-shore-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "water",
-      "materialRoles": [
-        "water",
-        "shore",
-        "grass",
-        "sand"
-      ]
-    },
-    {
-      "id": "ground-rock-gravel-dirt-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "rocky",
-      "materialRoles": [
-        "rocky",
-        "dirt",
-        "grass"
-      ]
-    },
-    {
-      "id": "ground-dark-grass-puddles-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "grass",
-      "materialRoles": [
-        "grass",
-        "water",
-        "shore"
-      ]
-    },
-    {
-      "id": "ground-rock-grass-dirt-b",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "rocky",
-      "materialRoles": [
-        "grass",
-        "dirt",
-        "rocky"
-      ]
-    },
-    {
-      "id": "ground-grass-dirt-path-b",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "grass",
-      "materialRoles": [
-        "grass",
-        "dirt",
-        "grass-to-dirt"
-      ]
-    },
-    {
-      "id": "megatexture-water-rock-dirt-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "shore",
-      "materialRoles": [
-        "water",
-        "shore",
-        "dirt",
-        "rocky"
-      ]
-    },
-    {
-      "id": "megatexture-grass-path-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "grass",
-      "materialRoles": [
-        "grass",
-        "dirt",
-        "grass-to-dirt"
-      ]
-    },
-    {
-      "id": "megatexture-shore-grass-rock-a",
-      "grid": {
-        "rows": 5,
-        "cols": 5
-      },
-      "kind": "full-cell terrain tile sheet",
-      "primaryRole": "shore",
-      "materialRoles": [
-        "water",
-        "shore",
-        "grass",
-        "rocky"
-      ]
-    }
-  ],
   "gridCounts": {
     "treeIdleFrames": 18,
     "forestProps": 32,
-    "groundTiles": 425,
-    "groundTextures": 425
+    "environmentProps": 69,
+    "groundTiles": 475,
+    "groundTextures": 475
   },
   "runtime": {
     "coherentWorldRoot": "./assets/generated/hmh-coherent-world/curated",
@@ -885,6 +620,491 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "width": 256,
       "height": 256,
       "collision": "visual-first; use trunk/root footprint later, not full canopy"
+    }
+  ],
+  "environmentProps": [
+    {
+      "id": "jul9-tree-brush-00-small-dead-tree",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/00-small-dead-tree.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-01-small-leafy-tree",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/01-small-leafy-tree.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-02-scrubby-pine",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/02-scrubby-pine.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-03-burnt-sapling",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/03-burnt-sapling.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-04-medium-dead-tree",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/04-medium-dead-tree.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-05-medium-oak",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/05-medium-oak.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-06-crooked-pine",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/06-crooked-pine.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-07-trash-branch-tree",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/07-trash-branch-tree.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-08-large-gnarled-tree",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/08-large-gnarled-tree.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-09-large-dead-trunk",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/09-large-dead-trunk.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-10-dense-bush",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/10-dense-bush.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-11-bramble-cluster",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/11-bramble-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-12-two-tree-cluster",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/12-two-tree-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-13-stump-roots",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/13-stump-roots.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-14-fallen-log",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/14-fallen-log.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-tree-brush-15-bush-rock-cluster",
+      "sheet": "jul9-tree-brush",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-tree-brush/15-bush-rock-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-00-rusted-compact-car",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/00-rusted-compact-car.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-01-burned-sedan",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/01-burned-sedan.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-02-pickup-wreck",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/02-pickup-wreck.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-03-armored-cash-van-wreck",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/03-armored-cash-van-wreck.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-04-barrel-cone-cluster",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/04-barrel-cone-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-05-tire-pile",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/05-tire-pile.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-06-broken-streetlight",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/06-broken-streetlight.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-07-cracked-vending-machine",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/07-cracked-vending-machine.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-08-trash-heap",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/08-trash-heap.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-09-wooden-crate-stack",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/09-wooden-crate-stack.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-10-metal-barricade",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/10-metal-barricade.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-11-chainlink-fence",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/11-chainlink-fence.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-12-gas-pump-pair",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/12-gas-pump-pair.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-13-crypto-atm-wreck",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/13-crypto-atm-wreck.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-14-generator-box",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/14-generator-box.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-vehicles-street-junk-15-roadside-sign-frame",
+      "sheet": "jul9-vehicles-street-junk",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vehicles-street-junk/15-roadside-sign-frame.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-00-roadside-store",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/00-roadside-store.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-01-gas-station-kiosk",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/01-gas-station-kiosk.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-02-farm-shed",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/02-farm-shed.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-03-collapsed-mining-shack",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/03-collapsed-mining-shack.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-04-loan-office-front",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/04-loan-office-front.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-05-motel-office",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/05-motel-office.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-06-ruined-garage",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/06-ruined-garage.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-07-billboard-frame",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/07-billboard-frame.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-08-utility-shed",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/08-utility-shed.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-09-power-pole-cluster",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/09-power-pole-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-10-water-tower",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/10-water-tower.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-buildings-landmarks-11-boarded-house-porch",
+      "sheet": "jul9-buildings-landmarks",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-buildings-landmarks/11-boarded-house-porch.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-00-single-stone",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/00-single-stone.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-01-pebble-pile",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/01-pebble-pile.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-02-mossy-rock",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/02-mossy-rock.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-03-cracked-stone",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/03-cracked-stone.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-04-dark-shale",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/04-dark-shale.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-05-round-boulder",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/05-round-boulder.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-06-angular-boulder",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/06-angular-boulder.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-07-stacked-rocks",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/07-stacked-rocks.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-08-lichen-boulder",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/08-lichen-boulder.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-09-broken-stone-slab",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/09-broken-stone-slab.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-10-tall-boulder",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/10-tall-boulder.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-11-two-boulder-cover",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/11-two-boulder-cover.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-12-cave-mouth-rock",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/12-cave-mouth-rock.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-13-mining-outcrop",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/13-mining-outcrop.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-14-jagged-wasteland-rock",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/14-jagged-wasteland-rock.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-15-short-cliff-face",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/15-short-cliff-face.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-16-eroded-dirt-ledge",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/16-eroded-dirt-ledge.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-17-rocky-ridge-chunk",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/17-rocky-ridge-chunk.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-18-gravel-mound",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/18-gravel-mound.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-19-broken-retaining-wall",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/19-broken-retaining-wall.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-20-ltc-carved-stone",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/20-ltc-carved-stone.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-21-mining-rubble-pile",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/21-mining-rubble-pile.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-22-cracked-concrete-chunk",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/22-cracked-concrete-chunk.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-23-warning-marker-rock",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/23-warning-marker-rock.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-rocks-boulders-24-bone-rock-pile",
+      "sheet": "jul9-rocks-boulders",
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-rocks-boulders/24-bone-rock-pile.png",
+      "width": 256,
+      "height": 256
     }
   ],
   "groundTiles": [
@@ -9437,6 +9657,991 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r1-c1",
+      "slug": "jul9-master-ground-terrain-a-r1-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r1-c2",
+      "slug": "jul9-master-ground-terrain-a-r1-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r1-c3",
+      "slug": "jul9-master-ground-terrain-a-r1-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r1-c4",
+      "slug": "jul9-master-ground-terrain-a-r1-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r1-c5",
+      "slug": "jul9-master-ground-terrain-a-r1-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r2-c1",
+      "slug": "jul9-master-ground-terrain-a-r2-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r2-c2",
+      "slug": "jul9-master-ground-terrain-a-r2-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r2-c3",
+      "slug": "jul9-master-ground-terrain-a-r2-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r2-c4",
+      "slug": "jul9-master-ground-terrain-a-r2-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r2-c5",
+      "slug": "jul9-master-ground-terrain-a-r2-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r3-c1",
+      "slug": "jul9-master-ground-terrain-a-r3-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r3-c2",
+      "slug": "jul9-master-ground-terrain-a-r3-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r3-c3",
+      "slug": "jul9-master-ground-terrain-a-r3-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r3-c4",
+      "slug": "jul9-master-ground-terrain-a-r3-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r3-c5",
+      "slug": "jul9-master-ground-terrain-a-r3-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r4-c1",
+      "slug": "jul9-master-ground-terrain-a-r4-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r4-c2",
+      "slug": "jul9-master-ground-terrain-a-r4-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r4-c3",
+      "slug": "jul9-master-ground-terrain-a-r4-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r4-c4",
+      "slug": "jul9-master-ground-terrain-a-r4-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r4-c5",
+      "slug": "jul9-master-ground-terrain-a-r4-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r5-c1",
+      "slug": "jul9-master-ground-terrain-a-r5-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r5-c2",
+      "slug": "jul9-master-ground-terrain-a-r5-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r5-c3",
+      "slug": "jul9-master-ground-terrain-a-r5-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r5-c4",
+      "slug": "jul9-master-ground-terrain-a-r5-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-master-ground-terrain-a-r5-c5",
+      "slug": "jul9-master-ground-terrain-a-r5-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-master-ground-terrain-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r1-c1",
+      "slug": "jul9-transition-ground-edges-a-r1-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r1-c2",
+      "slug": "jul9-transition-ground-edges-a-r1-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r1-c3",
+      "slug": "jul9-transition-ground-edges-a-r1-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r1-c4",
+      "slug": "jul9-transition-ground-edges-a-r1-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r1-c5",
+      "slug": "jul9-transition-ground-edges-a-r1-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r2-c1",
+      "slug": "jul9-transition-ground-edges-a-r2-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r2-c2",
+      "slug": "jul9-transition-ground-edges-a-r2-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r2-c3",
+      "slug": "jul9-transition-ground-edges-a-r2-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r2-c4",
+      "slug": "jul9-transition-ground-edges-a-r2-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r2-c5",
+      "slug": "jul9-transition-ground-edges-a-r2-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r3-c1",
+      "slug": "jul9-transition-ground-edges-a-r3-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r3-c2",
+      "slug": "jul9-transition-ground-edges-a-r3-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r3-c3",
+      "slug": "jul9-transition-ground-edges-a-r3-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r3-c4",
+      "slug": "jul9-transition-ground-edges-a-r3-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r3-c5",
+      "slug": "jul9-transition-ground-edges-a-r3-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r4-c1",
+      "slug": "jul9-transition-ground-edges-a-r4-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r4-c2",
+      "slug": "jul9-transition-ground-edges-a-r4-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r4-c3",
+      "slug": "jul9-transition-ground-edges-a-r4-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r4-c4",
+      "slug": "jul9-transition-ground-edges-a-r4-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r4-c5",
+      "slug": "jul9-transition-ground-edges-a-r4-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r5-c1",
+      "slug": "jul9-transition-ground-edges-a-r5-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r5-c2",
+      "slug": "jul9-transition-ground-edges-a-r5-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r5-c3",
+      "slug": "jul9-transition-ground-edges-a-r5-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r5-c4",
+      "slug": "jul9-transition-ground-edges-a-r5-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "jul9-transition-ground-edges-a-r5-c5",
+      "slug": "jul9-transition-ground-edges-a-r5-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-transition-ground-edges-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ]
     }
   ],
   "groundTextures": [
@@ -9458,7 +10663,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -9479,7 +10683,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9500,7 +10703,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9521,7 +10723,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9542,7 +10743,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9563,7 +10763,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9584,7 +10783,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -9605,7 +10803,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9626,7 +10823,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9647,7 +10843,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9668,7 +10863,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9689,7 +10883,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9710,7 +10903,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -9731,7 +10923,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9752,7 +10943,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9773,7 +10963,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9794,7 +10983,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9815,7 +11003,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9836,7 +11023,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -9857,7 +11043,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9878,7 +11063,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9899,7 +11083,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9920,7 +11103,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9941,7 +11123,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -9962,7 +11143,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -9983,7 +11163,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10004,7 +11183,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10025,7 +11203,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10046,7 +11223,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10067,7 +11243,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10088,7 +11263,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10109,7 +11283,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10130,7 +11303,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10151,7 +11323,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10172,7 +11343,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10193,7 +11363,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10214,7 +11383,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10235,7 +11403,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10256,7 +11423,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10277,7 +11443,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10298,7 +11463,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10319,7 +11483,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10340,7 +11503,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10361,7 +11523,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10382,7 +11543,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10403,7 +11563,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10424,7 +11583,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10445,7 +11603,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10466,7 +11623,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10487,7 +11643,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10507,7 +11662,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10527,7 +11681,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10547,7 +11700,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10567,7 +11719,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10587,7 +11738,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10607,7 +11757,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10627,7 +11776,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10647,7 +11795,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10667,7 +11814,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10687,7 +11833,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10707,7 +11852,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10727,7 +11871,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10747,7 +11890,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10767,7 +11909,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10787,7 +11928,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10807,7 +11947,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10827,7 +11966,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10847,7 +11985,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10867,7 +12004,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -10887,7 +12023,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10907,7 +12042,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10927,7 +12061,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10947,7 +12080,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10967,7 +12099,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -10987,7 +12118,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11009,7 +12139,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11031,7 +12160,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11053,7 +12181,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11075,7 +12202,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11097,7 +12223,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11119,7 +12244,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11141,7 +12265,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11163,7 +12286,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11185,7 +12307,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11207,7 +12328,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11229,7 +12349,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11251,7 +12370,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11273,7 +12391,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11295,7 +12412,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11317,7 +12433,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11339,7 +12454,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11361,7 +12475,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11383,7 +12496,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11405,7 +12517,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11427,7 +12538,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11449,7 +12559,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11471,7 +12580,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11493,7 +12601,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11515,7 +12622,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11537,7 +12643,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11558,7 +12663,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11579,7 +12683,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11600,7 +12703,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11621,7 +12723,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11642,7 +12743,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11663,7 +12763,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11684,7 +12783,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11705,7 +12803,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11726,7 +12823,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11747,7 +12843,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11768,7 +12863,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11789,7 +12883,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11810,7 +12903,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11831,7 +12923,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11852,7 +12943,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11873,7 +12963,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11894,7 +12983,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11915,7 +13003,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11936,7 +13023,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -11957,7 +13043,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11978,7 +13063,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -11999,7 +13083,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12020,7 +13103,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12041,7 +13123,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12062,7 +13143,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12083,7 +13163,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12104,7 +13183,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12125,7 +13203,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12146,7 +13223,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12167,7 +13243,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12188,7 +13263,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12209,7 +13283,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12230,7 +13303,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12251,7 +13323,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12272,7 +13343,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12293,7 +13363,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12314,7 +13383,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12335,7 +13403,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12356,7 +13423,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12377,7 +13443,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12398,7 +13463,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12419,7 +13483,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12440,7 +13503,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12461,7 +13523,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12482,7 +13543,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12503,7 +13563,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12524,7 +13583,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12545,7 +13603,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12566,7 +13623,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12587,7 +13643,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "road"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12608,7 +13663,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12629,7 +13683,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12650,7 +13703,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12671,7 +13723,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12692,7 +13743,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12713,7 +13763,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12734,7 +13783,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12755,7 +13803,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12776,7 +13823,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12797,7 +13843,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12818,7 +13863,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12839,7 +13883,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12860,7 +13903,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -12881,7 +13923,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12902,7 +13943,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12923,7 +13963,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12944,7 +13983,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12965,7 +14003,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -12986,7 +14023,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13007,7 +14043,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13028,7 +14063,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13049,7 +14083,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13070,7 +14103,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13091,7 +14123,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13112,7 +14143,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13132,7 +14162,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13152,7 +14181,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13172,7 +14200,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13192,7 +14219,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13212,7 +14238,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13232,7 +14257,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13252,7 +14276,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13272,7 +14295,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13292,7 +14314,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13312,7 +14333,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13332,7 +14352,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13352,7 +14371,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13372,7 +14390,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13392,7 +14409,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13412,7 +14428,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13432,7 +14447,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13452,7 +14466,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13472,7 +14485,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13492,7 +14504,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13512,7 +14523,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13532,7 +14542,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13552,7 +14561,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13572,7 +14580,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13592,7 +14599,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13612,7 +14618,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "road",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13633,7 +14638,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13654,7 +14658,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13675,7 +14678,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13696,7 +14698,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13717,7 +14718,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13738,7 +14738,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13759,7 +14758,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13780,7 +14778,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13801,7 +14798,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13822,7 +14818,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13843,7 +14838,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13864,7 +14858,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13885,7 +14878,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -13906,7 +14898,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13927,7 +14918,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13948,7 +14938,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13969,7 +14958,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -13990,7 +14978,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14011,7 +14998,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14032,7 +15018,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14053,7 +15038,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14074,7 +15058,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14095,7 +15078,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14116,7 +15098,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14137,7 +15118,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt-to-sand",
         "dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14159,7 +15139,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14181,7 +15160,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14203,7 +15181,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14225,7 +15202,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14247,7 +15223,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14269,7 +15244,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14291,7 +15265,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14313,7 +15286,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14335,7 +15307,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14357,7 +15328,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14379,7 +15349,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14401,7 +15370,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14423,7 +15391,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14445,7 +15412,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14467,7 +15433,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14489,7 +15454,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14511,7 +15475,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14533,7 +15496,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14555,7 +15517,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14577,7 +15538,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14599,7 +15559,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14621,7 +15580,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14643,7 +15601,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14665,7 +15622,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14687,7 +15643,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "sand"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14708,7 +15663,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14729,7 +15683,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14750,7 +15703,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14771,7 +15723,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14792,7 +15743,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14813,7 +15763,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14834,7 +15783,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14855,7 +15803,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14876,7 +15823,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14897,7 +15843,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14918,7 +15863,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14939,7 +15883,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -14960,7 +15903,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -14981,7 +15923,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15002,7 +15943,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15023,7 +15963,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15044,7 +15983,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15065,7 +16003,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15086,7 +16023,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15107,7 +16043,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15128,7 +16063,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15149,7 +16083,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15170,7 +16103,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15191,7 +16123,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15212,7 +16143,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15233,7 +16163,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15254,7 +16183,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15275,7 +16203,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15296,7 +16223,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15317,7 +16243,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15338,7 +16263,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15359,7 +16283,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15380,7 +16303,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15401,7 +16323,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15422,7 +16343,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15443,7 +16363,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15464,7 +16383,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15485,7 +16403,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15506,7 +16423,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15527,7 +16443,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15548,7 +16463,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15569,7 +16483,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15590,7 +16503,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15611,7 +16523,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15632,7 +16543,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15653,7 +16563,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15674,7 +16583,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15695,7 +16603,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15716,7 +16623,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15737,7 +16643,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "water",
         "shore"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15758,7 +16663,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15779,7 +16683,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15800,7 +16703,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15821,7 +16723,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15842,7 +16743,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15863,7 +16763,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15884,7 +16783,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -15905,7 +16803,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15926,7 +16823,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15947,7 +16843,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15968,7 +16863,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -15989,7 +16883,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16010,7 +16903,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16031,7 +16923,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16052,7 +16943,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16073,7 +16963,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16094,7 +16983,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16115,7 +17003,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16136,7 +17023,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16157,7 +17043,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16178,7 +17063,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16199,7 +17083,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16220,7 +17103,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16241,7 +17123,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16262,7 +17143,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16283,7 +17163,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16304,7 +17183,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16325,7 +17203,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16346,7 +17223,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16367,7 +17243,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16388,7 +17263,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16409,7 +17283,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16430,7 +17303,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16451,7 +17323,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16472,7 +17343,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16493,7 +17363,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16514,7 +17383,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16535,7 +17403,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16556,7 +17423,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16577,7 +17443,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16598,7 +17463,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16619,7 +17483,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16640,7 +17503,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16661,7 +17523,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16682,7 +17543,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16703,7 +17563,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16724,7 +17583,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16745,7 +17603,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16766,7 +17623,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16787,7 +17643,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16809,7 +17664,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16831,7 +17685,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16853,7 +17706,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16875,7 +17727,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16897,7 +17748,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16919,7 +17769,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16941,7 +17790,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -16963,7 +17811,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -16985,7 +17832,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17007,7 +17853,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17029,7 +17874,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17051,7 +17895,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17073,7 +17916,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17095,7 +17937,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17117,7 +17958,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17139,7 +17979,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17161,7 +18000,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17183,7 +18021,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17205,7 +18042,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17227,7 +18063,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17249,7 +18084,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17271,7 +18105,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17293,7 +18126,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17315,7 +18147,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17337,7 +18168,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17358,7 +18188,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17379,7 +18208,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17400,7 +18228,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17421,7 +18248,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17442,7 +18268,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17463,7 +18288,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17484,7 +18308,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17505,7 +18328,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17526,7 +18348,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17547,7 +18368,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17568,7 +18388,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17589,7 +18408,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17610,7 +18428,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17631,7 +18448,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17652,7 +18468,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17673,7 +18488,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17694,7 +18508,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17715,7 +18528,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17736,7 +18548,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17757,7 +18568,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17778,7 +18588,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17799,7 +18608,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17820,7 +18628,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17841,7 +18648,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17862,7 +18668,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "dirt",
         "grass-to-dirt"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17884,7 +18689,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -17906,7 +18710,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17928,7 +18731,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17950,7 +18752,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17972,7 +18773,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -17994,7 +18794,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18016,7 +18815,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -18038,7 +18836,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18060,7 +18857,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18082,7 +18878,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18104,7 +18899,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18126,7 +18920,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18148,7 +18941,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -18170,7 +18962,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18192,7 +18983,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18214,7 +19004,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18236,7 +19025,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18258,7 +19046,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18280,7 +19067,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": true
     },
     {
@@ -18302,7 +19088,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18324,7 +19109,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18346,7 +19130,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18368,7 +19151,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18390,7 +19172,6 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
       "preferred": false
     },
     {
@@ -18412,7 +19193,991 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "grass",
         "rocky"
       ],
-      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c1",
+      "slug": "jul9-master-ground-terrain-a-r1-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c2",
+      "slug": "jul9-master-ground-terrain-a-r1-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c3",
+      "slug": "jul9-master-ground-terrain-a-r1-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c4",
+      "slug": "jul9-master-ground-terrain-a-r1-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c5",
+      "slug": "jul9-master-ground-terrain-a-r1-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c1",
+      "slug": "jul9-master-ground-terrain-a-r2-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2",
+      "slug": "jul9-master-ground-terrain-a-r2-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c3",
+      "slug": "jul9-master-ground-terrain-a-r2-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c4",
+      "slug": "jul9-master-ground-terrain-a-r2-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c5",
+      "slug": "jul9-master-ground-terrain-a-r2-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c1",
+      "slug": "jul9-master-ground-terrain-a-r3-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c2",
+      "slug": "jul9-master-ground-terrain-a-r3-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c3",
+      "slug": "jul9-master-ground-terrain-a-r3-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c4",
+      "slug": "jul9-master-ground-terrain-a-r3-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c5",
+      "slug": "jul9-master-ground-terrain-a-r3-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "rocky",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c1",
+      "slug": "jul9-master-ground-terrain-a-r4-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2",
+      "slug": "jul9-master-ground-terrain-a-r4-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3",
+      "slug": "jul9-master-ground-terrain-a-r4-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c4",
+      "slug": "jul9-master-ground-terrain-a-r4-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c5",
+      "slug": "jul9-master-ground-terrain-a-r4-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c1",
+      "slug": "jul9-master-ground-terrain-a-r5-c1",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c2",
+      "slug": "jul9-master-ground-terrain-a-r5-c2",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c3",
+      "slug": "jul9-master-ground-terrain-a-r5-c3",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c4",
+      "slug": "jul9-master-ground-terrain-a-r5-c4",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c5",
+      "slug": "jul9-master-ground-terrain-a-r5-c5",
+      "sheet": "jul9-master-ground-terrain-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-master-ground-terrain-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky",
+        "grass-to-dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c1",
+      "slug": "jul9-transition-ground-edges-a-r1-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c2",
+      "slug": "jul9-transition-ground-edges-a-r1-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c3",
+      "slug": "jul9-transition-ground-edges-a-r1-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c4",
+      "slug": "jul9-transition-ground-edges-a-r1-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c5",
+      "slug": "jul9-transition-ground-edges-a-r1-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c1",
+      "slug": "jul9-transition-ground-edges-a-r2-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2",
+      "slug": "jul9-transition-ground-edges-a-r2-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c3",
+      "slug": "jul9-transition-ground-edges-a-r2-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c4",
+      "slug": "jul9-transition-ground-edges-a-r2-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c5",
+      "slug": "jul9-transition-ground-edges-a-r2-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "road",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c1",
+      "slug": "jul9-transition-ground-edges-a-r3-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c2",
+      "slug": "jul9-transition-ground-edges-a-r3-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c3",
+      "slug": "jul9-transition-ground-edges-a-r3-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c4",
+      "slug": "jul9-transition-ground-edges-a-r3-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c5",
+      "slug": "jul9-transition-ground-edges-a-r3-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "dirt",
+        "road",
+        "dirt-to-sand"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c1",
+      "slug": "jul9-transition-ground-edges-a-r4-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2",
+      "slug": "jul9-transition-ground-edges-a-r4-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c3",
+      "slug": "jul9-transition-ground-edges-a-r4-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4",
+      "slug": "jul9-transition-ground-edges-a-r4-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5",
+      "slug": "jul9-transition-ground-edges-a-r4-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "grass",
+        "shore",
+        "water"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c1",
+      "slug": "jul9-transition-ground-edges-a-r5-c1",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c2",
+      "slug": "jul9-transition-ground-edges-a-r5-c2",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c3",
+      "slug": "jul9-transition-ground-edges-a-r5-c3",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c4",
+      "slug": "jul9-transition-ground-edges-a-r5-c4",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5",
+      "slug": "jul9-transition-ground-edges-a-r5-c5",
+      "sheet": "jul9-transition-ground-edges-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-transition-ground-edges-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass-to-dirt",
+      "materialRoles": [
+        "road",
+        "dirt",
+        "grass-to-dirt"
+      ],
       "preferred": true
     }
   ],
@@ -18692,7 +20457,42 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/megatexture-grass-path-a-r5-c2",
       "chatgpt-terrain/megatexture-grass-path-a-r5-c3",
       "chatgpt-terrain/megatexture-grass-path-a-r5-c4",
-      "chatgpt-terrain/megatexture-grass-path-a-r5-c5"
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5"
     ],
     "dirt-to-sand": [
       "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
@@ -18744,7 +20544,17 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c2",
       "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c3",
       "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c4",
-      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c5"
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c5"
     ],
     "grass": [
       "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
@@ -19046,7 +20856,32 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
-      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r1-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5"
     ],
     "grass-to-dirt": [
       "chatgpt-terrain/ground-grass-dirt-path-a-r1-c1",
@@ -19148,7 +20983,34 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/megatexture-grass-path-a-r5-c2",
       "chatgpt-terrain/megatexture-grass-path-a-r5-c3",
       "chatgpt-terrain/megatexture-grass-path-a-r5-c4",
-      "chatgpt-terrain/megatexture-grass-path-a-r5-c5"
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r2-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r1-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5"
+    ],
+    "grass-to-road": [
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c5"
     ],
     "road": [
       "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
@@ -19225,7 +21087,22 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c2",
       "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c3",
       "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c4",
-      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c5"
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r2-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r3-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r5-c5"
     ],
     "rocky": [
       "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
@@ -19402,7 +21279,17 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
-      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r3-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r5-c5"
     ],
     "sand": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -19504,7 +21391,12 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/ground-water-grass-shore-a-r5-c2",
       "chatgpt-terrain/ground-water-grass-shore-a-r5-c3",
       "chatgpt-terrain/ground-water-grass-shore-a-r5-c4",
-      "chatgpt-terrain/ground-water-grass-shore-a-r5-c5"
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c5",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c1",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c4",
+      "chatgpt-terrain/jul9-master-ground-terrain-a-r4-c5"
     ],
     "shore": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -19631,7 +21523,12 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
-      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5"
     ],
     "water": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -19758,21 +21655,26 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
       "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
-      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c1",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c2",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c3",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c4",
+      "chatgpt-terrain/jul9-transition-ground-edges-a-r4-c5"
     ]
   },
   "recommendedGroundSlugs": {
-    "grassDominant": "ground-grass-dirt-path-b-r1-c1",
-    "grassAccent": "megatexture-grass-path-a-r3-c3",
-    "forestFloor": "ground-dark-grass-puddles-a-r1-c1",
-    "rockyAccent": "ground-rock-gravel-dirt-a-r3-c3",
-    "dirtPath": "ground-grass-dirt-path-b-r3-c4",
-    "water": "ground-water-grass-shore-a-r1-c2",
-    "shoreGrassWater": "ground-water-grass-shore-a-r4-c4",
-    "sand": "ground-sand-dune-dirt-a-r1-c1",
-    "sandRoadBlend": "ground-sand-gravel-road-a-r2-c4",
-    "asphalt": "ground-cracked-asphalt-concrete-a-r1-c2",
-    "grassRoadBlend": "ground-asphalt-moss-grass-a-r4-c3",
-    "megaGrassPath": "megatexture-grass-path-a-r3-c3"
+    "grassDominant": "jul9-master-ground-terrain-a-r1-c1",
+    "grassAccent": "jul9-transition-ground-edges-a-r1-c3",
+    "forestFloor": "jul9-master-ground-terrain-a-r2-c1",
+    "rockyAccent": "jul9-master-ground-terrain-a-r3-c3",
+    "dirtPath": "jul9-master-ground-terrain-a-r2-c2",
+    "water": "jul9-transition-ground-edges-a-r4-c2",
+    "shoreGrassWater": "jul9-transition-ground-edges-a-r4-c1",
+    "sand": "jul9-master-ground-terrain-a-r4-c3",
+    "sandRoadBlend": "jul9-transition-ground-edges-a-r3-c2",
+    "asphalt": "jul9-transition-ground-edges-a-r2-c2",
+    "grassRoadBlend": "jul9-transition-ground-edges-a-r2-c1",
+    "megaGrassPath": "jul9-master-ground-terrain-a-r2-c1"
   }
 });

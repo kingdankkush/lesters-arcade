@@ -21,10 +21,7 @@ import { authoredStampAssetByKey, HMH_LEVEL_ONE_AUTHORED_STAMP_ART } from '../ap
 import { HMH_LEVEL_ONE_SPAWN_GATE_REDRESS } from '../apps/portal/src/hmh-level-one-curated-world-contract.mjs';
 
 function levelOneVisibleAssetByKey(assetKey) {
-  return curatedLevelKitAssetByKey(assetKey)
-    ?? authoredStampAssetByKey(assetKey)
-    ?? wo102MegaPropAssetByKey(assetKey)
-    ?? (wo104106WorldKitAssetSrc(assetKey) ? { src: wo104106WorldKitAssetSrc(assetKey) } : null);
+  return levelOneCuratedAssetSrc(assetKey) ? { src: levelOneCuratedAssetSrc(assetKey) } : null;
 }
 
 function repoPath(relativePath) {
@@ -35,8 +32,9 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 18 });
   assert.equal(objects.length >= 18, true, `expected a dense visible authored spawn slice, got ${objects.length}`);
   assert.equal(objects.some((object) => object.id.includes('spawn-broken-road')), true, 'spawn road beat should be visible immediately');
-  assert.equal(objects.some((object) => object.assetKey === 'level-1/building/storefront-02'), true, 'opening should have a strong curated shoulder landmark visible at spawn without covering the hero');
-  assert.equal(objects.some((object) => object.assetKey === 'level-1/building/ghost-boarded-storefront'), true, 'opening should telegraph the next authored town beat');
+  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-buildings-landmarks-00-roadside-store'), true, 'opening should have a strong Jul 9 shoulder landmark visible at spawn without covering the hero');
+  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-buildings-landmarks-04-loan-office-front'), true, 'opening should telegraph the next authored town beat with the new building sheet');
+  assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-rocks-boulders-')), true, 'opening should use the new rock/boulder prop sheet');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), true, 'opening should include route signage without covering the hero start');
   assert.equal(objects.every((object) => levelOneCuratedAssetSrc(object.assetKey)), true, 'every object should resolve through the Level 1 runtime art policy');
 });
@@ -95,8 +93,8 @@ test('Level 1 opening ground roles replace noisy procedural sand/grass with auth
 test('Level 1 curated visible runtime maps approved asset keys to direct runtime image sources', () => {
   const saloon = levelOneCuratedAssetSrc('level-1/building/ghost-saloon-front');
   assert.equal(saloon, './assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Buildings/ghost-saloon-front.png');
-  const road = levelOneCuratedAssetSrc('level-1/road/road1-ground');
-  assert.match(road, /hmh-curated-level-kit\/source\/level-1-crypto-wasteland\//);
+  const jul9Rock = levelOneCuratedAssetSrc('curated/jul9-rocks-boulders-07-stacked-rocks');
+  assert.match(jul9Rock, /hmh-curated-level-art\/props\/environment\/jul9-rocks-boulders/);
 });
 
 test('WO-102 mega-props are real alpha-clean runtime assets and emit visible Level 1 objects', () => {
@@ -118,8 +116,6 @@ test('WO-102 mega-props are real alpha-clean runtime assets and emit visible Lev
     const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 });
     const object = objects.find((item) => item.assetKey === view.key);
     assert.ok(object, `${view.key} should be visible near its R1 proof coordinate`);
-    assert.equal(object.generatedMegaPropArt, true);
-    assert.equal(object.sourcePolicy, 'repo-generated-wo102-megaprop-art');
     assert.equal(object.authoredPrefabStamp, true);
     assert.equal(object.prefabStampId, view.stampId);
     assert.ok(object.footprintTiles?.w >= 5, `${view.key} should carry runtime footprint metadata`);
@@ -151,8 +147,6 @@ test('generated Level 1 authored stamp art resolves through the live prefab stam
   for (const key of requiredKeys) {
     const object = gapBeatObjects.find((item) => item.assetKey === key);
     assert.ok(object, `${key} should be emitted as a visible authored prefab object`);
-    assert.equal(object.generatedStampArt, true);
-    assert.equal(object.sourcePolicy, 'repo-generated-authored-stamp-art');
     assert.equal(object.authoredPrefabStamp, true);
   }
 });
@@ -182,10 +176,10 @@ test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehic
   const checkpointViews = [
     { playerX: 55, playerY: 12, stampId: 'wo104-forest-canopy-cliff-checkpoint', keys: ['wo104-world/forest-canopy-sway', 'wo104-world/mossy-cliff-wall'] },
     { playerX: 84, playerY: 7, stampId: 'wo104-lakeside-firefly-bank-checkpoint', keys: ['wo104-world/reed-bank-fireflies', 'wo104-world/park-tree-bench-cluster'] },
-    { playerX: 48, playerY: 6, stampId: 'wo105-bank-plaza-arena-checkpoint', keys: ['wo105-world/bank-plaza-kiosk', 'wo105-world/town-bank-frontage', 'wo105-world/cracked-road-junction'] },
-    { playerX: 55, playerY: 12, stampId: 'wo105-forest-log-arena-checkpoint', keys: ['wo105-world/forest-log-arena-ring', 'wo105-world/cracked-road-barricade'] },
-    { playerX: 88, playerY: 7, stampId: 'wo105-second-town-road-checkpoint', keys: ['wo105-world/second-town-building-row', 'wo105-world/cracked-road-junction'] },
-    { playerX: 93, playerY: 8, stampId: 'wo105-container-extraction-yard-checkpoint', keys: ['wo105-world/container-cover-line', 'wo105-world/cracked-road-barricade', 'wo105-world/extraction-yard-warehouse'] },
+    { playerX: 48, playerY: 6, stampId: 'wo105-bank-plaza-arena-checkpoint', keys: ['wo105-world/bank-plaza-kiosk', 'wo105-world/town-bank-frontage'] },
+    { playerX: 55, playerY: 12, stampId: 'wo105-forest-log-arena-checkpoint', keys: ['wo105-world/forest-log-arena-ring'] },
+    { playerX: 88, playerY: 7, stampId: 'wo105-second-town-road-checkpoint', keys: ['wo105-world/second-town-building-row'] },
+    { playerX: 93, playerY: 8, stampId: 'wo105-container-extraction-yard-checkpoint', keys: ['wo105-world/container-cover-line', 'wo105-world/extraction-yard-warehouse'] },
     { playerX: 74, playerY: 8, stampId: 'wo106-roadside-vehicle-micro-scenes', keys: ['wo106-world/abandoned-pickup', 'wo106-world/delivery-van-cache', 'wo106-world/critter-dust-burrow'] },
   ];
   for (const view of checkpointViews) {
@@ -193,8 +187,6 @@ test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehic
     for (const key of view.keys) {
       const object = objects.find((item) => item.assetKey === key && item.prefabStampId === view.stampId);
       assert.ok(object, `${key} should be visible near ${view.stampId}`);
-      assert.equal(object.generatedWorldKitArt, true, `${key} should be tagged as generated world-kit art`);
-      assert.equal(object.sourcePolicy, 'repo-generated-wo104-106-world-kit-art');
       assert.equal(object.authoredPrefabStamp, true);
       assert.equal(object.prefabStampId, view.stampId);
     }
@@ -206,6 +198,11 @@ test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehic
       .filter((object) => object.prefabStampId === view.stampId));
   assert.equal(wo105StampObjects.length >= 12, true, 'WO-105 capture tour should expose dense authored arena objects');
   assert.equal(wo105StampObjects.some((object) => object.assetKey.startsWith('level-1/building/')), false, 'WO-105 stamps should de-reference old generic level-1 building placeholders');
+
+  const visibleRouteOverlays = checkpointViews
+    .flatMap((view) => buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 }))
+    .filter((object) => object.use === 'route' || /cracked-road|level-1\/road\//.test(object.assetKey));
+  assert.deepEqual(visibleRouteOverlays.map((object) => object.assetKey), [], 'route/road plates are ground metadata now, not visible prop overlays');
 });
 
 test('Level 1 art policy disables old enemy-wave/combatArt fallbacks and generic procedural scatter', () => {
