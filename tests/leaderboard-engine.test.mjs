@@ -79,6 +79,19 @@ test('entries are ranked high-to-low with rank numbers', () => {
   assert.deepEqual(board.topEntries.map((e) => e.score), [700, 500, 300]);
 });
 
+test('leaderboards show only each wallet best run per cadence', () => {
+  const state = {};
+  recordCadenceScore(state, GAME, { wallet: W1, sessionId: 'run-low', score: 300, recordedAt: '2026-03-15T10:00:00Z' });
+  recordCadenceScore(state, GAME, { wallet: W1.toUpperCase(), sessionId: 'run-best', score: 900, recordedAt: '2026-03-15T11:00:00Z' });
+  recordCadenceScore(state, GAME, { wallet: W1, sessionId: 'run-mid', score: 500, recordedAt: '2026-03-15T12:00:00Z' });
+
+  const board = getLeaderboard(state, GAME, 'all-time', { now: '2026-03-15T13:00:00Z' });
+  assert.equal(board.total, 1);
+  assert.equal(board.topEntries.length, 1);
+  assert.equal(board.topEntries[0].score, 900);
+  assert.equal(board.topEntries[0].sessionId, 'run-best');
+});
+
 test('display name resolves via callback; current player highlighted', () => {
   const state = {};
   const t = '2026-03-15T10:00:00Z';

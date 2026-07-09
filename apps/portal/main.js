@@ -16,8 +16,8 @@ import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
-import { CANONICAL_ACTOR_MANIFESTS, CANONICAL_ACTOR_ROLES, canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actors.mjs';
-import { buildActorRegistry, prewarmActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+import { CANONICAL_ACTOR_MANIFESTS, canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actors.mjs';
+import { buildActorRegistry, prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
@@ -226,7 +226,7 @@ import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMini
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
-import { applySeedLeaderboard, formatSurvive } from './src/leaderboard-seed.mjs';
+import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
 
 const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
@@ -326,8 +326,6 @@ const HMH_ACTOR_REGISTRY = buildActorRegistry({
   'bonus-gas-fee-wisp': HMH_BONUS_GAS_FEE_WISP,
   'bonus-whale-dumper': HMH_BONUS_WHALE_DUMPER,
 }, loadImageAsset);
-const HMH_PREWARMED_HERO_FRAME_COUNT = prewarmActorRegistry(HMH_ACTOR_REGISTRY, CANONICAL_ACTOR_ROLES.heroes);
-if (DEBUG_ARCADE_RUNTIME) console.info('[HMH] prewarmed hero sprite frames', HMH_PREWARMED_HERO_FRAME_COUNT);
 
 // Map a runtime enemy/boss entity to its registry actor id. Canonical art first.
 function registryActorIdFor(entity) {
@@ -1389,6 +1387,7 @@ const dom = {
   officialGuestEnterButton: document.querySelector('#officialGuestEnterButton'),
   officialWalletCopy: document.querySelector('#officialWalletCopy'),
   officialArcadeFloor: document.querySelector('#officialArcadeFloor'),
+  officialProfileEyebrow: document.querySelector('#officialProfileEyebrow'),
   officialProfileTitle: document.querySelector('#officialProfileTitle'),
   officialProfileCopy: document.querySelector('#officialProfileCopy'),
   officialCabinetGrid: document.querySelector('#officialCabinetGrid'),
@@ -4434,6 +4433,10 @@ function renderOfficialLeaderboards() {
     displayNameFor,
     limit: 50,
   });
+  const houseScoreCount = active.topEntries.filter((entry) => leaderboardEntryProvenance(entry, state.profiles?.[entry.wallet]).source === 'house-score').length;
+  const officialScoreCount = active.topEntries.filter((entry) => leaderboardEntryProvenance(entry, state.profiles?.[entry.wallet]).official).length;
+  const localScoreCount = Math.max(0, active.topEntries.length - houseScoreCount - officialScoreCount);
+  const scoreSourceSummary = `${officialScoreCount} official · ${houseScoreCount} house score${houseScoreCount === 1 ? '' : 's'}${localScoreCount > 0 ? ` · ${localScoreCount} local` : ''}`;
   const activeLeaderboardCabinet = leaderboardGameFilters.find((cabinet) => cabinet.gameId === leaderboardGameId);
   const activeLeaderboardTitle = activeLeaderboardCabinet?.title ?? getGame(leaderboardGameId).title;
 
@@ -4445,7 +4448,7 @@ function renderOfficialLeaderboards() {
   appendText(filterCopy, 'small', `${humanList(playableCabinetNames())} ${leaderboardGameFilters.length === 1 ? 'is the current public score filter' : 'are the current public score filters'}. Daily, weekly, monthly, yearly, and all-time are time filters for the same ranked board below.`);
   const filterSummary = el('div', { className: 'leaderboard-filter-summary' });
   appendText(filterSummary, 'span', activeLeaderboardTitle, 'leaderboard-filter-summary-game');
-  appendText(filterSummary, 'strong', `${active.total.toLocaleString()} ranked run${active.total === 1 ? '' : 's'}`);
+  appendText(filterSummary, 'strong', scoreSourceSummary);
   appendText(filterSummary, 'small', officialLeaderboardCadence.replace('-', ' ').toUpperCase());
   filterHead.append(filterCopy, filterSummary);
   filterPanel.append(filterHead);
@@ -4498,14 +4501,14 @@ function renderOfficialLeaderboards() {
   const header = el('div', { className: 'leaderboard-header leaderboard-header-v9' });
   const headerCopy = el('div', { className: 'leaderboard-header-copy' });
   appendText(headerCopy, 'h3', `🏆 ${activeLeaderboardTitle.toUpperCase()}`, 'leaderboard-title');
-  appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${active.total} ranked runs`, 'cabinet-status-label');
+  appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${scoreSourceSummary}`, 'cabinet-status-label');
   const headerStats = el('div', { className: 'leaderboard-header-stats' });
   const topScore = active.topEntries[0]?.score ?? 0;
   for (const [label, value] of [
     ['Top Score', topScore.toLocaleString()],
-    ['Settled', `${active.trustSummary.settledRuns}/${active.trustSummary.totalRankedRuns}`],
+    ['Official', officialScoreCount.toLocaleString()],
+    ['House', houseScoreCount.toLocaleString()],
     ['Review', `${active.trustSummary.flaggedRuns} flagged`],
-    ['Cache', active.cache.status.toUpperCase()],
     ['You', connectedWallet && active.playerRank ? `#${active.playerRank}` : 'Unranked'],
   ]) {
     const stat = el('div', { className: 'leaderboard-header-stat' });
@@ -4534,6 +4537,8 @@ function renderOfficialLeaderboards() {
       appendText(col, 'span', medals[entry.rank] ?? `#${entry.rank}`, 'podium-medal');
       col.append(renderAvatarChip(wallet, entry.displayName, 'podium-avatar'));
       appendText(col, 'strong', entry.displayName, 'podium-name');
+      const provenance = leaderboardEntryProvenance(entry, state.profiles?.[wallet]);
+      if (!provenance.official) appendText(col, 'span', provenance.label, 'podium-provenance');
       appendText(col, 'span', entry.score.toLocaleString(), 'podium-score');
       const stand = el('div', { className: 'podium-stand' });
       appendText(stand, 'span', `#${entry.rank}`, 'podium-stand-rank');
@@ -4647,7 +4652,9 @@ function renderOfficialLeaderboards() {
     const nameCell = el('span', { className: 'lt-name' });
     nameCell.append(renderAvatarChip(wallet, entry.displayName, 'leaderboard-row-avatar'));
     appendText(nameCell, 'span', entry.displayName, 'lt-name-text');
-    if (entry.settlementTxHash) appendText(nameCell, 'span', '⛓ on-chain', 'lt-settled');
+    const provenance = leaderboardEntryProvenance(entry, state.profiles?.[wallet]);
+    if (provenance.official) appendText(nameCell, 'span', '⛓ ON-CHAIN', 'lt-settled');
+    else appendText(nameCell, 'span', provenance.label, 'lt-house-score');
     row.append(nameCell);
     appendText(row, 'strong', entry.score.toLocaleString(), 'lt-score');
     appendText(row, 'span', String(entry.runStats?.kills ?? '—'), 'lt-kills');
@@ -4656,7 +4663,7 @@ function renderOfficialLeaderboards() {
     appendText(row, 'span', `×${entry.runStats?.maxCombo ?? 0}`, 'lt-combo');
     appendText(row, 'span', String(entry.runStats?.collectedPowerUps?.length ?? entry.runStats?.powerUpsCollected ?? 0), 'lt-powerups');
     const trustBadge = el('span', { className: `lt-trust lt-trust-${entry.trust?.tone ?? 'muted'}` });
-    trustBadge.textContent = entry.trust?.label ?? 'Prototype';
+    trustBadge.textContent = provenance.official ? (entry.trust?.label ?? 'Pending') : provenance.label.replace('HOUSE SCORE', 'House Score');
     if (entry.trust?.flags?.length) {
       trustBadge.title = entry.trust.flags.map((flag) => `${flag.code ?? 'flag'}: ${flag.detail ?? flag.severity ?? ''}`).join(' | ');
     }
@@ -4707,11 +4714,11 @@ function renderOfficialArcadeFloor() {
   applyHardMoneyHeroScreenBackground(dom.officialArcadeFloor, officialAppStep === 'settings' ? 'options' : 'mainMenu');
   dom.officialCabinetGrid.classList.toggle('profile-command-grid', officialAppStep === 'profile');
   dom.officialCabinetGrid.classList.toggle('leaderboard-command-grid', officialAppStep === 'leaderboards');
-  const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'No wallet';
+  const walletShort = connectedWallet ? `${connectedWallet.slice(0, 8)}…${connectedWallet.slice(-6)}` : 'Guest practice';
   const titleByStep = {
     'arcade-walk-in': 'Entering the Arcade...',
     'cabinet-select': 'Choose Your Cabinet',
-    profile: 'Wallet Profile',
+    profile: connectedWallet ? 'Wallet Profile' : 'Guest Practice Profile',
     leaderboards: 'Leaderboards',
     settings: 'Settings',
   };
@@ -4720,10 +4727,13 @@ function renderOfficialArcadeFloor() {
     'cabinet-select': connectedWallet
       ? `Select a cabinet. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now; future cabinets remain locked.`
       : `Select a cabinet and play Free as a guest. ${humanList(playableCabinetNames())} ${playableCabinetNames().length === 1 ? 'is' : 'are'} playable now. Connect a wallet anytime to save progress and unlock Ranked.`,
-    profile: LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy,
+    profile: connectedWallet
+      ? LESTERS_ARCADE_V2_APP_SHELL.profileRules.walletLockCopy
+      : 'Guest Practice Profile saves local settings, scores, and run history on this device. Connect a wallet when you want cross-session identity and Ranked testnet publishing.',
     leaderboards: 'Browse daily, weekly, monthly, yearly, and all-time boards. Official scores submit from ranked game-over only.',
     settings: 'Controls, audio, accessibility, wallet/network, and sign-out controls live here.',
   };
+  dom.officialProfileEyebrow.textContent = connectedWallet ? 'Wallet profile connected' : 'Guest practice session';
   dom.officialProfileTitle.textContent = titleByStep[officialAppStep] ?? titleByStep['cabinet-select'];
   dom.officialProfileCopy.textContent = copyByStep[officialAppStep] ?? copyByStep['cabinet-select'];
   if (officialAppStep === 'profile') renderOfficialProfile();
@@ -4988,6 +4998,10 @@ async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEF
   // so they see the canvas behind the ready overlay before the game starts.
   await showHMHLoadingScreen(async () => {
     await startCombat({ levelId: level.id, carryOver: options.carryOver ?? null, startPendingBegin: true });
+    const prewarmedHeroFrames = prewarmSelectedHeroActorRegistry(HMH_ACTOR_REGISTRY, combat.characterId);
+    if (DEBUG_ARCADE_RUNTIME && prewarmedHeroFrames > 0) {
+      console.info('[HMH] prewarmed selected hero opening frames', combat.characterId, prewarmedHeroFrames);
+    }
     // World is generated and painted, but the sim/audio stay frozen until READY.
     render();
   }, level);

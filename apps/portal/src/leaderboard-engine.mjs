@@ -133,15 +133,29 @@ export function getLeaderboard(state, gameId, cadence, {
     ? rows.filter((row) => !row.version || isCurrentVersion(row.version))
     : rows;
 
-  const ranked = versionFiltered.map((row, index) => ({
+  const bestByWallet = new Map();
+  for (const row of versionFiltered) {
+    const walletKey = String(row.wallet ?? '').trim().toLowerCase();
+    if (!walletKey) continue;
+    const current = bestByWallet.get(walletKey);
+    if (!current || row.score > current.score || (row.score === current.score && String(row.recordedAt ?? '').localeCompare(String(current.recordedAt ?? '')) < 0)) {
+      bestByWallet.set(walletKey, row);
+    }
+  }
+  const uniqueBestRows = [...bestByWallet.values()]
+    .sort((a, b) => b.score - a.score || String(a.recordedAt ?? '').localeCompare(String(b.recordedAt ?? '')));
+  const currentWalletKey = wallet ? String(wallet).trim().toLowerCase() : null;
+  const ranked = uniqueBestRows.map((row, index) => ({
     ...row,
     rank: index + 1,
     displayName: displayNameFor(row.wallet),
-    isCurrentPlayer: wallet ? row.wallet === wallet : false,
+    isCurrentPlayer: currentWalletKey ? String(row.wallet).trim().toLowerCase() === currentWalletKey : false,
   }));
 
   const top = ranked.slice(0, limit);
-  const playerEntry = wallet ? ranked.find((row) => row.wallet === wallet) ?? null : null;
+  const playerEntry = currentWalletKey
+    ? ranked.find((row) => String(row.wallet).trim().toLowerCase() === currentWalletKey) ?? null
+    : null;
 
   return {
     gameId,

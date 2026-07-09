@@ -17,14 +17,27 @@ export function buildActorRegistry(manifests, imageLoader) {
   return registry;
 }
 
-export function prewarmActorRegistry(registry, actorIds = []) {
+export function prewarmActorRegistry(registry, actorIds = [], options = {}) {
   let count = 0;
   for (const actorId of actorIds) {
     const actor = registry?.get?.(actorId);
     if (!actor || typeof actor.prewarm !== 'function') continue;
-    count += actor.prewarm();
+    count += actor.prewarm(options);
   }
   return count;
+}
+
+const SELECTED_HERO_ACTOR_IDS = Object.freeze({
+  lester: 'lester',
+  'lester-original': 'lester',
+  lilly: 'lilly',
+});
+
+export function prewarmSelectedHeroActorRegistry(registry, characterId, options = {}) {
+  const actorId = SELECTED_HERO_ACTOR_IDS[String(characterId ?? '').trim().toLowerCase()];
+  if (!actorId) return 0;
+  const states = options.states ?? ['idle', 'run', 'shoot'];
+  return prewarmActorRegistry(registry, [actorId], { ...options, states });
 }
 
 // Map the hero's live combat state to a canonical animation state name.

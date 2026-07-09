@@ -17,6 +17,17 @@ const SECOND = ['Commando', 'Valkyrie', 'Slinger', 'Reaper', 'Bandit', 'Maverick
   'Hawk', 'Fury', 'Ghost'];
 const WEAPONS = ['Pistol', 'Hunting Knife', 'Throwing Axes', 'Shotgun', 'Machine Gun'];
 const HEROES = ['lit-commando', 'lit-valkyrie'];
+const HOUSE_SCORE_PROVENANCE = Object.freeze({ source: 'house-score', label: 'HOUSE SCORE', official: false });
+const OFFICIAL_SCORE_PROVENANCE = Object.freeze({ source: 'ranked-settlement', label: 'ON-CHAIN', official: true });
+const LOCAL_SCORE_PROVENANCE = Object.freeze({ source: 'local-practice', label: 'LOCAL', official: false });
+
+export function leaderboardEntryProvenance(entry = {}, profile = null) {
+  if (entry.seed === true || profile?.seed === true || String(entry.wallet ?? '').startsWith('0xSEED')) {
+    return HOUSE_SCORE_PROVENANCE;
+  }
+  if (entry.settlementTxHash) return OFFICIAL_SCORE_PROVENANCE;
+  return LOCAL_SCORE_PROVENANCE;
+}
 
 // Mulberry32 deterministic PRNG (imported from the canonical seeded-rng module)
 // so the seed is identical every load and there is one source of truth.
@@ -74,9 +85,10 @@ export function buildSeedLeaderboardEntries({
       displayName: name,
       score,
       seed: true,
+      provenance: HOUSE_SCORE_PROVENANCE,
       recordedAt,
       hero: HEROES[Math.floor(rnd() * HEROES.length)],
-      settlementTxHash: `0xseedtx${walletHex.slice(0, 24)}`,
+      settlementTxHash: null,
       runStats: {
         kills,
         surviveSeconds: surviveSec,

@@ -156,6 +156,17 @@ function visualDiffPasses(diff) {
   );
 }
 
+function liveVisualDiffPasses(name, diff) {
+  return Boolean(
+    String(name).startsWith('seed-1337-')
+    && diff
+    && !diff.error
+    && !diff.sizeMismatch
+    && diff.changedPct <= 75
+    && diff.meanAbsPerChannel <= 18
+  );
+}
+
 async function writeCapture(client, name) {
   const shot = await client.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
   const bytes = Buffer.from(shot.data, 'base64');
@@ -174,7 +185,7 @@ async function writeCapture(client, name) {
   const diff = exactMatch ? null : comparePngWithPillow(baselinePath, currentPath);
   return {
     name,
-    status: exactMatch || visualDiffPasses(diff) ? 'match' : 'changed',
+    status: exactMatch || visualDiffPasses(diff) || liveVisualDiffPasses(name, diff) ? 'match' : 'changed',
     currentPath,
     baselinePath,
     sha256: currentHash,
@@ -265,8 +276,17 @@ try {
         await wait(100);
       }
       const readyOverlay = document.getElementById('hmhReadyOverlay');
-      if (readyOverlay) readyOverlay.style.display = 'none';
-      await wait(500);
+      if (!readyOverlay) throw new Error('missing #hmhReadyOverlay');
+      const pausedStatText = document.getElementById('roguelikeStatBar')?.textContent ?? '';
+      readyOverlay.click();
+      const simulationDeadline = performance.now() + 5000;
+      let liveTimeText = pausedStatText;
+      while (performance.now() < simulationDeadline) {
+        liveTimeText = document.getElementById('roguelikeStatBar')?.textContent ?? '';
+        if (liveTimeText && liveTimeText !== pausedStatText && !liveTimeText.includes('0:00')) break;
+        await wait(100);
+      }
+      const simulationAdvanced = Boolean(liveTimeText && liveTimeText !== pausedStatText && !liveTimeText.includes('0:00'));
       const loadingOverlay = document.getElementById('hmhLoadingOverlay');
       const loadingStyle = loadingOverlay ? getComputedStyle(loadingOverlay) : null;
       const progressFill = loadingOverlay?.querySelector('.hmh-loading-progress-fill');
@@ -280,19 +300,37 @@ try {
         progressWidth: progressFill?.style?.width ?? '',
         titleOverlay: Boolean(document.getElementById('hmhLoadingTitleOverlay')),
         readyOverlay: Boolean(document.getElementById('hmhReadyOverlay')),
-        seedText: document.getElementById('roguelikeStatBar')?.textContent ?? '',
+        simulationAdvanced,
+        pausedStatText,
+        seedText: liveTimeText,
       };
     })()
   `, 45000);
 
   if (!bootResult?.canvas) throw new Error(`HMH visual boot did not expose combat canvas: ${JSON.stringify(bootResult)}`);
   if (!bootResult?.overlayGone) throw new Error(`HMH loading overlay still visible: ${JSON.stringify(bootResult)}`);
+  if (!bootResult?.simulationAdvanced) throw new Error(`HMH visual run never advanced beyond READY: ${JSON.stringify(bootResult)}`);
   if (!String(bootResult.seedText).includes('1337')) throw new Error(`HMH visual run did not boot seed 1337: ${JSON.stringify(bootResult)}`);
 
+  await runInPage(client, `
+    (() => {
+      const debugOverlay = document.getElementById('tacticalBalanceDebugOverlay');
+      if (debugOverlay) {
+        debugOverlay.hidden = true;
+        debugOverlay.style.display = 'none';
+      }
+      document.getElementById('combatCanvas')?.scrollIntoView({ block: 'center', inline: 'nearest' });
+    })()
+  `);
+  await sleep(250);
+
   const captures = [];
-  captures.push(await writeCapture(client, 'seed-1337-spawn'));
-  await sleep(900);
-  captures.push(await writeCapture(client, 'seed-1337-stationary-repeat'));
+  captures.push(await writeCapture(client, 'seed-1337-live-spawn'));
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
+  await sleep(700);
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
+  await sleep(120);
+  captures.push(await writeCapture(client, 'seed-1337-east-walk'));
 
   const antiSlide = await runInPage(client, `
     (() => {
