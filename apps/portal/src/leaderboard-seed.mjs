@@ -29,6 +29,39 @@ export function leaderboardEntryProvenance(entry = {}, profile = null) {
   return LOCAL_SCORE_PROVENANCE;
 }
 
+export function summarizeVisibleLeaderboardProvenance(entries = [], profiles = {}, totalRankedPlayers = entries.length) {
+  const rows = Array.isArray(entries) ? entries : [];
+  const visibleCount = rows.length;
+  let officialCount = 0;
+  let houseScoreCount = 0;
+
+  for (const entry of rows) {
+    const provenance = leaderboardEntryProvenance(entry, profiles?.[entry?.wallet]);
+    if (provenance.official) officialCount += 1;
+    else if (provenance.source === 'house-score') houseScoreCount += 1;
+  }
+
+  const localScoreCount = Math.max(0, visibleCount - officialCount - houseScoreCount);
+  const normalizedTotal = Math.max(visibleCount, Math.floor(Number(totalRankedPlayers) || 0));
+  const visibleScope = normalizedTotal > visibleCount
+    ? `${visibleCount} of ${normalizedTotal} players`
+    : `${visibleCount} player${visibleCount === 1 ? '' : 's'}`;
+  const sourceParts = [
+    `${officialCount} official`,
+    `${houseScoreCount} house score${houseScoreCount === 1 ? '' : 's'}`,
+  ];
+  if (localScoreCount > 0) sourceParts.push(`${localScoreCount} local`);
+
+  return {
+    visibleCount,
+    totalRankedPlayers: normalizedTotal,
+    officialCount,
+    houseScoreCount,
+    localScoreCount,
+    label: `Showing ${visibleScope} · ${sourceParts.join(' · ')}`,
+  };
+}
+
 // Mulberry32 deterministic PRNG (imported from the canonical seeded-rng module)
 // so the seed is identical every load and there is one source of truth.
 import { mulberry32 } from './seeded-rng.mjs';

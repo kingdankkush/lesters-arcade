@@ -226,7 +226,7 @@ import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMini
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
-import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance } from './src/leaderboard-seed.mjs';
+import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance, summarizeVisibleLeaderboardProvenance } from './src/leaderboard-seed.mjs';
 import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
 
 const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
@@ -4433,10 +4433,12 @@ function renderOfficialLeaderboards() {
     displayNameFor,
     limit: 50,
   });
-  const houseScoreCount = active.topEntries.filter((entry) => leaderboardEntryProvenance(entry, state.profiles?.[entry.wallet]).source === 'house-score').length;
-  const officialScoreCount = active.topEntries.filter((entry) => leaderboardEntryProvenance(entry, state.profiles?.[entry.wallet]).official).length;
-  const localScoreCount = Math.max(0, active.topEntries.length - houseScoreCount - officialScoreCount);
-  const scoreSourceSummary = `${officialScoreCount} official · ${houseScoreCount} house score${houseScoreCount === 1 ? '' : 's'}${localScoreCount > 0 ? ` · ${localScoreCount} local` : ''}`;
+  const scoreSourceSummary = summarizeVisibleLeaderboardProvenance(
+    active.topEntries,
+    state.profiles,
+    active.total,
+  );
+  const { houseScoreCount, officialCount: officialScoreCount } = scoreSourceSummary;
   const activeLeaderboardCabinet = leaderboardGameFilters.find((cabinet) => cabinet.gameId === leaderboardGameId);
   const activeLeaderboardTitle = activeLeaderboardCabinet?.title ?? getGame(leaderboardGameId).title;
 
@@ -4448,7 +4450,7 @@ function renderOfficialLeaderboards() {
   appendText(filterCopy, 'small', `${humanList(playableCabinetNames())} ${leaderboardGameFilters.length === 1 ? 'is the current public score filter' : 'are the current public score filters'}. Daily, weekly, monthly, yearly, and all-time are time filters for the same ranked board below.`);
   const filterSummary = el('div', { className: 'leaderboard-filter-summary' });
   appendText(filterSummary, 'span', activeLeaderboardTitle, 'leaderboard-filter-summary-game');
-  appendText(filterSummary, 'strong', scoreSourceSummary);
+  appendText(filterSummary, 'strong', scoreSourceSummary.label);
   appendText(filterSummary, 'small', officialLeaderboardCadence.replace('-', ' ').toUpperCase());
   filterHead.append(filterCopy, filterSummary);
   filterPanel.append(filterHead);
@@ -4501,13 +4503,13 @@ function renderOfficialLeaderboards() {
   const header = el('div', { className: 'leaderboard-header leaderboard-header-v9' });
   const headerCopy = el('div', { className: 'leaderboard-header-copy' });
   appendText(headerCopy, 'h3', `🏆 ${activeLeaderboardTitle.toUpperCase()}`, 'leaderboard-title');
-  appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${scoreSourceSummary}`, 'cabinet-status-label');
+  appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${scoreSourceSummary.label}`, 'cabinet-status-label');
   const headerStats = el('div', { className: 'leaderboard-header-stats' });
   const topScore = active.topEntries[0]?.score ?? 0;
   for (const [label, value] of [
     ['Top Score', topScore.toLocaleString()],
-    ['Official', officialScoreCount.toLocaleString()],
-    ['House', houseScoreCount.toLocaleString()],
+    ['Official shown', officialScoreCount.toLocaleString()],
+    ['House shown', houseScoreCount.toLocaleString()],
     ['Review', `${active.trustSummary.flaggedRuns} flagged`],
     ['You', connectedWallet && active.playerRank ? `#${active.playerRank}` : 'Unranked'],
   ]) {
