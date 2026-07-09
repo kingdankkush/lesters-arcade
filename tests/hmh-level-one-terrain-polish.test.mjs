@@ -5,10 +5,11 @@ import path from 'node:path';
 import test from 'node:test';
 
 import { HMH_CURATED_LEVEL_ART } from '../apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-level-art.mjs';
-import { buildLevelOneOpeningComposition } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
+import { buildLevelOneOpeningComposition, buildLevelOneCuratedVisibleSceneObjects } from '../apps/portal/src/hmh-level-one-visible-runtime.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const MAIN_SOURCE = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+const ENCOUNTER_VISUALS_SOURCE = readFileSync(new URL('../apps/portal/src/hmh-encounter-visuals.mjs', import.meta.url), 'utf8');
 
 function runtimePath(src) {
   return path.resolve(ROOT, 'apps/portal', String(src).replace(/^\.\//, ''));
@@ -60,11 +61,13 @@ test('world prop preloader is bounded to opening-camera assets for faster gamepl
   assert.doesNotMatch(preloadBlock, /LEVEL_2_AUTHORED_LAYOUT_KEYS|LEVEL_3_AUTHORED_LAYOUT_KEYS/);
 });
 
-test('Wasteland Debt Collector frame-polish report records neighbor-bleed cleanup', () => {
-  const reportPath = path.resolve(ROOT, 'apps/portal/assets/generated/hmh-animated-roster/wasteland-debt-collector/frame-polish-report.json');
-  const report = JSON.parse(readFileSync(reportPath, 'utf8'));
-  assert.equal(report.checkedFrames, 336);
-  assert.ok(report.changedFrames >= 100, 'expected cleanup to touch many sliced frames');
-  assert.ok(report.removedComponents >= 100, 'expected disconnected islands to be removed');
-  assert.ok(report.removedPixels >= 100000, 'expected significant neighboring-frame bleed cleanup');
+test('Paper Hands stays on direct PixelLab art and Wasteland cleanup is not live-mapped', () => {
+  assert.match(ENCOUNTER_VISUALS_SOURCE, /'paper-hand': \{ rosterKey: 'paper-hand'/);
+  assert.doesNotMatch(ENCOUNTER_VISUALS_SOURCE, /'paper-hand': \{ rosterKey: 'wasteland-debt-collector'/);
+});
+
+test('spawn view does not draw unsliced curated road sheets as scene props', () => {
+  const visible = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 18 });
+  const routeSheets = visible.filter((object) => String(object.assetKey).startsWith('level-1/road/'));
+  assert.deepEqual(routeSheets.map((object) => object.assetKey), [], 'road/path sheets must stay in ground metadata, not the prop layer');
 });

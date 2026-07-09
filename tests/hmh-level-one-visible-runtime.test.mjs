@@ -49,7 +49,7 @@ test('WO-48 spawn gate redress keeps the opening safe while preserving route sig
   assert.equal(insideGate.length > 0, true, 'spawn gate should still contain readable low route cues');
   assert.equal(insideGate.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), false, 'route signage must sit outside the safe radius so it does not cover the hero');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), true, 'opening still preserves authored route signage outside the safe radius');
-  assert.equal(insideGate.some((object) => object.sceneRole === 'road'), true, 'spawn gate keeps low road/readability ground props');
+  assert.equal(levelOneOpeningGroundRoleForTile({ worldX: 0, worldY: 5 }), 'road', 'spawn gate keeps low road/readability ground through ground-role metadata');
   assert.equal(insideGate.some((object) => object.sceneRole === 'water-strip'), false, 'spawn gate should not start on water/noir clutter');
   assert.equal(insideGate.some((object) => object.solid && (object.zHeight >= 2 || ['landmark', 'wall'].includes(object.sceneRole))), false, 'spawn gate should not contain tall solid blockers');
 });

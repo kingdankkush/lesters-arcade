@@ -1778,9 +1778,9 @@ const HERO_ROTATION_DISPLAY_SCALE = Object.freeze({
   // same visual card box instead.
   'lit-commando': Object.freeze({ x: 1.1, y: 1.1 }),
   'lit-valkyrie': Object.freeze({ x: 1.1, y: 1.1 }),
-  lester: Object.freeze({ x: 0.84, y: 1.12 }),
-  'lester-original': Object.freeze({ x: 0.84, y: 1.12 }),
-  lilly: Object.freeze({ x: 0.86, y: 1.12 }),
+  lester: Object.freeze({ x: 0.84, y: 0.96 }),
+  'lester-original': Object.freeze({ x: 0.84, y: 0.96 }),
+  lilly: Object.freeze({ x: 0.86, y: 0.96 }),
 });
 function heroRotationSprite(characterId) {
   // USE THE SAME ROSTER KEY AS GAMEPLAY so the character-select spinning sprite

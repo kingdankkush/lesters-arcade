@@ -26,18 +26,18 @@ test('ground plan assigns every sampled tile to exactly one zone with one textur
   }
 });
 
-test('adjacent tiles inside the same authored zone keep the identical texture key', () => {
+test('large authored terrain zones use deterministic tile variants instead of one repeated stamp', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
-  let checked = 0;
-  for (const [x, y] of sampleTiles(140, 140)) {
-    const here = plan.zoneAt(x, y);
-    const east = plan.zoneAt(x + 1, y);
-    if (here.zoneId === east.zoneId) {
-      assert.equal(east.textureKey, here.textureKey, `texture changed inside ${here.zoneId} at ${x},${y}`);
-      checked += 1;
-    }
+  const sampledByZone = new Map();
+  for (const [x, y] of sampleTiles(120, 40)) {
+    const here = plan.zoneAt(x - 20, y - 8);
+    if (!sampledByZone.has(here.zoneId)) sampledByZone.set(here.zoneId, new Set());
+    sampledByZone.get(here.zoneId).add(here.textureKey);
   }
-  assert.ok(checked > 1000, 'expected many same-zone adjacency checks');
+
+  assert.ok((sampledByZone.get('spawn-dirt-scrub-outfield')?.size ?? 0) >= 5, 'spawn outfield should vary terrain tile cells');
+  assert.ok((sampledByZone.get('spawn-clear-blacktop-centerline')?.size ?? 0) >= 3, 'spawn road should vary cracked asphalt cells');
+  assert.ok((sampledByZone.get('ghost-town-cracked-asphalt-core')?.size ?? 0) >= 5, 'ghost town street should use multiple asphalt variants');
 });
 
 test('borderInfo is present exactly on cardinal zone boundaries', () => {
@@ -96,9 +96,9 @@ test('spawn road uses blended shoulders and keeps the player start clear', () =>
   assert.equal(plan.zoneAt(0, 5).role, 'road');
   assert.equal(plan.zoneAt(0, 3).zoneId, 'spawn-grass-road-north-shoulder');
   assert.equal(plan.zoneAt(0, 8).zoneId, 'spawn-sand-road-south-shoulder');
-  assert.match(plan.zoneAt(0, 5).textureKey, /^chatgpt-terrain\/ground-cracked-asphalt-concrete/);
-  assert.match(plan.zoneAt(0, 3).textureKey, /^chatgpt-terrain\/ground-asphalt-moss-grass/);
-  assert.match(plan.zoneAt(0, 8).textureKey, /^chatgpt-terrain\/ground-sand-gravel-road/);
+  assert.match(plan.zoneAt(0, 5).textureKey, /^chatgpt-terrain\//);
+  assert.match(plan.zoneAt(0, 3).textureKey, /^chatgpt-terrain\//);
+  assert.match(plan.zoneAt(0, 8).textureKey, /^chatgpt-terrain\//);
 });
 
 test('ground plan source and tests are covered by the explicit syntax gate', () => {

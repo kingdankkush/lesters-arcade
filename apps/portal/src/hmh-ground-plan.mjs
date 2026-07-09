@@ -198,11 +198,10 @@ function buildPixellabZones() {
   });
 }
 
-function terrainZone(zoneId, role, textureKey, xMin, xMax, yMin, yMax, priority, title) {
+function terrainZone(zoneId, role, textureKey, xMin, xMax, yMin, yMax, priority) {
   return freezeRecord({
     source: 'justin-chatgpt-terrain-layout-v2',
     zoneId,
-    title,
     role,
     textureKey,
     priority,
@@ -213,23 +212,37 @@ function terrainZone(zoneId, role, textureKey, xMin, xMax, yMin, yMax, priority,
   });
 }
 
+function textureVariantKeysForZone(zone) {
+  return [zone.textureKey, ...curatedTextureKeysForRole(zone.role)]
+    .filter((key, index, keys) => key?.startsWith('chatgpt-terrain/') && keys.indexOf(key) === index)
+    .slice(0, 9);
+}
+
+function textureKeyForZoneCell(zone, worldX, worldY, seed) {
+  const variants = textureVariantKeysForZone(zone);
+  if (variants.length <= 1) return zone.textureKey;
+  const blockX = Math.floor(Math.round(Number(worldX) || 0) / 2);
+  const blockY = Math.floor(Math.round(Number(worldY) || 0) / 2);
+  return variants[((blockX * 31 + blockY * 131 + String(zone.zoneId).length * 17 + (Number(seed) || 0)) >>> 0) % variants.length];
+}
+
 function buildChatgptTerrainZones() {
   return Object.freeze([
-    terrainZone('spawn-clear-blacktop-centerline', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2', -16, 22, 4, 6, 3100, 'safe spawn blacktop lane'),
-    terrainZone('spawn-grass-road-north-shoulder', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', -12, 24, 2, 3, 3095, 'grass-to-asphalt north shoulder'),
-    terrainZone('spawn-sand-road-south-shoulder', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', -12, 26, 7, 9, 3095, 'sand-to-road south shoulder'),
-    terrainZone('spawn-dirt-scrub-outfield', 'dirt', 'chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3', -18, 30, -4, 12, 3000, 'low detail dirt scrub outfield'),
-    terrainZone('ghost-town-cracked-asphalt-core', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 28, 54, -1, 12, 3120, 'cracked asphalt ghost-town street'),
-    terrainZone('ghost-town-mossy-curb-edge', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', 28, 54, 11, 14, 3110, 'mossy asphalt-to-grass curb edge'),
-    terrainZone('country-grass-megapath', 'grass', 'chatgpt-terrain/megatexture-grass-path-a-r3-c3', 50, 88, -2, 13, 3080, 'megatexture grass path field'),
-    terrainZone('country-puddle-lowlands', 'shore', 'chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2', 55, 74, 9, 13, 3090, 'muddy grass puddle lowlands'),
-    terrainZone('river-bridge-planks', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 60, 64, 5, 6, 3165, 'bridge deck across the water ribbon'),
-    terrainZone('blackwater-ford-water-ribbon', 'water', 'chatgpt-terrain/ground-water-grass-shore-a-r1-c2', 60, 64, 6, 9, 3150, 'water ribbon through the ford'),
-    terrainZone('blackwater-ford-grass-shore', 'shore', 'chatgpt-terrain/ground-water-grass-shore-a-r4-c4', 58, 66, 4, 10, 3140, 'grass-water shoreline blend'),
-    terrainZone('bone-camp-open-sand', 'sand', 'chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1', 68, 92, -2, 12, 3070, 'open sand combat oval'),
-    terrainZone('bone-camp-rocky-rim', 'rocky', 'chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3', 70, 94, 10, 15, 3080, 'rocky rim around sand oval'),
-    terrainZone('warehouse-oil-asphalt', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c3', 88, 104, 2, 9, 3130, 'warehouse asphalt pad'),
-    terrainZone('warehouse-sand-asphalt-edge', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', 86, 106, 9, 13, 3110, 'asphalt-to-sand warehouse shoulder'),
+    terrainZone('spawn-clear-blacktop-centerline', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2', -16, 22, 4, 6, 3100),
+    terrainZone('spawn-grass-road-north-shoulder', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', -12, 24, 2, 3, 3095),
+    terrainZone('spawn-sand-road-south-shoulder', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', -12, 26, 7, 9, 3095),
+    terrainZone('spawn-dirt-scrub-outfield', 'dirt', 'chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3', -18, 30, -4, 12, 3000),
+    terrainZone('ghost-town-cracked-asphalt-core', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 28, 54, -1, 12, 3120),
+    terrainZone('ghost-town-mossy-curb-edge', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', 28, 54, 11, 14, 3110),
+    terrainZone('country-grass-megapath', 'grass', 'chatgpt-terrain/megatexture-grass-path-a-r3-c3', 50, 88, -2, 13, 3080),
+    terrainZone('country-puddle-lowlands', 'shore', 'chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2', 55, 74, 9, 13, 3090),
+    terrainZone('river-bridge-planks', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 60, 64, 5, 6, 3165),
+    terrainZone('blackwater-ford-water-ribbon', 'water', 'chatgpt-terrain/ground-water-grass-shore-a-r1-c2', 60, 64, 6, 9, 3150),
+    terrainZone('blackwater-ford-grass-shore', 'shore', 'chatgpt-terrain/ground-water-grass-shore-a-r4-c4', 58, 66, 4, 10, 3140),
+    terrainZone('bone-camp-open-sand', 'sand', 'chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1', 68, 92, -2, 12, 3070),
+    terrainZone('bone-camp-rocky-rim', 'rocky', 'chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3', 70, 94, 10, 15, 3080),
+    terrainZone('warehouse-oil-asphalt', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c3', 88, 104, 2, 9, 3130),
+    terrainZone('warehouse-sand-asphalt-edge', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', 86, 106, 9, 13, 3110),
   ]);
 }
 
@@ -298,14 +311,14 @@ export function buildGroundPlan({ levelId = HMH_LEVEL_ONE_ID, seed = 0 } = {}) {
     zones,
     textureForKey: textureAssetByKey,
     textureKeys() {
-      return Object.freeze([...new Set(zones.map((zone) => zone.textureKey).filter(Boolean))]);
+      return Object.freeze([...new Set(zones.flatMap((zone) => textureVariantKeysForZone(zone)).filter(Boolean))]);
     },
     zoneAt(worldX, worldY) {
       const zone = zoneAtBare(worldX, worldY);
       return Object.freeze({
         zoneId: zone.zoneId,
         role: zone.role,
-        textureKey: zone.textureKey,
+        textureKey: textureKeyForZoneCell(zone, worldX, worldY, seed),
         borderInfo: borderInfoFor(worldX, worldY, zone),
       });
     },

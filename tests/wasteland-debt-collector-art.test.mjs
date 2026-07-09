@@ -36,9 +36,9 @@ test('Wasteland Debt Collector has approved 8-direction production sprite covera
   }
 });
 
-test('Paper Hands uses the approved Wasteland Debt Collector artwork for playtest', () => {
+test('Paper Hands uses the direct PixelLab runtime kit instead of Wasteland Debt Collector', () => {
   const kit = bespokeEnemyVisualKitFor({ id: 'paper-hand', title: 'Paper Hands' });
   assert.ok(kit);
-  assert.equal(kit.rosterKey, 'wasteland-debt-collector');
+  assert.equal(kit.rosterKey, 'paper-hand');
   assert.ok(kit.drawScaleMul >= 1);
 });

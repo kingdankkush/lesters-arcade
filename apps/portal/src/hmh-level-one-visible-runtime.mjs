@@ -390,10 +390,11 @@ function anchorForZone(zone) {
 }
 
 function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, index = 0, solid = undefined, metadata = {} }) {
-  // Terrain sheets belong to the ground-tile renderer, not the obstacle/prop
-  // renderer. Drawing them as props is what made the corrected runtime look like
-  // repeated grey block clutter instead of a clean authored route.
+  // Terrain and route tile sheets belong to the ground renderer, not the
+  // obstacle/prop renderer. Drawing the 240x416 road sheets as a single scene
+  // prop is what created the ugly blue/gray pathway-sheet overlap at spawn.
   if (use === 'terrain') return null;
+  if (use === 'route' && String(assetKey || '').startsWith('level-1/road/')) return null;
   const record = curatedLevelKitAssetByKey(assetKey)
     ?? authoredStampAssetByKey(assetKey)
     ?? wo102MegaPropAssetByKey(assetKey)

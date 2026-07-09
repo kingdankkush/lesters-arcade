@@ -91,13 +91,13 @@ test('no playable hero frame keeps the tiny QA triangle/robot placeholder signat
   }
 });
 
-test('character-select rotation display scales normalize Lester and Lilly without shrinking them', () => {
+test('character-select rotation display scales normalize Lester and Lilly width while reducing their height', () => {
   const src = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   assert.equal(src.includes("'lit-commando': Object.freeze({ x: 1.1, y: 1.1 })"), true);
   assert.equal(src.includes("'lit-valkyrie': Object.freeze({ x: 1.1, y: 1.1 })"), true);
-  assert.equal(src.includes("lester: Object.freeze({ x: 0.84, y: 1.12 })"), true);
-  assert.equal(src.includes("'lester-original': Object.freeze({ x: 0.84, y: 1.12 })"), true);
-  assert.equal(src.includes("lilly: Object.freeze({ x: 0.86, y: 1.12 })"), true);
+  assert.equal(src.includes("lester: Object.freeze({ x: 0.84, y: 0.96 })"), true);
+  assert.equal(src.includes("'lester-original': Object.freeze({ x: 0.84, y: 0.96 })"), true);
+  assert.equal(src.includes("lilly: Object.freeze({ x: 0.86, y: 0.96 })"), true);
   assert.match(src, /displayScaleX: typeof scale === 'object' \? scale\.x : displayScale/);
   assert.match(src, /displayScaleY: typeof scale === 'object' \? scale\.y : displayScale/);
 });
