@@ -29,14 +29,14 @@ test('curated level art manifest exposes all approved tree, forest, and ground s
   assert.equal(HMH_CURATED_LEVEL_ART.generatedFrom, 'Justin-approved ChatGPT Image tree, forest, and ground tile sheets; local source paths redacted');
   assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.treeIdleFrames, 18);
   assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.forestProps, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.environmentProps, 126);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 525);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTextures, 525);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.environmentProps, 381);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 625);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTextures, 625);
   assert.equal(HMH_CURATED_LEVEL_ART.treeAnimations.length, 3);
   assert.equal(HMH_CURATED_LEVEL_ART.forestProps.length, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.environmentProps.length, 126);
-  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 525);
-  assert.equal(HMH_CURATED_LEVEL_ART.groundTextures.length, 525);
+  assert.equal(HMH_CURATED_LEVEL_ART.environmentProps.length, 381);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 625);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTextures.length, 625);
 });
 
 test('Jul 9 terrain and prop sheets are sliced into semantic runtime assets', () => {
@@ -49,14 +49,35 @@ test('Jul 9 terrain and prop sheets are sliced into semantic runtime assets', ()
     'jul9-landmark-microscene',
     'jul9-industrial-mining',
     'jul9-fences-barricades',
+    'jul9-roadside-buildings-large',
+    'jul9-civic-buildings-large',
+    'jul9-industrial-buildings-large',
+    'jul9-residential-block-buildings-large',
+    'jul9-main-street-storefronts-large',
+    'jul9-garages-sheds-large',
+    'jul9-residential-house-facades-large',
+    'jul9-neighborhood-fences-hedges',
+    'jul9-neighborhood-yard-clutter',
+    'jul9-park-rest-area',
+    'jul9-neighborhood-combo',
+    'jul9-creek-canal-culvert',
+    'jul9-small-cover-loot',
+    'jul9-power-yard-extraction',
+    'jul9-cliff-ditch-boundary',
+    'jul9-ghost-town-facade-modules',
+    'jul9-vegetation-crop-edge',
   ]) {
     assert.ok(propSheets.has(sheet), `${sheet} should be present`);
   }
   const jul9Terrain = HMH_CURATED_LEVEL_ART.groundTextures.filter((texture) => texture.sheet.startsWith('jul9-'));
-  assert.equal(jul9Terrain.length, 100);
+  assert.equal(jul9Terrain.length, 200);
   assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2'));
   assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c2'));
   assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-water-shore-mud-a-r1-c4'));
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-neighborhood-ground-a-r3-c5'));
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-lakeside-pond-a-r1-c2'));
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-park-path-plaza-a-r1-c2'));
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-road-transition-a-r3-c3'));
   assert.ok(jul9Terrain.some((texture) => texture.materialRoles.includes('water')));
   assert.ok(jul9Terrain.some((texture) => texture.materialRoles.includes('grass-to-road')));
 });
@@ -106,9 +127,10 @@ test('scene templates use the curated forest/tree sprites so the new assets appe
 
 test('main runtime is wired to load curated ground tiles through the HMH lazy payload', () => {
   const loader = readFileSync(join(repoRoot, 'apps', 'portal', 'src', 'games', 'hmh', 'loader.mjs'), 'utf8');
-  const main = readFileSync(join(repoRoot, 'apps', 'portal', 'main.js'), 'utf8');
+  const main = readFileSync(join(repoRoot, 'apps', 'portal', 'src', 'hmh-ground-plan.mjs'), 'utf8');
   assert.match(loader, /HMH_CURATED_LEVEL_ART/);
   assert.match(loader, /hmh-curated-level-art\/hmh-curated-level-art\.mjs/);
-  assert.match(main, /curatedGroundTileImage/);
-  assert.match(main, /HMH_CURATED_LEVEL_ART/);
+  assert.match(main, /curatedTerrainTextureAssetByKey/);
+  assert.match(main, /HMH_CURATED_GROUND_RUNTIME/);
+  assert.match(main, /hmh-curated-ground-runtime/);
 });

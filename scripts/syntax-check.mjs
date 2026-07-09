@@ -158,6 +158,7 @@ const NODE_CHECK_FILES = [
   "scripts/hmh-security-audit-sweep.mjs",
   "scripts/hmh-fable-markdown-crosswalk.mjs",
   "scripts/build-asset-footprints.mjs",
+  "scripts/build-hmh-curated-level-kit-runtime.mjs",
   "scripts/report-hmh-animation-coverage.mjs",
   "scripts/roster-coverage-report.mjs",
   "scripts/write-hmh-balance-snapshot.mjs",

@@ -18,8 +18,8 @@ import {
   sbsGroundAssetByKey,
 } from '../assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
 import {
-  HMH_CURATED_LEVEL_ART,
-} from '../assets/generated/hmh-curated-level-art/hmh-curated-level-art.mjs';
+  HMH_CURATED_GROUND_RUNTIME,
+} from '../assets/generated/hmh-curated-level-art/hmh-curated-ground-runtime.mjs';
 
 const CONNECTIVE_ZONE_ID = 'connective-scrub';
 
@@ -44,17 +44,17 @@ const WO103_ROLE_PREFERENCES = Object.freeze({
 });
 
 const CHATGPT_TERRAIN_ROLE_PREFERENCES = Object.freeze({
-  grass: 'chatgpt-terrain/jul9-master-ground-terrain-a-r1-c1',
+  grass: 'chatgpt-terrain/jul9-park-path-plaza-a-r1-c2',
   dirt: 'chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2',
   sand: 'chatgpt-terrain/jul9-master-ground-terrain-a-r4-c3',
   rocky: 'chatgpt-terrain/jul9-master-ground-terrain-a-r3-c3',
-  road: 'chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c2',
-  bridge: 'chatgpt-terrain/jul9-street-asphalt-parking-a-r3-c2',
-  shore: 'chatgpt-terrain/jul9-water-shore-mud-a-r2-c5',
-  water: 'chatgpt-terrain/jul9-water-shore-mud-a-r1-c4',
+  road: 'chatgpt-terrain/jul9-road-transition-a-r1-c2',
+  bridge: 'chatgpt-terrain/jul9-road-transition-a-r3-c3',
+  shore: 'chatgpt-terrain/jul9-lakeside-pond-a-r2-c3',
+  water: 'chatgpt-terrain/jul9-lakeside-pond-a-r1-c2',
   'grass-to-dirt': 'chatgpt-terrain/jul9-transition-ground-edges-a-r1-c3',
   'dirt-to-sand': 'chatgpt-terrain/jul9-master-ground-terrain-a-r4-c2',
-  'grass-to-road': 'chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c4',
+  'grass-to-road': 'chatgpt-terrain/jul9-neighborhood-ground-a-r3-c5',
 });
 
 const CURATED_RADIUS_BY_BEAT = Object.freeze({
@@ -75,19 +75,60 @@ function normalizeRole(role) {
   return ROLE_ALIASES[key] ?? key;
 }
 
-const CHATGPT_TERRAIN_ASSET_BY_KEY = new Map((HMH_CURATED_LEVEL_ART.groundTextures ?? []).map((asset) => [asset.key, Object.freeze({
-  ...asset,
-  source: asset.source ?? 'justin-chatgpt-map-tile-sheet',
-  notes: asset.notes ?? 'Justin-approved ChatGPT Image map tile sheet, sliced into an opaque runtime terrain texture.',
-})]));
+const CURATED_GROUND_LABELS = Object.freeze(String(HMH_CURATED_GROUND_RUNTIME.groundLabels ?? '').split('|'));
+const CURATED_GROUND_ROLE_CODES = Object.freeze(HMH_CURATED_GROUND_RUNTIME.roleCodes ?? {});
+function decodeCuratedGroundRoles(serialized) {
+  return Object.freeze(String(serialized || '').split(',').filter(Boolean).map((code) => CURATED_GROUND_ROLE_CODES[code] ?? code));
+}
+const CURATED_GROUND_SHEETS = Object.freeze((HMH_CURATED_GROUND_RUNTIME.sheets ?? []).map(([slug, primaryCode, rowCodes]) => Object.freeze({
+  slug,
+  primaryRole: CURATED_GROUND_ROLE_CODES[primaryCode] ?? primaryCode,
+  roleRows: Object.freeze(String(rowCodes || '').split('|').map(decodeCuratedGroundRoles)),
+})));
+const CURATED_GROUND_SHEET_BY_SLUG = new Map(CURATED_GROUND_SHEETS.map((sheet) => [sheet.slug, sheet]));
+
+function curatedGroundTextureKey(sheetSlug, row, col) {
+  return `chatgpt-terrain/${sheetSlug}-r${row}-c${col}`;
+}
 
 function curatedTerrainTextureAssetByKey(key) {
-  return CHATGPT_TERRAIN_ASSET_BY_KEY.get(key) ?? null;
+  const match = String(key || '').match(/^chatgpt-terrain\/(.+)-r([1-5])-c([1-5])$/);
+  if (!match) return null;
+  const [, sheetSlug, rowRaw, colRaw] = match;
+  const sheet = CURATED_GROUND_SHEET_BY_SLUG.get(sheetSlug);
+  if (!sheet) return null;
+  const row = Number(rowRaw);
+  const col = Number(colRaw);
+  const label = CURATED_GROUND_LABELS[(row - 1) * 5 + (col - 1)] ?? `tile-${row}-${col}`;
+  const materialRoles = Object.freeze(sheet.roleRows?.[row - 1] ?? [sheet.primaryRole ?? 'dirt']);
+  return Object.freeze({
+    key,
+    slug: `${sheetSlug}-r${row}-c${col}`,
+    sheet: sheetSlug,
+    label,
+    grid: Object.freeze({ row, col }),
+    src: `./assets/generated/hmh-curated-level-art/terrain-textures/${sheetSlug}/${row}-${col}-${label}.png`,
+    width: HMH_CURATED_GROUND_RUNTIME.tileSize ?? 160,
+    height: HMH_CURATED_GROUND_RUNTIME.tileSize ?? 160,
+    role: sheet.primaryRole ?? 'dirt',
+    materialRoles,
+    preferred: (row === col),
+    source: 'justin-chatgpt-map-tile-sheet',
+    notes: 'Justin-approved ChatGPT Image map tile sheet, sliced into an opaque runtime terrain texture.',
+  });
 }
 
 function curatedTextureKeysForRole(role) {
   const normalized = normalizeRole(role);
-  return HMH_CURATED_LEVEL_ART.terrainRoles?.[normalized] ?? [];
+  const keys = [];
+  for (const sheet of CURATED_GROUND_SHEETS) {
+    for (let row = 1; row <= 5; row += 1) {
+      const roles = sheet.roleRows?.[row - 1] ?? [sheet.primaryRole ?? 'dirt'];
+      if (!roles.includes(normalized)) continue;
+      for (let col = 1; col <= 5; col += 1) keys.push(curatedGroundTextureKey(sheet.slug, row, col));
+    }
+  }
+  return keys;
 }
 
 function manifestKeysForRole(role) {

@@ -47,6 +47,10 @@ GROUND_SHEETS = [
     ("jul9-transition-ground-edges-a", ATTACHMENTS / "jul9-transition-ground-edges.png", "grass-to-dirt", ["grass", "dirt", "road", "shore", "water", "grass-to-dirt", "grass-to-road", "dirt-to-sand"]),
     ("jul9-street-asphalt-parking-a", ATTACHMENTS / "jul9-street-asphalt-terrain.png", "road", ["road", "grass-to-road", "dirt"]),
     ("jul9-water-shore-mud-a", ATTACHMENTS / "jul9-water-shore-mud-terrain.png", "shore", ["water", "shore", "dirt", "grass"]),
+    ("jul9-neighborhood-ground-a", ATTACHMENTS / "jul9-neighborhood-ground-terrain.png", "grass", ["grass", "dirt", "road", "grass-to-road"]),
+    ("jul9-lakeside-pond-a", ATTACHMENTS / "jul9-lakeside-pond-terrain.png", "water", ["water", "shore", "grass", "dirt"]),
+    ("jul9-park-path-plaza-a", ATTACHMENTS / "jul9-park-path-plaza-terrain.png", "grass", ["grass", "dirt", "road", "grass-to-road"]),
+    ("jul9-road-transition-a", ATTACHMENTS / "jul9-road-transition-terrain.png", "road", ["road", "grass-to-road", "dirt"]),
 ]
 
 ENVIRONMENT_PROP_SHEETS = [
@@ -93,6 +97,95 @@ ENVIRONMENT_PROP_SHEETS = [
         "concrete-barrier", "cracked-jersey-barrier", "sandbag-barrier", "metal-road-barricade", "roadblock-cluster",
         "ruined-wall-chunk", "brick-wall-segment", "collapsed-wall", "retaining-wall", "burned-wall-panel",
         "crate-fence-cluster", "barrel-barricade-cluster", "rubble-barricade", "broken-gate-post", "warning-post",
+    ]),
+    ("jul9-roadside-buildings-large", ATTACHMENTS / "jul9-roadside-buildings-large.png", 2, 2, "building_large", [
+        "motel-office-front", "gas-station-service-canopy", "roadside-convenience-store", "laundromat-wash-house",
+    ]),
+    ("jul9-civic-buildings-large", ATTACHMENTS / "jul9-civic-buildings-large.png", 2, 2, "building_large", [
+        "town-hall-front", "old-fire-station", "small-clinic-office", "community-center-front",
+    ]),
+    ("jul9-industrial-buildings-large", ATTACHMENTS / "jul9-industrial-buildings-large.png", 2, 2, "building_large", [
+        "warehouse-rollup-front", "auto-repair-garage", "power-utility-building", "crypto-mining-service-shed",
+    ]),
+    ("jul9-residential-block-buildings-large", ATTACHMENTS / "jul9-residential-block-buildings-large.png", 2, 2, "building_large", [
+        "two-story-apartment-block", "worn-duplex-building", "rowhouse-corner-facade", "boarding-house-front",
+    ]),
+    ("jul9-main-street-storefronts-large", ATTACHMENTS / "jul9-main-street-storefronts-large.png", 2, 2, "building_large", [
+        "boarded-general-store", "old-diner-front", "bank-loan-office-front", "collapsed-corner-shop",
+    ]),
+    ("jul9-garages-sheds-large", ATTACHMENTS / "jul9-garages-sheds-large.png", 2, 2, "building_large", [
+        "detached-garage", "backyard-shed", "torn-carport-frame", "workshop-shack",
+    ]),
+    ("jul9-residential-house-facades-large", ATTACHMENTS / "jul9-residential-house-facades-large.png", 2, 2, "building_large", [
+        "boarded-ranch-house", "two-story-farmhouse", "split-level-garage-house", "rental-duplex-facade",
+    ]),
+    ("jul9-neighborhood-fences-hedges", ATTACHMENTS / "jul9-neighborhood-fences-hedges.png", 5, 5, "boundary", [
+        "picket-fence-segment", "broken-picket-fence", "picket-fence-corner", "open-picket-gate", "fallen-picket-section",
+        "privacy-fence-segment", "broken-privacy-fence", "privacy-fence-corner", "sagging-wooden-gate", "missing-board-fence",
+        "chainlink-residential-fence", "bent-chainlink-fence", "chainlink-residential-corner", "open-chainlink-residential-gate", "fallen-chainlink-roll",
+        "hedge-segment", "overgrown-hedge", "hedge-corner", "dead-hedge", "hedge-with-gap",
+        "mailbox-fence-cluster", "trash-can-fence-cluster", "hedge-rock-edge", "broken-gate-posts", "low-yard-barrier",
+    ]),
+    ("jul9-neighborhood-yard-clutter", ATTACHMENTS / "jul9-neighborhood-yard-clutter.png", 5, 5, "yard", [
+        "mailbox", "broken-mailbox", "yard-light", "blank-address-post", "cracked-birdbath",
+        "lawn-chair", "tipped-lawn-chair", "cooler", "charcoal-grill", "wheelbarrow",
+        "tire-stack", "woodpile", "garden-hose-coil", "tarp-covered-object", "toolbox-crate",
+        "garbage-bag-pile", "trash-can", "tipped-trash-can", "cracked-planter", "dead-flower-pot",
+        "mailbox-weeds", "chair-cooler", "grill-crates", "hose-tools", "abandoned-yard-corner",
+    ]),
+    ("jul9-park-rest-area", ATTACHMENTS / "jul9-park-rest-area-props.png", 5, 5, "park", [
+        "park-bench", "broken-park-bench", "picnic-table", "overturned-picnic-table", "park-trash-can",
+        "park-light-post", "cracked-drinking-fountain", "bike-rack", "blank-newspaper-box", "blank-map-board",
+        "broken-swing-frame", "cracked-slide-piece", "sandbox-edge", "spring-rider-wreck", "playground-rubble",
+        "planter-box", "dead-flower-bed", "low-hedge-planter", "tree-planter", "concrete-planter-barrier",
+        "bench-trash-cluster", "picnic-cooler-cluster", "broken-playground-cluster", "planter-lamp-cluster", "park-entry-posts",
+    ]),
+    ("jul9-neighborhood-combo", ATTACHMENTS / "jul9-neighborhood-combo-props.png", 5, 5, "yard", [
+        "mailbox-alt", "broken-mailbox-alt", "yard-lantern", "blank-yard-post", "birdbath-alt",
+        "folding-lawn-chair", "patched-lawn-chair", "cooler-alt", "kettle-grill", "rusty-wheelbarrow",
+        "picket-fence-short", "picket-fence-broken", "chainlink-short", "hedge-short", "garden-border",
+        "tire-stack-alt", "open-stash-crate", "tarp-object-alt", "woodpile-alt", "hose-coil-alt",
+        "weedy-yard-cluster", "yard-chair-cluster", "grill-yard-cluster", "trash-bin-cluster", "brush-hole-cluster",
+    ]),
+    ("jul9-creek-canal-culvert", ATTACHMENTS / "jul9-creek-canal-culvert-props.png", 4, 4, "water", [
+        "concrete-culvert-mouth", "metal-pipe-outflow", "storm-drain-grate", "drainage-ditch-intake",
+        "small-footbridge", "broken-footbridge", "plank-crossing", "concrete-slab-crossing",
+        "pump-station-box", "water-valve-cluster", "rusty-pipe-cluster", "sewer-access-hatch",
+        "reeds-around-pipe", "trash-caught-in-grate", "muddy-culvert-bank", "broken-canal-wall",
+    ]),
+    ("jul9-small-cover-loot", ATTACHMENTS / "jul9-small-cover-loot-props.png", 5, 5, "cover", [
+        "low-crate-stack", "broken-pallet", "short-concrete-block", "trash-pile", "sandbag-nub",
+        "abstract-coin-pile", "ammo-crate-blank", "glowing-pickup-pedestal", "small-stash-box", "broken-cash-bag",
+        "spark-box", "oil-puddle-marker", "exposed-wire-coil", "small-fire-barrel", "smoking-battery",
+        "cone-cluster", "warning-post-blank", "cracked-road-marker", "low-bollard", "wordless-barricade-arrow",
+        "crate-barrel-cover", "pallet-cable-pile", "coin-stash-rubble", "small-generator-cover", "broken-checkpoint-clutter",
+    ]),
+    ("jul9-power-yard-extraction", ATTACHMENTS / "jul9-power-yard-extraction-props.png", 5, 4, "industrial", [
+        "lit-extraction-beacon", "small-power-pylon", "warning-light-tripod", "blank-crypto-terminal",
+        "generator-bank", "battery-cabinet", "transformer-cluster", "cooling-fan-tower",
+        "cable-trench", "bundled-power-cables", "broken-conduit-bridge", "glowing-floor-pad-edge",
+        "beacon-crates", "power-yard-barricade", "cable-spool-checkpoint", "dead-server-shrine",
+        "extraction-pad-base", "lit-stanchion-pair", "power-spool-platform", "server-shrine-cluster",
+    ]),
+    ("jul9-cliff-ditch-boundary", ATTACHMENTS / "jul9-cliff-ditch-boundary-props.png", 5, 5, "boundary", [
+        "low-dirt-ledge", "low-dirt-ledge-corner", "cracked-rock-ledge", "eroded-embankment", "dry-ditch-lip",
+        "short-cliff-face-alt", "jagged-rock-wall", "broken-retaining-wall-alt", "muddy-drainage-wall", "timber-bank-wall",
+        "culvert-side-wall", "small-plank-crossing", "broken-concrete-crossing", "washed-out-road-edge", "ditch-rubble-edge",
+        "boulder-wall-segment", "rubble-slope", "collapsed-bank", "cave-edge-wall", "dry-creek-wall",
+        "cliff-weeds", "ditch-reeds", "road-cut-barrier", "water-eroded-bank", "rocky-arena-edge",
+    ]),
+    ("jul9-ghost-town-facade-modules", ATTACHMENTS / "jul9-ghost-town-facade-modules.png", 4, 4, "landmark", [
+        "boarded-storefront-front", "motel-office-facade", "ruined-pawnshop-blank", "collapsed-roadside-shop",
+        "side-wall-module", "corner-storefront-module", "roofline-awning-module", "broken-porch-front",
+        "small-garage-front", "rollup-door-facade", "boarded-window-wall", "alley-service-door",
+        "storefront-crates", "boarded-shop-fence", "collapsed-awning-scene", "arcade-front-shell-blank",
+    ]),
+    ("jul9-vegetation-crop-edge", ATTACHMENTS / "jul9-vegetation-crop-edge-props.png", 5, 5, "vegetation", [
+        "short-grass-clump", "tall-grass-clump", "dead-grass-clump", "yellow-weeds", "dark-weeds",
+        "reed-cluster", "cattails", "swamp-grass", "muddy-reeds", "water-edge-brush",
+        "dead-corn-stalks", "broken-crop-row", "dry-farm-weeds", "hay-clump", "trampled-field-edge",
+        "thorn-bush", "burnt-bush", "low-hedge", "berry-bush", "scraggly-roadside-shrub",
+        "weeds-around-stump", "reeds-around-puddle", "grass-rock-cluster", "crop-edge-barrier", "dead-brush-wall",
     ]),
 ]
 TREE_ROWS = [
@@ -311,6 +404,42 @@ def material_roles_for_cell(sheet_slug: str, default_roles: list[str], row: int,
             ["dirt", "sand", "water", "rocky"],
         ]
         return by_row[row]
+    if sheet_slug == "jul9-neighborhood-ground-a":
+        by_row = [
+            ["grass"],
+            ["dirt", "road", "grass-to-road"],
+            ["road", "grass-to-road"],
+            ["grass", "dirt", "grass-to-dirt"],
+            ["grass", "dirt", "road"],
+        ]
+        return by_row[row]
+    if sheet_slug == "jul9-lakeside-pond-a":
+        by_row = [
+            ["water"],
+            ["shore", "grass", "water"],
+            ["dirt", "shore", "water"],
+            ["grass", "shore", "water"],
+            ["water", "shore", "dirt"],
+        ]
+        return by_row[row]
+    if sheet_slug == "jul9-park-path-plaza-a":
+        by_row = [
+            ["grass"],
+            ["dirt", "grass-to-dirt"],
+            ["road", "grass-to-road"],
+            ["grass-to-road", "dirt", "road"],
+            ["grass", "dirt", "road"],
+        ]
+        return by_row[row]
+    if sheet_slug == "jul9-road-transition-a":
+        by_row = [
+            ["road"],
+            ["road", "grass-to-road", "dirt"],
+            ["road", "grass-to-road"],
+            ["road", "dirt"],
+            ["road", "rocky", "dirt"],
+        ]
+        return by_row[row]
     return default_roles
 
 
@@ -393,7 +522,10 @@ def main() -> None:
                 index = row * cols + col
                 label = labels[index]
                 cell = crop_cell_border(grid_crop(img, rows, cols, row, col))
-                prop = normalize_prop(cell, canvas_size=256, max_fill=232 if category in {"tree", "rock"} else 238)
+                if category == "building_large":
+                    prop = normalize_prop(cell, canvas_size=384, max_fill=356)
+                else:
+                    prop = normalize_prop(cell, canvas_size=256, max_fill=232 if category in {"tree", "rock", "boundary"} else 238)
                 prop_path = prop_dir / f"{index:02d}-{label}.png"
                 prop.save(prop_path, optimize=True)
                 coherent_key = f"{sheet_slug}-{index:02d}-{label}"
@@ -402,6 +534,9 @@ def main() -> None:
                 environment_props.append({
                     "id": coherent_key,
                     "sheet": sheet_slug,
+                    "label": label,
+                    "category": category,
+                    "grid": {"row": row + 1, "col": col + 1},
                     "src": rel_portal(prop_path),
                     "width": prop.width,
                     "height": prop.height,
@@ -498,8 +633,67 @@ def main() -> None:
             "megaGrassPath": "jul9-master-ground-terrain-a-r2-c1",
         },
     }
+    ground_manifest = {
+        "id": manifest["id"] + "-ground-runtime",
+        "generatedFrom": manifest["generatedFrom"],
+        "gridCounts": {
+            "groundTiles": len(ground_tiles),
+            "groundTextures": len(ground_textures),
+        },
+        "runtime": {
+            "groundRoot": manifest["runtime"]["groundRoot"],
+            "terrainTextureRoot": manifest["runtime"]["terrainTextureRoot"],
+        },
+        "groundTiles": ground_tiles,
+        "groundTextures": ground_textures,
+        "terrainRoles": manifest["terrainRoles"],
+        "recommendedGroundSlugs": {
+            **manifest["recommendedGroundSlugs"],
+            "neighborhoodLawn": "jul9-neighborhood-ground-a-r1-c1",
+            "neighborhoodDriveway": "jul9-neighborhood-ground-a-r2-c2",
+            "parkGrass": "jul9-park-path-plaza-a-r1-c2",
+            "parkPath": "jul9-park-path-plaza-a-r2-c2",
+            "lakesideWater": "jul9-lakeside-pond-a-r1-c2",
+            "lakesideBank": "jul9-lakeside-pond-a-r2-c3",
+            "roadJunction": "jul9-road-transition-a-r3-c3",
+        },
+    }
+    role_code_by_name = {
+        "grass": "g",
+        "dirt": "d",
+        "rocky": "k",
+        "sand": "s",
+        "road": "r",
+        "shore": "h",
+        "water": "w",
+        "grass-to-dirt": "gd",
+        "dirt-to-sand": "ds",
+        "grass-to-road": "gr",
+    }
+    def encode_roles(roles: list[str]) -> str:
+        return ",".join(role_code_by_name.get(role, role) for role in roles)
+
+    compact_ground_runtime = {
+        "id": manifest["id"] + "-compact-ground-runtime",
+        "terrainTextureRoot": manifest["runtime"]["terrainTextureRoot"],
+        "tileSize": 160,
+        "roleCodes": {code: role for role, code in role_code_by_name.items()},
+        "groundLabels": "|".join(GROUND_LABELS),
+        "sheets": [
+            [
+                sheet_slug,
+                role_code_by_name.get(primary_role, primary_role),
+                "|".join(encode_roles(material_roles_for_cell(sheet_slug, material_roles, row, 0)) for row in range(5)),
+            ]
+            for sheet_slug, _sheet_path, primary_role, material_roles in GROUND_SHEETS
+        ],
+    }
     write_json(OUT / "hmh-curated-level-art.json", manifest)
     write_module(OUT / "hmh-curated-level-art.mjs", "HMH_CURATED_LEVEL_ART", manifest)
+    write_json(OUT / "hmh-curated-ground-art.json", ground_manifest)
+    write_module(OUT / "hmh-curated-ground-art.mjs", "HMH_CURATED_GROUND_ART", ground_manifest)
+    write_json(OUT / "hmh-curated-ground-runtime.json", compact_ground_runtime)
+    write_module(OUT / "hmh-curated-ground-runtime.mjs", "HMH_CURATED_GROUND_RUNTIME", compact_ground_runtime)
     print(json.dumps({
         "treeFrames": manifest["gridCounts"]["treeIdleFrames"],
         "forestProps": manifest["gridCounts"]["forestProps"],

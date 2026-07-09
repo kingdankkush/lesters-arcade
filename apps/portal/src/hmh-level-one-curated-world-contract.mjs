@@ -1,7 +1,7 @@
 import {
   HMH_CURATED_LEVEL_KIT,
   curatedLevelKitAssetByKey,
-} from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
+} from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-runtime.mjs';
 import { HMH_LEVEL_ONE_AAA_SLICE_PLAN } from './hmh-level-one-aaa-slices.mjs';
 
 const LEVEL_1_ID = 'level-1-crypto-wasteland';

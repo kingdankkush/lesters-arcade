@@ -4,7 +4,7 @@ import {
   HMH_LEVEL_ONE_SPAWN_GATE_REDRESS,
   curatedLevelOneCriticalPath,
 } from './hmh-level-one-curated-world-contract.mjs';
-import { curatedLevelKitAssetByKey } from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-manifest.mjs';
+import { curatedLevelKitAssetByKey } from '../assets/generated/hmh-curated-level-kit/hmh-curated-level-kit-runtime.mjs';
 import { authoredStampAssetByKey } from '../assets/generated/hmh-level-one-authored-stamp-art/hmh-level-one-authored-stamp-art-manifest.mjs';
 import {
   HMH_WO104_106_WORLD_KIT,
@@ -140,17 +140,17 @@ const OPENING_ROUTE_TILES = Object.freeze([
 ]);
 
 const OPENING_LANDMARKS = Object.freeze([
-  openingSpec('west-storefront-shoulder-anchor', 'curated/jul9-buildings-landmarks-00-roadside-store', 'landmark', -13, 2, {
-    notes: 'small storefront shoulder anchor replaces the old spawn-overlap gas-station landmark',
+  openingSpec('west-storefront-shoulder-anchor', 'curated/jul9-roadside-buildings-large-02-roadside-convenience-store', 'landmark', -14, 1, {
+    notes: 'large roadside convenience-store silhouette anchors the opening shoulder without covering spawn',
   }),
-  openingSpec('boarded-storefront-telegraph', 'curated/jul9-buildings-landmarks-04-loan-office-front', 'landmark', 21, 2, {
-    notes: 'telegraphs ghost-town main street ahead instead of random desert scatter',
+  openingSpec('boarded-storefront-telegraph', 'curated/jul9-main-street-storefronts-large-02-bank-loan-office-front', 'landmark', 21, 1, {
+    notes: 'large bank/loan-office facade telegraphs ghost-town main street ahead',
   }),
-  openingSpec('saloon-silhouette-telegraph', 'curated/jul9-buildings-landmarks-05-motel-office', 'landmark', 31, 3, {
-    notes: 'distant saloon silhouette frames the next combat beat',
+  openingSpec('saloon-silhouette-telegraph', 'curated/jul9-roadside-buildings-large-00-motel-office-front', 'landmark', 32, 2, {
+    notes: 'distant motel-office mass frames the next combat beat',
   }),
-  openingSpec('storefront-side-anchor', 'curated/jul9-buildings-landmarks-03-collapsed-mining-shack', 'landmark', 9, 2, {
-    notes: 'small town-side anchor for the spawn camera composition',
+  openingSpec('storefront-side-anchor', 'curated/jul9-ghost-town-facade-modules-03-collapsed-roadside-shop', 'landmark', 9, 2, {
+    notes: 'collapsed facade module gives the spawn camera a ghost-town edge',
   }),
   openingSpec('route-arcade-cache', 'level-1/building/arcade-cabinet', 'dressing', 12, 8, {
     solid: false,
@@ -303,6 +303,48 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'wo106-world/critter-dust-burrow', use: 'ambient', dx: 0, dy: -2, solid: false, notes: 'WO-106: burrow/dust puffs telegraph critter life before flee AI ships' },
     { assetKey: 'level-1/prop/bus-stop-sign', use: 'dressing', dx: -1, dy: 3, solid: false },
   ], { label: 'WO-106 roadside vehicle micro-scenes', routeBeat: 'micro-scene', anchor: { x: 74, y: 8 }, routeRead: 'vehicles, cache, and critter burrow make the route feel inhabited' }),
+  prefabStamp('civic-park-town-pocket', 'ghost-town', [
+    { assetKey: 'curated/jul9-civic-buildings-large-00-town-hall-front', use: 'landmark', dx: -7, dy: -6, solid: true, metadata: { footprintTiles: { w: 5.5, h: 3.2 } } },
+    { assetKey: 'curated/jul9-main-street-storefronts-large-00-boarded-general-store', use: 'landmark', dx: 1, dy: -6, solid: true, metadata: { footprintTiles: { w: 5.4, h: 3.0 } } },
+    { assetKey: 'curated/jul9-park-rest-area-00-park-bench', use: 'dressing', dx: -3, dy: 0, solid: false },
+    { assetKey: 'curated/jul9-park-rest-area-02-picnic-table', use: 'dressing', dx: 4, dy: 0, solid: false },
+    { assetKey: 'curated/jul9-small-cover-loot-07-glowing-pickup-pedestal', use: 'dressing', dx: 0, dy: 3, solid: false },
+  ], { label: 'Civic park town pocket', routeBeat: 'arena', anchor: { x: 48, y: 8 }, routeRead: 'civic frontage, park furniture, and loot cue define the town plaza' }),
+  prefabStamp('neighborhood-house-yard-pocket', 'residential-edge', [
+    { assetKey: 'curated/jul9-residential-house-facades-large-00-boarded-ranch-house', use: 'landmark', dx: -7, dy: -5, solid: true, metadata: { footprintTiles: { w: 5.8, h: 3.2 } } },
+    { assetKey: 'curated/jul9-garages-sheds-large-00-detached-garage', use: 'landmark', dx: 4, dy: -6, solid: true, metadata: { footprintTiles: { w: 5.0, h: 2.8 } } },
+    { assetKey: 'curated/jul9-neighborhood-fences-hedges-15-hedge-segment', use: 'boundary', dx: -8, dy: 2, solid: true },
+    { assetKey: 'curated/jul9-neighborhood-yard-clutter-20-mailbox-weeds', use: 'dressing', dx: -2, dy: 3, solid: false },
+    { assetKey: 'curated/jul9-neighborhood-combo-21-yard-chair-cluster', use: 'dressing', dx: 5, dy: 2, solid: false },
+  ], { label: 'Neighborhood house yard pocket', routeBeat: 'road', anchor: { x: 77, y: 7 }, routeRead: 'house, garage, hedge, and yard clutter make the residential edge readable' }),
+  prefabStamp('residential-block-backlot-pocket', 'residential-edge', [
+    { assetKey: 'curated/jul9-residential-block-buildings-large-01-worn-duplex-building', use: 'landmark', dx: -6, dy: -5, solid: true, metadata: { footprintTiles: { w: 5.8, h: 3.2 } } },
+    { assetKey: 'curated/jul9-garages-sheds-large-02-torn-carport-frame', use: 'landmark', dx: 3, dy: -4, solid: true, metadata: { footprintTiles: { w: 4.8, h: 2.8 } } },
+    { assetKey: 'curated/jul9-neighborhood-fences-hedges-06-broken-privacy-fence', use: 'boundary', dx: -4, dy: 2, solid: true },
+    { assetKey: 'curated/jul9-neighborhood-yard-clutter-12-garden-hose-coil', use: 'dressing', dx: 1, dy: 3, solid: false },
+    { assetKey: 'curated/jul9-vegetation-crop-edge-20-weeds-around-stump', use: 'dressing', dx: 5, dy: 3, solid: false },
+  ], { label: 'Residential block backlot pocket', routeBeat: 'pressure', anchor: { x: 86, y: 9 }, routeRead: 'duplex, carport, privacy fence, and weeds build the second-neighborhood read' }),
+  prefabStamp('canal-park-ford-pocket', 'country-road', [
+    { assetKey: 'curated/jul9-creek-canal-culvert-00-concrete-culvert-mouth', use: 'landmark', dx: -5, dy: -2, solid: true },
+    { assetKey: 'curated/jul9-creek-canal-culvert-04-small-footbridge', use: 'dressing', dx: 0, dy: 1, solid: false },
+    { assetKey: 'curated/jul9-cliff-ditch-boundary-09-timber-bank-wall', use: 'boundary', dx: 7, dy: -4, solid: true },
+    { assetKey: 'curated/jul9-vegetation-crop-edge-21-reeds-around-puddle', use: 'dressing', dx: -2, dy: 3, solid: false },
+    { assetKey: 'curated/jul9-park-rest-area-20-bench-trash-cluster', use: 'dressing', dx: 5, dy: 3, solid: false },
+  ], { label: 'Canal park ford pocket', routeBeat: 'chokepoint', anchor: { x: 66, y: 7 }, routeRead: 'culvert, footbridge, bank wall, reeds, and bench clarify the water crossing' }),
+  prefabStamp('ghost-town-facade-row-pocket', 'ghost-town', [
+    { assetKey: 'curated/jul9-ghost-town-facade-modules-00-boarded-storefront-front', use: 'landmark', dx: -5, dy: -4, solid: true },
+    { assetKey: 'curated/jul9-ghost-town-facade-modules-06-roofline-awning-module', use: 'landmark', dx: 2, dy: -4, solid: true },
+    { assetKey: 'curated/jul9-roadside-buildings-large-01-gas-station-service-canopy', use: 'landmark', dx: 8, dy: -3, solid: true, metadata: { footprintTiles: { w: 5.8, h: 3.0 } } },
+    { assetKey: 'curated/jul9-neighborhood-fences-hedges-10-chainlink-residential-fence', use: 'boundary', dx: -3, dy: 2, solid: true },
+    { assetKey: 'curated/jul9-small-cover-loot-20-crate-barrel-cover', use: 'dressing', dx: 4, dy: 3, solid: false },
+  ], { label: 'Ghost town facade row pocket', routeBeat: 'arena', anchor: { x: 42, y: 6 }, routeRead: 'facade row, gas canopy, fence, and cover shape the town fight' }),
+  prefabStamp('industrial-power-yard-extraction-pocket', 'finale-extraction', [
+    { assetKey: 'curated/jul9-industrial-buildings-large-03-crypto-mining-service-shed', use: 'landmark', dx: -7, dy: -5, solid: true, metadata: { footprintTiles: { w: 5.7, h: 3.0 } } },
+    { assetKey: 'curated/jul9-power-yard-extraction-00-lit-extraction-beacon', use: 'landmark', dx: 1, dy: -2, solid: false },
+    { assetKey: 'curated/jul9-power-yard-extraction-05-battery-cabinet', use: 'dressing', dx: 5, dy: -1, solid: false },
+    { assetKey: 'curated/jul9-power-yard-extraction-13-power-yard-barricade', use: 'boundary', dx: -4, dy: 3, solid: true },
+    { assetKey: 'curated/jul9-small-cover-loot-13-small-fire-barrel', use: 'dressing', dx: 4, dy: 3, solid: false },
+  ], { label: 'Industrial power-yard extraction pocket', routeBeat: 'extract', anchor: { x: 100, y: 6 }, routeRead: 'mining shed, beacon, battery, barricade, and hazard props sell extraction' }),
   prefabStamp('innercity-gate-barricade', 'inner-city-threshold', [
     { assetKey: 'curated/jul9-industrial-mining-00-mining-rig-rack', use: 'landmark', dx: -5, dy: -4, solid: true },
     { assetKey: 'curated/jul9-industrial-mining-14-satellite-dish', use: 'landmark', dx: 4, dy: -4, solid: true },

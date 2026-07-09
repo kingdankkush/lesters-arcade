@@ -1,0 +1,145 @@
+export const HMH_CURATED_GROUND_RUNTIME = Object.freeze({
+  "id": "hmh-curated-level-art-chatgpt-2026-07-08-compact-ground-runtime",
+  "terrainTextureRoot": "./assets/generated/hmh-curated-level-art/terrain-textures",
+  "tileSize": 160,
+  "roleCodes": {
+    "g": "grass",
+    "d": "dirt",
+    "k": "rocky",
+    "s": "sand",
+    "r": "road",
+    "h": "shore",
+    "w": "water",
+    "gd": "grass-to-dirt",
+    "ds": "dirt-to-sand",
+    "gr": "grass-to-road"
+  },
+  "groundLabels": "base-01|base-02|base-03|base-04|base-05|blend-01|blend-02|blend-03|blend-04|blend-05|edge-01|edge-02|edge-03|edge-04|edge-05|detail-01|detail-02|detail-03|detail-04|detail-05|accent-01|accent-02|accent-03|accent-04|accent-05",
+  "sheets": [
+    [
+      "ground-rock-grass-dirt-a",
+      "k",
+      "g,d,k|g,d,k|g,d,k|g,d,k|g,d,k"
+    ],
+    [
+      "ground-grass-dirt-path-a",
+      "g",
+      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd"
+    ],
+    [
+      "ground-dirt-rock-gravel-a",
+      "d",
+      "d,k|d,k|d,k|d,k|d,k"
+    ],
+    [
+      "ground-water-grass-sand-a",
+      "h",
+      "w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s"
+    ],
+    [
+      "megatexture-dirt-scrub-a",
+      "d",
+      "d,g,k|d,g,k|d,g,k|d,g,k|d,g,k"
+    ],
+    [
+      "ground-sand-gravel-road-a",
+      "s",
+      "s,ds,r|s,ds,r|s,ds,r|s,ds,r|s,ds,r"
+    ],
+    [
+      "ground-asphalt-moss-grass-a",
+      "r",
+      "r,g,gd|r,g,gd|r,g,gd|r,g,gd|r,g,gd"
+    ],
+    [
+      "ground-cracked-asphalt-concrete-a",
+      "r",
+      "r,d|r,d|r,d|r,d|r,d"
+    ],
+    [
+      "ground-sand-dune-dirt-a",
+      "s",
+      "s,ds,d|s,ds,d|s,ds,d|s,ds,d|s,ds,d"
+    ],
+    [
+      "ground-water-grass-shore-a",
+      "w",
+      "w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s"
+    ],
+    [
+      "ground-rock-gravel-dirt-a",
+      "k",
+      "k,d,g|k,d,g|k,d,g|k,d,g|k,d,g"
+    ],
+    [
+      "ground-dark-grass-puddles-a",
+      "g",
+      "g,w,h|g,w,h|g,w,h|g,w,h|g,w,h"
+    ],
+    [
+      "ground-rock-grass-dirt-b",
+      "k",
+      "g,d,k|g,d,k|g,d,k|g,d,k|g,d,k"
+    ],
+    [
+      "ground-grass-dirt-path-b",
+      "g",
+      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd"
+    ],
+    [
+      "megatexture-water-rock-dirt-a",
+      "h",
+      "w,h,d,k|w,h,d,k|w,h,d,k|w,h,d,k|w,h,d,k"
+    ],
+    [
+      "megatexture-grass-path-a",
+      "g",
+      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd"
+    ],
+    [
+      "megatexture-shore-grass-rock-a",
+      "h",
+      "w,h,g,k|w,h,g,k|w,h,g,k|w,h,g,k|w,h,g,k"
+    ],
+    [
+      "jul9-master-ground-terrain-a",
+      "d",
+      "g|g,d,gd|k,d|s,ds,d|d,k,gd"
+    ],
+    [
+      "jul9-transition-ground-edges-a",
+      "gd",
+      "g,d,gd|g,r,gr|d,r,ds|g,h,w|r,d,gd"
+    ],
+    [
+      "jul9-street-asphalt-parking-a",
+      "r",
+      "r|r,gr,d|r|r,d|r,k,d"
+    ],
+    [
+      "jul9-water-shore-mud-a",
+      "h",
+      "w,h|d,h,w|d,w,r|g,h,w|d,s,w,k"
+    ],
+    [
+      "jul9-neighborhood-ground-a",
+      "g",
+      "g|d,r,gr|r,gr|g,d,gd|g,d,r"
+    ],
+    [
+      "jul9-lakeside-pond-a",
+      "w",
+      "w|h,g,w|d,h,w|g,h,w|w,h,d"
+    ],
+    [
+      "jul9-park-path-plaza-a",
+      "g",
+      "g|d,gd|r,gr|gr,d,r|g,d,r"
+    ],
+    [
+      "jul9-road-transition-a",
+      "r",
+      "r|r,gr,d|r,gr|r,d|r,k,d"
+    ]
+  ]
+});

@@ -32,8 +32,8 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 18 });
   assert.equal(objects.length >= 18, true, `expected a dense visible authored spawn slice, got ${objects.length}`);
   assert.equal(objects.some((object) => object.id.includes('spawn-broken-road')), true, 'spawn road beat should be visible immediately');
-  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-buildings-landmarks-00-roadside-store'), true, 'opening should have a strong Jul 9 shoulder landmark visible at spawn without covering the hero');
-  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-buildings-landmarks-04-loan-office-front'), true, 'opening should telegraph the next authored town beat with the new building sheet');
+  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-roadside-buildings-large-02-roadside-convenience-store'), true, 'opening should have a large roadside building visible at spawn without covering the hero');
+  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-main-street-storefronts-large-02-bank-loan-office-front'), true, 'opening should telegraph the next authored town beat with the large storefront sheet');
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-rocks-boulders-')), true, 'opening should use the new rock/boulder prop sheet');
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-fences-barricades-')), true, 'opening should use the new fence/barricade sheet for authored route boundaries');
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-industrial-mining-')), true, 'opening should use the new crypto-industrial sheet as roadside dressing');
@@ -116,6 +116,26 @@ test('Jul 9 10:19 fences, industrial props, and micro-scenes are visible in auth
 
   for (const view of sampleViews) {
     const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 });
+    const stampObjects = objects.filter((object) => object.prefabStampId === view.stampId);
+    assert.ok(stampObjects.length, `${view.stampId} should emit authored objects`);
+    for (const prefix of view.prefixes) {
+      assert.ok(stampObjects.some((object) => object.assetKey.startsWith(prefix)), `${view.stampId} should include ${prefix}`);
+    }
+  }
+});
+
+test('Jul 9 11:16 buildings, neighborhoods, park, water, cliffs, cover, and power-yard sheets are authored into Level 1 biome pockets', () => {
+  const sampleViews = [
+    { playerX: 48, playerY: 8, stampId: 'civic-park-town-pocket', prefixes: ['curated/jul9-civic-buildings-large-', 'curated/jul9-main-street-storefronts-large-', 'curated/jul9-park-rest-area-', 'curated/jul9-small-cover-loot-'] },
+    { playerX: 77, playerY: 7, stampId: 'neighborhood-house-yard-pocket', prefixes: ['curated/jul9-residential-house-facades-large-', 'curated/jul9-garages-sheds-large-', 'curated/jul9-neighborhood-fences-hedges-', 'curated/jul9-neighborhood-yard-clutter-', 'curated/jul9-neighborhood-combo-'] },
+    { playerX: 86, playerY: 9, stampId: 'residential-block-backlot-pocket', prefixes: ['curated/jul9-residential-block-buildings-large-', 'curated/jul9-vegetation-crop-edge-'] },
+    { playerX: 66, playerY: 7, stampId: 'canal-park-ford-pocket', prefixes: ['curated/jul9-creek-canal-culvert-', 'curated/jul9-cliff-ditch-boundary-', 'curated/jul9-vegetation-crop-edge-'] },
+    { playerX: 42, playerY: 6, stampId: 'ghost-town-facade-row-pocket', prefixes: ['curated/jul9-ghost-town-facade-modules-', 'curated/jul9-roadside-buildings-large-'] },
+    { playerX: 100, playerY: 6, stampId: 'industrial-power-yard-extraction-pocket', prefixes: ['curated/jul9-industrial-buildings-large-', 'curated/jul9-power-yard-extraction-'] },
+  ];
+
+  for (const view of sampleViews) {
+    const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 12 });
     const stampObjects = objects.filter((object) => object.prefabStampId === view.stampId);
     assert.ok(stampObjects.length, `${view.stampId} should emit authored objects`);
     for (const prefix of view.prefixes) {
