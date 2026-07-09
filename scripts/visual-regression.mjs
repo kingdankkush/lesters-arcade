@@ -156,20 +156,28 @@ function visualDiffPasses(diff) {
   );
 }
 
-function liveVisualDiffPasses(name, diff) {
-  return Boolean(
-    String(name).startsWith('seed-1337-')
-    && diff
-    && !diff.error
-    && !diff.sizeMismatch
-    && diff.changedPct <= 75
-    && diff.meanAbsPerChannel <= 18
-  );
+const LIVE_WALK_REAL_TIME_MS = 700;
+
+async function captureScreenshotBytes(client) {
+  const shot = await client.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+  return Buffer.from(shot.data, 'base64');
+}
+
+async function writeEvidenceCapture(client, name) {
+  const bytes = await captureScreenshotBytes(client);
+  await mkdir(currentDir, { recursive: true });
+  const currentPath = `${currentDir}/${name}.png`;
+  await writeFile(currentPath, bytes);
+  return {
+    name,
+    status: 'evidence',
+    currentPath,
+    sha256: createHash('sha256').update(bytes).digest('hex'),
+  };
 }
 
 async function writeCapture(client, name) {
-  const shot = await client.send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-  const bytes = Buffer.from(shot.data, 'base64');
+  const bytes = await captureScreenshotBytes(client);
   await mkdir(currentDir, { recursive: true });
   const currentPath = `${currentDir}/${name}.png`;
   await writeFile(currentPath, bytes);
@@ -185,7 +193,7 @@ async function writeCapture(client, name) {
   const diff = exactMatch ? null : comparePngWithPillow(baselinePath, currentPath);
   return {
     name,
-    status: exactMatch || visualDiffPasses(diff) || liveVisualDiffPasses(name, diff) ? 'match' : 'changed',
+    status: exactMatch || visualDiffPasses(diff) ? 'match' : 'changed',
     currentPath,
     baselinePath,
     sha256: currentHash,
@@ -245,7 +253,7 @@ try {
   await loadEvent;
   await sleep(700);
 
-  const bootResult = await runInPage(client, `
+  const bootGate = await runInPage(client, `
     (async () => {
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       const click = (id) => {
@@ -278,15 +286,14 @@ try {
       const readyOverlay = document.getElementById('hmhReadyOverlay');
       if (!readyOverlay) throw new Error('missing #hmhReadyOverlay');
       const pausedStatText = document.getElementById('roguelikeStatBar')?.textContent ?? '';
-      readyOverlay.click();
-      const simulationDeadline = performance.now() + 5000;
-      let liveTimeText = pausedStatText;
-      while (performance.now() < simulationDeadline) {
-        liveTimeText = document.getElementById('roguelikeStatBar')?.textContent ?? '';
-        if (liveTimeText && liveTimeText !== pausedStatText && !liveTimeText.includes('0:00')) break;
-        await wait(100);
+      const debugOverlay = document.getElementById('tacticalBalanceDebugOverlay');
+      if (debugOverlay) {
+        debugOverlay.hidden = true;
+        debugOverlay.style.display = 'none';
       }
-      const simulationAdvanced = Boolean(liveTimeText && liveTimeText !== pausedStatText && !liveTimeText.includes('0:00'));
+      readyOverlay.hidden = true;
+      document.getElementById('combatCanvas')?.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'nearest' });
+      await wait(50);
       const loadingOverlay = document.getElementById('hmhLoadingOverlay');
       const loadingStyle = loadingOverlay ? getComputedStyle(loadingOverlay) : null;
       const progressFill = loadingOverlay?.querySelector('.hmh-loading-progress-fill');
@@ -299,38 +306,63 @@ try {
         overlayText: loadingOverlay?.textContent ?? '',
         progressWidth: progressFill?.style?.width ?? '',
         titleOverlay: Boolean(document.getElementById('hmhLoadingTitleOverlay')),
-        readyOverlay: Boolean(document.getElementById('hmhReadyOverlay')),
-        simulationAdvanced,
+        readyGatePrepared: readyOverlay.hidden,
         pausedStatText,
-        seedText: liveTimeText,
       };
     })()
   `, 45000);
 
-  if (!bootResult?.canvas) throw new Error(`HMH visual boot did not expose combat canvas: ${JSON.stringify(bootResult)}`);
-  if (!bootResult?.overlayGone) throw new Error(`HMH loading overlay still visible: ${JSON.stringify(bootResult)}`);
-  if (!bootResult?.simulationAdvanced) throw new Error(`HMH visual run never advanced beyond READY: ${JSON.stringify(bootResult)}`);
-  if (!String(bootResult.seedText).includes('1337')) throw new Error(`HMH visual run did not boot seed 1337: ${JSON.stringify(bootResult)}`);
+  if (!bootGate?.canvas) throw new Error(`HMH visual boot did not expose combat canvas: ${JSON.stringify(bootGate)}`);
+  if (!bootGate?.overlayGone) throw new Error(`HMH loading overlay still visible: ${JSON.stringify(bootGate)}`);
+  if (!bootGate?.readyGatePrepared) throw new Error(`HMH READY gate did not prepare the deterministic render anchor: ${JSON.stringify(bootGate)}`);
 
-  await runInPage(client, `
-    (() => {
+  const captures = [];
+  captures.push(await writeCapture(client, 'seed-1337-render-anchor'));
+
+  const liveResult = await runInPage(client, `
+    (async () => {
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const readyOverlay = document.getElementById('hmhReadyOverlay');
+      if (!readyOverlay) throw new Error('missing #hmhReadyOverlay');
+      readyOverlay.hidden = false;
+      const pausedStatText = document.getElementById('roguelikeStatBar')?.textContent ?? '';
+      readyOverlay.click();
+      const simulationDeadline = performance.now() + 5000;
+      let seedText = pausedStatText;
+      while (performance.now() < simulationDeadline) {
+        seedText = document.getElementById('roguelikeStatBar')?.textContent ?? '';
+        if (seedText && seedText !== pausedStatText && !seedText.includes('0:00')) break;
+        await wait(25);
+      }
       const debugOverlay = document.getElementById('tacticalBalanceDebugOverlay');
       if (debugOverlay) {
         debugOverlay.hidden = true;
         debugOverlay.style.display = 'none';
       }
-      document.getElementById('combatCanvas')?.scrollIntoView({ block: 'center', inline: 'nearest' });
+      document.getElementById('combatCanvas')?.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'nearest' });
+      await wait(50);
+      return {
+        readyOverlay: Boolean(document.getElementById('hmhReadyOverlay')),
+        simulationAdvanced: Boolean(seedText && seedText !== pausedStatText && !seedText.includes('0:00')),
+        seedText,
+      };
     })()
   `);
-  await sleep(250);
+  const bootResult = { ...bootGate, ...liveResult };
+  if (!bootResult.simulationAdvanced) throw new Error(`HMH visual run never advanced beyond READY: ${JSON.stringify(bootResult)}`);
+  if (bootResult.readyOverlay) throw new Error(`HMH READY gate remained after activation: ${JSON.stringify(bootResult)}`);
+  if (!String(bootResult.seedText).includes('1337')) throw new Error(`HMH visual run did not boot seed 1337: ${JSON.stringify(bootResult)}`);
 
-  const captures = [];
-  captures.push(await writeCapture(client, 'seed-1337-live-spawn'));
+  const liveEvidence = await writeEvidenceCapture(client, 'seed-1337-live-spawn');
+  captures.push(liveEvidence);
+
   await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
-  await sleep(700);
+  await sleep(LIVE_WALK_REAL_TIME_MS);
   await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
-  await sleep(120);
-  captures.push(await writeCapture(client, 'seed-1337-east-walk'));
+  const walkEvidence = await writeEvidenceCapture(client, 'seed-1337-east-walk');
+  captures.push(walkEvidence);
+  const activeEvidenceDistinct = liveEvidence.sha256 !== walkEvidence.sha256;
+  if (!activeEvidenceDistinct) throw new Error('HMH east-walk evidence did not differ from the live-spawn frame');
 
   const antiSlide = await runInPage(client, `
     (() => {
@@ -347,7 +379,7 @@ try {
   if (!antiSlide.canvasWidth || !antiSlide.canvasHeight) throw new Error(`Anti-slide probe could not read canvas dimensions: ${JSON.stringify(antiSlide)}`);
 
   const changed = captures.filter((capture) => capture.status === 'changed');
-  const report = { portalUrl, bootResult, antiSlide, captures };
+  const report = { portalUrl, bootResult, antiSlide, activeEvidenceDistinct, captures };
   await mkdir(currentDir, { recursive: true });
   await writeFile(`${currentDir}/visual-regression-report.json`, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));
