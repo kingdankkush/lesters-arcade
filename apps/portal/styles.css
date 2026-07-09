@@ -447,13 +447,15 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .hero-character-rotator {
   --hero-rotation-scale: 1;
+  --hero-rotation-scale-x: var(--hero-rotation-scale);
+  --hero-rotation-scale-y: var(--hero-rotation-scale);
   aspect-ratio: 1 / 1;
   width: min(100%, 150px);
   filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 16px rgba(25, 247, 255, 0.22));
 }
 
 .hero-character-rotator .cabinet-rotation-frame {
-  transform: scale(var(--hero-rotation-scale));
+  transform: scale(var(--hero-rotation-scale-x), var(--hero-rotation-scale-y));
   transform-origin: 50% 58%;
   image-rendering: pixelated;
 }

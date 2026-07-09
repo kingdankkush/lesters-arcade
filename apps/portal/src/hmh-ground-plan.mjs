@@ -17,6 +17,9 @@ import {
   HMH_LEVEL_ONE_SBS_GROUND,
   sbsGroundAssetByKey,
 } from '../assets/generated/hmh-level-one-ground/sbs-cc0/sbs-level-one-ground-manifest.mjs';
+import {
+  HMH_CURATED_LEVEL_ART,
+} from '../assets/generated/hmh-curated-level-art/hmh-curated-level-art.mjs';
 
 const CONNECTIVE_ZONE_ID = 'connective-scrub';
 
@@ -40,6 +43,20 @@ const WO103_ROLE_PREFERENCES = Object.freeze({
   'dirt-to-sand': 'wo103-continuous/dirt-sand-transition',
 });
 
+const CHATGPT_TERRAIN_ROLE_PREFERENCES = Object.freeze({
+  grass: 'chatgpt-terrain/ground-grass-dirt-path-b-r1-c1',
+  dirt: 'chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3',
+  sand: 'chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1',
+  rocky: 'chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3',
+  road: 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2',
+  bridge: 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2',
+  shore: 'chatgpt-terrain/ground-water-grass-shore-a-r4-c4',
+  water: 'chatgpt-terrain/ground-water-grass-shore-a-r1-c2',
+  'grass-to-dirt': 'chatgpt-terrain/ground-grass-dirt-path-b-r3-c4',
+  'dirt-to-sand': 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4',
+  'grass-to-road': 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3',
+});
+
 const CURATED_RADIUS_BY_BEAT = Object.freeze({
   'safe-spawn': Object.freeze({ x: 10, y: 8 }),
   'mini-boss-arena': Object.freeze({ x: 12, y: 10 }),
@@ -58,8 +75,25 @@ function normalizeRole(role) {
   return ROLE_ALIASES[key] ?? key;
 }
 
+const CHATGPT_TERRAIN_ASSET_BY_KEY = new Map((HMH_CURATED_LEVEL_ART.groundTextures ?? []).map((asset) => [asset.key, Object.freeze({
+  ...asset,
+  source: asset.source ?? 'justin-chatgpt-map-tile-sheet',
+  notes: asset.notes ?? 'Justin-approved ChatGPT Image map tile sheet, sliced into an opaque runtime terrain texture.',
+})]));
+
+function curatedTerrainTextureAssetByKey(key) {
+  return CHATGPT_TERRAIN_ASSET_BY_KEY.get(key) ?? null;
+}
+
+function curatedTextureKeysForRole(role) {
+  const normalized = normalizeRole(role);
+  return HMH_CURATED_LEVEL_ART.terrainRoles?.[normalized] ?? [];
+}
+
 function manifestKeysForRole(role) {
   const normalized = normalizeRole(role);
+  const curatedKeys = curatedTextureKeysForRole(normalized);
+  if (curatedKeys.length) return { keys: curatedKeys, lookup: curatedTerrainTextureAssetByKey };
   const continuousKeys = HMH_WO103_CONTINUOUS_GROUND.roles?.[normalized] ?? [];
   if (continuousKeys.length) return { keys: continuousKeys, lookup: wo103ContinuousGroundAssetByKey };
   const finalKeys = HMH_LEVEL_ONE_FINAL_PAINT_GROUND.roles?.[normalized] ?? [];
@@ -72,6 +106,7 @@ function manifestKeysForRole(role) {
 
 function preferredTextureKeyForRole(role) {
   const normalized = normalizeRole(role);
+  if (curatedTerrainTextureAssetByKey(CHATGPT_TERRAIN_ROLE_PREFERENCES[normalized])) return CHATGPT_TERRAIN_ROLE_PREFERENCES[normalized];
   if (wo103ContinuousGroundAssetByKey(WO103_ROLE_PREFERENCES[normalized])) return WO103_ROLE_PREFERENCES[normalized];
   const { keys, lookup } = manifestKeysForRole(role);
   if (!keys.length) return 'final-paint/dirt-handpaint-01';
@@ -80,12 +115,12 @@ function preferredTextureKeyForRole(role) {
 
 function wo103TextureKeyForLegacySurface(asset, role) {
   const key = String(asset?.key ?? '').toLowerCase();
-  if (key.includes('asphalt') || key.includes('cobble')) return 'wo103-continuous/asphalt';
-  if (key.includes('scorched') || key.includes('boss')) return 'wo103-continuous/scorched-yard';
-  if (key.includes('field') || key.includes('stubble')) return 'wo103-continuous/field-stubble';
-  if (key.includes('forest')) return 'wo103-continuous/forest-floor';
-  if (key.includes('sand')) return 'wo103-continuous/sand';
-  if (key.includes('water')) return 'wo103-continuous/water-ripple';
+  if (key.includes('asphalt') || key.includes('cobble')) return preferredTextureKeyForRole('road');
+  if (key.includes('scorched') || key.includes('boss')) return preferredTextureKeyForRole('rocky');
+  if (key.includes('field') || key.includes('stubble')) return preferredTextureKeyForRole('grass');
+  if (key.includes('forest')) return preferredTextureKeyForRole('grass');
+  if (key.includes('sand')) return preferredTextureKeyForRole('sand');
+  if (key.includes('water')) return preferredTextureKeyForRole('water');
   return preferredTextureKeyForRole(role);
 }
 
@@ -153,10 +188,6 @@ function buildPixellabZones() {
       source: 'pixellab-surface-zones',
       zoneId: zone.id,
       role,
-      // WO-103: legacy PixelLab "ground texture" candidates were transparent
-      // isometric slabs. They stay as decal references, while broad runtime fill
-      // uses the opaque continuous WO-103 variants so the canvas no longer
-      // checkerboards through transparent pattern corners.
       textureKey: wo103TextureKeyForLegacySurface(asset, role),
       priority: 2000 + (zone.priority ?? 0),
       xMin: zone.xMin,
@@ -165,6 +196,41 @@ function buildPixellabZones() {
       yMax: zone.yMax,
     });
   });
+}
+
+function terrainZone(zoneId, role, textureKey, xMin, xMax, yMin, yMax, priority, title) {
+  return freezeRecord({
+    source: 'justin-chatgpt-terrain-layout-v2',
+    zoneId,
+    title,
+    role,
+    textureKey,
+    priority,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+  });
+}
+
+function buildChatgptTerrainZones() {
+  return Object.freeze([
+    terrainZone('spawn-clear-blacktop-centerline', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2', -16, 22, 4, 6, 3100, 'safe spawn blacktop lane'),
+    terrainZone('spawn-grass-road-north-shoulder', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', -12, 24, 2, 3, 3095, 'grass-to-asphalt north shoulder'),
+    terrainZone('spawn-sand-road-south-shoulder', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', -12, 26, 7, 9, 3095, 'sand-to-road south shoulder'),
+    terrainZone('spawn-dirt-scrub-outfield', 'dirt', 'chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3', -18, 30, -4, 12, 3000, 'low detail dirt scrub outfield'),
+    terrainZone('ghost-town-cracked-asphalt-core', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 28, 54, -1, 12, 3120, 'cracked asphalt ghost-town street'),
+    terrainZone('ghost-town-mossy-curb-edge', 'grass-to-dirt', 'chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3', 28, 54, 11, 14, 3110, 'mossy asphalt-to-grass curb edge'),
+    terrainZone('country-grass-megapath', 'grass', 'chatgpt-terrain/megatexture-grass-path-a-r3-c3', 50, 88, -2, 13, 3080, 'megatexture grass path field'),
+    terrainZone('country-puddle-lowlands', 'shore', 'chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2', 55, 74, 9, 13, 3090, 'muddy grass puddle lowlands'),
+    terrainZone('river-bridge-planks', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2', 60, 64, 5, 6, 3165, 'bridge deck across the water ribbon'),
+    terrainZone('blackwater-ford-water-ribbon', 'water', 'chatgpt-terrain/ground-water-grass-shore-a-r1-c2', 60, 64, 6, 9, 3150, 'water ribbon through the ford'),
+    terrainZone('blackwater-ford-grass-shore', 'shore', 'chatgpt-terrain/ground-water-grass-shore-a-r4-c4', 58, 66, 4, 10, 3140, 'grass-water shoreline blend'),
+    terrainZone('bone-camp-open-sand', 'sand', 'chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1', 68, 92, -2, 12, 3070, 'open sand combat oval'),
+    terrainZone('bone-camp-rocky-rim', 'rocky', 'chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3', 70, 94, 10, 15, 3080, 'rocky rim around sand oval'),
+    terrainZone('warehouse-oil-asphalt', 'road', 'chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c3', 88, 104, 2, 9, 3130, 'warehouse asphalt pad'),
+    terrainZone('warehouse-sand-asphalt-edge', 'dirt-to-sand', 'chatgpt-terrain/ground-sand-gravel-road-a-r2-c4', 86, 106, 9, 13, 3110, 'asphalt-to-sand warehouse shoulder'),
+  ]);
 }
 
 function connectiveZone() {
@@ -183,7 +249,8 @@ function connectiveZone() {
 }
 
 function textureAssetByKey(textureKey) {
-  return wo103ContinuousGroundAssetByKey(textureKey)
+  return curatedTerrainTextureAssetByKey(textureKey)
+    ?? wo103ContinuousGroundAssetByKey(textureKey)
     ?? levelOnePixellabSurfaceAssetByKey(textureKey)
     ?? finalPaintGroundAssetByKey(textureKey)
     ?? sbsGroundAssetByKey(textureKey)
@@ -193,7 +260,7 @@ function textureAssetByKey(textureKey) {
 export function buildGroundPlan({ levelId = HMH_LEVEL_ONE_ID, seed = 0 } = {}) {
   const safeLevelId = levelId || HMH_LEVEL_ONE_ID;
   const zones = safeLevelId === HMH_LEVEL_ONE_ID
-    ? Object.freeze([...buildCuratedZones(), ...buildPixellabZones(), connectiveZone()])
+    ? Object.freeze([...buildChatgptTerrainZones(), ...buildCuratedZones(), ...buildPixellabZones(), connectiveZone()])
     : Object.freeze([connectiveZone()]);
   const ordered = [...zones].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
   const zoneAtBare = (worldX, worldY) => {

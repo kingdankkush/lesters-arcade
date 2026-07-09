@@ -35,7 +35,7 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 18 });
   assert.equal(objects.length >= 18, true, `expected a dense visible authored spawn slice, got ${objects.length}`);
   assert.equal(objects.some((object) => object.id.includes('spawn-broken-road')), true, 'spawn road beat should be visible immediately');
-  assert.equal(objects.some((object) => object.assetKey === 'level-1/building/landmark-gas-station'), true, 'opening should have a strong curated landmark visible at spawn');
+  assert.equal(objects.some((object) => object.assetKey === 'level-1/building/storefront-02'), true, 'opening should have a strong curated shoulder landmark visible at spawn without covering the hero');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/building/ghost-boarded-storefront'), true, 'opening should telegraph the next authored town beat');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), true, 'opening should include route signage without covering the hero start');
   assert.equal(objects.every((object) => levelOneCuratedAssetSrc(object.assetKey)), true, 'every object should resolve through the Level 1 runtime art policy');

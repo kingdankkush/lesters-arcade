@@ -32,7 +32,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "rows": 5,
         "cols": 5
       },
-      "kind": "full-cell terrain tile sheet"
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a",
@@ -40,17 +46,237 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
         "rows": 5,
         "cols": 5
       },
-      "kind": "full-cell terrain tile sheet"
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a",
+      "grid": {
+        "rows": 5,
+        "cols": 5
+      },
+      "kind": "full-cell terrain tile sheet",
+      "primaryRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
     }
   ],
   "gridCounts": {
     "treeIdleFrames": 18,
     "forestProps": 32,
-    "groundTiles": 50
+    "groundTiles": 425,
+    "groundTextures": 425
   },
   "runtime": {
     "coherentWorldRoot": "./assets/generated/hmh-coherent-world/curated",
     "groundRoot": "./assets/generated/hmh-curated-level-art/ground",
+    "terrainTextureRoot": "./assets/generated/hmh-curated-level-art/terrain-textures",
     "propRoot": "./assets/generated/hmh-curated-level-art/props"
   },
   "treeAnimations": [
@@ -674,7 +900,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-1-base-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r1-c2",
@@ -688,7 +920,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-2-base-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r1-c3",
@@ -702,7 +940,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-3-base-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r1-c4",
@@ -716,7 +960,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-4-base-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r1-c5",
@@ -730,7 +980,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/1-5-base-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r2-c1",
@@ -744,7 +1000,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-1-blend-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r2-c2",
@@ -758,7 +1020,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-2-blend-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r2-c3",
@@ -772,7 +1040,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-3-blend-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r2-c4",
@@ -786,7 +1060,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-4-blend-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r2-c5",
@@ -800,7 +1080,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/2-5-blend-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r3-c1",
@@ -814,7 +1100,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-1-edge-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r3-c2",
@@ -828,7 +1120,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-2-edge-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r3-c3",
@@ -842,7 +1140,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-3-edge-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r3-c4",
@@ -856,7 +1160,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-4-edge-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r3-c5",
@@ -870,7 +1180,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/3-5-edge-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r4-c1",
@@ -884,7 +1200,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-1-detail-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r4-c2",
@@ -898,7 +1220,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-2-detail-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r4-c3",
@@ -912,7 +1240,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-3-detail-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r4-c4",
@@ -926,7 +1260,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-4-detail-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r4-c5",
@@ -940,7 +1280,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/4-5-detail-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r5-c1",
@@ -954,7 +1300,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-1-accent-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r5-c2",
@@ -968,7 +1320,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-2-accent-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r5-c3",
@@ -982,7 +1340,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-3-accent-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r5-c4",
@@ -996,7 +1360,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-4-accent-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-rock-grass-dirt-a-r5-c5",
@@ -1010,7 +1380,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-a/5-5-accent-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r1-c1",
@@ -1024,7 +1400,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-1-base-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r1-c2",
@@ -1038,7 +1420,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-2-base-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r1-c3",
@@ -1052,7 +1440,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-3-base-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r1-c4",
@@ -1066,7 +1460,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-4-base-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r1-c5",
@@ -1080,7 +1480,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/1-5-base-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r2-c1",
@@ -1094,7 +1500,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-1-blend-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r2-c2",
@@ -1108,7 +1520,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-2-blend-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r2-c3",
@@ -1122,7 +1540,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-3-blend-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r2-c4",
@@ -1136,7 +1560,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-4-blend-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r2-c5",
@@ -1150,7 +1580,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/2-5-blend-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r3-c1",
@@ -1164,7 +1600,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-1-edge-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r3-c2",
@@ -1178,7 +1620,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-2-edge-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r3-c3",
@@ -1192,7 +1640,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-3-edge-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r3-c4",
@@ -1206,7 +1660,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-4-edge-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r3-c5",
@@ -1220,7 +1680,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/3-5-edge-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r4-c1",
@@ -1234,7 +1700,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-1-detail-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r4-c2",
@@ -1248,7 +1720,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-2-detail-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r4-c3",
@@ -1262,7 +1740,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-3-detail-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r4-c4",
@@ -1276,7 +1760,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-4-detail-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r4-c5",
@@ -1290,7 +1780,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/4-5-detail-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r5-c1",
@@ -1304,7 +1800,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-1-accent-01.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r5-c2",
@@ -1318,7 +1820,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-2-accent-02.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r5-c3",
@@ -1332,7 +1840,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-3-accent-03.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r5-c4",
@@ -1346,7 +1860,13 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-4-accent-04.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
     },
     {
       "id": "ground-grass-dirt-path-a-r5-c5",
@@ -1360,14 +1880,17899 @@ export const HMH_CURATED_LEVEL_ART = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-a/5-5-accent-05.png",
       "width": 56,
       "height": 56,
-      "role": "isometric_tile"
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r1-c1",
+      "slug": "ground-dirt-rock-gravel-a-r1-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r1-c2",
+      "slug": "ground-dirt-rock-gravel-a-r1-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r1-c3",
+      "slug": "ground-dirt-rock-gravel-a-r1-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r1-c4",
+      "slug": "ground-dirt-rock-gravel-a-r1-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r1-c5",
+      "slug": "ground-dirt-rock-gravel-a-r1-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r2-c1",
+      "slug": "ground-dirt-rock-gravel-a-r2-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r2-c2",
+      "slug": "ground-dirt-rock-gravel-a-r2-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r2-c3",
+      "slug": "ground-dirt-rock-gravel-a-r2-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r2-c4",
+      "slug": "ground-dirt-rock-gravel-a-r2-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r2-c5",
+      "slug": "ground-dirt-rock-gravel-a-r2-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r3-c1",
+      "slug": "ground-dirt-rock-gravel-a-r3-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r3-c2",
+      "slug": "ground-dirt-rock-gravel-a-r3-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r3-c3",
+      "slug": "ground-dirt-rock-gravel-a-r3-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r3-c4",
+      "slug": "ground-dirt-rock-gravel-a-r3-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r3-c5",
+      "slug": "ground-dirt-rock-gravel-a-r3-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r4-c1",
+      "slug": "ground-dirt-rock-gravel-a-r4-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r4-c2",
+      "slug": "ground-dirt-rock-gravel-a-r4-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r4-c3",
+      "slug": "ground-dirt-rock-gravel-a-r4-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r4-c4",
+      "slug": "ground-dirt-rock-gravel-a-r4-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r4-c5",
+      "slug": "ground-dirt-rock-gravel-a-r4-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r5-c1",
+      "slug": "ground-dirt-rock-gravel-a-r5-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r5-c2",
+      "slug": "ground-dirt-rock-gravel-a-r5-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r5-c3",
+      "slug": "ground-dirt-rock-gravel-a-r5-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r5-c4",
+      "slug": "ground-dirt-rock-gravel-a-r5-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-dirt-rock-gravel-a-r5-c5",
+      "slug": "ground-dirt-rock-gravel-a-r5-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dirt-rock-gravel-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r1-c1",
+      "slug": "ground-water-grass-sand-a-r1-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r1-c2",
+      "slug": "ground-water-grass-sand-a-r1-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r1-c3",
+      "slug": "ground-water-grass-sand-a-r1-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r1-c4",
+      "slug": "ground-water-grass-sand-a-r1-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r1-c5",
+      "slug": "ground-water-grass-sand-a-r1-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r2-c1",
+      "slug": "ground-water-grass-sand-a-r2-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r2-c2",
+      "slug": "ground-water-grass-sand-a-r2-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r2-c3",
+      "slug": "ground-water-grass-sand-a-r2-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r2-c4",
+      "slug": "ground-water-grass-sand-a-r2-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r2-c5",
+      "slug": "ground-water-grass-sand-a-r2-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r3-c1",
+      "slug": "ground-water-grass-sand-a-r3-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r3-c2",
+      "slug": "ground-water-grass-sand-a-r3-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r3-c3",
+      "slug": "ground-water-grass-sand-a-r3-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r3-c4",
+      "slug": "ground-water-grass-sand-a-r3-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r3-c5",
+      "slug": "ground-water-grass-sand-a-r3-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r4-c1",
+      "slug": "ground-water-grass-sand-a-r4-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r4-c2",
+      "slug": "ground-water-grass-sand-a-r4-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r4-c3",
+      "slug": "ground-water-grass-sand-a-r4-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r4-c4",
+      "slug": "ground-water-grass-sand-a-r4-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r4-c5",
+      "slug": "ground-water-grass-sand-a-r4-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r5-c1",
+      "slug": "ground-water-grass-sand-a-r5-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r5-c2",
+      "slug": "ground-water-grass-sand-a-r5-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r5-c3",
+      "slug": "ground-water-grass-sand-a-r5-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r5-c4",
+      "slug": "ground-water-grass-sand-a-r5-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-sand-a-r5-c5",
+      "slug": "ground-water-grass-sand-a-r5-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-sand-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r1-c1",
+      "slug": "megatexture-dirt-scrub-a-r1-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r1-c2",
+      "slug": "megatexture-dirt-scrub-a-r1-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r1-c3",
+      "slug": "megatexture-dirt-scrub-a-r1-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r1-c4",
+      "slug": "megatexture-dirt-scrub-a-r1-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r1-c5",
+      "slug": "megatexture-dirt-scrub-a-r1-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r2-c1",
+      "slug": "megatexture-dirt-scrub-a-r2-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r2-c2",
+      "slug": "megatexture-dirt-scrub-a-r2-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r2-c3",
+      "slug": "megatexture-dirt-scrub-a-r2-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r2-c4",
+      "slug": "megatexture-dirt-scrub-a-r2-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r2-c5",
+      "slug": "megatexture-dirt-scrub-a-r2-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r3-c1",
+      "slug": "megatexture-dirt-scrub-a-r3-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r3-c2",
+      "slug": "megatexture-dirt-scrub-a-r3-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r3-c3",
+      "slug": "megatexture-dirt-scrub-a-r3-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r3-c4",
+      "slug": "megatexture-dirt-scrub-a-r3-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r3-c5",
+      "slug": "megatexture-dirt-scrub-a-r3-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r4-c1",
+      "slug": "megatexture-dirt-scrub-a-r4-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r4-c2",
+      "slug": "megatexture-dirt-scrub-a-r4-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r4-c3",
+      "slug": "megatexture-dirt-scrub-a-r4-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r4-c4",
+      "slug": "megatexture-dirt-scrub-a-r4-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r4-c5",
+      "slug": "megatexture-dirt-scrub-a-r4-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r5-c1",
+      "slug": "megatexture-dirt-scrub-a-r5-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r5-c2",
+      "slug": "megatexture-dirt-scrub-a-r5-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r5-c3",
+      "slug": "megatexture-dirt-scrub-a-r5-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r5-c4",
+      "slug": "megatexture-dirt-scrub-a-r5-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-dirt-scrub-a-r5-c5",
+      "slug": "megatexture-dirt-scrub-a-r5-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-dirt-scrub-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r1-c1",
+      "slug": "ground-sand-gravel-road-a-r1-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r1-c2",
+      "slug": "ground-sand-gravel-road-a-r1-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r1-c3",
+      "slug": "ground-sand-gravel-road-a-r1-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r1-c4",
+      "slug": "ground-sand-gravel-road-a-r1-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r1-c5",
+      "slug": "ground-sand-gravel-road-a-r1-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r2-c1",
+      "slug": "ground-sand-gravel-road-a-r2-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r2-c2",
+      "slug": "ground-sand-gravel-road-a-r2-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r2-c3",
+      "slug": "ground-sand-gravel-road-a-r2-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r2-c4",
+      "slug": "ground-sand-gravel-road-a-r2-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r2-c5",
+      "slug": "ground-sand-gravel-road-a-r2-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r3-c1",
+      "slug": "ground-sand-gravel-road-a-r3-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r3-c2",
+      "slug": "ground-sand-gravel-road-a-r3-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r3-c3",
+      "slug": "ground-sand-gravel-road-a-r3-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r3-c4",
+      "slug": "ground-sand-gravel-road-a-r3-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r3-c5",
+      "slug": "ground-sand-gravel-road-a-r3-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r4-c1",
+      "slug": "ground-sand-gravel-road-a-r4-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r4-c2",
+      "slug": "ground-sand-gravel-road-a-r4-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r4-c3",
+      "slug": "ground-sand-gravel-road-a-r4-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r4-c4",
+      "slug": "ground-sand-gravel-road-a-r4-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r4-c5",
+      "slug": "ground-sand-gravel-road-a-r4-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r5-c1",
+      "slug": "ground-sand-gravel-road-a-r5-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r5-c2",
+      "slug": "ground-sand-gravel-road-a-r5-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r5-c3",
+      "slug": "ground-sand-gravel-road-a-r5-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r5-c4",
+      "slug": "ground-sand-gravel-road-a-r5-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-sand-gravel-road-a-r5-c5",
+      "slug": "ground-sand-gravel-road-a-r5-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-gravel-road-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r1-c1",
+      "slug": "ground-asphalt-moss-grass-a-r1-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r1-c2",
+      "slug": "ground-asphalt-moss-grass-a-r1-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r1-c3",
+      "slug": "ground-asphalt-moss-grass-a-r1-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r1-c4",
+      "slug": "ground-asphalt-moss-grass-a-r1-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r1-c5",
+      "slug": "ground-asphalt-moss-grass-a-r1-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r2-c1",
+      "slug": "ground-asphalt-moss-grass-a-r2-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r2-c2",
+      "slug": "ground-asphalt-moss-grass-a-r2-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r2-c3",
+      "slug": "ground-asphalt-moss-grass-a-r2-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r2-c4",
+      "slug": "ground-asphalt-moss-grass-a-r2-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r2-c5",
+      "slug": "ground-asphalt-moss-grass-a-r2-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r3-c1",
+      "slug": "ground-asphalt-moss-grass-a-r3-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r3-c2",
+      "slug": "ground-asphalt-moss-grass-a-r3-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r3-c3",
+      "slug": "ground-asphalt-moss-grass-a-r3-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r3-c4",
+      "slug": "ground-asphalt-moss-grass-a-r3-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r3-c5",
+      "slug": "ground-asphalt-moss-grass-a-r3-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r4-c1",
+      "slug": "ground-asphalt-moss-grass-a-r4-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r4-c2",
+      "slug": "ground-asphalt-moss-grass-a-r4-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r4-c3",
+      "slug": "ground-asphalt-moss-grass-a-r4-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r4-c4",
+      "slug": "ground-asphalt-moss-grass-a-r4-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r4-c5",
+      "slug": "ground-asphalt-moss-grass-a-r4-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r5-c1",
+      "slug": "ground-asphalt-moss-grass-a-r5-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r5-c2",
+      "slug": "ground-asphalt-moss-grass-a-r5-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r5-c3",
+      "slug": "ground-asphalt-moss-grass-a-r5-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r5-c4",
+      "slug": "ground-asphalt-moss-grass-a-r5-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-asphalt-moss-grass-a-r5-c5",
+      "slug": "ground-asphalt-moss-grass-a-r5-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-asphalt-moss-grass-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r1-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r1-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r1-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r1-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r1-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r2-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r2-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r2-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r2-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r2-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r3-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r3-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r3-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r3-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r3-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r4-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r4-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r4-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r4-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r4-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r5-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r5-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r5-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r5-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-cracked-asphalt-concrete-a-r5-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-cracked-asphalt-concrete-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r1-c1",
+      "slug": "ground-sand-dune-dirt-a-r1-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r1-c2",
+      "slug": "ground-sand-dune-dirt-a-r1-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r1-c3",
+      "slug": "ground-sand-dune-dirt-a-r1-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r1-c4",
+      "slug": "ground-sand-dune-dirt-a-r1-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r1-c5",
+      "slug": "ground-sand-dune-dirt-a-r1-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r2-c1",
+      "slug": "ground-sand-dune-dirt-a-r2-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r2-c2",
+      "slug": "ground-sand-dune-dirt-a-r2-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r2-c3",
+      "slug": "ground-sand-dune-dirt-a-r2-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r2-c4",
+      "slug": "ground-sand-dune-dirt-a-r2-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r2-c5",
+      "slug": "ground-sand-dune-dirt-a-r2-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r3-c1",
+      "slug": "ground-sand-dune-dirt-a-r3-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r3-c2",
+      "slug": "ground-sand-dune-dirt-a-r3-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r3-c3",
+      "slug": "ground-sand-dune-dirt-a-r3-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r3-c4",
+      "slug": "ground-sand-dune-dirt-a-r3-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r3-c5",
+      "slug": "ground-sand-dune-dirt-a-r3-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r4-c1",
+      "slug": "ground-sand-dune-dirt-a-r4-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r4-c2",
+      "slug": "ground-sand-dune-dirt-a-r4-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r4-c3",
+      "slug": "ground-sand-dune-dirt-a-r4-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r4-c4",
+      "slug": "ground-sand-dune-dirt-a-r4-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r4-c5",
+      "slug": "ground-sand-dune-dirt-a-r4-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r5-c1",
+      "slug": "ground-sand-dune-dirt-a-r5-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r5-c2",
+      "slug": "ground-sand-dune-dirt-a-r5-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r5-c3",
+      "slug": "ground-sand-dune-dirt-a-r5-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r5-c4",
+      "slug": "ground-sand-dune-dirt-a-r5-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-sand-dune-dirt-a-r5-c5",
+      "slug": "ground-sand-dune-dirt-a-r5-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-sand-dune-dirt-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r1-c1",
+      "slug": "ground-water-grass-shore-a-r1-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r1-c2",
+      "slug": "ground-water-grass-shore-a-r1-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r1-c3",
+      "slug": "ground-water-grass-shore-a-r1-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r1-c4",
+      "slug": "ground-water-grass-shore-a-r1-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r1-c5",
+      "slug": "ground-water-grass-shore-a-r1-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r2-c1",
+      "slug": "ground-water-grass-shore-a-r2-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r2-c2",
+      "slug": "ground-water-grass-shore-a-r2-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r2-c3",
+      "slug": "ground-water-grass-shore-a-r2-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r2-c4",
+      "slug": "ground-water-grass-shore-a-r2-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r2-c5",
+      "slug": "ground-water-grass-shore-a-r2-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r3-c1",
+      "slug": "ground-water-grass-shore-a-r3-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r3-c2",
+      "slug": "ground-water-grass-shore-a-r3-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r3-c3",
+      "slug": "ground-water-grass-shore-a-r3-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r3-c4",
+      "slug": "ground-water-grass-shore-a-r3-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r3-c5",
+      "slug": "ground-water-grass-shore-a-r3-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r4-c1",
+      "slug": "ground-water-grass-shore-a-r4-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r4-c2",
+      "slug": "ground-water-grass-shore-a-r4-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r4-c3",
+      "slug": "ground-water-grass-shore-a-r4-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r4-c4",
+      "slug": "ground-water-grass-shore-a-r4-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r4-c5",
+      "slug": "ground-water-grass-shore-a-r4-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r5-c1",
+      "slug": "ground-water-grass-shore-a-r5-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r5-c2",
+      "slug": "ground-water-grass-shore-a-r5-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r5-c3",
+      "slug": "ground-water-grass-shore-a-r5-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r5-c4",
+      "slug": "ground-water-grass-shore-a-r5-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-water-grass-shore-a-r5-c5",
+      "slug": "ground-water-grass-shore-a-r5-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-water-grass-shore-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r1-c1",
+      "slug": "ground-rock-gravel-dirt-a-r1-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r1-c2",
+      "slug": "ground-rock-gravel-dirt-a-r1-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r1-c3",
+      "slug": "ground-rock-gravel-dirt-a-r1-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r1-c4",
+      "slug": "ground-rock-gravel-dirt-a-r1-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r1-c5",
+      "slug": "ground-rock-gravel-dirt-a-r1-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r2-c1",
+      "slug": "ground-rock-gravel-dirt-a-r2-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r2-c2",
+      "slug": "ground-rock-gravel-dirt-a-r2-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r2-c3",
+      "slug": "ground-rock-gravel-dirt-a-r2-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r2-c4",
+      "slug": "ground-rock-gravel-dirt-a-r2-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r2-c5",
+      "slug": "ground-rock-gravel-dirt-a-r2-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r3-c1",
+      "slug": "ground-rock-gravel-dirt-a-r3-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r3-c2",
+      "slug": "ground-rock-gravel-dirt-a-r3-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r3-c3",
+      "slug": "ground-rock-gravel-dirt-a-r3-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r3-c4",
+      "slug": "ground-rock-gravel-dirt-a-r3-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r3-c5",
+      "slug": "ground-rock-gravel-dirt-a-r3-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r4-c1",
+      "slug": "ground-rock-gravel-dirt-a-r4-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r4-c2",
+      "slug": "ground-rock-gravel-dirt-a-r4-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r4-c3",
+      "slug": "ground-rock-gravel-dirt-a-r4-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r4-c4",
+      "slug": "ground-rock-gravel-dirt-a-r4-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r4-c5",
+      "slug": "ground-rock-gravel-dirt-a-r4-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r5-c1",
+      "slug": "ground-rock-gravel-dirt-a-r5-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r5-c2",
+      "slug": "ground-rock-gravel-dirt-a-r5-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r5-c3",
+      "slug": "ground-rock-gravel-dirt-a-r5-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r5-c4",
+      "slug": "ground-rock-gravel-dirt-a-r5-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-rock-gravel-dirt-a-r5-c5",
+      "slug": "ground-rock-gravel-dirt-a-r5-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-gravel-dirt-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r1-c1",
+      "slug": "ground-dark-grass-puddles-a-r1-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r1-c2",
+      "slug": "ground-dark-grass-puddles-a-r1-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r1-c3",
+      "slug": "ground-dark-grass-puddles-a-r1-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r1-c4",
+      "slug": "ground-dark-grass-puddles-a-r1-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r1-c5",
+      "slug": "ground-dark-grass-puddles-a-r1-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r2-c1",
+      "slug": "ground-dark-grass-puddles-a-r2-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r2-c2",
+      "slug": "ground-dark-grass-puddles-a-r2-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r2-c3",
+      "slug": "ground-dark-grass-puddles-a-r2-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r2-c4",
+      "slug": "ground-dark-grass-puddles-a-r2-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r2-c5",
+      "slug": "ground-dark-grass-puddles-a-r2-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r3-c1",
+      "slug": "ground-dark-grass-puddles-a-r3-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r3-c2",
+      "slug": "ground-dark-grass-puddles-a-r3-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r3-c3",
+      "slug": "ground-dark-grass-puddles-a-r3-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r3-c4",
+      "slug": "ground-dark-grass-puddles-a-r3-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r3-c5",
+      "slug": "ground-dark-grass-puddles-a-r3-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r4-c1",
+      "slug": "ground-dark-grass-puddles-a-r4-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r4-c2",
+      "slug": "ground-dark-grass-puddles-a-r4-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r4-c3",
+      "slug": "ground-dark-grass-puddles-a-r4-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r4-c4",
+      "slug": "ground-dark-grass-puddles-a-r4-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r4-c5",
+      "slug": "ground-dark-grass-puddles-a-r4-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r5-c1",
+      "slug": "ground-dark-grass-puddles-a-r5-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r5-c2",
+      "slug": "ground-dark-grass-puddles-a-r5-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r5-c3",
+      "slug": "ground-dark-grass-puddles-a-r5-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r5-c4",
+      "slug": "ground-dark-grass-puddles-a-r5-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-dark-grass-puddles-a-r5-c5",
+      "slug": "ground-dark-grass-puddles-a-r5-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-dark-grass-puddles-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r1-c1",
+      "slug": "ground-rock-grass-dirt-b-r1-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r1-c2",
+      "slug": "ground-rock-grass-dirt-b-r1-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r1-c3",
+      "slug": "ground-rock-grass-dirt-b-r1-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r1-c4",
+      "slug": "ground-rock-grass-dirt-b-r1-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r1-c5",
+      "slug": "ground-rock-grass-dirt-b-r1-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r2-c1",
+      "slug": "ground-rock-grass-dirt-b-r2-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r2-c2",
+      "slug": "ground-rock-grass-dirt-b-r2-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r2-c3",
+      "slug": "ground-rock-grass-dirt-b-r2-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r2-c4",
+      "slug": "ground-rock-grass-dirt-b-r2-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r2-c5",
+      "slug": "ground-rock-grass-dirt-b-r2-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r3-c1",
+      "slug": "ground-rock-grass-dirt-b-r3-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r3-c2",
+      "slug": "ground-rock-grass-dirt-b-r3-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r3-c3",
+      "slug": "ground-rock-grass-dirt-b-r3-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r3-c4",
+      "slug": "ground-rock-grass-dirt-b-r3-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r3-c5",
+      "slug": "ground-rock-grass-dirt-b-r3-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r4-c1",
+      "slug": "ground-rock-grass-dirt-b-r4-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r4-c2",
+      "slug": "ground-rock-grass-dirt-b-r4-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r4-c3",
+      "slug": "ground-rock-grass-dirt-b-r4-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r4-c4",
+      "slug": "ground-rock-grass-dirt-b-r4-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r4-c5",
+      "slug": "ground-rock-grass-dirt-b-r4-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r5-c1",
+      "slug": "ground-rock-grass-dirt-b-r5-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r5-c2",
+      "slug": "ground-rock-grass-dirt-b-r5-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r5-c3",
+      "slug": "ground-rock-grass-dirt-b-r5-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r5-c4",
+      "slug": "ground-rock-grass-dirt-b-r5-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-rock-grass-dirt-b-r5-c5",
+      "slug": "ground-rock-grass-dirt-b-r5-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-rock-grass-dirt-b/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r1-c1",
+      "slug": "ground-grass-dirt-path-b-r1-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r1-c2",
+      "slug": "ground-grass-dirt-path-b-r1-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r1-c3",
+      "slug": "ground-grass-dirt-path-b-r1-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r1-c4",
+      "slug": "ground-grass-dirt-path-b-r1-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r1-c5",
+      "slug": "ground-grass-dirt-path-b-r1-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r2-c1",
+      "slug": "ground-grass-dirt-path-b-r2-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r2-c2",
+      "slug": "ground-grass-dirt-path-b-r2-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r2-c3",
+      "slug": "ground-grass-dirt-path-b-r2-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r2-c4",
+      "slug": "ground-grass-dirt-path-b-r2-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r2-c5",
+      "slug": "ground-grass-dirt-path-b-r2-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r3-c1",
+      "slug": "ground-grass-dirt-path-b-r3-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r3-c2",
+      "slug": "ground-grass-dirt-path-b-r3-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r3-c3",
+      "slug": "ground-grass-dirt-path-b-r3-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r3-c4",
+      "slug": "ground-grass-dirt-path-b-r3-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r3-c5",
+      "slug": "ground-grass-dirt-path-b-r3-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r4-c1",
+      "slug": "ground-grass-dirt-path-b-r4-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r4-c2",
+      "slug": "ground-grass-dirt-path-b-r4-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r4-c3",
+      "slug": "ground-grass-dirt-path-b-r4-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r4-c4",
+      "slug": "ground-grass-dirt-path-b-r4-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r4-c5",
+      "slug": "ground-grass-dirt-path-b-r4-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r5-c1",
+      "slug": "ground-grass-dirt-path-b-r5-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r5-c2",
+      "slug": "ground-grass-dirt-path-b-r5-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r5-c3",
+      "slug": "ground-grass-dirt-path-b-r5-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r5-c4",
+      "slug": "ground-grass-dirt-path-b-r5-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "ground-grass-dirt-path-b-r5-c5",
+      "slug": "ground-grass-dirt-path-b-r5-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/ground-grass-dirt-path-b/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r1-c1",
+      "slug": "megatexture-water-rock-dirt-a-r1-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r1-c2",
+      "slug": "megatexture-water-rock-dirt-a-r1-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r1-c3",
+      "slug": "megatexture-water-rock-dirt-a-r1-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r1-c4",
+      "slug": "megatexture-water-rock-dirt-a-r1-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r1-c5",
+      "slug": "megatexture-water-rock-dirt-a-r1-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r2-c1",
+      "slug": "megatexture-water-rock-dirt-a-r2-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r2-c2",
+      "slug": "megatexture-water-rock-dirt-a-r2-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r2-c3",
+      "slug": "megatexture-water-rock-dirt-a-r2-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r2-c4",
+      "slug": "megatexture-water-rock-dirt-a-r2-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r2-c5",
+      "slug": "megatexture-water-rock-dirt-a-r2-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r3-c1",
+      "slug": "megatexture-water-rock-dirt-a-r3-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r3-c2",
+      "slug": "megatexture-water-rock-dirt-a-r3-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r3-c3",
+      "slug": "megatexture-water-rock-dirt-a-r3-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r3-c4",
+      "slug": "megatexture-water-rock-dirt-a-r3-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r3-c5",
+      "slug": "megatexture-water-rock-dirt-a-r3-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r4-c1",
+      "slug": "megatexture-water-rock-dirt-a-r4-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r4-c2",
+      "slug": "megatexture-water-rock-dirt-a-r4-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r4-c3",
+      "slug": "megatexture-water-rock-dirt-a-r4-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r4-c4",
+      "slug": "megatexture-water-rock-dirt-a-r4-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r4-c5",
+      "slug": "megatexture-water-rock-dirt-a-r4-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r5-c1",
+      "slug": "megatexture-water-rock-dirt-a-r5-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r5-c2",
+      "slug": "megatexture-water-rock-dirt-a-r5-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r5-c3",
+      "slug": "megatexture-water-rock-dirt-a-r5-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r5-c4",
+      "slug": "megatexture-water-rock-dirt-a-r5-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-water-rock-dirt-a-r5-c5",
+      "slug": "megatexture-water-rock-dirt-a-r5-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-water-rock-dirt-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r1-c1",
+      "slug": "megatexture-grass-path-a-r1-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r1-c2",
+      "slug": "megatexture-grass-path-a-r1-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r1-c3",
+      "slug": "megatexture-grass-path-a-r1-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r1-c4",
+      "slug": "megatexture-grass-path-a-r1-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r1-c5",
+      "slug": "megatexture-grass-path-a-r1-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r2-c1",
+      "slug": "megatexture-grass-path-a-r2-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r2-c2",
+      "slug": "megatexture-grass-path-a-r2-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r2-c3",
+      "slug": "megatexture-grass-path-a-r2-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r2-c4",
+      "slug": "megatexture-grass-path-a-r2-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r2-c5",
+      "slug": "megatexture-grass-path-a-r2-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r3-c1",
+      "slug": "megatexture-grass-path-a-r3-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r3-c2",
+      "slug": "megatexture-grass-path-a-r3-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r3-c3",
+      "slug": "megatexture-grass-path-a-r3-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r3-c4",
+      "slug": "megatexture-grass-path-a-r3-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r3-c5",
+      "slug": "megatexture-grass-path-a-r3-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r4-c1",
+      "slug": "megatexture-grass-path-a-r4-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r4-c2",
+      "slug": "megatexture-grass-path-a-r4-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r4-c3",
+      "slug": "megatexture-grass-path-a-r4-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r4-c4",
+      "slug": "megatexture-grass-path-a-r4-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r4-c5",
+      "slug": "megatexture-grass-path-a-r4-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r5-c1",
+      "slug": "megatexture-grass-path-a-r5-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r5-c2",
+      "slug": "megatexture-grass-path-a-r5-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r5-c3",
+      "slug": "megatexture-grass-path-a-r5-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r5-c4",
+      "slug": "megatexture-grass-path-a-r5-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-grass-path-a-r5-c5",
+      "slug": "megatexture-grass-path-a-r5-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-grass-path-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r1-c1",
+      "slug": "megatexture-shore-grass-rock-a-r1-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/1-1-base-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r1-c2",
+      "slug": "megatexture-shore-grass-rock-a-r1-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/1-2-base-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r1-c3",
+      "slug": "megatexture-shore-grass-rock-a-r1-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/1-3-base-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r1-c4",
+      "slug": "megatexture-shore-grass-rock-a-r1-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/1-4-base-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r1-c5",
+      "slug": "megatexture-shore-grass-rock-a-r1-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/1-5-base-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r2-c1",
+      "slug": "megatexture-shore-grass-rock-a-r2-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/2-1-blend-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r2-c2",
+      "slug": "megatexture-shore-grass-rock-a-r2-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/2-2-blend-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r2-c3",
+      "slug": "megatexture-shore-grass-rock-a-r2-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/2-3-blend-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r2-c4",
+      "slug": "megatexture-shore-grass-rock-a-r2-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/2-4-blend-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r2-c5",
+      "slug": "megatexture-shore-grass-rock-a-r2-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/2-5-blend-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r3-c1",
+      "slug": "megatexture-shore-grass-rock-a-r3-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/3-1-edge-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r3-c2",
+      "slug": "megatexture-shore-grass-rock-a-r3-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/3-2-edge-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r3-c3",
+      "slug": "megatexture-shore-grass-rock-a-r3-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/3-3-edge-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r3-c4",
+      "slug": "megatexture-shore-grass-rock-a-r3-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/3-4-edge-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r3-c5",
+      "slug": "megatexture-shore-grass-rock-a-r3-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/3-5-edge-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r4-c1",
+      "slug": "megatexture-shore-grass-rock-a-r4-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/4-1-detail-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r4-c2",
+      "slug": "megatexture-shore-grass-rock-a-r4-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/4-2-detail-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r4-c3",
+      "slug": "megatexture-shore-grass-rock-a-r4-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/4-3-detail-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r4-c4",
+      "slug": "megatexture-shore-grass-rock-a-r4-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/4-4-detail-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r4-c5",
+      "slug": "megatexture-shore-grass-rock-a-r4-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/4-5-detail-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r5-c1",
+      "slug": "megatexture-shore-grass-rock-a-r5-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/5-1-accent-01.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r5-c2",
+      "slug": "megatexture-shore-grass-rock-a-r5-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/5-2-accent-02.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r5-c3",
+      "slug": "megatexture-shore-grass-rock-a-r5-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/5-3-accent-03.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r5-c4",
+      "slug": "megatexture-shore-grass-rock-a-r5-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/5-4-accent-04.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
+    },
+    {
+      "id": "megatexture-shore-grass-rock-a-r5-c5",
+      "slug": "megatexture-shore-grass-rock-a-r5-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/megatexture-shore-grass-rock-a/5-5-accent-05.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ]
     }
   ],
+  "groundTextures": [
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
+      "slug": "ground-rock-grass-dirt-a-r1-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c2",
+      "slug": "ground-rock-grass-dirt-a-r1-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c3",
+      "slug": "ground-rock-grass-dirt-a-r1-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c4",
+      "slug": "ground-rock-grass-dirt-a-r1-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c5",
+      "slug": "ground-rock-grass-dirt-a-r1-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c1",
+      "slug": "ground-rock-grass-dirt-a-r2-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c2",
+      "slug": "ground-rock-grass-dirt-a-r2-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c3",
+      "slug": "ground-rock-grass-dirt-a-r2-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c4",
+      "slug": "ground-rock-grass-dirt-a-r2-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c5",
+      "slug": "ground-rock-grass-dirt-a-r2-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c1",
+      "slug": "ground-rock-grass-dirt-a-r3-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c2",
+      "slug": "ground-rock-grass-dirt-a-r3-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c3",
+      "slug": "ground-rock-grass-dirt-a-r3-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c4",
+      "slug": "ground-rock-grass-dirt-a-r3-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c5",
+      "slug": "ground-rock-grass-dirt-a-r3-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c1",
+      "slug": "ground-rock-grass-dirt-a-r4-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c2",
+      "slug": "ground-rock-grass-dirt-a-r4-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c3",
+      "slug": "ground-rock-grass-dirt-a-r4-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c4",
+      "slug": "ground-rock-grass-dirt-a-r4-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c5",
+      "slug": "ground-rock-grass-dirt-a-r4-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c1",
+      "slug": "ground-rock-grass-dirt-a-r5-c1",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c2",
+      "slug": "ground-rock-grass-dirt-a-r5-c2",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c3",
+      "slug": "ground-rock-grass-dirt-a-r5-c3",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c4",
+      "slug": "ground-rock-grass-dirt-a-r5-c4",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c5",
+      "slug": "ground-rock-grass-dirt-a-r5-c5",
+      "sheet": "ground-rock-grass-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r1-c1",
+      "slug": "ground-grass-dirt-path-a-r1-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r1-c2",
+      "slug": "ground-grass-dirt-path-a-r1-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r1-c3",
+      "slug": "ground-grass-dirt-path-a-r1-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r1-c4",
+      "slug": "ground-grass-dirt-path-a-r1-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r1-c5",
+      "slug": "ground-grass-dirt-path-a-r1-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r2-c1",
+      "slug": "ground-grass-dirt-path-a-r2-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r2-c2",
+      "slug": "ground-grass-dirt-path-a-r2-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r2-c3",
+      "slug": "ground-grass-dirt-path-a-r2-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r2-c4",
+      "slug": "ground-grass-dirt-path-a-r2-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r2-c5",
+      "slug": "ground-grass-dirt-path-a-r2-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r3-c1",
+      "slug": "ground-grass-dirt-path-a-r3-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r3-c2",
+      "slug": "ground-grass-dirt-path-a-r3-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r3-c3",
+      "slug": "ground-grass-dirt-path-a-r3-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r3-c4",
+      "slug": "ground-grass-dirt-path-a-r3-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r3-c5",
+      "slug": "ground-grass-dirt-path-a-r3-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r4-c1",
+      "slug": "ground-grass-dirt-path-a-r4-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r4-c2",
+      "slug": "ground-grass-dirt-path-a-r4-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r4-c3",
+      "slug": "ground-grass-dirt-path-a-r4-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r4-c4",
+      "slug": "ground-grass-dirt-path-a-r4-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r4-c5",
+      "slug": "ground-grass-dirt-path-a-r4-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r5-c1",
+      "slug": "ground-grass-dirt-path-a-r5-c1",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r5-c2",
+      "slug": "ground-grass-dirt-path-a-r5-c2",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r5-c3",
+      "slug": "ground-grass-dirt-path-a-r5-c3",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r5-c4",
+      "slug": "ground-grass-dirt-path-a-r5-c4",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-a-r5-c5",
+      "slug": "ground-grass-dirt-path-a-r5-c5",
+      "sheet": "ground-grass-dirt-path-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c1",
+      "slug": "ground-dirt-rock-gravel-a-r1-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c2",
+      "slug": "ground-dirt-rock-gravel-a-r1-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c3",
+      "slug": "ground-dirt-rock-gravel-a-r1-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c4",
+      "slug": "ground-dirt-rock-gravel-a-r1-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c5",
+      "slug": "ground-dirt-rock-gravel-a-r1-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c1",
+      "slug": "ground-dirt-rock-gravel-a-r2-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c2",
+      "slug": "ground-dirt-rock-gravel-a-r2-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c3",
+      "slug": "ground-dirt-rock-gravel-a-r2-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c4",
+      "slug": "ground-dirt-rock-gravel-a-r2-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c5",
+      "slug": "ground-dirt-rock-gravel-a-r2-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c1",
+      "slug": "ground-dirt-rock-gravel-a-r3-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c2",
+      "slug": "ground-dirt-rock-gravel-a-r3-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c3",
+      "slug": "ground-dirt-rock-gravel-a-r3-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c4",
+      "slug": "ground-dirt-rock-gravel-a-r3-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c5",
+      "slug": "ground-dirt-rock-gravel-a-r3-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c1",
+      "slug": "ground-dirt-rock-gravel-a-r4-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c2",
+      "slug": "ground-dirt-rock-gravel-a-r4-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c3",
+      "slug": "ground-dirt-rock-gravel-a-r4-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c4",
+      "slug": "ground-dirt-rock-gravel-a-r4-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c5",
+      "slug": "ground-dirt-rock-gravel-a-r4-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c1",
+      "slug": "ground-dirt-rock-gravel-a-r5-c1",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c2",
+      "slug": "ground-dirt-rock-gravel-a-r5-c2",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c3",
+      "slug": "ground-dirt-rock-gravel-a-r5-c3",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c4",
+      "slug": "ground-dirt-rock-gravel-a-r5-c4",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c5",
+      "slug": "ground-dirt-rock-gravel-a-r5-c5",
+      "sheet": "ground-dirt-rock-gravel-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dirt-rock-gravel-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
+      "slug": "ground-water-grass-sand-a-r1-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r1-c2",
+      "slug": "ground-water-grass-sand-a-r1-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r1-c3",
+      "slug": "ground-water-grass-sand-a-r1-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r1-c4",
+      "slug": "ground-water-grass-sand-a-r1-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r1-c5",
+      "slug": "ground-water-grass-sand-a-r1-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r2-c1",
+      "slug": "ground-water-grass-sand-a-r2-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r2-c2",
+      "slug": "ground-water-grass-sand-a-r2-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r2-c3",
+      "slug": "ground-water-grass-sand-a-r2-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r2-c4",
+      "slug": "ground-water-grass-sand-a-r2-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r2-c5",
+      "slug": "ground-water-grass-sand-a-r2-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r3-c1",
+      "slug": "ground-water-grass-sand-a-r3-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r3-c2",
+      "slug": "ground-water-grass-sand-a-r3-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r3-c3",
+      "slug": "ground-water-grass-sand-a-r3-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r3-c4",
+      "slug": "ground-water-grass-sand-a-r3-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r3-c5",
+      "slug": "ground-water-grass-sand-a-r3-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r4-c1",
+      "slug": "ground-water-grass-sand-a-r4-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r4-c2",
+      "slug": "ground-water-grass-sand-a-r4-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r4-c3",
+      "slug": "ground-water-grass-sand-a-r4-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r4-c4",
+      "slug": "ground-water-grass-sand-a-r4-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r4-c5",
+      "slug": "ground-water-grass-sand-a-r4-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r5-c1",
+      "slug": "ground-water-grass-sand-a-r5-c1",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r5-c2",
+      "slug": "ground-water-grass-sand-a-r5-c2",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r5-c3",
+      "slug": "ground-water-grass-sand-a-r5-c3",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r5-c4",
+      "slug": "ground-water-grass-sand-a-r5-c4",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-sand-a-r5-c5",
+      "slug": "ground-water-grass-sand-a-r5-c5",
+      "sheet": "ground-water-grass-sand-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-sand-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c1",
+      "slug": "megatexture-dirt-scrub-a-r1-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c2",
+      "slug": "megatexture-dirt-scrub-a-r1-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c3",
+      "slug": "megatexture-dirt-scrub-a-r1-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c4",
+      "slug": "megatexture-dirt-scrub-a-r1-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c5",
+      "slug": "megatexture-dirt-scrub-a-r1-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c1",
+      "slug": "megatexture-dirt-scrub-a-r2-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c2",
+      "slug": "megatexture-dirt-scrub-a-r2-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c3",
+      "slug": "megatexture-dirt-scrub-a-r2-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c4",
+      "slug": "megatexture-dirt-scrub-a-r2-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c5",
+      "slug": "megatexture-dirt-scrub-a-r2-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c1",
+      "slug": "megatexture-dirt-scrub-a-r3-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c2",
+      "slug": "megatexture-dirt-scrub-a-r3-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3",
+      "slug": "megatexture-dirt-scrub-a-r3-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c4",
+      "slug": "megatexture-dirt-scrub-a-r3-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c5",
+      "slug": "megatexture-dirt-scrub-a-r3-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c1",
+      "slug": "megatexture-dirt-scrub-a-r4-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c2",
+      "slug": "megatexture-dirt-scrub-a-r4-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c3",
+      "slug": "megatexture-dirt-scrub-a-r4-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c4",
+      "slug": "megatexture-dirt-scrub-a-r4-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c5",
+      "slug": "megatexture-dirt-scrub-a-r4-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c1",
+      "slug": "megatexture-dirt-scrub-a-r5-c1",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c2",
+      "slug": "megatexture-dirt-scrub-a-r5-c2",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c3",
+      "slug": "megatexture-dirt-scrub-a-r5-c3",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c4",
+      "slug": "megatexture-dirt-scrub-a-r5-c4",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c5",
+      "slug": "megatexture-dirt-scrub-a-r5-c5",
+      "sheet": "megatexture-dirt-scrub-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-dirt-scrub-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "dirt",
+      "materialRoles": [
+        "dirt",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
+      "slug": "ground-sand-gravel-road-a-r1-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r1-c2",
+      "slug": "ground-sand-gravel-road-a-r1-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r1-c3",
+      "slug": "ground-sand-gravel-road-a-r1-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r1-c4",
+      "slug": "ground-sand-gravel-road-a-r1-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r1-c5",
+      "slug": "ground-sand-gravel-road-a-r1-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r2-c1",
+      "slug": "ground-sand-gravel-road-a-r2-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r2-c2",
+      "slug": "ground-sand-gravel-road-a-r2-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r2-c3",
+      "slug": "ground-sand-gravel-road-a-r2-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r2-c4",
+      "slug": "ground-sand-gravel-road-a-r2-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r2-c5",
+      "slug": "ground-sand-gravel-road-a-r2-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r3-c1",
+      "slug": "ground-sand-gravel-road-a-r3-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r3-c2",
+      "slug": "ground-sand-gravel-road-a-r3-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r3-c3",
+      "slug": "ground-sand-gravel-road-a-r3-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r3-c4",
+      "slug": "ground-sand-gravel-road-a-r3-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r3-c5",
+      "slug": "ground-sand-gravel-road-a-r3-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r4-c1",
+      "slug": "ground-sand-gravel-road-a-r4-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r4-c2",
+      "slug": "ground-sand-gravel-road-a-r4-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r4-c3",
+      "slug": "ground-sand-gravel-road-a-r4-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r4-c4",
+      "slug": "ground-sand-gravel-road-a-r4-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r4-c5",
+      "slug": "ground-sand-gravel-road-a-r4-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r5-c1",
+      "slug": "ground-sand-gravel-road-a-r5-c1",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r5-c2",
+      "slug": "ground-sand-gravel-road-a-r5-c2",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r5-c3",
+      "slug": "ground-sand-gravel-road-a-r5-c3",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r5-c4",
+      "slug": "ground-sand-gravel-road-a-r5-c4",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-gravel-road-a-r5-c5",
+      "slug": "ground-sand-gravel-road-a-r5-c5",
+      "sheet": "ground-sand-gravel-road-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-gravel-road-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "road"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c1",
+      "slug": "ground-asphalt-moss-grass-a-r1-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c2",
+      "slug": "ground-asphalt-moss-grass-a-r1-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c3",
+      "slug": "ground-asphalt-moss-grass-a-r1-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c4",
+      "slug": "ground-asphalt-moss-grass-a-r1-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c5",
+      "slug": "ground-asphalt-moss-grass-a-r1-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c1",
+      "slug": "ground-asphalt-moss-grass-a-r2-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c2",
+      "slug": "ground-asphalt-moss-grass-a-r2-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c3",
+      "slug": "ground-asphalt-moss-grass-a-r2-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c4",
+      "slug": "ground-asphalt-moss-grass-a-r2-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c5",
+      "slug": "ground-asphalt-moss-grass-a-r2-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c1",
+      "slug": "ground-asphalt-moss-grass-a-r3-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c2",
+      "slug": "ground-asphalt-moss-grass-a-r3-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c3",
+      "slug": "ground-asphalt-moss-grass-a-r3-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c4",
+      "slug": "ground-asphalt-moss-grass-a-r3-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c5",
+      "slug": "ground-asphalt-moss-grass-a-r3-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c1",
+      "slug": "ground-asphalt-moss-grass-a-r4-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c2",
+      "slug": "ground-asphalt-moss-grass-a-r4-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3",
+      "slug": "ground-asphalt-moss-grass-a-r4-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c4",
+      "slug": "ground-asphalt-moss-grass-a-r4-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c5",
+      "slug": "ground-asphalt-moss-grass-a-r4-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c1",
+      "slug": "ground-asphalt-moss-grass-a-r5-c1",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c2",
+      "slug": "ground-asphalt-moss-grass-a-r5-c2",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c3",
+      "slug": "ground-asphalt-moss-grass-a-r5-c3",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c4",
+      "slug": "ground-asphalt-moss-grass-a-r5-c4",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c5",
+      "slug": "ground-asphalt-moss-grass-a-r5-c5",
+      "sheet": "ground-asphalt-moss-grass-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-asphalt-moss-grass-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "grass",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r1-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r2-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r3-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r4-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c1",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c1",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c2",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c2",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c3",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c3",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c4",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c4",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c5",
+      "slug": "ground-cracked-asphalt-concrete-a-r5-c5",
+      "sheet": "ground-cracked-asphalt-concrete-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-cracked-asphalt-concrete-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1",
+      "slug": "ground-sand-dune-dirt-a-r1-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c2",
+      "slug": "ground-sand-dune-dirt-a-r1-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c3",
+      "slug": "ground-sand-dune-dirt-a-r1-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c4",
+      "slug": "ground-sand-dune-dirt-a-r1-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c5",
+      "slug": "ground-sand-dune-dirt-a-r1-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c1",
+      "slug": "ground-sand-dune-dirt-a-r2-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c2",
+      "slug": "ground-sand-dune-dirt-a-r2-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c3",
+      "slug": "ground-sand-dune-dirt-a-r2-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c4",
+      "slug": "ground-sand-dune-dirt-a-r2-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c5",
+      "slug": "ground-sand-dune-dirt-a-r2-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c1",
+      "slug": "ground-sand-dune-dirt-a-r3-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c2",
+      "slug": "ground-sand-dune-dirt-a-r3-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c3",
+      "slug": "ground-sand-dune-dirt-a-r3-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c4",
+      "slug": "ground-sand-dune-dirt-a-r3-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c5",
+      "slug": "ground-sand-dune-dirt-a-r3-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c1",
+      "slug": "ground-sand-dune-dirt-a-r4-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c2",
+      "slug": "ground-sand-dune-dirt-a-r4-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c3",
+      "slug": "ground-sand-dune-dirt-a-r4-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c4",
+      "slug": "ground-sand-dune-dirt-a-r4-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c5",
+      "slug": "ground-sand-dune-dirt-a-r4-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c1",
+      "slug": "ground-sand-dune-dirt-a-r5-c1",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c2",
+      "slug": "ground-sand-dune-dirt-a-r5-c2",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c3",
+      "slug": "ground-sand-dune-dirt-a-r5-c3",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c4",
+      "slug": "ground-sand-dune-dirt-a-r5-c4",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c5",
+      "slug": "ground-sand-dune-dirt-a-r5-c5",
+      "sheet": "ground-sand-dune-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-sand-dune-dirt-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "sand",
+      "materialRoles": [
+        "sand",
+        "dirt-to-sand",
+        "dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r1-c1",
+      "slug": "ground-water-grass-shore-a-r1-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r1-c2",
+      "slug": "ground-water-grass-shore-a-r1-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r1-c3",
+      "slug": "ground-water-grass-shore-a-r1-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r1-c4",
+      "slug": "ground-water-grass-shore-a-r1-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r1-c5",
+      "slug": "ground-water-grass-shore-a-r1-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r2-c1",
+      "slug": "ground-water-grass-shore-a-r2-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r2-c2",
+      "slug": "ground-water-grass-shore-a-r2-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r2-c3",
+      "slug": "ground-water-grass-shore-a-r2-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r2-c4",
+      "slug": "ground-water-grass-shore-a-r2-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r2-c5",
+      "slug": "ground-water-grass-shore-a-r2-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r3-c1",
+      "slug": "ground-water-grass-shore-a-r3-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r3-c2",
+      "slug": "ground-water-grass-shore-a-r3-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r3-c3",
+      "slug": "ground-water-grass-shore-a-r3-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r3-c4",
+      "slug": "ground-water-grass-shore-a-r3-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r3-c5",
+      "slug": "ground-water-grass-shore-a-r3-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r4-c1",
+      "slug": "ground-water-grass-shore-a-r4-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r4-c2",
+      "slug": "ground-water-grass-shore-a-r4-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r4-c3",
+      "slug": "ground-water-grass-shore-a-r4-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r4-c4",
+      "slug": "ground-water-grass-shore-a-r4-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r4-c5",
+      "slug": "ground-water-grass-shore-a-r4-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r5-c1",
+      "slug": "ground-water-grass-shore-a-r5-c1",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r5-c2",
+      "slug": "ground-water-grass-shore-a-r5-c2",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r5-c3",
+      "slug": "ground-water-grass-shore-a-r5-c3",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r5-c4",
+      "slug": "ground-water-grass-shore-a-r5-c4",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-water-grass-shore-a-r5-c5",
+      "slug": "ground-water-grass-shore-a-r5-c5",
+      "sheet": "ground-water-grass-shore-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-water-grass-shore-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "sand"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c1",
+      "slug": "ground-rock-gravel-dirt-a-r1-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c2",
+      "slug": "ground-rock-gravel-dirt-a-r1-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c3",
+      "slug": "ground-rock-gravel-dirt-a-r1-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c4",
+      "slug": "ground-rock-gravel-dirt-a-r1-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c5",
+      "slug": "ground-rock-gravel-dirt-a-r1-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c1",
+      "slug": "ground-rock-gravel-dirt-a-r2-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c2",
+      "slug": "ground-rock-gravel-dirt-a-r2-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c3",
+      "slug": "ground-rock-gravel-dirt-a-r2-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c4",
+      "slug": "ground-rock-gravel-dirt-a-r2-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c5",
+      "slug": "ground-rock-gravel-dirt-a-r2-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c1",
+      "slug": "ground-rock-gravel-dirt-a-r3-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c2",
+      "slug": "ground-rock-gravel-dirt-a-r3-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3",
+      "slug": "ground-rock-gravel-dirt-a-r3-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c4",
+      "slug": "ground-rock-gravel-dirt-a-r3-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c5",
+      "slug": "ground-rock-gravel-dirt-a-r3-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c1",
+      "slug": "ground-rock-gravel-dirt-a-r4-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c2",
+      "slug": "ground-rock-gravel-dirt-a-r4-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c3",
+      "slug": "ground-rock-gravel-dirt-a-r4-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c4",
+      "slug": "ground-rock-gravel-dirt-a-r4-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c5",
+      "slug": "ground-rock-gravel-dirt-a-r4-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c1",
+      "slug": "ground-rock-gravel-dirt-a-r5-c1",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c2",
+      "slug": "ground-rock-gravel-dirt-a-r5-c2",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c3",
+      "slug": "ground-rock-gravel-dirt-a-r5-c3",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c4",
+      "slug": "ground-rock-gravel-dirt-a-r5-c4",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c5",
+      "slug": "ground-rock-gravel-dirt-a-r5-c5",
+      "sheet": "ground-rock-gravel-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-gravel-dirt-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "rocky",
+        "dirt",
+        "grass"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c1",
+      "slug": "ground-dark-grass-puddles-a-r1-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c2",
+      "slug": "ground-dark-grass-puddles-a-r1-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c3",
+      "slug": "ground-dark-grass-puddles-a-r1-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c4",
+      "slug": "ground-dark-grass-puddles-a-r1-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c5",
+      "slug": "ground-dark-grass-puddles-a-r1-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c1",
+      "slug": "ground-dark-grass-puddles-a-r2-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c2",
+      "slug": "ground-dark-grass-puddles-a-r2-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c3",
+      "slug": "ground-dark-grass-puddles-a-r2-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c4",
+      "slug": "ground-dark-grass-puddles-a-r2-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c5",
+      "slug": "ground-dark-grass-puddles-a-r2-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c1",
+      "slug": "ground-dark-grass-puddles-a-r3-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2",
+      "slug": "ground-dark-grass-puddles-a-r3-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c3",
+      "slug": "ground-dark-grass-puddles-a-r3-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c4",
+      "slug": "ground-dark-grass-puddles-a-r3-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c5",
+      "slug": "ground-dark-grass-puddles-a-r3-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c1",
+      "slug": "ground-dark-grass-puddles-a-r4-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c2",
+      "slug": "ground-dark-grass-puddles-a-r4-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c3",
+      "slug": "ground-dark-grass-puddles-a-r4-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c4",
+      "slug": "ground-dark-grass-puddles-a-r4-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c5",
+      "slug": "ground-dark-grass-puddles-a-r4-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c1",
+      "slug": "ground-dark-grass-puddles-a-r5-c1",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c2",
+      "slug": "ground-dark-grass-puddles-a-r5-c2",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c3",
+      "slug": "ground-dark-grass-puddles-a-r5-c3",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c4",
+      "slug": "ground-dark-grass-puddles-a-r5-c4",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c5",
+      "slug": "ground-dark-grass-puddles-a-r5-c5",
+      "sheet": "ground-dark-grass-puddles-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-dark-grass-puddles-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "water",
+        "shore"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c1",
+      "slug": "ground-rock-grass-dirt-b-r1-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c2",
+      "slug": "ground-rock-grass-dirt-b-r1-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c3",
+      "slug": "ground-rock-grass-dirt-b-r1-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c4",
+      "slug": "ground-rock-grass-dirt-b-r1-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c5",
+      "slug": "ground-rock-grass-dirt-b-r1-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c1",
+      "slug": "ground-rock-grass-dirt-b-r2-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c2",
+      "slug": "ground-rock-grass-dirt-b-r2-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c3",
+      "slug": "ground-rock-grass-dirt-b-r2-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c4",
+      "slug": "ground-rock-grass-dirt-b-r2-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c5",
+      "slug": "ground-rock-grass-dirt-b-r2-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c1",
+      "slug": "ground-rock-grass-dirt-b-r3-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c2",
+      "slug": "ground-rock-grass-dirt-b-r3-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c3",
+      "slug": "ground-rock-grass-dirt-b-r3-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c4",
+      "slug": "ground-rock-grass-dirt-b-r3-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c5",
+      "slug": "ground-rock-grass-dirt-b-r3-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c1",
+      "slug": "ground-rock-grass-dirt-b-r4-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c2",
+      "slug": "ground-rock-grass-dirt-b-r4-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c3",
+      "slug": "ground-rock-grass-dirt-b-r4-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c4",
+      "slug": "ground-rock-grass-dirt-b-r4-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c5",
+      "slug": "ground-rock-grass-dirt-b-r4-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c1",
+      "slug": "ground-rock-grass-dirt-b-r5-c1",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c2",
+      "slug": "ground-rock-grass-dirt-b-r5-c2",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c3",
+      "slug": "ground-rock-grass-dirt-b-r5-c3",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c4",
+      "slug": "ground-rock-grass-dirt-b-r5-c4",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c5",
+      "slug": "ground-rock-grass-dirt-b-r5-c5",
+      "sheet": "ground-rock-grass-dirt-b",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-rock-grass-dirt-b/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "rocky",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r1-c1",
+      "slug": "ground-grass-dirt-path-b-r1-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r1-c2",
+      "slug": "ground-grass-dirt-path-b-r1-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r1-c3",
+      "slug": "ground-grass-dirt-path-b-r1-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r1-c4",
+      "slug": "ground-grass-dirt-path-b-r1-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r1-c5",
+      "slug": "ground-grass-dirt-path-b-r1-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r2-c1",
+      "slug": "ground-grass-dirt-path-b-r2-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r2-c2",
+      "slug": "ground-grass-dirt-path-b-r2-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r2-c3",
+      "slug": "ground-grass-dirt-path-b-r2-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r2-c4",
+      "slug": "ground-grass-dirt-path-b-r2-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r2-c5",
+      "slug": "ground-grass-dirt-path-b-r2-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r3-c1",
+      "slug": "ground-grass-dirt-path-b-r3-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r3-c2",
+      "slug": "ground-grass-dirt-path-b-r3-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r3-c3",
+      "slug": "ground-grass-dirt-path-b-r3-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r3-c4",
+      "slug": "ground-grass-dirt-path-b-r3-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r3-c5",
+      "slug": "ground-grass-dirt-path-b-r3-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r4-c1",
+      "slug": "ground-grass-dirt-path-b-r4-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r4-c2",
+      "slug": "ground-grass-dirt-path-b-r4-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r4-c3",
+      "slug": "ground-grass-dirt-path-b-r4-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r4-c4",
+      "slug": "ground-grass-dirt-path-b-r4-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r4-c5",
+      "slug": "ground-grass-dirt-path-b-r4-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r5-c1",
+      "slug": "ground-grass-dirt-path-b-r5-c1",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r5-c2",
+      "slug": "ground-grass-dirt-path-b-r5-c2",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r5-c3",
+      "slug": "ground-grass-dirt-path-b-r5-c3",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r5-c4",
+      "slug": "ground-grass-dirt-path-b-r5-c4",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/ground-grass-dirt-path-b-r5-c5",
+      "slug": "ground-grass-dirt-path-b-r5-c5",
+      "sheet": "ground-grass-dirt-path-b",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/ground-grass-dirt-path-b/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c1",
+      "slug": "megatexture-water-rock-dirt-a-r1-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c2",
+      "slug": "megatexture-water-rock-dirt-a-r1-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c3",
+      "slug": "megatexture-water-rock-dirt-a-r1-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c4",
+      "slug": "megatexture-water-rock-dirt-a-r1-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c5",
+      "slug": "megatexture-water-rock-dirt-a-r1-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c1",
+      "slug": "megatexture-water-rock-dirt-a-r2-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c2",
+      "slug": "megatexture-water-rock-dirt-a-r2-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c3",
+      "slug": "megatexture-water-rock-dirt-a-r2-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c4",
+      "slug": "megatexture-water-rock-dirt-a-r2-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c5",
+      "slug": "megatexture-water-rock-dirt-a-r2-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c1",
+      "slug": "megatexture-water-rock-dirt-a-r3-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c2",
+      "slug": "megatexture-water-rock-dirt-a-r3-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c3",
+      "slug": "megatexture-water-rock-dirt-a-r3-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c4",
+      "slug": "megatexture-water-rock-dirt-a-r3-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c5",
+      "slug": "megatexture-water-rock-dirt-a-r3-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c1",
+      "slug": "megatexture-water-rock-dirt-a-r4-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c2",
+      "slug": "megatexture-water-rock-dirt-a-r4-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c3",
+      "slug": "megatexture-water-rock-dirt-a-r4-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c4",
+      "slug": "megatexture-water-rock-dirt-a-r4-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c5",
+      "slug": "megatexture-water-rock-dirt-a-r4-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c1",
+      "slug": "megatexture-water-rock-dirt-a-r5-c1",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c2",
+      "slug": "megatexture-water-rock-dirt-a-r5-c2",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c3",
+      "slug": "megatexture-water-rock-dirt-a-r5-c3",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c4",
+      "slug": "megatexture-water-rock-dirt-a-r5-c4",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c5",
+      "slug": "megatexture-water-rock-dirt-a-r5-c5",
+      "sheet": "megatexture-water-rock-dirt-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-water-rock-dirt-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "dirt",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r1-c1",
+      "slug": "megatexture-grass-path-a-r1-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r1-c2",
+      "slug": "megatexture-grass-path-a-r1-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r1-c3",
+      "slug": "megatexture-grass-path-a-r1-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r1-c4",
+      "slug": "megatexture-grass-path-a-r1-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r1-c5",
+      "slug": "megatexture-grass-path-a-r1-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r2-c1",
+      "slug": "megatexture-grass-path-a-r2-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r2-c2",
+      "slug": "megatexture-grass-path-a-r2-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r2-c3",
+      "slug": "megatexture-grass-path-a-r2-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r2-c4",
+      "slug": "megatexture-grass-path-a-r2-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r2-c5",
+      "slug": "megatexture-grass-path-a-r2-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r3-c1",
+      "slug": "megatexture-grass-path-a-r3-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r3-c2",
+      "slug": "megatexture-grass-path-a-r3-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r3-c3",
+      "slug": "megatexture-grass-path-a-r3-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r3-c4",
+      "slug": "megatexture-grass-path-a-r3-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r3-c5",
+      "slug": "megatexture-grass-path-a-r3-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r4-c1",
+      "slug": "megatexture-grass-path-a-r4-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r4-c2",
+      "slug": "megatexture-grass-path-a-r4-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r4-c3",
+      "slug": "megatexture-grass-path-a-r4-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r4-c4",
+      "slug": "megatexture-grass-path-a-r4-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r4-c5",
+      "slug": "megatexture-grass-path-a-r4-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r5-c1",
+      "slug": "megatexture-grass-path-a-r5-c1",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r5-c2",
+      "slug": "megatexture-grass-path-a-r5-c2",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r5-c3",
+      "slug": "megatexture-grass-path-a-r5-c3",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r5-c4",
+      "slug": "megatexture-grass-path-a-r5-c4",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-grass-path-a-r5-c5",
+      "slug": "megatexture-grass-path-a-r5-c5",
+      "sheet": "megatexture-grass-path-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-grass-path-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "grass",
+      "materialRoles": [
+        "grass",
+        "dirt",
+        "grass-to-dirt"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c1",
+      "slug": "megatexture-shore-grass-rock-a-r1-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-01",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/1-1-base-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c2",
+      "slug": "megatexture-shore-grass-rock-a-r1-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-02",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/1-2-base-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c3",
+      "slug": "megatexture-shore-grass-rock-a-r1-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-03",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/1-3-base-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c4",
+      "slug": "megatexture-shore-grass-rock-a-r1-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-04",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/1-4-base-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c5",
+      "slug": "megatexture-shore-grass-rock-a-r1-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "base-05",
+      "grid": {
+        "row": 1,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/1-5-base-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c1",
+      "slug": "megatexture-shore-grass-rock-a-r2-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-01",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/2-1-blend-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c2",
+      "slug": "megatexture-shore-grass-rock-a-r2-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-02",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/2-2-blend-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c3",
+      "slug": "megatexture-shore-grass-rock-a-r2-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-03",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/2-3-blend-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c4",
+      "slug": "megatexture-shore-grass-rock-a-r2-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-04",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/2-4-blend-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c5",
+      "slug": "megatexture-shore-grass-rock-a-r2-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "blend-05",
+      "grid": {
+        "row": 2,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/2-5-blend-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c1",
+      "slug": "megatexture-shore-grass-rock-a-r3-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-01",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/3-1-edge-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c2",
+      "slug": "megatexture-shore-grass-rock-a-r3-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-02",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/3-2-edge-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c3",
+      "slug": "megatexture-shore-grass-rock-a-r3-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-03",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/3-3-edge-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c4",
+      "slug": "megatexture-shore-grass-rock-a-r3-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-04",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/3-4-edge-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c5",
+      "slug": "megatexture-shore-grass-rock-a-r3-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "edge-05",
+      "grid": {
+        "row": 3,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/3-5-edge-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c1",
+      "slug": "megatexture-shore-grass-rock-a-r4-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-01",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/4-1-detail-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c2",
+      "slug": "megatexture-shore-grass-rock-a-r4-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-02",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/4-2-detail-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c3",
+      "slug": "megatexture-shore-grass-rock-a-r4-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-03",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/4-3-detail-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c4",
+      "slug": "megatexture-shore-grass-rock-a-r4-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-04",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/4-4-detail-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c5",
+      "slug": "megatexture-shore-grass-rock-a-r4-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "detail-05",
+      "grid": {
+        "row": 4,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/4-5-detail-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c1",
+      "slug": "megatexture-shore-grass-rock-a-r5-c1",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-01",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/5-1-accent-01.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
+      "slug": "megatexture-shore-grass-rock-a-r5-c2",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-02",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/5-2-accent-02.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
+      "slug": "megatexture-shore-grass-rock-a-r5-c3",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-03",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/5-3-accent-03.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
+      "slug": "megatexture-shore-grass-rock-a-r5-c4",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-04",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/5-4-accent-04.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5",
+      "slug": "megatexture-shore-grass-rock-a-r5-c5",
+      "sheet": "megatexture-shore-grass-rock-a",
+      "label": "accent-05",
+      "grid": {
+        "row": 5,
+        "col": 5
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/megatexture-shore-grass-rock-a/5-5-accent-05.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "grass",
+        "rocky"
+      ],
+      "source": "justin-chatgpt-map-tile-sheet",
+      "preferred": true
+    }
+  ],
+  "terrainRoles": {
+    "dirt": [
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c5"
+    ],
+    "dirt-to-sand": [
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c5"
+    ],
+    "grass": [
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+    ],
+    "grass-to-dirt": [
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r1-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r2-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r3-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r4-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-a-r5-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r1-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r2-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r3-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r4-c5",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c1",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c2",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c3",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c4",
+      "chatgpt-terrain/ground-grass-dirt-path-b-r5-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r1-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r2-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r3-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r4-c5",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c1",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c2",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c3",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c4",
+      "chatgpt-terrain/megatexture-grass-path-a-r5-c5"
+    ],
+    "road": [
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r1-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r2-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r3-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r4-c5",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c1",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c2",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c3",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c4",
+      "chatgpt-terrain/ground-asphalt-moss-grass-a-r5-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r1-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r2-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r3-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r4-c5",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c1",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c2",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c3",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c4",
+      "chatgpt-terrain/ground-cracked-asphalt-concrete-a-r5-c5"
+    ],
+    "rocky": [
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r1-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r2-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r3-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r4-c5",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c1",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c2",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c3",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c4",
+      "chatgpt-terrain/ground-dirt-rock-gravel-a-r5-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r1-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r2-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r3-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r4-c5",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c1",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c2",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c3",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c4",
+      "chatgpt-terrain/megatexture-dirt-scrub-a-r5-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-rock-gravel-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r1-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r2-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r3-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r4-c5",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c1",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c2",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c3",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c4",
+      "chatgpt-terrain/ground-rock-grass-dirt-b-r5-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+    ],
+    "sand": [
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r1-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r2-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r3-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r4-c5",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c1",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c2",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c3",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c4",
+      "chatgpt-terrain/ground-sand-gravel-road-a-r5-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r1-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r2-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r3-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r4-c5",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c1",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c2",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c3",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c4",
+      "chatgpt-terrain/ground-sand-dune-dirt-a-r5-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c5"
+    ],
+    "shore": [
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+    ],
+    "water": [
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-sand-a-r5-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r1-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r2-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r3-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r4-c5",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c1",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c2",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c3",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c4",
+      "chatgpt-terrain/ground-water-grass-shore-a-r5-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r1-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r2-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r3-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r4-c5",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c1",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c2",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c3",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c4",
+      "chatgpt-terrain/ground-dark-grass-puddles-a-r5-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r1-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r2-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r3-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r4-c5",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c1",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c2",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c3",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c4",
+      "chatgpt-terrain/megatexture-water-rock-dirt-a-r5-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r1-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r2-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r3-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r4-c5",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c1",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c2",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c3",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c4",
+      "chatgpt-terrain/megatexture-shore-grass-rock-a-r5-c5"
+    ]
+  },
   "recommendedGroundSlugs": {
-    "grassDominant": "ground-grass-dirt-path-a-r1-c1",
-    "grassAccent": "ground-grass-dirt-path-a-r3-c2",
-    "forestFloor": "ground-rock-grass-dirt-a-r2-c1",
-    "rockyAccent": "ground-rock-grass-dirt-a-r4-c3",
-    "dirtPath": "ground-grass-dirt-path-a-r3-c4"
+    "grassDominant": "ground-grass-dirt-path-b-r1-c1",
+    "grassAccent": "megatexture-grass-path-a-r3-c3",
+    "forestFloor": "ground-dark-grass-puddles-a-r1-c1",
+    "rockyAccent": "ground-rock-gravel-dirt-a-r3-c3",
+    "dirtPath": "ground-grass-dirt-path-b-r3-c4",
+    "water": "ground-water-grass-shore-a-r1-c2",
+    "shoreGrassWater": "ground-water-grass-shore-a-r4-c4",
+    "sand": "ground-sand-dune-dirt-a-r1-c1",
+    "sandRoadBlend": "ground-sand-gravel-road-a-r2-c4",
+    "asphalt": "ground-cracked-asphalt-concrete-a-r1-c2",
+    "grassRoadBlend": "ground-asphalt-moss-grass-a-r4-c3",
+    "megaGrassPath": "megatexture-grass-path-a-r3-c3"
   }
 });

@@ -29,10 +29,12 @@ test('curated level art manifest exposes all approved tree, forest, and ground s
   assert.equal(HMH_CURATED_LEVEL_ART.generatedFrom, 'Justin-approved ChatGPT Image tree, forest, and ground tile sheets; local source paths redacted');
   assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.treeIdleFrames, 18);
   assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.forestProps, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 50);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 425);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTextures, 425);
   assert.equal(HMH_CURATED_LEVEL_ART.treeAnimations.length, 3);
   assert.equal(HMH_CURATED_LEVEL_ART.forestProps.length, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 50);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 425);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTextures.length, 425);
 });
 
 test('curated runtime assets exist, use safe portal-relative paths, and have expected dimensions', () => {

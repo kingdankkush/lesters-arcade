@@ -26,8 +26,23 @@ FOREST_SHEETS = [
     ("forest-boundary-b", ATTACHMENTS / "Jul 8, 2026, 08_40_00 PM.png"),
 ]
 GROUND_SHEETS = [
-    ("ground-rock-grass-dirt-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_52_18 PM.png"),
-    ("ground-grass-dirt-path-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_50_57 PM.png"),
+    ("ground-rock-grass-dirt-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_52_18 PM.png", "rocky", ["grass", "dirt", "rocky"]),
+    ("ground-grass-dirt-path-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_50_57 PM.png", "grass", ["grass", "dirt", "grass-to-dirt"]),
+    ("ground-dirt-rock-gravel-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_31_15 PM.png", "dirt", ["dirt", "rocky"]),
+    ("ground-water-grass-sand-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_30_58 PM.png", "shore", ["water", "shore", "grass", "sand"]),
+    ("megatexture-dirt-scrub-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_26_15 PM.png", "dirt", ["dirt", "grass", "rocky"]),
+    ("ground-sand-gravel-road-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_24_16 PM.png", "sand", ["sand", "dirt-to-sand", "road"]),
+    ("ground-asphalt-moss-grass-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_24_06 PM.png", "road", ["road", "grass", "grass-to-dirt"]),
+    ("ground-cracked-asphalt-concrete-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_22_49 PM.png", "road", ["road", "dirt"]),
+    ("ground-sand-dune-dirt-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_22_13 PM.png", "sand", ["sand", "dirt-to-sand", "dirt"]),
+    ("ground-water-grass-shore-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_20_39 PM.png", "water", ["water", "shore", "grass", "sand"]),
+    ("ground-rock-gravel-dirt-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 10_20_33 PM.png", "rocky", ["rocky", "dirt", "grass"]),
+    ("ground-dark-grass-puddles-a", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_58_37 PM.png", "grass", ["grass", "water", "shore"]),
+    ("ground-rock-grass-dirt-b", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_52_18 PM-2.png", "rocky", ["grass", "dirt", "rocky"]),
+    ("ground-grass-dirt-path-b", ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_50_57 PM-2.png", "grass", ["grass", "dirt", "grass-to-dirt"]),
+    ("megatexture-water-rock-dirt-a", ATTACHMENTS / "Megatexture-groundtile-02.png", "shore", ["water", "shore", "dirt", "rocky"]),
+    ("megatexture-grass-path-a", ATTACHMENTS / "Megatexture-groundtile-01.png", "grass", ["grass", "dirt", "grass-to-dirt"]),
+    ("megatexture-shore-grass-rock-a", ATTACHMENTS / "Megatexture-groundtile-03.png", "shore", ["water", "shore", "grass", "rocky"]),
 ]
 TREE_ROWS = [
     ("juniper-tree", "dusty desert juniper / scrub pine"),
@@ -173,6 +188,15 @@ def make_iso_tile(cell: Image.Image, size: int = 56) -> Image.Image:
     return texture
 
 
+def make_texture_tile(cell: Image.Image, size: int = 160) -> Image.Image:
+    """Opaque square texture for the pattern-based terrain renderer."""
+    texture = cell.convert("RGB")
+    texture = ImageEnhance.Color(texture).enhance(1.08)
+    texture = ImageEnhance.Contrast(texture).enhance(1.08)
+    texture = ImageEnhance.Sharpness(texture).enhance(1.16)
+    return texture.resize((size, size), Image.Resampling.LANCZOS)
+
+
 def write_json(path: Path, data: object) -> None:
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
@@ -191,7 +215,7 @@ def ensure_sources(paths: Iterable[Path]) -> None:
 
 
 def main() -> None:
-    ensure_sources([TREE_SHEET, *(p for _, p in FOREST_SHEETS), *(p for _, p in GROUND_SHEETS)])
+    ensure_sources([TREE_SHEET, *(p for _, p in FOREST_SHEETS), *(p for _, p, _role, _materials in GROUND_SHEETS)])
     OUT.mkdir(parents=True, exist_ok=True)
     COHERENT_OUT.mkdir(parents=True, exist_ok=True)
 
@@ -255,10 +279,14 @@ def main() -> None:
                 })
 
     ground_tiles = []
-    for sheet_slug, sheet_path in GROUND_SHEETS:
+    ground_textures = []
+    role_indexes = {}
+    for sheet_slug, sheet_path, primary_role, material_roles in GROUND_SHEETS:
         img = Image.open(sheet_path)
         tile_dir = OUT / "ground" / sheet_slug
+        texture_dir = OUT / "terrain-textures" / sheet_slug
         tile_dir.mkdir(parents=True, exist_ok=True)
+        texture_dir.mkdir(parents=True, exist_ok=True)
         for row in range(5):
             for col in range(5):
                 index = row * 5 + col
@@ -266,8 +294,11 @@ def main() -> None:
                 slug = f"{sheet_slug}-r{row + 1}-c{col + 1}"
                 cell = grid_crop(img, 5, 5, row, col)
                 tile = make_iso_tile(cell)
+                texture = make_texture_tile(cell)
                 tile_path = tile_dir / f"{row + 1}-{col + 1}-{label}.png"
+                texture_path = texture_dir / f"{row + 1}-{col + 1}-{label}.png"
                 tile.save(tile_path, optimize=True)
+                texture.save(texture_path, optimize=True)
                 ground_tiles.append({
                     "id": slug,
                     "slug": slug,
@@ -278,7 +309,26 @@ def main() -> None:
                     "width": tile.width,
                     "height": tile.height,
                     "role": "isometric_tile",
+                    "primaryTerrainRole": primary_role,
+                    "materialRoles": material_roles,
                 })
+                texture_key = f"chatgpt-terrain/{slug}"
+                ground_textures.append({
+                    "key": texture_key,
+                    "slug": slug,
+                    "sheet": sheet_slug,
+                    "label": label,
+                    "grid": {"row": row + 1, "col": col + 1},
+                    "src": rel_portal(texture_path),
+                    "width": texture.width,
+                    "height": texture.height,
+                    "role": primary_role,
+                    "materialRoles": material_roles,
+                    "source": "justin-chatgpt-map-tile-sheet",
+                    "preferred": index in {0, 6, 12, 18, 24},
+                })
+                for role in material_roles:
+                    role_indexes.setdefault(role, []).append(texture_key)
 
     manifest = {
         "id": "hmh-curated-level-art-chatgpt-2026-07-08",
@@ -287,28 +337,41 @@ def main() -> None:
             {"id": "tree-idle", "grid": {"rows": 3, "cols": 6}, "kind": "magenta-keyed animated tree prop sheet"},
             {"id": "forest-boundary-a", "grid": {"rows": 4, "cols": 4}, "kind": "magenta-keyed forest boundary prop sheet"},
             {"id": "forest-boundary-b", "grid": {"rows": 4, "cols": 4}, "kind": "magenta-keyed forest boundary prop sheet"},
-            {"id": "ground-rock-grass-dirt-a", "grid": {"rows": 5, "cols": 5}, "kind": "full-cell terrain tile sheet"},
-            {"id": "ground-grass-dirt-path-a", "grid": {"rows": 5, "cols": 5}, "kind": "full-cell terrain tile sheet"},
+            *[
+                {"id": sheet_slug, "grid": {"rows": 5, "cols": 5}, "kind": "full-cell terrain tile sheet", "primaryRole": primary_role, "materialRoles": material_roles}
+                for sheet_slug, _sheet_path, primary_role, material_roles in GROUND_SHEETS
+            ],
         ],
         "gridCounts": {
             "treeIdleFrames": sum(len(tree["frames"]) for tree in tree_animations),
             "forestProps": len(forest_props),
             "groundTiles": len(ground_tiles),
+            "groundTextures": len(ground_textures),
         },
         "runtime": {
             "coherentWorldRoot": "./assets/generated/hmh-coherent-world/curated",
             "groundRoot": "./assets/generated/hmh-curated-level-art/ground",
+            "terrainTextureRoot": "./assets/generated/hmh-curated-level-art/terrain-textures",
             "propRoot": "./assets/generated/hmh-curated-level-art/props",
         },
         "treeAnimations": tree_animations,
         "forestProps": forest_props,
         "groundTiles": ground_tiles,
+        "groundTextures": ground_textures,
+        "terrainRoles": {role: keys for role, keys in sorted(role_indexes.items())},
         "recommendedGroundSlugs": {
-            "grassDominant": "ground-grass-dirt-path-a-r1-c1",
-            "grassAccent": "ground-grass-dirt-path-a-r3-c2",
-            "forestFloor": "ground-rock-grass-dirt-a-r2-c1",
-            "rockyAccent": "ground-rock-grass-dirt-a-r4-c3",
-            "dirtPath": "ground-grass-dirt-path-a-r3-c4",
+            "grassDominant": "ground-grass-dirt-path-b-r1-c1",
+            "grassAccent": "megatexture-grass-path-a-r3-c3",
+            "forestFloor": "ground-dark-grass-puddles-a-r1-c1",
+            "rockyAccent": "ground-rock-gravel-dirt-a-r3-c3",
+            "dirtPath": "ground-grass-dirt-path-b-r3-c4",
+            "water": "ground-water-grass-shore-a-r1-c2",
+            "shoreGrassWater": "ground-water-grass-shore-a-r4-c4",
+            "sand": "ground-sand-dune-dirt-a-r1-c1",
+            "sandRoadBlend": "ground-sand-gravel-road-a-r2-c4",
+            "asphalt": "ground-cracked-asphalt-concrete-a-r1-c2",
+            "grassRoadBlend": "ground-asphalt-moss-grass-a-r4-c3",
+            "megaGrassPath": "megatexture-grass-path-a-r3-c3",
         },
     }
     write_json(OUT / "hmh-curated-level-art.json", manifest)
@@ -317,6 +380,7 @@ def main() -> None:
         "treeFrames": manifest["gridCounts"]["treeIdleFrames"],
         "forestProps": manifest["gridCounts"]["forestProps"],
         "groundTiles": manifest["gridCounts"]["groundTiles"],
+        "groundTextures": manifest["gridCounts"]["groundTextures"],
         "out": str(OUT.relative_to(ROOT)),
     }, indent=2))
 

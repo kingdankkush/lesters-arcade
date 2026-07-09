@@ -1748,6 +1748,8 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
   rotator.style.setProperty('--cabinet-frame-count', String(Math.max(1, frames.length)));
   rotator.style.setProperty('--cabinet-loop-duration', `${frameDuration * Math.max(1, frames.length)}ms`);
   if (Number.isFinite(sprite?.displayScale)) rotator.style.setProperty('--hero-rotation-scale', String(sprite.displayScale));
+  if (Number.isFinite(sprite?.displayScaleX)) rotator.style.setProperty('--hero-rotation-scale-x', String(sprite.displayScaleX));
+  if (Number.isFinite(sprite?.displayScaleY)) rotator.style.setProperty('--hero-rotation-scale-y', String(sprite.displayScaleY));
   frames.forEach((frame, index) => {
     const image = el('img', {
       className: 'cabinet-rotation-frame',
@@ -1770,15 +1772,15 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
 // Order directions clockwise (E → NE → N → NW → W → SW → S → SE) for a natural spin.
 const SPIN_DIRECTION_ORDER = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'];
 const HERO_ROTATION_DISPLAY_SCALE = Object.freeze({
-  // Measured from restored idle nontransparent bounds after the art repair pass:
-  // Commando/Valkyrie max height ≈107px; Lester/Lilly max height ≈96px. These
-  // are display-only card scales so character-select rotations read at the same
-  // size without touching gameplay pixels, hitboxes, or source sprite files.
-  'lit-commando': 1.1,
-  'lit-valkyrie': 1.1,
-  lester: 1.23,
-  'lester-original': 1.23,
-  lilly: 1.23,
+  // Per-axis card-only normalization. Lester/Lilly have wider original bounds
+  // than Commando/Valkyrie, so uniform scaling made them too wide when height
+  // matched. Keep gameplay pixels untouched and fit the picker silhouettes to the
+  // same visual card box instead.
+  'lit-commando': Object.freeze({ x: 1.1, y: 1.1 }),
+  'lit-valkyrie': Object.freeze({ x: 1.1, y: 1.1 }),
+  lester: Object.freeze({ x: 0.84, y: 1.12 }),
+  'lester-original': Object.freeze({ x: 0.84, y: 1.12 }),
+  lilly: Object.freeze({ x: 0.86, y: 1.12 }),
 });
 function heroRotationSprite(characterId) {
   // USE THE SAME ROSTER KEY AS GAMEPLAY so the character-select spinning sprite
@@ -1816,13 +1818,17 @@ function heroRotationSprite(characterId) {
   }
   if (!frames.length) return null;
   const frameDurationMs = Math.max(180, Math.round(1000 / (entry?.targetFps ?? 10)));
+  const scale = HERO_ROTATION_DISPLAY_SCALE[rosterKey] ?? HERO_ROTATION_DISPLAY_SCALE[characterId] ?? 1;
+  const displayScale = typeof scale === 'number' ? scale : 1;
   return {
     id: characterId,
     animation: chosenName,
     frames,
     frameDurationMs,
     className: 'hero-character-rotator',
-    displayScale: HERO_ROTATION_DISPLAY_SCALE[rosterKey] ?? HERO_ROTATION_DISPLAY_SCALE[characterId] ?? 1,
+    displayScale,
+    displayScaleX: typeof scale === 'object' ? scale.x : displayScale,
+    displayScaleY: typeof scale === 'object' ? scale.y : displayScale,
   };
 }
 const HERO_ROSTER_BASE = buildCharacterStatIdentityRoster();
@@ -9545,21 +9551,21 @@ function ambientAnimationFramesBySlug() {
     const frames = (a.images ?? []).filter((im) => /frame_\d+/.test(im.src));
     if (frames.length) bySlug[a.slug.replace('-ambient', '')] = frames.map((im) => im.src);
   }
-  for (const tree of hmh('HMH_CURATED_LEVEL_ART')?.treeAnimations ?? []) {
-    const frames = (tree.frames ?? []).map((frame) => frame.src).filter(Boolean);
-    if (tree.slug && frames.length) bySlug[tree.slug] = frames;
-  }
+  // Curated trees are intentionally static now. The first frames are still wired
+  // as scene props through `curated/<tree>-idle-00`; do not add all six frames to
+  // the ambient animation pool because that multiplies decoded images and slowed
+  // gameplay in playtests.
   _ambientAnimPayload = HMH_PAYLOAD;
   _ambientAnimBySlug = bySlug;
   return bySlug;
 }
 const BIOME_ANIM_PROPS = {
-  forest: ['juniper-tree-idle', 'cottonwood-tree-idle', 'leafy-tree-wind', 'flower-patch-sway'],
+  forest: ['leafy-tree-wind', 'flower-patch-sway'],
   desert: ['cactus-heat-shimmer', 'tumbleweed-roll', 'palm-tree-wind'],
   water: ['water-surface-ripple', 'waterfall-cascade', 'river-rapids-flow'],
   town: ['neon-sign-flicker', 'traffic-light-blink', 'parked-car-blink', 'garbage-can-wobble'],
   road: ['road-sign-sway', 'traffic-light-blink', 'wrecked-car-smoke'],
-  rocky: ['dead-tree-idle', 'tumbleweed-roll', 'leafy-tree-wind'],
+  rocky: ['tumbleweed-roll', 'leafy-tree-wind'],
 };
 const wave2AnimImages = new Map();
 function wave2AnimFrame(slug, frameIdx) {
@@ -10143,30 +10149,19 @@ function canonicalLandmarkImage(src) {
   }
   return landmarkImageCache.get(src);
 }
-// Preload (decode) every placeable world-prop image at run start so a 300px
-// building is already decoded before it scrolls into the generous draw window —
-// no first-sight pop-in. Cheap: primes the same cache the renderer reads.
+// Preload only the first-camera world props. The old version decoded every
+// scene-template and authored-layout asset at run start; with large curated art
+// waves that front-loaded hundreds of images and made the game feel slow before
+// the player moved. Runtime caches still lazy-load anything outside the opening
+// window when it actually scrolls into view.
 function preloadWorldPropImages() {
   const wp = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
-  for (const p of wp) {
+  for (const p of wp.slice(0, 24)) {
     if (p?.src) canonicalLandmarkImage(p.src);
   }
-  // Also decode every coherent-world scene asset up front so scene props (lamps,
-  // cabinets, trees, fountains, TVs) are ready before they scroll into the draw
-  // window — no first-sight pop-in.
-  for (const t of Object.values(SCENE_TEMPLATES)) {
-    for (const s of t.slots) coherentWorldImage(s.assetKey);
-  }
-  for (const [levelId, districtMap] of [
-    [HMH_LEVEL_ONE_ID, LEVEL_1_AUTHORED_LAYOUT_KEYS],
-    ['level-2-litecoin-city', LEVEL_2_AUTHORED_LAYOUT_KEYS],
-    ['level-3-the-getaway', LEVEL_3_AUTHORED_LAYOUT_KEYS],
-  ]) {
-    for (const districtId of Object.keys(districtMap)) {
-      for (const obj of getAllAuthoredSceneObjects(districtId, levelId)) {
-        if (obj?.assetKey) coherentWorldImage(obj.assetKey);
-      }
-    }
+  for (const obj of buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 16, frame: 0 }).slice(0, 32)) {
+    if (obj?.assetKey) coherentWorldImage(obj.assetKey);
+    if (obj?.imageSrc) canonicalLandmarkImage(obj.imageSrc);
   }
 }
 // --- Persistent collidable world obstacles --------------------------------

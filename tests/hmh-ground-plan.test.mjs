@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
+import { HMH_CURATED_LEVEL_ART } from '../apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-level-art.mjs';
 import { HMH_LEVEL_ONE_ID } from '../apps/portal/src/hmh-level-one-ground.mjs';
 import { buildGroundPlan } from '../apps/portal/src/hmh-ground-plan.mjs';
 
@@ -68,22 +69,36 @@ test('borderInfo is present exactly on cardinal zone boundaries', () => {
   assert.ok(interiorTiles > boundaryTiles, 'the plan should still have broad zone interiors');
 });
 
-test('WO-103 plan references approved continuous runtime textures instead of transparent slab candidates', () => {
+test('ground plan references Justin-approved ChatGPT terrain tiles for the redesigned level layout', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   const textureKeys = new Set(plan.zones.map((zone) => zone.textureKey));
   assert.ok(textureKeys.size > 0, 'expected plan textures to be present');
-  assert.ok([...textureKeys].some((key) => key.startsWith('wo103-continuous/')), 'expected WO-103 continuous runtime textures in the ground plan');
+  assert.ok([...textureKeys].some((key) => key.startsWith('chatgpt-terrain/')), 'expected ChatGPT terrain textures in the ground plan');
+  for (const role of ['grass', 'water', 'shore', 'sand', 'road', 'rocky', 'grass-to-dirt', 'dirt-to-sand']) {
+    assert.ok(HMH_CURATED_LEVEL_ART.terrainRoles?.[role]?.length > 0, `${role} terrain role should have sliced tile coverage`);
+  }
   for (const textureKey of textureKeys) {
     assert.doesNotMatch(textureKey, /^pixellab-surface\//, `${textureKey} should not use transparent legacy slab candidates for broad ground fill`);
     const asset = plan.textureForKey(textureKey);
     assert.ok(asset, `${textureKey} should resolve through the plan texture lookup`);
-    if (textureKey.startsWith('wo103-continuous/')) {
-      assert.match(asset.src, /^\.\/assets\/generated\/hmh-level-one-ground\/wo103-continuous\//);
+    if (textureKey.startsWith('chatgpt-terrain/')) {
+      assert.match(asset.src, /^\.\/assets\/generated\/hmh-curated-level-art\/terrain-textures\//);
       assert.doesNotMatch(asset.src, /\.\/apps\/portal\//, 'runtime texture URL must be portal-root relative for Vercel outputDirectory');
-      assert.equal(asset.width, 128);
-      assert.equal(asset.height, 64);
+      assert.equal(asset.width, 160);
+      assert.equal(asset.height, 160);
     }
   }
+});
+
+test('spawn road uses blended shoulders and keeps the player start clear', () => {
+  const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
+  assert.equal(plan.zoneAt(0, 5).zoneId, 'spawn-clear-blacktop-centerline');
+  assert.equal(plan.zoneAt(0, 5).role, 'road');
+  assert.equal(plan.zoneAt(0, 3).zoneId, 'spawn-grass-road-north-shoulder');
+  assert.equal(plan.zoneAt(0, 8).zoneId, 'spawn-sand-road-south-shoulder');
+  assert.match(plan.zoneAt(0, 5).textureKey, /^chatgpt-terrain\/ground-cracked-asphalt-concrete/);
+  assert.match(plan.zoneAt(0, 3).textureKey, /^chatgpt-terrain\/ground-asphalt-moss-grass/);
+  assert.match(plan.zoneAt(0, 8).textureKey, /^chatgpt-terrain\/ground-sand-gravel-road/);
 });
 
 test('ground plan source and tests are covered by the explicit syntax gate', () => {

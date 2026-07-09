@@ -93,11 +93,20 @@ test('no playable hero frame keeps the tiny QA triangle/robot placeholder signat
 
 test('character-select rotation display scales normalize Lester and Lilly without shrinking them', () => {
   const src = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
-  assert.equal(src.includes("'lit-commando': 1.1"), true);
-  assert.equal(src.includes("'lit-valkyrie': 1.1"), true);
-  assert.equal(src.includes("lester: 1.23"), true);
-  assert.equal(src.includes("'lester-original': 1.23"), true);
-  assert.equal(src.includes("lilly: 1.23"), true);
+  assert.equal(src.includes("'lit-commando': Object.freeze({ x: 1.1, y: 1.1 })"), true);
+  assert.equal(src.includes("'lit-valkyrie': Object.freeze({ x: 1.1, y: 1.1 })"), true);
+  assert.equal(src.includes("lester: Object.freeze({ x: 0.84, y: 1.12 })"), true);
+  assert.equal(src.includes("'lester-original': Object.freeze({ x: 0.84, y: 1.12 })"), true);
+  assert.equal(src.includes("lilly: Object.freeze({ x: 0.86, y: 1.12 })"), true);
+  assert.match(src, /displayScaleX: typeof scale === 'object' \? scale\.x : displayScale/);
+  assert.match(src, /displayScaleY: typeof scale === 'object' \? scale\.y : displayScale/);
+});
+
+test('character-select CSS supports per-axis Lester/Lilly normalization', () => {
+  const css = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
+  assert.match(css, /--hero-rotation-scale-x: var\(--hero-rotation-scale\)/);
+  assert.match(css, /--hero-rotation-scale-y: var\(--hero-rotation-scale\)/);
+  assert.match(css, /transform: scale\(var\(--hero-rotation-scale-x\), var\(--hero-rotation-scale-y\)\)/);
 });
 
 test('Commando and Valkyrie are DISTINCT designs (no shared roster)', () => {

@@ -135,8 +135,8 @@ const OPENING_ROUTE_TILES = Object.freeze([
 ]);
 
 const OPENING_LANDMARKS = Object.freeze([
-  openingSpec('gas-station-landmark', 'level-1/building/landmark-gas-station', 'landmark', -9, 8, {
-    notes: 'large curated spawn landmark anchors the opening camera',
+  openingSpec('west-storefront-shoulder-anchor', 'level-1/building/storefront-02', 'landmark', -13, 2, {
+    notes: 'small storefront shoulder anchor replaces the old spawn-overlap gas-station landmark',
   }),
   openingSpec('boarded-storefront-telegraph', 'level-1/building/ghost-boarded-storefront', 'landmark', 21, 2, {
     notes: 'telegraphs ghost-town main street ahead instead of random desert scatter',
