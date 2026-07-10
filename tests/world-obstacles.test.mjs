@@ -7,6 +7,7 @@ import {
   obstaclesNear,
   resolvePlayerCollision,
   obstacleHitAt,
+  obstacleHitAlongSegment,
   isWaterAt,
   resolveWaterCollision,
   findNearestDrySpawn,
@@ -83,6 +84,29 @@ test('obstacleHitAt detects a bullet inside a solid obstacle and misses outside'
   const obstacles = [{ worldX: 5, worldY: 5, radius: 1, solid: true }];
   assert.ok(obstacleHitAt(5, 5, obstacles));
   assert.equal(obstacleHitAt(20, 20, obstacles), null);
+});
+
+test('footprint rectangles block the full base of wide buildings instead of only their center', () => {
+  const obstacles = [{ worldX: 10, worldY: 5, radius: 0.5, footprintTiles: { w: 6, h: 2 }, solid: true }];
+  const resolved = resolvePlayerCollision(5, 5, 7.2, 5, 0.4, obstacles);
+  assert.ok(resolved.x <= 6.61, `player should stop at the west building wall, got ${resolved.x}`);
+  assert.ok(obstacleHitAt(12.5, 5, obstacles), 'shots should hit the wide end of the building footprint');
+});
+
+test('authored footprints replace oversized fallback circles so clear lanes beside buildings stay open', () => {
+  const obstacles = [{ worldX: 10, worldY: 5, radius: 5, footprintTiles: { w: 6, h: 2 }, solid: true }];
+  const resolved = resolvePlayerCollision(10, 2, 10, 3, 0.4, obstacles);
+  assert.deepEqual(resolved, { x: 10, y: 3 });
+});
+
+test('swept projectile collision catches fast shots crossing thin props and walls', () => {
+  const obstacles = [
+    { id: 'tree', worldX: 5, worldY: 0, radius: 0.7, solid: true },
+    { id: 'wall', worldX: 12, worldY: 0, radius: 0.4, footprintTiles: { w: 4, h: 1 }, solid: true },
+  ];
+  assert.equal(obstacleHitAlongSegment(0, 0, 9, 0, obstacles)?.id, 'tree');
+  assert.equal(obstacleHitAlongSegment(9, 0, 16, 0, obstacles)?.id, 'wall');
+  assert.equal(obstacleHitAlongSegment(0, 5, 16, 5, obstacles), null);
 });
 
 test('findNearestDrySpawn moves an initial player start off water', () => {

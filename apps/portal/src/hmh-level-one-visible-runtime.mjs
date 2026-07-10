@@ -42,7 +42,7 @@ const SOLID_FOR_USE = Object.freeze({
   vfx: false,
   canopy: true,
   ambient: false,
-  vehicle: false,
+  vehicle: true,
   plaza: true,
   container: true,
 });
@@ -50,6 +50,11 @@ const SOLID_FOR_USE = Object.freeze({
 function curatedLevelArtPropByKey(assetKey) {
   const match = (assetKey || '').match(/^curated\/(jul9-[a-z-]+)-(\d\d-.+)$/);
   return match ? { src: `./assets/generated/hmh-curated-level-art/props/environment/${match[1]}/${match[2]}.png` } : null;
+}
+
+function curatedTreeAnimationAssetByKey(assetKey) {
+  const match = (assetKey || '').match(/^curated-tree\/(jul9-[a-z-]+)-idle-(\d\d)$/);
+  return match ? { src: `./assets/generated/hmh-curated-level-art/props/trees/${match[1]}/idle/${match[2]}.png` } : null;
 }
 
 export const WO102_MEGA_PROP_ASSETS = Object.freeze([
@@ -178,8 +183,8 @@ const OPENING_SET_DRESSING = Object.freeze([
   openingSpec('small-rock-cluster-0', 'curated/jul9-rocks-boulders-03-cracked-stone', 'dressing', 4, 9, { solid: false }),
   openingSpec('small-rock-cluster-1', 'curated/jul9-rocks-boulders-11-two-boulder-cover', 'dressing', 20, 8, { solid: false }),
   openingSpec('roadside-cable-spool', 'curated/jul9-industrial-mining-04-cable-spool', 'dressing', 11, 8, { solid: false }),
-  openingSpec('opening-abandoned-pickup', 'curated/jul9-vehicles-street-junk-02-pickup-wreck', 'vehicle', 17, 9, { solid: false, notes: 'roadside vehicle' }),
-  openingSpec('opening-delivery-cache', 'curated/jul9-vehicles-street-junk-03-armored-cash-van-wreck', 'vehicle', 29, 8, { solid: false, notes: 'cache van' }),
+  openingSpec('opening-abandoned-pickup', 'curated/jul9-vehicles-street-junk-02-pickup-wreck', 'vehicle', 17, 9, { solid: true, notes: 'solid roadside vehicle outside the clear lane' }),
+  openingSpec('opening-delivery-cache', 'curated/jul9-vehicles-street-junk-03-armored-cash-van-wreck', 'vehicle', 29, 8, { solid: true, notes: 'solid cache van outside the clear lane' }),
   openingSpec('opening-forecourt-cache', 'curated/jul9-vehicles-street-junk-12-gas-pump-pair', 'dressing', 7, 8, { solid: false, notes: 'forecourt cache' }),
   openingSpec('route-generator-cache', 'curated/jul9-industrial-mining-03-small-generator', 'dressing', 27, 6, { solid: false }),
 ]);
@@ -218,7 +223,118 @@ function prefabStamp(id, districtId, objects, data = {}) {
   });
 }
 
+function curatedSheetKeys(sheetSlug, labels) {
+  return Object.freeze(labels.map((label, index) => `curated/${sheetSlug}-${String(index).padStart(2, '0')}-${label}`));
+}
+
+function stampObjectsForKeys(keys, use, options = {}) {
+  const columns = options.columns ?? 4;
+  const spacingX = options.spacingX ?? 3;
+  const spacingY = options.spacingY ?? 3;
+  const startX = options.startX ?? -5;
+  const startY = options.startY ?? -4;
+  return keys.map((assetKey, index) => ({
+    assetKey,
+    use,
+    dx: startX + (index % columns) * spacingX,
+    dy: startY + Math.floor(index / columns) * spacingY,
+    solid: options.solid ?? false,
+  }));
+}
+
+const JUL9_B_ASSETS = Object.freeze({
+  extraction: curatedSheetKeys('jul9-extraction-monuments-b', ['extraction-arch', 'closed-boss-gate', 'open-boss-gate', 'ltc-beacon-pad']),
+  neighborhood: curatedSheetKeys('jul9-neighborhood-small-props-b', ['weathered-picket-fence', 'trash-can-bags', 'mailbox-weeds', 'stone-well']),
+  forest: curatedSheetKeys('jul9-forest-obstacles-b', ['mossy-fallen-log', 'rooted-tree-stump', 'forest-boulder-cluster', 'rotting-log-pile']),
+  river: curatedSheetKeys('jul9-river-obstacles-b', ['waterlogged-log', 'concrete-river-block', 'submerged-stone-slab', 'broken-spillway', 'river-boulder-cluster', 'submerged-cart-wreck', 'shallow-rapid-strip', 'deep-rapid-strip']),
+  signals: curatedSheetKeys('jul9-route-signs-beacons-b', [
+    'amber-hanging-lamp', 'amber-lantern-sign', 'green-hanging-sign', 'green-double-sign',
+    'amber-route-sign', 'green-route-sign', 'green-crossroad-sign', 'green-town-sign',
+    'amber-short-lamp', 'cyan-short-lamp', 'cyan-beacon-post', 'cyan-square-beacon',
+    'low-rock-marker', 'mossy-rock-marker', 'broken-log-marker', 'low-stone-marker',
+    'amber-bollard', 'cyan-bollard', 'amber-pylon', 'cyan-pylon',
+    'green-floor-marker', 'stone-floor-marker', 'cyan-floor-marker', 'broken-floor-marker',
+  ]),
+  desert: curatedSheetKeys('jul9-desert-props-b', ['desert-brush-cluster', 'bone-pile', 'rusted-buried-barrel', 'sandstone-rubble']),
+  rocks: curatedSheetKeys('jul9-desert-rock-formations-b', ['sandstone-arch', 'hollow-skull-rock', 'cracked-flat-rock', 'sandstone-spire', 'cracked-flat-rock-alt', 'sandstone-spire-alt']),
+  ambient: curatedSheetKeys('jul9-ambient-water-glow-b', [
+    'firefly-drift-01', 'firefly-drift-02', 'firefly-drift-03', 'firefly-drift-04',
+    'moss-glow-01', 'moss-glow-02', 'moss-glow-03', 'moss-glow-04',
+    'water-glint-01', 'water-glint-02', 'water-glint-03', 'water-glint-04',
+    'water-spark-01', 'water-spark-02', 'water-spark-03', 'water-spark-04',
+  ]),
+});
+
 export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
+  prefabStamp('compact-northwest-desert-outcrop', 'compact-northwest', [
+    ...stampObjectsForKeys(JUL9_B_ASSETS.desert, 'dressing', { startX: -6, startY: 1 }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.rocks.slice(0, 3), 'boundary', { startX: -7, startY: -6, spacingX: 6, solid: true }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(0, 4), 'dressing', { startX: -5, startY: -2 }),
+    { assetKey: 'curated-tree/jul9-desert-acacia-idle-00', use: 'canopy', dx: -8, dy: -2, solid: true },
+    { assetKey: 'curated-tree/jul9-desert-mesquite-idle-00', use: 'canopy', dx: 7, dy: -2, solid: true },
+    { assetKey: 'curated-tree/jul9-desert-joshua-idle-00', use: 'canopy', dx: 6, dy: 5, solid: true },
+  ], { label: 'Northwest desert outcrop', routeBeat: 'exploration', anchor: { x: -108, y: -78 }, routeRead: 'desert trees, rocks, bones, and lamps define a complete outer-map POI' }),
+  prefabStamp('compact-north-forest-grove', 'compact-north', [
+    ...stampObjectsForKeys(JUL9_B_ASSETS.forest, 'boundary', { startX: -7, startY: -7, spacingX: 5, solid: true }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.ambient.slice(0, 8), 'ambient', { startX: -6, startY: 1 }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(4, 7), 'dressing', { startX: -4, startY: 5, spacingX: 4 }),
+    { assetKey: 'curated-tree/jul9-riparian-juniper-idle-00', use: 'canopy', dx: -8, dy: -6, solid: true },
+    { assetKey: 'curated-tree/jul9-riparian-dead-tree-idle-00', use: 'canopy', dx: 0, dy: -7, solid: true },
+    { assetKey: 'curated-tree/jul9-riparian-cottonwood-idle-00', use: 'canopy', dx: 8, dy: -5, solid: true },
+  ], { label: 'North forest grove', routeBeat: 'forest', anchor: { x: -36, y: -82 }, routeRead: 'tree canopy, log cover, boulders, and fireflies fill the northern forest' }),
+  prefabStamp('compact-north-riverfront', 'compact-river', [
+    ...JUL9_B_ASSETS.river.map((assetKey, index) => {
+      const positions = [[-8, -5], [-3, -7], [3, -7], [8, -5], [-8, 3], [8, 3], [-4, 1], [4, 1]];
+      return { assetKey, use: index >= 6 ? 'water' : 'boundary', dx: positions[index][0], dy: positions[index][1], solid: index < 6 };
+    }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.ambient.slice(8, 12), 'ambient', { startX: -5, startY: 4 }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(7, 10), 'dressing', { startX: -4, startY: -7, spacingX: 4 }),
+  ], { label: 'North riverfront crossing', routeBeat: 'waterfront', anchor: { x: 42, y: -78 }, routeRead: 'rapids, submerged wreckage, boulders, glints, and route lamps create a readable riverfront' }),
+  prefabStamp('compact-northeast-neighborhood', 'compact-northeast', [
+    { assetKey: JUL9_B_ASSETS.neighborhood[0], use: 'boundary', dx: -5, dy: 1, solid: true },
+    { assetKey: JUL9_B_ASSETS.neighborhood[1], use: 'boundary', dx: -1, dy: 1, solid: true },
+    { assetKey: JUL9_B_ASSETS.neighborhood[2], use: 'dressing', dx: 3, dy: 1, solid: false },
+    { assetKey: JUL9_B_ASSETS.neighborhood[3], use: 'boundary', dx: 7, dy: 1, solid: true },
+    ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(10, 13), 'dressing', { startX: -4, startY: -3, spacingX: 4 }),
+    { assetKey: 'curated/jul9-residential-house-facades-large-00-boarded-ranch-house', use: 'landmark', dx: -7, dy: -7, solid: true },
+    { assetKey: 'curated/jul9-garages-sheds-large-00-detached-garage', use: 'landmark', dx: 5, dy: -7, solid: true },
+  ], { label: 'Northeast neighborhood block', routeBeat: 'town', anchor: { x: 104, y: -66 }, routeRead: 'house, garage, yard props, fence, mailbox, and signals build a full neighborhood scene' }),
+  prefabStamp('compact-west-route-town', 'compact-west', [
+    ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(13, 16), 'dressing', { startX: -4, startY: 1, spacingX: 4 }),
+    { assetKey: 'curated/jul9-roadside-buildings-large-02-roadside-convenience-store', use: 'landmark', dx: -7, dy: -6, solid: true },
+    { assetKey: 'curated/jul9-ghost-town-facade-modules-00-boarded-storefront-front', use: 'landmark', dx: 4, dy: -6, solid: true },
+    { assetKey: 'curated/jul9-fences-barricades-00-wood-fence-straight', use: 'boundary', dx: -5, dy: 5, solid: true },
+    { assetKey: 'curated/jul9-fences-barricades-01-short-wood-fence', use: 'boundary', dx: 5, dy: 5, solid: true },
+  ], { label: 'West route town', routeBeat: 'town', anchor: { x: -106, y: 2 }, routeRead: 'storefronts and signal furniture establish a western town instead of empty outfield' }),
+  prefabStamp('compact-east-extraction-yard', 'compact-east', [
+    ...JUL9_B_ASSETS.extraction.map((assetKey, index) => {
+      const positions = [[-8, -6], [7, -6], [-8, 3], [4, 2]];
+      return { assetKey, use: index === 3 ? 'dressing' : 'landmark', dx: positions[index][0], dy: positions[index][1], solid: index !== 3 };
+    }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(16, 20), 'dressing', { startX: -5, startY: 5 }),
+    { assetKey: 'curated/jul9-industrial-buildings-large-03-crypto-mining-service-shed', use: 'landmark', dx: -7, dy: -9, solid: true },
+  ], { label: 'East extraction yard', routeBeat: 'boss', anchor: { x: 104, y: 4 }, routeRead: 'boss gates, extraction pad, pylons, and industrial shed form a complete east-side objective' }),
+  prefabStamp('compact-southwest-rock-camp', 'compact-southwest', [
+    ...stampObjectsForKeys(JUL9_B_ASSETS.rocks.slice(3), 'boundary', { startX: -7, startY: -7, spacingX: 7, solid: true }),
+    ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(20, 22), 'dressing', { startX: -3, startY: 3, spacingX: 6 }),
+    { assetKey: 'curated/jul9-landmark-microscene-01-ruined-camp', use: 'landmark', dx: 0, dy: 0, solid: false },
+    { assetKey: 'curated/jul9-fences-barricades-22-rubble-barricade', use: 'boundary', dx: 0, dy: 6, solid: true },
+  ], { label: 'Southwest rock camp', routeBeat: 'exploration', anchor: { x: -96, y: 78 }, routeRead: 'large rock silhouettes, camp, and floor markers fill the southwest corner' }),
+  prefabStamp('compact-south-forest-waterfront', 'compact-south', [
+    { assetKey: JUL9_B_ASSETS.signals[22], use: 'dressing', dx: 0, dy: 4, solid: false },
+    { assetKey: JUL9_B_ASSETS.forest[0], use: 'boundary', dx: -7, dy: -3, solid: true },
+    { assetKey: JUL9_B_ASSETS.forest[1], use: 'boundary', dx: 7, dy: -3, solid: true },
+    { assetKey: JUL9_B_ASSETS.river[0], use: 'boundary', dx: -4, dy: 5, solid: true },
+    { assetKey: JUL9_B_ASSETS.river[4], use: 'boundary', dx: 4, dy: 5, solid: true },
+    { assetKey: 'curated-tree/jul9-riparian-cottonwood-idle-00', use: 'canopy', dx: 0, dy: -7, solid: true },
+  ], { label: 'South forest waterfront', routeBeat: 'waterfront', anchor: { x: -20, y: 82 }, routeRead: 'logs, boulders, cottonwood, and marker light shape the southern river loop' }),
+  prefabStamp('compact-southeast-glow-bank', 'compact-southeast', [
+    ...stampObjectsForKeys(JUL9_B_ASSETS.ambient.slice(12), 'ambient', { startX: -5, startY: 1 }),
+    { assetKey: JUL9_B_ASSETS.signals[23], use: 'dressing', dx: 0, dy: 5, solid: false },
+    { assetKey: JUL9_B_ASSETS.extraction[3], use: 'landmark', dx: 0, dy: -2, solid: false },
+    { assetKey: JUL9_B_ASSETS.river[6], use: 'water', dx: -5, dy: -3, solid: false },
+    { assetKey: JUL9_B_ASSETS.river[7], use: 'water', dx: 5, dy: -3, solid: false },
+  ], { label: 'Southeast glow bank', routeBeat: 'extract', anchor: { x: 96, y: 78 }, routeRead: 'water sparks, rapid strips, broken marker, and extraction light complete the southeast waterfront' }),
   prefabStamp('desert-road-salvage-wall', 'desert-approach', [
     { assetKey: 'curated/jul9-fences-barricades-10-concrete-barrier', use: 'boundary', dx: -5, dy: -3, solid: true },
     { assetKey: 'curated/jul9-fences-barricades-12-sandbag-barrier', use: 'boundary', dx: 3, dy: -3, solid: true },
@@ -298,8 +414,8 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level1-authored-stamp/boss-yard-warning-pylon', use: 'dressing', dx: 4, dy: -2, solid: false },
   ], { label: 'WO-105 container extraction yard', routeBeat: 'boss', anchor: { x: 93, y: 8 }, routeRead: 'new warehouse silhouette, containers, and cracked road describe the boss/extraction arena' }),
   prefabStamp('wo106-roadside-vehicle-micro-scenes', 'residential-edge', [
-    { assetKey: 'wo106-world/abandoned-pickup', use: 'vehicle', dx: -4, dy: 1, solid: false, notes: 'WO-106: abandoned pickup adds roadside life without becoming a hard blocker' },
-    { assetKey: 'wo106-world/delivery-van-cache', use: 'vehicle', dx: 3, dy: 2, solid: false, notes: 'WO-106: delivery van/cache micro-scene reinforces loot-route storytelling' },
+    { assetKey: 'wo106-world/abandoned-pickup', use: 'vehicle', dx: -4, dy: 1, solid: true, notes: 'WO-106: abandoned pickup is solid cover outside the center lane' },
+    { assetKey: 'wo106-world/delivery-van-cache', use: 'vehicle', dx: 3, dy: 2, solid: true, notes: 'WO-106: delivery van is solid cover beside the loot route' },
     { assetKey: 'wo106-world/critter-dust-burrow', use: 'ambient', dx: 0, dy: -2, solid: false, notes: 'WO-106: burrow/dust puffs telegraph critter life before flee AI ships' },
     { assetKey: 'level-1/prop/bus-stop-sign', use: 'dressing', dx: -1, dy: 3, solid: false },
   ], { label: 'WO-106 roadside vehicle micro-scenes', routeBeat: 'micro-scene', anchor: { x: 74, y: 8 }, routeRead: 'vehicles, cache, and critter burrow make the route feel inhabited' }),
@@ -405,6 +521,7 @@ export function levelOneAuthoredStampAssetSrc(assetKey) {
 export function levelOneCuratedAssetSrc(assetKey) {
   return curatedLevelKitAssetByKey(assetKey)?.src
     ?? curatedLevelArtPropByKey(assetKey)?.src
+    ?? curatedTreeAnimationAssetByKey(assetKey)?.src
     ?? levelOneAuthoredStampAssetSrc(assetKey)
     ?? wo102MegaPropAssetByKey(assetKey)?.src
     ?? wo104106WorldKitAssetSrc(assetKey)
@@ -444,6 +561,7 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
   if (use === 'terrain' || use === 'route') return null;
   const record = curatedLevelKitAssetByKey(assetKey)
     ?? curatedLevelArtPropByKey(assetKey)
+    ?? curatedTreeAnimationAssetByKey(assetKey)
     ?? authoredStampAssetByKey(assetKey)
     ?? wo102MegaPropAssetByKey(assetKey)
     ?? wo104106WorldKitAssetByKey(assetKey);
@@ -518,9 +636,8 @@ function worldDressingObjects({ playerX = 0, playerY = 5, window = 18, frame = 0
     stamp.objects.forEach((spec, index) => {
       const x = anchorX + spec.dx;
       const y = anchorY + spec.dy;
-      // Keep a generous fight lane immediately around the player; silhouettes
-      // frame the screen instead of spawning directly underfoot.
-      if (Math.hypot(x - playerX, y - playerY) < 5.5 && spec.solid !== false) return;
+      // Stamps are authored with permanent clear lanes. Never remove a solid
+      // object based on the moving player position or its art/collision will pop.
       const ambientLife = ambientLifeCueForVisibleObject({ assetKey: spec.assetKey, gridX: x, gridY: y }, {
         playerX,
         playerY,

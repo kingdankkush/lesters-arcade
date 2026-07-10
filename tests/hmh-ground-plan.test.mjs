@@ -90,6 +90,39 @@ test('ground plan references Justin-approved ChatGPT terrain tiles for the redes
   }
 });
 
+test('compact full-map plan exposes every approved terrain sheet including variable 4x4 and 6x4 grids', () => {
+  const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
+  const keys = plan.textureKeys();
+  for (const sheet of [
+    'jul9-master-ground-terrain-a',
+    'jul9-transition-ground-edges-a',
+    'jul9-street-asphalt-parking-a',
+    'jul9-water-shore-mud-a',
+    'jul9-neighborhood-ground-a',
+    'jul9-lakeside-pond-a',
+    'jul9-park-path-plaza-a',
+    'jul9-road-transition-a',
+    'jul9-extraction-plaza-b',
+    'jul9-riverbank-slabs-b',
+    'jul9-rapid-water-b',
+  ]) {
+    assert.ok(keys.some((key) => key.includes(`/${sheet}-r`)), `${sheet} should be used by the live compact-map terrain plan`);
+  }
+  const approvedJul9Keys = HMH_CURATED_LEVEL_ART.groundTextures
+    .filter((texture) => texture.sheet.startsWith('jul9-'))
+    .map((texture) => texture.key);
+  assert.equal(approvedJul9Keys.length, 264);
+  assert.ok(approvedJul9Keys.every((key) => keys.includes(key)), 'every accepted Jul 9 map tile texture should participate in the compact world plan');
+  assert.ok(plan.textureForKey('chatgpt-terrain/jul9-extraction-plaza-b-r4-c4'));
+  assert.ok(plan.textureForKey('chatgpt-terrain/jul9-riverbank-slabs-b-r6-c4'));
+  assert.ok(plan.textureForKey('chatgpt-terrain/jul9-rapid-water-b-r6-c4'));
+
+  const nearby = plan.textureKeysNear(0, 5, 18);
+  assert.ok(nearby.length > 0);
+  assert.ok(nearby.length < keys.length, 'startup prewarm should decode nearby terrain instead of every full-map texture');
+  assert.ok(nearby.every((key) => plan.textureForKey(key)), 'every nearby texture key should resolve');
+});
+
 test('spawn road uses blended shoulders and keeps the player start clear', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   assert.equal(plan.zoneAt(0, 5).zoneId, 'spawn-clear-blacktop-centerline');
@@ -99,6 +132,25 @@ test('spawn road uses blended shoulders and keeps the player start clear', () =>
   assert.match(plan.zoneAt(0, 5).textureKey, /^chatgpt-terrain\//);
   assert.match(plan.zoneAt(0, 3).textureKey, /^chatgpt-terrain\//);
   assert.match(plan.zoneAt(0, 8).textureKey, /^chatgpt-terrain\//);
+});
+
+test('compact biome towns and exploration POIs are connected by authored roads, dirt paths, and bridge crossings', () => {
+  const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
+  const expectedRoutes = [
+    [-70, 4, 'road', 'west town to spawn road'],
+    [70, 4, 'road', 'spawn to east extraction road'],
+    [-106, -40, 'dirt', 'northwest desert path'],
+    [-36, -40, 'dirt', 'north forest path'],
+    [104, -30, 'road', 'northeast neighborhood road'],
+    [-60, 79, 'dirt', 'southwest exploration trail'],
+    [60, 79, 'dirt', 'southeast waterfront trail'],
+    [29, -71, 'road', 'north river bridge'],
+    [29, 79, 'road', 'south river bridge'],
+  ];
+  for (const [x, y, role, label] of expectedRoutes) {
+    assert.equal(plan.zoneAt(x, y).role, role, `${label} should be authored into the rendered ground plan`);
+  }
+  assert.equal(plan.zoneAt(29, 20).role, 'water', 'deep rapid-water spine must remain visible between crossings');
 });
 
 test('ground plan source and tests are covered by the explicit syntax gate', () => {

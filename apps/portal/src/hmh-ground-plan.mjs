@@ -80,10 +80,12 @@ const CURATED_GROUND_ROLE_CODES = Object.freeze(HMH_CURATED_GROUND_RUNTIME.roleC
 function decodeCuratedGroundRoles(serialized) {
   return Object.freeze(String(serialized || '').split(',').filter(Boolean).map((code) => CURATED_GROUND_ROLE_CODES[code] ?? code));
 }
-const CURATED_GROUND_SHEETS = Object.freeze((HMH_CURATED_GROUND_RUNTIME.sheets ?? []).map(([slug, primaryCode, rowCodes]) => Object.freeze({
+const CURATED_GROUND_SHEETS = Object.freeze((HMH_CURATED_GROUND_RUNTIME.sheets ?? []).map(([slug, primaryCode, rowCodes, rows = 5, cols = 5]) => Object.freeze({
   slug,
   primaryRole: CURATED_GROUND_ROLE_CODES[primaryCode] ?? primaryCode,
   roleRows: Object.freeze(String(rowCodes || '').split('|').map(decodeCuratedGroundRoles)),
+  rows,
+  cols,
 })));
 const CURATED_GROUND_SHEET_BY_SLUG = new Map(CURATED_GROUND_SHEETS.map((sheet) => [sheet.slug, sheet]));
 
@@ -92,14 +94,17 @@ function curatedGroundTextureKey(sheetSlug, row, col) {
 }
 
 function curatedTerrainTextureAssetByKey(key) {
-  const match = String(key || '').match(/^chatgpt-terrain\/(.+)-r([1-5])-c([1-5])$/);
+  const match = String(key || '').match(/^chatgpt-terrain\/(.+)-r(\d+)-c(\d+)$/);
   if (!match) return null;
   const [, sheetSlug, rowRaw, colRaw] = match;
   const sheet = CURATED_GROUND_SHEET_BY_SLUG.get(sheetSlug);
   if (!sheet) return null;
   const row = Number(rowRaw);
   const col = Number(colRaw);
-  const label = CURATED_GROUND_LABELS[(row - 1) * 5 + (col - 1)] ?? `tile-${row}-${col}`;
+  if (row < 1 || row > sheet.rows || col < 1 || col > sheet.cols) return null;
+  const label = sheet.rows === 5 && sheet.cols === 5
+    ? CURATED_GROUND_LABELS[(row - 1) * 5 + (col - 1)] ?? `tile-${row}-${col}`
+    : `tile-r${row}-c${col}`;
   const materialRoles = Object.freeze(sheet.roleRows?.[row - 1] ?? [sheet.primaryRole ?? 'dirt']);
   return Object.freeze({
     key,
@@ -122,11 +127,21 @@ function curatedTextureKeysForRole(role) {
   const normalized = normalizeRole(role);
   const keys = [];
   for (const sheet of CURATED_GROUND_SHEETS) {
-    for (let row = 1; row <= 5; row += 1) {
+    for (let row = 1; row <= sheet.rows; row += 1) {
       const roles = sheet.roleRows?.[row - 1] ?? [sheet.primaryRole ?? 'dirt'];
       if (!roles.includes(normalized)) continue;
-      for (let col = 1; col <= 5; col += 1) keys.push(curatedGroundTextureKey(sheet.slug, row, col));
+      for (let col = 1; col <= sheet.cols; col += 1) keys.push(curatedGroundTextureKey(sheet.slug, row, col));
     }
+  }
+  return keys;
+}
+
+function curatedTextureKeysForSheet(sheetSlug) {
+  const sheet = CURATED_GROUND_SHEET_BY_SLUG.get(sheetSlug);
+  if (!sheet) return [];
+  const keys = [];
+  for (let row = 1; row <= sheet.rows; row += 1) {
+    for (let col = 1; col <= sheet.cols; col += 1) keys.push(curatedGroundTextureKey(sheet.slug, row, col));
   }
   return keys;
 }
@@ -254,9 +269,12 @@ function terrainZone(zoneId, role, textureKey, xMin, xMax, yMin, yMax, priority)
 }
 
 function textureVariantKeysForZone(zone) {
-  return [zone.textureKey, ...curatedTextureKeysForRole(zone.role)]
-    .filter((key, index, keys) => key?.startsWith('chatgpt-terrain/') && keys.indexOf(key) === index)
-    .slice(0, 9);
+  const preferredSheet = String(zone.textureKey || '').match(/^chatgpt-terrain\/(.+)-r\d+-c\d+$/)?.[1] ?? null;
+  const sheetKeys = preferredSheet
+    ? curatedTextureKeysForSheet(preferredSheet)
+    : curatedTextureKeysForRole(zone.role).slice(0, 9);
+  return [zone.textureKey, ...sheetKeys]
+    .filter((key, index, keys) => key?.startsWith('chatgpt-terrain/') && keys.indexOf(key) === index);
 }
 
 function textureKeyForZoneCell(zone, worldX, worldY, seed) {
@@ -269,6 +287,33 @@ function textureKeyForZoneCell(zone, worldX, worldY, seed) {
 
 function buildChatgptTerrainZones() {
   return Object.freeze([
+    // Compact-map macro districts cover the entire 263x225 footprint. Narrow
+    // route/POI zones below override these broad authored biome fields.
+    terrainZone('compact-northwest-forest-field', 'grass', 'chatgpt-terrain/jul9-master-ground-terrain-a-r1-c1', -131, -41, -112, -26, 120),
+    terrainZone('compact-north-town-field', 'grass', 'chatgpt-terrain/jul9-neighborhood-ground-a-r1-c1', -40, 19, -112, -26, 120),
+    terrainZone('compact-northeast-lakeside-field', 'shore', 'chatgpt-terrain/jul9-lakeside-pond-a-r2-c2', 20, 131, -112, -26, 120),
+    terrainZone('compact-west-desert-field', 'dirt', 'chatgpt-terrain/jul9-transition-ground-edges-a-r3-c2', -131, -41, -25, 44, 120),
+    terrainZone('compact-center-town-field', 'road', 'chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c1', -40, 39, -25, 44, 120),
+    terrainZone('compact-east-park-field', 'grass-to-road', 'chatgpt-terrain/jul9-park-path-plaza-a-r3-c2', 40, 131, -25, 44, 120),
+    terrainZone('compact-southwest-road-field', 'road', 'chatgpt-terrain/jul9-road-transition-a-r1-c1', -131, -41, 45, 112, 120),
+    terrainZone('compact-south-waterfront-field', 'shore', 'chatgpt-terrain/jul9-water-shore-mud-a-r2-c1', -40, 39, 45, 112, 120),
+    terrainZone('compact-southeast-extraction-field', 'road', 'chatgpt-terrain/jul9-extraction-plaza-b-r1-c1', 40, 131, 45, 112, 120),
+    terrainZone('compact-riverbank-spine', 'shore', 'chatgpt-terrain/jul9-riverbank-slabs-b-r1-c1', 20, 38, -112, 112, 160),
+    terrainZone('compact-rapid-water-spine', 'water', 'chatgpt-terrain/jul9-rapid-water-b-r1-c1', 26, 32, -112, 112, 170),
+    // Authored connective network. Broad roads join the two towns and extraction
+    // yard; narrower dirt trails branch into forests, desert, and waterfront POIs.
+    // Three explicit bridge decks are the only hard-road crossings of the rapid
+    // spine, keeping the visible water and traversal rules in agreement.
+    terrainZone('compact-west-east-town-road', 'road', 'chatgpt-terrain/jul9-road-transition-a-r1-c1', -110, 108, 2, 6, 3090),
+    terrainZone('compact-north-town-road', 'road', 'chatgpt-terrain/jul9-neighborhood-ground-a-r1-c2', -40, 108, -73, -69, 3090),
+    terrainZone('compact-northeast-neighborhood-road', 'road', 'chatgpt-terrain/jul9-road-transition-a-r2-c2', 101, 107, -69, 6, 3090),
+    terrainZone('compact-northwest-desert-path', 'dirt', 'chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2', -109, -103, -79, 3, 3050),
+    terrainZone('compact-north-forest-path', 'dirt', 'chatgpt-terrain/jul9-park-path-plaza-a-r2-c2', -39, -33, -82, 3, 3050),
+    terrainZone('compact-center-south-path', 'road', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2', -3, 3, 5, 81, 3050),
+    terrainZone('compact-southern-waterfront-trail', 'dirt', 'chatgpt-terrain/jul9-park-path-plaza-a-r2-c3', -99, 99, 77, 81, 3050),
+    terrainZone('compact-central-river-bridge', 'road', 'chatgpt-terrain/jul9-road-transition-a-r3-c3', 26, 32, 2, 6, 3250),
+    terrainZone('compact-north-river-bridge', 'road', 'chatgpt-terrain/jul9-road-transition-a-r3-c3', 26, 32, -73, -69, 3250),
+    terrainZone('compact-south-river-bridge', 'road', 'chatgpt-terrain/jul9-road-transition-a-r3-c3', 26, 32, 77, 81, 3250),
     terrainZone('spawn-clear-blacktop-centerline', 'road', 'chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c2', -16, 22, 4, 6, 3100),
     terrainZone('spawn-grass-road-north-shoulder', 'grass-to-road', 'chatgpt-terrain/jul9-street-asphalt-parking-a-r2-c4', -12, 24, 2, 3, 3095),
     terrainZone('spawn-muddy-road-south-shoulder', 'dirt', 'chatgpt-terrain/jul9-water-shore-mud-a-r2-c2', -12, 26, 7, 9, 3095),
@@ -353,6 +398,22 @@ export function buildGroundPlan({ levelId = HMH_LEVEL_ONE_ID, seed = 0 } = {}) {
     textureForKey: textureAssetByKey,
     textureKeys() {
       return Object.freeze([...new Set(zones.flatMap((zone) => textureVariantKeysForZone(zone)).filter(Boolean))]);
+    },
+    textureKeysNear(centerX = 0, centerY = 0, radius = 18) {
+      const safeRadius = Math.max(1, Math.floor(Number(radius) || 18));
+      const minX = Math.floor(Number(centerX) || 0) - safeRadius;
+      const maxX = Math.ceil(Number(centerX) || 0) + safeRadius;
+      const minY = Math.floor(Number(centerY) || 0) - safeRadius;
+      const maxY = Math.ceil(Number(centerY) || 0) + safeRadius;
+      const keys = new Set();
+      for (let x = minX; x <= maxX; x += 2) {
+        for (let y = minY; y <= maxY; y += 2) {
+          const zone = zoneAtBare(x, y);
+          keys.add(textureKeyForZoneCell(zone, x, y, seed));
+        }
+      }
+      keys.add(textureKeyForZoneCell(zoneAtBare(centerX, centerY), centerX, centerY, seed));
+      return Object.freeze([...keys].filter(Boolean));
     },
     zoneAt(worldX, worldY) {
       const zone = zoneAtBare(worldX, worldY);

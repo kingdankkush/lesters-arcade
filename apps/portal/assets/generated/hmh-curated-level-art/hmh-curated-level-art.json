@@ -2,11 +2,11 @@
   "id": "hmh-curated-level-art-chatgpt-2026-07-08",
   "generatedFrom": "Justin-approved ChatGPT Image tree, forest, and ground tile sheets; local source paths redacted",
   "gridCounts": {
-    "treeIdleFrames": 18,
+    "treeIdleFrames": 54,
     "forestProps": 32,
-    "environmentProps": 381,
-    "groundTiles": 625,
-    "groundTextures": 625
+    "environmentProps": 451,
+    "groundTiles": 689,
+    "groundTextures": 689
   },
   "runtime": {
     "coherentWorldRoot": "./assets/generated/hmh-coherent-world/curated",
@@ -170,6 +170,318 @@
         }
       ],
       "coherentWorldKey": "curated/cottonwood-tree-idle-00"
+    },
+    {
+      "slug": "jul9-riparian-juniper-idle",
+      "tree": "jul9-riparian-juniper",
+      "description": "compact juniper with six wind-sway frames",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "jul9-riparian-juniper-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-juniper/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "jul9-riparian-juniper-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-juniper/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "jul9-riparian-juniper-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-juniper/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "jul9-riparian-juniper-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-juniper/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "jul9-riparian-juniper-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-juniper/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "jul9-riparian-juniper-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-juniper/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated-tree/jul9-riparian-juniper-idle-00"
+    },
+    {
+      "slug": "jul9-riparian-dead-tree-idle",
+      "tree": "jul9-riparian-dead-tree",
+      "description": "dead snag with six subtle idle frames",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "jul9-riparian-dead-tree-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-dead-tree/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "jul9-riparian-dead-tree-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-dead-tree/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "jul9-riparian-dead-tree-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-dead-tree/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "jul9-riparian-dead-tree-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-dead-tree/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "jul9-riparian-dead-tree-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-dead-tree/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "jul9-riparian-dead-tree-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-dead-tree/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated-tree/jul9-riparian-dead-tree-idle-00"
+    },
+    {
+      "slug": "jul9-riparian-cottonwood-idle",
+      "tree": "jul9-riparian-cottonwood",
+      "description": "broad cottonwood with six leaf-sway frames",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "jul9-riparian-cottonwood-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-cottonwood/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "jul9-riparian-cottonwood-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-cottonwood/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "jul9-riparian-cottonwood-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-cottonwood/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "jul9-riparian-cottonwood-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-cottonwood/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "jul9-riparian-cottonwood-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-cottonwood/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "jul9-riparian-cottonwood-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-riparian-cottonwood/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated-tree/jul9-riparian-cottonwood-idle-00"
+    },
+    {
+      "slug": "jul9-desert-acacia-idle",
+      "tree": "jul9-desert-acacia",
+      "description": "flat-canopy acacia with six idle frames",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "jul9-desert-acacia-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-acacia/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "jul9-desert-acacia-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-acacia/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "jul9-desert-acacia-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-acacia/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "jul9-desert-acacia-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-acacia/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "jul9-desert-acacia-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-acacia/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "jul9-desert-acacia-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-acacia/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated-tree/jul9-desert-acacia-idle-00"
+    },
+    {
+      "slug": "jul9-desert-mesquite-idle",
+      "tree": "jul9-desert-mesquite",
+      "description": "thorny mesquite with six idle frames",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "jul9-desert-mesquite-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-mesquite/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "jul9-desert-mesquite-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-mesquite/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "jul9-desert-mesquite-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-mesquite/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "jul9-desert-mesquite-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-mesquite/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "jul9-desert-mesquite-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-mesquite/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "jul9-desert-mesquite-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-mesquite/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated-tree/jul9-desert-mesquite-idle-00"
+    },
+    {
+      "slug": "jul9-desert-joshua-idle",
+      "tree": "jul9-desert-joshua",
+      "description": "Joshua tree with six idle frames",
+      "loop": true,
+      "frameDurationMs": 140,
+      "frames": [
+        {
+          "id": "jul9-desert-joshua-idle-00",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-joshua/idle/00.png",
+          "width": 256,
+          "height": 256,
+          "frame": 0
+        },
+        {
+          "id": "jul9-desert-joshua-idle-01",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-joshua/idle/01.png",
+          "width": 256,
+          "height": 256,
+          "frame": 1
+        },
+        {
+          "id": "jul9-desert-joshua-idle-02",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-joshua/idle/02.png",
+          "width": 256,
+          "height": 256,
+          "frame": 2
+        },
+        {
+          "id": "jul9-desert-joshua-idle-03",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-joshua/idle/03.png",
+          "width": 256,
+          "height": 256,
+          "frame": 3
+        },
+        {
+          "id": "jul9-desert-joshua-idle-04",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-joshua/idle/04.png",
+          "width": 256,
+          "height": 256,
+          "frame": 4
+        },
+        {
+          "id": "jul9-desert-joshua-idle-05",
+          "src": "./assets/generated/hmh-curated-level-art/props/trees/jul9-desert-joshua/idle/05.png",
+          "width": 256,
+          "height": 256,
+          "frame": 5
+        }
+      ],
+      "coherentWorldKey": "curated-tree/jul9-desert-joshua-idle-00"
     }
   ],
   "forestProps": [
@@ -5573,6 +5885,916 @@
         "col": 5
       },
       "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-vegetation-crop-edge/24-dead-brush-wall.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-extraction-monuments-b-00-extraction-arch",
+      "sheet": "jul9-extraction-monuments-b",
+      "label": "extraction-arch",
+      "category": "landmark",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-extraction-monuments-b/00-extraction-arch.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-extraction-monuments-b-01-closed-boss-gate",
+      "sheet": "jul9-extraction-monuments-b",
+      "label": "closed-boss-gate",
+      "category": "landmark",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-extraction-monuments-b/01-closed-boss-gate.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-extraction-monuments-b-02-open-boss-gate",
+      "sheet": "jul9-extraction-monuments-b",
+      "label": "open-boss-gate",
+      "category": "landmark",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-extraction-monuments-b/02-open-boss-gate.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-extraction-monuments-b-03-ltc-beacon-pad",
+      "sheet": "jul9-extraction-monuments-b",
+      "label": "ltc-beacon-pad",
+      "category": "landmark",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-extraction-monuments-b/03-ltc-beacon-pad.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-neighborhood-small-props-b-00-weathered-picket-fence",
+      "sheet": "jul9-neighborhood-small-props-b",
+      "label": "weathered-picket-fence",
+      "category": "yard",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-neighborhood-small-props-b/00-weathered-picket-fence.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-neighborhood-small-props-b-01-trash-can-bags",
+      "sheet": "jul9-neighborhood-small-props-b",
+      "label": "trash-can-bags",
+      "category": "yard",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-neighborhood-small-props-b/01-trash-can-bags.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-neighborhood-small-props-b-02-mailbox-weeds",
+      "sheet": "jul9-neighborhood-small-props-b",
+      "label": "mailbox-weeds",
+      "category": "yard",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-neighborhood-small-props-b/02-mailbox-weeds.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-neighborhood-small-props-b-03-stone-well",
+      "sheet": "jul9-neighborhood-small-props-b",
+      "label": "stone-well",
+      "category": "yard",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-neighborhood-small-props-b/03-stone-well.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-forest-obstacles-b-00-mossy-fallen-log",
+      "sheet": "jul9-forest-obstacles-b",
+      "label": "mossy-fallen-log",
+      "category": "forest",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-forest-obstacles-b/00-mossy-fallen-log.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-forest-obstacles-b-01-rooted-tree-stump",
+      "sheet": "jul9-forest-obstacles-b",
+      "label": "rooted-tree-stump",
+      "category": "forest",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-forest-obstacles-b/01-rooted-tree-stump.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-forest-obstacles-b-02-forest-boulder-cluster",
+      "sheet": "jul9-forest-obstacles-b",
+      "label": "forest-boulder-cluster",
+      "category": "forest",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-forest-obstacles-b/02-forest-boulder-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-forest-obstacles-b-03-rotting-log-pile",
+      "sheet": "jul9-forest-obstacles-b",
+      "label": "rotting-log-pile",
+      "category": "forest",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-forest-obstacles-b/03-rotting-log-pile.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-00-waterlogged-log",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "waterlogged-log",
+      "category": "water",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/00-waterlogged-log.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-01-concrete-river-block",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "concrete-river-block",
+      "category": "water",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/01-concrete-river-block.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-02-submerged-stone-slab",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "submerged-stone-slab",
+      "category": "water",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/02-submerged-stone-slab.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-03-broken-spillway",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "broken-spillway",
+      "category": "water",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/03-broken-spillway.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-04-river-boulder-cluster",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "river-boulder-cluster",
+      "category": "water",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/04-river-boulder-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-05-submerged-cart-wreck",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "submerged-cart-wreck",
+      "category": "water",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/05-submerged-cart-wreck.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-06-shallow-rapid-strip",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "shallow-rapid-strip",
+      "category": "water",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/06-shallow-rapid-strip.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-river-obstacles-b-07-deep-rapid-strip",
+      "sheet": "jul9-river-obstacles-b",
+      "label": "deep-rapid-strip",
+      "category": "water",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-river-obstacles-b/07-deep-rapid-strip.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-00-amber-hanging-lamp",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "amber-hanging-lamp",
+      "category": "signal",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/00-amber-hanging-lamp.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-01-amber-lantern-sign",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "amber-lantern-sign",
+      "category": "signal",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/01-amber-lantern-sign.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-02-green-hanging-sign",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "green-hanging-sign",
+      "category": "signal",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/02-green-hanging-sign.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-03-green-double-sign",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "green-double-sign",
+      "category": "signal",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/03-green-double-sign.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-04-amber-route-sign",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "amber-route-sign",
+      "category": "signal",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/04-amber-route-sign.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-05-green-route-sign",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "green-route-sign",
+      "category": "signal",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/05-green-route-sign.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-06-green-crossroad-sign",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "green-crossroad-sign",
+      "category": "signal",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/06-green-crossroad-sign.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-07-green-town-sign",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "green-town-sign",
+      "category": "signal",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/07-green-town-sign.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-08-amber-short-lamp",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "amber-short-lamp",
+      "category": "signal",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/08-amber-short-lamp.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-09-cyan-short-lamp",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "cyan-short-lamp",
+      "category": "signal",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/09-cyan-short-lamp.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-10-cyan-beacon-post",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "cyan-beacon-post",
+      "category": "signal",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/10-cyan-beacon-post.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-11-cyan-square-beacon",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "cyan-square-beacon",
+      "category": "signal",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/11-cyan-square-beacon.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-12-low-rock-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "low-rock-marker",
+      "category": "signal",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/12-low-rock-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-13-mossy-rock-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "mossy-rock-marker",
+      "category": "signal",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/13-mossy-rock-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-14-broken-log-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "broken-log-marker",
+      "category": "signal",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/14-broken-log-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-15-low-stone-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "low-stone-marker",
+      "category": "signal",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/15-low-stone-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-16-amber-bollard",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "amber-bollard",
+      "category": "signal",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/16-amber-bollard.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-17-cyan-bollard",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "cyan-bollard",
+      "category": "signal",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/17-cyan-bollard.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-18-amber-pylon",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "amber-pylon",
+      "category": "signal",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/18-amber-pylon.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-19-cyan-pylon",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "cyan-pylon",
+      "category": "signal",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/19-cyan-pylon.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-20-green-floor-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "green-floor-marker",
+      "category": "signal",
+      "grid": {
+        "row": 6,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/20-green-floor-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-21-stone-floor-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "stone-floor-marker",
+      "category": "signal",
+      "grid": {
+        "row": 6,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/21-stone-floor-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-22-cyan-floor-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "cyan-floor-marker",
+      "category": "signal",
+      "grid": {
+        "row": 6,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/22-cyan-floor-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-route-signs-beacons-b-23-broken-floor-marker",
+      "sheet": "jul9-route-signs-beacons-b",
+      "label": "broken-floor-marker",
+      "category": "signal",
+      "grid": {
+        "row": 6,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-route-signs-beacons-b/23-broken-floor-marker.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-props-b-00-desert-brush-cluster",
+      "sheet": "jul9-desert-props-b",
+      "label": "desert-brush-cluster",
+      "category": "desert",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-props-b/00-desert-brush-cluster.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-props-b-01-bone-pile",
+      "sheet": "jul9-desert-props-b",
+      "label": "bone-pile",
+      "category": "desert",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-props-b/01-bone-pile.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-props-b-02-rusted-buried-barrel",
+      "sheet": "jul9-desert-props-b",
+      "label": "rusted-buried-barrel",
+      "category": "desert",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-props-b/02-rusted-buried-barrel.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-props-b-03-sandstone-rubble",
+      "sheet": "jul9-desert-props-b",
+      "label": "sandstone-rubble",
+      "category": "desert",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-props-b/03-sandstone-rubble.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-rock-formations-b-00-sandstone-arch",
+      "sheet": "jul9-desert-rock-formations-b",
+      "label": "sandstone-arch",
+      "category": "rock",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-rock-formations-b/00-sandstone-arch.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-rock-formations-b-01-hollow-skull-rock",
+      "sheet": "jul9-desert-rock-formations-b",
+      "label": "hollow-skull-rock",
+      "category": "rock",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-rock-formations-b/01-hollow-skull-rock.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-rock-formations-b-02-cracked-flat-rock",
+      "sheet": "jul9-desert-rock-formations-b",
+      "label": "cracked-flat-rock",
+      "category": "rock",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-rock-formations-b/02-cracked-flat-rock.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-rock-formations-b-03-sandstone-spire",
+      "sheet": "jul9-desert-rock-formations-b",
+      "label": "sandstone-spire",
+      "category": "rock",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-rock-formations-b/03-sandstone-spire.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-rock-formations-b-04-cracked-flat-rock-alt",
+      "sheet": "jul9-desert-rock-formations-b",
+      "label": "cracked-flat-rock-alt",
+      "category": "rock",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-rock-formations-b/04-cracked-flat-rock-alt.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-desert-rock-formations-b-05-sandstone-spire-alt",
+      "sheet": "jul9-desert-rock-formations-b",
+      "label": "sandstone-spire-alt",
+      "category": "rock",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-desert-rock-formations-b/05-sandstone-spire-alt.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-00-firefly-drift-01",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "firefly-drift-01",
+      "category": "ambient",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/00-firefly-drift-01.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-01-firefly-drift-02",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "firefly-drift-02",
+      "category": "ambient",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/01-firefly-drift-02.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-02-firefly-drift-03",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "firefly-drift-03",
+      "category": "ambient",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/02-firefly-drift-03.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-03-firefly-drift-04",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "firefly-drift-04",
+      "category": "ambient",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/03-firefly-drift-04.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-04-moss-glow-01",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "moss-glow-01",
+      "category": "ambient",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/04-moss-glow-01.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-05-moss-glow-02",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "moss-glow-02",
+      "category": "ambient",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/05-moss-glow-02.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-06-moss-glow-03",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "moss-glow-03",
+      "category": "ambient",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/06-moss-glow-03.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-07-moss-glow-04",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "moss-glow-04",
+      "category": "ambient",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/07-moss-glow-04.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-08-water-glint-01",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-glint-01",
+      "category": "ambient",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/08-water-glint-01.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-09-water-glint-02",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-glint-02",
+      "category": "ambient",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/09-water-glint-02.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-10-water-glint-03",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-glint-03",
+      "category": "ambient",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/10-water-glint-03.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-11-water-glint-04",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-glint-04",
+      "category": "ambient",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/11-water-glint-04.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-12-water-spark-01",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-spark-01",
+      "category": "ambient",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/12-water-spark-01.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-13-water-spark-02",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-spark-02",
+      "category": "ambient",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/13-water-spark-02.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-14-water-spark-03",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-spark-03",
+      "category": "ambient",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/14-water-spark-03.png",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "id": "jul9-ambient-water-glow-b-15-water-spark-04",
+      "sheet": "jul9-ambient-water-glow-b",
+      "label": "water-spark-04",
+      "category": "ambient",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/props/environment/jul9-ambient-water-glow-b/15-water-spark-04.png",
       "width": 256,
       "height": 256
     }
@@ -18022,6 +19244,1262 @@
         "rocky",
         "dirt"
       ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r1-c1",
+      "slug": "jul9-extraction-plaza-b-r1-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c1",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/1-1-tile-r1-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r1-c2",
+      "slug": "jul9-extraction-plaza-b-r1-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c2",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/1-2-tile-r1-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r1-c3",
+      "slug": "jul9-extraction-plaza-b-r1-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c3",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/1-3-tile-r1-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r1-c4",
+      "slug": "jul9-extraction-plaza-b-r1-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c4",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/1-4-tile-r1-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r2-c1",
+      "slug": "jul9-extraction-plaza-b-r2-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c1",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/2-1-tile-r2-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r2-c2",
+      "slug": "jul9-extraction-plaza-b-r2-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c2",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/2-2-tile-r2-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r2-c3",
+      "slug": "jul9-extraction-plaza-b-r2-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c3",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/2-3-tile-r2-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r2-c4",
+      "slug": "jul9-extraction-plaza-b-r2-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c4",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/2-4-tile-r2-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r3-c1",
+      "slug": "jul9-extraction-plaza-b-r3-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c1",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/3-1-tile-r3-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r3-c2",
+      "slug": "jul9-extraction-plaza-b-r3-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c2",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/3-2-tile-r3-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r3-c3",
+      "slug": "jul9-extraction-plaza-b-r3-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c3",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/3-3-tile-r3-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r3-c4",
+      "slug": "jul9-extraction-plaza-b-r3-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c4",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/3-4-tile-r3-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r4-c1",
+      "slug": "jul9-extraction-plaza-b-r4-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c1",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/4-1-tile-r4-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r4-c2",
+      "slug": "jul9-extraction-plaza-b-r4-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c2",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/4-2-tile-r4-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r4-c3",
+      "slug": "jul9-extraction-plaza-b-r4-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c3",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/4-3-tile-r4-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-extraction-plaza-b-r4-c4",
+      "slug": "jul9-extraction-plaza-b-r4-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c4",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-extraction-plaza-b/4-4-tile-r4-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r1-c1",
+      "slug": "jul9-riverbank-slabs-b-r1-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c1",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/1-1-tile-r1-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r1-c2",
+      "slug": "jul9-riverbank-slabs-b-r1-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c2",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/1-2-tile-r1-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r1-c3",
+      "slug": "jul9-riverbank-slabs-b-r1-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c3",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/1-3-tile-r1-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r1-c4",
+      "slug": "jul9-riverbank-slabs-b-r1-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c4",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/1-4-tile-r1-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r2-c1",
+      "slug": "jul9-riverbank-slabs-b-r2-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c1",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/2-1-tile-r2-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r2-c2",
+      "slug": "jul9-riverbank-slabs-b-r2-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c2",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/2-2-tile-r2-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r2-c3",
+      "slug": "jul9-riverbank-slabs-b-r2-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c3",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/2-3-tile-r2-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r2-c4",
+      "slug": "jul9-riverbank-slabs-b-r2-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c4",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/2-4-tile-r2-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r3-c1",
+      "slug": "jul9-riverbank-slabs-b-r3-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c1",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/3-1-tile-r3-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r3-c2",
+      "slug": "jul9-riverbank-slabs-b-r3-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c2",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/3-2-tile-r3-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r3-c3",
+      "slug": "jul9-riverbank-slabs-b-r3-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c3",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/3-3-tile-r3-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r3-c4",
+      "slug": "jul9-riverbank-slabs-b-r3-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c4",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/3-4-tile-r3-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r4-c1",
+      "slug": "jul9-riverbank-slabs-b-r4-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c1",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/4-1-tile-r4-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r4-c2",
+      "slug": "jul9-riverbank-slabs-b-r4-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c2",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/4-2-tile-r4-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r4-c3",
+      "slug": "jul9-riverbank-slabs-b-r4-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c3",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/4-3-tile-r4-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r4-c4",
+      "slug": "jul9-riverbank-slabs-b-r4-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c4",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/4-4-tile-r4-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r5-c1",
+      "slug": "jul9-riverbank-slabs-b-r5-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c1",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/5-1-tile-r5-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r5-c2",
+      "slug": "jul9-riverbank-slabs-b-r5-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c2",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/5-2-tile-r5-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r5-c3",
+      "slug": "jul9-riverbank-slabs-b-r5-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c3",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/5-3-tile-r5-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r5-c4",
+      "slug": "jul9-riverbank-slabs-b-r5-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c4",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/5-4-tile-r5-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r6-c1",
+      "slug": "jul9-riverbank-slabs-b-r6-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c1",
+      "grid": {
+        "row": 6,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/6-1-tile-r6-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r6-c2",
+      "slug": "jul9-riverbank-slabs-b-r6-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c2",
+      "grid": {
+        "row": 6,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/6-2-tile-r6-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r6-c3",
+      "slug": "jul9-riverbank-slabs-b-r6-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c3",
+      "grid": {
+        "row": 6,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/6-3-tile-r6-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-riverbank-slabs-b-r6-c4",
+      "slug": "jul9-riverbank-slabs-b-r6-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c4",
+      "grid": {
+        "row": 6,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-riverbank-slabs-b/6-4-tile-r6-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r1-c1",
+      "slug": "jul9-rapid-water-b-r1-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c1",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/1-1-tile-r1-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r1-c2",
+      "slug": "jul9-rapid-water-b-r1-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c2",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/1-2-tile-r1-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r1-c3",
+      "slug": "jul9-rapid-water-b-r1-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c3",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/1-3-tile-r1-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r1-c4",
+      "slug": "jul9-rapid-water-b-r1-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c4",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/1-4-tile-r1-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r2-c1",
+      "slug": "jul9-rapid-water-b-r2-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c1",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/2-1-tile-r2-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r2-c2",
+      "slug": "jul9-rapid-water-b-r2-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c2",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/2-2-tile-r2-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r2-c3",
+      "slug": "jul9-rapid-water-b-r2-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c3",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/2-3-tile-r2-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r2-c4",
+      "slug": "jul9-rapid-water-b-r2-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c4",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/2-4-tile-r2-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r3-c1",
+      "slug": "jul9-rapid-water-b-r3-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c1",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/3-1-tile-r3-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r3-c2",
+      "slug": "jul9-rapid-water-b-r3-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c2",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/3-2-tile-r3-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r3-c3",
+      "slug": "jul9-rapid-water-b-r3-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c3",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/3-3-tile-r3-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r3-c4",
+      "slug": "jul9-rapid-water-b-r3-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c4",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/3-4-tile-r3-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r4-c1",
+      "slug": "jul9-rapid-water-b-r4-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c1",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/4-1-tile-r4-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r4-c2",
+      "slug": "jul9-rapid-water-b-r4-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c2",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/4-2-tile-r4-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r4-c3",
+      "slug": "jul9-rapid-water-b-r4-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c3",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/4-3-tile-r4-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r4-c4",
+      "slug": "jul9-rapid-water-b-r4-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c4",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/4-4-tile-r4-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r5-c1",
+      "slug": "jul9-rapid-water-b-r5-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c1",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/5-1-tile-r5-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r5-c2",
+      "slug": "jul9-rapid-water-b-r5-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c2",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/5-2-tile-r5-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r5-c3",
+      "slug": "jul9-rapid-water-b-r5-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c3",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/5-3-tile-r5-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r5-c4",
+      "slug": "jul9-rapid-water-b-r5-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c4",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/5-4-tile-r5-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r6-c1",
+      "slug": "jul9-rapid-water-b-r6-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c1",
+      "grid": {
+        "row": 6,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/6-1-tile-r6-c1.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r6-c2",
+      "slug": "jul9-rapid-water-b-r6-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c2",
+      "grid": {
+        "row": 6,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/6-2-tile-r6-c2.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r6-c3",
+      "slug": "jul9-rapid-water-b-r6-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c3",
+      "grid": {
+        "row": 6,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/6-3-tile-r6-c3.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
+    },
+    {
+      "id": "jul9-rapid-water-b-r6-c4",
+      "slug": "jul9-rapid-water-b-r6-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c4",
+      "grid": {
+        "row": 6,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/ground/jul9-rapid-water-b/6-4-tile-r6-c4.png",
+      "width": 56,
+      "height": 56,
+      "role": "isometric_tile",
+      "primaryTerrainRole": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ]
     }
   ],
   "groundTextures": [
@@ -30469,6 +32947,1262 @@
         "dirt"
       ],
       "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r1-c1",
+      "slug": "jul9-extraction-plaza-b-r1-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c1",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/1-1-tile-r1-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r1-c2",
+      "slug": "jul9-extraction-plaza-b-r1-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c2",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/1-2-tile-r1-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r1-c3",
+      "slug": "jul9-extraction-plaza-b-r1-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c3",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/1-3-tile-r1-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r1-c4",
+      "slug": "jul9-extraction-plaza-b-r1-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r1-c4",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/1-4-tile-r1-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r2-c1",
+      "slug": "jul9-extraction-plaza-b-r2-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c1",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/2-1-tile-r2-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r2-c2",
+      "slug": "jul9-extraction-plaza-b-r2-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c2",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/2-2-tile-r2-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r2-c3",
+      "slug": "jul9-extraction-plaza-b-r2-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c3",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/2-3-tile-r2-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r2-c4",
+      "slug": "jul9-extraction-plaza-b-r2-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r2-c4",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/2-4-tile-r2-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r3-c1",
+      "slug": "jul9-extraction-plaza-b-r3-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c1",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/3-1-tile-r3-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r3-c2",
+      "slug": "jul9-extraction-plaza-b-r3-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c2",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/3-2-tile-r3-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r3-c3",
+      "slug": "jul9-extraction-plaza-b-r3-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c3",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/3-3-tile-r3-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r3-c4",
+      "slug": "jul9-extraction-plaza-b-r3-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r3-c4",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/3-4-tile-r3-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r4-c1",
+      "slug": "jul9-extraction-plaza-b-r4-c1",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c1",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/4-1-tile-r4-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r4-c2",
+      "slug": "jul9-extraction-plaza-b-r4-c2",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c2",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/4-2-tile-r4-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r4-c3",
+      "slug": "jul9-extraction-plaza-b-r4-c3",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c3",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/4-3-tile-r4-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-extraction-plaza-b-r4-c4",
+      "slug": "jul9-extraction-plaza-b-r4-c4",
+      "sheet": "jul9-extraction-plaza-b",
+      "label": "tile-r4-c4",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-extraction-plaza-b/4-4-tile-r4-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "road",
+      "materialRoles": [
+        "road",
+        "rocky",
+        "grass-to-road"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c1",
+      "slug": "jul9-riverbank-slabs-b-r1-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c1",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/1-1-tile-r1-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c2",
+      "slug": "jul9-riverbank-slabs-b-r1-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c2",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/1-2-tile-r1-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c3",
+      "slug": "jul9-riverbank-slabs-b-r1-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c3",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/1-3-tile-r1-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c4",
+      "slug": "jul9-riverbank-slabs-b-r1-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r1-c4",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/1-4-tile-r1-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c1",
+      "slug": "jul9-riverbank-slabs-b-r2-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c1",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/2-1-tile-r2-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c2",
+      "slug": "jul9-riverbank-slabs-b-r2-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c2",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/2-2-tile-r2-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c3",
+      "slug": "jul9-riverbank-slabs-b-r2-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c3",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/2-3-tile-r2-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c4",
+      "slug": "jul9-riverbank-slabs-b-r2-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r2-c4",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/2-4-tile-r2-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c1",
+      "slug": "jul9-riverbank-slabs-b-r3-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c1",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/3-1-tile-r3-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c2",
+      "slug": "jul9-riverbank-slabs-b-r3-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c2",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/3-2-tile-r3-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c3",
+      "slug": "jul9-riverbank-slabs-b-r3-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c3",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/3-3-tile-r3-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c4",
+      "slug": "jul9-riverbank-slabs-b-r3-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r3-c4",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/3-4-tile-r3-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c1",
+      "slug": "jul9-riverbank-slabs-b-r4-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c1",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/4-1-tile-r4-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c2",
+      "slug": "jul9-riverbank-slabs-b-r4-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c2",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/4-2-tile-r4-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c3",
+      "slug": "jul9-riverbank-slabs-b-r4-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c3",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/4-3-tile-r4-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c4",
+      "slug": "jul9-riverbank-slabs-b-r4-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r4-c4",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/4-4-tile-r4-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c1",
+      "slug": "jul9-riverbank-slabs-b-r5-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c1",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/5-1-tile-r5-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c2",
+      "slug": "jul9-riverbank-slabs-b-r5-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c2",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/5-2-tile-r5-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c3",
+      "slug": "jul9-riverbank-slabs-b-r5-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c3",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/5-3-tile-r5-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c4",
+      "slug": "jul9-riverbank-slabs-b-r5-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r5-c4",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/5-4-tile-r5-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c1",
+      "slug": "jul9-riverbank-slabs-b-r6-c1",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c1",
+      "grid": {
+        "row": 6,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/6-1-tile-r6-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c2",
+      "slug": "jul9-riverbank-slabs-b-r6-c2",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c2",
+      "grid": {
+        "row": 6,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/6-2-tile-r6-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c3",
+      "slug": "jul9-riverbank-slabs-b-r6-c3",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c3",
+      "grid": {
+        "row": 6,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/6-3-tile-r6-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c4",
+      "slug": "jul9-riverbank-slabs-b-r6-c4",
+      "sheet": "jul9-riverbank-slabs-b",
+      "label": "tile-r6-c4",
+      "grid": {
+        "row": 6,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-riverbank-slabs-b/6-4-tile-r6-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "shore",
+      "materialRoles": [
+        "water",
+        "shore",
+        "rocky"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r1-c1",
+      "slug": "jul9-rapid-water-b-r1-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c1",
+      "grid": {
+        "row": 1,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/1-1-tile-r1-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": true
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r1-c2",
+      "slug": "jul9-rapid-water-b-r1-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c2",
+      "grid": {
+        "row": 1,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/1-2-tile-r1-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r1-c3",
+      "slug": "jul9-rapid-water-b-r1-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c3",
+      "grid": {
+        "row": 1,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/1-3-tile-r1-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r1-c4",
+      "slug": "jul9-rapid-water-b-r1-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r1-c4",
+      "grid": {
+        "row": 1,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/1-4-tile-r1-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r2-c1",
+      "slug": "jul9-rapid-water-b-r2-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c1",
+      "grid": {
+        "row": 2,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/2-1-tile-r2-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r2-c2",
+      "slug": "jul9-rapid-water-b-r2-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c2",
+      "grid": {
+        "row": 2,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/2-2-tile-r2-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r2-c3",
+      "slug": "jul9-rapid-water-b-r2-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c3",
+      "grid": {
+        "row": 2,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/2-3-tile-r2-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r2-c4",
+      "slug": "jul9-rapid-water-b-r2-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r2-c4",
+      "grid": {
+        "row": 2,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/2-4-tile-r2-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r3-c1",
+      "slug": "jul9-rapid-water-b-r3-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c1",
+      "grid": {
+        "row": 3,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/3-1-tile-r3-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r3-c2",
+      "slug": "jul9-rapid-water-b-r3-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c2",
+      "grid": {
+        "row": 3,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/3-2-tile-r3-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r3-c3",
+      "slug": "jul9-rapid-water-b-r3-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c3",
+      "grid": {
+        "row": 3,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/3-3-tile-r3-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r3-c4",
+      "slug": "jul9-rapid-water-b-r3-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r3-c4",
+      "grid": {
+        "row": 3,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/3-4-tile-r3-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r4-c1",
+      "slug": "jul9-rapid-water-b-r4-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c1",
+      "grid": {
+        "row": 4,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/4-1-tile-r4-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r4-c2",
+      "slug": "jul9-rapid-water-b-r4-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c2",
+      "grid": {
+        "row": 4,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/4-2-tile-r4-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r4-c3",
+      "slug": "jul9-rapid-water-b-r4-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c3",
+      "grid": {
+        "row": 4,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/4-3-tile-r4-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r4-c4",
+      "slug": "jul9-rapid-water-b-r4-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r4-c4",
+      "grid": {
+        "row": 4,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/4-4-tile-r4-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r5-c1",
+      "slug": "jul9-rapid-water-b-r5-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c1",
+      "grid": {
+        "row": 5,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/5-1-tile-r5-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r5-c2",
+      "slug": "jul9-rapid-water-b-r5-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c2",
+      "grid": {
+        "row": 5,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/5-2-tile-r5-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r5-c3",
+      "slug": "jul9-rapid-water-b-r5-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c3",
+      "grid": {
+        "row": 5,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/5-3-tile-r5-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r5-c4",
+      "slug": "jul9-rapid-water-b-r5-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r5-c4",
+      "grid": {
+        "row": 5,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/5-4-tile-r5-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r6-c1",
+      "slug": "jul9-rapid-water-b-r6-c1",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c1",
+      "grid": {
+        "row": 6,
+        "col": 1
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/6-1-tile-r6-c1.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r6-c2",
+      "slug": "jul9-rapid-water-b-r6-c2",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c2",
+      "grid": {
+        "row": 6,
+        "col": 2
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/6-2-tile-r6-c2.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r6-c3",
+      "slug": "jul9-rapid-water-b-r6-c3",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c3",
+      "grid": {
+        "row": 6,
+        "col": 3
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/6-3-tile-r6-c3.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
+    },
+    {
+      "key": "chatgpt-terrain/jul9-rapid-water-b-r6-c4",
+      "slug": "jul9-rapid-water-b-r6-c4",
+      "sheet": "jul9-rapid-water-b",
+      "label": "tile-r6-c4",
+      "grid": {
+        "row": 6,
+        "col": 4
+      },
+      "src": "./assets/generated/hmh-curated-level-art/terrain-textures/jul9-rapid-water-b/6-4-tile-r6-c4.png",
+      "width": 160,
+      "height": 160,
+      "role": "water",
+      "materialRoles": [
+        "water",
+        "shore"
+      ],
+      "preferred": false
     }
   ],
   "terrainRoles": {
@@ -31470,7 +35204,23 @@
       "chatgpt-terrain/jul9-road-transition-a-r3-c2",
       "chatgpt-terrain/jul9-road-transition-a-r3-c3",
       "chatgpt-terrain/jul9-road-transition-a-r3-c4",
-      "chatgpt-terrain/jul9-road-transition-a-r3-c5"
+      "chatgpt-terrain/jul9-road-transition-a-r3-c5",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c4"
     ],
     "road": [
       "chatgpt-terrain/ground-sand-gravel-road-a-r1-c1",
@@ -31647,7 +35397,23 @@
       "chatgpt-terrain/jul9-road-transition-a-r5-c2",
       "chatgpt-terrain/jul9-road-transition-a-r5-c3",
       "chatgpt-terrain/jul9-road-transition-a-r5-c4",
-      "chatgpt-terrain/jul9-road-transition-a-r5-c5"
+      "chatgpt-terrain/jul9-road-transition-a-r5-c5",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c4"
     ],
     "rocky": [
       "chatgpt-terrain/ground-rock-grass-dirt-a-r1-c1",
@@ -31849,7 +35615,47 @@
       "chatgpt-terrain/jul9-road-transition-a-r5-c2",
       "chatgpt-terrain/jul9-road-transition-a-r5-c3",
       "chatgpt-terrain/jul9-road-transition-a-r5-c4",
-      "chatgpt-terrain/jul9-road-transition-a-r5-c5"
+      "chatgpt-terrain/jul9-road-transition-a-r5-c5",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r1-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r2-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r3-c4",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c1",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c2",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c3",
+      "chatgpt-terrain/jul9-extraction-plaza-b-r4-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c4"
     ],
     "sand": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -32128,7 +35934,55 @@
       "chatgpt-terrain/jul9-lakeside-pond-a-r5-c2",
       "chatgpt-terrain/jul9-lakeside-pond-a-r5-c3",
       "chatgpt-terrain/jul9-lakeside-pond-a-r5-c4",
-      "chatgpt-terrain/jul9-lakeside-pond-a-r5-c5"
+      "chatgpt-terrain/jul9-lakeside-pond-a-r5-c5",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c4"
     ],
     "water": [
       "chatgpt-terrain/ground-water-grass-sand-a-r1-c1",
@@ -32310,7 +36164,55 @@
       "chatgpt-terrain/jul9-lakeside-pond-a-r5-c2",
       "chatgpt-terrain/jul9-lakeside-pond-a-r5-c3",
       "chatgpt-terrain/jul9-lakeside-pond-a-r5-c4",
-      "chatgpt-terrain/jul9-lakeside-pond-a-r5-c5"
+      "chatgpt-terrain/jul9-lakeside-pond-a-r5-c5",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r1-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r2-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r3-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r4-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r5-c4",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c1",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c2",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c3",
+      "chatgpt-terrain/jul9-riverbank-slabs-b-r6-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r1-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r2-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r3-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r4-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r5-c4",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c1",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c2",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c3",
+      "chatgpt-terrain/jul9-rapid-water-b-r6-c4"
     ]
   },
   "recommendedGroundSlugs": {

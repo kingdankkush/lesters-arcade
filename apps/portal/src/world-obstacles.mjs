@@ -120,6 +120,25 @@ export function resolvePlayerCollision(fromX, fromY, toX, toY, playerRadius, obs
   let y = toY;
   for (const o of obstacles) {
     if (!o.solid) continue;
+    const footprint = obstacleFootprintBounds(o, 1, playerRadius);
+    if (footprint && x >= footprint.minX && x <= footprint.maxX && y >= footprint.minY && y <= footprint.maxY) {
+      if (fromX < footprint.minX) x = footprint.minX;
+      else if (fromX > footprint.maxX) x = footprint.maxX;
+      else if (fromY < footprint.minY) y = footprint.minY;
+      else if (fromY > footprint.maxY) y = footprint.maxY;
+      else {
+        const exits = [
+          ['x', footprint.minX, Math.abs(x - footprint.minX)],
+          ['x', footprint.maxX, Math.abs(footprint.maxX - x)],
+          ['y', footprint.minY, Math.abs(y - footprint.minY)],
+          ['y', footprint.maxY, Math.abs(footprint.maxY - y)],
+        ].sort((a, b) => a[2] - b[2]);
+        if (exits[0][0] === 'x') x = exits[0][1];
+        else y = exits[0][1];
+      }
+      continue;
+    }
+    if (footprint) continue;
     const min = o.radius + playerRadius;
     const dx = x - o.worldX;
     const dy = y - o.worldY;
@@ -142,17 +161,87 @@ export function resolvePlayerCollision(fromX, fromY, toX, toY, playerRadius, obs
   return { x, y };
 }
 
+function obstacleFootprintBounds(obstacle, scale = 1, padding = 0) {
+  const width = Number(obstacle?.footprintTiles?.w);
+  const height = Number(obstacle?.footprintTiles?.h);
+  if (!(width > 0) || !(height > 0)) return null;
+  const safeScale = Math.max(0.1, Number(scale) || 1);
+  const halfW = width * safeScale * 0.5 + Math.max(0, Number(padding) || 0);
+  const halfH = height * safeScale * 0.5 + Math.max(0, Number(padding) || 0);
+  return {
+    minX: obstacle.worldX - halfW,
+    maxX: obstacle.worldX + halfW,
+    minY: obstacle.worldY - halfH,
+    maxY: obstacle.worldY + halfH,
+  };
+}
+
+function segmentAabbHitT(fromX, fromY, toX, toY, bounds) {
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+  let tMin = 0;
+  let tMax = 1;
+  for (const [start, delta, min, max] of [
+    [fromX, dx, bounds.minX, bounds.maxX],
+    [fromY, dy, bounds.minY, bounds.maxY],
+  ]) {
+    if (Math.abs(delta) < 1e-9) {
+      if (start < min || start > max) return null;
+      continue;
+    }
+    const a = (min - start) / delta;
+    const b = (max - start) / delta;
+    tMin = Math.max(tMin, Math.min(a, b));
+    tMax = Math.min(tMax, Math.max(a, b));
+    if (tMin > tMax) return null;
+  }
+  return tMin;
+}
+
+function segmentCircleHitT(fromX, fromY, toX, toY, centerX, centerY, radius) {
+  const dx = toX - fromX;
+  const dy = toY - fromY;
+  const lengthSq = dx * dx + dy * dy;
+  const t = lengthSq > 1e-9
+    ? Math.max(0, Math.min(1, ((centerX - fromX) * dx + (centerY - fromY) * dy) / lengthSq))
+    : 0;
+  const x = fromX + dx * t;
+  const y = fromY + dy * t;
+  return Math.hypot(x - centerX, y - centerY) <= radius ? t : null;
+}
+
 // Does a point (e.g. a bullet) hit any solid obstacle? Returns the obstacle hit,
 // or null. Uses a slightly smaller hit radius than the player footprint so
 // bullets visually impact the body rather than empty air around it.
 export function obstacleHitAt(worldX, worldY, obstacles, hitScale = 0.82) {
   for (const o of obstacles) {
     if (!o.solid) continue;
+    const footprint = obstacleFootprintBounds(o, Math.max(0.9, hitScale));
+    if (footprint && worldX >= footprint.minX && worldX <= footprint.maxX && worldY >= footprint.minY && worldY <= footprint.maxY) {
+      return o;
+    }
     if (Math.hypot(worldX - o.worldX, worldY - o.worldY) < o.radius * hitScale) {
       return o;
     }
   }
   return null;
+}
+
+export function obstacleHitAlongSegment(fromX, fromY, toX, toY, obstacles, hitScale = 0.82) {
+  let nearest = null;
+  let nearestT = Infinity;
+  for (const obstacle of obstacles) {
+    if (!obstacle?.solid) continue;
+    const footprint = obstacleFootprintBounds(obstacle, Math.max(0.9, hitScale));
+    const t = footprint
+      ? segmentAabbHitT(fromX, fromY, toX, toY, footprint)
+      : segmentCircleHitT(fromX, fromY, toX, toY, obstacle.worldX, obstacle.worldY, obstacle.radius * hitScale);
+    if (t !== null && t < nearestT) {
+      nearest = obstacle;
+      nearestT = t;
+    }
+  }
+  return nearest;
 }
 
 // Water is impassable. Returns true if the given world tile resolves to a water

@@ -35,10 +35,11 @@ import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-g
 import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
 import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
-import { obstaclesNear, resolvePlayerCollision, obstacleHitAt, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove } from './src/world-obstacles.mjs';
+import { obstaclesNear, resolvePlayerCollision, obstacleHitAlongSegment, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
+import { buildLevelOneRoadTileIndex, classifyLevelOneTraversal, levelOneRoadTileKey } from './src/hmh-level-one-traversal.mjs';
 import { groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
 import { buildTerrainPresentationForCell } from './src/hmh-terrain-presentation.mjs';
 import {
@@ -4985,6 +4986,9 @@ function requestRankedEntry() {
 }
 
 async function beginOfficialLevel(levelId = combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID, options = {}) {
+  // Cabinet clicks normally load HMH first, but direct/deep-linked free runs can
+  // reach this path without that click. Never start combat with an empty roster.
+  await ensureHMHLoaded();
   const level = getHmhCampaignLevel(levelId);
   combat.currentCampaignLevelId = level.id;
   if (!currentSession) await startOfficialMode(officialSelectedMode ?? 'free');
@@ -6147,7 +6151,7 @@ async function startCombat(options = {}) {
   // run is fully reproducible from roguelikeRun.seed. The stream lives on the
   // run state beside spawns/drops/boss/draft so replay verifiers can snapshot it.
   combat.critRng = combat.roguelikeRun.rngStreams?.crit ?? null;
-  preloadHeroRoster(combat.characterId); // decode hurt/death/melee frames up front (no first-hit art pop)
+  await preloadHeroRoster(combat.characterId); // guarantee a selected-hero frame before READY without decoding the whole roster
   preloadWorldPropImages(); // decode all world-prop art up front (no scroll-in pop-in)
   
   // Generate macro-scale world structure: districts + a road/path network
@@ -6194,9 +6198,14 @@ async function startCombat(options = {}) {
   // Index road tiles for O(1) per-tile lookups during rendering. The generator
   // anchors its grid at (0,0)..(2000,2000) but the hero spawns at world (0,0),
   // so shift everything by half the world to center the network on the player.
-  // Biome (and therefore road style / bridge-vs-road) is re-sampled at the
-  // SHIFTED coordinate so the visuals always match the actual ground there.
-  combat.roadTileIndex = buildRoadTileIndex(campaignWorld.roadNetwork, seed, worldWidth / 2, worldHeight / 2);
+  // Ground-plan role (and therefore road style / bridge-vs-road) is sampled at
+  // the shifted coordinate so visuals and traversal use the same authored map.
+  combat.roadTileIndex = buildLevelOneRoadTileIndex({
+    roadNetwork: campaignWorld.roadNetwork,
+    groundPlan: getCombatGroundPlan(),
+    shiftX: worldWidth / 2,
+    shiftY: worldHeight / 2,
+  });
   _themeCellCache.clear(); // theme cache key is seed-less; reset per run
   combat.roguelikeSpawnTimer = 0;
   combat.props = [];
@@ -7531,6 +7540,62 @@ function syncProjectedPlayerPosition() {
   combat.playerY = projected.y + 50;
 }
 
+if (tacticalBalanceDebugEnabled) {
+  Object.defineProperty(globalThis, '__hmhVisualDebugTeleport', {
+    configurable: true,
+    async value(worldX, worldY) {
+      if (!combat.active) return null;
+      const halfWidth = Math.floor((combat.worldWidth ?? HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width) / 2);
+      const halfHeight = Math.floor((combat.worldHeight ?? HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height) / 2);
+      combat.playerMapX = clamp(Number(worldX) || 0, -halfWidth, halfWidth);
+      combat.playerMapY = clamp(Number(worldY) || 0, -halfHeight, halfHeight);
+      if (combat.roguelikeRun?.player) {
+        combat.roguelikeRun.player.x = combat.playerMapX;
+        combat.roguelikeRun.player.y = combat.playerMapY;
+      }
+      combat.enemies = [];
+      combat.velocityX = 0;
+      combat.velocityY = 0;
+      _obstacleCacheFrame = -1;
+      syncProjectedPlayerPosition();
+      const visibleObjects = buildLevelOneCuratedVisibleSceneObjects({
+        playerX: combat.playerMapX,
+        playerY: combat.playerMapY,
+        window: 18,
+        frame: combat.frame,
+      });
+      const decoded = await Promise.all(visibleObjects.map((object) => decodeImageAsset(curatedLevelOneImage(object.assetKey))));
+      _obstacleCacheFrame = -1;
+      const obstacleCount = currentObstacles().length;
+      const renderEntryCount = buildObstacleRenderEntries(dom.combatCanvas.getContext('2d')).length;
+      return {
+        x: combat.playerMapX,
+        y: combat.playerMapY,
+        objectCount: visibleObjects.length,
+        decodedCount: decoded.filter(Boolean).length,
+        obstacleCount,
+        renderEntryCount,
+        assetKeys: visibleObjects.map((object) => object.assetKey),
+      };
+    },
+  });
+  Object.defineProperty(globalThis, '__hmhVisualDebugHero', {
+    configurable: true,
+    value() {
+      const frame = selectHeroFrame();
+      return {
+        characterId: combat.characterId,
+        rosterKey: heroRosterKey(combat.characterId),
+        availableRosterCount: Object.keys(hmh('HMH_ANIMATED_ROSTER') ?? {}).length,
+        ready: imageReady(frame),
+        src: frame?.src ?? '',
+        naturalWidth: frame?.naturalWidth ?? 0,
+        naturalHeight: frame?.naturalHeight ?? 0,
+      };
+    },
+  });
+}
+
 function updateAimFromPointer(event) {
   const rect = dom.combatCanvas.getBoundingClientRect();
   const scaleX = dom.combatCanvas.width / Math.max(1, rect.width);
@@ -7971,7 +8036,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     minDistance: minSpawnDistance,
     fallbackAngleRadians: angle,
     fallbackRadiusTiles: Math.max(radius, minSpawnDistance),
-    biomeAt,
+    biomeAt: currentTerrainBiomeAt,
     worldBounds: spawnWorldBounds,
   });
   if (safeSpawn.adjusted || safeSpawn.boundsAdjusted) {
@@ -8355,7 +8420,7 @@ function updateRoguelikeMovement(dt) {
     // Water is impassable — clamp the move so the player can't walk onto water
     // tiles (slides along the shoreline where possible).
     const seed = combat.roguelikeRun?.seed ?? 0;
-    const resolved = resolveWaterCollision(seed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt);
+    const resolved = resolveWaterCollision(seed, fromX, fromY, afterObstacles.x, afterObstacles.y, currentTerrainBiomeAt);
     combat.playerMapX = resolved.x;
     combat.playerMapY = resolved.y;
     // Level Design Bible §6.2: apply environmental force zones (quicksand slow,
@@ -8421,7 +8486,13 @@ function updateRoguelikeBullets(dt) {
     bullet.y = projected.y;
     // Solid obstacles block bullets (inanimate objects take no damage, but they
     // stop shots — you have to shoot around buildings/trees, not through them).
-    const hitObstacle = obstacleHitAt(bullet.worldX, bullet.worldY, obstacles);
+    const hitObstacle = obstacleHitAlongSegment(
+      bullet.prevWorldX,
+      bullet.prevWorldY,
+      bullet.worldX,
+      bullet.worldY,
+      obstacles,
+    );
     if (hitObstacle) {
       damageLevelOneInteractiveObstacle(hitObstacle, bullet.damage, bullet.weaponId ?? 'bullet');
       emitCombatVfxParticles(createHitSparks(projected.x, projected.y + 18, 6));
@@ -8442,11 +8513,13 @@ function updateRoguelikeBullets(dt) {
   combat.bullets = combat.bullets.filter((bullet) => bullet.ttl > 0);
 
   for (const shot of combat.enemyShots) {
+    const previousWorldX = shot.worldX;
+    const previousWorldY = shot.worldY;
     shot.worldX += shot.vx * dt;
     shot.worldY += shot.vy * dt;
     shot.ttl -= 1;
     // Enemy shots are also blocked by solid obstacles, so cover protects the player.
-    if (obstacleHitAt(shot.worldX, shot.worldY, obstacles)) {
+    if (obstacleHitAlongSegment(previousWorldX, previousWorldY, shot.worldX, shot.worldY, obstacles)) {
       shot.ttl = 0;
     }
     const projected = isoToScreen(shot.worldX, shot.worldY);
@@ -8697,7 +8770,7 @@ function updateRoguelikeEnemies(director, dt) {
           toY,
           radius: 0.4,
           obstacles,
-          biomeAt,
+          biomeAt: currentTerrainBiomeAt,
           worldBounds: enemyWorldBounds,
         });
         enemy.mapX = boundedMove.x;
@@ -8718,7 +8791,7 @@ function updateRoguelikeEnemies(director, dt) {
           toY,
           radius: 0.4,
           obstacles,
-          biomeAt,
+          biomeAt: currentTerrainBiomeAt,
           worldBounds: enemyWorldBounds,
         });
         enemy.mapX = boundedMove.x;
@@ -9845,29 +9918,16 @@ function productionPropForIndex(index) {
 // rendered as tinted diamond overlays ON TOP of the ground tiles, so they
 // inherit the underlying texture and never depend on art that might not exist.
 // Water crossings draw the wood-bridge sprite (with a plank-tint fallback).
-const ROAD_INDEX_RADIUS = 280; // only index/draw roads within this tile radius of spawn
-// Numeric grid key — the road index is probed for EVERY candidate tile every
-// frame, so string keys would allocate megabytes/sec of garbage.
-const roadTileKey = (x, y) => (x + 8192) * 16384 + (y + 8192);
-
-function buildRoadTileIndex(roadNetwork, seed, shiftX = 0, shiftY = 0) {
-  const index = new Map();
-  if (!Array.isArray(roadNetwork)) return index;
-  for (const road of roadNetwork) {
-    const path = Array.isArray(road?.path) ? road.path : [];
-    for (const pt of path) {
-      const x = Math.round((pt?.x ?? 0) - shiftX);
-      const y = Math.round((pt?.y ?? 0) - shiftY);
-      if (Math.abs(x) > ROAD_INDEX_RADIUS || Math.abs(y) > ROAD_INDEX_RADIUS) continue;
-      const key = roadTileKey(x, y);
-      if (index.has(key)) continue;
-      // Re-sample the biome at the SHIFTED coordinate so road style (and
-      // bridge-vs-road) always matches the terrain actually rendered there.
-      const biome = biomeAt(seed, x, y);
-      index.set(key, { x, y, biome, type: biome === 'water' ? 'bridge' : 'road' });
-    }
+function currentTerrainBiomeAt(seed, worldX, worldY) {
+  if ((combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID) !== HMH_LEVEL_ONE_ID) {
+    return biomeAt(seed, worldX, worldY);
   }
-  return index;
+  return classifyLevelOneTraversal({
+    groundPlan: getCombatGroundPlan(),
+    roadTileIndex: combat.roadTileIndex,
+    worldX,
+    worldY,
+  }).collisionBiome;
 }
 
 const ROAD_SURFACE_STYLE = {
@@ -9911,7 +9971,7 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
   ctx.save();
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
-      const tile = index.get(roadTileKey(worldX, worldY));
+      const tile = index.get(levelOneRoadTileKey(worldX, worldY));
       if (!tile) continue;
       const projected = isoToScreen(worldX, worldY);
       const groundPoint = groundTileLatticePointForProjection(projected);
@@ -9932,7 +9992,7 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
         }
         continue;
       }
-      const style = ROAD_SURFACE_STYLE[tile.biome] ?? ROAD_SURFACE_STYLE.default;
+      const style = ROAD_SURFACE_STYLE[tile.role] ?? ROAD_SURFACE_STYLE.default;
       traceIsoDiamond(ctx, cx, cy);
       ctx.fillStyle = style.fill;
       ctx.fill();
@@ -10283,16 +10343,18 @@ function curatedLevelOneImage(assetKey) {
 async function prewarmHmhLevelAssets(level, onProgress = () => {}) {
   if (level?.id !== HMH_LEVEL_ONE_ID) return { decoded: 0, total: 0 };
   const plan = combat.groundPlan ?? getCombatGroundPlan();
+  const playerX = combat.playerMapX ?? 0;
+  const playerY = combat.playerMapY ?? 5;
   const images = [];
-  for (const textureKey of plan.textureKeys()) {
+  for (const textureKey of plan.textureKeysNear(playerX, playerY, 22)) {
     const asset = plan.textureForKey(textureKey);
     const image = sbsGroundTileImage(asset);
     if (image) images.push(image);
   }
   const curatedObjects = buildLevelOneCuratedVisibleSceneObjects({
-    playerX: combat.playerMapX ?? 0,
-    playerY: combat.playerMapY ?? 5,
-    window: 140,
+    playerX,
+    playerY,
+    window: 26,
   });
   for (const object of curatedObjects) {
     const image = curatedLevelOneImage(object.assetKey);
@@ -10560,7 +10622,6 @@ function drawLevelOneInteractiveDebris(ctx, obstacle, projected, width, drawHeig
 
 function buildObstacleRenderEntries(ctx) {
   const worldProps = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
-  if (!worldProps.length) return [];
   const entries = [];
   for (const o of currentObstacles()) {
     // Draw obstacles inside the current performance-budget window. WO-71 keeps
@@ -11610,6 +11671,12 @@ function drawPlayer(ctx) {
     ctx.restore();
     return;
   }
+  if (combat.roguelikeRun) {
+    // The loading gate awaits a selected-roster frame. If a transient decode
+    // failure still occurs, draw nothing rather than resurrecting old block art.
+    ctx.restore();
+    return;
+  }
   ctx.fillStyle = '#ff7b2f';
   ctx.fillRect(x, y - 55 + bob, 36, 36);
   ctx.fillStyle = '#ffe84d';
@@ -11906,18 +11973,17 @@ function firstReadyRosterFrame(key) {
   return null;
 }
 
-// Preload every frame of the hero's locked roster at run start so hurt/death/
-// melee/throw are decoded BEFORE they're needed (no first-hit pop to old art,
-// no pop-in). Cheap: just primes the rosterFrame cache + browser decode.
-function preloadHeroRoster(characterId) {
+// Decode only the first idle frame for each facing before READY. The renderer
+// can hold one of these approved frames while later states load on demand.
+async function preloadHeroRoster(characterId) {
   const key = heroRosterKey(characterId);
   const roster = hmh('HMH_ANIMATED_ROSTER')?.[key];
   const anims = roster?.animations ?? {};
-  for (const dirs of Object.values(anims)) {
-    for (const frames of Object.values(dirs)) {
-      for (const src of frames) rosterFrame(src);
-    }
-  }
+  const idleDirections = anims.idle ?? anims.walk ?? anims.run ?? {};
+  const sources = [...new Set(Object.values(idleDirections).map((frames) => frames?.[0]).filter(Boolean))];
+  const images = sources.map((src) => rosterFrame(src)).filter(Boolean);
+  await Promise.all(images.map((image) => decodeImageAsset(image)));
+  return images.filter((image) => imageReady(image)).length;
 }
 
 // --- Roguelike biome-themed enemy sprites (hmh-enemies-wave) -------------------

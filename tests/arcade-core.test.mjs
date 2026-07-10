@@ -1027,18 +1027,18 @@ test('Level 1 ship focus is open-ended survival with no timer extraction target'
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('100%-scale enemy hit detection'), true);
 });
 
-test('Level 1 world dimensions use the compact half-size playtest footprint', () => {
+test('Level 1 world dimensions halve the still-oversized playtest footprint again', () => {
   const world = buildLevelOneRunWorldDimensions();
 
   assert.equal(world.width, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width);
   assert.equal(world.height, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height);
-  assert.equal(world.width, 525);
-  assert.equal(world.height, 450);
+  assert.equal(world.width, 263);
+  assert.equal(world.height, 225);
   assert.equal(world.targetSessionSeconds, 4 * 60);
-  assert.ok(world.traversalTargetPct >= 0.5 && world.traversalTargetPct <= 0.65);
-  assert.ok(world.expectedUniqueTraversalPct >= 0.5, `expected at least half-map traversal, got ${world.expectedUniqueTraversalPct}`);
-  assert.ok(world.expectedUniqueTraversalPct <= 0.65, `expected no more than 65% map traversal, got ${world.expectedUniqueTraversalPct}`);
-  assert.ok(world.width <= 1050 / 2 && world.height <= 900 / 2, 'playtest found the previous 1050x900 world too large for Level 1 learning');
+  assert.ok(world.traversalTargetPct >= 0.85 && world.traversalTargetPct <= 0.95);
+  assert.ok(world.expectedUniqueTraversalPct >= 0.85, `expected most of the compact map to be traversable, got ${world.expectedUniqueTraversalPct}`);
+  assert.ok(world.expectedUniqueTraversalPct <= 0.95, `expected authored loops rather than guaranteed full-map sweep, got ${world.expectedUniqueTraversalPct}`);
+  assert.ok(world.width <= Math.ceil(525 / 2) && world.height <= 450 / 2, 'user requested another 50% reduction from the 525x450 playtest world');
 });
 
 test('Level 1 temporarily assigns curated humanoid enemies as mini-boss and boss proxies', () => {
@@ -1722,7 +1722,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul9-1116-v31'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul10-compact-world-v32'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);

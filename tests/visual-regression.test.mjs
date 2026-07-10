@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const visualScript = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
+const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
 test('WO-65 visual regression harness is command-wired and captures real HMH canvas frames', () => {
   assert.equal(packageJson.scripts['visual:regression'], 'node scripts/visual-regression.mjs');
@@ -15,6 +16,21 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
   assert.match(visualScript, /seed-1337-render-anchor/);
   assert.match(visualScript, /seed-1337-live-spawn/);
   assert.match(visualScript, /seed-1337-east-walk/);
+  assert.match(visualScript, /seed-1337-north-forest/);
+  assert.match(visualScript, /seed-1337-north-riverfront/);
+  assert.match(visualScript, /seed-1337-northeast-neighborhood/);
+  assert.match(visualScript, /seed-1337-east-extraction/);
+  assert.match(visualScript, /seed-1337-southwest-rock-camp/);
+  assert.match(visualScript, /seed-1337-southeast-glow-bank/);
+  assert.match(mainSource, /__hmhVisualDebugTeleport/);
+  assert.match(mainSource, /__hmhVisualDebugHero/);
+  assert.match(visualScript, /heroReadyDeadline/);
+  assert.match(visualScript, /heroVisual\?\.ready/);
+  const obstacleRenderer = mainSource.slice(
+    mainSource.indexOf('function buildObstacleRenderEntries'),
+    mainSource.indexOf('function currentLevelOneExplorationLayer'),
+  );
+  assert.doesNotMatch(obstacleRenderer, /if \(!worldProps\.length\) return \[\]/);
   assert.match(visualScript, /readyOverlay\.click\(\)/);
   assert.doesNotMatch(visualScript, /readyOverlay\.style\.display\s*=\s*['"]none['"]/);
   assert.match(visualScript, /simulationAdvanced/);

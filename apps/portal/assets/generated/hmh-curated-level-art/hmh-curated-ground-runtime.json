@@ -19,127 +19,198 @@
     [
       "ground-rock-grass-dirt-a",
       "k",
-      "g,d,k|g,d,k|g,d,k|g,d,k|g,d,k"
+      "g,d,k|g,d,k|g,d,k|g,d,k|g,d,k",
+      5,
+      5
     ],
     [
       "ground-grass-dirt-path-a",
       "g",
-      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd"
+      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd",
+      5,
+      5
     ],
     [
       "ground-dirt-rock-gravel-a",
       "d",
-      "d,k|d,k|d,k|d,k|d,k"
+      "d,k|d,k|d,k|d,k|d,k",
+      5,
+      5
     ],
     [
       "ground-water-grass-sand-a",
       "h",
-      "w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s"
+      "w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s",
+      5,
+      5
     ],
     [
       "megatexture-dirt-scrub-a",
       "d",
-      "d,g,k|d,g,k|d,g,k|d,g,k|d,g,k"
+      "d,g,k|d,g,k|d,g,k|d,g,k|d,g,k",
+      5,
+      5
     ],
     [
       "ground-sand-gravel-road-a",
       "s",
-      "s,ds,r|s,ds,r|s,ds,r|s,ds,r|s,ds,r"
+      "s,ds,r|s,ds,r|s,ds,r|s,ds,r|s,ds,r",
+      5,
+      5
     ],
     [
       "ground-asphalt-moss-grass-a",
       "r",
-      "r,g,gd|r,g,gd|r,g,gd|r,g,gd|r,g,gd"
+      "r,g,gd|r,g,gd|r,g,gd|r,g,gd|r,g,gd",
+      5,
+      5
     ],
     [
       "ground-cracked-asphalt-concrete-a",
       "r",
-      "r,d|r,d|r,d|r,d|r,d"
+      "r,d|r,d|r,d|r,d|r,d",
+      5,
+      5
     ],
     [
       "ground-sand-dune-dirt-a",
       "s",
-      "s,ds,d|s,ds,d|s,ds,d|s,ds,d|s,ds,d"
+      "s,ds,d|s,ds,d|s,ds,d|s,ds,d|s,ds,d",
+      5,
+      5
     ],
     [
       "ground-water-grass-shore-a",
       "w",
-      "w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s"
+      "w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s|w,h,g,s",
+      5,
+      5
     ],
     [
       "ground-rock-gravel-dirt-a",
       "k",
-      "k,d,g|k,d,g|k,d,g|k,d,g|k,d,g"
+      "k,d,g|k,d,g|k,d,g|k,d,g|k,d,g",
+      5,
+      5
     ],
     [
       "ground-dark-grass-puddles-a",
       "g",
-      "g,w,h|g,w,h|g,w,h|g,w,h|g,w,h"
+      "g,w,h|g,w,h|g,w,h|g,w,h|g,w,h",
+      5,
+      5
     ],
     [
       "ground-rock-grass-dirt-b",
       "k",
-      "g,d,k|g,d,k|g,d,k|g,d,k|g,d,k"
+      "g,d,k|g,d,k|g,d,k|g,d,k|g,d,k",
+      5,
+      5
     ],
     [
       "ground-grass-dirt-path-b",
       "g",
-      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd"
+      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd",
+      5,
+      5
     ],
     [
       "megatexture-water-rock-dirt-a",
       "h",
-      "w,h,d,k|w,h,d,k|w,h,d,k|w,h,d,k|w,h,d,k"
+      "w,h,d,k|w,h,d,k|w,h,d,k|w,h,d,k|w,h,d,k",
+      5,
+      5
     ],
     [
       "megatexture-grass-path-a",
       "g",
-      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd"
+      "g,d,gd|g,d,gd|g,d,gd|g,d,gd|g,d,gd",
+      5,
+      5
     ],
     [
       "megatexture-shore-grass-rock-a",
       "h",
-      "w,h,g,k|w,h,g,k|w,h,g,k|w,h,g,k|w,h,g,k"
+      "w,h,g,k|w,h,g,k|w,h,g,k|w,h,g,k|w,h,g,k",
+      5,
+      5
     ],
     [
       "jul9-master-ground-terrain-a",
       "d",
-      "g|g,d,gd|k,d|s,ds,d|d,k,gd"
+      "g|g,d,gd|k,d|s,ds,d|d,k,gd",
+      5,
+      5
     ],
     [
       "jul9-transition-ground-edges-a",
       "gd",
-      "g,d,gd|g,r,gr|d,r,ds|g,h,w|r,d,gd"
+      "g,d,gd|g,r,gr|d,r,ds|g,h,w|r,d,gd",
+      5,
+      5
     ],
     [
       "jul9-street-asphalt-parking-a",
       "r",
-      "r|r,gr,d|r|r,d|r,k,d"
+      "r|r,gr,d|r|r,d|r,k,d",
+      5,
+      5
     ],
     [
       "jul9-water-shore-mud-a",
       "h",
-      "w,h|d,h,w|d,w,r|g,h,w|d,s,w,k"
+      "w,h|d,h,w|d,w,r|g,h,w|d,s,w,k",
+      5,
+      5
     ],
     [
       "jul9-neighborhood-ground-a",
       "g",
-      "g|d,r,gr|r,gr|g,d,gd|g,d,r"
+      "g|d,r,gr|r,gr|g,d,gd|g,d,r",
+      5,
+      5
     ],
     [
       "jul9-lakeside-pond-a",
       "w",
-      "w|h,g,w|d,h,w|g,h,w|w,h,d"
+      "w|h,g,w|d,h,w|g,h,w|w,h,d",
+      5,
+      5
     ],
     [
       "jul9-park-path-plaza-a",
       "g",
-      "g|d,gd|r,gr|gr,d,r|g,d,r"
+      "g|d,gd|r,gr|gr,d,r|g,d,r",
+      5,
+      5
     ],
     [
       "jul9-road-transition-a",
       "r",
-      "r|r,gr,d|r,gr|r,d|r,k,d"
+      "r|r,gr,d|r,gr|r,d|r,k,d",
+      5,
+      5
+    ],
+    [
+      "jul9-extraction-plaza-b",
+      "r",
+      "r,k,gr|r,k,gr|r,k,gr|r,k,gr",
+      4,
+      4
+    ],
+    [
+      "jul9-riverbank-slabs-b",
+      "h",
+      "w,h,k|w,h,k|w,h,k|w,h,k|w,h,k|w,h,k",
+      6,
+      4
+    ],
+    [
+      "jul9-rapid-water-b",
+      "w",
+      "w,h|w,h|w,h|w,h|w,h|w,h",
+      6,
+      4
     ]
   ]
 }

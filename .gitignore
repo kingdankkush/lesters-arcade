@@ -42,6 +42,7 @@ docs/testing/VISUAL_BASELINES/current/
 # Asset pipeline raw output — belongs in the vault/staging, never in git
 .art-staging/
 apps/portal/assets/_staging/
+apps/portal/assets/hmh-curated-level-kit/
 **/downloads/*.zip
 **/downloads/*.txt
 apps/portal/assets/**/*.zip

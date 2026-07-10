@@ -21,6 +21,18 @@ OUT = PORTAL / "assets" / "generated" / "hmh-curated-level-art"
 COHERENT_OUT = PORTAL / "assets" / "generated" / "hmh-coherent-world" / "curated"
 
 TREE_SHEET = ATTACHMENTS / "ChatGPT Image Jul 8, 2026, 08_31_56 PM.png"
+NEW_TREE_ANIMATION_SHEETS = [
+    ("jul9-riparian", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_29_55 PM.png", [
+        ("jul9-riparian-juniper", "compact juniper with six wind-sway frames"),
+        ("jul9-riparian-dead-tree", "dead snag with six subtle idle frames"),
+        ("jul9-riparian-cottonwood", "broad cottonwood with six leaf-sway frames"),
+    ]),
+    ("jul9-desert", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_32_47 PM.png", [
+        ("jul9-desert-acacia", "flat-canopy acacia with six idle frames"),
+        ("jul9-desert-mesquite", "thorny mesquite with six idle frames"),
+        ("jul9-desert-joshua", "Joshua tree with six idle frames"),
+    ]),
+]
 FOREST_SHEETS = [
     ("forest-boundary-a", ATTACHMENTS / "Jul 8, 2026, 08_40_02 PM.png"),
     ("forest-boundary-b", ATTACHMENTS / "Jul 8, 2026, 08_40_00 PM.png"),
@@ -51,6 +63,12 @@ GROUND_SHEETS = [
     ("jul9-lakeside-pond-a", ATTACHMENTS / "jul9-lakeside-pond-terrain.png", "water", ["water", "shore", "grass", "dirt"]),
     ("jul9-park-path-plaza-a", ATTACHMENTS / "jul9-park-path-plaza-terrain.png", "grass", ["grass", "dirt", "road", "grass-to-road"]),
     ("jul9-road-transition-a", ATTACHMENTS / "jul9-road-transition-terrain.png", "road", ["road", "grass-to-road", "dirt"]),
+]
+
+VARIABLE_GROUND_SHEETS = [
+    ("jul9-extraction-plaza-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_29_39 PM.png", "road", ["road", "rocky", "grass-to-road"], 4, 4),
+    ("jul9-riverbank-slabs-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_33_15 PM.png", "shore", ["water", "shore", "rocky"], 6, 4),
+    ("jul9-rapid-water-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_49_58 PM.png", "water", ["water", "shore"], 6, 4),
 ]
 
 ENVIRONMENT_PROP_SHEETS = [
@@ -187,7 +205,51 @@ ENVIRONMENT_PROP_SHEETS = [
         "thorn-bush", "burnt-bush", "low-hedge", "berry-bush", "scraggly-roadside-shrub",
         "weeds-around-stump", "reeds-around-puddle", "grass-rock-cluster", "crop-edge-barrier", "dead-brush-wall",
     ]),
+    ("jul9-extraction-monuments-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_29_22 PM.png", 2, 2, "landmark", [
+        "extraction-arch", "closed-boss-gate", "open-boss-gate", "ltc-beacon-pad",
+    ]),
+    ("jul9-neighborhood-small-props-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_30_16 PM.png", 2, 2, "yard", [
+        "weathered-picket-fence", "trash-can-bags", "mailbox-weeds", "stone-well",
+    ]),
+    ("jul9-forest-obstacles-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_30_24 PM.png", 2, 2, "forest", [
+        "mossy-fallen-log", "rooted-tree-stump", "forest-boulder-cluster", "rotting-log-pile",
+    ]),
+    ("jul9-river-obstacles-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_32_40 PM.png", 4, 2, "water", [
+        "waterlogged-log", "concrete-river-block", "submerged-stone-slab", "broken-spillway",
+        "river-boulder-cluster", "submerged-cart-wreck", "shallow-rapid-strip", "deep-rapid-strip",
+    ]),
+    ("jul9-route-signs-beacons-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_32_52 PM.png", 6, 4, "signal", [
+        "amber-hanging-lamp", "amber-lantern-sign", "green-hanging-sign", "green-double-sign",
+        "amber-route-sign", "green-route-sign", "green-crossroad-sign", "green-town-sign",
+        "amber-short-lamp", "cyan-short-lamp", "cyan-beacon-post", "cyan-square-beacon",
+        "low-rock-marker", "mossy-rock-marker", "broken-log-marker", "low-stone-marker",
+        "amber-bollard", "cyan-bollard", "amber-pylon", "cyan-pylon",
+        "green-floor-marker", "stone-floor-marker", "cyan-floor-marker", "broken-floor-marker",
+    ]),
+    ("jul9-desert-props-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_33_09 PM.png", 2, 2, "desert", [
+        "desert-brush-cluster", "bone-pile", "rusted-buried-barrel", "sandstone-rubble",
+    ]),
+    ("jul9-desert-rock-formations-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_49_43 PM.png", 3, 2, "rock", [
+        "sandstone-arch", "hollow-skull-rock", "cracked-flat-rock", "sandstone-spire",
+        "cracked-flat-rock-alt", "sandstone-spire-alt",
+    ]),
+    ("jul9-ambient-water-glow-b", ATTACHMENTS / "ChatGPT Image Jul 9, 2026, 10_49_53 PM.png", 4, 4, "ambient", [
+        "firefly-drift-01", "firefly-drift-02", "firefly-drift-03", "firefly-drift-04",
+        "moss-glow-01", "moss-glow-02", "moss-glow-03", "moss-glow-04",
+        "water-glint-01", "water-glint-02", "water-glint-03", "water-glint-04",
+        "water-spark-01", "water-spark-02", "water-spark-03", "water-spark-04",
+    ]),
 ]
+AUTO_MATTE_PROP_SHEETS = frozenset({
+    "jul9-extraction-monuments-b",
+    "jul9-neighborhood-small-props-b",
+    "jul9-forest-obstacles-b",
+    "jul9-river-obstacles-b",
+    "jul9-route-signs-beacons-b",
+    "jul9-desert-props-b",
+    "jul9-desert-rock-formations-b",
+    "jul9-ambient-water-glow-b",
+})
 TREE_ROWS = [
     ("juniper-tree", "dusty desert juniper / scrub pine"),
     ("dead-tree", "dead twisted wasteland mesquite"),
@@ -265,8 +327,64 @@ def magenta_key(image: Image.Image) -> Image.Image:
     return cleaned
 
 
-def normalize_prop(cell: Image.Image, canvas_size: int = 256, max_fill: int = 236) -> Image.Image:
-    keyed = magenta_key(cell)
+def has_useful_alpha(image: Image.Image) -> bool:
+    return "A" in image.getbands() and image.getchannel("A").getextrema()[0] < 250
+
+
+def has_magenta_matte(image: Image.Image) -> bool:
+    rgb = image.convert("RGB")
+    probes = [
+        rgb.getpixel((0, 0)),
+        rgb.getpixel((rgb.width - 1, 0)),
+        rgb.getpixel((0, rgb.height - 1)),
+        rgb.getpixel((rgb.width - 1, rgb.height - 1)),
+    ]
+    return sum(1 for r, g, b in probes if r >= 170 and b >= 170 and g <= 135) >= 2
+
+
+def clear_light_edge_background(image: Image.Image) -> Image.Image:
+    """Flood-clear ChatGPT's baked white/checkerboard matte without erasing prop interiors."""
+    rgba = image.convert("RGBA")
+    px = rgba.load()
+    width, height = rgba.size
+    seen = bytearray(width * height)
+    stack = []
+    for x in range(width):
+        stack.extend([(x, 0), (x, height - 1)])
+    for y in range(height):
+        stack.extend([(0, y), (width - 1, y)])
+    while stack:
+        x, y = stack.pop()
+        index = y * width + x
+        if seen[index]:
+            continue
+        seen[index] = 1
+        r, g, b, _a = px[x, y]
+        neutral_light = max(r, g, b) - min(r, g, b) <= 20 and min(r, g, b) >= 205
+        if not neutral_light:
+            continue
+        px[x, y] = (r, g, b, 0)
+        if x > 0:
+            stack.append((x - 1, y))
+        if x + 1 < width:
+            stack.append((x + 1, y))
+        if y > 0:
+            stack.append((x, y - 1))
+        if y + 1 < height:
+            stack.append((x, y + 1))
+    return rgba
+
+
+def prop_alpha(image: Image.Image) -> Image.Image:
+    if has_useful_alpha(image):
+        return image.convert("RGBA")
+    if has_magenta_matte(image):
+        return magenta_key(image)
+    return clear_light_edge_background(image)
+
+
+def normalize_prop(cell: Image.Image, canvas_size: int = 256, max_fill: int = 236, preserve_small: bool = False, matte_mode: str = "magenta") -> Image.Image:
+    keyed = prop_alpha(cell) if matte_mode == "auto" else magenta_key(cell)
     bbox = keyed.getbbox()
     canvas = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
     if not bbox:
@@ -281,7 +399,7 @@ def normalize_prop(cell: Image.Image, canvas_size: int = 256, max_fill: int = 23
     x = (canvas_size - sprite.width) // 2
     y = canvas_size - sprite.height - 10
     canvas.alpha_composite(sprite, (x, y))
-    return remove_tiny_alpha_islands(canvas)
+    return canvas if preserve_small else remove_tiny_alpha_islands(canvas)
 
 
 def remove_tiny_alpha_islands(image: Image.Image, min_pixels: int = 90) -> Image.Image:
@@ -348,6 +466,35 @@ def make_texture_tile(cell: Image.Image, size: int = 160) -> Image.Image:
     texture = ImageEnhance.Contrast(texture).enhance(1.08)
     texture = ImageEnhance.Sharpness(texture).enhance(1.16)
     return texture.resize((size, size), Image.Resampling.LANCZOS)
+
+
+VARIABLE_GROUND_BASE_COLORS = {
+    "road": (78, 75, 69, 255),
+    "shore": (71, 89, 82, 255),
+    "water": (31, 86, 102, 255),
+}
+
+
+def make_variable_texture_tile(cell: Image.Image, primary_role: str, size: int = 160) -> Image.Image:
+    """Normalize isolated alpha/checkerboard isometric tiles into opaque terrain textures."""
+    isolated = prop_alpha(cell)
+    bbox = isolated.getbbox()
+    base = Image.new("RGBA", (size, size), VARIABLE_GROUND_BASE_COLORS.get(primary_role, (82, 72, 58, 255)))
+    if not bbox:
+        return base.convert("RGB")
+    sprite = isolated.crop(bbox)
+    scale = min((size - 6) / max(sprite.width, 1), (size - 6) / max(sprite.height, 1))
+    sprite = sprite.resize((max(1, round(sprite.width * scale)), max(1, round(sprite.height * scale))), Image.Resampling.LANCZOS)
+    x = (size - sprite.width) // 2
+    y = (size - sprite.height) // 2
+    base.alpha_composite(sprite, (x, y))
+    texture = ImageEnhance.Color(base.convert("RGB")).enhance(1.06)
+    texture = ImageEnhance.Contrast(texture).enhance(1.06)
+    return ImageEnhance.Sharpness(texture).enhance(1.14)
+
+
+def variable_ground_label(row: int, col: int) -> str:
+    return f"tile-r{row + 1}-c{col + 1}"
 
 
 def write_json(path: Path, data: object) -> None:
@@ -446,8 +593,10 @@ def material_roles_for_cell(sheet_slug: str, default_roles: list[str], row: int,
 def main() -> None:
     ensure_sources([
         TREE_SHEET,
+        *(p for _slug, p, _trees in NEW_TREE_ANIMATION_SHEETS),
         *(p for _, p in FOREST_SHEETS),
         *(p for _, p, _role, _materials in GROUND_SHEETS),
+        *(p for _, p, _role, _materials, _rows, _cols in VARIABLE_GROUND_SHEETS),
         *(p for _, p, _rows, _cols, _category, _labels in ENVIRONMENT_PROP_SHEETS),
     ])
     OUT.mkdir(parents=True, exist_ok=True)
@@ -483,6 +632,40 @@ def main() -> None:
             "frames": frames,
             "coherentWorldKey": f"curated/{tree_slug}-idle-00",
         })
+
+    # The Jul 9 sheets are portrait grids: three tree variants across and six
+    # animation frames down. Preserve that orientation instead of treating each
+    # row as a different tree.
+    for _sheet_slug, sheet_path, variants in NEW_TREE_ANIMATION_SHEETS:
+        tree_img = Image.open(sheet_path)
+        for col, (tree_slug, description) in enumerate(variants):
+            frames = []
+            for row in range(6):
+                cell = grid_crop(tree_img, 6, 3, row, col)
+                frame = normalize_prop(cell, matte_mode="auto")
+                frame_dir = OUT / "props" / "trees" / tree_slug / "idle"
+                frame_dir.mkdir(parents=True, exist_ok=True)
+                frame_path = frame_dir / f"{row:02d}.png"
+                frame.save(frame_path, optimize=True)
+                frames.append({
+                    "id": f"{tree_slug}-idle-{row:02d}",
+                    "src": rel_portal(frame_path),
+                    "width": frame.width,
+                    "height": frame.height,
+                    "frame": row,
+                })
+                if row == 0:
+                    coherent = COHERENT_OUT / f"{tree_slug}-idle-00.png"
+                    frame.save(coherent, optimize=True)
+            tree_animations.append({
+                "slug": f"{tree_slug}-idle",
+                "tree": tree_slug,
+                "description": description,
+                "loop": True,
+                "frameDurationMs": 140,
+                "frames": frames,
+                "coherentWorldKey": f"curated-tree/{tree_slug}-idle-00",
+            })
 
     forest_props = []
     for sheet_slug, sheet_path in FOREST_SHEETS:
@@ -523,9 +706,15 @@ def main() -> None:
                 label = labels[index]
                 cell = crop_cell_border(grid_crop(img, rows, cols, row, col))
                 if category == "building_large":
-                    prop = normalize_prop(cell, canvas_size=384, max_fill=356)
+                    prop = normalize_prop(cell, canvas_size=384, max_fill=356, matte_mode="auto" if sheet_slug in AUTO_MATTE_PROP_SHEETS else "magenta")
                 else:
-                    prop = normalize_prop(cell, canvas_size=256, max_fill=232 if category in {"tree", "rock", "boundary"} else 238)
+                    prop = normalize_prop(
+                        cell,
+                        canvas_size=256,
+                        max_fill=232 if category in {"tree", "rock", "boundary"} else 238,
+                        preserve_small=category == "ambient",
+                        matte_mode="auto" if sheet_slug in AUTO_MATTE_PROP_SHEETS else "magenta",
+                    )
                 prop_path = prop_dir / f"{index:02d}-{label}.png"
                 prop.save(prop_path, optimize=True)
                 coherent_key = f"{sheet_slug}-{index:02d}-{label}"
@@ -592,6 +781,54 @@ def main() -> None:
                     "preferred": index in {0, 6, 12, 18, 24},
                 })
                 for role in cell_material_roles:
+                    role_indexes.setdefault(role, []).append(texture_key)
+
+    for sheet_slug, sheet_path, primary_role, material_roles, rows, cols in VARIABLE_GROUND_SHEETS:
+        img = Image.open(sheet_path)
+        tile_dir = OUT / "ground" / sheet_slug
+        texture_dir = OUT / "terrain-textures" / sheet_slug
+        tile_dir.mkdir(parents=True, exist_ok=True)
+        texture_dir.mkdir(parents=True, exist_ok=True)
+        for row in range(rows):
+            for col in range(cols):
+                index = row * cols + col
+                label = variable_ground_label(row, col)
+                slug = f"{sheet_slug}-r{row + 1}-c{col + 1}"
+                cell = grid_crop(img, rows, cols, row, col)
+                texture = make_variable_texture_tile(cell, primary_role)
+                tile = make_iso_tile(texture)
+                tile_path = tile_dir / f"{row + 1}-{col + 1}-{label}.png"
+                texture_path = texture_dir / f"{row + 1}-{col + 1}-{label}.png"
+                tile.save(tile_path, optimize=True)
+                texture.save(texture_path, optimize=True)
+                ground_tiles.append({
+                    "id": slug,
+                    "slug": slug,
+                    "sheet": sheet_slug,
+                    "label": label,
+                    "grid": {"row": row + 1, "col": col + 1},
+                    "src": rel_portal(tile_path),
+                    "width": tile.width,
+                    "height": tile.height,
+                    "role": "isometric_tile",
+                    "primaryTerrainRole": primary_role,
+                    "materialRoles": material_roles,
+                })
+                texture_key = f"chatgpt-terrain/{slug}"
+                ground_textures.append({
+                    "key": texture_key,
+                    "slug": slug,
+                    "sheet": sheet_slug,
+                    "label": label,
+                    "grid": {"row": row + 1, "col": col + 1},
+                    "src": rel_portal(texture_path),
+                    "width": texture.width,
+                    "height": texture.height,
+                    "role": primary_role,
+                    "materialRoles": material_roles,
+                    "preferred": index == 0,
+                })
+                for role in material_roles:
                     role_indexes.setdefault(role, []).append(texture_key)
 
     manifest = {
@@ -684,8 +921,19 @@ def main() -> None:
                 sheet_slug,
                 role_code_by_name.get(primary_role, primary_role),
                 "|".join(encode_roles(material_roles_for_cell(sheet_slug, material_roles, row, 0)) for row in range(5)),
+                5,
+                5,
             ]
             for sheet_slug, _sheet_path, primary_role, material_roles in GROUND_SHEETS
+        ] + [
+            [
+                sheet_slug,
+                role_code_by_name.get(primary_role, primary_role),
+                "|".join(encode_roles(material_roles) for _row in range(rows)),
+                rows,
+                cols,
+            ]
+            for sheet_slug, _sheet_path, primary_role, material_roles, rows, cols in VARIABLE_GROUND_SHEETS
         ],
     }
     write_json(OUT / "hmh-curated-level-art.json", manifest)

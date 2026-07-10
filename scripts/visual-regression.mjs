@@ -293,6 +293,12 @@ try {
       }
       readyOverlay.hidden = true;
       document.getElementById('combatCanvas')?.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'nearest' });
+      const heroReadyDeadline = performance.now() + 5000;
+      let heroVisual = globalThis.__hmhVisualDebugHero?.() ?? null;
+      while (!heroVisual?.ready && performance.now() < heroReadyDeadline) {
+        await wait(100);
+        heroVisual = globalThis.__hmhVisualDebugHero?.() ?? null;
+      }
       await wait(50);
       const loadingOverlay = document.getElementById('hmhLoadingOverlay');
       const loadingStyle = loadingOverlay ? getComputedStyle(loadingOverlay) : null;
@@ -308,6 +314,7 @@ try {
         titleOverlay: Boolean(document.getElementById('hmhLoadingTitleOverlay')),
         readyGatePrepared: readyOverlay.hidden,
         pausedStatText,
+        heroVisual,
       };
     })()
   `, 45000);
@@ -315,6 +322,7 @@ try {
   if (!bootGate?.canvas) throw new Error(`HMH visual boot did not expose combat canvas: ${JSON.stringify(bootGate)}`);
   if (!bootGate?.overlayGone) throw new Error(`HMH loading overlay still visible: ${JSON.stringify(bootGate)}`);
   if (!bootGate?.readyGatePrepared) throw new Error(`HMH READY gate did not prepare the deterministic render anchor: ${JSON.stringify(bootGate)}`);
+  if (!bootGate?.heroVisual?.ready) throw new Error(`HMH selected hero art was not decoded before visual capture: ${JSON.stringify(bootGate?.heroVisual)}`);
 
   const captures = [];
   captures.push(await writeCapture(client, 'seed-1337-render-anchor'));
@@ -364,6 +372,31 @@ try {
   const activeEvidenceDistinct = liveEvidence.sha256 !== walkEvidence.sha256;
   if (!activeEvidenceDistinct) throw new Error('HMH east-walk evidence did not differ from the live-spawn frame');
 
+  const compactWorldTour = [
+    { name: 'seed-1337-north-forest', x: -36, y: -82, prefix: 'curated-tree/jul9-riparian-' },
+    { name: 'seed-1337-north-riverfront', x: 42, y: -78, prefix: 'curated/jul9-river-obstacles-b-' },
+    { name: 'seed-1337-northeast-neighborhood', x: 104, y: -66, prefix: 'curated/jul9-neighborhood-small-props-b-' },
+    { name: 'seed-1337-east-extraction', x: 104, y: 4, prefix: 'curated/jul9-extraction-monuments-b-' },
+    { name: 'seed-1337-southwest-rock-camp', x: -96, y: 78, prefix: 'curated/jul9-desert-rock-formations-b-' },
+    { name: 'seed-1337-southeast-glow-bank', x: 96, y: 78, prefix: 'curated/jul9-ambient-water-glow-b-' },
+  ];
+  const compactWorldTourPositions = [];
+  for (const stop of compactWorldTour) {
+    const position = await runInPage(client, `globalThis.__hmhVisualDebugTeleport?.(${stop.x}, ${stop.y})`);
+    if (!position || Math.abs(position.x - stop.x) > 0.25 || Math.abs(position.y - stop.y) > 0.25) {
+      throw new Error(`HMH compact-world visual tour could not reach ${stop.name}: ${JSON.stringify(position)}`);
+    }
+    if (!position.objectCount || position.decodedCount !== position.objectCount || position.renderEntryCount < position.objectCount) {
+      throw new Error(`HMH compact-world visual tour did not render every visible object at ${stop.name}: ${JSON.stringify(position)}`);
+    }
+    if (!position.assetKeys?.some((key) => key.startsWith(stop.prefix))) {
+      throw new Error(`HMH compact-world visual tour did not expose ${stop.prefix} at ${stop.name}: ${JSON.stringify(position)}`);
+    }
+    compactWorldTourPositions.push({ ...stop, ...position });
+    await sleep(900);
+    captures.push(await writeEvidenceCapture(client, stop.name));
+  }
+
   const antiSlide = await runInPage(client, `
     (() => {
       const root = document.getElementById('combatCanvas');
@@ -379,7 +412,7 @@ try {
   if (!antiSlide.canvasWidth || !antiSlide.canvasHeight) throw new Error(`Anti-slide probe could not read canvas dimensions: ${JSON.stringify(antiSlide)}`);
 
   const changed = captures.filter((capture) => capture.status === 'changed');
-  const report = { portalUrl, bootResult, antiSlide, activeEvidenceDistinct, captures };
+  const report = { portalUrl, bootResult, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
   await mkdir(currentDir, { recursive: true });
   await writeFile(`${currentDir}/visual-regression-report.json`, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));

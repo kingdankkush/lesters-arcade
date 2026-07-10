@@ -144,6 +144,84 @@ test('Jul 9 11:16 buildings, neighborhoods, park, water, cliffs, cover, and powe
   }
 });
 
+test('compact Level 1 has authored scene coverage across the whole map instead of only the spawn corridor', () => {
+  const sampleViews = [
+    { playerX: -108, playerY: -78, prefix: 'curated/jul9-desert-' },
+    { playerX: -36, playerY: -82, prefix: 'curated-tree/jul9-riparian-' },
+    { playerX: 42, playerY: -78, prefix: 'curated/jul9-river-obstacles-b-' },
+    { playerX: 104, playerY: -66, prefix: 'curated/jul9-neighborhood-small-props-b-' },
+    { playerX: -106, playerY: 2, prefix: 'curated/jul9-route-signs-beacons-b-' },
+    { playerX: 104, playerY: 4, prefix: 'curated/jul9-extraction-monuments-b-' },
+    { playerX: -96, playerY: 78, prefix: 'curated/jul9-desert-rock-formations-b-' },
+    { playerX: -20, playerY: 82, prefix: 'curated/jul9-forest-obstacles-b-' },
+    { playerX: 96, playerY: 78, prefix: 'curated/jul9-ambient-water-glow-b-' },
+  ];
+
+  for (const view of sampleViews) {
+    const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 18 });
+    assert.ok(objects.length >= 4, `expected authored scene coverage near ${view.playerX},${view.playerY}`);
+    assert.ok(objects.some((object) => object.assetKey.startsWith(view.prefix)), `${view.prefix} should be visible near ${view.playerX},${view.playerY}`);
+    assert.ok(objects.every((object) => levelOneVisibleAssetByKey(object.assetKey)), 'every full-map authored object should resolve to runtime art');
+  }
+});
+
+test('compact authored stamps place every accepted asset from the new environment sheets', () => {
+  const keys = LEVEL_ONE_AUTHORED_PREFAB_STAMPS.flatMap((stamp) => stamp.assetKeys);
+  const expectedCounts = new Map([
+    ['curated/jul9-extraction-monuments-b-', 4],
+    ['curated/jul9-neighborhood-small-props-b-', 4],
+    ['curated/jul9-forest-obstacles-b-', 4],
+    ['curated/jul9-river-obstacles-b-', 8],
+    ['curated/jul9-route-signs-beacons-b-', 24],
+    ['curated/jul9-desert-props-b-', 4],
+    ['curated/jul9-desert-rock-formations-b-', 6],
+    ['curated/jul9-ambient-water-glow-b-', 16],
+  ]);
+  for (const [prefix, expected] of expectedCounts) {
+    assert.equal(new Set(keys.filter((key) => key.startsWith(prefix))).size, expected, `${prefix} should place every accepted slice`);
+  }
+  for (const tree of ['jul9-riparian-juniper', 'jul9-riparian-dead-tree', 'jul9-riparian-cottonwood', 'jul9-desert-acacia', 'jul9-desert-mesquite', 'jul9-desert-joshua']) {
+    assert.ok(keys.includes(`curated-tree/${tree}-idle-00`), `${tree} should anchor an authored biome scene`);
+  }
+});
+
+test('buildings, trees, walls, vehicles, and substantial world props expose solid collision semantics', () => {
+  const sampleViews = [
+    [0, 5],
+    [-36, -82],
+    [104, -66],
+    [74, 8],
+    [104, 4],
+  ];
+  const objects = sampleViews.flatMap(([playerX, playerY]) => buildLevelOneCuratedVisibleSceneObjects({ playerX, playerY, window: 20 }));
+  const vehicles = objects.filter((object) => object.sceneRole === 'vehicle');
+  const structures = objects.filter((object) =>
+    ['wall', 'tree', 'canopy-occluder'].includes(object.sceneRole)
+    || (object.sceneRole === 'landmark' && /(?:house|garage|storefront|shed|warehouse|town-hall|gate|buildings-large)/i.test(object.assetKey)));
+
+  assert.ok(vehicles.length >= 3, 'collision tour should include multiple vehicle blockers');
+  assert.equal(vehicles.every((object) => object.solid === true), true, 'cars, trucks, pickups, and vans must block movement and shots');
+  assert.ok(structures.length >= 12, 'collision tour should include buildings, walls, and trees');
+  assert.equal(structures.every((object) => object.solid === true), true, 'buildings, walls, and tree boundaries must be solid');
+
+  const northeast = buildLevelOneCuratedVisibleSceneObjects({ playerX: 104, playerY: -66, window: 18 });
+  for (const label of ['weathered-picket-fence', 'trash-can-bags', 'stone-well']) {
+    const object = northeast.find((item) => item.assetKey.includes(label));
+    assert.ok(object, `${label} should be placed in the neighborhood`);
+    assert.equal(object.solid, true, `${label} should have sensible collision`);
+  }
+});
+
+test('authored solid props remain stable as the player approaches instead of disappearing to clear a moving safety bubble', () => {
+  const overview = buildLevelOneCuratedVisibleSceneObjects({ playerX: 104, playerY: -66, window: 18 });
+  const house = overview.find((object) => object.assetKey.includes('boarded-ranch-house'));
+  assert.ok(house, 'neighborhood overview should include the ranch house');
+  assert.equal(house.solid, true);
+
+  const approached = buildLevelOneCuratedVisibleSceneObjects({ playerX: house.gridX, playerY: house.gridY, window: 10 });
+  assert.ok(approached.some((object) => object.id === house.id), 'solid authored objects must not pop out when the player reaches their collision footprint');
+});
+
 test('WO-102 mega-props are real alpha-clean runtime assets and emit visible Level 1 objects', () => {
   assert.equal(WO102_MEGA_PROP_ASSETS.length, 3);
   for (const asset of WO102_MEGA_PROP_ASSETS) {

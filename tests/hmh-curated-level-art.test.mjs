@@ -27,16 +27,16 @@ function pngSize(filePath) {
 test('curated level art manifest exposes all approved tree, forest, and ground sheets', () => {
   assert.equal(HMH_CURATED_LEVEL_ART.id, 'hmh-curated-level-art-chatgpt-2026-07-08');
   assert.equal(HMH_CURATED_LEVEL_ART.generatedFrom, 'Justin-approved ChatGPT Image tree, forest, and ground tile sheets; local source paths redacted');
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.treeIdleFrames, 18);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.treeIdleFrames, 54);
   assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.forestProps, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.environmentProps, 381);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 625);
-  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTextures, 625);
-  assert.equal(HMH_CURATED_LEVEL_ART.treeAnimations.length, 3);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.environmentProps, 451);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTiles, 689);
+  assert.equal(HMH_CURATED_LEVEL_ART.gridCounts.groundTextures, 689);
+  assert.equal(HMH_CURATED_LEVEL_ART.treeAnimations.length, 9);
   assert.equal(HMH_CURATED_LEVEL_ART.forestProps.length, 32);
-  assert.equal(HMH_CURATED_LEVEL_ART.environmentProps.length, 381);
-  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 625);
-  assert.equal(HMH_CURATED_LEVEL_ART.groundTextures.length, 625);
+  assert.equal(HMH_CURATED_LEVEL_ART.environmentProps.length, 451);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTiles.length, 689);
+  assert.equal(HMH_CURATED_LEVEL_ART.groundTextures.length, 689);
 });
 
 test('Jul 9 terrain and prop sheets are sliced into semantic runtime assets', () => {
@@ -66,11 +66,19 @@ test('Jul 9 terrain and prop sheets are sliced into semantic runtime assets', ()
     'jul9-cliff-ditch-boundary',
     'jul9-ghost-town-facade-modules',
     'jul9-vegetation-crop-edge',
+    'jul9-extraction-monuments-b',
+    'jul9-neighborhood-small-props-b',
+    'jul9-forest-obstacles-b',
+    'jul9-river-obstacles-b',
+    'jul9-route-signs-beacons-b',
+    'jul9-desert-props-b',
+    'jul9-desert-rock-formations-b',
+    'jul9-ambient-water-glow-b',
   ]) {
     assert.ok(propSheets.has(sheet), `${sheet} should be present`);
   }
   const jul9Terrain = HMH_CURATED_LEVEL_ART.groundTextures.filter((texture) => texture.sheet.startsWith('jul9-'));
-  assert.equal(jul9Terrain.length, 200);
+  assert.equal(jul9Terrain.length, 264);
   assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2'));
   assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-street-asphalt-parking-a-r1-c2'));
   assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-water-shore-mud-a-r1-c4'));
@@ -80,6 +88,9 @@ test('Jul 9 terrain and prop sheets are sliced into semantic runtime assets', ()
   assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-road-transition-a-r3-c3'));
   assert.ok(jul9Terrain.some((texture) => texture.materialRoles.includes('water')));
   assert.ok(jul9Terrain.some((texture) => texture.materialRoles.includes('grass-to-road')));
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-extraction-plaza-b-r4-c4'));
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-riverbank-slabs-b-r6-c4'));
+  assert.ok(jul9Terrain.some((texture) => texture.key === 'chatgpt-terrain/jul9-rapid-water-b-r6-c4'));
 });
 
 test('curated runtime assets exist, use safe portal-relative paths, and have expected dimensions', () => {
