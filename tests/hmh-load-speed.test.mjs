@@ -59,6 +59,7 @@ test('selected hero opening frame is decoded before READY and roguelike never dr
   assert.match(beginLevel, /await ensureHMHLoaded\(\)/, 'direct and deep-linked HMH starts must load the lazy roster payload');
   assert.match(source, /await preloadHeroRoster\(combat\.characterId\)/);
   assert.match(rosterPreload, /await Promise\.all\(/);
+  assert.match(source, /const preferredStates = \['idle', 'walk', 'run', 'shoot'\]/, 'decoded hold frames must prefer neutral locomotion instead of death/dash states');
   assert.equal(rosterPreload.includes('for (const dirs of Object.values(anims))'), false, 'startup must not decode every state and direction');
   const noFallbackGuard = drawPlayer.indexOf('draw nothing rather than resurrecting old block art');
   const oldBlockFallback = drawPlayer.indexOf("ctx.fillStyle = '#ff7b2f'");

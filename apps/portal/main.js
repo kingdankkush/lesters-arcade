@@ -11963,7 +11963,14 @@ function lesterAnimatedFrameForState(desiredStates) {
 function firstReadyRosterFrame(key) {
   const roster = hmh('HMH_ANIMATED_ROSTER')?.[key];
   const anims = roster?.animations ?? {};
-  for (const dirs of Object.values(anims)) {
+  const preferredStates = ['idle', 'walk', 'run', 'shoot'];
+  const orderedStates = [
+    ...preferredStates,
+    ...Object.keys(anims).filter((name) => !preferredStates.includes(name)),
+  ];
+  for (const state of orderedStates) {
+    const dirs = anims[state];
+    if (!dirs) continue;
     const frames = dirs.south ?? dirs[Object.keys(dirs)[0]] ?? [];
     for (const src of frames) {
       const img = rosterFrame(src);
