@@ -171,6 +171,7 @@ test('Level 1 PixelLab candidate upgrades replace generic route reads in the aut
   const assetKeys = Object.values(LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS);
   const manifest = JSON.parse(readFileSync(repoPath('apps/portal/assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-pixellab-candidates.manifest.json'), 'utf8'));
   const manifestEntries = new Map(manifest.entries.map((entry) => [entry.key, entry]));
+  assert.deepEqual(manifest.knownGaps, [], 'regenerated bridge and extraction-road replacements should retire the old processing gap');
   assert.equal(manifest.runtimeIntegrationStatus.candidateRuntimeAssetCount, assetKeys.length);
   assert.equal(manifest.runtimeIntegrationStatus.integratedVia.includes('getAllAuthoredSceneObjects'), true);
   assert.ok(assetKeys.length >= 16, 'expected a curated runtime set of PixelLab candidates');

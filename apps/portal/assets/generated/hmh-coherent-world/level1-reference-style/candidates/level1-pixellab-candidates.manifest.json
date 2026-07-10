@@ -8,9 +8,7 @@
     "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-p1-object-candidates-contact-sheet.png",
     "./assets/generated/hmh-coherent-world/level1-reference-style/candidates/level1-regenerated-terrain-contact-sheet.png"
   ],
-  "knownGaps": [
-    "original bridge-planks and extraction-flare-road jobs remain processing; regenerated replacements are present under regenerated-terrain/"
-  ],
+  "knownGaps": [],
   "entries": [
     {
       "key": "buildings-and-walls/buildings-and-walls__boss-yard-gate",
