@@ -11,8 +11,8 @@ function repoText(relativePath) {
 
 test('WO-36 index boots through optimized dist bundle with first-screen preload hints', () => {
   const index = repoText('apps/portal/index.html');
-  assert.equal(index.includes('src="./dist/main.js?v=hmh-jul10-compact-world-v32"'), true);
-  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-jul10-compact-world-v32"'), true);
+  assert.equal(index.includes('src="./dist/main.js?v=hmh-jul10-world-perf-v33"'), true);
+  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-jul10-world-perf-v33"'), true);
   assert.equal(index.includes('hard-money-heroes-keyart-bg.jpg'), true);
   assert.equal(index.includes('fetchpriority="high"'), true);
   const sw = repoText('apps/portal/sw.js');
@@ -48,6 +48,29 @@ test('WO-36 Level 1 prewarm decodes only spawn-near terrain and props', () => {
   assert.equal(prewarm.includes('textureKeysNear('), true);
   assert.equal(prewarm.includes('window: 26'), true);
   assert.equal(prewarm.includes('window: 140'), false);
+});
+
+test('Level 1 biome loading has no artificial 1.5 second hold or cross-level asset decode', () => {
+  const source = repoText('apps/portal/main.js');
+  const loading = source.slice(source.indexOf('async function precomputeBiomeWorld'), source.indexOf('// Canonical building/prop set dressing'));
+  const minimum = Number(loading.match(/const MIN_LOAD_MS = (\d+)/)?.[1] ?? Number.POSITIVE_INFINITY);
+  assert.ok(minimum <= 300, `Level 1 load reveal should add at most 300ms, got ${minimum}ms`);
+  assert.equal(loading.includes('for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND'), false, 'startup must not decode every Level 1/2/3 manifest in one loop');
+  assert.match(loading, /const isLevelOne = currentCampaignLevel\(\)\.id === DEFAULT_CAMPAIGN_LEVEL_ID/);
+  assert.match(loading, /if \(!isLevelOne\)/, 'legacy biome prop warming should be skipped for authored Level 1');
+});
+
+test('portal bootstrap does not eagerly import heavyweight canonical actor manifests', () => {
+  const source = repoText('apps/portal/main.js');
+  const encounterVisuals = repoText('apps/portal/src/hmh-encounter-visuals.mjs');
+  const combatArtInit = source.slice(source.indexOf('const combatArt ='), source.indexOf('function refreshHmhCombatArtPayload'));
+  assert.match(source, /from '\.\/src\/canonical-actor-routing\.mjs'/);
+  assert.doesNotMatch(source, /CANONICAL_ACTOR_MANIFESTS/);
+  assert.doesNotMatch(source, /hmh-bonus-enemies\//);
+  assert.match(source, /const HMH_ACTOR_REGISTRY = new Map\(\)/);
+  assert.doesNotMatch(encounterVisuals, /from ['"].*hmh-animated-roster/);
+  assert.doesNotMatch(combatArtInit, /buildCharacterArtFromManifest\(/, 'portal boot must not fetch legacy Lester/Lilly still libraries');
+  assert.doesNotMatch(combatArtInit, /buildEnemyArtFromManifest\(/, 'portal boot must not fetch legacy enemy still libraries');
 });
 
 test('selected hero opening frame is decoded before READY and roguelike never draws the old block fallback', () => {

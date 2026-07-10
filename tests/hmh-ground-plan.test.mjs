@@ -26,7 +26,7 @@ test('ground plan assigns every sampled tile to exactly one zone with one textur
   }
 });
 
-test('large authored terrain zones use deterministic tile variants instead of one repeated stamp', () => {
+test('authored terrain zones keep cohesive materials instead of randomizing tile art every two cells', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   const sampledByZone = new Map();
   for (const [x, y] of sampleTiles(120, 40)) {
@@ -35,9 +35,14 @@ test('large authored terrain zones use deterministic tile variants instead of on
     sampledByZone.get(here.zoneId).add(here.textureKey);
   }
 
-  assert.ok((sampledByZone.get('spawn-dirt-scrub-outfield')?.size ?? 0) >= 5, 'spawn outfield should vary terrain tile cells');
-  assert.ok((sampledByZone.get('spawn-clear-blacktop-centerline')?.size ?? 0) >= 3, 'spawn road should vary cracked asphalt cells');
-  assert.ok((sampledByZone.get('ghost-town-cracked-asphalt-core')?.size ?? 0) >= 5, 'ghost town street should use multiple asphalt variants');
+  assert.equal(sampledByZone.get('spawn-dirt-scrub-outfield')?.size, 1, 'spawn outfield should read as one continuous dirt material');
+  assert.equal(sampledByZone.get('spawn-clear-blacktop-centerline')?.size, 1, 'spawn road should read as continuous authored blacktop');
+  assert.equal(sampledByZone.get('ghost-town-cracked-asphalt-core')?.size, 1, 'ghost-town streets should use one coherent asphalt surface');
+  assert.notEqual(
+    plan.zoneAt(0, 5).textureKey,
+    plan.zoneAt(0, 8).textureKey,
+    'authored neighboring road and shoulder zones should still use distinct materials',
+  );
 });
 
 test('borderInfo is present exactly on cardinal zone boundaries', () => {
@@ -119,6 +124,7 @@ test('compact full-map plan exposes every approved terrain sheet including varia
 
   const nearby = plan.textureKeysNear(0, 5, 18);
   assert.ok(nearby.length > 0);
+  assert.ok(nearby.length <= 12, `opening prewarm should need at most 12 authored materials, got ${nearby.length}`);
   assert.ok(nearby.length < keys.length, 'startup prewarm should decode nearby terrain instead of every full-map texture');
   assert.ok(nearby.every((key) => plan.textureForKey(key)), 'every nearby texture key should resolve');
 });
@@ -151,6 +157,18 @@ test('compact biome towns and exploration POIs are connected by authored roads, 
     assert.equal(plan.zoneAt(x, y).role, role, `${label} should be authored into the rendered ground plan`);
   }
   assert.equal(plan.zoneAt(29, 20).role, 'water', 'deep rapid-water spine must remain visible between crossings');
+});
+
+test('authored lakes, rapids, and fords are ground-plan water instead of walkable prop cards', () => {
+  const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
+  for (const [x, y, label] of [
+    [42, -76, 'north riverfront rapid pool'],
+    [84, 9, 'lakeside park pond'],
+    [42, 3, 'east-town shallow ford'],
+    [96, 70, 'southeast glow-bank pool'],
+  ]) {
+    assert.equal(plan.zoneAt(x, y).role, 'water', `${label} should be authored into collision-backed water terrain`);
+  }
 });
 
 test('ground plan source and tests are covered by the explicit syntax gate', () => {

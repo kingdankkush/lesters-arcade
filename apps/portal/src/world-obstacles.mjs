@@ -118,6 +118,22 @@ export function obstaclesNear(seed, centerX, centerY, halfExtent, biomeAt, opts 
 export function resolvePlayerCollision(fromX, fromY, toX, toY, playerRadius, obstacles) {
   let x = toX;
   let y = toY;
+  let earliestFootprintHit = 1;
+  for (const obstacle of obstacles) {
+    if (!obstacle?.solid) continue;
+    const footprint = obstacleFootprintBounds(obstacle, 1, playerRadius);
+    if (!footprint) continue;
+    const startsInside = fromX >= footprint.minX && fromX <= footprint.maxX
+      && fromY >= footprint.minY && fromY <= footprint.maxY;
+    if (startsInside) continue;
+    const hitT = segmentAabbHitT(fromX, fromY, toX, toY, footprint);
+    if (hitT !== null && hitT < earliestFootprintHit) earliestFootprintHit = hitT;
+  }
+  if (earliestFootprintHit < 1) {
+    const safeT = Math.max(0, earliestFootprintHit - 1e-4);
+    x = fromX + (toX - fromX) * safeT;
+    y = fromY + (toY - fromY) * safeT;
+  }
   for (const o of obstacles) {
     if (!o.solid) continue;
     const footprint = obstacleFootprintBounds(o, 1, playerRadius);
@@ -410,5 +426,45 @@ export function resolveBoundedAiMove({
     boundsAdjusted: bounded.boundsAdjusted,
     adjusted: obstacleAdjusted || terrainAdjusted || bounded.boundsAdjusted,
   };
+}
+
+export function resolveTrackingAiMove({
+  targetX = 0,
+  targetY = 0,
+  detourSide = 1,
+  ...move
+} = {}) {
+  const startX = finiteOr(move.fromX, 0);
+  const startY = finiteOr(move.fromY, 0);
+  const desiredX = finiteOr(move.toX, startX);
+  const desiredY = finiteOr(move.toY, startY);
+  const requestedDistance = Math.hypot(desiredX - startX, desiredY - startY);
+  const direct = resolveBoundedAiMove({ ...move, fromX: startX, fromY: startY, toX: desiredX, toY: desiredY });
+  const directDistance = Math.hypot(direct.x - startX, direct.y - startY);
+  const directProgress = requestedDistance > 1e-6
+    ? ((direct.x - startX) * (desiredX - startX) + (direct.y - startY) * (desiredY - startY)) / requestedDistance
+    : 0;
+  if (requestedDistance <= 1e-6 || directProgress >= requestedDistance * 0.45) return { ...direct, detoured: false };
+
+  const targetDx = finiteOr(targetX, desiredX) - startX;
+  const targetDy = finiteOr(targetY, desiredY) - startY;
+  const targetLength = Math.hypot(targetDx, targetDy) || 1;
+  const forwardX = targetDx / targetLength;
+  const forwardY = targetDy / targetLength;
+  const preferredSide = detourSide < 0 ? -1 : 1;
+  const detourX = forwardX * 0.24 + (-forwardY) * preferredSide * 0.97;
+  const detourY = forwardY * 0.24 + forwardX * preferredSide * 0.97;
+  const detourLength = Math.hypot(detourX, detourY) || 1;
+  const candidate = resolveBoundedAiMove({
+    ...move,
+    fromX: startX,
+    fromY: startY,
+    toX: startX + (detourX / detourLength) * requestedDistance,
+    toY: startY + (detourY / detourLength) * requestedDistance,
+  });
+  const moved = Math.hypot(candidate.x - startX, candidate.y - startY);
+  return moved >= requestedDistance * 0.2
+    ? { ...candidate, detoured: true }
+    : { ...direct, detoured: false };
 }
 

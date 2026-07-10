@@ -4,6 +4,7 @@ import test from 'node:test';
 
 import { buildGlobalArtCensus, renderGlobalArtCensusMarkdown } from '../scripts/global-art-census.mjs';
 import { buildArtPurgeRepairPlan } from '../apps/portal/src/hmh-art-repair.mjs';
+import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 
 function repoText(relativePath) {
   return readFileSync(new URL(`../${relativePath}`, import.meta.url), 'utf8');
@@ -34,7 +35,7 @@ test('WO-17 global art census calls out incomplete roster coverage instead of pr
 });
 
 test('runtime actor census repair resolves all strict zero-animation blockers into direct renderable actors', () => {
-  const repairPlan = buildArtPurgeRepairPlan();
+  const repairPlan = buildArtPurgeRepairPlan({ roster: HMH_ANIMATED_ROSTER });
   assert.equal(repairPlan.summary.keptRenderableCount, 8, 'WO-109 plus native critical actors should now render directly');
   assert.equal(repairPlan.summary.autoRepairCount, 0, 'no zero-animation actors should need auto-repair');
   assert.equal(repairPlan.summary.deferOrPurgeCount, 0);

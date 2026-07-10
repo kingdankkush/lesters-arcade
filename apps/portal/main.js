@@ -16,8 +16,8 @@ import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
-import { CANONICAL_ACTOR_MANIFESTS, canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actors.mjs';
-import { buildActorRegistry, prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
+import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
@@ -31,11 +31,9 @@ import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow
 import { buildGrenadeAimPreview, classifyGrenadeRelease, grenadeAimType, isGrenadeAimCancel } from './src/hmh-grenade-aim.mjs';
 import { buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-game-feel-tuning.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
-import { HMH_BONUS_FUD_GOBLIN } from './assets/generated/hmh-bonus-enemies/fud-goblin/fud-goblin.mjs';
-import { HMH_BONUS_GAS_FEE_WISP } from './assets/generated/hmh-bonus-enemies/gas-fee-wisp/gas-fee-wisp.mjs';
-import { HMH_BONUS_WHALE_DUMPER } from './assets/generated/hmh-bonus-enemies/whale-dumper/whale-dumper.mjs';
+
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
-import { obstaclesNear, resolvePlayerCollision, obstacleHitAlongSegment, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove } from './src/world-obstacles.mjs';
+import { obstaclesNear, resolvePlayerCollision, obstacleHitAlongSegment, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove, resolveTrackingAiMove } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
@@ -317,16 +315,10 @@ async function decodeImageAsset(image) {
   });
 }
 
-// --- Durable sprite pipeline: registry of ALL actors ---
-// Canonical hand-made art (Justin's): heroes Lester/Lilly + enemies/bosses
-// (trench-degen, evil-banker, crypto-bro, gas-beast, evil-boss, warren-boss).
-// Bonus PixelLab-generated enemies are kept as ADDITIONAL roster members.
-const HMH_ACTOR_REGISTRY = buildActorRegistry({
-  ...CANONICAL_ACTOR_MANIFESTS,
-  'bonus-fud-goblin': HMH_BONUS_FUD_GOBLIN,
-  'bonus-gas-fee-wisp': HMH_BONUS_GAS_FEE_WISP,
-  'bonus-whale-dumper': HMH_BONUS_WHALE_DUMPER,
-}, loadImageAsset);
+// Level 1 uses the lazy animated roster. Keep the legacy canonical registry
+// empty at portal bootstrap so its heavyweight manifests do not enter the
+// first-load import closure before the player selects Hard Money Heroes.
+const HMH_ACTOR_REGISTRY = new Map();
 
 // Map a runtime enemy/boss entity to its registry actor id. Canonical art first.
 function registryActorIdFor(entity) {
@@ -1300,31 +1292,13 @@ function playSfxCue(cue, volume = 0.05) {
 const combatArt = {
   production: buildProductionArtPass(),
   characters: {
-    lester: buildProductionCharacterArt('lester', buildCharacterArtFromManifest('lester')),
-    lesterPixelLabCalibration: buildPixelLabLesterCalibrationArt(),
-    lilly: buildProductionCharacterArt('lilly', buildCharacterArtFromManifest('lilly')),
+    lester: null,
+    lesterPixelLabCalibration: null,
+    lilly: null,
   },
   hero: null,
-  enemies: {
-    trenchDegen: buildProductionCharacterArt('trenchDegen', buildEnemyArtFromManifest('trenchDegen')),
-    evilBanker: buildProductionCharacterArt('evilBanker', buildEnemyArtFromManifest('evilBanker')),
-    warrenSpearRider: buildProductionCharacterArt('warrenSpearRider', buildEnemyArtFromManifest('warrenSpearRider')),
-    cryptoBro: buildProductionCharacterArt('cryptoBro', buildEnemyArtFromManifest('cryptoBro')),
-    gasBeast: buildProductionCharacterArt('gasBeast', buildEnemyArtFromManifest('gasBeast')),
-    rugpullSummoner: buildProductionCharacterArt('rugpullSummoner', buildEnemyArtFromManifest('trenchDegen')),
-    bitWhale: buildProductionCharacterArt('bitWhale', buildEnemyArtFromManifest('warrenSpearRider')),
-    chainReaper: buildProductionCharacterArt('chainReaper', buildEnemyArtFromManifest('warrenSpearRider')),
-    goblin: loadImageAsset('./assets/generated/sliced/enemy-goblin-idle.png'),
-    wisp: loadImageAsset('./assets/generated/sliced/enemy-wisp-idle.png'),
-    bruiser: loadImageAsset('./assets/generated/sliced/enemy-bruiser-idle.png'),
-    scambot: loadImageAsset('./assets/generated/sliced/enemy-scambot-idle.png'),
-  },
-  screens: {
-    splash: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.splash.src),
-    mainMenu: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.mainMenu.src),
-    options: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.options.src),
-    modeSelect: loadImageAsset(HARD_MONEY_HEROES_ASSET_MANIFEST.screens.modeSelect.src),
-  },
+  enemies: {},
+  screens: {},
   icons: {
     health: loadImageAsset('./assets/generated/sliced/icon-weapon-health.png'),
     shield: loadImageAsset('./assets/generated/sliced/icon-weapon-shield.png'),
@@ -1333,32 +1307,9 @@ const combatArt = {
     weapon: loadImageAsset('./assets/generated/sliced/icon-weapon-settler.png'),
     score: loadImageAsset('./assets/generated/sliced/icon-weapon-score-multiplier.png'),
   },
-  parallax: {
-    'level-the-slums': [
-      { image: loadImageAsset('./assets/generated/sliced/level1-underchain-sky.png'), y: 0, h: 110, speed: 0.12 },
-      { image: loadImageAsset('./assets/generated/sliced/level1-underchain-skyline.png'), y: 58, h: 132, speed: 0.24 },
-      { image: loadImageAsset('./assets/generated/sliced/level1-underchain-midground.png'), y: 128, h: 132, speed: 0.46 },
-      { image: loadImageAsset('./assets/generated/sliced/level1-underchain-street.png'), y: 206, h: 96, speed: 0.82 },
-    ],
-    'level-the-tower': [
-      { image: loadImageAsset('./assets/generated/sliced/level2-foundry-sky.png'), y: 0, h: 110, speed: 0.1 },
-      { image: loadImageAsset('./assets/generated/sliced/level2-foundry-skyline.png'), y: 54, h: 140, speed: 0.22 },
-      { image: loadImageAsset('./assets/generated/sliced/level2-foundry-midground.png'), y: 124, h: 144, speed: 0.42 },
-      { image: loadImageAsset('./assets/generated/sliced/level2-foundry-street.png'), y: 202, h: 104, speed: 0.72 },
-    ],
-    'level-the-getaway': [
-      { image: loadImageAsset('./assets/generated/sliced/level3-getaway-sky.png'), y: 0, h: 112, speed: 0.18 },
-      { image: loadImageAsset('./assets/generated/sliced/level3-getaway-skyline.png'), y: 56, h: 140, speed: 0.38 },
-      { image: loadImageAsset('./assets/generated/sliced/level3-getaway-midground.png'), y: 126, h: 144, speed: 0.72 },
-      { image: loadImageAsset('./assets/generated/sliced/level3-getaway-street.png'), y: 202, h: 104, speed: 1.12 },
-    ],
-  },
-  environmentStages: Object.fromEntries(HARD_MONEY_HEROES_ENVIRONMENT_MANIFEST.levelOneStages.map((stage) => [
-    stage.id,
-    buildEnvironmentStageArt(stage),
-  ])),
+  parallax: {},
+  environmentStages: {},
 };
-combatArt.hero = combatArt.characters.lester;
 
 function refreshHmhCombatArtPayload() {
   combatArt.production = buildProductionArtPass();
@@ -8084,6 +8035,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     affixRuntime,
     immuneToKnockback: Boolean(affixRuntime.immuneToKnockback),
     finalBossProxy: Boolean(options.finalBossProxy),
+    aggroed: Boolean(options.boss || miniBoss || spawn.enemy.boss),
     districtFamily: options.districtFamily ?? districtContext?.districtFamily ?? null,
     poiId,
     poiEncounterId: options.poiEncounterId ?? null,
@@ -8722,6 +8674,7 @@ function updateRoguelikeEnemies(director, dt) {
     const dx = combat.playerMapX - enemy.mapX;
     const dy = combat.playerMapY - enemy.mapY;
     const distance = Math.hypot(dx, dy) || 1;
+    if (!enemy.aggroed && distance <= (enemy.ranged ? 22 : 28)) enemy.aggroed = true;
     const desiredDistance = (enemy.ranged ? 5.2 : 0.72) * (encounterBehavior.desiredDistanceMul ?? 1);
     const recovering = (enemy.recoveryFramesRemaining ?? 0) > 0;
     enemy.burrowing = false;
@@ -8751,6 +8704,7 @@ function updateRoguelikeEnemies(director, dt) {
         const speed = calculateEnemyChaseSpeed({
           enemySpeed: enemy.speed ?? 1,
           elite: enemy.elite,
+          boss: Boolean(enemy.boss || enemy.miniBoss || enemy.finalBossProxy),
           pressure: director.pressure,
           encounterSpeedMul: encounterBehavior.speedMul ?? 1,
           slowFactor,
@@ -8762,12 +8716,15 @@ function updateRoguelikeEnemies(director, dt) {
         const fromY = enemy.mapY;
         const toX = fromX + dir.x * speed * dt;
         const toY = fromY + dir.y * speed * dt;
-        const boundedMove = resolveBoundedAiMove({
+        const boundedMove = resolveTrackingAiMove({
           seed: runSeed,
           fromX,
           fromY,
           toX,
           toY,
+          targetX: combat.playerMapX,
+          targetY: combat.playerMapY,
+          detourSide: ((ei + runSeed) & 1) === 0 ? 1 : -1,
           radius: 0.4,
           obstacles,
           biomeAt: currentTerrainBiomeAt,
@@ -8776,6 +8733,7 @@ function updateRoguelikeEnemies(director, dt) {
         enemy.mapX = boundedMove.x;
         enemy.mapY = boundedMove.y;
         enemy.worldBoundsAdjusted = Boolean(boundedMove.boundsAdjusted);
+        enemy.pathDetoured = Boolean(boundedMove.detoured);
       } else if (enemy.ranged) {
         // Back away to maintain range, still avoiding neighbors + terrain.
         const dir = blendSteering({ x: -dx / distance, y: -dy / distance }, sep, 0.5);
@@ -10143,8 +10101,9 @@ function drawLevelLoadScreen(ctx, width, height, pct, biomeLabel) {
 // and render a brief load screen. Returns a layout summary for status text.
 async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   const loadStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
-  const MIN_LOAD_MS = 1500; // always show the biome reveal for at least this long
+  const MIN_LOAD_MS = 250;
   const seed = combat.roguelikeRun?.seed ?? 0;
+  const isLevelOne = currentCampaignLevel().id === DEFAULT_CAMPAIGN_LEVEL_ID;
   const envManifest = hmh('HMH_LEVEL_ENVIRONMENT') ?? {};
   const worldProps = envManifest.worldProps ?? [];
   const bgs = envManifest.parallaxBackgrounds ?? [];
@@ -10153,18 +10112,26 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   const startBiome = biomeAt(seed, 0, 0);
   const toWarm = new Set();
   const regionBiomes = new Set([startBiome]);
-  for (let rx = -2; rx <= 2; rx += 1) {
-    for (let ry = -2; ry <= 2; ry += 1) {
-      const b = biomeAt(seed, rx * 22, ry * 22);
-      regionBiomes.add(b);
-      for (const p of propsForBiome(worldProps, b).slice(0, 6)) toWarm.add(p.src);
-      if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, b, bgs.length)].src);
+  if (!isLevelOne) {
+    for (let rx = -2; rx <= 2; rx += 1) {
+      for (let ry = -2; ry <= 2; ry += 1) {
+        const b = biomeAt(seed, rx * 22, ry * 22);
+        regionBiomes.add(b);
+        for (const p of propsForBiome(worldProps, b).slice(0, 6)) toWarm.add(p.src);
+        if (bgs.length) toWarm.add(bgs[parallaxIndexForBiome(seed, b, bgs.length)].src);
+      }
     }
   }
-  // Warm Level 1 final-paint and CC0 fallback isometric base ground tiles. They
-  // render under authored HMH props/templates, so they should decode before the
-  // READY overlay appears.
-  for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND, HMH_LEVEL_ONE_SBS_GROUND, HMH_LEVEL_ONE_ANIMATED_POLISH_ASSETS, HMH_FINAL_WORLD_AMBIENT_ASSETS, HMH_LEVEL_TWO_FINAL_CITY_ASSETS, HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, HMH_LEVEL_THREE_FINAL_GROUND]) {
+  // Level 1 ground and opening props are already warmed by
+  // prewarmHmhLevelAssets. Do not decode other levels or broad fallback catalogs
+  // before READY. Later campaign levels warm only their own required manifest.
+  const campaignId = currentCampaignLevel().id;
+  const levelManifests = campaignId === 'level-2-litecoin-city'
+    ? [HMH_LEVEL_TWO_FINAL_CITY_ASSETS]
+    : campaignId === 'level-3-getaway'
+      ? [HMH_LEVEL_THREE_FINAL_GETAWAY_ASSETS, HMH_LEVEL_THREE_FINAL_GROUND]
+      : [];
+  for (const manifest of levelManifests) {
     for (const asset of manifest.assets ?? []) {
       if (asset?.src) toWarm.add(asset.src);
     }
@@ -10200,10 +10167,10 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
     done += 1;
     drawLevelLoadScreen(ctx, width, height, done / total, label);
   }
-  // Hold the finished bar, and enforce a minimum so the biome reveal always shows.
+  // Keep a short readable completion beat without masking real load time.
   drawLevelLoadScreen(ctx, width, height, 1, label);
   const elapsed = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - loadStart;
-  const remaining = Math.max(280, MIN_LOAD_MS - elapsed);
+  const remaining = Math.max(0, MIN_LOAD_MS - elapsed);
   await new Promise((resolve) => setTimeout(resolve, remaining));
   return { 
     startBiome, 

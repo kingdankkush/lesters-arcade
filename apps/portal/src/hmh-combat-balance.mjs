@@ -153,6 +153,7 @@ export function calculateEnemyChaseSpeed({
   catalogSpeed = 1,
   enemySpeed = catalogSpeed,
   elite = false,
+  boss = false,
   pressure = 0,
   encounterSpeedMul = 1,
   slowFactor = 1,
@@ -161,9 +162,9 @@ export function calculateEnemyChaseSpeed({
   const base = clamp(enemySpeed, 0, 6);
   const pressureMul = 1 + clamp(pressure, 0, 1) * 0.18;
   const authoredMul = clamp(encounterSpeedMul, 0.65, 1.08);
-  const roleMul = elite ? 0.82 : 0.74;
+  const roleMul = boss ? 1.05 : elite ? 0.82 : 0.74;
   const raw = base * roleMul * pressureMul * authoredMul * clamp(slowFactor, 0, 1);
-  const capRatio = elite ? 0.92 : 0.86;
+  const capRatio = boss ? 1.08 : elite ? 0.92 : 0.86;
   const speedCap = Math.max(0.45, clamp(playerMoveSpeed, 1, 12) * capRatio);
   return Number(Math.max(0, Math.min(raw, speedCap)).toFixed(3));
 }

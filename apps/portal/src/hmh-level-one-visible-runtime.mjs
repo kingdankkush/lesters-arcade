@@ -57,6 +57,22 @@ function curatedTreeAnimationAssetByKey(assetKey) {
   return match ? { src: `./assets/generated/hmh-curated-level-art/props/trees/${match[1]}/idle/${match[2]}.png` } : null;
 }
 
+function inferredSolidFootprint(assetKey, use) {
+  const key = String(assetKey || '').toLowerCase();
+  if (use === 'vehicle') return Object.freeze({ w: 3.2, h: 1.6 });
+  if (use === 'container') return Object.freeze({ w: 4.0, h: 1.4 });
+  if (use === 'plaza') return Object.freeze({ w: 3.2, h: 2.2 });
+  if (use === 'canopy' || /(?:tree|flora|sapling|bush|cactus|stump)/.test(key)) return Object.freeze({ w: 1.6, h: 1.4 });
+  if (/(?:fence|wall|barricade|gate|sandbag|log|roadblock)/.test(key)) return Object.freeze({ w: 3.2, h: 1.0 });
+  if (/(?:rock|boulder|rubble|ruins|bones)/.test(key)) return Object.freeze({ w: 2.2, h: 1.5 });
+  if (use === 'landmark') {
+    if (/(?:microscene|shrine|beacon|dish|rig|culvert)/.test(key)) return Object.freeze({ w: 2.8, h: 1.8 });
+    return Object.freeze({ w: 4.8, h: 2.8 });
+  }
+  if (use === 'boundary') return Object.freeze({ w: 2.2, h: 1.4 });
+  return null;
+}
+
 export const WO102_MEGA_PROP_ASSETS = Object.freeze([
   Object.freeze({
     id: 'wo102-megaprop/noodle-bar-storefront',
@@ -302,7 +318,7 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
   prefabStamp('compact-west-route-town', 'compact-west', [
     ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(13, 16), 'dressing', { startX: -4, startY: 1, spacingX: 4 }),
     { assetKey: 'curated/jul9-roadside-buildings-large-02-roadside-convenience-store', use: 'landmark', dx: -7, dy: -6, solid: true },
-    { assetKey: 'curated/jul9-ghost-town-facade-modules-00-boarded-storefront-front', use: 'landmark', dx: 4, dy: -6, solid: true },
+    { assetKey: 'wo102-megaprop/noodle-bar-storefront', use: 'landmark', dx: 4, dy: -6, solid: true },
     { assetKey: 'curated/jul9-fences-barricades-00-wood-fence-straight', use: 'boundary', dx: -5, dy: 5, solid: true },
     { assetKey: 'curated/jul9-fences-barricades-01-short-wood-fence', use: 'boundary', dx: 5, dy: 5, solid: true },
   ], { label: 'West route town', routeBeat: 'town', anchor: { x: -106, y: 2 }, routeRead: 'storefronts and signal furniture establish a western town instead of empty outfield' }),
@@ -352,7 +368,7 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
   ], { label: 'Ghost town street frontage', routeBeat: 'arena', anchor: { x: 42, y: 6 }, routeRead: 'false-front silhouettes and curb dressing make the street read authored' }),
   prefabStamp('wo102-forest-cliff-proof', 'country-road', [
     { assetKey: 'wo102-megaprop/forest-rock-outcrop', use: 'boundary', dx: 0, dy: 0, solid: true, notes: 'WO-102 proof: selected alpha-clean forest cliff mega-prop replaces scattered small rock/tree boundary art' },
-  ], { label: 'WO-102 forest cliff proof', routeBeat: 'loop', anchor: { x: 57, y: 2 }, routeRead: 'one composed cliff wall reads as authored forest boundary' }),
+  ], { label: 'WO-102 forest cliff proof', routeBeat: 'loop', anchor: { x: -50, y: -82 }, routeRead: 'one composed cliff wall reads as authored forest boundary' }),
   prefabStamp('forest-mushroom-ring', 'dead-forest-loop', [
     { assetKey: 'level-1/flora/broken-tree3', use: 'boundary', dx: -4, dy: -3, solid: true },
     { assetKey: 'level-1/flora/burned-tree2', use: 'boundary', dx: 5, dy: -2, solid: true },
@@ -374,13 +390,13 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/flora/oak-tree', use: 'boundary', dx: 5, dy: 2, solid: true },
     { assetKey: 'curated/jul9-fences-barricades-01-short-wood-fence', use: 'dressing', dx: -2, dy: 3, solid: false },
     { assetKey: 'curated/jul9-fences-barricades-03-wood-fence-corner', use: 'boundary', dx: -5, dy: 2, solid: true },
-  ], { label: 'Farmstead fence pocket', routeBeat: 'pressure', anchor: { x: 82, y: 6 }, routeRead: 'farm edge' }),
+  ], { label: 'Farmstead fence pocket', routeBeat: 'pressure', anchor: { x: 78, y: 20 }, routeRead: 'farm edge' }),
   prefabStamp('wo104-forest-canopy-cliff-checkpoint', 'dead-forest-loop', [
     { assetKey: 'wo104-world/forest-canopy-sway', use: 'canopy', dx: -4, dy: -4, solid: true, notes: 'WO-104: swaying canopy occluder frames the dry forest loop without random scatter' },
     { assetKey: 'wo104-world/mossy-cliff-wall', use: 'boundary', dx: 5, dy: -5, solid: true, notes: 'WO-104: mossy cliff wall turns the forest/cave edge into an authored blocker while staying outside the immediate fight lane' },
     { assetKey: 'level-1/prop/orange-mushrooms1-ground-shadow', use: 'dressing', dx: -1, dy: 1, solid: false },
     { assetKey: 'level-1/flora/broken-tree2', use: 'boundary', dx: 5, dy: 2, solid: true },
-  ], { label: 'WO-104 forest canopy/cliff checkpoint', routeBeat: 'forest', anchor: { x: 55, y: 12 }, routeRead: 'canopy, cliff, and mushroom accents make the forest pocket read authored before Checkpoint 1' }),
+  ], { label: 'WO-104 forest canopy/cliff checkpoint', routeBeat: 'forest', anchor: { x: -22, y: -84 }, routeRead: 'canopy, cliff, and mushroom accents make the northern forest read authored' }),
   prefabStamp('wo104-lakeside-firefly-bank-checkpoint', 'country-road', [
     { assetKey: 'wo104-world/reed-bank-fireflies', use: 'ambient', dx: -4, dy: 1, solid: false, notes: 'WO-104: ambient firefly/reed-bank prop adds life to the lakeside edge' },
     { assetKey: 'level-1/water/water-02', use: 'water', dx: -1, dy: 2, solid: false },
@@ -400,19 +416,19 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'wo105-world/cracked-road-barricade', use: 'route', dx: -5, dy: 2, solid: false, notes: 'WO-105: cracked asphalt road apron makes the street transition sensible' },
     { assetKey: 'wo105-world/container-cover-line', use: 'container', dx: 7, dy: 3, solid: true, notes: 'WO-105: container cover creates a deliberate arena flank blocker outside the player lane' },
     { assetKey: 'level-1/prop/street-lamp', use: 'dressing', dx: -2, dy: -3, solid: false },
-  ], { label: 'WO-105 bank plaza arena', routeBeat: 'arena', anchor: { x: 48, y: 6 }, routeRead: 'bank kiosk, new frontage, junction plate, road apron, and container cover define a readable town arena' }),
+  ], { label: 'WO-105 bank plaza arena', routeBeat: 'arena', anchor: { x: -90, y: 4 }, routeRead: 'bank kiosk, new frontage, junction plate, road apron, and container cover define the western town arena' }),
   prefabStamp('wo105-second-town-road-checkpoint', 'residential-edge', [
     { assetKey: 'wo105-world/second-town-building-row', use: 'landmark', dx: -4, dy: -5, solid: true, notes: 'WO-105: second-town facade row replaces generic building cards at the extraction approach' },
     { assetKey: 'wo105-world/cracked-road-junction', use: 'route', dx: 0, dy: 1, solid: false, notes: 'WO-105: junction plate makes the road split into second-town and extraction-yard lanes' },
     { assetKey: 'wo105-world/cracked-road-barricade', use: 'route', dx: 5, dy: 2, solid: false, notes: 'WO-105: barricade narrows the lane into a deliberate arena threshold' },
     { assetKey: 'wo104-world/park-tree-bench-cluster', use: 'landmark', dx: 6, dy: -4, solid: true, notes: 'WO-105: park edge keeps the second-town road from reading as bare asphalt' },
-  ], { label: 'WO-105 second-town road checkpoint', routeBeat: 'road', anchor: { x: 88, y: 7 }, routeRead: 'second-town facade, park edge, and cracked junction make the road-to-extraction transition sensible' }),
+  ], { label: 'WO-105 second-town road checkpoint', routeBeat: 'road', anchor: { x: 94, y: -58 }, routeRead: 'second-town facade, park edge, and cracked junction make the northeast road transition sensible' }),
   prefabStamp('wo105-container-extraction-yard-checkpoint', 'inner-city-threshold', [
     { assetKey: 'wo105-world/container-cover-line', use: 'container', dx: -6, dy: 4, solid: true, notes: 'WO-105: container wall stages the extraction-yard arena edge without blocking the center lane' },
     { assetKey: 'wo105-world/cracked-road-barricade', use: 'route', dx: 2, dy: 1, solid: false, notes: 'WO-105: road barricade points the lane toward the extraction pad' },
     { assetKey: 'wo105-world/extraction-yard-warehouse', use: 'landmark', dx: -6, dy: -4, solid: true, notes: 'WO-105: new warehouse art replaces old generic industrial-warehouse building art in the extraction arena' },
     { assetKey: 'level1-authored-stamp/boss-yard-warning-pylon', use: 'dressing', dx: 4, dy: -2, solid: false },
-  ], { label: 'WO-105 container extraction yard', routeBeat: 'boss', anchor: { x: 93, y: 8 }, routeRead: 'new warehouse silhouette, containers, and cracked road describe the boss/extraction arena' }),
+  ], { label: 'WO-105 container extraction yard', routeBeat: 'boss', anchor: { x: 104, y: 18 }, routeRead: 'new warehouse silhouette, containers, and cracked road describe the south extraction arena' }),
   prefabStamp('wo106-roadside-vehicle-micro-scenes', 'residential-edge', [
     { assetKey: 'wo106-world/abandoned-pickup', use: 'vehicle', dx: -4, dy: 1, solid: true, notes: 'WO-106: abandoned pickup is solid cover outside the center lane' },
     { assetKey: 'wo106-world/delivery-van-cache', use: 'vehicle', dx: 3, dy: 2, solid: true, notes: 'WO-106: delivery van is solid cover beside the loot route' },
@@ -432,14 +448,14 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'curated/jul9-neighborhood-fences-hedges-15-hedge-segment', use: 'boundary', dx: -8, dy: 2, solid: true },
     { assetKey: 'curated/jul9-neighborhood-yard-clutter-20-mailbox-weeds', use: 'dressing', dx: -2, dy: 3, solid: false },
     { assetKey: 'curated/jul9-neighborhood-combo-21-yard-chair-cluster', use: 'dressing', dx: 5, dy: 2, solid: false },
-  ], { label: 'Neighborhood house yard pocket', routeBeat: 'road', anchor: { x: 77, y: 7 }, routeRead: 'house, garage, hedge, and yard clutter make the residential edge readable' }),
+  ], { label: 'Neighborhood house yard pocket', routeBeat: 'road', anchor: { x: 88, y: -66 }, routeRead: 'house, garage, hedge, and yard clutter make the northeast residential edge readable' }),
   prefabStamp('residential-block-backlot-pocket', 'residential-edge', [
     { assetKey: 'curated/jul9-residential-block-buildings-large-01-worn-duplex-building', use: 'landmark', dx: -6, dy: -5, solid: true, metadata: { footprintTiles: { w: 5.8, h: 3.2 } } },
     { assetKey: 'curated/jul9-garages-sheds-large-02-torn-carport-frame', use: 'landmark', dx: 3, dy: -4, solid: true, metadata: { footprintTiles: { w: 4.8, h: 2.8 } } },
     { assetKey: 'curated/jul9-neighborhood-fences-hedges-06-broken-privacy-fence', use: 'boundary', dx: -4, dy: 2, solid: true },
     { assetKey: 'curated/jul9-neighborhood-yard-clutter-12-garden-hose-coil', use: 'dressing', dx: 1, dy: 3, solid: false },
     { assetKey: 'curated/jul9-vegetation-crop-edge-20-weeds-around-stump', use: 'dressing', dx: 5, dy: 3, solid: false },
-  ], { label: 'Residential block backlot pocket', routeBeat: 'pressure', anchor: { x: 86, y: 9 }, routeRead: 'duplex, carport, privacy fence, and weeds build the second-neighborhood read' }),
+  ], { label: 'Residential block backlot pocket', routeBeat: 'pressure', anchor: { x: 106, y: -54 }, routeRead: 'duplex, carport, privacy fence, and weeds build the second-neighborhood read' }),
   prefabStamp('canal-park-ford-pocket', 'country-road', [
     { assetKey: 'curated/jul9-creek-canal-culvert-00-concrete-culvert-mouth', use: 'landmark', dx: -5, dy: -2, solid: true },
     { assetKey: 'curated/jul9-creek-canal-culvert-04-small-footbridge', use: 'dressing', dx: 0, dy: 1, solid: false },
@@ -488,8 +504,17 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/building/town-10', use: 'landmark', dx: 5, dy: -4, solid: true },
     { assetKey: 'level-1/prop/park-bench', use: 'dressing', dx: -5, dy: 2, solid: false },
     { assetKey: 'level-1/flora/oak-tree', use: 'boundary', dx: 5, dy: 3, solid: true },
-  ], { label: 'Litecoin extraction beacon pad', routeBeat: 'extract', anchor: { x: 100, y: 5 }, routeRead: 'blue-gold beacon and flare road mark the final extraction read' }),
+  ], { label: 'Litecoin extraction beacon pad', routeBeat: 'extract', anchor: { x: 116, y: 6 }, routeRead: 'blue-gold beacon and flare road mark the final extraction read' }),
 ]);
+
+const RETIRED_OVERLAPPING_PREFAB_STAMP_IDS = new Set([
+  'ghost-town-frontage-pocket',
+  'forest-mushroom-ring',
+]);
+
+export const LEVEL_ONE_ACTIVE_PREFAB_STAMPS = Object.freeze(
+  LEVEL_ONE_AUTHORED_PREFAB_STAMPS.filter((stamp) => !RETIRED_OVERLAPPING_PREFAB_STAMP_IDS.has(stamp.id)),
+);
 
 const ZONE_OFFSETS = Object.freeze([
   [-3, -2], [0, -2], [3, -2],
@@ -556,9 +581,10 @@ function anchorForZone(zone) {
 
 function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, index = 0, solid = undefined, metadata = {} }) {
   // Terrain and routes belong to the ground renderer, not the prop renderer.
-  // Old road/path sheets and newer route plates must not sit on top of the
-  // Jul 9 terrain textures as pasted scene objects.
-  if (use === 'terrain' || use === 'route') return null;
+  // Old road/path/water sheets and newer route plates must not sit on top of the
+  // Jul 9 terrain textures as pasted scene objects. Water visibility and
+  // collision are both owned by hmh-ground-plan.
+  if (use === 'terrain' || use === 'route' || use === 'water') return null;
   const record = curatedLevelKitAssetByKey(assetKey)
     ?? curatedLevelArtPropByKey(assetKey)
     ?? curatedTreeAnimationAssetByKey(assetKey)
@@ -567,6 +593,7 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
     ?? wo104106WorldKitAssetByKey(assetKey);
   if (!record) return null;
   const sceneRole = ROLE_FOR_USE[use] ?? 'smallprop';
+  const isSolid = solid ?? SOLID_FOR_USE[use] ?? false;
   return {
     id,
     assetKey,
@@ -574,13 +601,13 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
     use,
     gridX: x,
     gridY: y,
-    solid: solid ?? SOLID_FOR_USE[use] ?? false,
+    solid: isSolid,
     zHeight: use === 'landmark' ? 4 : use === 'boundary' ? 2 : 0,
     drawOrderBias: use === 'landmark' ? 16 : use === 'boundary' ? 8 : 0,
     text: notes,
     sourceZoneId: zoneId,
     propIndex: index,
-    footprintTiles: record.footprintTiles ?? metadata.footprintTiles ?? null,
+    footprintTiles: metadata.footprintTiles ?? record.footprintTiles ?? (isSolid ? inferredSolidFootprint(assetKey, use) : null),
     collisionPolygons: record.collisionPolygons ?? metadata.collisionPolygons ?? null,
     overSlice: record.overSlice ?? metadata.overSlice ?? null,
     r1Observation: record.r1Observation ?? metadata.r1Observation ?? null,
@@ -629,7 +656,7 @@ function contractZoneObjects() {
 function worldDressingObjects({ playerX = 0, playerY = 5, window = 18, frame = 0 } = {}) {
   const pad = 10;
   const objects = [];
-  for (const stamp of LEVEL_ONE_AUTHORED_PREFAB_STAMPS) {
+  for (const stamp of LEVEL_ONE_ACTIVE_PREFAB_STAMPS) {
     const anchorX = stamp.anchor.x;
     const anchorY = stamp.anchor.y;
     if (Math.abs(anchorX - playerX) > window + pad || Math.abs(anchorY - playerY) > window + pad) continue;
@@ -680,7 +707,7 @@ function isForbiddenInsideSpawnGate(object) {
 }
 
 export function buildLevelOneCuratedVisibleSceneObjects({ playerX = 0, playerY = 5, window = 18, frame = 0 } = {}) {
-  const objects = [...openingObjects(), ...contractZoneObjects(), ...worldDressingObjects({ playerX, playerY, window, frame })];
+  const objects = [...openingObjects(), ...worldDressingObjects({ playerX, playerY, window, frame })];
   const visible = objects.filter((object) =>
     !isForbiddenInsideSpawnGate(object)
     && Math.abs(object.gridX - playerX) <= window + 6

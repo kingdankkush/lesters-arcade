@@ -1,5 +1,3 @@
-import { HMH_ANIMATED_ROSTER } from '../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
-
 export const HMH_ART_AUTO_REPAIR_MAP = Object.freeze({
   'crypto-bro-rusher': Object.freeze({ to: 'fud-goblin', action: 'auto-repair', reason: 'Level 1 runtime-spawnable humanoid rusher currently has zero frames; fud-goblin keeps readable melee/run/hit/death states.' }),
   'evil-banker-ranged': Object.freeze({ to: 'gas-fee-wisp', action: 'auto-repair', reason: 'Level 1 ranged banker proxy currently has zero frames; gas-fee-wisp provides idle/walk/run/attack/readable ranged pressure frames.' }),
@@ -54,7 +52,7 @@ export function repairRuntimeVisualKitSpec(spec = {}, roster = {}) {
   });
 }
 
-export function buildArtPurgeRepairPlan({ roster = HMH_ANIMATED_ROSTER, zeroAnimationActors = Object.keys(HMH_ART_AUTO_REPAIR_MAP) } = {}) {
+export function buildArtPurgeRepairPlan({ roster = {}, zeroAnimationActors = Object.keys(HMH_ART_AUTO_REPAIR_MAP) } = {}) {
   const repairs = Object.freeze(zeroAnimationActors.map((from) => {
     const repair = HMH_ART_AUTO_REPAIR_MAP[from] ?? null;
     const resolved = repairRuntimeActorKey(from, roster);

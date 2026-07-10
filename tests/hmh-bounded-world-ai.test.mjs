@@ -45,12 +45,14 @@ test('WO-24 bounded AI move still applies obstacle and water resolution before b
   assert.equal(moved.boundsAdjusted, false);
 });
 
-test('WO-24 runtime uses bounded AI movement for chase and ranged backaway', () => {
+test('runtime uses obstacle-tracking pursuit for chase and bounded movement for ranged backaway', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   const updateBlock = main.slice(main.indexOf('function updateRoguelikeEnemies'), main.indexOf('function dropRoguelikePowerUp'));
 
-  assert.ok(main.includes('resolveBoundedAiMove'), 'main.js should import/use bounded AI movement helper');
-  assert.ok(updateBlock.includes('resolveBoundedAiMove({'), 'roguelike enemy movement should route through bounded helper');
+  assert.ok(main.includes('resolveTrackingAiMove'), 'main.js should import the obstacle-tracking movement helper');
+  assert.ok(updateBlock.includes('resolveTrackingAiMove({'), 'chasing enemies should detour around authored obstacles');
+  assert.ok(updateBlock.includes('resolveBoundedAiMove({'), 'ranged backaway should retain bounded movement');
+  assert.match(updateBlock, /boss: Boolean\(enemy\.boss \|\| enemy\.miniBoss \|\| enemy\.finalBossProxy\)/, 'bosses should use the persistent catch-up pursuit speed law');
   assert.ok(updateBlock.includes('worldBounds: enemyWorldBounds'), 'enemy AI should receive finite world bounds');
   assert.equal(updateBlock.includes('resolveWaterCollision(runSeed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt)'), false, 'old unbounded inline movement path should be removed');
 });

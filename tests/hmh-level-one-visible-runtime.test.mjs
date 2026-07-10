@@ -7,6 +7,7 @@ import {
   buildLevelOneCuratedVisibleSceneObjects,
   buildLevelOneOpeningComposition,
   LEVEL_ONE_AUTHORED_PREFAB_STAMPS,
+  LEVEL_ONE_ACTIVE_PREFAB_STAMPS,
   levelOneCuratedRuntimeArtPolicy,
   levelOneCuratedAssetSrc,
   levelOneAuthoredStampAssetSrc,
@@ -31,7 +32,7 @@ function repoPath(relativePath) {
 test('Level 1 visible runtime builds curated authored objects around the actual spawn camera', () => {
   const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 18 });
   assert.equal(objects.length >= 18, true, `expected a dense visible authored spawn slice, got ${objects.length}`);
-  assert.equal(objects.some((object) => object.id.includes('spawn-broken-road')), true, 'spawn road beat should be visible immediately');
+  assert.equal(objects.some((object) => object.prefabStampId === 'desert-road-salvage-wall'), true, 'spawn road boundary beat should be visible immediately');
   assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-roadside-buildings-large-02-roadside-convenience-store'), true, 'opening should have a large roadside building visible at spawn without covering the hero');
   assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-main-street-storefronts-large-02-bank-loan-office-front'), true, 'opening should telegraph the next authored town beat with the large storefront sheet');
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-rocks-boulders-')), true, 'opening should use the new rock/boulder prop sheet');
@@ -74,7 +75,7 @@ test('WO-63 Level 1 far-field dressing uses explicit authored prefab stamps and 
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.assetKeys.length === stamp.objects.length), true, 'stamps should expose the exact runtime asset keys they place');
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.every((stamp) => stamp.assetKeys.every((assetKey) => levelOneVisibleAssetByKey(assetKey))), true, 'all stamp asset keys must resolve to curated or generated authored-stamp art');
   assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.some((stamp) => stamp.routeBeat === 'boss' && stamp.id.includes('innercity-gate')), true, 'boss-yard gate prefab must be an authored exact-key stamp');
-  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.some((stamp) => stamp.routeBeat === 'chokepoint' && stamp.assetKeys.includes('level-1/water/water-02')), true, 'shoreline ford prefab must place exact water/bridge keys');
+  assert.equal(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.some((stamp) => stamp.routeBeat === 'chokepoint' && stamp.assetKeys.includes('level-1/water/water-02')), true, 'shoreline ford source stamp should retain exact water/bridge provenance');
 
   const farObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 94, playerY: 6, window: 18 });
   assert.equal(farObjects.length >= 18, true, `expected dense authored far-field objects around traversal, got ${farObjects.length}`);
@@ -82,6 +83,7 @@ test('WO-63 Level 1 far-field dressing uses explicit authored prefab stamps and 
   assert.equal(farObjects.some((object) => object.routeBeat === 'boss' && object.sceneRole === 'landmark'), true, 'far-field traversal needs exact-key landmark silhouettes');
   assert.equal(farObjects.some((object) => object.sceneRole === 'wall' || object.sceneRole === 'tree'), true, 'far-field traversal needs visible boundaries');
   assert.equal(farObjects.every((object) => object.use !== 'terrain'), true, 'far-field terrain must not be drawn as obstacle props');
+  assert.equal(farObjects.every((object) => object.use !== 'water'), true, 'water belongs in the collision-backed ground plan, not pasted prop cards');
   assert.equal(farObjects.every((object) => levelOneVisibleAssetByKey(object.assetKey)), true, 'all far-field objects should resolve to curated or generated authored-stamp art');
 });
 
@@ -110,7 +112,7 @@ test('Jul 9 10:19 fences, industrial props, and micro-scenes are visible in auth
   const sampleViews = [
     { playerX: 18, playerY: 5, stampId: 'desert-road-salvage-wall', prefixes: ['curated/jul9-fences-barricades-'] },
     { playerX: 64, playerY: 7, stampId: 'shoreline-ford-bank', prefixes: ['curated/jul9-landmark-microscene-'] },
-    { playerX: 82, playerY: 6, stampId: 'farmstead-fence-pocket', prefixes: ['curated/jul9-fences-barricades-'] },
+    { playerX: 78, playerY: 20, stampId: 'farmstead-fence-pocket', prefixes: ['curated/jul9-fences-barricades-'] },
     { playerX: 94, playerY: 0, stampId: 'innercity-gate-barricade', prefixes: ['curated/jul9-industrial-mining-', 'curated/jul9-fences-barricades-'] },
   ];
 
@@ -127,8 +129,8 @@ test('Jul 9 10:19 fences, industrial props, and micro-scenes are visible in auth
 test('Jul 9 11:16 buildings, neighborhoods, park, water, cliffs, cover, and power-yard sheets are authored into Level 1 biome pockets', () => {
   const sampleViews = [
     { playerX: 48, playerY: 8, stampId: 'civic-park-town-pocket', prefixes: ['curated/jul9-civic-buildings-large-', 'curated/jul9-main-street-storefronts-large-', 'curated/jul9-park-rest-area-', 'curated/jul9-small-cover-loot-'] },
-    { playerX: 77, playerY: 7, stampId: 'neighborhood-house-yard-pocket', prefixes: ['curated/jul9-residential-house-facades-large-', 'curated/jul9-garages-sheds-large-', 'curated/jul9-neighborhood-fences-hedges-', 'curated/jul9-neighborhood-yard-clutter-', 'curated/jul9-neighborhood-combo-'] },
-    { playerX: 86, playerY: 9, stampId: 'residential-block-backlot-pocket', prefixes: ['curated/jul9-residential-block-buildings-large-', 'curated/jul9-vegetation-crop-edge-'] },
+    { playerX: 88, playerY: -66, stampId: 'neighborhood-house-yard-pocket', prefixes: ['curated/jul9-residential-house-facades-large-', 'curated/jul9-garages-sheds-large-', 'curated/jul9-neighborhood-fences-hedges-', 'curated/jul9-neighborhood-yard-clutter-', 'curated/jul9-neighborhood-combo-'] },
+    { playerX: 106, playerY: -54, stampId: 'residential-block-backlot-pocket', prefixes: ['curated/jul9-residential-block-buildings-large-', 'curated/jul9-vegetation-crop-edge-'] },
     { playerX: 66, playerY: 7, stampId: 'canal-park-ford-pocket', prefixes: ['curated/jul9-creek-canal-culvert-', 'curated/jul9-cliff-ditch-boundary-', 'curated/jul9-vegetation-crop-edge-'] },
     { playerX: 42, playerY: 6, stampId: 'ghost-town-facade-row-pocket', prefixes: ['curated/jul9-ghost-town-facade-modules-', 'curated/jul9-roadside-buildings-large-'] },
     { playerX: 100, playerY: 6, stampId: 'industrial-power-yard-extraction-pocket', prefixes: ['curated/jul9-industrial-buildings-large-', 'curated/jul9-power-yard-extraction-'] },
@@ -165,24 +167,27 @@ test('compact Level 1 has authored scene coverage across the whole map instead o
   }
 });
 
-test('compact authored stamps place every accepted asset from the new environment sheets', () => {
-  const keys = LEVEL_ONE_AUTHORED_PREFAB_STAMPS.flatMap((stamp) => stamp.assetKeys);
-  const expectedCounts = new Map([
-    ['curated/jul9-extraction-monuments-b-', 4],
-    ['curated/jul9-neighborhood-small-props-b-', 4],
-    ['curated/jul9-forest-obstacles-b-', 4],
-    ['curated/jul9-river-obstacles-b-', 8],
-    ['curated/jul9-route-signs-beacons-b-', 24],
-    ['curated/jul9-desert-props-b-', 4],
-    ['curated/jul9-desert-rock-formations-b-', 6],
-    ['curated/jul9-ambient-water-glow-b-', 16],
-  ]);
-  for (const [prefix, expected] of expectedCounts) {
-    assert.equal(new Set(keys.filter((key) => key.startsWith(prefix))).size, expected, `${prefix} should place every accepted slice`);
+test('active prefab composition selects coherent scenes instead of placing every available asset', () => {
+  assert.ok(LEVEL_ONE_ACTIVE_PREFAB_STAMPS.length < LEVEL_ONE_AUTHORED_PREFAB_STAMPS.length, 'the asset library must not be treated as a place-everything checklist');
+  const activeIds = new Set(LEVEL_ONE_ACTIVE_PREFAB_STAMPS.map((stamp) => stamp.id));
+  for (const retired of [
+    'ghost-town-frontage-pocket',
+    'forest-mushroom-ring',
+  ]) {
+    assert.equal(activeIds.has(retired), false, `${retired} should not overlap its replacement composition`);
   }
-  for (const tree of ['jul9-riparian-juniper', 'jul9-riparian-dead-tree', 'jul9-riparian-cottonwood', 'jul9-desert-acacia', 'jul9-desert-mesquite', 'jul9-desert-joshua']) {
-    assert.ok(keys.includes(`curated-tree/${tree}-idle-00`), `${tree} should anchor an authored biome scene`);
+  const anchorCounts = new Map();
+  for (const stamp of LEVEL_ONE_ACTIVE_PREFAB_STAMPS) {
+    const key = `${stamp.anchor.x}|${stamp.anchor.y}`;
+    anchorCounts.set(key, (anchorCounts.get(key) ?? 0) + 1);
   }
+  assert.ok([...anchorCounts.values()].every((count) => count <= 1), 'active authored scenes should not stack multiple prefabs on one anchor');
+});
+
+test('runtime emits only opening and selected prefab compositions, not the compressed legacy contract strip', () => {
+  const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 48, playerY: 6, window: 40 });
+  assert.ok(objects.length <= 72, `town traversal window should stay readable and performant, got ${objects.length} objects`);
+  assert.equal(objects.every((object) => object.id.startsWith('curated-opening-') || object.id.startsWith('curated-prefab-')), true);
 });
 
 test('buildings, trees, walls, vehicles, and substantial world props expose solid collision semantics', () => {
@@ -201,8 +206,10 @@ test('buildings, trees, walls, vehicles, and substantial world props expose soli
 
   assert.ok(vehicles.length >= 3, 'collision tour should include multiple vehicle blockers');
   assert.equal(vehicles.every((object) => object.solid === true), true, 'cars, trucks, pickups, and vans must block movement and shots');
+  assert.equal(vehicles.every((object) => object.footprintTiles?.w > 0 && object.footprintTiles?.h > 0), true, 'vehicles need full authored base footprints, not center-point circles');
   assert.ok(structures.length >= 12, 'collision tour should include buildings, walls, and trees');
   assert.equal(structures.every((object) => object.solid === true), true, 'buildings, walls, and tree boundaries must be solid');
+  assert.equal(structures.every((object) => object.footprintTiles?.w > 0 && object.footprintTiles?.h > 0), true, 'buildings, walls, and trees need full collision footprints');
 
   const northeast = buildLevelOneCuratedVisibleSceneObjects({ playerX: 104, playerY: -66, window: 18 });
   for (const label of ['weathered-picket-fence', 'trash-can-bags', 'stone-well']) {
@@ -233,9 +240,9 @@ test('WO-102 mega-props are real alpha-clean runtime assets and emit visible Lev
   }
 
   const proofViews = [
-    { key: 'wo102-megaprop/noodle-bar-storefront', playerX: 40, playerY: 8, stampId: 'ghost-town-frontage-pocket' },
-    { key: 'wo102-megaprop/forest-rock-outcrop', playerX: 57, playerY: 8, stampId: 'wo102-forest-cliff-proof' },
-    { key: 'wo102-megaprop/farm-barn-silo-cluster', playerX: 83, playerY: 10, stampId: 'farmstead-fence-pocket' },
+    { key: 'wo102-megaprop/noodle-bar-storefront', playerX: -106, playerY: 2, stampId: 'compact-west-route-town' },
+    { key: 'wo102-megaprop/forest-rock-outcrop', playerX: -50, playerY: -82, stampId: 'wo102-forest-cliff-proof' },
+    { key: 'wo102-megaprop/farm-barn-silo-cluster', playerX: 78, playerY: 20, stampId: 'farmstead-fence-pocket' },
   ];
   for (const view of proofViews) {
     const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: view.playerX, playerY: view.playerY, window: 10 });
@@ -267,7 +274,7 @@ test('generated Level 1 authored stamp art resolves through the live prefab stam
   const gapBeatObjects = [
     ...buildLevelOneCuratedVisibleSceneObjects({ playerX: 64, playerY: 7, window: 10 }),
     ...buildLevelOneCuratedVisibleSceneObjects({ playerX: 94, playerY: 6, window: 10 }),
-    ...buildLevelOneCuratedVisibleSceneObjects({ playerX: 100, playerY: 5, window: 10 }),
+    ...buildLevelOneCuratedVisibleSceneObjects({ playerX: 116, playerY: 6, window: 10 }),
   ];
   for (const key of requiredKeys) {
     const object = gapBeatObjects.find((item) => item.assetKey === key);
@@ -299,12 +306,12 @@ test('WO-104/105/106 world-kit assets are wired as authored nature, arena, vehic
   ].sort(), 'WO-105 should ship the full building/road/arena replacement set');
 
   const checkpointViews = [
-    { playerX: 55, playerY: 12, stampId: 'wo104-forest-canopy-cliff-checkpoint', keys: ['wo104-world/forest-canopy-sway', 'wo104-world/mossy-cliff-wall'] },
+    { playerX: -22, playerY: -84, stampId: 'wo104-forest-canopy-cliff-checkpoint', keys: ['wo104-world/forest-canopy-sway', 'wo104-world/mossy-cliff-wall'] },
     { playerX: 84, playerY: 7, stampId: 'wo104-lakeside-firefly-bank-checkpoint', keys: ['wo104-world/reed-bank-fireflies', 'wo104-world/park-tree-bench-cluster'] },
-    { playerX: 48, playerY: 6, stampId: 'wo105-bank-plaza-arena-checkpoint', keys: ['wo105-world/bank-plaza-kiosk', 'wo105-world/town-bank-frontage'] },
+    { playerX: -90, playerY: 4, stampId: 'wo105-bank-plaza-arena-checkpoint', keys: ['wo105-world/bank-plaza-kiosk', 'wo105-world/town-bank-frontage'] },
     { playerX: 55, playerY: 12, stampId: 'wo105-forest-log-arena-checkpoint', keys: ['wo105-world/forest-log-arena-ring'] },
-    { playerX: 88, playerY: 7, stampId: 'wo105-second-town-road-checkpoint', keys: ['wo105-world/second-town-building-row'] },
-    { playerX: 93, playerY: 8, stampId: 'wo105-container-extraction-yard-checkpoint', keys: ['wo105-world/container-cover-line', 'wo105-world/extraction-yard-warehouse'] },
+    { playerX: 94, playerY: -58, stampId: 'wo105-second-town-road-checkpoint', keys: ['wo105-world/second-town-building-row'] },
+    { playerX: 104, playerY: 18, stampId: 'wo105-container-extraction-yard-checkpoint', keys: ['wo105-world/container-cover-line', 'wo105-world/extraction-yard-warehouse'] },
     { playerX: 74, playerY: 8, stampId: 'wo106-roadside-vehicle-micro-scenes', keys: ['wo106-world/abandoned-pickup', 'wo106-world/delivery-van-cache', 'wo106-world/critter-dust-burrow'] },
   ];
   for (const view of checkpointViews) {

@@ -278,11 +278,11 @@ function textureVariantKeysForZone(zone) {
 }
 
 function textureKeyForZoneCell(zone, worldX, worldY, seed) {
-  const variants = textureVariantKeysForZone(zone);
-  if (variants.length <= 1) return zone.textureKey;
-  const blockX = Math.floor(Math.round(Number(worldX) || 0) / 2);
-  const blockY = Math.floor(Math.round(Number(worldY) || 0) / 2);
-  return variants[((blockX * 31 + blockY * 131 + String(zone.zoneId).length * 17 + (Number(seed) || 0)) >>> 0) % variants.length];
+  // A zone is an authored material field, not a sampler for every tile on its
+  // source sheet. Repeating the chosen source continuously lets grass, asphalt,
+  // sand, and water read as places; transitions and detail belong in explicit
+  // neighboring zones rather than randomized two-tile checkerboards.
+  return zone.textureKey;
 }
 
 function buildChatgptTerrainZones() {
@@ -300,6 +300,15 @@ function buildChatgptTerrainZones() {
     terrainZone('compact-southeast-extraction-field', 'road', 'chatgpt-terrain/jul9-extraction-plaza-b-r1-c1', 40, 131, 45, 112, 120),
     terrainZone('compact-riverbank-spine', 'shore', 'chatgpt-terrain/jul9-riverbank-slabs-b-r1-c1', 20, 38, -112, 112, 160),
     terrainZone('compact-rapid-water-spine', 'water', 'chatgpt-terrain/jul9-rapid-water-b-r1-c1', 26, 32, -112, 112, 170),
+    // Secondary authored water bodies. These replace pasted water prop cards so
+    // every visible lake/rapid/ford is represented by collision-backed terrain.
+    terrainZone('north-riverfront-shore', 'shore', 'chatgpt-terrain/jul9-riverbank-slabs-b-r2-c2', 35, 49, -82, -72, 3170),
+    terrainZone('north-riverfront-deep-rapid-pool', 'water', 'chatgpt-terrain/jul9-rapid-water-b-r2-c2', 37, 47, -77, -74, 3180),
+    terrainZone('lakeside-park-shore', 'shore', 'chatgpt-terrain/jul9-lakeside-pond-a-r2-c3', 79, 89, 7, 12, 3170),
+    terrainZone('lakeside-park-deep-water', 'water', 'chatgpt-terrain/jul9-lakeside-pond-a-r1-c2', 81, 87, 8, 11, 3180),
+    terrainZone('east-town-shallow-ford', 'water', 'chatgpt-terrain/jul9-water-shore-mud-a-r1-c4', 39, 45, 2, 4, 3200),
+    terrainZone('southeast-glow-bank-shore', 'shore', 'chatgpt-terrain/jul9-water-shore-mud-a-r2-c1', 88, 104, 67, 74, 3170),
+    terrainZone('southeast-glow-bank-deep-pool', 'water', 'chatgpt-terrain/jul9-rapid-water-b-r3-c2', 90, 102, 69, 72, 3180),
     // Authored connective network. Broad roads join the two towns and extraction
     // yard; narrower dirt trails branch into forests, desert, and waterfront POIs.
     // Three explicit bridge decks are the only hard-road crossings of the rapid
@@ -307,6 +316,8 @@ function buildChatgptTerrainZones() {
     terrainZone('compact-west-east-town-road', 'road', 'chatgpt-terrain/jul9-road-transition-a-r1-c1', -110, 108, 2, 6, 3090),
     terrainZone('compact-north-town-road', 'road', 'chatgpt-terrain/jul9-neighborhood-ground-a-r1-c2', -40, 108, -73, -69, 3090),
     terrainZone('compact-northeast-neighborhood-road', 'road', 'chatgpt-terrain/jul9-road-transition-a-r2-c2', 101, 107, -69, 6, 3090),
+    terrainZone('compact-east-farmstead-yard', 'rocky', 'chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2', 72, 86, 16, 25, 3070),
+    terrainZone('compact-east-farmstead-path', 'dirt', 'chatgpt-terrain/jul9-park-path-plaza-a-r2-c2', 76, 80, 5, 20, 3080),
     terrainZone('compact-northwest-desert-path', 'dirt', 'chatgpt-terrain/jul9-master-ground-terrain-a-r2-c2', -109, -103, -79, 3, 3050),
     terrainZone('compact-north-forest-path', 'dirt', 'chatgpt-terrain/jul9-park-path-plaza-a-r2-c2', -39, -33, -82, 3, 3050),
     terrainZone('compact-center-south-path', 'road', 'chatgpt-terrain/jul9-transition-ground-edges-a-r2-c2', -3, 3, 5, 81, 3050),

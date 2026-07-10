@@ -12,6 +12,7 @@ import {
   resolveWaterCollision,
   findNearestDrySpawn,
   resolveDistantSpawnPosition,
+  resolveTrackingAiMove,
 } from '../apps/portal/src/world-obstacles.mjs';
 
 // A simple deterministic biome stub so the model is testable without the real one.
@@ -91,6 +92,34 @@ test('footprint rectangles block the full base of wide buildings instead of only
   const resolved = resolvePlayerCollision(5, 5, 7.2, 5, 0.4, obstacles);
   assert.ok(resolved.x <= 6.61, `player should stop at the west building wall, got ${resolved.x}`);
   assert.ok(obstacleHitAt(12.5, 5, obstacles), 'shots should hit the wide end of the building footprint');
+});
+
+test('player swept collision cannot tunnel through a wide footprint in one movement step', () => {
+  const obstacles = [{ id: 'warehouse', worldX: 5, worldY: 0, radius: 0.5, footprintTiles: { w: 4, h: 2 }, solid: true }];
+  const resolved = resolvePlayerCollision(0, 0, 10, 0, 0.4, obstacles);
+  assert.ok(resolved.x <= 2.61, `player should stop at the west warehouse wall, got ${resolved.x}`);
+  assert.equal(resolved.y, 0);
+});
+
+test('tracking AI detours around authored walls instead of remaining stuck on the direct line', () => {
+  const wall = [{ id: 'town-wall', worldX: 5, worldY: 0, radius: 0.5, footprintTiles: { w: 2, h: 7 }, solid: true }];
+  let position = { x: 0, y: 0 };
+  for (let step = 0; step < 80; step += 1) {
+    position = resolveTrackingAiMove({
+      seed: 1337,
+      fromX: position.x,
+      fromY: position.y,
+      toX: position.x + 0.5,
+      toY: position.y,
+      targetX: 10,
+      targetY: 0,
+      detourSide: 1,
+      radius: 0.4,
+      obstacles: wall,
+      biomeAt: () => 'road',
+    });
+  }
+  assert.ok(position.x > 6, `tracking enemy should route beyond the wall, got ${position.x},${position.y}`);
 });
 
 test('authored footprints replace oversized fallback circles so clear lanes beside buildings stay open', () => {

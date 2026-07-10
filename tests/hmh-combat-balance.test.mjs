@@ -44,6 +44,19 @@ test('very fast melee catalog entries are clamped instead of scaling into unavoi
   assert.equal(slippageSkater <= HMH_PLAYER_BASE_MOVE_SPEED_TILES_PER_SECOND * 1.02, true);
 });
 
+test('aggroed bosses can briefly outrun the player to sustain cat-and-mouse pursuit', () => {
+  const bossSpeed = calculateEnemyChaseSpeed({
+    enemySpeed: 6,
+    elite: true,
+    boss: true,
+    pressure: 1,
+    encounterSpeedMul: 1.08,
+    playerMoveSpeed: HMH_PLAYER_BASE_MOVE_SPEED_TILES_PER_SECOND,
+  });
+  assert.ok(bossSpeed > HMH_PLAYER_BASE_MOVE_SPEED_TILES_PER_SECOND, 'boss should eventually close an open-field gap');
+  assert.ok(bossSpeed <= HMH_PLAYER_BASE_MOVE_SPEED_TILES_PER_SECOND * 1.08, 'boss pursuit must remain dodgeable rather than becoming unavoidable');
+});
+
 test('melee pack damage favors recovery windows over instant dogpiles', () => {
   assert.equal(calculateEnemyMeleeDamage({ normalHitDamage: 5, elite: false }), 4);
   assert.equal(calculateEnemyMeleeDamage({ normalHitDamage: 5, elite: true }), 6);

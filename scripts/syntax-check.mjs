@@ -36,6 +36,7 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/arcade-security-review.mjs",
   "apps/portal/src/wallet-auth.mjs",
   "apps/portal/src/combat-sprite-bridge.mjs",
+  "apps/portal/src/canonical-actor-routing.mjs",
   "apps/portal/src/canonical-actors.mjs",
   "apps/portal/src/biome-model.mjs",
   "apps/portal/src/world-obstacles.mjs",

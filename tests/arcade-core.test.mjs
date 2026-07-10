@@ -1722,7 +1722,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul10-compact-world-v32'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul10-world-perf-v33'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2035,11 +2035,13 @@ test('Hard Money Heroes adds Crypto Bro and Gas Beast enemies plus extra Warren 
   }
   assert.equal(manifest.enemies.warrenSpearRider.extraFramesIngested, true);
 
-  // Runtime must build art for the two new enemies and route them via the manifest key resolver.
-  assert.equal(mainSource.includes("buildEnemyArtFromManifest('cryptoBro')"), true);
-  assert.equal(mainSource.includes("buildEnemyArtFromManifest('gasBeast')"), true);
-  assert.equal(mainSource.includes("'cryptoBro'"), true);
-  assert.equal(mainSource.includes("'gasBeast'"), true);
+  // The archived side-scroller manifest remains valid, but Level 1 must not
+  // eagerly fetch those large still libraries before the lazy animated roster.
+  assert.equal(mainSource.includes("buildEnemyArtFromManifest('cryptoBro')"), false);
+  assert.equal(mainSource.includes("buildEnemyArtFromManifest('gasBeast')"), false);
+  assert.equal(mainSource.includes('roguelikeEnemyAnimatedFrame'), true);
+  assert.equal(mainSource.includes('const waveFrame = isLevelOneCuratedRuntime() ? null'), true);
+  assert.equal(mainSource.includes('const legacyEnemyFrame = isLevelOneCuratedRuntime() ? null'), true);
 });
 
 test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city source trove for runtime staging', () => {
@@ -2068,7 +2070,7 @@ test('Hard Money Heroes Level 1 environment manifest ingests the desert-to-city 
   assert.equal(mainSource.includes("scenic-prop-card"), true);
 });
 
-test('Hard Money Heroes runtime wires manifest art into official menus, hero switching, first enemy visuals, and gameplay controls', () => {
+test('Hard Money Heroes runtime keeps legacy manifest support while Level 1 uses lazy animated art', () => {
   const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
   const styleSource = readFileSync(fileURLToPath(new URL('../apps/portal/styles.css', import.meta.url)), 'utf8');
@@ -2078,7 +2080,8 @@ test('Hard Money Heroes runtime wires manifest art into official menus, hero swi
   assert.equal(mainSource.includes('weaponAssets.knife?.stabAnimation'), true);
   assert.equal(mainSource.includes('hero.animations.knifeStab'), true);
   assert.equal(mainSource.includes('lastMeleeFrame'), true);
-  assert.equal(mainSource.includes('combatArt.characters'), true);
+  assert.equal(mainSource.includes('const combatArt ='), true);
+  assert.equal(mainSource.includes('preloadHeroRoster'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenStyle'), true);
   assert.equal(mainSource.includes('manifestEnemyArtFor'), true);
   assert.equal(mainSource.includes('ctx.imageSmoothingEnabled = false'), true);
@@ -2544,7 +2547,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-jul9-1116-v30'), true);
+  assert.equal(smokeScript.includes('hmh-jul10-world-perf-v33'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);
