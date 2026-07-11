@@ -8,6 +8,8 @@ import {
   resolvePlayerCollision,
   obstacleHitAt,
   obstacleHitAlongSegment,
+  circleTargetHitAlongSegment,
+  drawRectIntersectsViewport,
   isWaterAt,
   resolveWaterCollision,
   findNearestDrySpawn,
@@ -136,6 +138,23 @@ test('swept projectile collision catches fast shots crossing thin props and wall
   assert.equal(obstacleHitAlongSegment(0, 0, 9, 0, obstacles)?.id, 'tree');
   assert.equal(obstacleHitAlongSegment(9, 0, 16, 0, obstacles)?.id, 'wall');
   assert.equal(obstacleHitAlongSegment(0, 5, 16, 5, obstacles), null);
+});
+
+test('screen-rectangle culling keeps a large prop until every visible pixel leaves the viewport', () => {
+  const viewport = { width: 1280, height: 720 };
+  assert.equal(drawRectIntersectsViewport({ x: 1270, y: 300, width: 256, height: 256 }, viewport), true);
+  assert.equal(drawRectIntersectsViewport({ x: -250, y: 300, width: 256, height: 256 }, viewport), true);
+  assert.equal(drawRectIntersectsViewport({ x: 1281, y: 300, width: 256, height: 256 }, viewport), false);
+  assert.equal(drawRectIntersectsViewport({ x: -257, y: 300, width: 256, height: 256 }, viewport), false);
+});
+
+test('swept actor hit detection catches fast bullets that cross an enemy between endpoints', () => {
+  const enemies = [
+    { id: 'near', mapX: 5, mapY: 0, hp: 10, hitRadius: 0.7 },
+    { id: 'far', mapX: 9, mapY: 0, hp: 10, hitRadius: 0.7 },
+  ];
+  assert.equal(circleTargetHitAlongSegment(0, 0, 12, 0, enemies, { defaultRadius: 0.72 })?.id, 'near');
+  assert.equal(circleTargetHitAlongSegment(0, 3, 12, 3, enemies, { defaultRadius: 0.72 }), null);
 });
 
 test('findNearestDrySpawn moves an initial player start off water', () => {

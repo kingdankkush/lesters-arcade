@@ -2441,12 +2441,17 @@ export function buildLevelOneRunWorldDimensions({
   });
 }
 
-export function clampLevelOneWorldPoint({ x = 0, y = 0, world = buildLevelOneRunWorldDimensions() } = {}) {
+export function clampLevelOneWorldPoint({ x = 0, y = 0, world = buildLevelOneRunWorldDimensions(), padding = 0 } = {}) {
   const safeWorld = world ?? buildLevelOneRunWorldDimensions();
-  const minX = Number.isFinite(safeWorld.minX) ? safeWorld.minX : -((safeWorld.width ?? 1) / 2);
-  const maxX = Number.isFinite(safeWorld.maxX) ? safeWorld.maxX : ((safeWorld.width ?? 1) / 2);
-  const minY = Number.isFinite(safeWorld.minY) ? safeWorld.minY : -((safeWorld.height ?? 1) / 2);
-  const maxY = Number.isFinite(safeWorld.maxY) ? safeWorld.maxY : ((safeWorld.height ?? 1) / 2);
+  const inset = Math.max(0, Number(padding) || 0);
+  const rawMinX = Number.isFinite(safeWorld.minX) ? safeWorld.minX : -((safeWorld.width ?? 1) / 2);
+  const rawMaxX = Number.isFinite(safeWorld.maxX) ? safeWorld.maxX : ((safeWorld.width ?? 1) / 2);
+  const rawMinY = Number.isFinite(safeWorld.minY) ? safeWorld.minY : -((safeWorld.height ?? 1) / 2);
+  const rawMaxY = Number.isFinite(safeWorld.maxY) ? safeWorld.maxY : ((safeWorld.height ?? 1) / 2);
+  const minX = Math.min(rawMaxX, rawMinX + inset);
+  const maxX = Math.max(rawMinX, rawMaxX - inset);
+  const minY = Math.min(rawMaxY, rawMinY + inset);
+  const maxY = Math.max(rawMinY, rawMaxY - inset);
   const rawX = Number(x) || 0;
   const rawY = Number(y) || 0;
   const clampedX = clampNumber(rawX, minX, maxX);
@@ -2714,10 +2719,10 @@ export function buildLevelOneBoundaryObstaclesNear({
   playerX = 0,
   playerY = 0,
   window = 45,
-  segmentSpacingTiles = 24,
+  segmentSpacingTiles = 6,
 } = {}) {
   const safeWorld = world ?? buildLevelOneRunWorldDimensions();
-  const spacing = Math.max(6, Math.round(Number(segmentSpacingTiles) || 24));
+  const spacing = Math.max(4, Math.round(Number(segmentSpacingTiles) || 6));
   const reach = Math.max(0, Number(window) || 0) + spacing;
   const px = Number(playerX) || 0;
   const py = Number(playerY) || 0;

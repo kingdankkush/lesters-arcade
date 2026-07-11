@@ -1113,6 +1113,21 @@ test('Level 1 opening keeps the hero lane clear while resolving authored POI pro
   }
 });
 
+test('substantial Level 1 dressing has physical footprints instead of ghost geometry', () => {
+  const objects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 30 });
+  const substantialKeys = [
+    'curated/jul9-industrial-mining-04-cable-spool',
+    'curated/jul9-vehicles-street-junk-12-gas-pump-pair',
+    'curated/jul9-industrial-mining-03-small-generator',
+  ];
+  for (const key of substantialKeys) {
+    const object = objects.find((entry) => entry.assetKey === key);
+    assert.ok(object, `missing substantial object ${key}`);
+    assert.equal(object.solid, true, `${key} should block player and projectile traversal`);
+    assert.ok(object.footprintTiles?.w > 0 && object.footprintTiles?.h > 0, `${key} needs an authored collision footprint`);
+  }
+});
+
 test('Level 1 world-boundary blockers carry visible natural edge art', () => {
   const world = buildLevelOneRunWorldDimensions({ width: 120, height: 64 });
   const boundaries = buildLevelOneBoundaryObstaclesNear({ world, playerX: world.minX, playerY: 0, window: 72, segmentSpacingTiles: 24 });
@@ -1121,6 +1136,16 @@ test('Level 1 world-boundary blockers carry visible natural edge art', () => {
     assert.ok(boundary.curatedAssetKey, `${boundary.id} needs visible art instead of an invisible collision edge`);
     assert.ok(levelOneCuratedAssetSrc(boundary.curatedAssetKey), `${boundary.id} asset ${boundary.curatedAssetKey} must resolve`);
     assert.ok(boundary.footprintTiles?.w > 0 && boundary.footprintTiles?.h > 0, `${boundary.id} needs a visible footprint`);
+  }
+});
+
+test('Level 1 default natural boundary cadence does not leave twenty-tile visual gaps', () => {
+  const world = buildLevelOneRunWorldDimensions({ width: 120, height: 64 });
+  const boundaries = buildLevelOneBoundaryObstaclesNear({ world, playerX: world.minX, playerY: world.minY, window: 72 });
+  const northXs = boundaries.filter((entry) => entry.boundarySide === 'north').map((entry) => entry.worldX).sort((a, b) => a - b);
+  assert.ok(northXs.length > 3);
+  for (let i = 1; i < northXs.length; i += 1) {
+    assert.ok(northXs[i] - northXs[i - 1] <= 6, `north boundary gap should be <= 6 tiles, got ${northXs[i] - northXs[i - 1]}`);
   }
 });
 

@@ -202,6 +202,21 @@ export const DEVICE_INPUT_QA_CASES = Object.freeze([
   Object.freeze({ id: 'small-desktop-no-touch', width: 800, height: 600, coarsePointer: false, hasTouch: false, maxTouchPoints: 0, expectedClass: 'mobile', expectedTouchControls: true, inputs: Object.freeze(['responsive layout fallback', 'keyboard movement']) }),
 ]);
 
+export function combatCanvasRenderScale({
+  cssWidth = 1,
+  cssHeight = 1,
+  devicePixelRatio = 1,
+  maxScale = 1.5,
+  maxPixelArea = 1_600_000,
+} = {}) {
+  const width = Math.max(1, Number(cssWidth) || 1);
+  const height = Math.max(1, Number(cssHeight) || 1);
+  const nativeScale = Math.max(1, Number(devicePixelRatio) || 1);
+  const pixelBudgetScale = Math.sqrt(Math.max(1, Number(maxPixelArea) || 1) / (width * height));
+  const scale = Math.min(nativeScale, Math.max(1, Number(maxScale) || 1), Math.max(1, pixelBudgetScale));
+  return Number(scale.toFixed(2));
+}
+
 export function buildDeviceInputQaMatrix(cases = DEVICE_INPUT_QA_CASES) {
   const rows = cases.map((testCase) => {
     const profile = buildDeviceProfile(testCase);

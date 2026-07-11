@@ -12,6 +12,7 @@ import {
   buildManualGrenadeTarget,
   buildManualAimInputModel,
   buildTouchControlLayout,
+  combatCanvasRenderScale,
   TOUCH_CONTROL_INVENTORY,
   TOUCH_CONTROL_MAP,
   shouldMirrorMovementIntoAim,
@@ -41,6 +42,12 @@ test('classifyDevice: small non-touch window => mobile layout', () => {
 test('orientationOf detects portrait and landscape', () => {
   assert.equal(orientationOf({ width: 390, height: 844 }), 'portrait');
   assert.equal(orientationOf({ width: 844, height: 390 }), 'landscape');
+});
+
+test('combat canvas render scale caps high-DPI pixel work while preserving CSS size', () => {
+  assert.equal(combatCanvasRenderScale({ cssWidth: 1156, cssHeight: 517, devicePixelRatio: 2 }), 1.5);
+  assert.equal(combatCanvasRenderScale({ cssWidth: 1920, cssHeight: 1080, devicePixelRatio: 2 }), 1);
+  assert.equal(combatCanvasRenderScale({ cssWidth: 760, cssHeight: 340, devicePixelRatio: 1 }), 1);
 });
 
 test('buildDeviceProfile: mobile portrait suggests landscape and shows touch controls', () => {

@@ -224,6 +224,9 @@ const chrome = spawn(chromePath, [
   '--disable-gpu',
   '--disable-extensions',
   '--disable-background-networking',
+  '--disable-background-timer-throttling',
+  '--disable-renderer-backgrounding',
+  '--disable-backgrounding-occluded-windows',
   '--disable-sync',
   '--no-first-run',
   '--no-default-browser-check',
@@ -372,6 +375,96 @@ try {
   const activeEvidenceDistinct = liveEvidence.sha256 !== walkEvidence.sha256;
   if (!activeEvidenceDistinct) throw new Error('HMH east-walk evidence did not differ from the live-spawn frame');
 
+  const propPersistenceSamples = [];
+  for (let sampleIndex = 0; sampleIndex < 36; sampleIndex += 1) {
+    await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(${sampleIndex * 1.5}, 10)`);
+    await sleep(150);
+    propPersistenceSamples.push(await runInPage(client, `globalThis.__hmhVisualDebugScene?.()`));
+  }
+  const renderedIdSet = new Set(propPersistenceSamples.flatMap((sample) => sample?.renderedIds ?? []));
+  const reappearedIds = [];
+  for (const id of renderedIdSet) {
+    const states = propPersistenceSamples.map((sample) => sample?.renderedIds?.includes(id) ?? false);
+    const compressed = states.filter((state, index) => index === 0 || state !== states[index - 1]);
+    if (compressed.join(',').includes('true,false,true')) reappearedIds.push(id);
+  }
+  const propPersistenceProbe = {
+    sampleCount: propPersistenceSamples.length,
+    startX: propPersistenceSamples[0]?.playerX ?? null,
+    endX: propPersistenceSamples.at(-1)?.playerX ?? null,
+    uniqueRenderedIds: renderedIdSet.size,
+    reappearedIds,
+    renderedWhileUndecoded: propPersistenceSamples.flatMap((sample) => (sample?.renderedIds ?? []).filter((id) => sample?.undecodedIds?.includes(id))),
+  };
+  if (propPersistenceProbe.reappearedIds.length || propPersistenceProbe.renderedWhileUndecoded.length || !(propPersistenceProbe.endX > propPersistenceProbe.startX + 4)) {
+    throw new Error(`HMH prop persistence traversal failed: ${JSON.stringify(propPersistenceProbe)}`);
+  }
+  // Let camera traversal image decodes settle before sampling steady-state gameplay.
+  await sleep(1500);
+
+  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(6, 8)`);
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
+  await sleep(900);
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
+  const horizontalCollision = await runInPage(client, `globalThis.__hmhVisualDebugScene?.()`);
+  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(9, 10.5)`);
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'w', code: 'KeyW', windowsVirtualKeyCode: 87 });
+  await sleep(900);
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'w', code: 'KeyW', windowsVirtualKeyCode: 87 });
+  const verticalCollision = await runInPage(client, `globalThis.__hmhVisualDebugScene?.()`);
+  const collisionProbe = {
+    horizontalStopX: horizontalCollision?.playerX ?? null,
+    verticalStopY: verticalCollision?.playerY ?? null,
+  };
+  if (!(collisionProbe.horizontalStopX > 6 && collisionProbe.horizontalStopX <= 7.59)
+      || !(collisionProbe.verticalStopY < 10.5 && collisionProbe.verticalStopY >= 9.03)) {
+    throw new Error(`HMH substantial-prop collision probe failed: ${JSON.stringify(collisionProbe)}`);
+  }
+  await sleep(1200);
+
+  const runtimeProfile = await runInPage(client, `
+    (async () => {
+      const proto = CanvasRenderingContext2D.prototype;
+      const names = ['drawImage', 'fillRect', 'fill', 'stroke'];
+      const originals = {};
+      const calls = Object.fromEntries(names.map((name) => [name, 0]));
+      for (const name of names) {
+        originals[name] = proto[name];
+        proto[name] = function (...args) {
+          calls[name] += 1;
+          return originals[name].apply(this, args);
+        };
+      }
+      const frameTimes = [];
+      let active = true;
+      let previous = performance.now();
+      const sample = (now) => {
+        frameTimes.push(now - previous);
+        previous = now;
+        if (active) requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+      const startedAt = performance.now();
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      active = false;
+      const elapsedSeconds = (performance.now() - startedAt) / 1000;
+      for (const name of names) proto[name] = originals[name];
+      const sorted = frameTimes.slice(1).sort((a, b) => a - b);
+      const percentile = (fraction) => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))] ?? 0;
+      return {
+        elapsedSeconds,
+        sampledFrames: sorted.length,
+        fps: sorted.length / elapsedSeconds,
+        p50FrameMs: percentile(0.5),
+        p95FrameMs: percentile(0.95),
+        worstFrameMs: percentile(1),
+        callsPerFrame: Object.fromEntries(names.map((name) => [name, calls[name] / Math.max(1, sorted.length)])),
+        fpsPill: document.getElementById('fpsPill')?.textContent ?? '',
+        runtimeDebug: globalThis.__hmhVisualDebugPerformance?.() ?? null,
+      };
+    })()
+  `, 10000);
+
   const compactWorldTour = [
     { name: 'seed-1337-north-forest', x: -36, y: -82, prefix: 'curated-tree/jul9-riparian-' },
     { name: 'seed-1337-north-riverfront', x: 42, y: -78, prefix: 'curated/jul9-river-obstacles-b-' },
@@ -379,6 +472,7 @@ try {
     { name: 'seed-1337-east-extraction', x: 104, y: 4, prefix: 'curated/jul9-extraction-monuments-b-' },
     { name: 'seed-1337-southwest-rock-camp', x: -96, y: 78, prefix: 'curated/jul9-desert-rock-formations-b-' },
     { name: 'seed-1337-southeast-glow-bank', x: 96, y: 78, prefix: 'curated/jul9-ambient-water-glow-b-' },
+    { name: 'seed-1337-west-boundary', x: -131, y: 0, obstaclePrefix: 'level-1/' },
   ];
   const compactWorldTourPositions = [];
   for (const stop of compactWorldTour) {
@@ -386,15 +480,26 @@ try {
     if (!position || Math.abs(position.x - stop.x) > 0.25 || Math.abs(position.y - stop.y) > 0.25) {
       throw new Error(`HMH compact-world visual tour could not reach ${stop.name}: ${JSON.stringify(position)}`);
     }
-    if (!position.objectCount || position.decodedCount !== position.objectCount || position.renderEntryCount < position.objectCount) {
-      throw new Error(`HMH compact-world visual tour did not render every visible object at ${stop.name}: ${JSON.stringify(position)}`);
+    if (!position.objectCount || position.decodedCount !== position.objectCount || position.renderEntryCount < 1 || position.renderEntryCount > position.obstacleCount) {
+      throw new Error(`HMH compact-world visual tour did not render a bounded visible scene at ${stop.name}: ${JSON.stringify(position)}`);
     }
-    if (!position.assetKeys?.some((key) => key.startsWith(stop.prefix))) {
+    if (stop.prefix && !position.assetKeys?.some((key) => key.startsWith(stop.prefix))) {
       throw new Error(`HMH compact-world visual tour did not expose ${stop.prefix} at ${stop.name}: ${JSON.stringify(position)}`);
+    }
+    if (stop.obstaclePrefix && !position.obstacleAssetKeys?.some((key) => key.startsWith(stop.obstaclePrefix))) {
+      throw new Error(`HMH compact-world boundary tour did not expose ${stop.obstaclePrefix} at ${stop.name}: ${JSON.stringify(position)}`);
     }
     compactWorldTourPositions.push({ ...stop, ...position });
     await sleep(900);
     captures.push(await writeEvidenceCapture(client, stop.name));
+  }
+
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'a', code: 'KeyA', windowsVirtualKeyCode: 65 });
+  await sleep(900);
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', windowsVirtualKeyCode: 65 });
+  const boundaryProbe = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
+  if (!boundaryProbe?.player?.boundaryClamped || boundaryProbe.player.x < -131.081) {
+    throw new Error(`HMH west world boundary did not retain the complete player footprint: ${JSON.stringify(boundaryProbe)}`);
   }
 
   const antiSlide = await runInPage(client, `
@@ -412,7 +517,7 @@ try {
   if (!antiSlide.canvasWidth || !antiSlide.canvasHeight) throw new Error(`Anti-slide probe could not read canvas dimensions: ${JSON.stringify(antiSlide)}`);
 
   const changed = captures.filter((capture) => capture.status === 'changed');
-  const report = { portalUrl, bootResult, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
+  const report = { portalUrl, bootResult, propPersistenceProbe, collisionProbe, runtimeProfile, boundaryProbe, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
   await mkdir(currentDir, { recursive: true });
   await writeFile(`${currentDir}/visual-regression-report.json`, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));

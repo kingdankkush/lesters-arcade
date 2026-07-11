@@ -28,6 +28,14 @@ test('WO-21 clamps players to the finite Level 1 map rectangle', () => {
   assert.equal(pointWithinLevelOneBounds({ x: 50.1, y: 0, world }), false);
 });
 
+test('Level 1 edge clamp keeps the complete player footprint inside the world', () => {
+  const world = buildLevelOneRunWorldDimensions({ width: 100, height: 80 });
+  assert.deepEqual(
+    clampLevelOneWorldPoint({ x: 50, y: -40, world, padding: 0.42 }),
+    { x: 49.58, y: -39.58, clamped: true },
+  );
+});
+
 test('WO-21 minimap model normalizes player, enemy, POI, and extraction markers', () => {
   const world = buildLevelOneRunWorldDimensions({ width: 100, height: 80 });
   const model = buildLevelOneMinimapModel({
@@ -57,6 +65,7 @@ test('WO-21 minimap model normalizes player, enemy, POI, and extraction markers'
 test('WO-21 runtime clamps movement to finite bounds and paints the minimap', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.ok(main.includes('clampLevelOneWorldPoint'), 'movement should call the Level 1 bounds clamp');
+  assert.match(main, /clampLevelOneWorldPoint\(\{[^}]*padding:\s*0\.42/s, 'runtime clamp should include the player collision radius');
   assert.ok(main.includes('function drawRoguelikeMinimap('), 'runtime needs a minimap draw function');
   assert.ok(main.includes('buildLevelOneMinimapModel({'), 'minimap should be driven by the pure model');
   assert.ok(main.includes('drawRoguelikeMinimap(ctx, width, height);'), 'roguelike scene should paint minimap after gameplay');

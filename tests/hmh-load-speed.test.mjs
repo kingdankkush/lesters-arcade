@@ -104,6 +104,56 @@ test('Level 1 scales complete hero frames and keeps muzzle/tracer VFX at weapon 
   assert.match(drawBullets, /projectPlayerShotScreenPoint\(/);
 });
 
+test('Level 1 prop rendering uses screen rectangles instead of pressure-dependent anchor radius culling', () => {
+  const source = repoText('apps/portal/main.js');
+  const renderBody = source.slice(source.indexOf('function buildObstacleRenderEntries('), source.indexOf('function currentLevelOneExplorationLayer('));
+  assert.match(renderBody, /drawRectIntersectsViewport\(/);
+  assert.doesNotMatch(renderBody, /obstacleRenderRadiusWindowed|obstacleRenderRadiusFullscreen|Math\.abs\(o\.worldX - combat\.playerMapX\)/);
+});
+
+test('Level 1 bullets use swept hit detection for both cover and enemies', () => {
+  const source = repoText('apps/portal/main.js');
+  const bulletBody = source.slice(source.indexOf('function updateRoguelikeBullets('), source.indexOf('function trimLooseRoguelikeRewards('));
+  assert.match(bulletBody, /circleTargetHitAlongSegment\(/);
+  assert.doesNotMatch(bulletBody, /Math\.hypot\(enemy\.mapX - bullet\.worldX/);
+});
+
+test('Level 1 fog batches world and minimap cells instead of issuing hundreds of fills per frame', () => {
+  const source = repoText('apps/portal/main.js');
+  const visionFogBody = source.slice(source.indexOf('function drawLevelOneVisionFog('), source.indexOf('function drawRoguelikeMinimap('));
+  const minimapBody = source.slice(source.indexOf('function drawRoguelikeMinimap('), source.indexOf('function drawRoguelikeScene('));
+  assert.match(visionFogBody, /new Path2D\(\)/);
+  assert.match(visionFogBody, /ctx\.fill\(fogPath\)/);
+  assert.match(minimapBody, /new Path2D\(\)/);
+  assert.match(minimapBody, /ctx\.fill\(minimapFogPath\)/);
+  assert.doesNotMatch(minimapBody, /fillRect\(x \+ cell\.x/);
+});
+
+test('Level 1 roads batch diamond paths by material instead of filling every tile twice', () => {
+  const source = repoText('apps/portal/main.js');
+  const roadBody = source.slice(source.indexOf('function drawRoadsAndTransitions('), source.indexOf('function drawProductionIsoProp('));
+  assert.match(roadBody, /const roadSurfaceGroups = new Map\(\)/);
+  assert.match(roadBody, /ctx\.fill\(group\.surfacePath\)/);
+  assert.match(roadBody, /ctx\.fill\(group\.wearPath\)/);
+  assert.doesNotMatch(roadBody, /traceIsoDiamond\(ctx, cx, cy, 9\)/);
+});
+
+test('Level 1 terrain renders to the actual canvas instead of a phantom 2560x1440 fullscreen target', () => {
+  const source = repoText('apps/portal/main.js');
+  const sceneBody = source.slice(source.indexOf('function drawRoguelikeScene('), source.indexOf('function drawEnvironmentLayer('));
+  assert.doesNotMatch(sceneBody, /Math\.max\(width,\s*2560\)|Math\.max\(height,\s*1440\)/);
+  assert.match(sceneBody, /const renderWidth = width/);
+  assert.match(sceneBody, /const renderHeight = height/);
+});
+
+test('Level 1 terrain stops at finite world bounds so edge collision has a visible map edge', () => {
+  const source = repoText('apps/portal/main.js');
+  const sceneBody = source.slice(source.indexOf('function drawRoguelikeScene('), source.indexOf('function drawEnvironmentLayer('));
+  assert.match(sceneBody, /const finiteWorld = [\s\S]*?buildLevelOneRunWorldDimensions/);
+  assert.match(sceneBody, /worldX < finiteWorld\.minX/);
+  assert.match(sceneBody, /worldY > finiteWorld\.maxY/);
+});
+
 test('WO-36 syntax gate includes load-speed report', () => {
   const syntaxCheck = repoText('scripts/syntax-check.mjs');
   assert.equal(syntaxCheck.includes('scripts/hmh-load-speed-report.mjs'), true);

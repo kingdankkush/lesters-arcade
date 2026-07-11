@@ -47,6 +47,8 @@ const SOLID_FOR_USE = Object.freeze({
   container: true,
 });
 
+const SUBSTANTIAL_DRESSING_PATTERN = /(?:gas-pump|generator|cable-spool|battery-cabinet|arcade-cabinet|transformer|mining-rig|satellite-dish|stone-well|trash-can|barrel-stack|supply-crate|workbench)/;
+
 function curatedLevelArtPropByKey(assetKey) {
   const match = (assetKey || '').match(/^curated\/(jul9-[a-z-]+)-(\d\d-.+)$/);
   return match ? { src: `./assets/generated/hmh-curated-level-art/props/environment/${match[1]}/${match[2]}.png` } : null;
@@ -59,6 +61,7 @@ function curatedTreeAnimationAssetByKey(assetKey) {
 
 function inferredSolidFootprint(assetKey, use) {
   const key = String(assetKey || '').toLowerCase();
+  if (SUBSTANTIAL_DRESSING_PATTERN.test(key)) return Object.freeze({ w: 2.0, h: 1.25 });
   if (use === 'vehicle') return Object.freeze({ w: 3.2, h: 1.6 });
   if (use === 'container') return Object.freeze({ w: 4.0, h: 1.4 });
   if (use === 'plaza') return Object.freeze({ w: 3.2, h: 2.2 });
@@ -198,11 +201,11 @@ const OPENING_SET_DRESSING = Object.freeze([
   openingSpec('coin-shrine-foreground', 'curated/jul9-landmark-microscene-08-coin-pile-shrine', 'dressing', -16, 6, { solid: false }),
   openingSpec('small-rock-cluster-0', 'curated/jul9-rocks-boulders-03-cracked-stone', 'dressing', 4, 9, { solid: false }),
   openingSpec('small-rock-cluster-1', 'curated/jul9-rocks-boulders-11-two-boulder-cover', 'dressing', 20, 8, { solid: false }),
-  openingSpec('roadside-cable-spool', 'curated/jul9-industrial-mining-04-cable-spool', 'dressing', 11, 8, { solid: false }),
+  openingSpec('roadside-cable-spool', 'curated/jul9-industrial-mining-04-cable-spool', 'dressing', 11, 8, { solid: true }),
   openingSpec('opening-abandoned-pickup', 'curated/jul9-vehicles-street-junk-02-pickup-wreck', 'vehicle', 17, 9, { solid: true, notes: 'solid roadside vehicle outside the clear lane' }),
   openingSpec('opening-delivery-cache', 'curated/jul9-vehicles-street-junk-03-armored-cash-van-wreck', 'vehicle', 29, 8, { solid: true, notes: 'solid cache van outside the clear lane' }),
-  openingSpec('opening-forecourt-cache', 'curated/jul9-vehicles-street-junk-12-gas-pump-pair', 'dressing', 7, 8, { solid: false, notes: 'forecourt cache' }),
-  openingSpec('route-generator-cache', 'curated/jul9-industrial-mining-03-small-generator', 'dressing', 27, 6, { solid: false }),
+  openingSpec('opening-forecourt-cache', 'curated/jul9-vehicles-street-junk-12-gas-pump-pair', 'dressing', 9, 8, { solid: true, notes: 'forecourt cache outside the protected spawn lane' }),
+  openingSpec('route-generator-cache', 'curated/jul9-industrial-mining-03-small-generator', 'dressing', 27, 6, { solid: true }),
 ]);
 
 const OPENING_COMPOSITION = Object.freeze({
@@ -254,7 +257,7 @@ function stampObjectsForKeys(keys, use, options = {}) {
     use,
     dx: startX + (index % columns) * spacingX,
     dy: startY + Math.floor(index / columns) * spacingY,
-    solid: options.solid ?? false,
+    solid: options.solid,
   }));
 }
 
@@ -593,7 +596,10 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
     ?? wo104106WorldKitAssetByKey(assetKey);
   if (!record) return null;
   const sceneRole = ROLE_FOR_USE[use] ?? 'smallprop';
-  const isSolid = solid ?? SOLID_FOR_USE[use] ?? false;
+  const isSubstantialDressing = use === 'dressing' && SUBSTANTIAL_DRESSING_PATTERN.test(String(assetKey || '').toLowerCase());
+  const isSolid = solid ?? Boolean(SOLID_FOR_USE[use] || isSubstantialDressing);
+  const authoredFootprint = metadata.footprintTiles ?? record.footprintTiles ?? null;
+  const collisionFootprint = authoredFootprint ?? (isSolid ? inferredSolidFootprint(assetKey, use) : null);
   return {
     id,
     assetKey,
@@ -607,7 +613,8 @@ function objectFromAsset({ id, assetKey, use, x, y, notes = '', zoneId = null, i
     text: notes,
     sourceZoneId: zoneId,
     propIndex: index,
-    footprintTiles: metadata.footprintTiles ?? record.footprintTiles ?? (isSolid ? inferredSolidFootprint(assetKey, use) : null),
+    footprintTiles: collisionFootprint,
+    ...(isSubstantialDressing ? { drawFootprintTiles: authoredFootprint } : {}),
     collisionPolygons: record.collisionPolygons ?? metadata.collisionPolygons ?? null,
     overSlice: record.overSlice ?? metadata.overSlice ?? null,
     r1Observation: record.r1Observation ?? metadata.r1Observation ?? null,

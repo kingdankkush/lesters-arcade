@@ -15,7 +15,7 @@ import { loadHMHGame } from './src/games/hmh/loader.mjs';
 import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-registry.mjs';
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
-import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
+import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
 import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
@@ -33,7 +33,7 @@ import { buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-gam
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
-import { obstaclesNear, resolvePlayerCollision, obstacleHitAlongSegment, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove, resolveTrackingAiMove } from './src/world-obstacles.mjs';
+import { obstaclesNear, resolvePlayerCollision, obstacleHitAlongSegment, circleTargetHitAlongSegment, drawRectIntersectsViewport, resolveWaterCollision, findNearestDrySpawn, resolveDistantSpawnPosition, resolveBoundedAiMove, resolveTrackingAiMove } from './src/world-obstacles.mjs';
 import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } from './src/scene-templates.mjs';
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
@@ -1639,6 +1639,7 @@ const combat = {
   lastTimestamp: 0,
   accumulatorMs: 0,
   frameTimes: [],
+  renderTimes: [],
   fps: 60,
   groundRenderStats: { passMs: 0, groupCount: 0, cacheSize: 0, cacheHits: 0, cacheMisses: 0 },
   status: 'Attract mode: choose free or paid, then start the 60fps combat test.',
@@ -3078,7 +3079,11 @@ function resizeCombatCanvas() {
   const canvas = dom.combatCanvas;
   if (!canvas) return;
   const rect = canvas.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = combatCanvasRenderScale({
+    cssWidth: rect.width,
+    cssHeight: rect.height,
+    devicePixelRatio: window.devicePixelRatio || 1,
+  });
   const targetWidth = Math.max(1, Math.round(rect.width * dpr));
   const targetHeight = Math.max(1, Math.round(rect.height * dpr));
   if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
@@ -5285,6 +5290,7 @@ function executeSignOut() {
   combat.weaponUpgrades = Object.freeze({});
   combat.lastTimestamp = 0;
   combat.frameTimes.length = 0;
+  combat.renderTimes.length = 0;
 
   // 2) Tear down any lingering full-screen or modal overlays that were left
   //    around from the in-progress session (level-up cards, HMH loading,
@@ -7517,7 +7523,8 @@ if (tacticalBalanceDebugEnabled) {
       });
       const decoded = await Promise.all(visibleObjects.map((object) => decodeImageAsset(curatedLevelOneImage(object.assetKey))));
       _obstacleCacheFrame = -1;
-      const obstacleCount = currentObstacles().length;
+      const obstacles = currentObstacles();
+      const obstacleCount = obstacles.length;
       const renderEntryCount = buildObstacleRenderEntries(dom.combatCanvas.getContext('2d')).length;
       return {
         x: combat.playerMapX,
@@ -7527,6 +7534,65 @@ if (tacticalBalanceDebugEnabled) {
         obstacleCount,
         renderEntryCount,
         assetKeys: visibleObjects.map((object) => object.assetKey),
+        obstacleAssetKeys: obstacles.map((object) => object.curatedAssetKey ?? object.sceneAssetKey ?? null).filter(Boolean),
+      };
+    },
+  });
+  Object.defineProperty(globalThis, '__hmhVisualDebugSetPosition', {
+    configurable: true,
+    value(x, y) {
+      combat.playerMapX = Number(x) || 0;
+      combat.playerMapY = Number(y) || 0;
+      combat.cameraX = combat.playerMapX;
+      combat.cameraY = combat.playerMapY;
+      combat.enemies = [];
+      combat.boss = null;
+      _obstacleCacheFrame = -1;
+      return { x: combat.playerMapX, y: combat.playerMapY };
+    },
+  });
+  Object.defineProperty(globalThis, '__hmhVisualDebugScene', {
+    configurable: true,
+    value() {
+      _obstacleCacheFrame = -1;
+      const obstacles = currentObstacles();
+      const entries = buildObstacleRenderEntries(dom.combatCanvas.getContext('2d'));
+      const undecodedIds = obstacles
+        .filter((obstacle) => obstacle.curatedAssetKey && !imageReady(curatedLevelOneImage(obstacle.curatedAssetKey)))
+        .map((obstacle) => obstacle.id);
+      return {
+        playerX: combat.playerMapX,
+        playerY: combat.playerMapY,
+        obstacleIds: obstacles.map((obstacle) => obstacle.id),
+        renderedIds: entries.map((entry) => entry.id).filter(Boolean),
+        undecodedIds,
+      };
+    },
+  });
+  Object.defineProperty(globalThis, '__hmhVisualDebugPerformance', {
+    configurable: true,
+    value() {
+      const samples = combat.renderTimes.slice().sort((a, b) => a - b);
+      const averageRenderMs = samples.length ? samples.reduce((sum, value) => sum + value, 0) / samples.length : 0;
+      const p95RenderMs = samples[Math.min(samples.length - 1, Math.floor(samples.length * 0.95))] ?? 0;
+      return {
+        fps: combat.fps,
+        averageRenderMs,
+        p95RenderMs,
+        sampleCount: samples.length,
+        canvas: {
+          internalWidth: dom.combatCanvas?.width ?? 0,
+          internalHeight: dom.combatCanvas?.height ?? 0,
+          cssWidth: dom.combatCanvas?.getBoundingClientRect().width ?? 0,
+          cssHeight: dom.combatCanvas?.getBoundingClientRect().height ?? 0,
+        },
+        groundRender: { ...combat.groundRenderStats },
+        obstacleCount: currentObstacles().length,
+        player: {
+          x: combat.playerMapX,
+          y: combat.playerMapY,
+          boundaryClamped: combat.worldBoundaryClamped,
+        },
       };
     },
   });
@@ -8395,7 +8461,12 @@ function updateRoguelikeMovement(dt) {
     }
     if ((combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID) {
       const bounds = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
-      const clamped = clampLevelOneWorldPoint({ x: combat.playerMapX, y: combat.playerMapY, world: bounds });
+      const clamped = clampLevelOneWorldPoint({
+        x: combat.playerMapX,
+        y: combat.playerMapY,
+        world: bounds,
+        padding: 0.42,
+      });
       combat.playerMapX = clamped.x;
       combat.playerMapY = clamped.y;
       combat.worldBoundaryClamped = clamped.clamped;
@@ -8455,12 +8526,17 @@ function updateRoguelikeBullets(dt) {
       bullet.ttl = 0;
       continue;
     }
-    for (const enemy of combat.enemies) {
-      if (enemy.hp > 0 && Math.hypot(enemy.mapX - bullet.worldX, enemy.mapY - bullet.worldY) < (bullet.hitRadius ?? 0.72)) {
-        damageEnemy(enemy, bullet.damage, bullet.weaponId);
-        bullet.ttl = 0;
-        break;
-      }
+    const hitEnemy = circleTargetHitAlongSegment(
+      bullet.prevWorldX,
+      bullet.prevWorldY,
+      bullet.worldX,
+      bullet.worldY,
+      combat.enemies,
+      { defaultRadius: bullet.hitRadius ?? 0.72 },
+    );
+    if (hitEnemy) {
+      damageEnemy(hitEnemy, bullet.damage, bullet.weaponId);
+      bullet.ttl = 0;
     }
   }
   combat.bullets = combat.bullets.filter((bullet) => bullet.ttl > 0);
@@ -8474,11 +8550,20 @@ function updateRoguelikeBullets(dt) {
     // Enemy shots are also blocked by solid obstacles, so cover protects the player.
     if (obstacleHitAlongSegment(previousWorldX, previousWorldY, shot.worldX, shot.worldY, obstacles)) {
       shot.ttl = 0;
+      continue;
     }
     const projected = isoToScreen(shot.worldX, shot.worldY);
     shot.x = projected.x;
     shot.y = projected.y;
-    if (Math.hypot(shot.worldX - combat.playerMapX, shot.worldY - combat.playerMapY) < 0.62) {
+    const hitPlayer = circleTargetHitAlongSegment(
+      previousWorldX,
+      previousWorldY,
+      shot.worldX,
+      shot.worldY,
+      [{ id: 'player', mapX: combat.playerMapX, mapY: combat.playerMapY, hp: combat.roguelikeRun?.player?.hp ?? 1, hitRadius: 0.62 }],
+      { defaultRadius: 0.62 },
+    );
+    if (hitPlayer) {
       damagePlayer(shot.damage, 'enemy-shot', shot.firedBy ? `${shot.firedBy} (gunfire)` : null);
       shot.ttl = 0;
     }
@@ -9912,6 +9997,16 @@ function traceIsoDiamond(ctx, cx, cy, inset = 0) {
   ctx.closePath();
 }
 
+function addIsoDiamondToPath(path, cx, cy, inset = 0) {
+  const hw = ISO_TILE_WIDTH / 2 - inset;
+  const hh = ISO_TILE_HEIGHT / 2 - inset * 0.5;
+  path.moveTo(cx, cy - hh);
+  path.lineTo(cx + hw, cy);
+  path.lineTo(cx, cy + hh);
+  path.lineTo(cx - hw, cy);
+  path.closePath();
+}
+
 function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
   const index = combat.roadTileIndex;
   if (!index || index.size === 0) return;
@@ -9927,6 +10022,7 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
   const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - PAD;
   const maxY = Math.ceil(Math.max(...corners.map((c) => c.y))) + PAD;
   const bridgeImg = canonicalLandmarkImage('./assets/generated/hmh-coherent-world/construct/wood-bridge.png');
+  const roadSurfaceGroups = new Map();
   ctx.save();
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
@@ -9952,14 +10048,23 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
         continue;
       }
       const style = ROAD_SURFACE_STYLE[tile.role] ?? ROAD_SURFACE_STYLE.default;
-      traceIsoDiamond(ctx, cx, cy);
-      ctx.fillStyle = style.fill;
-      ctx.fill();
-      // Subtle worn center so long straights read as a travelled path.
-      traceIsoDiamond(ctx, cx, cy, 9);
-      ctx.fillStyle = style.edge;
-      ctx.fill();
+      const styleKey = tile.role in ROAD_SURFACE_STYLE ? tile.role : 'default';
+      let group = roadSurfaceGroups.get(styleKey);
+      if (!group) {
+        group = { style, surfacePath: new Path2D(), wearPath: new Path2D() };
+        roadSurfaceGroups.set(styleKey, group);
+      }
+      addIsoDiamondToPath(group.surfacePath, cx, cy);
+      addIsoDiamondToPath(group.wearPath, cx, cy, 9);
     }
+  }
+  for (const group of roadSurfaceGroups.values()) {
+    ctx.fillStyle = group.style.fill;
+    ctx.fill(group.surfacePath);
+  }
+  for (const group of roadSurfaceGroups.values()) {
+    ctx.fillStyle = group.style.edge;
+    ctx.fill(group.wearPath);
   }
   ctx.restore();
 }
@@ -10419,6 +10524,7 @@ function currentObstacles() {
     routeBeat: o.routeBeat ?? null,
     exactAssetKey: o.exactAssetKey ?? o.assetKey,
     footprintTiles: o.footprintTiles ?? null,
+    ...(Object.hasOwn(o, 'drawFootprintTiles') ? { drawFootprintTiles: o.drawFootprintTiles } : {}),
     collisionPolygons: o.collisionPolygons ?? null,
     overSlice: o.overSlice ?? null,
     generatedWorldKitArt: o.generatedWorldKitArt === true,
@@ -10523,7 +10629,9 @@ function resolveObstacleProp(obstacle, worldProps) {
         ? 'bigprop'
         : SCENE_ROLE_TO_STYLE[obstacle.sceneRole] ?? 'smallprop';
     const style = PROP_ROLE_STYLE[styleKey] ?? PROP_ROLE_STYLE.smallprop;
-    const footprint = obstacle.footprintTiles ?? null;
+    const footprint = Object.hasOwn(obstacle, 'drawFootprintTiles')
+      ? obstacle.drawFootprintTiles
+      : obstacle.footprintTiles ?? null;
     return { prop: { role: obstacle.sceneRole, src: obstacle.curatedAssetKey, curated: true }, img, style, footprint };
   }
   // Coherent scene-template object: draw the exact art the template chose
@@ -10591,14 +10699,11 @@ function drawLevelOneInteractiveDebris(ctx, obstacle, projected, width, drawHeig
 function buildObstacleRenderEntries(ctx) {
   const worldProps = hmh('HMH_LEVEL_ENVIRONMENT')?.worldProps ?? [];
   const entries = [];
+  const viewport = { width: ctx.canvas.width, height: ctx.canvas.height };
   for (const o of currentObstacles()) {
-    // Draw obstacles inside the current performance-budget window. WO-71 keeps
-    // opening fidelity at the original generous radius, then trims late swarms
-    // where the minute-12 profile shows the budget is spent on actor pressure.
-    const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
-    const perfBudget = currentLevelOnePerformanceBudget();
-    const renderRadius = isFullscreen ? perfBudget.obstacleRenderRadiusFullscreen : perfBudget.obstacleRenderRadiusWindowed;
-    if (Math.abs(o.worldX - combat.playerMapX) > renderRadius || Math.abs(o.worldY - combat.playerMapY) > renderRadius) continue;
+    // Resolve and decode ahead of the viewport, then cull against the complete
+    // projected sprite rectangle. Anchor-radius culling clipped large buildings
+    // and pressure LOD could make static scenery disappear while still on screen.
     const resolved = resolveObstacleProp(o, worldProps);
     if (!resolved || !imageReady(resolved.img)) continue;
     const { img, style, footprint } = resolved;
@@ -10613,6 +10718,7 @@ function buildObstacleRenderEntries(ctx) {
       drawHeight: drawH,
       tileHeight: ISO_TILE_HEIGHT,
     });
+    if (!drawRectIntersectsViewport(rect, viewport, 64)) continue;
     const shadow = propShadowEllipseForGroundContact({
       projected,
       drawWidth: w,
@@ -10620,14 +10726,15 @@ function buildObstacleRenderEntries(ctx) {
       tileHeight: ISO_TILE_HEIGHT,
     });
     entries.push({
-          depth: propFrontEdgeDepth({
-            projected,
-            footprint,
-            radius,
-            drawOrderBias: o.drawOrderBias ?? 0,
-            tileHeight: ISO_TILE_HEIGHT,
-          }),
-          draw: () => {
+      id: o.id,
+      depth: propFrontEdgeDepth({
+        projected,
+        footprint,
+        radius,
+        drawOrderBias: o.drawOrderBias ?? 0,
+        tileHeight: ISO_TILE_HEIGHT,
+      }),
+      draw: () => {
             ctx.save();
             ctx.imageSmoothingEnabled = false;
             if (!o.debrisState?.visible) {
@@ -10673,9 +10780,9 @@ function buildObstacleRenderEntries(ctx) {
           },
         });
 
-    // Keep the obstacle's collision footprint in sync with the art that is
-
-    o.footprintTiles = footprint ?? null;
+    // Preserve authored collision geometry. Draw-footprint overrides affect only
+    // visual scale and must never erase a substantial object's physical base.
+    if (!o.footprintTiles && footprint) o.footprintTiles = footprint;
     o.drawWidth = w;
     o.drawHeight = drawH;
     o.radius = radius;
@@ -10717,7 +10824,7 @@ function drawLevelOneVisionFog(ctx, width, height) {
   ctx.clip();
   for (const layer of visionFogModel.layers) {
     if (!layer.cells.length) continue;
-    ctx.fillStyle = layer.fill;
+    const fogPath = new Path2D();
     for (const cell of layer.cells) {
       const nw = isoToScreen(cell.minX, cell.minY);
       const ne = isoToScreen(cell.maxX, cell.minY);
@@ -10725,14 +10832,14 @@ function drawLevelOneVisionFog(ctx, width, height) {
       const sw = isoToScreen(cell.minX, cell.maxY);
       if (Math.max(nw.x, ne.x, se.x, sw.x) < -80 || Math.min(nw.x, ne.x, se.x, sw.x) > width + 80) continue;
       if (Math.max(nw.y, ne.y, se.y, sw.y) < -80 || Math.min(nw.y, ne.y, se.y, sw.y) > height + 80) continue;
-      ctx.beginPath();
-      ctx.moveTo(nw.x, nw.y);
-      ctx.lineTo(ne.x, ne.y);
-      ctx.lineTo(se.x, se.y);
-      ctx.lineTo(sw.x, sw.y);
-      ctx.closePath();
-      ctx.fill();
+      fogPath.moveTo(nw.x, nw.y);
+      fogPath.lineTo(ne.x, ne.y);
+      fogPath.lineTo(se.x, se.y);
+      fogPath.lineTo(sw.x, sw.y);
+      fogPath.closePath();
     }
+    ctx.fillStyle = layer.fill;
+    ctx.fill(fogPath);
   }
   ctx.restore();
 }
@@ -10765,10 +10872,17 @@ function drawRoguelikeMinimap(ctx, width, height) {
   ctx.stroke();
   if (model.exploration?.fogCells?.length) {
     ctx.save();
-    ctx.fillStyle = 'rgba(1, 3, 10, 0.68)';
+    const minimapFogPath = new Path2D();
     for (const cell of model.exploration.fogCells) {
-      ctx.fillRect(x + cell.x * w, y + cell.y * h, Math.ceil(cell.w * w) + 0.5, Math.ceil(cell.h * h) + 0.5);
+      minimapFogPath.rect(
+        x + cell.x * w,
+        y + cell.y * h,
+        Math.ceil(cell.w * w) + 0.5,
+        Math.ceil(cell.h * h) + 0.5,
+      );
     }
+    ctx.fillStyle = 'rgba(1, 3, 10, 0.68)';
+    ctx.fill(minimapFogPath);
     ctx.restore();
   }
   const plot = (marker, radius = 3) => {
@@ -10809,11 +10923,12 @@ function drawRoguelikeScene(ctx, width, height) {
   // Ground tiles: cover the WHOLE canvas plus a GENEROUS overscan margin so
   // the tile field always extends past the viewport/fullscreen edges — the
   // player should never see where the tiles stop, even at 2560x1440 fullscreen.
-  // In fullscreen/expanded modes, render a full 2560x1440 world window so distant
-  // biome transitions and scene templates are visible far beyond the immediate view.
+  // Render only the actual canvas plus the world-space overscan below. The old
+  // fullscreen branch forced a 2560x1440 offscreen field even on smaller canvases,
+  // processing thousands of terrain cells that could never become visible.
   const isFullscreen = combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen';
-  const renderWidth = isFullscreen ? Math.max(width, 2560) : width;
-  const renderHeight = isFullscreen ? Math.max(height, 1440) : height;
+  const renderWidth = width;
+  const renderHeight = height;
   const corners = [
     screenToIso(0, 0),
     screenToIso(renderWidth, 0),
@@ -10828,6 +10943,9 @@ function drawRoguelikeScene(ctx, width, height) {
   const maxX = Math.ceil(Math.max(...corners.map((c) => c.x))) + OVERSCAN;
   const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - OVERSCAN;
   const maxY = Math.ceil(Math.max(...corners.map((c) => c.y))) + OVERSCAN;
+  const finiteWorld = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
+    ? buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight })
+    : null;
   // One smoothing toggle + cull bounds hoisted OUT of the per-tile loop —
   // drawProductionIsoTile no longer save/restores per tile (huge win at
   // thousands of tiles/frame in fullscreen).
@@ -10838,6 +10956,10 @@ function drawRoguelikeScene(ctx, width, height) {
   const visibleTiles = [];
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
+      if (finiteWorld && (
+        worldX < finiteWorld.minX || worldX > finiteWorld.maxX
+        || worldY < finiteWorld.minY || worldY > finiteWorld.maxY
+      )) continue;
       const projected = isoToScreen(worldX, worldY);
       // Cheap cull: skip tiles fully off the RENDERED canvas (not just viewport).
       // In fullscreen, renderWidth/renderHeight may exceed actual canvas size.
@@ -11322,8 +11444,8 @@ function drawCombatScene(timestamp = 0) {
     ctx.translate(Math.cos(ang) * mag, Math.sin(ang) * mag);
   }
 
+  const renderStartedAt = performance.now();
   if (combat.roguelikeRun) {
-    // Resilience: a single thrown error inside the scene draw must NEVER kill
     // the whole game — the rAF re-registration below is the loop's heartbeat.
     // (A ReferenceError in drawSingleEnemy once froze production permanently.)
     try {
@@ -11346,6 +11468,8 @@ function drawCombatScene(timestamp = 0) {
     drawFloatingTexts(ctx);
     drawHud(ctx);
   }
+  combat.renderTimes.push(performance.now() - renderStartedAt);
+  if (combat.renderTimes.length > 90) combat.renderTimes.shift();
 
   if (shakeApplied) ctx.restore();
 

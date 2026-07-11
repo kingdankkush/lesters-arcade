@@ -226,6 +226,38 @@ function segmentCircleHitT(fromX, fromY, toX, toY, centerX, centerY, radius) {
   return Math.hypot(x - centerX, y - centerY) <= radius ? t : null;
 }
 
+export function drawRectIntersectsViewport(rect, viewport, overscan = 0) {
+  const x = Number(rect?.x) || 0;
+  const y = Number(rect?.y) || 0;
+  const width = Math.max(0, Number(rect?.width) || 0);
+  const height = Math.max(0, Number(rect?.height) || 0);
+  const viewportWidth = Math.max(0, Number(viewport?.width) || 0);
+  const viewportHeight = Math.max(0, Number(viewport?.height) || 0);
+  const margin = Math.max(0, Number(overscan) || 0);
+  return x + width >= -margin
+    && y + height >= -margin
+    && x <= viewportWidth + margin
+    && y <= viewportHeight + margin;
+}
+
+export function circleTargetHitAlongSegment(fromX, fromY, toX, toY, targets, { defaultRadius = 0.72 } = {}) {
+  let nearest = null;
+  let nearestT = Infinity;
+  for (const target of targets ?? []) {
+    if (!target || Number(target.hp) <= 0) continue;
+    const centerX = Number(target.mapX ?? target.worldX ?? target.x);
+    const centerY = Number(target.mapY ?? target.worldY ?? target.y);
+    if (!Number.isFinite(centerX) || !Number.isFinite(centerY)) continue;
+    const radius = Math.max(0.05, Number(target.hitRadius ?? target.radius ?? defaultRadius) || defaultRadius);
+    const t = segmentCircleHitT(fromX, fromY, toX, toY, centerX, centerY, radius);
+    if (t !== null && t < nearestT) {
+      nearest = target;
+      nearestT = t;
+    }
+  }
+  return nearest;
+}
+
 // Does a point (e.g. a bullet) hit any solid obstacle? Returns the obstacle hit,
 // or null. Uses a slightly smaller hit radius than the player footprint so
 // bullets visually impact the body rather than empty air around it.
