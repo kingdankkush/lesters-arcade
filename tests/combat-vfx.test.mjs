@@ -14,6 +14,8 @@ import {
   createDeathBurst,
   createBulletTrail,
   createExplosion,
+  buildIsometricHeroDrawPlan,
+  projectPlayerShotScreenPoint,
   updateVfxParticles,
   drawVfxParticles,
   getDeathVfxName,
@@ -60,7 +62,7 @@ test('combat VFX module exposes final spritesheet metadata for runtime/UI consum
   assert.equal(getFinalCombatVfxAsset('normal-bullet-sprite'), null);
 });
 
-test('createMuzzleFlash produces one tiny static barrel flash instead of a particle spray', () => {
+test('createMuzzleFlash produces one readable barrel flash instead of an invisible particle spray', () => {
   const flashes = createMuzzleFlash(100, 200, 'east');
   assert.equal(flashes.length, 1);
   const flash = flashes[0];
@@ -70,9 +72,29 @@ test('createMuzzleFlash produces one tiny static barrel flash instead of a parti
   assert.equal(flash.vx, 0);
   assert.equal(flash.vy, 0);
   assert.equal(flash.gravity, 0);
-  assert.ok(flash.life > 0 && flash.life <= 5);
+  assert.ok(flash.life >= 6 && flash.life <= 10);
   assert.ok(flash.color.startsWith('#'));
-  assert.ok(flash.size > 0 && flash.size <= 4);
+  assert.ok(flash.size >= 7 && flash.size <= 10);
+});
+
+test('isometric hero draw plan preserves complete animation frames at a readable grounded scale', () => {
+  const plan = buildIsometricHeroDrawPlan({ x: 400, y: 300, bob: 2, frameWidth: 136, frameHeight: 136 });
+  assert.deepEqual(plan.source, { x: 0, y: 0, width: 136, height: 136 });
+  assert.deepEqual(plan.destination, { x: 334, y: 170, width: 132, height: 132 });
+  assert.equal(plan.destination.y + plan.destination.height, 302);
+  assert.ok(plan.marker.radiusX >= 24);
+  assert.ok(plan.marker.radiusY >= 8);
+});
+
+test('player projectiles and muzzle effects render above the isometric ground plane', () => {
+  assert.deepEqual(
+    projectPlayerShotScreenPoint({ x: 500, y: 320 }),
+    { x: 500, y: 262 },
+  );
+  assert.deepEqual(
+    projectPlayerShotScreenPoint({ x: 500, y: 320 }, { isometric: false }),
+    { x: 500, y: 320 },
+  );
 });
 
 test('createShellCasing produces a brass-colored casing particle', () => {

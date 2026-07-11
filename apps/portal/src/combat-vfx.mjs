@@ -15,11 +15,44 @@
 
 const VFX_POOL_SIZE = 200; // max simultaneous VFX particles
 
+const ISO_HERO_DRAW_HEIGHT = 132;
+const ISO_PLAYER_SHOT_HEIGHT = 58;
+
 // VFX particle shape
 import { HMH_FINAL_COMBAT_VFX_PACK, finalCombatVfxAssetByKey } from '../assets/generated/hmh-final-combat-vfx/hmh-final-combat-vfx-manifest.mjs';
 
 function vfxParticle(id, type, x, y, vx, vy, life, color, size, gravity = 0) {
   return { id, type, x, y, vx, vy, life, maxLife: life, color, size, gravity };
+}
+
+// The playable 136px roster frames reserve broad transparent margins for
+// animation stability. Rendering the whole frame at 88px made the actual actor
+// only 12-18 CSS pixels wide. Keep the complete frame so directional weapon
+// flashes and throw arcs cannot be clipped, but scale it to a readable footprint
+// while preserving the bottom-center foot anchor.
+export function buildIsometricHeroDrawPlan({ x, y, bob = 0, frameWidth = 136, frameHeight = 136 }) {
+  const source = { x: 0, y: 0, width: frameWidth, height: frameHeight };
+  const drawHeight = ISO_HERO_DRAW_HEIGHT;
+  const drawWidth = Math.round(drawHeight * (frameWidth / frameHeight));
+  return {
+    source,
+    destination: {
+      x: Math.round(x - drawWidth / 2),
+      y: Math.round(y + bob - drawHeight),
+      width: drawWidth,
+      height: drawHeight,
+    },
+    marker: { x, y: y + 2, radiusX: 28, radiusY: 10 },
+  };
+}
+
+// Projectile collision stays on the ground plane, but its visual tracer should
+// originate at the hero's weapon height rather than between the hero's feet.
+export function projectPlayerShotScreenPoint(point, { isometric = true, heightOffset = ISO_PLAYER_SHOT_HEIGHT } = {}) {
+  return {
+    x: point.x,
+    y: point.y - (isometric ? heightOffset : 0),
+  };
 }
 
 // VFX effect definitions per enemy death effect
@@ -61,7 +94,7 @@ const DEFAULT_DEATH_VFX = Object.freeze({
 // readable and minimal so player bullets/tracers don't get lost in a particle spray.
 export function createMuzzleFlash(x, y, direction = 'east') {
   const color = direction === 'rail' ? '#19f7ff' : '#fff5cc';
-  const size = direction === 'rail' ? 4 : 3;
+  const size = direction === 'rail' ? 10 : 7;
   return [vfxParticle(
     `mf-${Date.now()}`,
     'muzzle-flash',
@@ -69,7 +102,7 @@ export function createMuzzleFlash(x, y, direction = 'east') {
     y,
     0,
     0,
-    direction === 'rail' ? 4 : 3,
+    direction === 'rail' ? 8 : 6,
     color,
     size,
     0,

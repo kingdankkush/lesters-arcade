@@ -112,7 +112,7 @@ import HMH_ASSET_FOOTPRINTS from './assets/hmh-asset-footprints.json' with { typ
 function animatedSceneAssetByKey(key) {
   return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key) ?? levelThreeFinalGetawayAssetByKey(key);
 }
-import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles, getFinalCombatVfxPack } from './src/combat-vfx.mjs';
+import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles, getFinalCombatVfxPack, buildIsometricHeroDrawPlan, projectPlayerShotScreenPoint } from './src/combat-vfx.mjs';
 import { buildUpgradeMenuPresentation } from './src/hmh-upgrade-menu-ui.mjs';
 import { buildCombatFeedbackPlan } from './src/hmh-combat-feedback.mjs';
 import { HMH_COPY_SHEET } from './src/hmh-copy-sheet.mjs';
@@ -7724,7 +7724,7 @@ function shootRoguelike() {
   const sideY = aimX;
   const muzzleWorldX = combat.playerMapX + aimX * 0.72 + sideX * 0.08;
   const muzzleWorldY = combat.playerMapY + aimY * 0.72 + sideY * 0.08;
-  const muzzle = isoToScreen(muzzleWorldX, muzzleWorldY);
+  const muzzle = projectPlayerShotScreenPoint(isoToScreen(muzzleWorldX, muzzleWorldY));
 
   // Shotgun/spread weapons emit separate pellet physics objects. Pistol and
   // machine-gun power-up emit one slug per rate-of-fire tick. No bullet sprites or
@@ -7738,7 +7738,7 @@ function shootRoguelike() {
     const ang = baseAng + t * spread + deterministicJitter;
     const vx = Math.cos(ang) * profile.speed * speedScale;
     const vy = Math.sin(ang) * profile.speed * speedScale;
-    const projected = isoToScreen(muzzleWorldX, muzzleWorldY);
+    const projected = projectPlayerShotScreenPoint(isoToScreen(muzzleWorldX, muzzleWorldY));
     combat.bullets.push({
       worldX: muzzleWorldX,
       worldY: muzzleWorldY,
@@ -8434,8 +8434,9 @@ function updateRoguelikeBullets(dt) {
     bullet.worldY += bullet.vy * dt;
     bullet.ttl -= 1;
     const projected = isoToScreen(bullet.worldX, bullet.worldY);
-    bullet.x = projected.x;
-    bullet.y = projected.y;
+    const visualPoint = projectPlayerShotScreenPoint(projected);
+    bullet.x = visualPoint.x;
+    bullet.y = visualPoint.y;
     // Solid obstacles block bullets (inanimate objects take no damage, but they
     // stop shots — you have to shoot around buildings/trees, not through them).
     const hitObstacle = obstacleHitAlongSegment(
@@ -8447,9 +8448,9 @@ function updateRoguelikeBullets(dt) {
     );
     if (hitObstacle) {
       damageLevelOneInteractiveObstacle(hitObstacle, bullet.damage, bullet.weaponId ?? 'bullet');
-      emitCombatVfxParticles(createHitSparks(projected.x, projected.y + 18, 6));
+      emitCombatVfxParticles(createHitSparks(visualPoint.x, visualPoint.y, 6));
       for (let i = 0; i < 3; i += 1) {
-        combat.particles.push({ type: 'impact-sparks', x: projected.x, y: projected.y + 18, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2, color: i % 2 ? '#f9f7ff' : '#9aa7c7', size: 12 + Math.random() * 8, life: 0.3, maxLife: 0.3 }); // cosmetic-rng-ok visual-only or legacy-non-replay jitter
+        combat.particles.push({ type: 'impact-sparks', x: visualPoint.x, y: visualPoint.y, vx: (Math.random() - 0.5) * 3, vy: -Math.random() * 2, color: i % 2 ? '#f9f7ff' : '#9aa7c7', size: 12 + Math.random() * 8, life: 0.3, maxLife: 0.3 }); // cosmetic-rng-ok visual-only or legacy-non-replay jitter
       }
       bullet.ttl = 0;
       continue;
@@ -11607,33 +11608,65 @@ function drawPlayer(ctx) {
   const bob = combat.active ? Math.sin(combat.frame * 0.28) * 2 : 0;
   const heroFrame = selectHeroFrame();
   const hero = combatArt.hero;
-  const shadowY = combat.roguelikeRun ? y + 3 : GROUND_Y + 2;
   const blink = combat.invulnerableFrames > 0 && Math.floor(combat.invulnerableFrames / 6) % 2 === 0;
+  const isoHero = Boolean(combat.roguelikeRun);
+  const isoPlan = isoHero
+    ? buildIsometricHeroDrawPlan({
+        x,
+        y,
+        bob,
+        frameWidth: heroFrame?.naturalWidth || heroFrame?.width || 136,
+        frameHeight: heroFrame?.naturalHeight || heroFrame?.height || 136,
+      })
+    : null;
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   if (blink) ctx.globalAlpha = 0.54;
 
-  if (imageReady(heroFrame)) {
-    const productionHero = Boolean(hero.productionSlug);
-    // Scale: in the iso roguelike the hero is deliberately small (~88px) so the
-    // 300px buildings tower over him and the world reads with real scale.
-    const isoHero = Boolean(combat.roguelikeRun);
-    const drawWidth = isoHero ? 88 : (productionHero ? 132 : 104);
-    const drawHeight = isoHero ? 88 : (productionHero ? 132 : 104);
-    const drawX = x - drawWidth / 2 + (isoHero ? 8 : (productionHero ? 0 : 0));
-    const drawY = y - drawHeight + (isoHero ? 10 : (productionHero ? 16 : 0)) + bob;
-        // Contact shadows are disabled here too; keep the hero grounded via art only.
+  // A compact cyan foot marker keeps the selected hero readable against dark,
+  // similarly colored terrain and also covers the brief frame-decode handoff.
+  if (isoPlan) {
+    const marker = isoPlan.marker;
+    ctx.save();
+    ctx.globalAlpha *= 0.72;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = '#19f7ff';
+    ctx.strokeStyle = '#7ffcff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.ellipse(marker.x, marker.y, marker.radiusX, marker.radiusY, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
 
-    // fall back to keyboard side-scroll facing.
+  if (imageReady(heroFrame)) {
+    const productionHero = Boolean(hero?.productionSlug);
     const flip = heroFrame._flip != null ? heroFrame._flip : playerFacingLeft();
-    if (flip) {
-      ctx.save();
-      ctx.translate(drawX + drawWidth / 2, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(heroFrame, -drawWidth / 2, drawY, drawWidth, drawHeight);
-      ctx.restore();
+    if (isoPlan) {
+      const { source, destination } = isoPlan;
+      if (flip) {
+        ctx.save();
+        ctx.translate(destination.x + destination.width / 2, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(heroFrame, source.x, source.y, source.width, source.height, -destination.width / 2, destination.y, destination.width, destination.height);
+        ctx.restore();
+      } else {
+        ctx.drawImage(heroFrame, source.x, source.y, source.width, source.height, destination.x, destination.y, destination.width, destination.height);
+      }
     } else {
-      ctx.drawImage(heroFrame, drawX, drawY, drawWidth, drawHeight);
+      const drawWidth = productionHero ? 132 : 104;
+      const drawHeight = productionHero ? 132 : 104;
+      const drawX = x - drawWidth / 2;
+      const drawY = y - drawHeight + (productionHero ? 16 : 0) + bob;
+      if (flip) {
+        ctx.save();
+        ctx.translate(drawX + drawWidth / 2, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(heroFrame, -drawWidth / 2, drawY, drawWidth, drawHeight);
+        ctx.restore();
+      } else {
+        ctx.drawImage(heroFrame, drawX, drawY, drawWidth, drawHeight);
+      }
     }
     ctx.restore();
     return;
@@ -12296,7 +12329,7 @@ function drawBullets(ctx) {
       : '#ffe84d');
     const coreColor = visual.coreColor ?? '#ffffff';
     const prev = (bullet.prevWorldX !== undefined && bullet.prevWorldY !== undefined)
-      ? isoToScreen(bullet.prevWorldX, bullet.prevWorldY)
+      ? projectPlayerShotScreenPoint(isoToScreen(bullet.prevWorldX, bullet.prevWorldY))
       : { x: bullet.x - (vx / speed) * 8, y: bullet.y - (vy / speed) * 8 };
     const ageFade = Math.max(0.2, Math.min(1, (bullet.ttl ?? 1) / Math.max(1, bullet.maxTtl ?? bullet.ttl ?? 1)));
 
