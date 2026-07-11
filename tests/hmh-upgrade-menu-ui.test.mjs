@@ -2,7 +2,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-import { buildUpgradeMenuPresentation, upgradeCategoryStyle } from '../apps/portal/src/hmh-upgrade-menu-ui.mjs';
+import {
+  buildLevelUpInteractionGate,
+  buildLevelUpViewportLayout,
+  buildUpgradeMenuPresentation,
+  canActivateLevelUpChoice,
+  isLevelUpInteractionReady,
+  upgradeCategoryStyle,
+} from '../apps/portal/src/hmh-upgrade-menu-ui.mjs';
 
 function repoText(relativePath) {
   return readFileSync(new URL(`../${relativePath}`, import.meta.url), 'utf8');
@@ -26,6 +33,7 @@ test('WO-73 upgrade menu presentation labels the two-card continuation/new draft
 
   assert.equal(model.version, 'compact-upgrade-menu-ui-v3');
   assert.equal(model.title, 'Choose One Upgrade');
+  assert.equal(model.instructions, 'Pick one upgrade. Press 1 or 2, or tap a card.');
   assert.equal(model.cards.length, 2);
   assert.equal(model.shell.layout, 'compact-two-card-tooltip-draft');
   assert.equal(model.reroll.enabled, true);
@@ -77,6 +85,8 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(main.includes('upgrade-card-tooltip'), true);
   assert.equal(main.includes("appendText(button, 'p', card.description, 'upgrade-card-desc')"), false);
   assert.equal(main.includes('upgrade-locked-preview-rail'), false);
+  assert.equal(main.includes("document.addEventListener('lostpointercapture', releaseLevelUpPointer, true)"), true);
+  assert.equal(main.includes("if (combat.levelUpPaused) renderLevelUpActionGrid();"), true);
   assert.equal(css.includes('.level-up-shell'), true);
   assert.equal(css.includes('.level-up-slot-label'), true);
   assert.equal(css.includes('.upgrade-card-meter'), true);
@@ -85,4 +95,90 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(css.includes('min-height: 104px'), true);
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-upgrade-menu-ui.mjs'), true);
   assert.equal(syntaxCheck.includes('tests/hmh-upgrade-menu-ui.test.mjs'), true);
+});
+
+test('active gameplay focus mode removes redundant portal chrome and touch overdraw', () => {
+  const css = repoText('apps/portal/styles.css');
+
+  assert.match(css, /html\[data-ingame="true"\] \.official-nav/);
+  assert.match(css, /html\[data-ingame="true"\] \.official-footer/);
+  assert.match(css, /html\[data-ingame="true"\] \.gameplay-control-bar/);
+  assert.match(css, /html\[data-level-up="true"\] \.touch-controls/);
+  assert.match(css, /html\[data-touch="true"\] \.level-up-overlay[\s\S]*?backdrop-filter: none/);
+});
+
+test('responsive level-up layout fills a portrait viewport without clipping cards', () => {
+  const layout = buildLevelUpViewportLayout({
+    width: 390,
+    height: 844,
+    safeAreaTop: 12,
+    safeAreaBottom: 24,
+    cardCount: 2,
+    isTouch: true,
+  });
+
+  assert.equal(layout.mode, 'portrait-sheet');
+  assert.equal(layout.columns, 1);
+  assert.equal(layout.compact, false);
+  assert.equal(layout.insetTop, 20);
+  assert.equal(layout.insetBottom, 32);
+  assert.equal(layout.maxHeight, 792);
+  assert.equal(layout.maxWidth, 374);
+  assert.equal(layout.cardsScrollable, true);
+});
+
+test('responsive level-up layout uses a compact two-column grid in short landscape', () => {
+  const layout = buildLevelUpViewportLayout({
+    width: 844,
+    height: 390,
+    safeAreaLeft: 18,
+    safeAreaRight: 18,
+    cardCount: 2,
+    isTouch: true,
+  });
+
+  assert.equal(layout.mode, 'landscape-grid');
+  assert.equal(layout.columns, 2);
+  assert.equal(layout.compact, true);
+  assert.equal(layout.maxHeight, 374);
+  assert.equal(layout.maxWidth, 792);
+  assert.equal(layout.cardsScrollable, true);
+});
+
+test('touch tablets use a centered two-column draft instead of a stretched phone sheet', () => {
+  const layout = buildLevelUpViewportLayout({
+    width: 768,
+    height: 1024,
+    cardCount: 2,
+    isTouch: true,
+  });
+
+  assert.equal(layout.mode, 'tablet-grid');
+  assert.equal(layout.columns, 2);
+  assert.equal(layout.compact, false);
+  assert.equal(layout.maxWidth, 752);
+  assert.equal(layout.maxHeight, 520);
+  assert.equal(layout.insetTop, 252);
+});
+
+test('level-up interaction gate waits for shield time and preexisting pointer release', () => {
+  const gate = buildLevelUpInteractionGate({
+    openedAt: 1_000,
+    shieldMs: 420,
+    activePointerIds: [7],
+  });
+
+  assert.equal(isLevelUpInteractionReady(gate, { now: 1_419, activePointerIds: [] }), false, 'shield still active');
+  assert.equal(isLevelUpInteractionReady(gate, { now: 1_500, activePointerIds: [7] }), false, 'held firing pointer still active');
+  assert.equal(isLevelUpInteractionReady(gate, { now: 1_500, activePointerIds: [] }), true, 'released after shield');
+  assert.equal(canActivateLevelUpChoice(gate, {
+    now: 1_500,
+    activePointerIds: [],
+    interactionStartedAt: 1_419,
+  }), false, 'a press started before arming cannot leak into a card');
+  assert.equal(canActivateLevelUpChoice(gate, {
+    now: 1_500,
+    activePointerIds: [],
+    interactionStartedAt: 1_450,
+  }), true, 'a new intentional press can select');
 });

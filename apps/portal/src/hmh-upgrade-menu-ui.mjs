@@ -29,6 +29,92 @@ const RARITY_CORNER_PIPS = Object.freeze({
   'post-cap': 3,
 });
 
+const LEVEL_UP_EDGE_GAP_PX = 8;
+const LEVEL_UP_INPUT_SHIELD_MS = 420;
+
+function finiteNonNegative(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.max(0, number) : fallback;
+}
+
+export function buildLevelUpViewportLayout({
+  width = 1280,
+  height = 720,
+  safeAreaTop = 0,
+  safeAreaRight = 0,
+  safeAreaBottom = 0,
+  safeAreaLeft = 0,
+  cardCount = 2,
+  isTouch = false,
+} = {}) {
+  const viewportWidth = Math.max(240, finiteNonNegative(width, 1280));
+  const viewportHeight = Math.max(240, finiteNonNegative(height, 720));
+  const baseInsetTop = finiteNonNegative(safeAreaTop) + LEVEL_UP_EDGE_GAP_PX;
+  const insetRight = finiteNonNegative(safeAreaRight) + LEVEL_UP_EDGE_GAP_PX;
+  const insetBottom = finiteNonNegative(safeAreaBottom) + LEVEL_UP_EDGE_GAP_PX;
+  const insetLeft = finiteNonNegative(safeAreaLeft) + LEVEL_UP_EDGE_GAP_PX;
+  const shortLandscape = viewportWidth > viewportHeight && viewportHeight <= 560;
+  const touchTablet = Boolean(isTouch && viewportHeight >= viewportWidth && viewportWidth >= 640);
+  const portraitSheet = viewportHeight >= viewportWidth && !touchTablet && (viewportWidth <= 720 || isTouch);
+  const mode = shortLandscape
+    ? 'landscape-grid'
+    : touchTablet
+      ? 'tablet-grid'
+      : portraitSheet
+        ? 'portrait-sheet'
+        : 'desktop-grid';
+  const availableWidth = Math.max(224, viewportWidth - insetLeft - insetRight);
+  const availableHeight = Math.max(224, viewportHeight - baseInsetTop - insetBottom);
+  const maxWidth = Math.min(mode === 'portrait-sheet' ? 480 : 792, availableWidth);
+  const maxHeight = Math.min(mode === 'tablet-grid' ? 520 : availableHeight, availableHeight);
+  const insetTop = baseInsetTop + (mode === 'tablet-grid' ? Math.max(0, (availableHeight - maxHeight) / 2) : 0);
+  const columns = Math.max(1, Number(cardCount) > 1 && mode !== 'portrait-sheet' ? 2 : 1);
+
+  return Object.freeze({
+    version: 'responsive-level-up-layout-v1',
+    mode,
+    columns,
+    compact: shortLandscape,
+    insetTop,
+    insetRight,
+    insetBottom,
+    insetLeft,
+    maxWidth,
+    maxHeight,
+    cardsScrollable: true,
+  });
+}
+
+export function buildLevelUpInteractionGate({
+  openedAt = 0,
+  shieldMs = LEVEL_UP_INPUT_SHIELD_MS,
+  activePointerIds = [],
+} = {}) {
+  const normalizedOpenedAt = finiteNonNegative(openedAt);
+  const normalizedShield = finiteNonNegative(shieldMs, LEVEL_UP_INPUT_SHIELD_MS);
+  return Object.freeze({
+    version: 'release-to-select-v1',
+    openedAt: normalizedOpenedAt,
+    armedAt: normalizedOpenedAt + normalizedShield,
+    blockedPointerIds: Object.freeze([...new Set(activePointerIds)].map(String)),
+  });
+}
+
+export function isLevelUpInteractionReady(gate, { now = 0, activePointerIds = [] } = {}) {
+  if (!gate || finiteNonNegative(now) < gate.armedAt) return false;
+  const active = new Set([...activePointerIds].map(String));
+  return !gate.blockedPointerIds.some((pointerId) => active.has(pointerId));
+}
+
+export function canActivateLevelUpChoice(gate, {
+  now = 0,
+  activePointerIds = [],
+  interactionStartedAt = 0,
+} = {}) {
+  if (!isLevelUpInteractionReady(gate, { now, activePointerIds })) return false;
+  return finiteNonNegative(interactionStartedAt) >= gate.armedAt;
+}
+
 function freezeArray(items) {
   return Object.freeze(items.map((item) => Object.freeze(item)));
 }
@@ -123,6 +209,7 @@ export function buildUpgradeMenuPresentation({
     version: 'compact-upgrade-menu-ui-v3',
     title: 'Choose One Upgrade',
     subtitle: level ? `Level ${level} draft` : 'Upgrade draft',
+    instructions: 'Pick one upgrade. Press 1 or 2, or tap a card.',
     shell: Object.freeze({
       layout: 'compact-two-card-tooltip-draft',
       accessibility: 'Compact 44px-minimum tap targets with icons, rarity labels, rank pips, and tooltip/ARIA details instead of visible description clutter.',

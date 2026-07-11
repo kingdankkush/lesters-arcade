@@ -943,6 +943,51 @@ test('roguelike XP pacing prevents one enemy pack from chaining multiple level-u
   assert.equal(afterHugeBurst.pausedForLevelUp, true);
 });
 
+test('guided level-up rerolls replace both discarded cards when alternatives exist', () => {
+  const run = createRoguelikeRunState({ seed: 91, mode: 'free' });
+
+  for (let seed = 1; seed <= 32; seed += 1) {
+    const offered = chooseRoguelikeUpgradeOptions(run, { seed });
+    const discardedIds = offered.options.map((option) => option.id);
+    const rerolled = chooseRoguelikeUpgradeOptions(run, {
+      seed,
+      reroll: true,
+      excludeSkillIds: discardedIds,
+    });
+    assert.equal(rerolled.options.length, 2);
+    assert.equal(
+      rerolled.options.some((option) => discardedIds.includes(option.id)),
+      false,
+      `seed ${seed} reroll should replace both discarded cards`,
+    );
+  }
+});
+
+test('guided level-up reroll falls back to the only two legal cards when exclusions empty the pool', () => {
+  const baseSkills = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY
+    .filter((skill) => !(skill.gate?.requires?.length > 0))
+    .slice(0, 2);
+  assert.equal(baseSkills.length, 2);
+  const keepIds = new Set(baseSkills.map((skill) => skill.id));
+  const run = {
+    ...createRoguelikeRunState({ seed: 92, mode: 'free' }),
+    skills: Object.fromEntries(
+      LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY
+        .filter((skill) => !keepIds.has(skill.id))
+        .map((skill) => [skill.id, skill.maxRank]),
+    ),
+  };
+
+  const rerolled = chooseRoguelikeUpgradeOptions(run, {
+    seed: 92,
+    reroll: true,
+    excludeSkillIds: [...keepIds],
+  });
+
+  assert.equal(rerolled.options.length, 2);
+  assert.deepEqual(new Set(rerolled.options.map((option) => option.id)), keepIds);
+});
+
 test('Wave 2 max-level XP converts to score instead of overflowing past level 80', () => {
   const run = {
     ...createRoguelikeRunState({ seed: 80, mode: 'free' }),
@@ -1747,7 +1792,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul10-runtime-stability-v35'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul11-responsive-levelup-v36'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2572,7 +2617,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-jul10-runtime-stability-v35'), true);
+  assert.equal(smokeScript.includes('hmh-jul11-responsive-levelup-v36'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

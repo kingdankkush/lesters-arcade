@@ -3130,11 +3130,16 @@ function postCapCoinOption(slot) {
   });
 }
 
-export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false, rng = null, includeLockedPreviews = false } = {}) {
-  const available = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => {
+export function chooseRoguelikeUpgradeOptions(run, { seed = run?.seed ?? 1, reroll = false, rng = null, includeLockedPreviews = false, excludeSkillIds = [] } = {}) {
+  const legal = LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY.filter((skill) => {
     if (ownedRank(run, skill) >= skill.maxRank) return false;
     return roguelikeGateSatisfied(skill, run);
   });
+  const excluded = new Set(excludeSkillIds ?? []);
+  const freshRerollPool = legal.filter((skill) => !excluded.has(skill.id));
+  const available = freshRerollPool.length >= LESTER_BLASTER_ISOMETRIC_ROGUELIKE.levelUp.choicesPerLevel
+    ? freshRerollPool
+    : legal;
   const saltBase = (run?.level ?? 1) * 17 + (reroll ? 101 : 0);
   const chosen = [];
   const chosenIds = new Set();

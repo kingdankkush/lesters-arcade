@@ -24,6 +24,11 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
   assert.match(visualScript, /seed-1337-southeast-glow-bank/);
   assert.match(mainSource, /__hmhVisualDebugTeleport/);
   assert.match(mainSource, /__hmhVisualDebugHero/);
+  assert.match(mainSource, /__hmhVisualDebugOpenLevelUp/);
+  assert.match(visualScript, /level-up-portrait-390x844/);
+  assert.match(visualScript, /level-up-landscape-844x390/);
+  assert.match(visualScript, /levelUpViewportProbe/);
+  assert.match(visualScript, /data\.armed === 'true'/);
   assert.match(visualScript, /heroReadyDeadline/);
   assert.match(visualScript, /heroVisual\?\.ready/);
   const obstacleRenderer = mainSource.slice(

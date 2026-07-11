@@ -502,6 +502,77 @@ try {
     throw new Error(`HMH west world boundary did not retain the complete player footprint: ${JSON.stringify(boundaryProbe)}`);
   }
 
+  const levelUpViewportProbe = [];
+  const probeLevelUpViewport = async ({ name, width, height, orientation }) => {
+    await client.send('Emulation.setDeviceMetricsOverride', {
+      width,
+      height,
+      deviceScaleFactor: 1,
+      mobile: true,
+      screenOrientation: { type: orientation, angle: orientation === 'portraitPrimary' ? 0 : 90 },
+    });
+    await client.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    await sleep(450);
+    const data = await runInPage(client, `
+      (() => {
+        const overlay = document.getElementById('levelUpOverlay');
+        const rect = overlay?.getBoundingClientRect();
+        const cardStack = overlay?.querySelector('.level-up-card-stack');
+        const buttons = [...(overlay?.querySelectorAll('[data-level-up-choice]') ?? [])];
+        const style = cardStack ? getComputedStyle(cardStack) : null;
+        return {
+          viewport: { width: innerWidth, height: innerHeight },
+          layout: overlay?.dataset.layout ?? null,
+          armed: overlay?.dataset.armed ?? null,
+          overlay: rect ? { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height } : null,
+          cardCount: buttons.length,
+          buttonsEnabled: buttons.every((button) => !button.disabled),
+          columns: style?.gridTemplateColumns?.split(' ').filter(Boolean).length ?? 0,
+          cardsScrollable: Boolean(cardStack && cardStack.scrollHeight >= cardStack.clientHeight),
+          touchControlsHidden: getComputedStyle(document.getElementById('touchControls')).display === 'none',
+          bodyOverflow: getComputedStyle(document.body).overflow,
+        };
+      })()
+    `);
+    const tolerance = 1;
+    const inViewport = data?.overlay
+      && data.overlay.left >= -tolerance
+      && data.overlay.top >= -tolerance
+      && data.overlay.right <= width + tolerance
+      && data.overlay.bottom <= height + tolerance;
+    const choicesArmed = data.armed === 'true';
+    if (!inViewport || data.cardCount !== 2 || !choicesArmed || !data.buttonsEnabled || !data.touchControlsHidden || data.bodyOverflow !== 'hidden') {
+      throw new Error(`HMH ${name} level-up layout failed: ${JSON.stringify(data)}`);
+    }
+    levelUpViewportProbe.push({ name, ...data });
+    captures.push(await writeEvidenceCapture(client, name));
+  };
+
+  await client.send('Emulation.setDeviceMetricsOverride', {
+    width: 390,
+    height: 844,
+    deviceScaleFactor: 1,
+    mobile: true,
+    screenOrientation: { type: 'portraitPrimary', angle: 0 },
+  });
+  await client.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+  await sleep(350);
+  const levelUpOpened = await runInPage(client, `globalThis.__hmhVisualDebugOpenLevelUp?.()`);
+  if (!levelUpOpened?.choices?.length) throw new Error(`HMH level-up debug hook did not open a draft: ${JSON.stringify(levelUpOpened)}`);
+  await sleep(520);
+  await probeLevelUpViewport({ name: 'level-up-portrait-390x844', width: 390, height: 844, orientation: 'portraitPrimary' });
+  await probeLevelUpViewport({ name: 'level-up-landscape-844x390', width: 844, height: 390, orientation: 'landscapePrimary' });
+  await probeLevelUpViewport({ name: 'level-up-tablet-768x1024', width: 768, height: 1024, orientation: 'portraitPrimary' });
+
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: '1', code: 'Digit1', windowsVirtualKeyCode: 49 });
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: '1', code: 'Digit1', windowsVirtualKeyCode: 49 });
+  await sleep(200);
+  const levelUpClosed = await runInPage(client, `!document.documentElement.dataset.levelUp && document.getElementById('levelUpOverlay')?.hidden === true`);
+  if (!levelUpClosed) throw new Error('HMH level-up keyboard selection did not close the responsive overlay');
+  await client.send('Emulation.setTouchEmulationEnabled', { enabled: false });
+  await client.send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
+  await sleep(350);
+
   const antiSlide = await runInPage(client, `
     (() => {
       const root = document.getElementById('combatCanvas');
@@ -517,7 +588,7 @@ try {
   if (!antiSlide.canvasWidth || !antiSlide.canvasHeight) throw new Error(`Anti-slide probe could not read canvas dimensions: ${JSON.stringify(antiSlide)}`);
 
   const changed = captures.filter((capture) => capture.status === 'changed');
-  const report = { portalUrl, bootResult, propPersistenceProbe, collisionProbe, runtimeProfile, boundaryProbe, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
+  const report = { portalUrl, bootResult, propPersistenceProbe, collisionProbe, runtimeProfile, boundaryProbe, levelUpViewportProbe, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
   await mkdir(currentDir, { recursive: true });
   await writeFile(`${currentDir}/visual-regression-report.json`, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));

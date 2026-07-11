@@ -113,7 +113,13 @@ function animatedSceneAssetByKey(key) {
   return animatedPolishAssetByKey(key) ?? finalWorldAmbientAssetByKey(key) ?? levelTwoFinalCityAssetByKey(key) ?? levelThreeFinalGetawayAssetByKey(key);
 }
 import { createMuzzleFlash, createShellCasing, createHitSparks, createDeathBurst, createBulletTrail, createExplosion, updateVfxParticles, drawVfxParticles, getFinalCombatVfxPack, buildIsometricHeroDrawPlan, projectPlayerShotScreenPoint } from './src/combat-vfx.mjs';
-import { buildUpgradeMenuPresentation } from './src/hmh-upgrade-menu-ui.mjs';
+import {
+  buildLevelUpInteractionGate,
+  buildLevelUpViewportLayout,
+  buildUpgradeMenuPresentation,
+  canActivateLevelUpChoice,
+  isLevelUpInteractionReady,
+} from './src/hmh-upgrade-menu-ui.mjs';
 import { buildCombatFeedbackPlan } from './src/hmh-combat-feedback.mjs';
 import { HMH_COPY_SHEET } from './src/hmh-copy-sheet.mjs';
 import { hmhSfxToneFor, resolveHmhSfxCuePlan } from './src/hmh-audio-system.mjs';
@@ -2396,45 +2402,116 @@ async function settleRankedRun(settlementInput, runStats = {}) {
   }
 }
 
+const activeLevelUpPointerIds = new Set();
+let levelUpInteractionGate = null;
+let levelUpArmTimer = null;
+
+function levelUpClock() {
+  return globalThis.performance?.now?.() ?? Date.now();
+}
+
+function currentLevelUpViewport() {
+  const viewport = window.visualViewport;
+  return {
+    width: viewport?.width ?? window.innerWidth,
+    height: viewport?.height ?? window.innerHeight,
+    offsetTop: viewport?.offsetTop ?? 0,
+    offsetLeft: viewport?.offsetLeft ?? 0,
+  };
+}
+
+function levelUpSelectionReady(now = levelUpClock()) {
+  return isLevelUpInteractionReady(levelUpInteractionGate, {
+    now,
+    activePointerIds: activeLevelUpPointerIds,
+  });
+}
+
+function refreshLevelUpInteractionState() {
+  clearTimeout(levelUpArmTimer);
+  levelUpArmTimer = null;
+  const overlay = document.getElementById('levelUpOverlay');
+  if (!overlay || !combat.levelUpPaused) return;
+  const now = levelUpClock();
+  const ready = levelUpSelectionReady(now);
+  overlay.dataset.armed = String(ready);
+  const status = overlay.querySelector('.level-up-selection-status');
+  if (status) status.textContent = ready ? 'SELECT AN UPGRADE // KEYS 1 OR 2' : 'RELEASE CONTROLS // CHOICES ARMING';
+  for (const button of overlay.querySelectorAll('[data-level-up-choice]')) button.disabled = !ready;
+  const reroll = overlay.querySelector('[data-action="level-up-reroll"]');
+  if (reroll) reroll.disabled = !ready || reroll.dataset.available !== 'true';
+  if (!ready && levelUpInteractionGate && now < levelUpInteractionGate.armedAt) {
+    levelUpArmTimer = setTimeout(refreshLevelUpInteractionState, Math.max(16, levelUpInteractionGate.armedAt - now + 8));
+  }
+}
+
+function closeLevelUpInteractionGate() {
+  clearTimeout(levelUpArmTimer);
+  levelUpArmTimer = null;
+  levelUpInteractionGate = null;
+  activeLevelUpPointerIds.clear();
+  delete document.documentElement.dataset.levelUp;
+}
+
+function bindSafeLevelUpAction(button, action, { available = true } = {}) {
+  let interactionStartedAt = 0;
+  button.dataset.available = String(Boolean(available));
+  button.addEventListener('pointerdown', (event) => {
+    interactionStartedAt = levelUpClock();
+    if (!levelUpSelectionReady(interactionStartedAt)) event.preventDefault();
+  });
+  button.addEventListener('click', (event) => {
+    const now = levelUpClock();
+    const startedAt = event.detail === 0 ? now : interactionStartedAt;
+    if (!available || !canActivateLevelUpChoice(levelUpInteractionGate, {
+      now,
+      activePointerIds: activeLevelUpPointerIds,
+      interactionStartedAt: startedAt,
+    })) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    action();
+  });
+}
+
 function applyLevelUpOverlayLayout(levelUpContainer) {
   const profile = deviceState.profile ?? buildDeviceProfile(readDeviceSignals());
-  const mobile = profile.deviceClass === 'mobile';
-  Object.assign(levelUpContainer.style, {
-    position: mobile ? 'fixed' : 'absolute',
-    top: mobile ? 'auto' : '8%',
-    left: '50%',
-    bottom: mobile ? 'calc(10px + env(safe-area-inset-bottom))' : 'auto',
-    transform: 'translateX(-50%)',
-    zIndex: '9999',
-    width: mobile ? 'min(92vw, 420px)' : 'min(74%, 560px)',
-    maxHeight: mobile ? 'min(48dvh, calc(100dvh - 150px))' : '58vh',
-    overflow: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: mobile ? '7px' : '10px',
-    background: 'rgba(12,14,24,0.9)',
-    border: '2px solid rgba(255,95,162,0.55)',
-    borderRadius: '14px',
-    padding: mobile ? '10px 10px 12px' : '14px 16px',
-    boxShadow: '0 0 48px rgba(255,95,162,0.25), inset 0 0 18px rgba(255,95,162,0.08)',
-    backdropFilter: 'blur(2px)',
-    WebkitOverflowScrolling: 'touch',
+  const viewport = currentLevelUpViewport();
+  const layout = buildLevelUpViewportLayout({
+    width: viewport.width,
+    height: viewport.height,
+    cardCount: combat.levelUpChoices?.length ?? 2,
+    isTouch: profile.isTouch,
   });
+  levelUpContainer.dataset.layout = layout.mode;
+  levelUpContainer.dataset.compact = String(layout.compact);
+  levelUpContainer.style.setProperty('--level-up-top', `${Math.round(viewport.offsetTop + layout.insetTop)}px`);
+  levelUpContainer.style.setProperty('--level-up-left', `${Math.round(viewport.offsetLeft + viewport.width / 2)}px`);
+  levelUpContainer.style.setProperty('--level-up-max-width', `${Math.round(layout.maxWidth)}px`);
+  levelUpContainer.style.setProperty('--level-up-max-height', `${Math.round(layout.maxHeight)}px`);
+  levelUpContainer.style.setProperty('--level-up-columns', String(layout.columns));
   levelUpContainer.classList.add('level-up-overlay');
 }
 
 function renderLevelUpActionGrid() {
   if (!dom.combatMenuActionGrid || !combat.levelUpPaused) return false;
-  // FULLSCREEN FIX: render level-up cards inside officialCombatMount so they stay visible in fullscreen
+  // Keep the sheet at body level in windowed play so transformed/centered game
+  // ancestors cannot become its fixed-position containing block. Fullscreen only
+  // paints descendants of the fullscreen element, so reparent there while active.
+  const levelUpHost = document.fullscreenElement === dom.officialCombatMount
+    ? dom.officialCombatMount
+    : document.body;
   let levelUpContainer = document.getElementById('levelUpOverlay');
-  if (!levelUpContainer && dom.officialCombatMount) {
+  if (!levelUpContainer) {
     levelUpContainer = document.createElement('div');
     levelUpContainer.id = 'levelUpOverlay';
     levelUpContainer.className = 'level-up-overlay';
-    // Single-column stacked layout so each card fills the container width;
-    // matches the design language the user approved on the weapon-branch card.
     applyLevelUpOverlayLayout(levelUpContainer);
-    dom.officialCombatMount.appendChild(levelUpContainer);
+    levelUpHost.appendChild(levelUpContainer);
+  } else if (levelUpContainer.parentElement !== levelUpHost) {
+    levelUpHost.appendChild(levelUpContainer);
   }
   if (levelUpContainer) applyLevelUpOverlayLayout(levelUpContainer);
   const targetGrid = levelUpContainer || dom.combatMenuActionGrid;
@@ -2447,7 +2524,10 @@ function renderLevelUpActionGrid() {
     level: combat.roguelikeRun?.level ?? null,
   });
   const signature = `level-up:${presentation.cards.map((card) => `${card.id}:${card.rankLabel}`).join('|')}:rerolls-${presentation.reroll.remaining}:cb-${gameSettings.colorblindTags ? 1 : 0}`;
-  if (targetGrid.dataset.signature === signature) return true;
+  if (targetGrid.dataset.signature === signature) {
+    refreshLevelUpInteractionState();
+    return true;
+  }
   targetGrid.dataset.signature = signature;
   targetGrid.replaceChildren();
 
@@ -2455,14 +2535,20 @@ function renderLevelUpActionGrid() {
   const shellHead = el('div', { className: 'level-up-shell-head' });
   appendText(shellHead, 'span', `LEVEL ${combat.roguelikeRun?.level ?? 1} DRAFT`, 'level-up-kicker');
   appendText(shellHead, 'strong', presentation.title, 'level-up-title');
-  appendText(shellHead, 'p', presentation.shell.accessibility, 'level-up-subtitle');
+  appendText(shellHead, 'p', presentation.instructions, 'level-up-subtitle');
   shell.append(shellHead);
+  const selectionStatus = appendText(shell, 'p', 'RELEASE CONTROLS // CHOICES ARMING', 'level-up-selection-status');
+  selectionStatus.setAttribute('aria-live', 'polite');
 
   const cardStack = el('div', { className: 'level-up-card-stack' });
   for (const card of presentation.cards) {
     const cardWrap = el('div', { className: `level-up-slot level-up-slot-${card.slotRole ?? 'draft'}` });
-    appendText(cardWrap, 'span', card.slotLabel ?? (card.index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'), 'level-up-slot-label');
+    const slotHead = el('div', { className: 'level-up-slot-head' });
+    appendText(slotHead, 'span', card.slotLabel ?? (card.index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'), 'level-up-slot-label');
+    appendText(slotHead, 'span', `KEY ${card.index + 1}`, 'level-up-shortcut');
+    cardWrap.append(slotHead);
     const button = el('button', { className: `combat-menu-action ${card.chrome?.className ?? 'level-up-upgrade-card'} ${card.rarity === 'golden' ? 'is-golden-card' : ''}`, type: 'button', dataset: { ...card.dataset, rarity: card.rarity ?? 'common' } });
+    button.dataset.levelUpChoice = card.id;
     const head = el('div', { className: 'upgrade-card-head' });
     const badge = el('span', { className: 'upgrade-card-badge', textContent: card.icon });
     badge.setAttribute('aria-hidden', 'true');
@@ -2496,7 +2582,7 @@ function renderLevelUpActionGrid() {
     button.append(ranks);
     button.setAttribute('title', card.ariaLabel);
     button.setAttribute('aria-label', card.ariaLabel);
-    button.addEventListener('click', () => selectLevelUpUpgrade(card.id));
+    bindSafeLevelUpAction(button, () => selectLevelUpUpgrade(card.id));
     cardWrap.append(button);
     cardStack.append(cardWrap);
   }
@@ -2507,11 +2593,11 @@ function renderLevelUpActionGrid() {
   // rail made the level-up screen too tall for the gameplay window.
 
   const reroll = el('button', { className: 'combat-menu-action upgrade-reroll-button', type: 'button', dataset: { action: 'level-up-reroll' } });
-  reroll.disabled = !presentation.reroll.enabled;
   reroll.append(renderArcadeIcon('↻', 'Reroll upgrade choices'), document.createTextNode(presentation.reroll.label));
-  reroll.addEventListener('click', rerollLevelUpChoices);
+  bindSafeLevelUpAction(reroll, rerollLevelUpChoices, { available: presentation.reroll.enabled });
   shell.append(reroll);
   targetGrid.append(shell);
+  refreshLevelUpInteractionState();
   return true;
 }
 
@@ -2808,6 +2894,8 @@ function clearInactiveCombatOverlay() {
 }
 
 function syncCombatOverlay() {
+  if (combat.levelUpPaused) document.documentElement.dataset.levelUp = 'true';
+  else delete document.documentElement.dataset.levelUp;
   // Auto-submit a finished ranked run to LitVM the moment the game-over state
   // is reached (no manual "Submit Official Score" step). One wallet confirmation
   // fires automatically. Guarded by gameOverSubmitted so it runs exactly once.
@@ -6096,6 +6184,7 @@ async function startCombat(options = {}) {
   combat.levelUpChoices = [];
   combat.levelUpLockedPreviews = [];
   combat.levelUpPaused = false;
+  closeLevelUpInteractionGate();
   combat.roguelikeRun = createRoguelikeRunState({
     seed: options.seed ?? Date.now(),
     mode: currentSession?.mode ?? 'free',
@@ -7611,6 +7700,18 @@ if (tacticalBalanceDebugEnabled) {
       };
     },
   });
+  Object.defineProperty(globalThis, '__hmhVisualDebugOpenLevelUp', {
+    configurable: true,
+    value() {
+      if (!combat.active || !combat.roguelikeRun) return null;
+      combat.roguelikeRun = { ...combat.roguelikeRun, pausedForLevelUp: true };
+      openLevelUpMenu();
+      return {
+        level: combat.roguelikeRun.level,
+        choices: combat.levelUpChoices.map((choice) => choice.id),
+      };
+    },
+  });
 }
 
 function updateAimFromPointer(event) {
@@ -7849,6 +7950,13 @@ function openLevelUpMenu() {
   combat.levelUpLockedPreviews = offer.lockedPreviews ?? [];
   combat.levelUpPaused = true;
   combat.paused = true;
+  combat.keys.clear();
+  deviceState.touchKeys = new Set();
+  levelUpInteractionGate = buildLevelUpInteractionGate({
+    openedAt: levelUpClock(),
+    activePointerIds: activeLevelUpPointerIds,
+  });
+  document.documentElement.dataset.levelUp = 'true';
   combat.status = 'LEVEL UP: choose one upgrade. The roguelike run is paused until you pick.';
   applyCombatFeedback('level-up', {
     level: combat.roguelikeRun?.level ?? 1,
@@ -7862,7 +7970,13 @@ function rerollLevelUpChoices() {
   if (!combat.levelUpPaused || !combat.roguelikeRun || combat.roguelikeRun.rerollsRemaining <= 0) return;
   combat.roguelikeRun = { ...combat.roguelikeRun, rerollsRemaining: combat.roguelikeRun.rerollsRemaining - 1 };
   const draftRng = roguelikeRngStream('draft');
-  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, { rng: draftRng, seed: combat.frame + combat.kills + 999, reroll: true, includeLockedPreviews: true });
+  const offer = chooseRoguelikeUpgradeOptions(combat.roguelikeRun, {
+    rng: draftRng,
+    seed: combat.frame + combat.kills + 999,
+    reroll: true,
+    includeLockedPreviews: true,
+    excludeSkillIds: combat.levelUpChoices.map((choice) => choice.id),
+  });
   combat.levelUpChoices = buildLevelUpPair(offer.options);
   combat.levelUpLockedPreviews = offer.lockedPreviews ?? [];
   syncCombatOverlay();
@@ -7948,6 +8062,7 @@ function selectLevelUpUpgrade(skillId) {
     combat.levelUpLockedPreviews = [];
     combat.levelUpPaused = false;
     combat.paused = false;
+    closeLevelUpInteractionGate();
     combat.status = `Weapon branch upgraded: ${titleOfWeapon(weaponId)} ${branchLabel(branchKey)} tier ${perWeapon[branchKey]}/3.`;
     spawnText(
       `${titleOfWeapon(weaponId)} ${branchLabel(branchKey)} T${perWeapon[branchKey]}`,
@@ -7962,6 +8077,7 @@ function selectLevelUpUpgrade(skillId) {
   combat.levelUpLockedPreviews = [];
   combat.levelUpPaused = false;
   combat.paused = false;
+  closeLevelUpInteractionGate();
   combat.status = `${skill?.title ?? 'Upgrade'} applied. Survive the 20-minute wall.`;
   spawnText(`${skill?.title ?? 'UPGRADE'} +5%`, ISO_CENTER_X - 44, ISO_CENTER_Y - 64, '#45ff8a');
   syncCombatOverlay();
@@ -12985,6 +13101,21 @@ dom.arcadeMusicAudio?.addEventListener('ended', () => {
   nextArcadeMusicTrack({ autoplay: true });
 });
 
+document.addEventListener('pointerdown', (event) => {
+  activeLevelUpPointerIds.add(String(event.pointerId));
+}, true);
+const releaseLevelUpPointer = (event) => {
+  activeLevelUpPointerIds.delete(String(event.pointerId));
+  if (combat.levelUpPaused) refreshLevelUpInteractionState();
+};
+document.addEventListener('pointerup', releaseLevelUpPointer, true);
+document.addEventListener('pointercancel', releaseLevelUpPointer, true);
+document.addEventListener('lostpointercapture', releaseLevelUpPointer, true);
+window.addEventListener('blur', () => {
+  activeLevelUpPointerIds.clear();
+  if (combat.levelUpPaused) refreshLevelUpInteractionState();
+});
+
 document.addEventListener('keydown', (event) => {
   // Never hijack keys while the user is typing in a form field (username, etc.).
   const target = event.target;
@@ -12993,6 +13124,17 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   const key = event.key.toLowerCase();
+  if (combat.levelUpPaused) {
+    event.preventDefault();
+    if (event.repeat || !levelUpSelectionReady()) return;
+    if (key === '1' || key === '2') {
+      const choice = combat.levelUpChoices[Number(key) - 1];
+      if (choice) selectLevelUpUpgrade(choice.id);
+    } else if (key === 'r') {
+      rerollLevelUpChoices();
+    }
+    return;
+  }
   if (event.key === 'F10') {
     event.preventDefault();
     tacticalBalanceDebugEnabled = !tacticalBalanceDebugEnabled;
@@ -13109,6 +13251,7 @@ document.addEventListener('fullscreenchange', () => {
     }
     scheduleCombatViewportRelayout(120);
   }
+  if (combat.levelUpPaused) renderLevelUpActionGrid();
   syncCombatOverlay();
 });
 
@@ -13176,6 +13319,8 @@ function applyDeviceProfile() {
   document.body.classList.toggle('suggest-landscape', profile.suggestLandscape);
   applyGameplayAccessibilitySettings();
   ensureTouchControls(profile);
+  const levelUpOverlay = document.getElementById('levelUpOverlay');
+  if (levelUpOverlay && combat.levelUpPaused) applyLevelUpOverlayLayout(levelUpOverlay);
   if (officialAppStep === 'gameplay') scheduleCombatViewportRelayout(120);
   return profile;
 }
@@ -13392,6 +13537,14 @@ let deviceResizeTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(deviceResizeTimer);
   deviceResizeTimer = setTimeout(applyDeviceProfile, 120);
+});
+window.visualViewport?.addEventListener('resize', () => {
+  clearTimeout(deviceResizeTimer);
+  deviceResizeTimer = setTimeout(applyDeviceProfile, 80);
+});
+window.visualViewport?.addEventListener('scroll', () => {
+  const levelUpOverlay = document.getElementById('levelUpOverlay');
+  if (levelUpOverlay && combat.levelUpPaused) applyLevelUpOverlayLayout(levelUpOverlay);
 });
 window.addEventListener('orientationchange', () => {
   scheduleCombatViewportRelayout(120);

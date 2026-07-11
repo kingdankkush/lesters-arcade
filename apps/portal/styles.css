@@ -2827,12 +2827,208 @@ html[data-ingame="true"] .arcade-music-player,
 }
 
 #combatMenuPanel[data-state="level-up"] {
-  background-image:
-    linear-gradient(160deg, rgba(4, 11, 26, 0.78), rgba(10, 5, 28, 0.7)),
-    url('./assets/generated/hmh-production-art-pass/ui/level-up-modal-frame.png');
-  background-size: cover, 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
+  display: none !important;
+}
+
+/* Responsive level-up sheet owns the visual viewport while the simulation is paused. */
+.level-up-overlay {
+  position: fixed;
+  top: var(--level-up-top, 8px);
+  left: var(--level-up-left, 50vw);
+  z-index: 9999;
+  box-sizing: border-box;
+  display: grid;
+  width: min(var(--level-up-max-width, 760px), calc(100vw - 16px));
+  max-width: calc(100vw - 16px);
+  height: min(var(--level-up-max-height, calc(100dvh - 16px)), calc(100dvh - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: hidden;
+  transform: translateX(-50%);
+  border: 1px solid rgba(25, 247, 255, 0.58);
+  border-radius: clamp(14px, 3vw, 22px);
+  background: rgba(4, 8, 20, 0.96);
+  box-shadow:
+    0 0 0 100vmax rgba(1, 3, 12, 0.78),
+    0 0 54px rgba(25, 247, 255, 0.24),
+    0 0 38px rgba(255, 95, 162, 0.22);
+  backdrop-filter: blur(8px) saturate(1.08);
+  isolation: isolate;
+  overscroll-behavior: contain;
+}
+.level-up-overlay[hidden] { display: none; }
+.level-up-overlay .level-up-shell {
+  box-sizing: border-box;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: clamp(9px, 2.2vw, 16px);
+  overflow: hidden;
+  border: 0;
+  border-radius: inherit;
+}
+.level-up-overlay .level-up-card-stack {
+  grid-template-columns: repeat(var(--level-up-columns, 2), minmax(0, 1fr));
+  min-height: 0;
+  padding: 2px 3px 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: rgba(25, 247, 255, 0.65) rgba(255, 255, 255, 0.06);
+  -webkit-overflow-scrolling: touch;
+}
+.level-up-slot-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.level-up-shortcut {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #dbe7ff;
+  background: rgba(255, 255, 255, 0.06);
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.level-up-selection-status {
+  margin: 0;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 232, 77, 0.38);
+  border-radius: 6px;
+  color: var(--neon-yellow);
+  background: rgba(255, 232, 77, 0.08);
+  font-family: var(--mono);
+  font-size: clamp(0.55rem, 1.8vw, 0.68rem);
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+.level-up-overlay[data-armed="true"] .level-up-selection-status {
+  border-color: rgba(69, 255, 138, 0.46);
+  color: var(--neon-green);
+  background: rgba(69, 255, 138, 0.08);
+}
+.level-up-overlay .upgrade-reroll-button {
+  min-height: 44px;
+  margin: 0;
+}
+.level-up-overlay .level-up-upgrade-card:disabled,
+.level-up-overlay .upgrade-reroll-button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+  filter: saturate(0.55);
+  transform: none;
+}
+.level-up-overlay[data-armed="true"] .level-up-upgrade-card {
+  animation: level-up-card-arm 180ms ease-out both;
+}
+.level-up-overlay[data-layout="portrait-sheet"] .level-up-card-stack {
+  grid-template-columns: 1fr;
+}
+.level-up-overlay[data-compact="true"] .level-up-shell {
+  gap: 7px;
+  padding: 8px 10px;
+}
+.level-up-overlay[data-compact="true"] .level-up-shell-head {
+  display: block;
+  text-align: left;
+}
+.level-up-overlay[data-compact="true"] .level-up-kicker { display: none; }
+.level-up-overlay[data-compact="true"] .level-up-title {
+  display: block;
+  font-size: 0.94rem;
+  line-height: 1.08;
+  white-space: nowrap;
+}
+.level-up-overlay[data-compact="true"] .level-up-subtitle { display: none; }
+.level-up-overlay[data-compact="true"] .level-up-card-stack { gap: 8px; }
+.level-up-overlay[data-compact="true"] .level-up-slot-label { font-size: 0.52rem; }
+.level-up-overlay[data-compact="true"] .level-up-upgrade-card {
+  min-height: 0;
+  padding: 7px 9px;
+  gap: 4px;
+}
+.level-up-overlay[data-compact="true"] .upgrade-card-description {
+  -webkit-line-clamp: 1;
+  font-size: 0.59rem;
+}
+.level-up-overlay[data-compact="true"] .upgrade-card-tooltip { display: none; }
+.level-up-overlay[data-compact="true"] .upgrade-rank-pip { height: 4px; }
+html[data-level-up="true"],
+html[data-level-up="true"] body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+html[data-level-up="true"] .touch-controls { display: none !important; }
+html[data-touch="true"] .level-up-overlay { backdrop-filter: none; }
+
+/* Active play is an app state, not another section below the arcade portal. */
+html[data-ingame="true"] .official-nav,
+html[data-ingame="true"] .official-footer {
+  display: none;
+}
+html[data-ingame="true"] .gameplay-control-bar,
+html[data-ingame="true"] .gameplay-topbar,
+html[data-ingame="true"] .combat-hud-overlay {
+  display: none;
+}
+html[data-ingame="true"] .arcade-shell {
+  width: 100vw;
+  max-width: none;
+  min-height: 100dvh;
+  padding: 0;
+}
+html[data-ingame="true"] .official-app {
+  min-height: 100dvh;
+  padding: clamp(4px, 1vw, 10px);
+  background:
+    radial-gradient(circle at 50% 12%, rgba(25, 247, 255, 0.1), transparent 38rem),
+    linear-gradient(180deg, #030714, #07111d);
+}
+html[data-ingame="true"] .gameplay-view {
+  min-height: calc(100dvh - clamp(8px, 2vw, 20px));
+  margin: 0;
+  padding: 0;
+  border-color: rgba(25, 247, 255, 0.22);
+  border-radius: clamp(10px, 2vw, 20px);
+  background: rgba(2, 6, 16, 0.9);
+  box-shadow: inset 0 0 70px rgba(25, 247, 255, 0.04);
+}
+html[data-ingame="true"] .roguelike-stat-bar {
+  width: min(1180px, calc(100vw - 16px));
+  margin: 6px auto;
+}
+html[data-ingame="true"] .official-combat-mount {
+  width: 100%;
+  padding: clamp(3px, 0.8vw, 8px);
+  border: 1px solid rgba(25, 247, 255, 0.2);
+  border-radius: clamp(8px, 1.5vw, 16px);
+  background:
+    linear-gradient(180deg, rgba(25, 247, 255, 0.035), transparent 18%),
+    #02050d;
+  box-shadow: inset 0 0 36px rgba(0, 0, 0, 0.58), 0 0 24px rgba(25, 247, 255, 0.08);
+}
+html[data-ingame="true"] .official-combat-mount canvas {
+  display: block;
+  max-height: calc(100dvh - 104px);
+  border-radius: clamp(6px, 1vw, 12px);
+}
+
+@keyframes level-up-card-arm {
+  from { opacity: 0.76; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-up-overlay[data-armed="true"] .level-up-upgrade-card { animation: none; }
 }
 
 .combat-touch-hint::before {
