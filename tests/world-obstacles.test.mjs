@@ -148,6 +148,26 @@ test('screen-rectangle culling keeps a large prop until every visible pixel leav
   assert.equal(drawRectIntersectsViewport({ x: -257, y: 300, width: 256, height: 256 }, viewport), false);
 });
 
+test('authored collision polygons trim transparent corners from large prop blockers', () => {
+  const irregular = {
+    id: 'irregular-megaprop',
+    worldX: 10,
+    worldY: 5,
+    solid: true,
+    footprintTiles: { w: 6, h: 4 },
+    collisionPolygons: [[
+      [1, 0.75],
+      [5, 0.75],
+      [5, 3.25],
+      [1, 3.25],
+    ]],
+  };
+  assert.equal(obstacleHitAt(10, 5, [irregular])?.id, 'irregular-megaprop');
+  assert.equal(obstacleHitAt(12.75, 6.75, [irregular]), null, 'transparent footprint corner should remain walkable and shootable');
+  const movement = resolvePlayerCollision(6, 6.75, 13, 6.75, 0.2, [irregular]);
+  assert.ok(movement.x > 12.5, `movement through trimmed transparent corner should stay open, got ${movement.x}`);
+});
+
 test('swept actor hit detection catches fast bullets that cross an enemy between endpoints', () => {
   const enemies = [
     { id: 'near', mapX: 5, mapY: 0, hp: 10, hitRadius: 0.7 },

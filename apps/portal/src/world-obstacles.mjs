@@ -182,8 +182,26 @@ function obstacleFootprintBounds(obstacle, scale = 1, padding = 0) {
   const height = Number(obstacle?.footprintTiles?.h);
   if (!(width > 0) || !(height > 0)) return null;
   const safeScale = Math.max(0.1, Number(scale) || 1);
-  const halfW = width * safeScale * 0.5 + Math.max(0, Number(padding) || 0);
-  const halfH = height * safeScale * 0.5 + Math.max(0, Number(padding) || 0);
+  const safePadding = Math.max(0, Number(padding) || 0);
+  const polygonPoints = (obstacle?.collisionPolygons ?? [])
+    .flatMap((polygon) => Array.isArray(polygon) ? polygon : [])
+    .filter((point) => Array.isArray(point) && Number.isFinite(Number(point[0])) && Number.isFinite(Number(point[1])));
+  if (polygonPoints.length >= 3) {
+    const localCenterX = width * 0.5;
+    const localCenterY = height * 0.5;
+    const xs = polygonPoints.map((point) => localCenterX + (Number(point[0]) - localCenterX) * safeScale);
+    const ys = polygonPoints.map((point) => localCenterY + (Number(point[1]) - localCenterY) * safeScale);
+    const originX = obstacle.worldX - localCenterX;
+    const originY = obstacle.worldY - localCenterY;
+    return {
+      minX: originX + Math.min(...xs) - safePadding,
+      maxX: originX + Math.max(...xs) + safePadding,
+      minY: originY + Math.min(...ys) - safePadding,
+      maxY: originY + Math.max(...ys) + safePadding,
+    };
+  }
+  const halfW = width * safeScale * 0.5 + safePadding;
+  const halfH = height * safeScale * 0.5 + safePadding;
   return {
     minX: obstacle.worldX - halfW,
     maxX: obstacle.worldX + halfW,
