@@ -10,20 +10,20 @@ import {
 
 test('terrain blob cell derives 47-blob masks and bridge/water metadata from the authored ground plan', () => {
   const plan = buildGroundPlan({ seed: 47 });
-  const bridge = buildTerrainBlobCell(plan, 61, 5);
-  const water = buildTerrainBlobCell(plan, 61, 7);
+  const bridge = buildTerrainBlobCell(plan, 27, -39);
+  const water = buildTerrainBlobCell(plan, 25, -42);
 
-  assert.equal(bridge.zoneId, 'river-bridge-planks');
-  assert.equal(bridge.role, 'road');
+  assert.equal(bridge.zoneId, 'world-v3-wood-bridge-bridge');
+  assert.equal(bridge.role, 'bridge');
   assert.equal(bridge.isBridge, true);
-  assert.equal(bridge.adjacency.cardinal.north.role, 'shore');
+  assert.equal(bridge.adjacency.cardinal.north.role, 'bridge');
   assert.equal(bridge.blob.variantIndex >= 0 && bridge.blob.variantIndex < 47, true);
   assert.equal(bridge.renderLayers.includes('bridge-deck'), true);
   assert.equal(bridge.vfx.includes('bridge-shadow'), true);
 
   assert.equal(water.role, 'water');
   assert.equal(water.isWater, true);
-  assert.equal(water.adjacency.cardinal.north.zoneId, 'river-bridge-planks');
+  assert.equal(water.adjacency.cardinal.south.zoneId, 'world-v3-wood-bridge-bridge');
   assert.equal(water.renderLayers.includes('water-ripple'), true);
   assert.equal(water.vfx.includes('shoreline-foam'), true);
 });
@@ -33,9 +33,9 @@ test('ground plan serves immutable terrain blob cells from a per-run cache', () 
   assert.equal(typeof plan.cellAt, 'function');
   assert.equal(typeof plan.terrainCellCacheStats, 'function');
 
-  const first = plan.cellAt(61, 5);
-  const second = plan.cellAt(61, 5);
-  const fractional = plan.cellAt(61.2, 4.8);
+  const first = plan.cellAt(27, -39);
+  const second = plan.cellAt(27, -39);
+  const fractional = plan.cellAt(27.2, -39.2);
 
   assert.equal(first, second, 'same tile should return the exact cached object');
   assert.equal(first, fractional, 'rounded equivalent tile should return the exact cached object');

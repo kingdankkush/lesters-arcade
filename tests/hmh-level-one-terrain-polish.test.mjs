@@ -56,7 +56,7 @@ test('curated trees render as static props and are not added to the ambient anim
 test('world prop preloader is bounded to opening-camera assets for faster gameplay boot', () => {
   const preloadBlock = MAIN_SOURCE.slice(MAIN_SOURCE.indexOf('function preloadWorldPropImages'), MAIN_SOURCE.indexOf('// --- Persistent collidable world obstacles'));
   assert.match(preloadBlock, /wp\.slice\(0, 24\)/);
-  assert.match(preloadBlock, /buildLevelOneCuratedVisibleSceneObjects\(\{ playerX: 0, playerY: 5, window: 16, frame: 0 \}\)\.slice\(0, 32\)/);
+  assert.match(preloadBlock, /buildLevelOneWorldV3VisibleObjects\(\{ playerX: 0, playerY: 0, window: 16 \}\)\.slice\(0, 32\)/);
   assert.doesNotMatch(preloadBlock, /Object\.values\(SCENE_TEMPLATES\)/);
   assert.doesNotMatch(preloadBlock, /LEVEL_2_AUTHORED_LAYOUT_KEYS|LEVEL_3_AUTHORED_LAYOUT_KEYS/);
 });

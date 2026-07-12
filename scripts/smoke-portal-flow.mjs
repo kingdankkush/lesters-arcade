@@ -99,7 +99,7 @@ server?.stderr.on('data', (chunk) => {
 
 try {
   const html = await fetchText(portalUrl);
-  const main = await fetchText(`${portalUrl}main.js?v=hmh-jul11-responsive-levelup-v36`);
+  const main = await fetchText(`${portalUrl}main.js?v=hmh-jul12-world-v3-v37`);
   const styles = await fetchText(`${portalUrl}styles.css`);
   const playlistManifest = await fetchText(`${portalUrl}assets/audio/playlist/arcade-playlist-manifest.json`);
   const pixelLabRuntimeManifest = await fetchText(`${portalUrl}assets/generated/pixellab-calibration/lester-hero-6d6e53e2/runtime-manifest.mjs`);
@@ -122,7 +122,7 @@ try {
     'arcadeMusicShuffleButton',
     'combatMenuPanel',
     'splashFeaturedCabinet',
-    'hmh-jul11-responsive-levelup-v36',
+    'hmh-jul12-world-v3-v37',
   ]) {
     assertIncludes('portal html', html, marker);
   }

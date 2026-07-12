@@ -402,22 +402,43 @@ try {
   // Let camera traversal image decodes settle before sampling steady-state gameplay.
   await sleep(1500);
 
-  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(6, 8)`);
+  await runInPage(client, `globalThis.__hmhVisualDebugTeleport?.(16, -13)`);
+  const collisionTarget = await runInPage(client, `
+    (() => {
+      const scene = globalThis.__hmhVisualDebugScene?.();
+      return scene?.solidObstacles?.find((obstacle) =>
+        String(obstacle.id).includes('ghost-saloon-square')
+        && obstacle.footprintTiles?.w > 0
+        && obstacle.footprintTiles?.h > 0
+        && obstacle.footprintTiles.w <= 4
+        && obstacle.footprintTiles.h <= 4
+      ) ?? null;
+    })()
+  `);
+  if (!collisionTarget) throw new Error('HMH World v3 collision probe could not find a nearby authored solid');
+  const halfWidth = collisionTarget.footprintTiles.w / 2;
+  const halfHeight = collisionTarget.footprintTiles.h / 2;
+  const horizontalStartX = collisionTarget.worldX - halfWidth - 1.5;
+  const horizontalLimitX = collisionTarget.worldX - halfWidth - 0.42;
+  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(${horizontalStartX}, ${collisionTarget.worldY})`);
   await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
   await sleep(900);
   await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
   const horizontalCollision = await runInPage(client, `globalThis.__hmhVisualDebugScene?.()`);
-  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(9, 10.5)`);
+  const verticalStartY = collisionTarget.worldY + halfHeight + 1.5;
+  const verticalLimitY = collisionTarget.worldY + halfHeight + 0.42;
+  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(${collisionTarget.worldX}, ${verticalStartY})`);
   await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'w', code: 'KeyW', windowsVirtualKeyCode: 87 });
   await sleep(900);
   await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'w', code: 'KeyW', windowsVirtualKeyCode: 87 });
   const verticalCollision = await runInPage(client, `globalThis.__hmhVisualDebugScene?.()`);
   const collisionProbe = {
+    targetId: collisionTarget.id,
     horizontalStopX: horizontalCollision?.playerX ?? null,
     verticalStopY: verticalCollision?.playerY ?? null,
   };
-  if (!(collisionProbe.horizontalStopX > 6 && collisionProbe.horizontalStopX <= 7.59)
-      || !(collisionProbe.verticalStopY < 10.5 && collisionProbe.verticalStopY >= 9.03)) {
+  if (!(collisionProbe.horizontalStopX > horizontalStartX + 0.2 && collisionProbe.horizontalStopX <= horizontalLimitX + 0.2)
+      || !(collisionProbe.verticalStopY < verticalStartY - 0.2 && collisionProbe.verticalStopY >= verticalLimitY - 0.2)) {
     throw new Error(`HMH substantial-prop collision probe failed: ${JSON.stringify(collisionProbe)}`);
   }
   await sleep(1200);
@@ -466,13 +487,18 @@ try {
   `, 10000);
 
   const compactWorldTour = [
-    { name: 'seed-1337-north-forest', x: -36, y: -82, prefix: 'curated-tree/jul9-riparian-' },
-    { name: 'seed-1337-north-riverfront', x: 42, y: -78, prefix: 'curated/jul9-river-obstacles-b-' },
-    { name: 'seed-1337-northeast-neighborhood', x: 104, y: -66, prefix: 'curated/jul9-neighborhood-small-props-b-' },
-    { name: 'seed-1337-east-extraction', x: 104, y: 4, prefix: 'curated/jul9-extraction-monuments-b-' },
-    { name: 'seed-1337-southwest-rock-camp', x: -96, y: 78, prefix: 'curated/jul9-desert-rock-formations-b-' },
-    { name: 'seed-1337-southeast-glow-bank', x: 96, y: 78, prefix: 'curated/jul9-ambient-water-glow-b-' },
-    { name: 'seed-1337-west-boundary', x: -131, y: 0, obstaclePrefix: 'level-1/' },
+    { name: 'seed-1337-spawn-road', x: 0, y: 0, prefix: 'curated/jul9-fences-barricades-' },
+    { name: 'seed-1337-ghost-town', x: 16, y: -13, prefix: 'curated/jul9-ghost-town-facade-' },
+    { name: 'seed-1337-dry-forest', x: 12, y: -40, prefix: 'wo104-world/forest-' },
+    { name: 'seed-1337-mesa-overlook', x: 30, y: -58, prefix: 'curated/jul9-desert-rock-formations-b-' },
+    { name: 'seed-1337-oasis-lakeside', x: 52, y: -13, prefix: 'wo104-world/reed-' },
+    { name: 'seed-1337-crossroads', x: 50, y: -33, prefix: 'level1-authored-stamp/river-bridge-arrow-sign' },
+    { name: 'seed-1337-pine-creek-bridge', x: 27, y: -39, prefix: 'level1-authored-stamp/river-bridge-arrow-sign', requireBridge: true },
+    { name: 'seed-1337-frontier-town', x: 63, y: -26, prefix: 'wo105-world/second-town-' },
+    { name: 'seed-1337-wrecked-lighthouse', x: 74, y: 4, prefix: 'curated/jul9-ambient-water-glow-b-' },
+    { name: 'seed-1337-boss-yard', x: 79, y: -43, prefix: 'curated/jul9-industrial-mining-' },
+    { name: 'seed-1337-extraction', x: 85, y: -39, prefix: 'level1-authored-stamp/extraction-pad-' },
+    { name: 'seed-1337-west-boundary', x: -7.5, y: -40, obstaclePrefix: 'level-1/' },
   ];
   const compactWorldTourPositions = [];
   for (const stop of compactWorldTour) {
@@ -489,16 +515,22 @@ try {
     if (stop.obstaclePrefix && !position.obstacleAssetKeys?.some((key) => key.startsWith(stop.obstaclePrefix))) {
       throw new Error(`HMH compact-world boundary tour did not expose ${stop.obstaclePrefix} at ${stop.name}: ${JSON.stringify(position)}`);
     }
+    if (stop.requireBridge) {
+      await sleep(250);
+      const bridgeProfile = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
+      if (!(bridgeProfile?.groundRender?.terrainPresentationStats?.bridgeLightingCells > 0)) {
+        throw new Error(`HMH bridge tour did not render authored bridge deck lighting at ${stop.name}: ${JSON.stringify(bridgeProfile)}`);
+      }
+    }
     compactWorldTourPositions.push({ ...stop, ...position });
     await sleep(900);
     captures.push(await writeEvidenceCapture(client, stop.name));
   }
 
-  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'a', code: 'KeyA', windowsVirtualKeyCode: 65 });
-  await sleep(900);
-  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', windowsVirtualKeyCode: 65 });
+  await runInPage(client, `globalThis.__hmhVisualDebugNudge?.(-4, 0)`);
+  await sleep(250);
   const boundaryProbe = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
-  if (!boundaryProbe?.player?.boundaryClamped || boundaryProbe.player.x < -131.081) {
+  if (!boundaryProbe?.player?.boundaryClamped || boundaryProbe.player.x < -7.581) {
     throw new Error(`HMH west world boundary did not retain the complete player footprint: ${JSON.stringify(boundaryProbe)}`);
   }
 

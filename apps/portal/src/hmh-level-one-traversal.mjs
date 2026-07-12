@@ -42,6 +42,22 @@ export function classifyLevelOneTraversal({ groundPlan, roadTileIndex, worldX = 
   const y = Math.round(Number(worldY) || 0);
   const terrain = groundPlan?.zoneAt?.(x, y) ?? { zoneId: 'unknown', role: 'dirt' };
   const role = String(terrain.role || 'dirt');
+  const authored = groundPlan?.traversalAt?.(x, y) ?? null;
+  if (authored) {
+    const crossing = authored.isBridge ? 'bridge' : authored.isWater && authored.slow ? 'shallow' : null;
+    const blocked = Boolean(authored.blocked);
+    return Object.freeze({
+      x,
+      y,
+      zoneId: terrain.zoneId ?? 'unknown',
+      role,
+      blocked,
+      slow: Boolean(authored.slow),
+      crossing,
+      groundNav: authored.groundNav,
+      collisionBiome: blocked ? 'water' : role === 'water' ? 'shore' : role,
+    });
+  }
   const route = roadTileIndex?.get?.(levelOneRoadTileKey(x, y)) ?? null;
   const shallow = WATER_ROLES.has(role) && SHALLOW_ZONE_PATTERN.test(String(terrain.zoneId || ''));
   const crossing = route ? route.type : shallow ? 'shallow' : null;

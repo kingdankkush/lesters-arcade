@@ -1,6 +1,6 @@
 {
   "name": "lesters-arcade",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Retro Litecoin/Web3 arcade portal prototype for Lester's Arcade on LitVM.",
@@ -63,6 +63,7 @@
     "assets:hmh:canonical": "python scripts/ingest-hmh-canonical-art.py",
     "assets:hmh:level1:queue": "node scripts/write-hmh-level-one-environment-asset-queue.mjs",
     "assets:hmh:level1:pixellab": "python scripts/pixellab-hmh-level1-asset-wave.py",
+    "assets:hmh:level1:world-v3": "python scripts/build-hmh-level-one-world-blueprint-v3.py && python scripts/build-hmh-level-one-world-v3-materials.py && python scripts/build-hmh-level-one-world-v3-runtime.py",
     "assets:hmh:level-env": "python scripts/ingest-hmh-level-environment.py",
     "assets:hmh:alpha-clean": "python scripts/clean-hmh-level-design-alpha.py",
     "assets:hmh:curated-level-kit": "python scripts/build-hmh-curated-level-kit.py",

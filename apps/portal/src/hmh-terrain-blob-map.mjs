@@ -98,7 +98,12 @@ export function buildTerrainBlobCell(plan, worldX = 0, worldY = 0) {
   });
 }
 
-export function buildTerrainRenderingCapabilityReport(plan, { xMin = 0, xMax = 105, yMin = 0, yMax = 80 } = {}) {
+export function buildTerrainRenderingCapabilityReport(plan, options = {}) {
+  const bounds = typeof plan?.worldBounds === 'function' ? plan.worldBounds() : (plan?.worldBounds ?? null);
+  const xMin = Number.isFinite(options.xMin) ? options.xMin : (bounds?.minX ?? 0);
+  const xMax = Number.isFinite(options.xMax) ? options.xMax : (bounds?.maxX ?? 105);
+  const yMin = Number.isFinite(options.yMin) ? options.yMin : (bounds?.minY ?? 0);
+  const yMax = Number.isFinite(options.yMax) ? options.yMax : (bounds?.maxY ?? 80);
   const cellAt = typeof plan.cellAt === 'function' ? plan.cellAt.bind(plan) : (x, y) => buildTerrainBlobCell(plan, x, y);
   const cells = [];
   for (let x = xMin; x <= xMax; x += 1) {

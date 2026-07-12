@@ -47,6 +47,28 @@ function hasVfx(cell, id) {
   return Array.isArray(cell?.vfx) && cell.vfx.includes(id);
 }
 
+export function buildTerrainEdgeBlendsForCell(cell = {}) {
+  const cardinal = cell?.adjacency?.cardinal ?? {};
+  const currentTextureKey = cell?.textureKey ?? null;
+  const currentRole = roleKind(cell);
+  if (!currentTextureKey || currentRole === 'bridge') return Object.freeze([]);
+  const blends = [];
+  for (const direction of ['north', 'east', 'south', 'west']) {
+    const neighbor = cardinal[direction];
+    if (!neighbor?.textureKey || neighbor.textureKey === currentTextureKey || neighbor.terrainRole === 'bridge') continue;
+    const shoreline = currentRole === 'water' || neighbor.terrainRole === 'water' || currentRole === 'shore' || neighbor.terrainRole === 'shore';
+    const hardElevation = currentRole === 'rocky' || neighbor.terrainRole === 'rocky';
+    blends.push(Object.freeze({
+      direction,
+      textureKey: neighbor.textureKey,
+      alpha: shoreline ? 0.34 : hardElevation ? 0.18 : 0.26,
+      inset: shoreline ? 0.34 : 0.27,
+      blendMode: shoreline ? 'source-over' : 'soft-light',
+    }));
+  }
+  return Object.freeze(blends);
+}
+
 export function buildTerrainPresentationForCell(cell = {}, { frame = 0 } = {}) {
   const kind = roleKind(cell);
   const elevationBand = cell?.elevation?.band ?? 'mid';

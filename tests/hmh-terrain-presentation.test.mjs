@@ -4,16 +4,35 @@ import { readFileSync } from 'node:fs';
 
 import { buildGroundPlan } from '../apps/portal/src/hmh-ground-plan.mjs';
 import {
+  buildTerrainEdgeBlendsForCell,
   buildTerrainPresentationForCell,
   summarizeTerrainPresentation,
   TERRAIN_PRESENTATION_OVERLAY_ORDER,
 } from '../apps/portal/src/hmh-terrain-presentation.mjs';
 
+test('terrain edge blends use neighboring material truth without softening bridge decks', () => {
+  const cell = {
+    textureKey: 'world-v3-material/dry-grass',
+    terrainRole: 'grass',
+    adjacency: { cardinal: {
+      north: { textureKey: 'world-v3-material/packed-dirt', terrainRole: 'dirt' },
+      east: { textureKey: 'world-v3-material/dry-grass', terrainRole: 'grass' },
+      south: { textureKey: 'world-v3-material/fresh-deep-water', terrainRole: 'water' },
+      west: { textureKey: 'world-v3-material/wood-bridge', terrainRole: 'bridge' },
+    } },
+  };
+  const blends = buildTerrainEdgeBlendsForCell(cell);
+  assert.deepEqual(blends.map((blend) => blend.direction), ['north', 'south']);
+  assert.equal(blends[1].alpha, 0.34);
+  assert.equal(blends.every((blend) => blend.textureKey.startsWith('world-v3-material/')), true);
+  assert.deepEqual(buildTerrainEdgeBlendsForCell({ ...cell, terrainRole: 'bridge', isBridge: true }), []);
+});
+
 test('terrain presentation turns blob cells into ordered elevation/water/bridge/lighting overlays', () => {
   const plan = buildGroundPlan({ seed: 47 });
-  const bridge = buildTerrainPresentationForCell(plan.cellAt(61, 5), { frame: 24 });
-  const water = buildTerrainPresentationForCell(plan.cellAt(61, 7), { frame: 24 });
-  const bossHigh = buildTerrainPresentationForCell(plan.cellAt(69, 30), { frame: 24 });
+  const bridge = buildTerrainPresentationForCell(plan.cellAt(27, -39), { frame: 24 });
+  const water = buildTerrainPresentationForCell(plan.cellAt(25, -42), { frame: 24 });
+  const bossHigh = buildTerrainPresentationForCell(plan.cellAt(-7, -78), { frame: 24 });
 
   assert.deepEqual(TERRAIN_PRESENTATION_OVERLAY_ORDER, [
     'terrain-shadow',
@@ -51,7 +70,7 @@ test('terrain presentation turns blob cells into ordered elevation/water/bridge/
 
 test('terrain presentation summary reports live visual-system coverage', () => {
   const plan = buildGroundPlan({ seed: 47 });
-  const cells = [plan.cellAt(61, 5), plan.cellAt(61, 7), plan.cellAt(69, 30), plan.cellAt(0, 60)];
+  const cells = [plan.cellAt(27, -39), plan.cellAt(25, -42), plan.cellAt(-7, -78), plan.cellAt(0, 0)];
   const summary = summarizeTerrainPresentation(cells, { frame: 33 });
 
   assert.equal(summary.cellCount, 4);

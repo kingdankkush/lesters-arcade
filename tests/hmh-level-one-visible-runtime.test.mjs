@@ -349,14 +349,14 @@ test('Level 1 art policy disables old enemy-wave/combatArt fallbacks and generic
 
 test('main runtime consumes the curated visible runtime before generic sceneObjectsNear and disables Level 1 old enemy art fallbacks', () => {
   const source = readFileSync(repoPath('apps/portal/main.js'), 'utf8');
-  assert.equal(source.includes('buildLevelOneCuratedVisibleSceneObjects'), true);
+  assert.equal(source.includes('buildLevelOneWorldV3VisibleObjects'), true);
   assert.equal(source.includes('levelOneCuratedRuntimeArtPolicy'), true);
   assert.equal(source.includes('curatedLevelOneImage'), true);
 
   const currentObstacles = source.slice(source.indexOf('function currentObstacles()'), source.indexOf('// Per-role art sizing'));
-  assert.equal(currentObstacles.includes('buildLevelOneCuratedVisibleSceneObjects'), true, 'currentObstacles should inject curated visible Level 1 art');
+  assert.equal(currentObstacles.includes('buildLevelOneWorldV3VisibleObjects'), true, 'currentObstacles should inject Blueprint v3 visible Level 1 art');
   assert.equal(currentObstacles.includes('if (isLevelOneCuratedRuntime())'), true, 'Level 1 should have an explicit curated-runtime branch');
-  assert.equal(currentObstacles.indexOf('buildLevelOneCuratedVisibleSceneObjects') < currentObstacles.indexOf('sceneObjectsNear('), true, 'curated authored objects must be chosen before procedural scatter');
+  assert.equal(currentObstacles.indexOf('buildLevelOneWorldV3VisibleObjects') < currentObstacles.indexOf('sceneObjectsNear('), true, 'Blueprint v3 authored objects must be chosen before procedural scatter');
 
   const visibleRuntimeSource = readFileSync(repoPath('apps/portal/src/hmh-level-one-visible-runtime.mjs'), 'utf8');
   assert.equal(visibleRuntimeSource.includes('LEVEL_ONE_AUTHORED_PREFAB_STAMPS'), true, 'Level 1 visible runtime should expose exact-key authored prefab stamps');

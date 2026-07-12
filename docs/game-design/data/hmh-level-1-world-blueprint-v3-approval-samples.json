@@ -1,0 +1,19 @@
+{
+  "id": "hmh-level-1-world-blueprint-v3-approval-samples",
+  "status": "concept-only-not-runtime-ready",
+  "samples": [
+    {
+      "id": "sample-terrain-river-road-transition",
+      "revision": 2,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa1ec19/Xutr2iEf7NBUFe5tX7OZY_diWlU9yg.png",
+      "vaultSourceName": "sample-a-terrain-river-road-transition-v2.png"
+    },
+    {
+      "id": "sample-landmark-ghost-saloon-arena",
+      "revision": 2,
+      "sourceUrl": "https://v3b.fal.media/files/b/0aa1ec1a/5aC1ZEu8fAV71ngNeb0KS_OFFeTVG7.png",
+      "vaultSourceName": "sample-b-ghost-saloon-arena-v2.png"
+    }
+  ],
+  "contactSheet": "docs/game-design/assets/hmh-level-1-world-blueprint-v3/approval-samples.png"
+}

@@ -10,6 +10,7 @@ import {
   HMH_WO104_106_WORLD_KIT,
   wo104106WorldKitAssetByKey,
 } from '../assets/generated/hmh-wo104-106-world-kit/hmh-wo104-106-world-kit-manifest.mjs';
+import { levelOneWorldV3LandmarkAssetByKey } from '../assets/generated/hmh-level-one-world-v3/hmh-level-one-world-v3-landmarks.mjs';
 
 const ROLE_FOR_USE = Object.freeze({
   landmark: 'landmark',
@@ -553,6 +554,7 @@ export function levelOneCuratedAssetSrc(assetKey) {
     ?? levelOneAuthoredStampAssetSrc(assetKey)
     ?? wo102MegaPropAssetByKey(assetKey)?.src
     ?? wo104106WorldKitAssetSrc(assetKey)
+    ?? levelOneWorldV3LandmarkAssetByKey(assetKey)?.src
     ?? null;
 }
 

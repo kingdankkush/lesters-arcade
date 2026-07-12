@@ -9,14 +9,11 @@ import {
   pointWithinLevelOneBounds,
 } from '../apps/portal/src/arcade-core.mjs';
 
-test('WO-21 Level 1 world dimensions expose finite centered map bounds', () => {
+test('WO-21 Level 1 world dimensions expose finite Blueprint v3 spawn-centered map bounds', () => {
   const world = buildLevelOneRunWorldDimensions();
   assert.equal(world.finite, true);
-  assert.equal(world.origin, 'center');
-  assert.equal(world.minX, -world.width / 2);
-  assert.equal(world.maxX, world.width / 2);
-  assert.equal(world.minY, -world.height / 2);
-  assert.equal(world.maxY, world.height / 2);
+  assert.equal(world.origin, 'authored-spawn');
+  assert.deepEqual({ minX: world.minX, maxX: world.maxX, minY: world.minY, maxY: world.maxY }, { minX: -8, maxX: 91, minY: -78, maxY: 21 });
   assert.ok(world.boundaryInsetTiles >= 3, 'bounds need an inset for future walls/natural edges');
 });
 

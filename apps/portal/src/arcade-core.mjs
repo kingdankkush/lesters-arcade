@@ -35,6 +35,7 @@ import { HMH_COPY_SHEET } from './hmh-copy-sheet.mjs';
 import { normalizeProfileIdentity } from './hmh-profile-parity.mjs';
 import { createSeededSubstreams } from './seeded-rng.mjs';
 import { gameSlugFor } from './arcade-router.mjs';
+import { levelOneWorldV3WorldBounds } from './hmh-level-one-world-v3-runtime.mjs';
 
 export {
   LEADERBOARD_CADENCES,
@@ -2211,13 +2212,12 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
   mode: 'open-ended-survival',
   eliteBandSeconds: Object.freeze({ start: 20 * 60, end: 25 * 60 }),
   world: Object.freeze({
-    // Two playtest reductions: 1050x900 -> 525x450 -> 263x225. The compact
-    // footprint keeps every authored district reachable while reducing world
-    // generation, boundary, minimap, and exploration bookkeeping.
-    width: 263,
-    height: 225,
-    traversalTargetPct: 0.9,
-    traversalEfficiency: 0.24,
+    // Blueprint v3 replaces the oversized procedural footprint with the complete
+    // authored 100x100 finite world. The live origin is the authored spawn cell.
+    width: 100,
+    height: 100,
+    traversalTargetPct: 0.8085,
+    traversalEfficiency: 0.09,
     traversalBudgetSeconds: 4 * 60,
   }),
   player: Object.freeze({
@@ -2418,13 +2418,15 @@ export function buildLevelOneRunWorldDimensions({
   const safeHeight = Math.max(1, Math.round(Number(height) || HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height));
   const uniqueTiles = Math.max(0, Number(moveSpeedTilesPerSecond) || 0) * Math.max(0, Number(targetSessionSeconds) || 0) * Math.max(0, Number(traversalEfficiency) || 0);
   const baselineAxis = Math.max(safeWidth, safeHeight);
-  const minX = -safeWidth / 2;
-  const maxX = safeWidth / 2;
-  const minY = -safeHeight / 2;
-  const maxY = safeHeight / 2;
+  const authoredBounds = levelOneWorldV3WorldBounds();
+  const useAuthoredBounds = safeWidth === authoredBounds.width && safeHeight === authoredBounds.height;
+  const minX = useAuthoredBounds ? authoredBounds.minX : -safeWidth / 2;
+  const maxX = useAuthoredBounds ? authoredBounds.maxX : safeWidth / 2;
+  const minY = useAuthoredBounds ? authoredBounds.minY : -safeHeight / 2;
+  const maxY = useAuthoredBounds ? authoredBounds.maxY : safeHeight / 2;
   return Object.freeze({
     finite: true,
-    origin: 'center',
+    origin: useAuthoredBounds ? 'authored-spawn' : 'center',
     width: safeWidth,
     height: safeHeight,
     minX,

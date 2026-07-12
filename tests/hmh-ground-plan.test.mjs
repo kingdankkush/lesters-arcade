@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-import { HMH_CURATED_LEVEL_ART } from '../apps/portal/assets/generated/hmh-curated-level-art/hmh-curated-level-art.mjs';
 import { HMH_LEVEL_ONE_ID } from '../apps/portal/src/hmh-level-one-ground.mjs';
 import { buildGroundPlan } from '../apps/portal/src/hmh-ground-plan.mjs';
+import { authoredCellToWorld, HMH_LEVEL_ONE_WORLD_V3 } from '../apps/portal/src/hmh-level-one-world-v3-runtime.mjs';
 
 function sampleTiles(width = 200, height = 200) {
   const tiles = [];
@@ -13,6 +13,37 @@ function sampleTiles(width = 200, height = 200) {
   }
   return tiles;
 }
+
+test('live Level 1 ground plan is backed by the approved Blueprint v3 cell contract', () => {
+  const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
+  assert.equal(plan.worldContractId, HMH_LEVEL_ONE_WORLD_V3.id);
+  assert.equal(plan.width, 100);
+  assert.equal(plan.height, 100);
+  assert.deepEqual(plan.worldBounds, { minX: -8, maxX: 91, minY: -78, maxY: 21, width: 100, height: 100 });
+  assert.deepEqual(plan.spawnWorld, { x: 0, y: 0 });
+
+  const spawn = plan.zoneAt(0, 0);
+  assert.equal(spawn.source, 'hmh-level-one-world-v3');
+  assert.equal(spawn.groundNav, '.');
+  assert.equal(spawn.authoredX, HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.x);
+  assert.equal(spawn.authoredY, HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.y);
+
+  const waterWorld = authoredCellToWorld(49, 64);
+  const water = plan.zoneAt(waterWorld.x, waterWorld.y);
+  assert.equal(water.role, 'water');
+  assert.equal(water.groundNav, '#');
+  assert.equal(plan.traversalAt(waterWorld.x, waterWorld.y).blocked, true);
+
+  const bridgeWorld = authoredCellToWorld(35, 39);
+  const bridge = plan.zoneAt(bridgeWorld.x, bridgeWorld.y);
+  assert.equal(bridge.role, 'bridge');
+  assert.equal(bridge.groundNav, '.');
+  assert.equal(plan.traversalAt(bridgeWorld.x, bridgeWorld.y).isBridge, true);
+
+  assert.equal(plan.zoneAt(999, 999).groundNav, '#');
+  assert.equal(plan.textureKeys().length, 17);
+  assert.equal(plan.textureKeys().every((key) => plan.textureForKey(key)?.src), true);
+});
 
 test('ground plan assigns every sampled tile to exactly one zone with one texture', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
@@ -26,23 +57,20 @@ test('ground plan assigns every sampled tile to exactly one zone with one textur
   }
 });
 
-test('authored terrain zones keep cohesive materials instead of randomizing tile art every two cells', () => {
+test('authored terrain families keep one cohesive material across all 10,000 cells', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
-  const sampledByZone = new Map();
-  for (const [x, y] of sampleTiles(120, 40)) {
-    const here = plan.zoneAt(x - 20, y - 8);
-    if (!sampledByZone.has(here.zoneId)) sampledByZone.set(here.zoneId, new Set());
-    sampledByZone.get(here.zoneId).add(here.textureKey);
+  const materialByTerrain = new Map();
+  for (let authoredY = 0; authoredY < 100; authoredY += 1) {
+    for (let authoredX = 0; authoredX < 100; authoredX += 1) {
+      const world = authoredCellToWorld(authoredX, authoredY);
+      const here = plan.zoneAt(world.x, world.y);
+      if (!materialByTerrain.has(here.terrain)) materialByTerrain.set(here.terrain, new Set());
+      materialByTerrain.get(here.terrain).add(here.textureKey);
+    }
   }
-
-  assert.equal(sampledByZone.get('spawn-dirt-scrub-outfield')?.size, 1, 'spawn outfield should read as one continuous dirt material');
-  assert.equal(sampledByZone.get('spawn-clear-blacktop-centerline')?.size, 1, 'spawn road should read as continuous authored blacktop');
-  assert.equal(sampledByZone.get('ghost-town-cracked-asphalt-core')?.size, 1, 'ghost-town streets should use one coherent asphalt surface');
-  assert.notEqual(
-    plan.zoneAt(0, 5).textureKey,
-    plan.zoneAt(0, 8).textureKey,
-    'authored neighboring road and shoulder zones should still use distinct materials',
-  );
+  assert.equal(materialByTerrain.size, 17);
+  assert.equal([...materialByTerrain.values()].every((keys) => keys.size === 1), true);
+  assert.notEqual(plan.zoneAt(0, 0).textureKey, plan.zoneAt(4, 0).textureKey, 'authored asphalt and shoulder materials stay distinct');
 });
 
 test('borderInfo is present exactly on cardinal zone boundaries', () => {
@@ -74,100 +102,69 @@ test('borderInfo is present exactly on cardinal zone boundaries', () => {
   assert.ok(interiorTiles > boundaryTiles, 'the plan should still have broad zone interiors');
 });
 
-test('ground plan references Justin-approved ChatGPT terrain tiles for the redesigned level layout', () => {
+test('ground plan references only certified World v3 terrain materials', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   const textureKeys = new Set(plan.zones.map((zone) => zone.textureKey));
-  assert.ok(textureKeys.size > 0, 'expected plan textures to be present');
-  assert.ok([...textureKeys].some((key) => key.startsWith('chatgpt-terrain/')), 'expected ChatGPT terrain textures in the ground plan');
-  for (const role of ['grass', 'water', 'shore', 'sand', 'road', 'rocky', 'grass-to-dirt', 'dirt-to-sand']) {
-    assert.ok(HMH_CURATED_LEVEL_ART.terrainRoles?.[role]?.length > 0, `${role} terrain role should have sliced tile coverage`);
-  }
+  assert.equal(textureKeys.size, 17);
   for (const textureKey of textureKeys) {
-    assert.doesNotMatch(textureKey, /^pixellab-surface\//, `${textureKey} should not use transparent legacy slab candidates for broad ground fill`);
+    assert.match(textureKey, /^world-v3-material\//);
     const asset = plan.textureForKey(textureKey);
     assert.ok(asset, `${textureKey} should resolve through the plan texture lookup`);
-    if (textureKey.startsWith('chatgpt-terrain/')) {
-      assert.match(asset.src, /^\.\/assets\/generated\/hmh-curated-level-art\/terrain-textures\//);
-      assert.doesNotMatch(asset.src, /\.\/apps\/portal\//, 'runtime texture URL must be portal-root relative for Vercel outputDirectory');
-      assert.equal(asset.width, 160);
-      assert.equal(asset.height, 160);
-    }
+    assert.match(asset.src, /^\.\/assets\/generated\/hmh-level-one-world-v3\/materials\//);
+    assert.equal(asset.width, 160);
+    assert.equal(asset.height, 160);
+    assert.equal(asset.seamMismatchPixels, 0);
   }
 });
 
-test('compact full-map plan exposes every approved terrain sheet including variable 4x4 and 6x4 grids', () => {
+test('compact full-map plan exposes all 17 materials while prewarming only the nearby subset', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
   const keys = plan.textureKeys();
-  for (const sheet of [
-    'jul9-master-ground-terrain-a',
-    'jul9-transition-ground-edges-a',
-    'jul9-street-asphalt-parking-a',
-    'jul9-water-shore-mud-a',
-    'jul9-neighborhood-ground-a',
-    'jul9-lakeside-pond-a',
-    'jul9-park-path-plaza-a',
-    'jul9-road-transition-a',
-    'jul9-extraction-plaza-b',
-    'jul9-riverbank-slabs-b',
-    'jul9-rapid-water-b',
-  ]) {
-    assert.ok(keys.some((key) => key.includes(`/${sheet}-r`)), `${sheet} should be used by the live compact-map terrain plan`);
-  }
-  const approvedJul9Keys = HMH_CURATED_LEVEL_ART.groundTextures
-    .filter((texture) => texture.sheet.startsWith('jul9-'))
-    .map((texture) => texture.key);
-  assert.equal(approvedJul9Keys.length, 264);
-  assert.ok(approvedJul9Keys.every((key) => keys.includes(key)), 'every accepted Jul 9 map tile texture should participate in the compact world plan');
-  assert.ok(plan.textureForKey('chatgpt-terrain/jul9-extraction-plaza-b-r4-c4'));
-  assert.ok(plan.textureForKey('chatgpt-terrain/jul9-riverbank-slabs-b-r6-c4'));
-  assert.ok(plan.textureForKey('chatgpt-terrain/jul9-rapid-water-b-r6-c4'));
-
-  const nearby = plan.textureKeysNear(0, 5, 18);
+  assert.equal(keys.length, 17);
+  assert.equal(new Set(keys).size, 17);
+  const nearby = plan.textureKeysNear(0, 0, 12);
   assert.ok(nearby.length > 0);
-  assert.ok(nearby.length <= 12, `opening prewarm should need at most 12 authored materials, got ${nearby.length}`);
+  assert.ok(nearby.length <= 12, `opening prewarm should need at most 12 materials, got ${nearby.length}`);
   assert.ok(nearby.length < keys.length, 'startup prewarm should decode nearby terrain instead of every full-map texture');
   assert.ok(nearby.every((key) => plan.textureForKey(key)), 'every nearby texture key should resolve');
 });
 
-test('spawn road uses blended shoulders and keeps the player start clear', () => {
+test('spawn road is authored asphalt with passable shoulders and a clear player start', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
-  assert.equal(plan.zoneAt(0, 5).zoneId, 'spawn-clear-blacktop-centerline');
-  assert.equal(plan.zoneAt(0, 5).role, 'road');
-  assert.equal(plan.zoneAt(0, 3).zoneId, 'spawn-grass-road-north-shoulder');
-  assert.equal(plan.zoneAt(0, 8).zoneId, 'spawn-muddy-road-south-shoulder');
-  assert.match(plan.zoneAt(0, 5).textureKey, /^chatgpt-terrain\//);
-  assert.match(plan.zoneAt(0, 3).textureKey, /^chatgpt-terrain\//);
-  assert.match(plan.zoneAt(0, 8).textureKey, /^chatgpt-terrain\//);
+  for (const [x, y] of [[0, 0], [0, -2], [0, 2]]) {
+    const cell = plan.zoneAt(x, y);
+    assert.equal(cell.role, 'road');
+    assert.equal(cell.groundNav, '.');
+    assert.equal(cell.terrain, 'A');
+  }
+  assert.equal(plan.zoneAt(4, 0).groundNav, '.');
+  assert.notEqual(plan.zoneAt(4, 0).textureKey, plan.zoneAt(0, 0).textureKey);
 });
 
-test('compact biome towns and exploration POIs are connected by authored roads, dirt paths, and bridge crossings', () => {
+test('critical path, POIs, and bridge crossings resolve through authored passable ground', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
-  const expectedRoutes = [
-    [-70, 4, 'road', 'west town to spawn road'],
-    [70, 4, 'road', 'spawn to east extraction road'],
-    [-106, -40, 'dirt', 'northwest desert path'],
-    [-36, -40, 'dirt', 'north forest path'],
-    [104, -30, 'road', 'northeast neighborhood road'],
-    [-60, 79, 'dirt', 'southwest exploration trail'],
-    [60, 79, 'dirt', 'southeast waterfront trail'],
-    [29, -71, 'road', 'north river bridge'],
-    [29, 79, 'road', 'south river bridge'],
-  ];
-  for (const [x, y, role, label] of expectedRoutes) {
-    assert.equal(plan.zoneAt(x, y).role, role, `${label} should be authored into the rendered ground plan`);
+  for (const anchor of [...HMH_LEVEL_ONE_WORLD_V3.criticalPath, ...HMH_LEVEL_ONE_WORLD_V3.pointsOfInterest]) {
+    const world = authoredCellToWorld(anchor.x, anchor.y);
+    assert.notEqual(plan.zoneAt(world.x, world.y).groundNav, '#', `${anchor.id} must be ground reachable`);
   }
-  assert.equal(plan.zoneAt(29, 20).role, 'water', 'deep rapid-water spine must remain visible between crossings');
+  for (const bridge of HMH_LEVEL_ONE_WORLD_V3.bridges) {
+    const world = authoredCellToWorld(bridge.x, bridge.y);
+    assert.equal(plan.zoneAt(world.x, world.y).role, 'bridge');
+    assert.equal(plan.zoneAt(world.x, world.y).route, 'B');
+    assert.equal(plan.zoneAt(world.x, world.y).groundNav, '.');
+  }
 });
 
 test('authored lakes, rapids, and fords are ground-plan water instead of walkable prop cards', () => {
   const plan = buildGroundPlan({ levelId: HMH_LEVEL_ONE_ID, seed: 1337 });
-  for (const [x, y, label] of [
-    [42, -76, 'north riverfront rapid pool'],
-    [84, 9, 'lakeside park pond'],
-    [42, 3, 'east-town shallow ford'],
-    [96, 70, 'southeast glow-bank pool'],
+  for (const [authoredX, authoredY, nav, label] of [
+    [49, 64, '#', 'Silver Wallet Lake deep water'],
+    [88, 92, '#', 'southern sea outlet'],
+    [56, 59, '~', 'optional shallow ford'],
   ]) {
-    assert.equal(plan.zoneAt(x, y).role, 'water', `${label} should be authored into collision-backed water terrain`);
+    const world = authoredCellToWorld(authoredX, authoredY);
+    assert.equal(plan.zoneAt(world.x, world.y).role, 'water', `${label} should be collision-backed water terrain`);
+    assert.equal(plan.zoneAt(world.x, world.y).groundNav, nav);
   }
 });
 

@@ -83,6 +83,22 @@ test('resolvePlayerCollision lets the player move freely when not overlapping', 
   assert.equal(r.y, 1);
 });
 
+test('terrain swept collision cannot tunnel through a one-tile blocker when the destination is dry', () => {
+  const thinWall = (_seed, x) => (x >= 4.5 && x <= 5.5 ? 'water' : 'road');
+  const resolved = resolveWaterCollision(1337, 0, 0, 10, 0, thinWall, { radius: 0.4, maxStep: 0.2 });
+  assert.ok(resolved.x < 4.2, `actor should stop before the thin blocker, got ${resolved.x}`);
+  assert.equal(resolved.y, 0);
+});
+
+test('terrain swept collision honors actor radius and slides along blocked banks', () => {
+  const eastBank = (_seed, x) => (x >= 5 ? 'water' : 'road');
+  const stopped = resolveWaterCollision(1337, 4, 0, 4.9, 0, eastBank, { radius: 0.42, maxStep: 0.1 });
+  assert.ok(stopped.x <= 4.5, `actor radius should remain outside the bank, got ${stopped.x}`);
+  const slid = resolveWaterCollision(1337, 4, 0, 5.2, 2, eastBank, { radius: 0.42, maxStep: 0.1 });
+  assert.ok(slid.x <= 4.5, `slide should not enter the bank, got ${slid.x}`);
+  assert.ok(slid.y > 1.5, `slide should preserve the clear axis, got ${slid.y}`);
+});
+
 test('obstacleHitAt detects a bullet inside a solid obstacle and misses outside', () => {
   const obstacles = [{ worldX: 5, worldY: 5, radius: 1, solid: true }];
   assert.ok(obstacleHitAt(5, 5, obstacles));

@@ -436,15 +436,46 @@ export function resolveDistantSpawnPosition({
   };
 }
 
-// Resolve a desired move against water: if the destination tile is water, keep
-// the axis that stays on land where possible (slide along the shoreline), else
-// stay put. `fromX/fromY` must be on non-water ground.
-export function resolveWaterCollision(seed, fromX, fromY, toX, toY, biomeAt) {
-  if (!isWaterAt(seed, toX, toY, biomeAt)) return { x: toX, y: toY };
-  // Try moving on X only, then Y only, so the player slides along the bank.
-  if (!isWaterAt(seed, toX, fromY, biomeAt)) return { x: toX, y: fromY };
-  if (!isWaterAt(seed, fromX, toY, biomeAt)) return { x: fromX, y: toY };
-  return { x: fromX, y: fromY };
+// Resolve a desired move against blocked terrain with a continuous actor sweep.
+// The historical name remains for API compatibility, but Blueprint v3 maps every
+// blocked terrain class (water, cliffs, mountains, perimeter) to this resolver.
+export function resolveWaterCollision(seed, fromX, fromY, toX, toY, biomeAt, { radius = 0, maxStep = 0.2 } = {}) {
+  const safeRadius = Math.max(0, finiteOr(radius, 0));
+  const safeStep = Math.max(0.05, Math.min(0.5, finiteOr(maxStep, 0.2)));
+  const blockedAt = (x, y) => {
+    if (isWaterAt(seed, x, y, biomeAt)) return true;
+    if (safeRadius <= 0) return false;
+    for (let index = 0; index < 8; index += 1) {
+      const angle = (index / 8) * Math.PI * 2;
+      if (isWaterAt(seed, x + Math.cos(angle) * safeRadius, y + Math.sin(angle) * safeRadius, biomeAt)) return true;
+    }
+    return false;
+  };
+  const sweep = (startX, startY, endX, endY) => {
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const steps = Math.max(1, Math.ceil(Math.hypot(dx, dy) / safeStep));
+    let lastSafe = { x: startX, y: startY };
+    for (let step = 1; step <= steps; step += 1) {
+      const t = step / steps;
+      const point = { x: startX + dx * t, y: startY + dy * t };
+      if (blockedAt(point.x, point.y)) return { blocked: true, lastSafe };
+      lastSafe = point;
+    }
+    return { blocked: false, lastSafe: { x: endX, y: endY } };
+  };
+
+  const direct = sweep(fromX, fromY, toX, toY);
+  if (!direct.blocked) return direct.lastSafe;
+
+  const candidates = [];
+  const xOnly = sweep(fromX, fromY, toX, fromY);
+  if (!xOnly.blocked && Math.abs(toX - fromX) > 1e-6) candidates.push(xOnly.lastSafe);
+  const yOnly = sweep(fromX, fromY, fromX, toY);
+  if (!yOnly.blocked && Math.abs(toY - fromY) > 1e-6) candidates.push(yOnly.lastSafe);
+  if (!candidates.length) return direct.lastSafe;
+  candidates.sort((a, b) => Math.hypot(b.x - fromX, b.y - fromY) - Math.hypot(a.x - fromX, a.y - fromY));
+  return candidates[0];
 }
 
 export function resolveBoundedAiMove({
@@ -464,7 +495,7 @@ export function resolveBoundedAiMove({
   const desiredY = finiteOr(toY, startY);
   const bounds = normalizeWorldBounds(worldBounds);
   const afterObstacles = resolvePlayerCollision(startX, startY, desiredX, desiredY, Math.max(0.1, finiteOr(radius, 0.4)), Array.isArray(obstacles) ? obstacles : []);
-  const terrain = resolveWaterCollision(seed, startX, startY, afterObstacles.x, afterObstacles.y, biomeAt);
+  const terrain = resolveWaterCollision(seed, startX, startY, afterObstacles.x, afterObstacles.y, biomeAt, { radius: Math.max(0.1, finiteOr(radius, 0.4)) });
   const bounded = clampToWorldBounds(terrain.x, terrain.y, bounds);
   const obstacleAdjusted = afterObstacles.x !== desiredX || afterObstacles.y !== desiredY;
   const terrainAdjusted = terrain.x !== afterObstacles.x || terrain.y !== afterObstacles.y;

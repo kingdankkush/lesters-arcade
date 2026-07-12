@@ -1072,15 +1072,20 @@ test('Level 1 ship focus is open-ended survival with no timer extraction target'
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('100%-scale enemy hit detection'), true);
 });
 
-test('Level 1 world dimensions halve the still-oversized playtest footprint again', () => {
+test('Level 1 world dimensions use Blueprint v3 authored spawn-centered bounds', () => {
   const world = buildLevelOneRunWorldDimensions();
 
   assert.equal(world.width, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width);
   assert.equal(world.height, HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height);
-  assert.equal(world.width, 263);
-  assert.equal(world.height, 225);
+  assert.equal(world.width, 100);
+  assert.equal(world.height, 100);
+  assert.equal(world.origin, 'authored-spawn');
+  assert.equal(world.minX, -8);
+  assert.equal(world.maxX, 91);
+  assert.equal(world.minY, -78);
+  assert.equal(world.maxY, 21);
   assert.equal(world.targetSessionSeconds, 4 * 60);
-  assert.ok(world.traversalTargetPct >= 0.85 && world.traversalTargetPct <= 0.95);
+  assert.equal(world.traversalTargetPct, 0.8085);
   assert.ok(world.expectedUniqueTraversalPct >= 0.85, `expected most of the compact map to be traversable, got ${world.expectedUniqueTraversalPct}`);
   assert.ok(world.expectedUniqueTraversalPct <= 0.95, `expected authored loops rather than guaranteed full-map sweep, got ${world.expectedUniqueTraversalPct}`);
   assert.ok(world.width <= Math.ceil(525 / 2) && world.height <= 450 / 2, 'user requested another 50% reduction from the 525x450 playtest world');
@@ -1792,7 +1797,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul11-responsive-levelup-v36'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul12-world-v3-v37'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2617,7 +2622,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-jul11-responsive-levelup-v36'), true);
+  assert.equal(smokeScript.includes('hmh-jul12-world-v3-v37'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

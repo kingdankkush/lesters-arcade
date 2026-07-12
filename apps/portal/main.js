@@ -39,7 +39,7 @@ import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
 import { buildLevelOneRoadTileIndex, classifyLevelOneTraversal, levelOneRoadTileKey } from './src/hmh-level-one-traversal.mjs';
 import { groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
-import { buildTerrainPresentationForCell } from './src/hmh-terrain-presentation.mjs';
+import { buildTerrainEdgeBlendsForCell, buildTerrainPresentationForCell } from './src/hmh-terrain-presentation.mjs';
 import {
   propDrawRectForGroundContact,
   propFrontEdgeDepth,
@@ -93,11 +93,17 @@ import {
   buildLevelOneSpawnCompositionAt,
 } from './src/hmh-level-one-balance-pass.mjs';
 import {
-  buildLevelOneCuratedVisibleSceneObjects,
   levelOneCuratedRuntimeArtPolicy,
   levelOneCuratedAssetSrc,
   levelOneOpeningGroundRoleForTile,
 } from './src/hmh-level-one-visible-runtime.mjs';
+import { buildLevelOneWorldV3VisibleObjects } from './src/hmh-level-one-world-v3-objects.mjs';
+import {
+  levelOneWorldV3BossPoint,
+  levelOneWorldV3DistrictContextAt,
+  levelOneWorldV3ExtractionPoint,
+  levelOneWorldV3PoiDirectiveAt,
+} from './src/hmh-level-one-world-v3-gameplay.mjs';
 import { buildAmbientZoneModel, buildCombatReadabilityProfile, buildEnvironmentState, buildNoirLightingPlan } from './src/hmh-environment-manager.mjs';
 import {
   buildCharacterSelectEntries,
@@ -1938,6 +1944,13 @@ function currentLevelOnePerformanceBudget() {
 }
 
 function currentCampaignPoi() {
+  if ((combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === HMH_LEVEL_ONE_ID) {
+    return levelOneWorldV3PoiDirectiveAt({
+      playerX: combat.playerMapX,
+      playerY: combat.playerMapY,
+      completedPoiIds: [...(combat.completedCampaignPoiIds ?? [])],
+    });
+  }
   if (!combat.roguelikeRun || !Array.isArray(combat.districtGrid) || !combat.districtGrid.length || !combat.macroCellsX) return null;
   return buildCampaignPoiDirective({
     levelId: combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID,
@@ -6204,10 +6217,12 @@ async function startCombat(options = {}) {
   // connecting district centers, so the world reads as a planned place
   // (streets between blocks, trails between groves) instead of raw biome noise.
   const seed = combat.roguelikeRun.seed;
-  const safePlayerStart = findNearestDrySpawn(seed, 0, 0, biomeAt, {
-    maxRadius: ROGUELIKE_PLAYER_START_SEARCH_RADIUS_TILES,
-    step: 1,
-  });
+  const safePlayerStart = level.id === HMH_LEVEL_ONE_ID
+    ? { x: 0, y: 0, adjusted: false, found: true }
+    : findNearestDrySpawn(seed, 0, 0, biomeAt, {
+        maxRadius: ROGUELIKE_PLAYER_START_SEARCH_RADIUS_TILES,
+        step: 1,
+      });
   combat.playerMapX = safePlayerStart.x;
   combat.playerMapY = safePlayerStart.y;
   combat.roguelikeRun.player.x = safePlayerStart.x;
@@ -6230,7 +6245,10 @@ async function startCombat(options = {}) {
   combat.districtGrid = campaignWorld.grid;
   combat.macroCellsX = campaignWorld.macroCellsX;
   combat.macroCellsY = campaignWorld.macroCellsY;
-  combat.roadNetwork = campaignWorld.roadNetwork;
+  // Blueprint v3 bakes every Level 1 road, trail, ford, and bridge into the
+  // authoritative terrain/route layers. Do not overlay the retired procedural
+  // macro-road network on top of those authored cells.
+  combat.roadNetwork = level.id === HMH_LEVEL_ONE_ID ? [] : campaignWorld.roadNetwork;
   combat.worldWidth = worldWidth;
   combat.worldHeight = worldHeight;
   combat.explorationVisitedCells = updateLevelOneExplorationTrail({
@@ -6241,13 +6259,10 @@ async function startCombat(options = {}) {
   });
   combat.explorationLayerFrame = -1;
   combat.explorationLayerCache = null;
-  // Index road tiles for O(1) per-tile lookups during rendering. The generator
-  // anchors its grid at (0,0)..(2000,2000) but the hero spawns at world (0,0),
-  // so shift everything by half the world to center the network on the player.
-  // Ground-plan role (and therefore road style / bridge-vs-road) is sampled at
-  // the shifted coordinate so visuals and traversal use the same authored map.
+  // Keep the legacy index adapter for later campaign levels. Blueprint v3 Level
+  // 1 traversal reads crossing truth directly from its authored cell metadata.
   combat.roadTileIndex = buildLevelOneRoadTileIndex({
-    roadNetwork: campaignWorld.roadNetwork,
+    roadNetwork: combat.roadNetwork,
     groundPlan: getCombatGroundPlan(),
     shiftX: worldWidth / 2,
     shiftY: worldHeight / 2,
@@ -7591,10 +7606,9 @@ if (tacticalBalanceDebugEnabled) {
     configurable: true,
     async value(worldX, worldY) {
       if (!combat.active) return null;
-      const halfWidth = Math.floor((combat.worldWidth ?? HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.width) / 2);
-      const halfHeight = Math.floor((combat.worldHeight ?? HMH_LEVEL_ONE_PLAYTEST_BALANCE.world.height) / 2);
-      combat.playerMapX = clamp(Number(worldX) || 0, -halfWidth, halfWidth);
-      combat.playerMapY = clamp(Number(worldY) || 0, -halfHeight, halfHeight);
+      const bounds = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
+      combat.playerMapX = clamp(Number(worldX) || 0, bounds.minX, bounds.maxX);
+      combat.playerMapY = clamp(Number(worldY) || 0, bounds.minY, bounds.maxY);
       if (combat.roguelikeRun?.player) {
         combat.roguelikeRun.player.x = combat.playerMapX;
         combat.roguelikeRun.player.y = combat.playerMapY;
@@ -7604,13 +7618,17 @@ if (tacticalBalanceDebugEnabled) {
       combat.velocityY = 0;
       _obstacleCacheFrame = -1;
       syncProjectedPlayerPosition();
-      const visibleObjects = buildLevelOneCuratedVisibleSceneObjects({
+      const visibleObjects = buildLevelOneWorldV3VisibleObjects({
         playerX: combat.playerMapX,
         playerY: combat.playerMapY,
         window: 18,
         frame: combat.frame,
       });
-      const decoded = await Promise.all(visibleObjects.map((object) => decodeImageAsset(curatedLevelOneImage(object.assetKey))));
+      const visibleImages = visibleObjects.map((object) => curatedLevelOneImage(object.assetKey));
+      await Promise.all(visibleImages.map((image) => decodeImageAsset(image)));
+      const unresolvedImages = [...new Set(visibleImages.filter((image) => !imageReady(image)))];
+      if (unresolvedImages.length) await Promise.all(unresolvedImages.map((image) => decodeImageAsset(image)));
+      const decodedCount = visibleImages.filter((image) => imageReady(image)).length;
       _obstacleCacheFrame = -1;
       const obstacles = currentObstacles();
       const obstacleCount = obstacles.length;
@@ -7619,7 +7637,7 @@ if (tacticalBalanceDebugEnabled) {
         x: combat.playerMapX,
         y: combat.playerMapY,
         objectCount: visibleObjects.length,
-        decodedCount: decoded.filter(Boolean).length,
+        decodedCount,
         obstacleCount,
         renderEntryCount,
         assetKeys: visibleObjects.map((object) => object.assetKey),
@@ -7640,6 +7658,23 @@ if (tacticalBalanceDebugEnabled) {
       return { x: combat.playerMapX, y: combat.playerMapY };
     },
   });
+  Object.defineProperty(globalThis, '__hmhVisualDebugNudge', {
+    configurable: true,
+    value(dx, dy) {
+      const world = buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight });
+      const bounded = clampLevelOneWorldPoint({
+        x: combat.playerMapX + (Number(dx) || 0),
+        y: combat.playerMapY + (Number(dy) || 0),
+        world,
+        padding: 0.42,
+      });
+      combat.playerMapX = bounded.x;
+      combat.playerMapY = bounded.y;
+      combat.worldBoundaryClamped = bounded.clamped;
+      syncProjectedPlayerPosition();
+      return { x: bounded.x, y: bounded.y, clamped: bounded.clamped };
+    },
+  });
   Object.defineProperty(globalThis, '__hmhVisualDebugScene', {
     configurable: true,
     value() {
@@ -7653,6 +7688,15 @@ if (tacticalBalanceDebugEnabled) {
         playerX: combat.playerMapX,
         playerY: combat.playerMapY,
         obstacleIds: obstacles.map((obstacle) => obstacle.id),
+        solidObstacles: obstacles
+          .filter((obstacle) => obstacle.solid && Number.isFinite(obstacle.worldX) && Number.isFinite(obstacle.worldY))
+          .map((obstacle) => ({
+            id: obstacle.id,
+            worldX: obstacle.worldX,
+            worldY: obstacle.worldY,
+            footprintTiles: obstacle.footprintTiles ?? null,
+            radius: obstacle.radius ?? null,
+          })),
         renderedIds: entries.map((entry) => entry.id).filter(Boolean),
         undecodedIds,
       };
@@ -8115,6 +8159,9 @@ function currentAmbientZoneModel(environmentState = currentEnvironmentState()) {
 }
 
 function currentPlayerDistrictContext() {
+  if ((combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === HMH_LEVEL_ONE_ID) {
+    return levelOneWorldV3DistrictContextAt(combat.playerMapX, combat.playerMapY);
+  }
   const worldOffsetX = Math.floor(combat.worldWidth / 2);
   const worldOffsetY = Math.floor(combat.worldHeight / 2);
   const cellX = Math.floor((combat.playerMapX + worldOffsetX) / SCENE_CELL);
@@ -8554,7 +8601,7 @@ function updateRoguelikeMovement(dt) {
     // Water is impassable — clamp the move so the player can't walk onto water
     // tiles (slides along the shoreline where possible).
     const seed = combat.roguelikeRun?.seed ?? 0;
-    const resolved = resolveWaterCollision(seed, fromX, fromY, afterObstacles.x, afterObstacles.y, currentTerrainBiomeAt);
+    const resolved = resolveWaterCollision(seed, fromX, fromY, afterObstacles.x, afterObstacles.y, currentTerrainBiomeAt, { radius: 0.42 });
     combat.playerMapX = resolved.x;
     combat.playerMapY = resolved.y;
     // Level Design Bible §6.2: apply environmental force zones (quicksand slow,
@@ -9347,6 +9394,7 @@ function spawnLevelOneFinalBossProxy(director) {
   lastBossId = bossProxy.enemyId;
   spawnText(`BOSS: ${bossProxy.title.toUpperCase()}`, ISO_CENTER_X - 98, ISO_CENTER_Y - 112, '#ffe84d');
   spawnText(choreography.finalBoss.phases[0]?.pattern?.toUpperCase() ?? 'CLEAR HIM TO REVEAL EXTRACTION', ISO_CENTER_X - 138, ISO_CENTER_Y - 84, '#ff7b2f');
+  const bossPoint = levelOneWorldV3BossPoint();
   return spawnRoguelikeEnemy(director, {
     forceEnemyId: bossProxy.enemyId,
     title: bossProxy.title,
@@ -9358,6 +9406,8 @@ function spawnLevelOneFinalBossProxy(director) {
     boss: true,
     finalBossProxy: true,
     ranged: true,
+    mapX: bossPoint.x,
+    mapY: bossPoint.y,
     angleRadians: Math.PI * 0.15,
     radiusTiles: ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES + 4,
     minDistanceTiles: ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES,
@@ -9398,6 +9448,8 @@ function updateLevelOneFinalBossProxy(director) {
   }
   if (combat.scriptedBossTriggered || combat.bossDefeated) return;
   if (combat.elapsedGameSeconds < (level.timings?.bossSpawnSeconds ?? Infinity)) return;
+  const bossPoint = levelOneWorldV3BossPoint();
+  if (Math.hypot(combat.playerMapX - bossPoint.x, combat.playerMapY - bossPoint.y) > 12) return;
   spawnLevelOneFinalBossProxy(director);
 }
 
@@ -9405,14 +9457,16 @@ function syncCampaignProgression() {
   const level = currentCampaignLevel();
   const levelOneBossGateSatisfied = level.id !== DEFAULT_CAMPAIGN_LEVEL_ID || combat.bossDefeated;
   if (!combat.extractionPoint && levelOneBossGateSatisfied && Array.isArray(combat.districtGrid) && combat.districtGrid.length && combat.elapsedGameSeconds >= (level.timings?.extractionSpawnSeconds ?? Infinity)) {
-    combat.extractionPoint = buildCampaignExtractionPoint({
-      levelId: level.id,
-      districtGrid: combat.districtGrid,
-      worldWidth: combat.worldWidth,
-      worldHeight: combat.worldHeight,
-      worldOffsetX: Math.floor((combat.worldWidth ?? 0) / 2),
-      worldOffsetY: Math.floor((combat.worldHeight ?? 0) / 2),
-    });
+    combat.extractionPoint = level.id === HMH_LEVEL_ONE_ID
+      ? levelOneWorldV3ExtractionPoint()
+      : buildCampaignExtractionPoint({
+          levelId: level.id,
+          districtGrid: combat.districtGrid,
+          worldWidth: combat.worldWidth,
+          worldHeight: combat.worldHeight,
+          worldOffsetX: Math.floor((combat.worldWidth ?? 0) / 2),
+          worldOffsetY: Math.floor((combat.worldHeight ?? 0) / 2),
+        });
     if (combat.extractionPoint) {
       spawnText('EXTRACTION LIVE', ISO_CENTER_X - 52, ISO_CENTER_Y - 116, '#45ff8a');
       spawnText(combat.extractionPoint.label, ISO_CENTER_X - 42, ISO_CENTER_Y - 92, '#ffe84d');
@@ -9944,6 +9998,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   const groundPassStartedAt = typeof performance !== 'undefined' ? performance.now() : 0;
   const plan = getCombatGroundPlan();
   const textureGroups = new Map();
+  const terrainEdgeBlendGroups = new Map();
   const terrainPresentationPaths = new Map();
   const terrainPresentationStats = {
     cellCount: 0,
@@ -9952,6 +10007,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     bridgeLightingCells: 0,
     elevationLightingCells: 0,
     castShadowCells: 0,
+    edgeBlendStrips: 0,
   };
   const fallbackTiles = [];
   const cameraAnchor = groundPatternAnchorForOrigin(isoToScreen(0, 0));
@@ -9962,6 +10018,29 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     path.lineTo(tile.cx + ISO_TILE_WIDTH / 2, cy);
     path.lineTo(tile.cx, cy + ISO_TILE_HEIGHT / 2);
     path.lineTo(tile.cx - ISO_TILE_WIDTH / 2, cy);
+    path.closePath();
+  };
+
+  const addEdgeStrip = (path, tile, direction, inset = 0.27, elevationPx = 0) => {
+    const center = { x: tile.cx, y: tile.cy + elevationPx };
+    const points = {
+      top: { x: tile.cx, y: tile.cy + elevationPx - ISO_TILE_HEIGHT / 2 },
+      right: { x: tile.cx + ISO_TILE_WIDTH / 2, y: tile.cy + elevationPx },
+      bottom: { x: tile.cx, y: tile.cy + elevationPx + ISO_TILE_HEIGHT / 2 },
+      left: { x: tile.cx - ISO_TILE_WIDTH / 2, y: tile.cy + elevationPx },
+    };
+    const edge = direction === 'north' ? [points.top, points.right]
+      : direction === 'east' ? [points.right, points.bottom]
+        : direction === 'south' ? [points.bottom, points.left]
+          : [points.left, points.top];
+    const inner = edge.map((point) => ({
+      x: point.x + (center.x - point.x) * inset,
+      y: point.y + (center.y - point.y) * inset,
+    }));
+    path.moveTo(edge[0].x, edge[0].y);
+    path.lineTo(edge[1].x, edge[1].y);
+    path.lineTo(inner[1].x, inner[1].y);
+    path.lineTo(inner[0].x, inner[0].y);
     path.closePath();
   };
 
@@ -10002,6 +10081,26 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
       textureGroups.set(groupKey, group);
     }
     addDiamond(group.path, tile, terrainPresentation.elevationPx);
+    for (const edgeBlend of buildTerrainEdgeBlendsForCell(terrainCell)) {
+      const blendAsset = plan.textureForKey(edgeBlend.textureKey);
+      const blendImage = sbsGroundTileImage(blendAsset);
+      if (!imageReady(blendImage)) continue;
+      const blendKey = `${edgeBlend.textureKey}|${terrainPresentation.elevationPx}|${edgeBlend.alpha}|${edgeBlend.blendMode}`;
+      let blendGroup = terrainEdgeBlendGroups.get(blendKey);
+      if (!blendGroup) {
+        blendGroup = {
+          asset: blendAsset,
+          image: blendImage,
+          path: new Path2D(),
+          alpha: edgeBlend.alpha,
+          blendMode: edgeBlend.blendMode,
+          elevationPx: terrainPresentation.elevationPx,
+        };
+        terrainEdgeBlendGroups.set(blendKey, blendGroup);
+      }
+      addEdgeStrip(blendGroup.path, tile, edgeBlend.direction, edgeBlend.inset, terrainPresentation.elevationPx);
+      terrainPresentationStats.edgeBlendStrips += 1;
+    }
     terrainPresentationStats.cellCount += 1;
     for (const overlay of terrainPresentation.overlays) {
       terrainPresentationStats.overlayIds.add(overlay.id);
@@ -10021,6 +10120,20 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     }
     ctx.fillStyle = pattern;
     ctx.fill(group.path);
+  }
+
+  for (const group of terrainEdgeBlendGroups.values()) {
+    const pattern = groundPlanPatternForGroup(ctx, group);
+    if (!pattern) continue;
+    if (typeof DOMMatrix !== 'undefined' && typeof pattern.setTransform === 'function') {
+      pattern.setTransform(new DOMMatrix().translate(cameraAnchor.x, cameraAnchor.y + group.elevationPx));
+    }
+    ctx.save();
+    ctx.globalAlpha = group.alpha;
+    ctx.globalCompositeOperation = group.blendMode;
+    ctx.fillStyle = pattern;
+    ctx.fill(group.path);
+    ctx.restore();
   }
 
   for (const [overlayId, overlayEntry] of terrainPresentationPaths.entries()) {
@@ -10424,8 +10537,8 @@ function preloadWorldPropImages() {
   for (const p of wp.slice(0, 24)) {
     if (p?.src) canonicalLandmarkImage(p.src);
   }
-  for (const obj of buildLevelOneCuratedVisibleSceneObjects({ playerX: 0, playerY: 5, window: 16, frame: 0 }).slice(0, 32)) {
-    if (obj?.assetKey) coherentWorldImage(obj.assetKey);
+  for (const obj of buildLevelOneWorldV3VisibleObjects({ playerX: 0, playerY: 0, window: 16 }).slice(0, 32)) {
+    if (obj?.assetKey) curatedLevelOneImage(obj.assetKey);
   }
 }
 // --- Persistent collidable world obstacles --------------------------------
@@ -10533,14 +10646,14 @@ async function prewarmHmhLevelAssets(level, onProgress = () => {}) {
   if (level?.id !== HMH_LEVEL_ONE_ID) return { decoded: 0, total: 0 };
   const plan = combat.groundPlan ?? getCombatGroundPlan();
   const playerX = combat.playerMapX ?? 0;
-  const playerY = combat.playerMapY ?? 5;
+  const playerY = combat.playerMapY ?? 0;
   const images = [];
   for (const textureKey of plan.textureKeysNear(playerX, playerY, 22)) {
     const asset = plan.textureForKey(textureKey);
     const image = sbsGroundTileImage(asset);
     if (image) images.push(image);
   }
-  const curatedObjects = buildLevelOneCuratedVisibleSceneObjects({
+  const curatedObjects = buildLevelOneWorldV3VisibleObjects({
     playerX,
     playerY,
     window: 26,
@@ -10601,7 +10714,7 @@ function currentObstacles() {
   let curatedVisibleObjects = [];
   let scene = [];
   if (isLevelOneCuratedRuntime()) {
-    curatedVisibleObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: combat.playerMapX, playerY: combat.playerMapY, window: sceneWindow, frame: combat.frame });
+    curatedVisibleObjects = buildLevelOneWorldV3VisibleObjects({ playerX: combat.playerMapX, playerY: combat.playerMapY, window: sceneWindow, frame: combat.frame });
   } else {
     scene = sceneObjectsNear(seed, combat.playerMapX, combat.playerMapY, sceneWindow, biomeAt, {
       reserveRadius: 6,

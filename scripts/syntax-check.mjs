@@ -49,6 +49,11 @@ const NODE_CHECK_FILES = [
   "apps/portal/src/hmh-level-one-sketch-layout.mjs",
   "apps/portal/src/hmh-level-one-ground.mjs",
   "apps/portal/src/hmh-ground-plan.mjs",
+  "apps/portal/src/hmh-level-one-world-v3-runtime.mjs",
+  "apps/portal/src/hmh-level-one-world-v3-objects.mjs",
+  "apps/portal/src/hmh-level-one-world-v3-gameplay.mjs",
+  "apps/portal/assets/generated/hmh-level-one-world-v3/hmh-level-one-world-v3-materials.mjs",
+  "apps/portal/assets/generated/hmh-level-one-world-v3/hmh-level-one-world-v3-landmarks.mjs",
   "apps/portal/src/hmh-level-one-traversal.mjs",
   "apps/portal/src/hmh-terrain-blob-map.mjs",
   "apps/portal/src/hmh-terrain-presentation.mjs",
@@ -80,6 +85,10 @@ const NODE_CHECK_FILES = [
   "tests/hmh-level-one-sketch-layout.test.mjs",
   "tests/hmh-level-one-ground.test.mjs",
   "tests/hmh-ground-plan.test.mjs",
+  "tests/hmh-level-one-world-v3-runtime.test.mjs",
+  "tests/hmh-level-one-world-v3-objects.test.mjs",
+  "tests/hmh-level-one-world-v3-gameplay.test.mjs",
+  "tests/hmh-level-one-world-v3-materials.test.mjs",
   "tests/hmh-level-one-traversal.test.mjs",
   "tests/hmh-terrain-blob-map.test.mjs",
   "tests/hmh-terrain-presentation.test.mjs",
@@ -326,7 +335,10 @@ const PY_COMPILE_FILES = [
   "scripts/pixellab-hmh-aaa-quality-wave.py",
   "scripts/write-wo119-pixellab-aaa-wave.py",
   "scripts/pixellab-hmh-level1-asset-wave.py",
-  "scripts/build-hmh-wo99-enemy-canon-uplift.py"
+  "scripts/build-hmh-wo99-enemy-canon-uplift.py",
+  "scripts/build-hmh-level-one-world-blueprint-v3.py",
+  "scripts/build-hmh-level-one-world-v3-runtime.py",
+  "scripts/build-hmh-level-one-world-v3-materials.py"
 ];
 
 let failures = 0;

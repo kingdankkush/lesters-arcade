@@ -6,6 +6,8 @@ describe('version-tracking', () => {
   it('exports valid semver versions', () => {
     assert.match(SITE_VERSION, /^\d+\.\d+\.\d+$/);
     assert.match(GAME_VERSION, /^\d+\.\d+\.\d+$/);
+    assert.equal(SITE_VERSION, '1.1.0');
+    assert.equal(GAME_VERSION, '1.1.0');
   });
 
   it('getVersionSnapshot returns a frozen object with both versions', () => {

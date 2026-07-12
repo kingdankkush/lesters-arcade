@@ -1,4 +1,9 @@
 import { buildTerrainBlobCell } from './hmh-terrain-blob-map.mjs';
+import {
+  HMH_LEVEL_ONE_WORLD_V3,
+  levelOneWorldV3CellAt,
+  levelOneWorldV3WorldBounds,
+} from './hmh-level-one-world-v3-runtime.mjs';
 import { HMH_LEVEL_ONE_CURATED_ROUTE } from './hmh-level-one-curated-world-contract.mjs';
 import {
   HMH_LEVEL_ONE_ID,
@@ -20,6 +25,7 @@ import {
 import {
   HMH_CURATED_GROUND_RUNTIME,
 } from '../assets/generated/hmh-curated-level-art/hmh-curated-ground-runtime.mjs';
+import { levelOneWorldV3MaterialByKey } from '../assets/generated/hmh-level-one-world-v3/hmh-level-one-world-v3-materials.mjs';
 
 const CONNECTIVE_ZONE_ID = 'connective-scrub';
 
@@ -359,7 +365,8 @@ function connectiveZone() {
 }
 
 function textureAssetByKey(textureKey) {
-  return curatedTerrainTextureAssetByKey(textureKey)
+  return levelOneWorldV3MaterialByKey(textureKey)
+    ?? curatedTerrainTextureAssetByKey(textureKey)
     ?? wo103ContinuousGroundAssetByKey(textureKey)
     ?? levelOnePixellabSurfaceAssetByKey(textureKey)
     ?? finalPaintGroundAssetByKey(textureKey)
@@ -367,8 +374,114 @@ function textureAssetByKey(textureKey) {
     ?? null;
 }
 
+function buildWorldV3GroundPlan(seed) {
+  const familyByCode = new Map(HMH_LEVEL_ONE_WORLD_V3.terrainFamilies.map((family) => [family.code, family]));
+  const zones = Object.freeze(HMH_LEVEL_ONE_WORLD_V3.terrainFamilies.map((family) => freezeRecord({
+    source: 'hmh-level-one-world-v3',
+    zoneId: `world-v3-${family.id}${family.role === 'bridge' ? '-bridge' : ''}`,
+    role: family.role,
+    textureKey: family.materialKey,
+    terrain: family.code,
+    priority: 4000,
+  })));
+  const worldBounds = levelOneWorldV3WorldBounds();
+  const zoneCache = new Map();
+  const terrainCellCache = new Map();
+  let terrainCellCacheHits = 0;
+  let terrainCellCacheMisses = 0;
+  const keyFor = (worldX, worldY) => `${Math.round(Number(worldX) || 0)}|${Math.round(Number(worldY) || 0)}`;
+
+  const zoneAt = (worldX, worldY) => {
+    const key = keyFor(worldX, worldY);
+    if (zoneCache.has(key)) return zoneCache.get(key);
+    const cell = levelOneWorldV3CellAt(worldX, worldY);
+    const family = familyByCode.get(cell.terrain) ?? familyByCode.get('X');
+    const borderInfo = Object.freeze([
+      ['east', 1, 0],
+      ['west', -1, 0],
+      ['south', 0, 1],
+      ['north', 0, -1],
+    ].map(([direction, dx, dy]) => {
+      const neighbor = levelOneWorldV3CellAt(cell.worldX + dx, cell.worldY + dy);
+      return neighbor.terrain === cell.terrain ? null : Object.freeze({
+        direction,
+        neighborZoneId: `world-v3-${neighbor.terrainId}${neighbor.isBridge ? '-bridge' : ''}`,
+        neighborRole: neighbor.terrainRole,
+      });
+    }).filter(Boolean));
+    const zone = freezeRecord({
+      source: 'hmh-level-one-world-v3',
+      zoneId: `world-v3-${family.id}${cell.isBridge ? '-bridge' : ''}`,
+      role: family.role,
+      textureKey: family.materialKey,
+      terrain: cell.terrain,
+      biome: cell.biome,
+      elevation: cell.elevation,
+      groundNav: cell.groundNav,
+      route: cell.route,
+      encounter: cell.encounter,
+      authoredX: cell.authoredX,
+      authoredY: cell.authoredY,
+      worldX: cell.worldX,
+      worldY: cell.worldY,
+      inBounds: cell.inBounds,
+      blocked: cell.blocked,
+      slow: cell.slow,
+      isBridge: cell.isBridge,
+      isWater: cell.isWater,
+      borderInfo,
+    });
+    zoneCache.set(key, zone);
+    return zone;
+  };
+
+  const plan = {
+    levelId: HMH_LEVEL_ONE_ID,
+    seed: Number(seed) || 0,
+    worldContractId: HMH_LEVEL_ONE_WORLD_V3.id,
+    width: HMH_LEVEL_ONE_WORLD_V3.dimensions.width,
+    height: HMH_LEVEL_ONE_WORLD_V3.dimensions.height,
+    worldBounds,
+    spawnWorld: Object.freeze({ x: 0, y: 0 }),
+    anchors: HMH_LEVEL_ONE_WORLD_V3.anchors,
+    zones,
+    textureForKey: textureAssetByKey,
+    textureKeys() {
+      return Object.freeze(HMH_LEVEL_ONE_WORLD_V3.terrainFamilies.map((family) => family.materialKey));
+    },
+    textureKeysNear(centerX = 0, centerY = 0, radius = 18) {
+      const safeRadius = Math.max(1, Math.floor(Number(radius) || 18));
+      const keys = new Set();
+      for (let x = Math.floor(centerX - safeRadius); x <= Math.ceil(centerX + safeRadius); x += 2) {
+        for (let y = Math.floor(centerY - safeRadius); y <= Math.ceil(centerY + safeRadius); y += 2) keys.add(zoneAt(x, y).textureKey);
+      }
+      return Object.freeze([...keys]);
+    },
+    zoneAt,
+    traversalAt(worldX, worldY) {
+      return levelOneWorldV3CellAt(worldX, worldY);
+    },
+    cellAt(worldX, worldY) {
+      const key = keyFor(worldX, worldY);
+      if (terrainCellCache.has(key)) {
+        terrainCellCacheHits += 1;
+        return terrainCellCache.get(key);
+      }
+      terrainCellCacheMisses += 1;
+      const cell = buildTerrainBlobCell(plan, worldX, worldY);
+      terrainCellCache.set(key, cell);
+      return cell;
+    },
+    terrainCellCacheStats() {
+      return Object.freeze({ size: terrainCellCache.size, hits: terrainCellCacheHits, misses: terrainCellCacheMisses });
+    },
+  };
+  return Object.freeze(plan);
+}
+
 export function buildGroundPlan({ levelId = HMH_LEVEL_ONE_ID, seed = 0 } = {}) {
   const safeLevelId = levelId || HMH_LEVEL_ONE_ID;
+  if (safeLevelId === HMH_LEVEL_ONE_ID) return buildWorldV3GroundPlan(seed);
   const zones = safeLevelId === HMH_LEVEL_ONE_ID
     ? Object.freeze([...buildChatgptTerrainZones(), ...buildCuratedZones(), ...buildPixellabZones(), connectiveZone()])
     : Object.freeze([connectiveZone()]);

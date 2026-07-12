@@ -98,7 +98,7 @@ test('WO-62 loading screen prewarms deterministic Level 1 ground and prop image 
   assert.match(prewarmBody, /plan\.textureKeysNear\(playerX, playerY, 22\)/);
   assert.doesNotMatch(prewarmBody, /plan\.textureKeys\(\)/);
   assert.match(prewarmBody, /sbsGroundTileImage\(asset\)/);
-  assert.match(prewarmBody, /buildLevelOneCuratedVisibleSceneObjects\(/);
+  assert.match(prewarmBody, /buildLevelOneWorldV3VisibleObjects\(/);
   assert.match(prewarmBody, /curatedLevelOneImage\(object\.assetKey\)/);
   assert.match(prewarmBody, /decodeImageAsset\(/);
   const loadingBody = functionBody('showHMHLoadingScreen');
