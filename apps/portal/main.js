@@ -10250,8 +10250,9 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
   const maxX = Math.ceil(Math.max(...corners.map((c) => c.x))) + PAD;
   const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - PAD;
   const maxY = Math.ceil(Math.max(...corners.map((c) => c.y))) + PAD;
-  const bridgeImg = canonicalLandmarkImage('./assets/generated/hmh-coherent-world/construct/wood-bridge.png');
   const roadSurfaceGroups = new Map();
+  const bridgeSurfacePath = new Path2D();
+  const bridgeWearPath = new Path2D();
   ctx.save();
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
@@ -10264,16 +10265,8 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
       if (cx < -ISO_TILE_WIDTH || cx > cullWidth + ISO_TILE_WIDTH) continue;
       if (cy < -ISO_TILE_HEIGHT - 80 || cy > cullHeight + ISO_TILE_HEIGHT + 80) continue;
       if (tile.type === 'bridge') {
-        if (imageReady(bridgeImg)) {
-          const w = ISO_TILE_WIDTH + 6;
-          const h = ISO_TILE_HEIGHT * 2 + 8;
-          ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(bridgeImg, Math.round(cx - w / 2), Math.round(cy - h / 2), w, h);
-        } else {
-          traceIsoDiamond(ctx, cx, cy);
-          ctx.fillStyle = 'rgba(122, 86, 48, 0.85)'; // wood plank fallback
-          ctx.fill();
-        }
+        addIsoDiamondToPath(bridgeSurfacePath, cx, cy);
+        addIsoDiamondToPath(bridgeWearPath, cx, cy, 6);
         continue;
       }
       const style = ROAD_SURFACE_STYLE[tile.role] ?? ROAD_SURFACE_STYLE.default;
@@ -10291,6 +10284,10 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
     ctx.fillStyle = group.style.fill;
     ctx.fill(group.surfacePath);
   }
+  ctx.fillStyle = 'rgba(75, 48, 30, 0.96)';
+  ctx.fill(bridgeSurfacePath);
+  ctx.fillStyle = 'rgba(151, 102, 55, 0.9)';
+  ctx.fill(bridgeWearPath);
   for (const group of roadSurfaceGroups.values()) {
     ctx.fillStyle = group.style.edge;
     ctx.fill(group.wearPath);
@@ -10442,7 +10439,7 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   const envManifest = hmh('HMH_LEVEL_ENVIRONMENT') ?? {};
   const worldProps = envManifest.worldProps ?? [];
   const bgs = envManifest.parallaxBackgrounds ?? [];
-  const { districtGrid, roadNetwork } = worldStructure;
+  const { districtGrid } = worldStructure;
 
   const startBiome = biomeAt(seed, 0, 0);
   const toWarm = new Set();
@@ -10471,17 +10468,8 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
       if (asset?.src) toWarm.add(asset.src);
     }
   }
-  // Warm the one image asset the road network actually uses (water crossings).
-  // Road surfaces themselves are tinted procedurally over the ground tiles, so
-  // they need no extra art and can never 404.
-  if (roadNetwork && combat.roadTileIndex) {
-    for (const tile of combat.roadTileIndex.values()) {
-      if (tile.type === 'bridge') {
-        toWarm.add('./assets/generated/hmh-coherent-world/construct/wood-bridge.png');
-        break;
-      }
-    }
-  }
+  // Bridge cells are batched canvas paths. Their authored overlays enter through
+  // the normal visible-object prewarm, so there is no separate bridge decode.
   const srcs = [...toWarm];
   const total = srcs.length || 1;
   let done = 0;

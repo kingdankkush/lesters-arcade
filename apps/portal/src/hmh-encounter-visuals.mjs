@@ -108,7 +108,6 @@ export function buildEncounterSceneObjects({ poiId = null, arenaLayout = null, c
 
   if (key === 'crossroads-trading-post' || layout === 'wagon-circle-crossfire') {
     objects.push(
-      sceneObj('crossroads-wagon-core', 'level-final-setpiece/wagon-circle', 'crate', centerX, centerY, { radius: 0.4 }),
       sceneObj('crossroads-signpost', 'level-final-setpiece/signpost-fork', 'sign', centerX - 2, centerY - 2, { radius: 0.4 }),
       sceneObj('crossroads-lanterns', 'level-final-setpiece/lantern-string', 'lamp', centerX + 2, centerY, { radius: 0.32 }),
     );

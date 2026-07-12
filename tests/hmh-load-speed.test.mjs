@@ -11,13 +11,13 @@ function repoText(relativePath) {
 
 test('WO-36 index boots through optimized dist bundle with first-screen preload hints', () => {
   const index = repoText('apps/portal/index.html');
-  assert.equal(index.includes('src="./dist/main.js?v=hmh-jul12-landmarks-v2-v38"'), true);
-  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-jul12-landmarks-v2-v38"'), true);
+  assert.equal(index.includes('src="./dist/main.js?v=hmh-jul12-infrastructure-v3-v39"'), true);
+  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-jul12-infrastructure-v3-v39"'), true);
   assert.equal(index.includes('hard-money-heroes-keyart-bg.jpg'), true);
   assert.equal(index.includes('fetchpriority="high"'), true);
   const sw = repoText('apps/portal/sw.js');
   assert.equal(sw.includes("'/dist/main.js'"), true);
-  assert.equal(sw.includes('lesters-arcade-v3-landmarks-v2-v31'), true);
+  assert.equal(sw.includes('lesters-arcade-v3-infrastructure-v3-v32'), true);
 });
 
 test('WO-36 Vercel build generates the optimized dist bundle before deploy', () => {
@@ -136,6 +136,8 @@ test('Level 1 roads batch diamond paths by material instead of filling every til
   assert.match(roadBody, /ctx\.fill\(group\.surfacePath\)/);
   assert.match(roadBody, /ctx\.fill\(group\.wearPath\)/);
   assert.doesNotMatch(roadBody, /traceIsoDiamond\(ctx, cx, cy, 9\)/);
+  assert.match(roadBody, /const bridgeSurfacePath = new Path2D\(\)/);
+  assert.doesNotMatch(roadBody, /hmh-coherent-world\/construct\/wood-bridge\.png/);
 });
 
 test('Level 1 terrain renders to the actual canvas instead of a phantom 2560x1440 fullscreen target', () => {

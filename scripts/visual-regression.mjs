@@ -490,13 +490,13 @@ try {
     { name: 'seed-1337-dry-forest', x: 12, y: -40, prefix: 'world-v3-landmark/dry-forest-cave-mouth' },
     { name: 'seed-1337-mesa-overlook', x: 30, y: -58, prefix: 'world-v3-landmark/mesa-overlook-outcrop' },
     { name: 'seed-1337-oasis-lakeside', x: 52, y: -13, requireWater: true },
-    { name: 'seed-1337-crossroads', x: 50, y: -33, prefix: 'level1-authored-stamp/river-bridge-arrow-sign' },
-    { name: 'seed-1337-pine-creek-bridge', x: 27, y: -39, prefix: 'level1-authored-stamp/river-bridge-arrow-sign', requireBridge: true },
+    { name: 'seed-1337-crossroads', x: 50, y: -33, prefix: 'world-v3-infrastructure/crossroads-wagon-trading-post' },
+    { name: 'seed-1337-pine-creek-bridge', x: 27, y: -39, prefix: 'world-v3-infrastructure/pine-creek-timber-bridge', requireBridge: true },
     { name: 'seed-1337-frontier-town', x: 63, y: -26, prefix: 'world-v3-landmark/frontier-town-exchange-hall' },
     { name: 'seed-1337-wrecked-lighthouse', x: 74, y: 4, prefix: 'curated/jul9-ambient-water-glow-b-' },
-    { name: 'seed-1337-boss-yard', x: 79, y: -43, prefix: 'curated/jul9-industrial-mining-' },
+    { name: 'seed-1337-boss-yard', x: 79, y: -43, prefix: 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower' },
     { name: 'seed-1337-extraction', x: 85, y: -39, prefix: 'world-v3-landmark/litecoin-city-threshold-gate' },
-    { name: 'seed-1337-west-boundary', x: -7.5, y: -40, obstaclePrefix: 'level-1/' },
+    { name: 'seed-1337-west-boundary', x: -7.5, y: -40, obstaclePrefix: 'world-v3-infrastructure/canyon-boundary-' },
   ];
   const compactWorldTourPositions = [];
   for (const stop of compactWorldTour) {

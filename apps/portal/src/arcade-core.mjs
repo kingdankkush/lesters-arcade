@@ -2742,9 +2742,12 @@ export function buildLevelOneBoundaryObstaclesNear({
         : { key: rotation === 1 ? 'level-1/prop/dragon-bones-body-ground-shadow' : 'level-1/prop/oval-rock5-ground-shadow', role: 'wall', footprintTiles: { w: 2.8, h: 1.5 }, drawOrderBias: 3 };
     }
     if (side === 'west') {
-      return rotation === 0
-        ? { key: 'level-1/water/water-02', role: 'water-strip', footprintTiles: { w: 3.8, h: 1.2 }, drawOrderBias: 1 }
-        : { key: 'level-1/prop/water-ruins2', role: 'wall', footprintTiles: { w: 2.6, h: 1.7 }, drawOrderBias: 2 };
+      const key = rotation === 0
+        ? 'world-v3-infrastructure/canyon-boundary-straight'
+        : rotation === 1
+          ? 'world-v3-infrastructure/canyon-boundary-bend'
+          : 'world-v3-infrastructure/canyon-boundary-buttress';
+      return { key, role: 'wall', footprintTiles: { w: 5.6, h: 2.4 }, drawOrderBias: 2 };
     }
     return rotation === 0
       ? { key: 'wo105-world/container-cover-line', role: 'container', footprintTiles: { w: 3.6, h: 1.6 }, drawOrderBias: 3 }

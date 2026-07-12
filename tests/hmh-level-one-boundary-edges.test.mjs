@@ -31,6 +31,19 @@ test('WO-22 boundary obstacle query only returns nearby edge segments for render
   assert.ok(west.every((edge) => Math.abs(edge.worldX - (world.minX)) <= 2 || Math.abs(edge.worldY) <= 35));
 });
 
+test('World v3 west edge uses a coherent canyon kit instead of repeated water pools and ruin pillars', () => {
+  const world = buildLevelOneRunWorldDimensions({ width: 100, height: 100 });
+  const edges = buildLevelOneBoundaryObstaclesNear({ world, playerX: world.minX, playerY: 0, window: 80 });
+  const westKeys = new Set(edges.filter((edge) => edge.boundarySide === 'west').map((edge) => edge.curatedAssetKey));
+  assert.deepEqual([...westKeys].sort(), [
+    'world-v3-infrastructure/canyon-boundary-bend',
+    'world-v3-infrastructure/canyon-boundary-buttress',
+    'world-v3-infrastructure/canyon-boundary-straight',
+  ]);
+  assert.equal(westKeys.has('level-1/water/water-02'), false);
+  assert.equal(westKeys.has('level-1/prop/water-ruins2'), false);
+});
+
 test('WO-22 runtime includes boundary edges in obstacle collision/render path', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.ok(main.includes('buildLevelOneBoundaryObstaclesNear'), 'main.js should import/use boundary edge obstacles');

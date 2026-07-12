@@ -134,6 +134,12 @@ test('buildEncounterSceneObjects preserves lightweight arena cues without duplic
     centerX: 84,
     centerY: 16,
   });
+  const crossroads = buildEncounterSceneObjects({
+    poiId: 'crossroads-trading-post',
+    arenaLayout: 'wagon-circle-crossfire',
+    centerX: 50,
+    centerY: -33,
+  });
   const mesa = buildEncounterSceneObjects({
     poiId: 'mesa-overlook',
     arenaLayout: 'switchback-sniper-lane',
@@ -150,11 +156,15 @@ test('buildEncounterSceneObjects preserves lightweight arena cues without duplic
   assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/driftwood-sandbar' && obj.sceneRole === 'smallprop'), true);
   assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/reed-bank-ring' && obj.sceneRole === 'water-strip'), true);
 
+  assert.equal(crossroads.some((obj) => obj.id === 'crossroads-wagon-core'), false, 'original trading-post landmark replaces the legacy wagon core');
+  assert.equal(crossroads.some((obj) => obj.id === 'crossroads-signpost'), true);
+  assert.equal(crossroads.some((obj) => obj.id === 'crossroads-lanterns'), true);
+
   assert.equal(mesa.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/cliff-switchback'), false);
   assert.equal(mesa.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/broken-guardrail' && obj.sceneRole === 'fence'), true);
   assert.equal(mesa.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/ridge-glint-post' && obj.sceneRole === 'sign'), true);
 
-  for (const obj of [...dryForest, ...oasis, ...mesa]) {
+  for (const obj of [...dryForest, ...oasis, ...crossroads, ...mesa]) {
     assert.equal(typeof obj.worldX, 'number');
     assert.equal(typeof obj.worldY, 'number');
     assert.equal(typeof obj.sceneAssetKey, 'string');

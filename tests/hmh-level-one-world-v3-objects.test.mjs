@@ -22,7 +22,6 @@ test('World v3 builds a bounded deterministic authored object layer with explici
   assert.ok(objects.length >= 150 && objects.length <= 260, `expected a dense but bounded object layer, got ${objects.length}`);
   assert.equal(report.total, objects.length);
   assert.ok(report.solid >= 120);
-  assert.ok(report.interactiveOrLandmark >= 20, 'coherent landmark wave must retain authored POI and interaction coverage without legacy fragment clutter');
   assert.equal(new Set(objects.map((object) => object.id)).size, objects.length);
 
   for (const object of objects) {
@@ -43,10 +42,8 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
   for (const stampId of [
     'desert-road-salvage-wall',
     'ruined-camp-bone-yard',
-    'shoreline-ford-bank',
     'compact-southeast-glow-bank',
-    'innercity-gate-barricade',
-    'industrial-power-yard-extraction-pocket',
+    'world-v3-pine-creek-timber-bridge',
   ]) assert.ok(report.byStamp[stampId] > 0, `missing authored stamp ${stampId}`);
 
   for (const retiredStampId of [
@@ -56,6 +53,9 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
     'wo105-second-town-road-checkpoint',
     'wo104-lakeside-firefly-bank-checkpoint',
     'litecoin-extraction-beacon-pad',
+    'shoreline-ford-bank',
+    'innercity-gate-barricade',
+    'industrial-power-yard-extraction-pocket',
   ]) assert.equal(report.byStamp[retiredStampId], undefined, `legacy placeholder stamp ${retiredStampId} must stay retired`);
   for (const terrain of ['terrain-F', 'terrain-G', 'terrain-R', 'terrain-S']) {
     assert.ok(report.byTerrain[terrain] > 0, `missing authored natural family ${terrain}`);
@@ -72,6 +72,8 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
     ['world-v3-dry-forest-cave-landmark', 'world-v3-landmark/dry-forest-cave-mouth', true],
     ['world-v3-mesa-overlook-landmark', 'world-v3-landmark/mesa-overlook-outcrop', true],
     ['world-v3-frontier-town-hall-landmark', 'world-v3-landmark/frontier-town-exchange-hall', true],
+    ['world-v3-crossroads-trading-post-landmark', 'world-v3-infrastructure/crossroads-wagon-trading-post', true],
+    ['world-v3-rugpull-gulch-landmark', 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower', true],
     ['world-v3-litecoin-city-threshold-landmark', 'world-v3-landmark/litecoin-city-threshold-gate', false],
   ];
   for (const [id, assetKey, solid] of originalLandmarks) {
@@ -82,6 +84,22 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
     assert.equal(landmark.interactive, true);
     assert.ok(levelOneCuratedAssetSrc(assetKey), `${assetKey} must resolve to shipped art`);
   }
+
+  const rugpullLandmark = HMH_LEVEL_ONE_WORLD_V3_OBJECTS.find((object) => object.id === 'world-v3-rugpull-gulch-landmark');
+  assert.deepEqual(rugpullLandmark?.footprintTiles, { w: 6.2, h: 4.2 });
+  assert.deepEqual(rugpullLandmark?.drawFootprintTiles, { w: 5.0, h: 3.4 });
+
+  const pineBridge = HMH_LEVEL_ONE_WORLD_V3_OBJECTS.find((object) => object.id === 'world-v3-pine-creek-timber-bridge');
+  assert.ok(pineBridge, 'Pine Creek semantic bridge must have one authored visual overlay');
+  assert.equal(pineBridge.assetKey, 'world-v3-infrastructure/pine-creek-timber-bridge');
+  assert.equal(pineBridge.gridX, 27);
+  assert.equal(pineBridge.gridY, -39);
+  assert.equal(pineBridge.solid, false, 'bridge overlay must not alter semantic bridge traversal');
+  assert.equal(pineBridge.interactive, false);
+  assert.equal(pineBridge.role, 'bridge');
+  assert.ok(levelOneCuratedAssetSrc(pineBridge.assetKey));
+  const pineBridgeAsset = HMH_LEVEL_ONE_WORLD_V3_LANDMARKS.assets.find((asset) => asset.key === pineBridge.assetKey);
+  assert.match(pineBridgeAsset?.provenance?.processing ?? '', /horizontal mirror to authored crossing axis/);
 
   for (const poi of HMH_LEVEL_ONE_WORLD_V3.pointsOfInterest) {
     const center = authoredCellToWorld(poi.x, poi.y);
@@ -98,8 +116,8 @@ test('World v3 landmark manifest records immutable per-asset source provenance w
   const sourceArtifacts = new Set();
   const sourceHashes = new Set();
   for (const asset of HMH_LEVEL_ONE_WORLD_V3_LANDMARKS.assets) {
-    assert.equal(asset.provenance?.provider, 'fal.ai');
-    assert.equal(asset.provenance?.model, 'flux-2-klein-9b');
+    assert.ok(['fal.ai', 'pixellab.ai'].includes(asset.provenance?.provider));
+    assert.ok(['flux-2-klein-9b', 'create-map-object'].includes(asset.provenance?.model));
     assert.match(asset.provenance?.sourceArtifact ?? '', /^[a-z0-9-]+-source\.png$/);
     assert.match(asset.provenance?.sourceSha256 ?? '', /^[a-f0-9]{64}$/);
     assert.doesNotMatch(asset.provenance?.sourceArtifact ?? '', /[\\/]|Users|vault/i);

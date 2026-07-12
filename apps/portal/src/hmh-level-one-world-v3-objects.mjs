@@ -11,10 +11,7 @@ const SPAWN_CLEAR_RADIUS = 5;
 const STAMP_PLACEMENTS = Object.freeze([
   Object.freeze({ stampId: 'desert-road-salvage-wall', anchorId: 'spawn', kind: 'spawn' }),
   Object.freeze({ stampId: 'ruined-camp-bone-yard', anchorId: 'old-hashrate-camp', kind: 'poi' }),
-  Object.freeze({ stampId: 'shoreline-ford-bank', anchorId: 'crossroads-trading-post', kind: 'poi' }),
   Object.freeze({ stampId: 'compact-southeast-glow-bank', anchorId: 'wrecked-lighthouse', kind: 'poi' }),
-  Object.freeze({ stampId: 'innercity-gate-barricade', anchorId: 'rugpull-gulch-boss-yard', kind: 'boss' }),
-  Object.freeze({ stampId: 'industrial-power-yard-extraction-pocket', anchorId: 'rugpull-gulch-boss-yard', kind: 'boss' }),
 ]);
 
 const ANCHOR_BY_ID = new Map([
@@ -196,7 +193,9 @@ const ORIGINAL_LANDMARK_SPECS = Object.freeze([
   Object.freeze({ id: 'world-v3-dry-forest-cave-landmark', anchorId: 'dry-forest-cave', assetKey: 'world-v3-landmark/dry-forest-cave-mouth', offsetX: 0, offsetY: -7, footprint: Object.freeze({ w: 5.2, h: 4.0 }), solid: true, zHeight: 4 }),
   Object.freeze({ id: 'world-v3-mesa-overlook-landmark', anchorId: 'mesa-overlook', assetKey: 'world-v3-landmark/mesa-overlook-outcrop', offsetX: 7, offsetY: -1, footprint: Object.freeze({ w: 5.0, h: 4.0 }), solid: true, zHeight: 3 }),
   Object.freeze({ id: 'world-v3-frontier-town-hall-landmark', anchorId: 'frontier-town-square', assetKey: 'world-v3-landmark/frontier-town-exchange-hall', offsetX: -2, offsetY: -7, footprint: Object.freeze({ w: 4.8, h: 3.5 }), solid: true, zHeight: 4 }),
-  Object.freeze({ id: 'world-v3-litecoin-city-threshold-landmark', anchorId: 'extraction', assetKey: 'world-v3-landmark/litecoin-city-threshold-gate', offsetX: 0, offsetY: 0, footprint: Object.freeze({ w: 4.8, h: 3.0 }), solid: false, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-crossroads-trading-post-landmark', anchorId: 'crossroads-trading-post', assetKey: 'world-v3-infrastructure/crossroads-wagon-trading-post', offsetX: 7, offsetY: 2, footprint: Object.freeze({ w: 5.4, h: 3.8 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-rugpull-gulch-landmark', anchorId: 'rugpull-gulch-boss-yard', assetKey: 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower', offsetX: -10, offsetY: 4, footprint: Object.freeze({ w: 6.2, h: 4.2 }), drawFootprint: Object.freeze({ w: 5.0, h: 3.4 }), solid: true, zHeight: 5 }),
+  Object.freeze({ id: 'world-v3-litecoin-city-threshold-landmark', anchorId: 'extraction', assetKey: 'world-v3-landmark/litecoin-city-threshold-gate', offsetX: 4, offsetY: 0, footprint: Object.freeze({ w: 4.8, h: 3.0 }), solid: false, zHeight: 4 }),
 ]);
 
 function originalLandmark(spec) {
@@ -222,6 +221,7 @@ function originalLandmark(spec) {
     routeBeat: spec.anchorId === 'extraction' ? 'extraction-landmark' : 'poi-landmark',
     exactAssetKey: spec.assetKey,
     footprintTiles: spec.footprint,
+    ...(spec.drawFootprint ? { drawFootprintTiles: spec.drawFootprint } : {}),
     collisionPolygons: spec.solid ? footprintPolygon(spec.footprint) : null,
     drawOrderBias: 4,
     zHeight: spec.zHeight,
@@ -230,9 +230,40 @@ function originalLandmark(spec) {
 }
 
 const ORIGINAL_LANDMARKS = ORIGINAL_LANDMARK_SPECS.map(originalLandmark).filter(Boolean);
+
+function pineCreekBridgeOverlay() {
+  const bridge = HMH_LEVEL_ONE_WORLD_V3.bridges.find((entry) => entry.id === 'pine-creek-wood-bridge');
+  if (!bridge) return null;
+  const world = authoredCellToWorld(bridge.x, bridge.y);
+  return Object.freeze({
+    id: 'world-v3-pine-creek-timber-bridge',
+    assetKey: 'world-v3-infrastructure/pine-creek-timber-bridge',
+    gridX: world.x,
+    gridY: world.y,
+    authoredX: bridge.x,
+    authoredY: bridge.y,
+    role: 'bridge',
+    sceneRole: 'bridge-overhang',
+    solid: false,
+    interactive: false,
+    sourceZoneId: bridge.id,
+    authoredPrefabStamp: true,
+    prefabStampId: 'world-v3-pine-creek-timber-bridge',
+    routeBeat: 'navigation-test',
+    exactAssetKey: 'world-v3-infrastructure/pine-creek-timber-bridge',
+    footprintTiles: Object.freeze({ w: 6.0, h: 3.0 }),
+    collisionPolygons: null,
+    drawOrderBias: -1,
+    zHeight: 1,
+    worldV3: true,
+  });
+}
+
+const PINE_CREEK_BRIDGE = pineCreekBridgeOverlay();
 export const HMH_LEVEL_ONE_WORLD_V3_OBJECTS = Object.freeze([
   ...authoredStampObjects(),
   ...ORIGINAL_LANDMARKS,
+  ...(PINE_CREEK_BRIDGE ? [PINE_CREEK_BRIDGE] : []),
   ...naturalObjects(),
 ]);
 

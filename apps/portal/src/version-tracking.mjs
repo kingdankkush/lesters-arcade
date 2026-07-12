@@ -8,8 +8,8 @@
 // This module is the single source of truth for version numbers. Bump these on every
 // deploy that changes gameplay, balance, or the site itself.
 
-export const SITE_VERSION = '1.1.1';
-export const GAME_VERSION = '1.1.1';
+export const SITE_VERSION = '1.1.2';
+export const GAME_VERSION = '1.1.2';
 
 // Combined version label for display in UI (HUD, footer, game-over screen).
 export const VERSION_LABEL = `v${SITE_VERSION}`;
