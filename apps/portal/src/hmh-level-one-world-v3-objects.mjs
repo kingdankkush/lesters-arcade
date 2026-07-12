@@ -10,17 +10,11 @@ const SPAWN_CLEAR_RADIUS = 5;
 
 const STAMP_PLACEMENTS = Object.freeze([
   Object.freeze({ stampId: 'desert-road-salvage-wall', anchorId: 'spawn', kind: 'spawn' }),
-  Object.freeze({ stampId: 'ghost-town-facade-row-pocket', anchorId: 'ghost-saloon-square', kind: 'poi' }),
-  Object.freeze({ stampId: 'wo104-forest-canopy-cliff-checkpoint', anchorId: 'dry-forest-cave', kind: 'poi' }),
-  Object.freeze({ stampId: 'compact-northwest-desert-outcrop', anchorId: 'mesa-overlook', kind: 'poi' }),
   Object.freeze({ stampId: 'ruined-camp-bone-yard', anchorId: 'old-hashrate-camp', kind: 'poi' }),
-  Object.freeze({ stampId: 'wo104-lakeside-firefly-bank-checkpoint', anchorId: 'oasis-lakeside', kind: 'poi' }),
   Object.freeze({ stampId: 'shoreline-ford-bank', anchorId: 'crossroads-trading-post', kind: 'poi' }),
-  Object.freeze({ stampId: 'wo105-second-town-road-checkpoint', anchorId: 'frontier-town-square', kind: 'poi' }),
   Object.freeze({ stampId: 'compact-southeast-glow-bank', anchorId: 'wrecked-lighthouse', kind: 'poi' }),
   Object.freeze({ stampId: 'innercity-gate-barricade', anchorId: 'rugpull-gulch-boss-yard', kind: 'boss' }),
   Object.freeze({ stampId: 'industrial-power-yard-extraction-pocket', anchorId: 'rugpull-gulch-boss-yard', kind: 'boss' }),
-  Object.freeze({ stampId: 'litecoin-extraction-beacon-pad', anchorId: 'extraction', kind: 'extraction' }),
 ]);
 
 const ANCHOR_BY_ID = new Map([
@@ -196,40 +190,49 @@ function naturalObjects() {
   return objects;
 }
 
-function wreckedLighthouseLandmark() {
-  const anchor = ANCHOR_BY_ID.get('wrecked-lighthouse');
-  const placed = nearestPlacement(anchor.x + anchor.arenaRadius + 1, anchor.y, true);
+const ORIGINAL_LANDMARK_SPECS = Object.freeze([
+  Object.freeze({ id: 'world-v3-wrecked-lighthouse-landmark', anchorId: 'wrecked-lighthouse', assetKey: 'world-v3-landmark/wrecked-litecoin-lighthouse', offsetX: 7, offsetY: 0, footprint: Object.freeze({ w: 4.2, h: 3.2 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-ghost-saloon-landmark', anchorId: 'ghost-saloon-square', assetKey: 'world-v3-landmark/ghost-saloon-square', offsetX: 8, offsetY: 0, footprint: Object.freeze({ w: 5.0, h: 3.6 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-dry-forest-cave-landmark', anchorId: 'dry-forest-cave', assetKey: 'world-v3-landmark/dry-forest-cave-mouth', offsetX: 0, offsetY: -7, footprint: Object.freeze({ w: 5.2, h: 4.0 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-mesa-overlook-landmark', anchorId: 'mesa-overlook', assetKey: 'world-v3-landmark/mesa-overlook-outcrop', offsetX: 7, offsetY: -1, footprint: Object.freeze({ w: 5.0, h: 4.0 }), solid: true, zHeight: 3 }),
+  Object.freeze({ id: 'world-v3-frontier-town-hall-landmark', anchorId: 'frontier-town-square', assetKey: 'world-v3-landmark/frontier-town-exchange-hall', offsetX: -2, offsetY: -7, footprint: Object.freeze({ w: 4.8, h: 3.5 }), solid: true, zHeight: 4 }),
+  Object.freeze({ id: 'world-v3-litecoin-city-threshold-landmark', anchorId: 'extraction', assetKey: 'world-v3-landmark/litecoin-city-threshold-gate', offsetX: 0, offsetY: 0, footprint: Object.freeze({ w: 4.8, h: 3.0 }), solid: false, zHeight: 4 }),
+]);
+
+function originalLandmark(spec) {
+  const anchor = ANCHOR_BY_ID.get(spec.anchorId);
+  if (!anchor) return null;
+  const placed = nearestPlacement(anchor.x + spec.offsetX, anchor.y + spec.offsetY, spec.solid);
   if (!placed) return null;
   const world = authoredCellToWorld(placed.x, placed.y);
-  const footprint = Object.freeze({ w: 4.2, h: 3.2 });
   return Object.freeze({
-    id: 'world-v3-wrecked-lighthouse-landmark',
-    assetKey: 'world-v3-landmark/wrecked-litecoin-lighthouse',
+    id: spec.id,
+    assetKey: spec.assetKey,
     gridX: world.x,
     gridY: world.y,
     authoredX: placed.x,
     authoredY: placed.y,
     role: 'landmark',
     sceneRole: 'landmark',
-    solid: true,
+    solid: spec.solid,
     interactive: true,
-    sourceZoneId: 'wrecked-lighthouse',
+    sourceZoneId: spec.anchorId,
     authoredPrefabStamp: true,
-    prefabStampId: 'world-v3-wrecked-lighthouse-landmark',
-    routeBeat: 'poi-landmark',
-    exactAssetKey: 'world-v3-landmark/wrecked-litecoin-lighthouse',
-    footprintTiles: footprint,
-    collisionPolygons: footprintPolygon(footprint),
+    prefabStampId: spec.id,
+    routeBeat: spec.anchorId === 'extraction' ? 'extraction-landmark' : 'poi-landmark',
+    exactAssetKey: spec.assetKey,
+    footprintTiles: spec.footprint,
+    collisionPolygons: spec.solid ? footprintPolygon(spec.footprint) : null,
     drawOrderBias: 4,
-    zHeight: 4,
+    zHeight: spec.zHeight,
     worldV3: true,
   });
 }
 
-const LIGHTHOUSE_LANDMARK = wreckedLighthouseLandmark();
+const ORIGINAL_LANDMARKS = ORIGINAL_LANDMARK_SPECS.map(originalLandmark).filter(Boolean);
 export const HMH_LEVEL_ONE_WORLD_V3_OBJECTS = Object.freeze([
   ...authoredStampObjects(),
-  ...(LIGHTHOUSE_LANDMARK ? [LIGHTHOUSE_LANDMARK] : []),
+  ...ORIGINAL_LANDMARKS,
   ...naturalObjects(),
 ]);
 

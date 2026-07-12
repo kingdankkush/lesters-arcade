@@ -90,9 +90,6 @@ export function buildEncounterSceneObjects({ poiId = null, arenaLayout = null, c
 
   if (key === 'dry-forest-cave' || layout === 'cave-mouth-funnel') {
     objects.push(
-      sceneObj('dry-cave-cliff-west', 'level-final-setpiece/cave-mouth-rocks', 'wall', centerX - 3, centerY - 2, { radius: 0.8 }),
-      sceneObj('dry-cave-cliff-east', 'level-final-setpiece/cave-mouth-rocks', 'wall', centerX + 3, centerY - 2, { radius: 0.8 }),
-      sceneObj('dry-cave-treeline', 'level-final-setpiece/pine-wall-shadow', 'tree', centerX + 2, centerY - 4, { radius: 0.72 }),
       sceneObj('dry-cave-lamp', 'level-final-setpiece/torch-pockets', 'lamp', centerX - 1, centerY + 2, { radius: 0.35 }),
       sceneObj('dry-cave-gate', 'construct/fence-gate', 'fence', centerX, centerY - 1, { radius: 0.32 }),
     );
@@ -119,7 +116,6 @@ export function buildEncounterSceneObjects({ poiId = null, arenaLayout = null, c
 
   if (key === 'mesa-overlook' || layout === 'switchback-sniper-lane') {
     objects.push(
-      sceneObj('mesa-cliff-switchback', 'level-final-setpiece/cliff-switchback', 'wall', centerX + 3, centerY - 3, { radius: 0.8 }),
       sceneObj('mesa-rail', 'level-final-setpiece/broken-guardrail', 'fence', centerX - 1, centerY + 1, { radius: 0.32 }),
       sceneObj('mesa-glint-post', 'level-final-setpiece/ridge-glint-post', 'sign', centerX + 1, centerY - 1, { radius: 0.35 }),
     );

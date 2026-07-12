@@ -407,11 +407,9 @@ try {
     (() => {
       const scene = globalThis.__hmhVisualDebugScene?.();
       return scene?.solidObstacles?.find((obstacle) =>
-        String(obstacle.id).includes('ghost-saloon-square')
+        obstacle.id === 'world-v3-ghost-saloon-landmark'
         && obstacle.footprintTiles?.w > 0
         && obstacle.footprintTiles?.h > 0
-        && obstacle.footprintTiles.w <= 4
-        && obstacle.footprintTiles.h <= 4
       ) ?? null;
     })()
   `);
@@ -488,16 +486,16 @@ try {
 
   const compactWorldTour = [
     { name: 'seed-1337-spawn-road', x: 0, y: 0, prefix: 'curated/jul9-fences-barricades-' },
-    { name: 'seed-1337-ghost-town', x: 16, y: -13, prefix: 'curated/jul9-ghost-town-facade-' },
-    { name: 'seed-1337-dry-forest', x: 12, y: -40, prefix: 'wo104-world/forest-' },
-    { name: 'seed-1337-mesa-overlook', x: 30, y: -58, prefix: 'curated/jul9-desert-rock-formations-b-' },
-    { name: 'seed-1337-oasis-lakeside', x: 52, y: -13, prefix: 'wo104-world/reed-' },
+    { name: 'seed-1337-ghost-town', x: 16, y: -13, prefix: 'world-v3-landmark/ghost-saloon-square' },
+    { name: 'seed-1337-dry-forest', x: 12, y: -40, prefix: 'world-v3-landmark/dry-forest-cave-mouth' },
+    { name: 'seed-1337-mesa-overlook', x: 30, y: -58, prefix: 'world-v3-landmark/mesa-overlook-outcrop' },
+    { name: 'seed-1337-oasis-lakeside', x: 52, y: -13, requireWater: true },
     { name: 'seed-1337-crossroads', x: 50, y: -33, prefix: 'level1-authored-stamp/river-bridge-arrow-sign' },
     { name: 'seed-1337-pine-creek-bridge', x: 27, y: -39, prefix: 'level1-authored-stamp/river-bridge-arrow-sign', requireBridge: true },
-    { name: 'seed-1337-frontier-town', x: 63, y: -26, prefix: 'wo105-world/second-town-' },
+    { name: 'seed-1337-frontier-town', x: 63, y: -26, prefix: 'world-v3-landmark/frontier-town-exchange-hall' },
     { name: 'seed-1337-wrecked-lighthouse', x: 74, y: 4, prefix: 'curated/jul9-ambient-water-glow-b-' },
     { name: 'seed-1337-boss-yard', x: 79, y: -43, prefix: 'curated/jul9-industrial-mining-' },
-    { name: 'seed-1337-extraction', x: 85, y: -39, prefix: 'level1-authored-stamp/extraction-pad-' },
+    { name: 'seed-1337-extraction', x: 85, y: -39, prefix: 'world-v3-landmark/litecoin-city-threshold-gate' },
     { name: 'seed-1337-west-boundary', x: -7.5, y: -40, obstaclePrefix: 'level-1/' },
   ];
   const compactWorldTourPositions = [];
@@ -520,6 +518,13 @@ try {
       const bridgeProfile = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
       if (!(bridgeProfile?.groundRender?.terrainPresentationStats?.bridgeLightingCells > 0)) {
         throw new Error(`HMH bridge tour did not render authored bridge deck lighting at ${stop.name}: ${JSON.stringify(bridgeProfile)}`);
+      }
+    }
+    if (stop.requireWater) {
+      await sleep(250);
+      const waterProfile = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
+      if (!(waterProfile?.groundRender?.terrainPresentationStats?.waterFlowCells > 0)) {
+        throw new Error(`HMH water tour did not render authored water flow at ${stop.name}: ${JSON.stringify(waterProfile)}`);
       }
     }
     compactWorldTourPositions.push({ ...stop, ...position });

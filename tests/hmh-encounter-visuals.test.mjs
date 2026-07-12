@@ -121,7 +121,7 @@ test('buildEncounterVisualPlan gives authored Dry Forest Cave, Oasis Lakeside, C
 });
 
 
-test('buildEncounterSceneObjects turns authored visual plans into stable in-scene prop placements for Dry Forest and Oasis arenas', () => {
+test('buildEncounterSceneObjects preserves lightweight arena cues without duplicating World v3 landmarks', () => {
   const dryForest = buildEncounterSceneObjects({
     poiId: 'dry-forest-cave',
     arenaLayout: 'cave-mouth-funnel',
@@ -134,16 +134,27 @@ test('buildEncounterSceneObjects turns authored visual plans into stable in-scen
     centerX: 84,
     centerY: 16,
   });
+  const mesa = buildEncounterSceneObjects({
+    poiId: 'mesa-overlook',
+    arenaLayout: 'switchback-sniper-lane',
+    centerX: 38,
+    centerY: -20,
+  });
 
-  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/cave-mouth-rocks' && obj.sceneRole === 'wall'), true);
-  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/pine-wall-shadow' && obj.sceneRole === 'tree'), true);
+  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/cave-mouth-rocks'), false);
+  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/pine-wall-shadow'), false);
   assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/torch-pockets' && obj.sceneRole === 'lamp'), true);
+  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'construct/fence-gate' && obj.sceneRole === 'fence'), true);
 
   assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/shoreline-ripple-line' && obj.sceneRole === 'water-strip' && obj.solid === false), true);
   assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/driftwood-sandbar' && obj.sceneRole === 'smallprop'), true);
   assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/reed-bank-ring' && obj.sceneRole === 'water-strip'), true);
 
-  for (const obj of [...dryForest, ...oasis]) {
+  assert.equal(mesa.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/cliff-switchback'), false);
+  assert.equal(mesa.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/broken-guardrail' && obj.sceneRole === 'fence'), true);
+  assert.equal(mesa.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/ridge-glint-post' && obj.sceneRole === 'sign'), true);
+
+  for (const obj of [...dryForest, ...oasis, ...mesa]) {
     assert.equal(typeof obj.worldX, 'number');
     assert.equal(typeof obj.worldY, 'number');
     assert.equal(typeof obj.sceneAssetKey, 'string');

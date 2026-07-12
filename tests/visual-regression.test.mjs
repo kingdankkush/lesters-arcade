@@ -18,6 +18,8 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
   assert.match(visualScript, /seed-1337-east-walk/);
   assert.match(visualScript, /seed-1337-ghost-town/);
   assert.match(visualScript, /seed-1337-dry-forest/);
+  assert.match(visualScript, /requireWater: true/);
+  assert.match(visualScript, /waterFlowCells > 0/);
   assert.match(visualScript, /seed-1337-pine-creek-bridge/);
   assert.match(visualScript, /seed-1337-frontier-town/);
   assert.match(visualScript, /seed-1337-wrecked-lighthouse/);
