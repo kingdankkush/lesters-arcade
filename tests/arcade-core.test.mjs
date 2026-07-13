@@ -454,7 +454,7 @@ test('ranked sessions use one UUID-backed canonical id across routing and eviden
   assert.equal(session.evidence.sessionId, session.sessionId);
   assert.equal(session.canonicalContext.wallet, wallet);
   assert.equal(session.canonicalContext.gameId, 'lester-blaster');
-  assert.equal(session.canonicalContext.buildHash, 'site-1.2.0:game-1.2.0');
+  assert.equal(session.canonicalContext.buildHash, 'site-1.2.1:game-1.2.1');
 });
 
 test('paid mode session uses free-entry (testnet) economics and leaderboard eligibility', () => {
