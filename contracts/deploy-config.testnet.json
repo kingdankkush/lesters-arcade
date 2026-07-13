@@ -1,0 +1,26 @@
+{
+  "network": "LitVM LiteForge Testnet",
+  "chainId": 4441,
+  "rpcUrl": "https://liteforge.rpc.caldera.xyz/http",
+  "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "operator": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "verifier": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "developerWallet": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "game": {
+    "slug": "lester-blaster",
+    "title": "Hard Money Heroes",
+    "devBps": 7500,
+    "platformBps": 2500,
+    "liquidityBps": 0,
+    "treasuryBps": 0,
+    "entryFeeMicroUsdc": 0
+  },
+  "oldDeployment": {
+    "deployedAt": "2026-06-22",
+    "gameRegistry": "0x09C6f94e73f6aA16177549952Dc47dB5AEb83406",
+    "playerProfileRegistry": "0x5ba410d2A0ccCc00D070d0C45Dc7102e0FfABe96",
+    "scoreSubmissionRegistry": "0x7C05C9596c6c77302ae0479B1Db550E9baD1acf0",
+    "expectedScoreRows": 13,
+    "disposition": "archive-read-only; never import as verified"
+  }
+}

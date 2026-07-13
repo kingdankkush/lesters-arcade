@@ -1,5 +1,9 @@
 {
-  "targetSessionSeconds": 480,
+  "mode": "open-ended-survival",
+  "eliteBandSeconds": {
+    "start": 1200,
+    "end": 1500
+  },
   "generatedBy": "hmh-level-one-balance-pass",
   "areas": [
     "telemetry-harness",
@@ -22,7 +26,12 @@
         "rangedEnemyShare": 0.18,
         "eliteEnemyShare": 0.02,
         "projectileSpeedMultiplier": 1,
+        "archetypeMixCount": 2,
+        "packCohesion": 0.12,
+        "patternDensity": 1,
+        "currentThreatBeat": null,
         "healthMultiplier": 1,
+        "damageMultiplier": 1,
         "difficultyLabel": "opening"
       },
       "composition": {
@@ -53,164 +62,45 @@
       "normalDropChance": 0.16
     },
     {
-      "seconds": 60,
-      "actId": "safe-road-controls",
-      "director": {
-        "elapsedMinutes": 1,
-        "pressure": 0.125,
-        "spawnIntervalSeconds": 2.21,
-        "maxEnemiesOnMap": 25,
-        "chaseEnemyShare": 0.64,
-        "rangedEnemyShare": 0.2,
-        "eliteEnemyShare": 0.05,
-        "projectileSpeedMultiplier": 1.09,
-        "healthMultiplier": 1.24,
-        "difficultyLabel": "opening"
-      },
-      "composition": {
-        "actId": "safe-road-controls",
-        "actLabel": "Safe Road / Controls Read",
-        "elapsedSeconds": 60,
-        "minSpawnDistanceTiles": 18,
-        "rangedEnemyShare": 0.12,
-        "eliteEnemyShare": 0.0325,
-        "genericSpawnSuppression": false,
-        "spawnLaneTags": [
-          "front-road",
-          "rear-shoulder"
-        ],
-        "roles": [
-          {
-            "id": "tutorial-chaser",
-            "share": 0.72,
-            "read": "slow readable chase pressure"
-          },
-          {
-            "id": "coin-lane-pickup",
-            "share": 0.28,
-            "read": "reward lane teaching"
-          }
-        ]
-      },
-      "normalDropChance": 0.18
-    },
-    {
-      "seconds": 120,
-      "actId": "ghost-saloon-mainstreet-duel",
-      "director": {
-        "elapsedMinutes": 2,
-        "pressure": 0.25,
-        "spawnIntervalSeconds": 1.98,
-        "maxEnemiesOnMap": 36,
-        "chaseEnemyShare": 0.65,
-        "rangedEnemyShare": 0.21,
-        "eliteEnemyShare": 0.07,
-        "projectileSpeedMultiplier": 1.18,
-        "healthMultiplier": 1.49,
-        "difficultyLabel": "volatile"
-      },
-      "composition": {
-        "actId": "ghost-saloon-mainstreet-duel",
-        "actLabel": "Ghost Saloon Main Street Duel",
-        "elapsedSeconds": 120,
-        "minSpawnDistanceTiles": 20,
-        "rangedEnemyShare": 0.21,
-        "eliteEnemyShare": 0.08,
-        "genericSpawnSuppression": false,
-        "spawnLaneTags": [
-          "saloon-cover-left",
-          "mainstreet-right",
-          "storefront-porch"
-        ],
-        "roles": [
-          {
-            "id": "cover-shooter",
-            "share": 0.38,
-            "read": "rifle enemies staged around saloon cover"
-          },
-          {
-            "id": "lane-chaser",
-            "share": 0.42,
-            "read": "front pressure from the main street"
-          },
-          {
-            "id": "cache-guard",
-            "share": 0.2,
-            "read": "risk/reward guard near breakable props"
-          }
-        ]
-      },
-      "normalDropChance": 0.2
-    },
-    {
-      "seconds": 240,
-      "actId": "forest-shoreline-ford-loop",
-      "director": {
-        "elapsedMinutes": 4,
-        "pressure": 0.5,
-        "spawnIntervalSeconds": 1.51,
-        "maxEnemiesOnMap": 57,
-        "chaseEnemyShare": 0.68,
-        "rangedEnemyShare": 0.24,
-        "eliteEnemyShare": 0.13,
-        "projectileSpeedMultiplier": 1.36,
-        "healthMultiplier": 1.98,
-        "difficultyLabel": "market-crash"
-      },
-      "composition": {
-        "actId": "forest-shoreline-ford-loop",
-        "actLabel": "Forest Grove / Shoreline Ford Loop",
-        "elapsedSeconds": 240,
-        "minSpawnDistanceTiles": 20,
-        "rangedEnemyShare": 0.18,
-        "eliteEnemyShare": 0.11,
-        "genericSpawnSuppression": false,
-        "spawnLaneTags": [
-          "tree-line-left",
-          "shoreline-ford",
-          "mushroom-ring"
-        ],
-        "roles": [
-          {
-            "id": "animal-rusher",
-            "share": 0.52,
-            "read": "boar/coyote rushers telegraphed by forest edge"
-          },
-          {
-            "id": "spore-herder",
-            "share": 0.28,
-            "read": "pressure around mushroom hazard pulse"
-          },
-          {
-            "id": "ford-blocker",
-            "share": 0.2,
-            "read": "slow bodies at bridge/fording lane"
-          }
-        ]
-      },
-      "normalDropChance": 0.24
-    },
-    {
-      "seconds": 360,
+      "seconds": 300,
       "actId": "desert-gas-yard-pressure",
       "director": {
-        "elapsedMinutes": 6,
-        "pressure": 0.75,
-        "spawnIntervalSeconds": 1.03,
-        "maxEnemiesOnMap": 79,
-        "chaseEnemyShare": 0.71,
-        "rangedEnemyShare": 0.28,
-        "eliteEnemyShare": 0.18,
-        "projectileSpeedMultiplier": 1.54,
-        "healthMultiplier": 2.46,
-        "difficultyLabel": "panic"
+        "elapsedMinutes": 5,
+        "pressure": 0.426,
+        "spawnIntervalSeconds": 1.373,
+        "maxEnemiesOnMap": 73,
+        "chaseEnemyShare": 0.69,
+        "rangedEnemyShare": 0.234,
+        "eliteEnemyShare": 0.173,
+        "projectileSpeedMultiplier": 1.283,
+        "archetypeMixCount": 4,
+        "packCohesion": 0.395,
+        "patternDensity": 1.614,
+        "currentThreatBeat": {
+          "id": "wo42-04-hunter",
+          "type": "HUNTER",
+          "label": "HUNTER",
+          "startSeconds": 278,
+          "endSeconds": 314,
+          "durationSeconds": 36,
+          "telegraphSeconds": 2,
+          "telegraph": "bounty elite enters fast",
+          "composition": {
+            "elites": 1,
+            "bounty": true,
+            "flankBias": 0.2
+          }
+        },
+        "healthMultiplier": 1.283,
+        "damageMultiplier": 1.138,
+        "difficultyLabel": "volatile"
       },
       "composition": {
         "actId": "desert-gas-yard-pressure",
         "actLabel": "Desert Cache / Gas Yard Pressure",
-        "elapsedSeconds": 360,
+        "elapsedSeconds": 300,
         "minSpawnDistanceTiles": 21,
-        "rangedEnemyShare": 0.28,
+        "rangedEnemyShare": 0.234,
         "eliteEnemyShare": 0.18,
         "genericSpawnSuppression": false,
         "spawnLaneTags": [
@@ -236,27 +126,46 @@
           }
         ]
       },
-      "normalDropChance": 0.28
+      "normalDropChance": 0.248
     },
     {
-      "seconds": 480,
+      "seconds": 600,
       "actId": "rugpull-boss-yard-extraction",
       "director": {
-        "elapsedMinutes": 8,
-        "pressure": 1,
-        "spawnIntervalSeconds": 0.56,
-        "maxEnemiesOnMap": 100,
-        "chaseEnemyShare": 0.74,
-        "rangedEnemyShare": 0.31,
-        "eliteEnemyShare": 0.24,
-        "projectileSpeedMultiplier": 1.72,
-        "healthMultiplier": 2.95,
-        "difficultyLabel": "survival-wall"
+        "elapsedMinutes": 10,
+        "pressure": 0.671,
+        "spawnIntervalSeconds": 0.846,
+        "maxEnemiesOnMap": 104,
+        "chaseEnemyShare": 0.73,
+        "rangedEnemyShare": 0.265,
+        "eliteEnemyShare": 0.261,
+        "projectileSpeedMultiplier": 1.455,
+        "archetypeMixCount": 6,
+        "packCohesion": 0.562,
+        "patternDensity": 1.958,
+        "currentThreatBeat": {
+          "id": "wo42-08-pincer",
+          "type": "PINCER",
+          "label": "PINCER",
+          "startSeconds": 579,
+          "endSeconds": 613,
+          "durationSeconds": 34,
+          "telegraphSeconds": 2,
+          "telegraph": "opposite-gate synchronized packs",
+          "composition": {
+            "packs": 2,
+            "rangedBias": 0.16,
+            "flankBias": 0.42
+          }
+        },
+        "healthMultiplier": 1.487,
+        "damageMultiplier": 1.221,
+        "difficultyLabel": "pincer-pressure"
       },
       "composition": {
         "actId": "rugpull-boss-yard-extraction",
         "actLabel": "Rugpull Boss Yard / Extraction Reveal",
-        "elapsedSeconds": 480,
+        "elapsedSeconds": 600,
         "minSpawnDistanceTiles": 24,
         "rangedEnemyShare": 0.24,
         "eliteEnemyShare": 0.2,
@@ -284,17 +193,256 @@
           }
         ]
       },
-      "normalDropChance": 0.32
+      "normalDropChance": 0.297
+    },
+    {
+      "seconds": 900,
+      "actId": "rugpull-boss-yard-extraction",
+      "director": {
+        "elapsedMinutes": 15,
+        "pressure": 0.811,
+        "spawnIntervalSeconds": 0.588,
+        "maxEnemiesOnMap": 121,
+        "chaseEnemyShare": 0.752,
+        "rangedEnemyShare": 0.284,
+        "eliteEnemyShare": 0.312,
+        "projectileSpeedMultiplier": 1.559,
+        "archetypeMixCount": 6,
+        "packCohesion": 0.664,
+        "patternDensity": 2.152,
+        "currentThreatBeat": {
+          "id": "wo42-12-surge",
+          "type": "SURGE",
+          "label": "SURGE",
+          "startSeconds": 876,
+          "endSeconds": 904,
+          "durationSeconds": 28,
+          "telegraphSeconds": 2,
+          "telegraph": "one-gate weak swarm",
+          "composition": {
+            "swarm": 30,
+            "rangedBias": 0.08,
+            "eliteBias": 0
+          }
+        },
+        "healthMultiplier": 1.632,
+        "damageMultiplier": 1.272,
+        "difficultyLabel": "elite-band"
+      },
+      "composition": {
+        "actId": "rugpull-boss-yard-extraction",
+        "actLabel": "Rugpull Boss Yard / Extraction Reveal",
+        "elapsedSeconds": 900,
+        "minSpawnDistanceTiles": 24,
+        "rangedEnemyShare": 0.24,
+        "eliteEnemyShare": 0.2028,
+        "genericSpawnSuppression": true,
+        "spawnLaneTags": [
+          "boss-gate",
+          "warning-sign",
+          "extraction-flare"
+        ],
+        "roles": [
+          {
+            "id": "boss-guard",
+            "share": 0.25,
+            "read": "small guard wave before boss patterns"
+          },
+          {
+            "id": "boss-pattern-space",
+            "share": 0.55,
+            "read": "empty space preserved for boss tells"
+          },
+          {
+            "id": "extraction-lane-holder",
+            "share": 0.2,
+            "read": "final pressure without spawn soup"
+          }
+        ]
+      },
+      "normalDropChance": 0.325
+    },
+    {
+      "seconds": 1200,
+      "actId": "rugpull-boss-yard-extraction",
+      "director": {
+        "elapsedMinutes": 20,
+        "pressure": 0.892,
+        "spawnIntervalSeconds": 0.461,
+        "maxEnemiesOnMap": 130,
+        "chaseEnemyShare": 0.764,
+        "rangedEnemyShare": 0.295,
+        "eliteEnemyShare": 0.341,
+        "projectileSpeedMultiplier": 1.623,
+        "archetypeMixCount": 7,
+        "packCohesion": 0.725,
+        "patternDensity": 2.261,
+        "currentThreatBeat": null,
+        "healthMultiplier": 1.736,
+        "damageMultiplier": 1.303,
+        "difficultyLabel": "elite-band"
+      },
+      "composition": {
+        "actId": "rugpull-boss-yard-extraction",
+        "actLabel": "Rugpull Boss Yard / Extraction Reveal",
+        "elapsedSeconds": 1200,
+        "minSpawnDistanceTiles": 24,
+        "rangedEnemyShare": 0.24,
+        "eliteEnemyShare": 0.22165,
+        "genericSpawnSuppression": true,
+        "spawnLaneTags": [
+          "boss-gate",
+          "warning-sign",
+          "extraction-flare"
+        ],
+        "roles": [
+          {
+            "id": "boss-guard",
+            "share": 0.25,
+            "read": "small guard wave before boss patterns"
+          },
+          {
+            "id": "boss-pattern-space",
+            "share": 0.55,
+            "read": "empty space preserved for boss tells"
+          },
+          {
+            "id": "extraction-lane-holder",
+            "share": 0.2,
+            "read": "final pressure without spawn soup"
+          }
+        ]
+      },
+      "normalDropChance": 0.34
+    },
+    {
+      "seconds": 1500,
+      "actId": "rugpull-boss-yard-extraction",
+      "director": {
+        "elapsedMinutes": 25,
+        "pressure": 0.938,
+        "spawnIntervalSeconds": 0.399,
+        "maxEnemiesOnMap": 134,
+        "chaseEnemyShare": 0.771,
+        "rangedEnemyShare": 0.301,
+        "eliteEnemyShare": 0.358,
+        "projectileSpeedMultiplier": 1.661,
+        "archetypeMixCount": 7,
+        "packCohesion": 0.763,
+        "patternDensity": 2.322,
+        "currentThreatBeat": {
+          "id": "wo42-20-artillery-minute",
+          "type": "ARTILLERY_MINUTE",
+          "label": "ARTILLERY MINUTE",
+          "startSeconds": 1461,
+          "endSeconds": 1521,
+          "durationSeconds": 60,
+          "telegraphSeconds": 2,
+          "telegraph": "ranged-heavy dodge pressure",
+          "composition": {
+            "rangedBias": 0.48,
+            "volleyBias": 0.35
+          }
+        },
+        "healthMultiplier": 1.811,
+        "damageMultiplier": 1.321,
+        "difficultyLabel": "record-chase"
+      },
+      "composition": {
+        "actId": "rugpull-boss-yard-extraction",
+        "actLabel": "Rugpull Boss Yard / Extraction Reveal",
+        "elapsedSeconds": 1500,
+        "minSpawnDistanceTiles": 24,
+        "rangedEnemyShare": 0.24,
+        "eliteEnemyShare": 0.2327,
+        "genericSpawnSuppression": true,
+        "spawnLaneTags": [
+          "boss-gate",
+          "warning-sign",
+          "extraction-flare"
+        ],
+        "roles": [
+          {
+            "id": "boss-guard",
+            "share": 0.25,
+            "read": "small guard wave before boss patterns"
+          },
+          {
+            "id": "boss-pattern-space",
+            "share": 0.55,
+            "read": "empty space preserved for boss tells"
+          },
+          {
+            "id": "extraction-lane-holder",
+            "share": 0.2,
+            "read": "final pressure without spawn soup"
+          }
+        ]
+      },
+      "normalDropChance": 0.349
+    },
+    {
+      "seconds": 1800,
+      "actId": "rugpull-boss-yard-extraction",
+      "director": {
+        "elapsedMinutes": 30,
+        "pressure": 0.964,
+        "spawnIntervalSeconds": 0.369,
+        "maxEnemiesOnMap": 137,
+        "chaseEnemyShare": 0.775,
+        "rangedEnemyShare": 0.305,
+        "eliteEnemyShare": 0.367,
+        "projectileSpeedMultiplier": 1.684,
+        "archetypeMixCount": 7,
+        "packCohesion": 0.785,
+        "patternDensity": 2.356,
+        "currentThreatBeat": null,
+        "healthMultiplier": 1.865,
+        "damageMultiplier": 1.333,
+        "difficultyLabel": "record-chase"
+      },
+      "composition": {
+        "actId": "rugpull-boss-yard-extraction",
+        "actLabel": "Rugpull Boss Yard / Extraction Reveal",
+        "elapsedSeconds": 1800,
+        "minSpawnDistanceTiles": 24,
+        "rangedEnemyShare": 0.24,
+        "eliteEnemyShare": 0.23855,
+        "genericSpawnSuppression": true,
+        "spawnLaneTags": [
+          "boss-gate",
+          "warning-sign",
+          "extraction-flare"
+        ],
+        "roles": [
+          {
+            "id": "boss-guard",
+            "share": 0.25,
+            "read": "small guard wave before boss patterns"
+          },
+          {
+            "id": "boss-pattern-space",
+            "share": 0.55,
+            "read": "empty space preserved for boss tells"
+          },
+          {
+            "id": "extraction-lane-holder",
+            "share": 0.2,
+            "read": "final pressure without spawn soup"
+          }
+        ]
+      },
+      "normalDropChance": 0.354
     }
   ],
   "killsModel": {
     "passiveRun": {
       "killsPerMinute": 8,
-      "killsAtEightMinutes": 64
+      "killsAtEliteBand": 180
     },
     "swarmFighter": {
       "killsPerMinute": 20,
-      "killsAtEightMinutes": 160
+      "killsAtEliteBand": 450
     }
   },
   "xpPacing": {
@@ -304,13 +452,13 @@
         75
       ],
       "firstUpgradeExpectedSeconds": 58,
-      "targetLevelAtEightMinutes": 7,
-      "totalExpectedXpAtEightMinutes": 821,
-      "killXpAtEightMinutes": 736,
-      "cacheXpAtEightMinutes": 85,
-      "miniBossXpAtEightMinutes": 0,
+      "targetLevelAtEliteBand": 20,
+      "totalExpectedXpAtEliteBand": 2155,
+      "killXpAtEliteBand": 2070,
+      "cacheXpAtEliteBand": 85,
+      "bossXpAtEliteBand": 0,
       "guardrails": [
-        "first upgrade should arrive after the player understands movement but before the first POI lock",
+        "first upgrade should arrive after the player understands movement but before the first boss beat",
         "cache XP should feel valuable without chaining multiple level-ups by itself",
         "one enemy pack must still pause after one level-up through grantRoguelikeXp"
       ]
@@ -321,13 +469,13 @@
         75
       ],
       "firstUpgradeExpectedSeconds": 58,
-      "targetLevelAtEightMinutes": 7,
-      "totalExpectedXpAtEightMinutes": 2134,
-      "killXpAtEightMinutes": 1840,
-      "cacheXpAtEightMinutes": 170,
-      "miniBossXpAtEightMinutes": 124,
+      "targetLevelAtEliteBand": 20,
+      "totalExpectedXpAtEliteBand": 5469,
+      "killXpAtEliteBand": 5175,
+      "cacheXpAtEliteBand": 170,
+      "bossXpAtEliteBand": 124,
       "guardrails": [
-        "first upgrade should arrive after the player understands movement but before the first POI lock",
+        "first upgrade should arrive after the player understands movement but before the first boss beat",
         "cache XP should feel valuable without chaining multiple level-ups by itself",
         "one enemy pack must still pause after one level-up through grantRoguelikeXp"
       ]
@@ -336,7 +484,7 @@
   },
   "rewardModel": {
     "normalDropChanceAtStart": 0.16,
-    "normalDropChanceAtEightMinutes": 0.32,
+    "normalDropChanceAtEliteBand": 0.345,
     "rareDropPolicy": "elite, mini-boss, boss, and authored cache rewards remain deliberate rather than random spam"
   },
   "spawnModel": {
@@ -430,39 +578,39 @@
     }
   },
   "upgradeVariety": {
-    "choicesPerLevel": 2,
+    "choicesPerLevel": 3,
     "mechanicCards": [
       {
-        "id": "saloon-ricochet",
-        "mechanic": "shots glance through saloon/warehouse lanes",
+        "id": "pierce",
+        "mechanic": "shots punch through dense saloon and road-loop bodies",
         "stat": "pierce"
       },
       {
-        "id": "gas-chain-refund",
-        "mechanic": "gas-pump chain kills refund grenade tempo",
-        "stat": "grenadeCooldown"
+        "id": "grenade-damage",
+        "mechanic": "grenade builds become a deliberate branch instead of a one-off pickup",
+        "stat": "grenadeDamage"
       },
       {
-        "id": "spore-filter",
-        "mechanic": "mushroom pulse slow/damage is easier to route around",
-        "stat": "armor"
-      },
-      {
-        "id": "cache-magnet",
-        "mechanic": "Litecoin cache rewards pull harder and stay readable",
+        "id": "pickup-radius",
+        "mechanic": "cache and XP rewards pull harder and stay readable while kiting",
         "stat": "pickupRadius"
       },
       {
-        "id": "boss-yard-breaker",
-        "mechanic": "boss gate/final boss damage windows hit harder",
-        "stat": "bossDamage"
+        "id": "dash-distance",
+        "mechanic": "safer committed dashes through ford, bridge, and chokepoint routes",
+        "stat": "dashDistance"
       },
       {
-        "id": "ford-line-dash",
-        "mechanic": "short safer dashes through ford/bridge chokepoints",
-        "stat": "dashDistance"
+        "id": "block-buster",
+        "mechanic": "grenade type can become a heavy room-clearing build identity",
+        "stat": "grenadeType"
+      },
+      {
+        "id": "revive",
+        "mechanic": "late-run defense can trade many picks for one extra lethal mistake",
+        "stat": "revive"
       }
     ],
-    "buildVarietyGoal": "at least one card per route act should change movement, routing, explosive setup, or boss pressure instead of only nudging a stat"
+    "buildVarietyGoal": "ranked bases and gated unlocks should create build identity instead of letting one run complete every upgrade"
   }
 }

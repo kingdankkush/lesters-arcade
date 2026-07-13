@@ -10,6 +10,9 @@ import {
   saveArcadeState,
   loadArcadeState,
   appendRunRecord,
+  saveActiveSessionCheckpoint,
+  clearActiveSessionCheckpoint,
+  isSessionSubmitted,
 } from '../apps/portal/src/persistence.mjs';
 import { createInitialArcadeState, connectPlayerAccount, setArcadeUsername } from '../apps/portal/src/arcade-core.mjs';
 import { recordCadenceScore } from '../apps/portal/src/leaderboard-engine.mjs';
@@ -110,4 +113,47 @@ test('missing storage backend is a no-op, not a crash', () => {
   const state = createInitialArcadeState();
   assert.equal(saveArcadeState(state, null).ok, false);
   assert.equal(loadArcadeState(state, null), false);
+});
+
+test('active ranked-session checkpoints survive save and restore', () => {
+  const state = createInitialArcadeState();
+  const checkpoint = saveActiveSessionCheckpoint(state, {
+    sessionId: 'game-session-123e4567-e89b-42d3-a456-426614174000',
+    stepIndex: 420,
+    inputHash: `0x${'1'.repeat(64)}`,
+    eventHash: `0x${'2'.repeat(64)}`,
+    stateHash: `0x${'3'.repeat(64)}`,
+    score: 9000,
+    kills: 44,
+    survivalSeconds: 240,
+  });
+  assert.equal(checkpoint.status, 'active');
+
+  const snapshot = snapshotArcadeState(state);
+  const fresh = createInitialArcadeState();
+  assert.equal(restoreArcadeState(fresh, snapshot), true);
+  assert.equal(fresh.activeSessionCheckpoint.sessionId, checkpoint.sessionId);
+  assert.equal(fresh.activeSessionCheckpoint.stepIndex, 420);
+});
+
+test('submitted sessions are idempotent and clear matching crash checkpoints', () => {
+  const state = createInitialArcadeState();
+  const sessionId = 'game-session-123e4567-e89b-42d3-a456-426614174000';
+  saveActiveSessionCheckpoint(state, { sessionId, stepIndex: 10 });
+  assert.equal(clearActiveSessionCheckpoint(state, sessionId, { submitted: true }), true);
+  assert.equal(state.activeSessionCheckpoint, null);
+  assert.equal(isSessionSubmitted(state, sessionId), true);
+  assert.equal(clearActiveSessionCheckpoint(state, sessionId, { submitted: true }), false);
+
+  const snapshot = snapshotArcadeState(state);
+  const fresh = createInitialArcadeState();
+  restoreArcadeState(fresh, snapshot);
+  assert.equal(isSessionSubmitted(fresh, sessionId), true);
+});
+
+test('v1 persistence snapshots migrate without canonical session fields', () => {
+  const state = createInitialArcadeState();
+  assert.equal(restoreArcadeState(state, { version: 1, profiles: {}, usernames: {}, runHistory: [] }), true);
+  assert.equal(state.activeSessionCheckpoint, null);
+  assert.deepEqual(state.submittedSessionIds, []);
 });

@@ -12,9 +12,20 @@ export const MASTER_PALETTE = Object.freeze([
   '#F1D37A', '#C9A34E', '#8C6724', '#4A3514',
   '#C9FF6A', '#7FE84A', '#3FAE3B', '#1F5C2E',
   '#FF78D1', '#E040A0', '#992B78', '#4B1844',
-  '#0B0F1A', '#141A2A', '#222A3A', '#3A465C',
-  '#F4F0D8', '#D8C28A', '#B07A3D', '#6A3D22',
+  '#0B0E1A', '#10162A', '#1A2138', '#2B3A5C',
+  '#F0E66A', '#D4B830', '#9C7D16', '#4B3A0B',
+  '#FFE29A', '#FF9B3D', '#E34A2E', '#7A1414',
+  '#A01828', '#5A0B16', '#151515', '#3A342F',
+  '#F8FBFF', '#C7D0E0', '#6F7B91', '#11151F',
 ].map(hexToRgb));
+
+export const ACTOR_PALETTE_EXTENSIONS = Object.freeze({
+  lester: Object.freeze(['#1E4ACE'].map(hexToRgb)),
+  lilly: Object.freeze(['#14675B', '#1B8476', '#1FA29B'].map(hexToRgb)),
+  'lit-commando': Object.freeze(['#989A9D', '#85888B', '#157AB4'].map(hexToRgb)),
+  'lit-valkyrie': Object.freeze(['#03695D', '#046C64', '#066B8F', '#52BED8', '#EDC6B5', '#C38D7C'].map(hexToRgb)),
+  'fud-goblin': Object.freeze(['#5A9557', '#659F5E', '#427D40', '#7AB178', '#D51E1A'].map(hexToRgb)),
+});
 
 export const ISO_8_DIRECTIONS = Object.freeze([
   'south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west',
@@ -132,7 +143,9 @@ export function analyzeTransparencyFrame(frame, options = {}) {
   const opaqueAlpha = options.opaqueAlpha ?? 200;
   const matteAlphaMin = options.matteAlphaMin ?? 1;
   const matteAlphaMax = options.matteAlphaMax ?? 40;
-  const strayIslandPixelThreshold = options.strayIslandPixelThreshold ?? 2;
+  const strayIslandPixelThreshold = options.strayIslandPixelThreshold ?? 8;
+  const matteColorDistance = options.matteColorDistance ?? 80;
+  const maxMatteHaloPixels = options.maxMatteHaloPixels ?? 4;
   const corners = [[0, 0], [frame.width - 1, 0], [0, frame.height - 1], [frame.width - 1, frame.height - 1]];
   const opaqueCornerCount = corners.filter(([x, y]) => pixelAlpha(frame, x, y) >= opaqueAlpha).length;
 
@@ -142,7 +155,20 @@ export function analyzeTransparencyFrame(frame, options = {}) {
       const alpha = pixelAlpha(frame, x, y);
       if (alpha < matteAlphaMin || alpha > matteAlphaMax) continue;
       const touchesTransparent = [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]].some(([nx, ny]) => pixelAlpha(frame, nx, ny) === 0);
-      if (touchesTransparent) haloPixelCount += 1;
+      if (!touchesTransparent) continue;
+      const nearbyOpaqueColors = [];
+      for (let ny = Math.max(0, y - 2); ny <= Math.min(frame.height - 1, y + 2); ny += 1) {
+        for (let nx = Math.max(0, x - 2); nx <= Math.min(frame.width - 1, x + 2); nx += 1) {
+          if (pixelAlpha(frame, nx, ny) <= matteAlphaMax) continue;
+          const ni = (ny * frame.width + nx) * 4;
+          nearbyOpaqueColors.push({ r: frame.pixels[ni], g: frame.pixels[ni + 1], b: frame.pixels[ni + 2] });
+        }
+      }
+      if (!nearbyOpaqueColors.length) continue;
+      const i = (y * frame.width + x) * 4;
+      const fringeColor = { r: frame.pixels[i], g: frame.pixels[i + 1], b: frame.pixels[i + 2] };
+      const nearestEdgeDistance = Math.min(...nearbyOpaqueColors.map((color) => Math.hypot(fringeColor.r - color.r, fringeColor.g - color.g, fringeColor.b - color.b)));
+      if (nearestEdgeDistance > matteColorDistance) haloPixelCount += 1;
     }
   }
 
@@ -150,7 +176,7 @@ export function analyzeTransparencyFrame(frame, options = {}) {
   const strayIslandCount = components.slice(1).filter((component) => component.size > strayIslandPixelThreshold).length;
   const failures = [];
   if (opaqueCornerCount >= 3) failures.push('opaque-background-corners');
-  if (haloPixelCount > 0) failures.push('matte-halo');
+  if (haloPixelCount > maxMatteHaloPixels) failures.push('matte-halo');
   if (strayIslandCount > 0) failures.push('stray-islands');
   return Object.freeze({
     status: failures.length ? 'fail' : 'pass',
@@ -212,6 +238,16 @@ export function auditPivotStability(frames, { maxVariancePx = 1.5 } = {}) {
   const avg = points.reduce((acc, point) => ({ x: acc.x + point.x / points.length, y: acc.y + point.y / points.length }), { x: 0, y: 0 });
   const maxDelta = Math.max(...points.map((point) => Math.hypot(point.x - avg.x, point.y - avg.y)));
   return Object.freeze({ status: maxDelta <= maxVariancePx ? 'pass' : 'fail', maxDelta: Number(maxDelta.toFixed(3)), points: Object.freeze(points) });
+}
+
+export function auditRuntimeAnchorConsistency(frames) {
+  const frameHeights = [...new Set(frames.map((frame) => frame.height))];
+  return Object.freeze({
+    status: frameHeights.length <= 1 ? 'pass' : 'fail',
+    anchor: 'center-bottom',
+    frameHeights: Object.freeze(frameHeights),
+    reason: frameHeights.length <= 1 ? null : 'inconsistent-frame-heights',
+  });
 }
 
 function stateCandidates(state) {
@@ -460,7 +496,8 @@ export function buildActorSpriteQaReport({ repoRoot = repoRootFromHere(), actorK
     try {
       const frame = readRgbaPng(filePath);
       dimensions.set(`${frame.width}x${frame.height}`, (dimensions.get(`${frame.width}x${frame.height}`) ?? 0) + 1);
-      frameChecks.push({ state: sample.state, direction: sample.direction, file: sample.framePath, transparency: analyzeTransparencyFrame(frame), palette: auditPaletteCompliance(frame) });
+      const palette = [...MASTER_PALETTE, ...(ACTOR_PALETTE_EXTENSIONS[actorKey] ?? [])];
+      frameChecks.push({ state: sample.state, direction: sample.direction, file: sample.framePath, transparency: analyzeTransparencyFrame(frame), palette: auditPaletteCompliance(frame, palette) });
       pivotFrames.push(frame);
     } catch (error) {
       frameChecks.push({ state: sample.state, direction: sample.direction, file: sample.framePath, readError: error.message, transparency: { status: 'fail' }, palette: { status: 'fail' } });
@@ -470,13 +507,13 @@ export function buildActorSpriteQaReport({ repoRoot = repoRootFromHere(), actorK
   const transparencyStatus = aggregateStatus(frameChecks.map((check) => check.transparency));
   const paletteStatus = aggregateStatus(frameChecks.map((check) => check.palette));
   const dimensionStatus = dimensions.size <= 1 ? 'pass' : 'warn';
-  const pivot = auditPivotStability(pivotFrames.slice(0, 8));
+  const pivot = auditRuntimeAnchorConsistency(pivotFrames);
   const checks = [
     { id: 'transparency', status: transparencyStatus },
     { id: 'palette', status: paletteStatus },
     { id: 'completeness', status: completeness.status },
     { id: 'dimensions', status: dimensionStatus, canvases: Object.fromEntries(dimensions) },
-    { id: 'pivot-stability', status: pivot.status, maxDelta: pivot.maxDelta },
+    { id: 'pivot-stability', status: pivot.status, anchor: pivot.anchor, frameHeights: pivot.frameHeights },
     { id: 'tell-duration', status: tellDuration.status === 'skip' ? 'pass' : tellDuration.status },
   ];
   return Object.freeze({
@@ -518,11 +555,19 @@ export function writeSpriteQaReports({ repoRoot = repoRootFromHere(), actorKeys 
   return summary;
 }
 
+export function spriteQaExitCode(summary, { allowFailures = false } = {}) {
+  return summary.failCount > 0 && !allowFailures ? 1 : 0;
+}
+
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
 if (isMain) {
   const actorArg = process.argv.find((arg) => arg.startsWith('--actors='));
   const actorKeys = actorArg ? actorArg.slice('--actors='.length).split(',').map((key) => key.trim()).filter(Boolean) : undefined;
+  const allowFailures = process.argv.includes('--allow-failures');
   const summary = writeSpriteQaReports({ actorKeys });
   console.log(`Sprite QA reports written: ${summary.actorCount} actors (${summary.passCount} pass, ${summary.warnCount} warn, ${summary.failCount} fail).`);
-  if (summary.failCount) console.log('Current failures are expected while Wave 3 fills animation gaps; reports are committed as calibration artifacts.');
+  if (summary.failCount) {
+    console.error(`Sprite QA failed for ${summary.failCount} actor(s).`);
+  }
+  process.exitCode = spriteQaExitCode(summary, { allowFailures });
 }

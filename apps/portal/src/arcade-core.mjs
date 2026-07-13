@@ -5,6 +5,7 @@ import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/envi
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
+import { createCanonicalSessionHandle, createSessionEvidenceState } from './session-integrity.mjs';
 import {
   LEADERBOARD_CADENCES,
   recordCadenceScore,
@@ -317,7 +318,7 @@ export const LESTER_ARCADE_UI_QUALITY_SYSTEM = Object.freeze({
   tooltips: Object.freeze([
     Object.freeze({ anchor: 'connectWalletButton', title: 'Wallet login', copy: 'Tries MetaMask/Rabby first, requests LitVM LiteForge if needed, then falls back to a local mock wallet. No funds or live game transaction.' }),
     Object.freeze({ anchor: 'freePlayButton', title: 'Free play', copy: 'Practice for free with no official tracking: no progress, achievements, high scores, or transactions.' }),
-    Object.freeze({ anchor: 'paidPlayButton', title: 'Play Ranked', copy: 'Publishes your score, achievements, and name on-chain to LitVM as a permanent run record. On testnet the only cost is the zkLTC gas to write it — free from the faucet, no real funds.' }),
+    Object.freeze({ anchor: 'paidPlayButton', title: 'Play Ranked', copy: 'Tracks a canonical local Ranked Testnet run. Verified on-chain publishing is temporarily disabled while the hardened verifier deployment is pending.' }),
     Object.freeze({ anchor: 'simulateRunButton', title: 'Sync sample result', copy: 'Completes a generated run summary and writes progress back to the parent account model.' }),
     Object.freeze({ anchor: 'startCombatButton', title: 'Start 60fps practice', copy: 'Starts the Canvas run loop. Target: 60fps, smooth controls, pixel-snapped sprites.' }),
     Object.freeze({ anchor: 'jumpButton', title: 'Jump / double jump', copy: 'Keyboard: Space. Use double jump to reach vertical platforms and dodge boss sweeps.' }),
@@ -1755,6 +1756,7 @@ export const LESTER_BLASTER_ENEMY_CATALOG = Object.freeze([
   Object.freeze({ id: 'rattlesnake', title: 'Rattlesnake', class: 'ambusher-animal', baseHealth: 20, damage: 14, speed: 2.5, score: 255, spawnAfterSeconds: 100, aiArchetype: 'coil-rattle-strike', districtFamilies: Object.freeze(['desert_approach', 'residential_edge', 'oasis_lakeside']), poiIds: Object.freeze(['oasis-lakeside', 'mesa-overlook']), preferredRangeMode: 'melee', animationStates: Object.freeze(['idle', 'burrow', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['coil-rattle-strike', 'sand-recoil-reset']), deathEffect: 'sand plume + venom mist flicker', tells: 'tail rattle and head lift sync before the strike' }),
   Object.freeze({ id: 'scorpion-ambusher', title: 'Scorpion Ambusher', class: 'burrow-trap', baseHealth: 22, damage: 15, speed: 2.4, score: 280, spawnAfterSeconds: 110, aiArchetype: 'burrow-tail-strike', districtFamilies: Object.freeze(['desert_approach', 'oasis_lakeside']), poiIds: Object.freeze(['old-hashrate-camp', 'oasis-lakeside']), preferredRangeMode: 'melee', animationStates: Object.freeze(['idle', 'burrow', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['sand-burrow-pop', 'tail-overhead-sting']), deathEffect: 'sand plume + neon venom spray', tells: 'tail rises out of the sand before the sting breaks the surface' }),
   Object.freeze({ id: 'bandit-captain', title: 'Bandit Captain', class: 'elite-ranged-human', enemyKey: 'evilBanker', baseHealth: 38, damage: 18, speed: 1.95, score: 520, spawnAfterSeconds: 190, aiArchetype: 'banner-plant-volley', districtFamilies: Object.freeze(['country_road', 'ghost_town']), poiIds: Object.freeze(['crossroads-trading-post', 'rugpull-gulch']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'command-point', 'hit', 'death']), attackPatterns: Object.freeze(['banner-plant-buff', 'sidearm-burst', 'wagon-flank-order']), deathEffect: 'banner shred + brass spark burst + dust plume', tells: 'banner drops and off-hand sidearm flares before the order burst' }),
+  Object.freeze({ id: 'rug-pull-baron', title: 'The Rug Pull Baron', class: 'signature-boss-ranged-human', enemyKey: 'rugPullBaron', baseHealth: 240, damage: 24, speed: 1.62, score: 5000, spawnAfterSeconds: 480, aiArchetype: 'three-phase-arena-control', districtFamilies: Object.freeze(['country_road']), poiIds: Object.freeze(['rugpull-gulch-boss-yard']), preferredRangeMode: 'ranged', boss: true, animationStates: Object.freeze(['phase-form', 'super-telegraph', 'death-spectacle']), attackPatterns: Object.freeze(['rifle-fan', 'guard-crossfire', 'liquidation-wave']), deathEffect: 'coin burst, ledger tear, and dust collapse' }),
   Object.freeze({ id: 'ridge-raider', title: 'Ridge Raider', class: 'sniper-human', enemyKey: 'evilBanker', baseHealth: 30, damage: 17, speed: 1.7, score: 410, spawnAfterSeconds: 165, aiArchetype: 'ridge-scope-relocate', districtFamilies: Object.freeze(['residential_edge']), poiIds: Object.freeze(['mesa-overlook']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'reload', 'hit', 'death']), attackPatterns: Object.freeze(['scope-volley', 'switchback-reposition']), deathEffect: 'scope-glint shards + cliff dust burst', tells: 'scope glint holds a beat before the ridge shot breaks' }),
   Object.freeze({ id: 'slippage-skater', title: 'Slippage Skater', class: 'mid-tier-rusher', baseHealth: 20, damage: 14, speed: 3.6, score: 260, spawnAfterSeconds: 130, aiArchetype: 'overshoot-u-turn', districtFamilies: Object.freeze(['country_road', 'inner_city']), preferredRangeMode: 'melee', animationStates: Object.freeze(['skate', 'attack-tell', 'slide-rush', 'u-turn', 'hit', 'wipeout', 'death']), attackPatterns: Object.freeze(['slide-rush', 'overshoot-return']), deathEffect: 'ice-trail shards + orange skid sparks', tells: 'skates spark before line rush' }),
 
@@ -2157,10 +2159,17 @@ function clampNumber(value, min, max) {
 }
 
 
+const ROGUELIKE_ABSOLUTE_STAT_DEFAULTS = Object.freeze({
+  grenadeCapacity: 0,
+  healthRegen: 0,
+  pierce: 0,
+  revive: 0,
+});
+
 const roguelikeStatDefaults = () => Object.fromEntries(
   LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY
     .filter((skill) => skill.stat)
-    .map((skill) => [skill.stat, 1]),
+    .map((skill) => [skill.stat, ROGUELIKE_ABSOLUTE_STAT_DEFAULTS[skill.stat] ?? 1]),
 );
 
 // Per-hero STARTING stat identity (multipliers layered on the level-1 defaults).
@@ -2396,15 +2405,19 @@ export const HMH_LEVEL_ONE_SHIP_FOCUS = Object.freeze({
   note: 'Level 1 has no 8-minute target or milestone. Pressure climbs smoothly from 0:00, elite play should reach the 20-25 minute band, and runs end on death.',
 });
 
-export const HMH_LEVEL_ONE_BOSS_PROXY_ROSTER = Object.freeze([
+export function hmhCampaignLevelAllowsExtraction(levelId = HMH_LEVEL_ONE_SHIP_FOCUS.targetLevelId) {
+  return String(levelId || HMH_LEVEL_ONE_SHIP_FOCUS.targetLevelId) !== HMH_LEVEL_ONE_SHIP_FOCUS.targetLevelId;
+}
+
+export const HMH_LEVEL_ONE_BOSS_ROSTER = Object.freeze([
   Object.freeze({ role: 'mini-boss', zoneId: 'ghost-saloon-mainstreet', enemyId: 'claim-jumper-sheriff', title: 'Claim-Jumper Sheriff', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/claim-jumper', read: 'rifle humanoid commander for the first saloon lock' }),
   Object.freeze({ role: 'mini-boss', zoneId: 'dead-forest-mushroom-grove', enemyId: 'scam-cult-zealot', title: 'Scam Cult Zealot Alpha', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/scam-cult-zealot', read: 'fully animated humanoid zealot used as forest-loop pressure until bespoke mini-boss art exists' }),
   Object.freeze({ role: 'mini-boss', zoneId: 'warehouse-gas-station-yard', enemyId: 'gas-beast', title: 'Gas Beast Tank', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/gas-beast-tank', read: 'large humanoid tank for warehouse/gas-station pressure' }),
-  Object.freeze({ role: 'boss', zoneId: 'rugpull-gulch-boss-yard', enemyId: 'bandit-captain', title: 'Bandit Captain', humanoid: true, animatedCuratedAssetKey: 'universal/enemy/evil-banker-ranged', read: 'ranged humanoid captain scaled as the temporary Level 1 boss proxy' }),
+  Object.freeze({ role: 'boss', zoneId: 'rugpull-gulch-boss-yard', enemyId: 'rug-pull-baron', title: 'The Rug Pull Baron', humanoid: true, animatedCuratedAssetKey: 'wo110/rug-pull-baron-phase-1', read: 'true-scale three-phase signature boss with dedicated super telegraphs and death spectacle' }),
 ]);
 
-export function levelOneRoguelikeBossProxyRoster() {
-  return HMH_LEVEL_ONE_BOSS_PROXY_ROSTER;
+export function levelOneRoguelikeBossRoster() {
+  return HMH_LEVEL_ONE_BOSS_ROSTER;
 }
 
 export function buildLevelOneRunWorldDimensions({
@@ -2695,7 +2708,7 @@ export function buildLevelOneMinimapModel({
       y: enemy.mapY ?? enemy.y ?? 0,
       world: safeWorld,
       id: enemy.id ?? `enemy-${index}`,
-      tone: enemy.finalBossProxy || enemy.boss ? 'red' : enemy.elite || enemy.miniBoss ? 'orange' : 'magenta',
+      tone: enemy.signatureBoss || enemy.boss ? 'red' : enemy.elite || enemy.miniBoss ? 'orange' : 'magenta',
     }))),
     pois: Object.freeze(visiblePois.slice(0, 12).map((poi, index) => levelOneMinimapMarker({
       x: poi.worldX ?? poi.x ?? 0,
@@ -2891,7 +2904,7 @@ export function buildLevelOnePlaytestBalanceModel() {
     ...HMH_LEVEL_ONE_PLAYTEST_BALANCE,
     shipFocus: HMH_LEVEL_ONE_SHIP_FOCUS,
     world: buildLevelOneRunWorldDimensions(),
-    bossProxyRoster: HMH_LEVEL_ONE_BOSS_PROXY_ROSTER,
+    bossRoster: HMH_LEVEL_ONE_BOSS_ROSTER,
     bossBeatSchedule: HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
     checkpoints: Object.freeze([0, 300, 600, 900, 1200, 1500, 1800].map((seconds) => levelOneRoguelikeSpawnDirectorAt(seconds))),
   });
@@ -3241,7 +3254,10 @@ export function applyRoguelikeSkillUpgrade(run, skillId) {
     if (skill.grenadeType) next.stats.grenadeType = skill.grenadeType;
     if (skill.stat && Number.isFinite(Number(rank.statDelta))) next.stats[skill.stat] = (next.stats[skill.stat] ?? 0) + Number(rank.statDelta);
   } else if (skill.stat && Number.isFinite(Number(rank.statDelta))) {
-    next.stats[skill.stat] = (next.stats[skill.stat] ?? 1) + Number(rank.statDelta) / 100;
+    const absoluteDefault = ROGUELIKE_ABSOLUTE_STAT_DEFAULTS[skill.stat];
+    next.stats[skill.stat] = absoluteDefault !== undefined
+      ? (next.stats[skill.stat] ?? absoluteDefault) + Number(rank.statDelta)
+      : (next.stats[skill.stat] ?? 1) + Number(rank.statDelta) / 100;
   }
   next.pausedForLevelUp = false;
   next.pendingUpgradeChoices = 0;
@@ -3696,22 +3712,31 @@ export function buildCombatOptionsMenuModel({
 } = {}) {
   const official = currentMode === 'paid' || currentMode === 'ranked';
   const actions = [
-    ...(gameOver ? [] : [Object.freeze({ id: 'resume', label: 'Resume', icon: '▶', enabled: paused })]),
-    Object.freeze({ id: 'toggle-settings', label: 'Settings', icon: '⚙', enabled: true }),
+    ...(gameOver ? [] : [Object.freeze({ id: 'resume', label: 'Resume Run', hint: 'ESC', icon: '▶', enabled: paused, group: 'continue', primary: true })]),
+    Object.freeze({ id: 'toggle-settings', label: 'Gameplay Settings', hint: 'AIM · FLASH · SHAKE', icon: '⚙', enabled: true, group: 'system' }),
     ...(gameOver && official ? [Object.freeze({ id: 'submit-official-score', label: officialScoreSubmitted ? 'Score Synced' : 'Submit Official Score', icon: '★', enabled: !officialScoreSubmitted })] : []),
-    Object.freeze({ id: 'restart', label: gameOver ? 'Play Again' : (official ? 'Restart: New Credit' : 'Restart Free'), icon: '⟲', enabled: true }),
-    Object.freeze({ id: 'toggle-music', label: musicEnabled ? 'Music On' : 'Music Off', icon: musicEnabled ? '♪' : '⊘', enabled: true }),
-    Object.freeze({ id: 'toggle-fullscreen', label: viewportMode === 'fullscreen' || viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', icon: '▣', enabled: true }),
-    Object.freeze({ id: 'return-to-game-menu', label: 'Game Menu', icon: '☰', enabled: true }),
-    Object.freeze({ id: 'exit-to-arcade', label: 'Exit to Lester’s Arcade', icon: '⏏', enabled: true, danger: true }),
+    Object.freeze({ id: 'restart', label: gameOver ? 'Play Again' : (official ? 'Restart Ranked Run' : 'Restart Practice Run'), hint: gameOver ? 'NEW RUN' : 'LOSE CURRENT RUN', icon: '↻', enabled: true, group: 'leave', danger: true }),
+    Object.freeze({ id: 'toggle-music', label: musicEnabled ? 'Music On' : 'Music Off', hint: 'AUDIO', icon: musicEnabled ? '♪' : '⊘', enabled: true, group: 'system' }),
+    Object.freeze({ id: 'toggle-fullscreen', label: viewportMode === 'fullscreen' || viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', hint: 'DISPLAY', icon: '▣', enabled: true, group: 'system' }),
+    Object.freeze({ id: 'return-to-game-menu', label: 'Hero & Mode Select', hint: 'LEAVE RUN', icon: '☰', enabled: true, group: 'leave' }),
+    Object.freeze({ id: 'exit-to-arcade', label: 'Exit to Arcade', hint: 'LEAVE GAME', icon: '⏏', enabled: true, group: 'leave', danger: true }),
   ];
 
+  const groups = Object.freeze([
+    Object.freeze({ id: 'continue', label: 'BACK TO THE FIGHT', actionIds: Object.freeze(['resume']) }),
+    Object.freeze({ id: 'system', label: 'RUN SETTINGS', actionIds: Object.freeze(['toggle-settings', 'toggle-music', 'toggle-fullscreen']) }),
+    Object.freeze({ id: 'leave', label: 'END OR LEAVE RUN', actionIds: Object.freeze(['restart', 'return-to-game-menu', 'exit-to-arcade']) }),
+  ]);
+
   return Object.freeze({
-    title: gameOver ? 'Game Over' : 'Paused',
+    version: 'tactical-pause-console-v2',
+    kicker: gameOver ? 'RUN COMPLETE' : 'RUN SUSPENDED',
+    title: gameOver ? 'Game Over' : 'Run Paused',
     state: gameOver ? 'game-over' : paused ? 'paused' : 'running',
     copy: gameOver
       ? 'Review the run summary, submit eligible ranked scores, restart, or exit cleanly back to Lester’s Arcade.'
-      : 'Resume, restart, toggle music, switch fullscreen/windowed, return to the game menu, or exit back to Lester’s Arcade.',
+      : 'Your position and build are locked. Resume when ready.',
+    groups,
     actions: Object.freeze(actions),
   });
 }
@@ -4832,8 +4857,16 @@ export function nextGlobalSessionId(state) {
   };
 }
 
-export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken = 'USDC', urlSessionId = null, sequenceNumber = null }) {
-  const allowDevCabinet = Boolean(arguments[0]?.allowDevCabinet);
+export function startPlaySession({
+  wallet,
+  gameId,
+  mode = 'free',
+  paymentToken = 'USDC',
+  urlSessionId = null,
+  sequenceNumber = null,
+  sessionNonce = null,
+  allowDevCabinet = false,
+}) {
   const normalizedWallet = normalizeWallet(wallet);
   const game = getGame(gameId);
 
@@ -4846,16 +4879,29 @@ export function startPlaySession({ wallet, gameId, mode = 'free', paymentToken =
   }
 
   const isPaid = mode === 'paid';
-  const sequence = typeof globalThis.crypto?.randomUUID === 'function'
+  const randomNonce = typeof globalThis.crypto?.randomUUID === 'function'
     ? globalThis.crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const nonce = String(sessionNonce ?? randomNonce).toLowerCase();
+  const canonicalSessionId = isPaid
+    ? (urlSessionId ?? createCanonicalSessionHandle({ uuid: nonce }))
+    : `${gameId}-free-${nonce}`;
+  const evidence = createSessionEvidenceState({ sessionId: canonicalSessionId });
 
   return {
-    sessionId: `${gameId}-${mode}-${sequence}`,
+    sessionId: canonicalSessionId,
     // User-facing / blockchain-searchable handle (ranked sessions). Free runs
     // may leave this null; the URL then falls back to the game page.
-    urlSessionId: urlSessionId,
+    urlSessionId: isPaid ? canonicalSessionId : null,
     sequenceNumber: sequenceNumber,
+    sessionNonce: nonce,
+    evidence,
+    canonicalContext: Object.freeze({
+      sessionId: canonicalSessionId,
+      wallet: normalizedWallet,
+      gameId,
+      buildHash: `site-${SITE_VERSION}:game-${GAME_VERSION}`,
+    }),
     wallet: normalizedWallet,
     gameId,
     gameTitle: game.title,

@@ -23,14 +23,14 @@
   },
   "checks": [
     {
-      "id": "live-testnet-addresses-present",
+      "id": "safe-ranked-live-gate",
       "pass": true,
-      "detail": "all LitVM contract addresses are populated and settlement live flag is true"
+      "detail": "addresses populated; settlement live=false; unverified writes remain gated"
     },
     {
-      "id": "score-abi-submit-session",
+      "id": "score-abi-verified-session",
       "pass": true,
-      "detail": "score client calls deployed submitSession ABI"
+      "detail": "score client exposes verifier-attested submission ABI"
     },
     {
       "id": "profile-abi-set-profile",

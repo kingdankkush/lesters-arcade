@@ -13,7 +13,7 @@ export const HMH_WO86_89_SHOWCASE_REEL_SHOTLIST = freeze([
   { second: '08-18', beat: 'pickup-and-first-hit', visual: 'pickup sparkle into first enemy hit', audio: 'pickup sparkle on beat, enemy-hit transient', cue: 'pickup' },
   { second: '18-30', beat: 'pressure-layer', visual: 'swarm pressure with weapon cadence', audio: 'combat arpeggio + weapon-fire/impact ducking', cue: 'weapon-fire' },
   { second: '30-42', beat: 'boss-warning', visual: 'boss warning/telegraph and screen shake', audio: 'boss brass hit layer, warning swell', cue: 'boss-warning' },
-  { second: '42-53', beat: 'death-burst', visual: 'elite death or boss proxy burst', audio: 'death burst tail with impact duck', cue: 'enemy-death' },
+  { second: '42-53', beat: 'death-burst', visual: 'elite death or signature boss spectacle', audio: 'death burst tail with impact duck', cue: 'enemy-death' },
   { second: '53-60', beat: 'victory-settle', visual: 'upgrade or victory UI settle', audio: 'victory release sting + UI confirm', cue: 'level-up' },
 ]);
 

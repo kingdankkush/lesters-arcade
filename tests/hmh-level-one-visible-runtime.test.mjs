@@ -357,6 +357,13 @@ test('main runtime consumes the curated visible runtime before generic sceneObje
   assert.equal(currentObstacles.includes('buildLevelOneWorldV3VisibleObjects'), true, 'currentObstacles should inject Blueprint v3 visible Level 1 art');
   assert.equal(currentObstacles.includes('if (isLevelOneCuratedRuntime())'), true, 'Level 1 should have an explicit curated-runtime branch');
   assert.equal(currentObstacles.indexOf('buildLevelOneWorldV3VisibleObjects') < currentObstacles.indexOf('sceneObjectsNear('), true, 'Blueprint v3 authored objects must be chosen before procedural scatter');
+  assert.match(source, /function currentObstacleCacheKey\(\)/, 'obstacle cache should expose a state-aware key');
+  const cacheKeySource = source.slice(source.indexOf('function currentObstacleCacheKey()'), source.indexOf('function currentObstacles()'));
+  assert.match(cacheKeySource, /combat\.playerMapX/);
+  assert.match(cacheKeySource, /combat\.playerMapY/);
+  assert.match(cacheKeySource, /combat\.currentCampaignLevelId/);
+  assert.match(cacheKeySource, /combat\.viewportMode/);
+  assert.match(currentObstacles, /_obstacleCacheKey === cacheKey/, 'same-frame cache reuse must require identical world state');
 
   const visibleRuntimeSource = readFileSync(repoPath('apps/portal/src/hmh-level-one-visible-runtime.mjs'), 'utf8');
   assert.equal(visibleRuntimeSource.includes('LEVEL_ONE_AUTHORED_PREFAB_STAMPS'), true, 'Level 1 visible runtime should expose exact-key authored prefab stamps');

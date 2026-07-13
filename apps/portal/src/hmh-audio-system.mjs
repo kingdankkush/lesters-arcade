@@ -4,6 +4,7 @@ export const HMH_SFX_CUE_REGISTRY = Object.freeze({
   'hero-select': Object.freeze({ family: 'ui', priority: 3, cooldownMs: 160, tone: Object.freeze([523, 659, 784, 1047]), synth: 'triangle', gainMul: 1.1, samplePreferred: false }),
   'level-start': Object.freeze({ family: 'state', priority: 4, cooldownMs: 260, tone: Object.freeze([330, 494, 660]), synth: 'triangle', gainMul: 1.05, samplePreferred: true }),
   jump: Object.freeze({ family: 'movement', priority: 2, cooldownMs: 90, tone: Object.freeze([420, 630]), synth: 'triangle', gainMul: 0.78, samplePreferred: true }),
+  dash: Object.freeze({ family: 'movement', priority: 3, cooldownMs: 140, tone: Object.freeze([260, 520, 780]), synth: 'square', gainMul: 0.72, samplePreferred: false }),
   land: Object.freeze({ family: 'movement', priority: 2, cooldownMs: 120, tone: Object.freeze([120]), synth: 'sine', gainMul: 0.7, samplePreferred: true }),
   'weapon-fire': Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 42, tone: Object.freeze([180, 900]), synth: 'square', gainMul: 0.68, samplePreferred: true }),
   melee: Object.freeze({ family: 'weapon', priority: 2, cooldownMs: 85, tone: Object.freeze([760, 420]), synth: 'square', gainMul: 0.82, samplePreferred: true }),

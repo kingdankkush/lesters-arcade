@@ -516,15 +516,18 @@ try {
     if (stop.requireBridge) {
       await sleep(250);
       const bridgeProfile = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
-      if (!(bridgeProfile?.groundRender?.terrainPresentationStats?.bridgeLightingCells > 0)) {
-        throw new Error(`HMH bridge tour did not render authored bridge deck lighting at ${stop.name}: ${JSON.stringify(bridgeProfile)}`);
+      const bridgeStats = bridgeProfile?.groundRender?.terrainPresentationStats;
+      if (bridgeStats?.bridgeLightingCells !== 0 || bridgeStats?.overlayIds?.length !== 0) {
+        throw new Error(`HMH bridge tour rendered retired flat-color bridge overlays at ${stop.name}: ${JSON.stringify(bridgeProfile)}`);
       }
     }
     if (stop.requireWater) {
       await sleep(250);
       const waterProfile = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
-      if (!(waterProfile?.groundRender?.terrainPresentationStats?.waterFlowCells > 0)) {
-        throw new Error(`HMH water tour did not render authored water flow at ${stop.name}: ${JSON.stringify(waterProfile)}`);
+      const waterStats = waterProfile?.groundRender?.terrainPresentationStats;
+      const usesWaterTexture = waterStats?.textureKeys?.some((textureKey) => String(textureKey).includes('water'));
+      if (!usesWaterTexture || waterStats?.waterFlowCells !== 0 || waterStats?.overlayIds?.length !== 0) {
+        throw new Error(`HMH water tour did not retain texture-only authored water at ${stop.name}: ${JSON.stringify(waterProfile)}`);
       }
     }
     compactWorldTourPositions.push({ ...stop, ...position });

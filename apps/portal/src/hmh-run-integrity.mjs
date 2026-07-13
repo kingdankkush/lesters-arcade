@@ -134,7 +134,7 @@ export function deriveRunCeilings({ survivalSeconds = 0, level = 1 } = {}) {
 }
 
 // The minimum survival time in which a boss clear is even possible. A run that
-// claims a boss kill at 0-3 seconds is tampered: the boss proxy is gated behind
+// claims a boss kill at 0-3 seconds is tampered: the signature boss is gated behind
 // the final route and cannot spawn instantly.
 export const MIN_BOSS_CLEAR_SECONDS = 45;
 

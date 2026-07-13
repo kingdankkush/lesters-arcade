@@ -52,7 +52,7 @@ test('roguelike ground pass batches diamonds by texture key and fills world-anch
   const body = functionBody('drawGroundPlanPatternTiles');
   assert.match(body, /plan\.cellAt\(tile\.worldX, tile\.worldY\)/);
   assert.doesNotMatch(body, /buildTerrainBlobCell\(/);
-  assert.match(body, /buildTerrainPresentationForCell\(terrainCell, \{ frame: combat\.frame \}\)/);
+  assert.match(body, /buildTerrainPresentationForCell\(terrainCell, \{[\s\S]*?overlayMode: isLevelOneCuratedRuntime\(\) \? 'texture-only' : 'full'/);
   assert.match(body, /overlay\.id === 'bridge-deck-light'/);
   assert.match(body, /overlay\.id === 'water-flow'/);
   assert.match(body, /overlay\.id === 'terrain-shadow' \|\| overlay\.id === 'bridge-contact-shadow'/);

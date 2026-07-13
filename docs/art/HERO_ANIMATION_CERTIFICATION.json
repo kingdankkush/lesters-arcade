@@ -25,7 +25,7 @@
     "heroCount": 4,
     "coreCertifiedHeroCount": 4,
     "failedHeroCount": 0,
-    "averageMinFramesPerState": 8
+    "averageMinFramesPerState": 8.5
   },
   "finalCompletionPack": {
     "id": "hmh-final-animation-completion-v1",
@@ -40,7 +40,7 @@
   "heroes": [
     {
       "key": "lester",
-      "characterId": "qa-green-native-lester-v1",
+      "characterId": "lester",
       "role": "hero",
       "coreCertified": true,
       "states": [
@@ -55,16 +55,16 @@
         {
           "state": "walk",
           "directionsPresent": 8,
-          "minFrames": 8,
-          "maxFrames": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
           "complete": true,
           "smooth": true
         },
         {
           "state": "run",
           "directionsPresent": 8,
-          "minFrames": 8,
-          "maxFrames": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
           "complete": true,
           "smooth": true
         },
@@ -125,13 +125,13 @@
       "smoothness": {
         "pass": true,
         "minFramesPerStateDirection": 8,
-        "maxFramesPerStateDirection": 8,
+        "maxFramesPerStateDirection": 12,
         "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
       }
     },
     {
       "key": "lilly",
-      "characterId": "qa-green-native-lilly-v1",
+      "characterId": "lilly",
       "role": "hero",
       "coreCertified": true,
       "states": [
@@ -146,16 +146,16 @@
         {
           "state": "walk",
           "directionsPresent": 8,
-          "minFrames": 8,
-          "maxFrames": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
           "complete": true,
           "smooth": true
         },
         {
           "state": "run",
           "directionsPresent": 8,
-          "minFrames": 8,
-          "maxFrames": 8,
+          "minFrames": 12,
+          "maxFrames": 12,
           "complete": true,
           "smooth": true
         },
@@ -216,13 +216,13 @@
       "smoothness": {
         "pass": true,
         "minFramesPerStateDirection": 8,
-        "maxFramesPerStateDirection": 8,
+        "maxFramesPerStateDirection": 12,
         "rule": "All core state-direction clips must have 7-12 frames and no state spread above 5 frames."
       }
     },
     {
       "key": "lit-commando",
-      "characterId": "qa-green-native-lit-commando-v1",
+      "characterId": "lit-commando",
       "role": "hero",
       "coreCertified": true,
       "states": [
@@ -313,7 +313,7 @@
     },
     {
       "key": "lit-valkyrie",
-      "characterId": "qa-green-native-lit-valkyrie-v1",
+      "characterId": "lit-valkyrie",
       "role": "hero",
       "coreCertified": true,
       "states": [

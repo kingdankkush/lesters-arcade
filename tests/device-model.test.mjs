@@ -118,7 +118,7 @@ test('WO-100 touch layout supports opacity, center dead zone, and left-handed mi
   assert.equal(rightHanded.floatingOrigins, true);
   assert.equal(rightHanded.moveStick.side, 'left');
   assert.equal(rightHanded.aimStick.side, 'right');
-  assert.deepEqual([...rightHanded.actionCluster.buttons], ['grenade']);
+  assert.deepEqual([...rightHanded.actionCluster.buttons], ['dash', 'grenade']);
   assert.ok(rightHanded.actionCluster.minButtonPx >= 56);
   assert.equal(rightHanded.idleOpacity, 0.4);
   assert.equal(rightHanded.activeOpacity, 0.7);

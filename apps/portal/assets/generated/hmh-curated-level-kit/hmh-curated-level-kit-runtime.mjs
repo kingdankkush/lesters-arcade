@@ -79,6 +79,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/hmh-level-one-world-v3-objects.mjs",
     "apps/portal/src/hmh-level-one-world-v3-runtime.mjs",
     "apps/portal/src/hmh-level-three-ground.mjs",
+    "apps/portal/src/hmh-long-run-simulator.mjs",
     "apps/portal/src/hmh-playtest-sweep.mjs",
     "apps/portal/src/hmh-post-anchor-work-orders.mjs",
     "apps/portal/src/hmh-profile-parity.mjs",
@@ -88,6 +89,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/hmh-terrain-blob-map.mjs",
     "apps/portal/src/hmh-terrain-presentation.mjs",
     "apps/portal/src/hmh-upgrade-menu-ui.mjs",
+    "apps/portal/src/hmh-upgrade-runtime.mjs",
     "apps/portal/src/hmh-wo103-114-continuation.mjs",
     "apps/portal/src/hmh-wo107-checkpoint2.mjs",
     "apps/portal/src/hmh-wo111-114-ship-candidate.mjs",
@@ -105,6 +107,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/scene-templates.mjs",
     "apps/portal/src/seeded-rng.mjs",
     "apps/portal/src/session-analytics.mjs",
+    "apps/portal/src/session-integrity.mjs",
     "apps/portal/src/settlement.mjs",
     "apps/portal/src/sprite-pipeline.mjs",
     "apps/portal/src/username-registry.mjs",
@@ -115,7 +118,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/web3-live-readiness.mjs",
     "apps/portal/src/world-obstacles.mjs"
   ],
-  "totalReferencedKeys": 78,
+  "totalReferencedKeys": 76,
   "missing": [],
   "assets": [
     {
@@ -931,19 +934,6 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "needsSlicing": false
     },
     {
-      "key": "level-1/prop/water-ruins2",
-      "label": "Water Ruins2",
-      "category": "water",
-      "family": "water",
-      "scope": "level-1-crypto-wasteland",
-      "role": "Level 1 water/shoreline dressing",
-      "source": "level-1-crypto-wasteland/Random-Assets/Water_ruins2.png",
-      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/Water_ruins2.png",
-      "width": 64,
-      "height": 80,
-      "needsSlicing": false
-    },
-    {
       "key": "level-1/road/road1",
       "label": "Road1",
       "category": "road",
@@ -1123,19 +1113,6 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/claim-jumper/anim0/south-west/00.png",
       "width": 188,
       "height": 188,
-      "needsSlicing": false
-    },
-    {
-      "key": "universal/enemy/evil-banker-ranged",
-      "label": "00",
-      "category": "enemy",
-      "family": "enemies",
-      "scope": "Universal",
-      "role": "Universal enemy animation source",
-      "source": "Universal/Enemies/evil-banker-ranged/anim0/east/00.png",
-      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/evil-banker-ranged/anim0/east/00.png",
-      "width": 136,
-      "height": 136,
       "needsSlicing": false
     },
     {

@@ -33,8 +33,8 @@ export function buildWeb3SettlementAudit({ repoRoot = repoRootFromHere() } = {})
     entryFeeMicroUnits: 0,
   });
   const checks = Object.freeze([
-    Object.freeze({ id: 'live-testnet-addresses-present', pass: SETTLEMENT_LIVE && Object.values(LITVM_CONTRACT_ADDRESSES).every((address) => /^0x[a-fA-F0-9]{40}$/.test(address)), detail: 'all LitVM contract addresses are populated and settlement live flag is true' }),
-    Object.freeze({ id: 'score-abi-submit-session', pass: SCORE_REGISTRY_ABI.some((sig) => sig.includes('submitSession(bytes32 sessionId')), detail: 'score client calls deployed submitSession ABI' }),
+    Object.freeze({ id: 'safe-ranked-live-gate', pass: Object.values(LITVM_CONTRACT_ADDRESSES).every((address) => /^0x[a-fA-F0-9]{40}$/.test(address)) && (!SETTLEMENT_LIVE || chainClient.includes('trusted verifier attestation is required')), detail: `addresses populated; settlement live=${SETTLEMENT_LIVE}; unverified writes remain gated` }),
+    Object.freeze({ id: 'score-abi-verified-session', pass: SCORE_REGISTRY_ABI.some((sig) => sig.includes('submitVerifiedSession(')), detail: 'score client exposes verifier-attested submission ABI' }),
     Object.freeze({ id: 'profile-abi-set-profile', pass: PROFILE_REGISTRY_ABI.some((sig) => sig.includes('setProfile(string displayName, string avatarUri)')), detail: 'profile client calls deployed setProfile ABI' }),
     Object.freeze({ id: 'ranked-submit-chain-guard', pass: chainClient.includes('submitRankedSession') && chainClient.includes('Wrong network: wallet is on chain') && chainClient.includes('expected ${LITVM_LITEFORGE_NETWORK.chainId}'), detail: 'ranked score write blocks wrong chain before signer transaction' }),
     Object.freeze({ id: 'profile-submit-chain-guard', pass: /export async function submitProfile[\s\S]*getNetwork\(\)[\s\S]*Wrong network/.test(chainClient), detail: 'profile writes use the same LitVM chain guard as score submissions' }),

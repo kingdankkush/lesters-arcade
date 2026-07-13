@@ -81,7 +81,7 @@ export function runtimeEnemyHitbox(enemy, options = {}) {
   const mini = Boolean(enemy?.miniBoss);
   const baseWidth = mini ? 68 : enemy?.class === 'armored' ? 42 : 30;
   const drawWidth = n(enemy?.runtimeDrawSize, mini ? 132 : enemy?.class === 'armored' ? 112 : 88);
-  return buildRuntimeSpriteHitboxes({ actorKey: enemy?.id ?? enemy?.enemyKey ?? 'enemy', screenX: n(enemy?.x) + baseWidth / 2, screenY: n(enemy?.y), drawWidth, drawHeight: n(enemy?.runtimeDrawHeight, drawWidth), direction: enemy?.direction ?? enemy?.facing ?? 'south', boss: mini || Boolean(enemy?.finalBossProxy), debugHitboxes: options.debugHitboxes });
+  return buildRuntimeSpriteHitboxes({ actorKey: enemy?.id ?? enemy?.enemyKey ?? 'enemy', screenX: n(enemy?.x) + baseWidth / 2, screenY: n(enemy?.y), drawWidth, drawHeight: n(enemy?.runtimeDrawHeight, drawWidth), direction: enemy?.direction ?? enemy?.facing ?? 'south', boss: mini || Boolean(enemy?.signatureBoss), debugHitboxes: options.debugHitboxes });
 }
 
 export function runtimeBossHitbox(boss, { groundY = 0, debugHitboxes = false } = {}) {

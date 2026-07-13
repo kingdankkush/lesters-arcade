@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { loadHMHGame } from '../apps/portal/src/games/hmh/loader.mjs';
+import { levelOneRoguelikeBossRoster } from '../apps/portal/src/arcade-core.mjs';
 import {
   HMH_WO110_BOSS_REDO,
   wo110BossAssetForPhaseState,
@@ -57,4 +58,24 @@ test('WO-110 runtime and checkpoint docs are wired', () => {
   assert.equal(existsSync(new URL('../docs/game-design/wo110-boss-redo-checkpoint3/wo110-boss-checkpoint3-proof.png', import.meta.url)), true);
   const notice = readFileSync(new URL('../docs/game-design/PLAYTEST_CHECKPOINT_3_NOTICE.md', import.meta.url), 'utf8');
   assert.match(notice, /Verdict: \*\*OPEN/);
+});
+
+test('WO-110 is the active isometric signature boss rather than a proxy', () => {
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  const bossEntry = levelOneRoguelikeBossRoster().find((entry) => entry.role === 'boss');
+
+  assert.equal(bossEntry?.enemyId, 'rug-pull-baron');
+  assert.equal(bossEntry?.animatedCuratedAssetKey, 'wo110/rug-pull-baron-phase-1');
+  assert.match(main, /signatureBoss: true/);
+  assert.match(main, /bossEnemy\.phase = directive\.phase\.phaseNumber/);
+  assert.match(main, /isSignatureBoss \? wo110BossRuntimeFrame\(enemy\) : null/);
+  assert.match(main, /img: image/);
+  assert.match(main, /ready: Boolean\(image\.complete && image\.naturalWidth > 0\)/);
+  assert.match(main, /bossDeathSpectacle/);
+  assert.match(main, /deathSpectacle: true/);
+  assert.match(main, /__hmhVisualDebugBoss/);
+  assert.match(main, /forceEnemyId: 'rug-pull-baron'/);
+  assert.match(main, /const affixes = options\.signatureBoss \? \[\] : resolveEliteAffixes/);
+  assert.match(main, /nameplateTags: options\.signatureBoss \? \[\(options\.title \?\? spawn\.enemy\.title\)\.toUpperCase\(\)\]/);
+  assert.doesNotMatch(main, /finalBossProxy|FinalBossProxy/);
 });

@@ -69,7 +69,7 @@ export function buildTerrainEdgeBlendsForCell(cell = {}) {
   return Object.freeze(blends);
 }
 
-export function buildTerrainPresentationForCell(cell = {}, { frame = 0 } = {}) {
+export function buildTerrainPresentationForCell(cell = {}, { frame = 0, overlayMode = 'full' } = {}) {
   const kind = roleKind(cell);
   const elevationBand = cell?.elevation?.band ?? 'mid';
   const frameNum = Number(frame) || 0;
@@ -130,6 +130,7 @@ export function buildTerrainPresentationForCell(cell = {}, { frame = 0 } = {}) {
     }));
   }
 
+  if (overlayMode === 'texture-only') overlays.length = 0;
   overlays.sort((a, b) => (ORDER_INDEX.get(a.id) ?? 999) - (ORDER_INDEX.get(b.id) ?? 999));
   return Object.freeze({
     kind,

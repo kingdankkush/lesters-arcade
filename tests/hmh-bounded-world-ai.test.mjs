@@ -52,7 +52,7 @@ test('runtime uses obstacle-tracking pursuit for chase and bounded movement for 
   assert.ok(main.includes('resolveTrackingAiMove'), 'main.js should import the obstacle-tracking movement helper');
   assert.ok(updateBlock.includes('resolveTrackingAiMove({'), 'chasing enemies should detour around authored obstacles');
   assert.ok(updateBlock.includes('resolveBoundedAiMove({'), 'ranged backaway should retain bounded movement');
-  assert.match(updateBlock, /boss: Boolean\(enemy\.boss \|\| enemy\.miniBoss \|\| enemy\.finalBossProxy\)/, 'bosses should use the persistent catch-up pursuit speed law');
+  assert.match(updateBlock, /boss: Boolean\(enemy\.boss \|\| enemy\.miniBoss \|\| enemy\.signatureBoss\)/, 'bosses should use the persistent catch-up pursuit speed law');
   assert.ok(updateBlock.includes('worldBounds: enemyWorldBounds'), 'enemy AI should receive finite world bounds');
   assert.equal(updateBlock.includes('resolveWaterCollision(runSeed, fromX, fromY, afterObstacles.x, afterObstacles.y, biomeAt)'), false, 'old unbounded inline movement path should be removed');
 });

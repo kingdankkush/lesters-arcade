@@ -31,11 +31,11 @@ test('WO-73 upgrade menu presentation labels the two-card continuation/new draft
     colorblindTags: true,
   });
 
-  assert.equal(model.version, 'compact-upgrade-menu-ui-v3');
-  assert.equal(model.title, 'Choose One Upgrade');
-  assert.equal(model.instructions, 'Pick one upgrade. Press 1 or 2, or tap a card.');
+  assert.equal(model.version, 'tactical-upgrade-draft-v4');
+  assert.equal(model.title, 'Choose Your Edge');
+  assert.equal(model.instructions, 'Compare the effect, then press 1 or 2.');
   assert.equal(model.cards.length, 2);
-  assert.equal(model.shell.layout, 'compact-two-card-tooltip-draft');
+  assert.equal(model.shell.layout, 'tactical-two-card-draft');
   assert.equal(model.reroll.enabled, true);
   assert.equal(model.reroll.label, 'Reroll Both (2)');
   assert.equal(model.cards[0].slotLabel, 'CONTINUE YOUR BUILD');
@@ -43,6 +43,9 @@ test('WO-73 upgrade menu presentation labels the two-card continuation/new draft
   assert.equal(model.cards[0].category.label, 'Offense');
   assert.equal(model.cards[0].category.colorblindTag, 'TONE RED');
   assert.equal(model.cards[0].tooltip, 'Bullets hit harder.');
+  assert.equal(model.cards[0].effectLabel, '+8%');
+  assert.equal(model.cards[0].rarityLabel, 'COMMON');
+  assert.equal(model.cards[0].decisionLabel, 'STAY COURSE');
   assert.match(model.cards[0].ariaLabel, /Bullets hit harder/);
   assert.deepEqual(model.cards[0].rankPips.map((pip) => pip.state), ['filled', 'next', 'empty', 'empty', 'empty']);
 });
@@ -67,7 +70,7 @@ test('WO-40 upgrade menu supports locked previews and mobile-safe shell metadata
   });
 
   assert.equal(model.reroll.enabled, false);
-  assert.equal(model.shell.layout, 'compact-two-card-tooltip-draft');
+  assert.equal(model.shell.layout, 'tactical-two-card-draft');
   assert.ok(model.shell.accessibility.includes('tooltip/ARIA'));
   assert.equal(model.lockedPreviewRail.length, 2);
   assert.match(model.lockedPreviewRail[0].gateHint, /LEVEL 10/);
@@ -91,8 +94,8 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(css.includes('.level-up-slot-label'), true);
   assert.equal(css.includes('.upgrade-card-meter'), true);
   assert.equal(css.includes('.upgrade-card-tooltip'), true);
-  assert.equal(css.includes('minmax(230px, 1fr)'), true);
-  assert.equal(css.includes('min-height: 104px'), true);
+  assert.equal(css.includes('.pause-console-shell'), true);
+  assert.equal(css.includes('.upgrade-card-effect'), true);
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-upgrade-menu-ui.mjs'), true);
   assert.equal(syntaxCheck.includes('tests/hmh-upgrade-menu-ui.test.mjs'), true);
 });

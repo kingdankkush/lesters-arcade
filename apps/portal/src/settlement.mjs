@@ -21,10 +21,10 @@ import { LITVM_LITEFORGE_NETWORK, DEFAULT_REVENUE_SPLIT_BPS, DEV_WALLET, calcula
 
 // HARD GATE. Stays false until Justin deploys contracts to LiteForge and
 // explicitly approves live settlement. Until then, everything is simulated.
-// Contracts deployed to LitVM LiteForge testnet on 2026-06-22.
-// Justin's dev wallet (0x24501ad94A9245DC88Fb9546929cDA10b91420d4) is the
-// deployer + trusted verifier. Settlement is now LIVE on testnet.
-export const SETTLEMENT_LIVE = true;
+// Legacy contracts were deployed to LiteForge, but verified ranked settlement
+// remains disabled until the hardened verifier contract is deployed and an
+// attestation service is production-approved. Never publish unverified rows.
+export const SETTLEMENT_LIVE = false;
 
 // Placeholder addresses; filled in at deploy time. Kept here so the plan shape
 // is complete and testable before deployment.

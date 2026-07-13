@@ -11,8 +11,9 @@
 // then without leaderboards, before giving up.
 
 export const ARCADE_PERSIST_KEY = 'lesters-arcade-save-v1';
-export const ARCADE_PERSIST_VERSION = 1;
+export const ARCADE_PERSIST_VERSION = 2;
 export const RUN_HISTORY_LIMIT = 50;
+export const SUBMITTED_SESSION_LIMIT = 1000;
 
 function safeParse(raw) {
   try {
@@ -40,6 +41,12 @@ export function snapshotArcadeState(state, { includeAvatars = true, includeLeade
     usernames: { ...(state.usernames ?? {}) },
     cadenceLeaderboards: includeLeaderboards ? (state.cadenceLeaderboards ?? {}) : null,
     runHistory: Array.isArray(state.runHistory) ? state.runHistory.slice(0, RUN_HISTORY_LIMIT) : [],
+    activeSessionCheckpoint: state.activeSessionCheckpoint && typeof state.activeSessionCheckpoint === 'object'
+      ? { ...state.activeSessionCheckpoint }
+      : null,
+    submittedSessionIds: Array.isArray(state.submittedSessionIds)
+      ? state.submittedSessionIds.slice(0, SUBMITTED_SESSION_LIMIT)
+      : [],
   };
 }
 
@@ -48,9 +55,9 @@ export function snapshotArcadeState(state, { includeAvatars = true, includeLeade
 export function restoreArcadeState(state, snapshot) {
   if (!state || typeof state !== 'object') throw new Error('state is required');
   if (!snapshot || typeof snapshot !== 'object') return false;
-  if (snapshot.version !== ARCADE_PERSIST_VERSION) return false;
+  if (![1, ARCADE_PERSIST_VERSION].includes(snapshot.version)) return false;
 
-  let restored = false;
+  let restored = snapshot.version === 1;
   if (snapshot.profiles && typeof snapshot.profiles === 'object') {
     state.profiles = { ...(state.profiles ?? {}) };
     for (const [wallet, profile] of Object.entries(snapshot.profiles)) {
@@ -72,6 +79,14 @@ export function restoreArcadeState(state, snapshot) {
     state.runHistory = snapshot.runHistory.slice(0, RUN_HISTORY_LIMIT);
     restored = true;
   }
+  state.activeSessionCheckpoint = snapshot.version === ARCADE_PERSIST_VERSION
+    && snapshot.activeSessionCheckpoint && typeof snapshot.activeSessionCheckpoint === 'object'
+    ? { ...snapshot.activeSessionCheckpoint }
+    : null;
+  state.submittedSessionIds = snapshot.version === ARCADE_PERSIST_VERSION && Array.isArray(snapshot.submittedSessionIds)
+    ? [...new Set(snapshot.submittedSessionIds.map(String))].slice(0, SUBMITTED_SESSION_LIMIT)
+    : [];
+  if (state.activeSessionCheckpoint || state.submittedSessionIds.length) restored = true;
   if (snapshot.seeded) state.__seededLeaderboard = true;
   return restored;
 }
@@ -128,4 +143,38 @@ export function appendRunRecord(state, record, { limit = RUN_HISTORY_LIMIT } = {
   });
   if (state.runHistory.length > limit) state.runHistory.length = limit;
   return state.runHistory[0];
+}
+
+export function isSessionSubmitted(state, sessionId) {
+  return Array.isArray(state?.submittedSessionIds) && state.submittedSessionIds.includes(String(sessionId));
+}
+
+export function saveActiveSessionCheckpoint(state, checkpoint) {
+  if (!state || typeof state !== 'object') throw new Error('state is required');
+  if (!checkpoint || typeof checkpoint !== 'object' || !checkpoint.sessionId) throw new Error('checkpoint with sessionId is required');
+  if (isSessionSubmitted(state, checkpoint.sessionId)) throw new Error('submitted sessions cannot be checkpointed again');
+  state.activeSessionCheckpoint = {
+    ...checkpoint,
+    sessionId: String(checkpoint.sessionId),
+    stepIndex: Math.max(0, Math.floor(Number(checkpoint.stepIndex) || 0)),
+    status: 'active',
+  };
+  return state.activeSessionCheckpoint;
+}
+
+export function clearActiveSessionCheckpoint(state, sessionId, { submitted = false } = {}) {
+  if (!state || typeof state !== 'object') throw new Error('state is required');
+  const normalizedId = String(sessionId ?? '');
+  let changed = false;
+  if (state.activeSessionCheckpoint?.sessionId === normalizedId) {
+    state.activeSessionCheckpoint = null;
+    changed = true;
+  }
+  if (submitted && !isSessionSubmitted(state, normalizedId)) {
+    state.submittedSessionIds ??= [];
+    state.submittedSessionIds.unshift(normalizedId);
+    if (state.submittedSessionIds.length > SUBMITTED_SESSION_LIMIT) state.submittedSessionIds.length = SUBMITTED_SESSION_LIMIT;
+    changed = true;
+  }
+  return changed;
 }

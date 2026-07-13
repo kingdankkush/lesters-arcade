@@ -107,6 +107,7 @@ import {
   HMH_LEVEL_TARGETS,
   HMH_LEVEL_ONE_PLAYTEST_BALANCE,
   HMH_LEVEL_ONE_SHIP_FOCUS,
+  hmhCampaignLevelAllowsExtraction,
   buildLevelOnePlaytestBalanceModel,
   buildLevelOneRunWorldDimensions,
   buildLevelOneBoundaryObstaclesNear,
@@ -115,7 +116,7 @@ import {
   levelOneRoguelikeDropChance,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
-  levelOneRoguelikeBossProxyRoster,
+  levelOneRoguelikeBossRoster,
 
   recordScore,
   applySettlement,
@@ -437,6 +438,23 @@ test('free mode session is playable but not global-leaderboard eligible', () => 
   assert.equal(session.leaderboardEligible, false);
   assert.equal(session.lives, Infinity);
   assert.equal(session.entryFeeMicroUsdc, 0);
+});
+
+test('ranked sessions use one UUID-backed canonical id across routing and evidence', () => {
+  const wallet = `0x${'7'.repeat(40)}`;
+  const session = startPlaySession({
+    wallet,
+    gameId: 'lester-blaster',
+    mode: 'paid',
+    sessionNonce: '123e4567-e89b-42d3-a456-426614174000',
+  });
+  assert.equal(session.sessionId, 'game-session-123e4567-e89b-42d3-a456-426614174000');
+  assert.equal(session.urlSessionId, session.sessionId);
+  assert.equal(session.sessionNonce, '123e4567-e89b-42d3-a456-426614174000');
+  assert.equal(session.evidence.sessionId, session.sessionId);
+  assert.equal(session.canonicalContext.wallet, wallet);
+  assert.equal(session.canonicalContext.gameId, 'lester-blaster');
+  assert.equal(session.canonicalContext.buildHash, 'site-1.2.0:game-1.2.0');
 });
 
 test('paid mode session uses free-entry (testnet) economics and leaderboard eligibility', () => {
@@ -1070,6 +1088,23 @@ test('Level 1 ship focus is open-ended survival with no timer extraction target'
   assert.deepEqual(HMH_LEVEL_ONE_SHIP_FOCUS.deferredSystems, ['level-2-litecoin-city', 'level-3-the-getaway']);
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('ground/path/water tiles'), true);
   assert.equal(HMH_LEVEL_ONE_SHIP_FOCUS.polishPriorities.includes('100%-scale enemy hit detection'), true);
+  assert.equal(hmhCampaignLevelAllowsExtraction(HMH_LEVEL_ONE_SHIP_FOCUS.targetLevelId), false);
+  assert.equal(hmhCampaignLevelAllowsExtraction('level-2-litecoin-city'), true);
+});
+
+test('public Level 1 runtime copy and progression honor death-only survival', () => {
+  const mainSource = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  const indexSource = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const progressionStart = mainSource.indexOf('function syncCampaignProgression()');
+  const summaryStart = mainSource.indexOf('function currentGameOverSummaryModel()');
+  const progression = mainSource.slice(progressionStart, mainSource.indexOf('\nfunction ', progressionStart + 1));
+  const summary = mainSource.slice(summaryStart, mainSource.indexOf('\nfunction ', summaryStart + 1));
+
+  assert.doesNotMatch(indexSource, /Reach the 20:00 extraction to win/i);
+  assert.match(indexSource, /run ends when your hero falls/i);
+  assert.match(progression, /hmhCampaignLevelAllowsExtraction/);
+  assert.match(summary, /const extractionAllowed = hmhCampaignLevelAllowsExtraction\(level\.id\)/);
+  assert.match(summary, /const extraction = extractionAllowed \? calculateExtractionScore/);
 });
 
 test('Level 1 world dimensions use Blueprint v3 authored spawn-centered bounds', () => {
@@ -1091,17 +1126,18 @@ test('Level 1 world dimensions use Blueprint v3 authored spawn-centered bounds',
   assert.ok(world.width <= Math.ceil(525 / 2) && world.height <= 450 / 2, 'user requested another 50% reduction from the 525x450 playtest world');
 });
 
-test('Level 1 temporarily assigns curated humanoid enemies as mini-boss and boss proxies', () => {
-  const roster = levelOneRoguelikeBossProxyRoster();
+test('Level 1 assigns curated mini-bosses and the true-scale Rug Pull Baron signature boss', () => {
+  const roster = levelOneRoguelikeBossRoster();
   const ids = roster.map((entry) => entry.enemyId);
   const catalogIds = new Set(LESTER_BLASTER_ENEMY_CATALOG.map((enemy) => enemy.id));
 
   assert.equal(roster.filter((entry) => entry.role === 'mini-boss').length >= 3, true);
   assert.equal(roster.filter((entry) => entry.role === 'boss').length, 1);
   assert.equal(new Set(ids).size, ids.length);
-  assert.ok(ids.every((id) => catalogIds.has(id)), `all proxy ids must exist in enemy catalog: ${ids.join(', ')}`);
-  assert.ok(roster.every((entry) => entry.animatedCuratedAssetKey?.startsWith('universal/enemy/')));
-  assert.ok(roster.every((entry) => entry.humanoid === true), 'temporary boss proxies should be humanoid-ish animated enemies');
+  assert.ok(ids.every((id) => catalogIds.has(id)), `all boss ids must exist in enemy catalog: ${ids.join(', ')}`);
+  assert.equal(roster.find((entry) => entry.role === 'boss')?.enemyId, 'rug-pull-baron');
+  assert.equal(roster.find((entry) => entry.role === 'boss')?.animatedCuratedAssetKey, 'wo110/rug-pull-baron-phase-1');
+  assert.ok(roster.every((entry) => entry.humanoid === true), 'Level 1 bosses should retain readable humanoid silhouettes');
 });
 
 test('Level 1 late-swarm budget keeps rewards collectible while capping visual spam', () => {
@@ -1199,13 +1235,13 @@ test('Level 1 default natural boundary cadence does not leave twenty-tile visual
   }
 });
 
-test('main.js routes all roguelike death paths through the final-boss extraction gate', () => {
+test('main.js routes screen-nuke enemy deaths through boss reward and cleanup side effects', () => {
   const source = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
   const nukeBlock = source.slice(source.indexOf("case 'screenNuke'"), source.indexOf("case 'screenNuke'") + 1100);
 
   assert.ok(source.includes('function resolveRoguelikeEnemyDeath('), 'runtime should centralize roguelike enemy death rewards and boss-gate side effects');
-  assert.ok(source.includes('enemy.finalBossProxy'), 'death resolver should detect the temporary final boss proxy');
-  assert.ok(source.includes('combat.bossDefeated = true'), 'final boss proxy death should unlock extraction progression');
+  assert.ok(source.includes('enemy.signatureBoss'), 'death resolver should detect the canonical signature boss');
+  assert.ok(source.includes('combat.bossDefeated = true'), 'major boss death should persist completion and boss-kill progression');
   assert.ok(nukeBlock.includes('resolveRoguelikeEnemyDeath(enemy'), 'screen nuke should use the same death resolver as normal combat kills');
   assert.equal(nukeBlock.includes('combat.enemies = []'), false, 'screen nuke must not bypass final-boss death side effects by wiping the array directly');
 });
@@ -1797,7 +1833,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul12-infrastructure-v3-v39'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul12-canonical-ranked-v40'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2411,7 +2447,7 @@ test('combat HUD and options models expose health, score, timer, power-ups, paus
     currentMode: 'free',
   });
   const actionIds = menu.actions.map((action) => action.id);
-  assert.equal(menu.title, 'Paused');
+  assert.equal(menu.title, 'Run Paused');
   assert.equal(actionIds.includes('resume'), true);
   assert.equal(actionIds.includes('toggle-settings'), true);
   assert.equal(actionIds.includes('restart'), true);
@@ -2421,6 +2457,13 @@ test('combat HUD and options models expose health, score, timer, power-ups, paus
   assert.equal(actionIds.includes('exit-to-arcade'), true);
   assert.equal(menu.actions.find((action) => action.id === 'toggle-music').label, 'Music Off');
   assert.equal(menu.actions.find((action) => action.id === 'toggle-fullscreen').label, 'Full Screen');
+  assert.equal(menu.version, 'tactical-pause-console-v2');
+  assert.equal(menu.kicker, 'RUN SUSPENDED');
+  assert.deepEqual(menu.groups.map((group) => group.id), ['continue', 'system', 'leave']);
+  assert.deepEqual(menu.groups.find((group) => group.id === 'continue').actionIds, ['resume']);
+  assert.equal(menu.actions.find((action) => action.id === 'restart').group, 'leave');
+  assert.equal(menu.actions.find((action) => action.id === 'restart').danger, true);
+  assert.equal(menu.actions.find((action) => action.id === 'exit-to-arcade').group, 'leave');
 });
 
 test('asset coverage report identifies which playable and enemy animation states still need production art', () => {
@@ -2622,7 +2665,7 @@ test('workflow automation scripts emit animation coverage, balance snapshots, an
   assert.equal(animationScript.includes('buildHardMoneyHeroesAnimationCoverageReport'), true);
   assert.equal(balanceScript.includes('LESTER_BLASTER_TACTICAL_COMBAT_V2'), true);
   assert.equal(smokeScript.includes('officialConnectButton'), true);
-  assert.equal(smokeScript.includes('hmh-jul12-infrastructure-v3-v39'), true);
+  assert.equal(smokeScript.includes('hmh-jul12-canonical-ranked-v40'), true);
   assert.equal(smokeScript.includes('findOpenSmokePort'), true);
   assert.equal(smokeScript.includes('splashFeaturedCabinet'), true);
   assert.equal(smokeScript.includes("officialAppStep = connectedWallet ? 'cabinet-select' : 'wallet-splash'"), true);

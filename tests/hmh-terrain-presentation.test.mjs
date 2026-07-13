@@ -84,6 +84,19 @@ test('terrain presentation summary reports live visual-system coverage', () => {
   assert.equal(Object.isFrozen(summary.overlayIds), true);
 });
 
+test('texture-only presentation preserves authored elevation without flat color polygon overlays', () => {
+  const plan = buildGroundPlan({ seed: 47 });
+  const bridge = buildTerrainPresentationForCell(plan.cellAt(27, -39), { frame: 24, overlayMode: 'texture-only' });
+  const water = buildTerrainPresentationForCell(plan.cellAt(25, -42), { frame: 24, overlayMode: 'texture-only' });
+  const bossHigh = buildTerrainPresentationForCell(plan.cellAt(-7, -78), { frame: 24, overlayMode: 'texture-only' });
+
+  assert.deepEqual(bridge.overlays, []);
+  assert.deepEqual(water.overlays, []);
+  assert.deepEqual(bossHigh.overlays, []);
+  assert.equal(water.elevationPx > 0, true);
+  assert.equal(bossHigh.elevationPx < 0, true);
+});
+
 test('live runtime consumes terrain presentation instead of ad-hoc flat terrain fills', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   const syntax = readFileSync(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
@@ -91,6 +104,7 @@ test('live runtime consumes terrain presentation instead of ad-hoc flat terrain 
   assert.match(main, /hmh-terrain-presentation\.mjs/);
   assert.match(main, /buildTerrainPresentationForCell\(/);
   assert.match(main, /terrainPresentationStats/);
+  assert.match(main, /overlayMode: isLevelOneCuratedRuntime\(\) \? 'texture-only' : 'full'/);
   assert.match(syntax, /apps\/portal\/src\/hmh-terrain-presentation\.mjs/);
   assert.match(syntax, /tests\/hmh-terrain-presentation\.test\.mjs/);
 });

@@ -11,10 +11,12 @@ import {
   auditCompleteness,
   auditPaletteCompliance,
   auditPivotStability,
+  auditRuntimeAnchorConsistency,
   auditTellDurationContract,
   estimateFootContactPoint,
   nearestPaletteDistance,
   renderTinyQaContactSheet,
+  spriteQaExitCode,
 } from '../scripts/sprite-qa.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -60,11 +62,11 @@ test('transparency audit catches opaque background corners, matte halos, and str
     set(3, 2, [23, 59, 114, 255]);
     set(2, 3, [23, 59, 114, 255]);
     set(3, 3, [23, 59, 114, 255]);
-    set(1, 1, [23, 59, 114, 20]);
+    set(1, 1, [255, 255, 255, 20]);
     set(5, 2, [23, 59, 114, 255]);
   });
 
-  const result = analyzeTransparencyFrame(bad, { strayIslandPixelThreshold: 0 });
+  const result = analyzeTransparencyFrame(bad, { strayIslandPixelThreshold: 0, maxMatteHaloPixels: 0 });
   assert.equal(result.status, 'fail');
   assert.equal(result.opaqueCornerCount, 4);
   assert.equal(result.haloPixelCount > 0, true);
@@ -87,6 +89,21 @@ test('pivot stability uses the lowest opaque row center as the foot contact poin
   const c = frame(8, 5, ({ set }) => set(7, 4, [23, 59, 114, 255]));
   const unstable = auditPivotStability([a, c], { maxVariancePx: 1.5 });
   assert.equal(unstable.status, 'fail');
+});
+
+test('runtime anchor audit accepts width-varying crops with a stable center-bottom height', () => {
+  const wide = frame(8, 6, ({ set }) => set(1, 5, [23, 59, 114, 255]));
+  const narrow = frame(4, 6, ({ set }) => set(3, 5, [23, 59, 114, 255]));
+  const inconsistent = frame(4, 7, ({ set }) => set(3, 6, [23, 59, 114, 255]));
+  assert.deepEqual(auditRuntimeAnchorConsistency([wide, narrow]).frameHeights, [6]);
+  assert.equal(auditRuntimeAnchorConsistency([wide, narrow]).status, 'pass');
+  assert.equal(auditRuntimeAnchorConsistency([wide, inconsistent]).status, 'fail');
+});
+
+test('sprite QA failures are fatal unless calibration explicitly allows them', () => {
+  assert.equal(spriteQaExitCode({ failCount: 2 }), 1);
+  assert.equal(spriteQaExitCode({ failCount: 2 }, { allowFailures: true }), 0);
+  assert.equal(spriteQaExitCode({ failCount: 0 }), 0);
 });
 
 test('completeness audit catches missing states and partial direction sets', () => {

@@ -11,13 +11,13 @@ function repoText(relativePath) {
 
 test('WO-36 index boots through optimized dist bundle with first-screen preload hints', () => {
   const index = repoText('apps/portal/index.html');
-  assert.equal(index.includes('src="./dist/main.js?v=hmh-jul12-infrastructure-v3-v39"'), true);
-  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-jul12-infrastructure-v3-v39"'), true);
+  assert.equal(index.includes('src="./dist/main.js?v=hmh-jul12-canonical-ranked-v40"'), true);
+  assert.equal(index.includes('rel="modulepreload" href="./dist/main.js?v=hmh-jul12-canonical-ranked-v40"'), true);
   assert.equal(index.includes('hard-money-heroes-keyart-bg.jpg'), true);
   assert.equal(index.includes('fetchpriority="high"'), true);
   const sw = repoText('apps/portal/sw.js');
   assert.equal(sw.includes("'/dist/main.js'"), true);
-  assert.equal(sw.includes('lesters-arcade-v3-infrastructure-v3-v32'), true);
+  assert.equal(sw.includes('lesters-arcade-v3-canonical-ranked-v33'), true);
 });
 
 test('WO-36 Vercel build generates the optimized dist bundle before deploy', () => {
@@ -58,6 +58,13 @@ test('Level 1 biome loading has no artificial 1.5 second hold or cross-level ass
   assert.equal(loading.includes('for (const manifest of [HMH_LEVEL_ONE_FINAL_PAINT_GROUND'), false, 'startup must not decode every Level 1/2/3 manifest in one loop');
   assert.match(loading, /const isLevelOne = currentCampaignLevel\(\)\.id === DEFAULT_CAMPAIGN_LEVEL_ID/);
   assert.match(loading, /if \(!isLevelOne\)/, 'legacy biome prop warming should be skipped for authored Level 1');
+});
+
+test('biome precompute consumes the supplied road network without falling through its catch path', () => {
+  const source = repoText('apps/portal/main.js');
+  const body = source.slice(source.indexOf('async function precomputeBiomeWorld('), source.indexOf('// Canonical building/prop set dressing'));
+  assert.match(body, /const \{ districtGrid, roadNetwork \} = worldStructure;/);
+  assert.match(body, /roads: roadNetwork\?\.length \?\? 0/);
 });
 
 test('portal bootstrap does not eagerly import heavyweight canonical actor manifests', () => {
@@ -129,15 +136,25 @@ test('Level 1 fog batches world and minimap cells instead of issuing hundreds of
   assert.doesNotMatch(minimapBody, /fillRect\(x \+ cell\.x/);
 });
 
-test('Level 1 roads batch diamond paths by material instead of filling every tile twice', () => {
+test('Level 1 roads use prewarmed texture masks and authored bridges instead of flat color diamonds', () => {
   const source = repoText('apps/portal/main.js');
   const roadBody = source.slice(source.indexOf('function drawRoadsAndTransitions('), source.indexOf('function drawProductionIsoProp('));
   assert.match(roadBody, /const roadSurfaceGroups = new Map\(\)/);
+  assert.match(roadBody, /ROAD_SURFACE_TEXTURE/);
+  assert.match(roadBody, /ctx\.createPattern\(/);
   assert.match(roadBody, /ctx\.fill\(group\.surfacePath\)/);
-  assert.match(roadBody, /ctx\.fill\(group\.wearPath\)/);
+  assert.doesNotMatch(roadBody, /ctx\.fillStyle = group\.style\.fill/);
+  assert.doesNotMatch(roadBody, /bridgeSurfacePath|bridgeWearPath/);
   assert.doesNotMatch(roadBody, /traceIsoDiamond\(ctx, cx, cy, 9\)/);
-  assert.match(roadBody, /const bridgeSurfacePath = new Path2D\(\)/);
   assert.doesNotMatch(roadBody, /hmh-coherent-world\/construct\/wood-bridge\.png/);
+});
+
+test('curated Level 1 disables camera-relative animated prop scatter', () => {
+  const source = repoText('apps/portal/main.js');
+  const ambientBody = source.slice(source.indexOf('function collectAnimatedProps('), source.indexOf('const groundPlanPatternFrames'));
+  assert.match(ambientBody, /if \(isLevelOneCuratedRuntime\(\)\) return \[\];/);
+  assert.doesNotMatch(ambientBody, /environmentState\.wind\.x \* 0\.18/);
+  assert.doesNotMatch(ambientBody, /environmentState\.wind\.y \* 0\.12/);
 });
 
 test('Level 1 terrain renders to the actual canvas instead of a phantom 2560x1440 fullscreen target', () => {

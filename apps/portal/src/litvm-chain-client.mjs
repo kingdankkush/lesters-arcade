@@ -34,12 +34,13 @@ export function loadEthers() {
 // contracts in contracts/src/ScoreSubmissionRegistry.sol + PlayerProfileRegistry.sol.
 export const SCORE_REGISTRY_ABI = [
   'function submitSession(bytes32 sessionId, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32[] achievements) external',
-  'function getSession(bytes32 sessionId) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool exists))',
+  'function submitVerifiedSession((bytes32 sessionId, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, bytes32 envelopeHash, uint64 deadline) run, bytes32[] achievements, uint8 v, bytes32 r, bytes32 s) external',
+  'function getSession(bytes32 sessionId) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool verified, bool exists))',
   'function getSessionAchievements(bytes32 sessionId) external view returns (bytes32[])',
   'function playerSessionCount(address player) external view returns (uint256)',
-  'function getPlayerSessions(address player, uint256 offset, uint256 limit) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool exists)[])',
+  'function getPlayerSessions(address player, uint256 offset, uint256 limit) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool verified, bool exists)[])',
   'function totalSessions() external view returns (uint256)',
-  'function getRecentSessions(uint256 offset, uint256 limit) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool exists)[])',
+  'function getRecentSessions(uint256 offset, uint256 limit) external view returns (tuple(bytes32 sessionId, address player, bytes32 gameId, uint256 score, uint64 kills, uint64 maxCombo, uint64 survivalSeconds, bytes32 bossId, uint64 submittedAt, bool verified, bool exists)[])',
 ];
 
 export const PROFILE_REGISTRY_ABI = [
@@ -56,6 +57,10 @@ export async function toBytes32Id(value) {
   const str = String(value ?? '');
   // keccak256 of the utf8 string -> stable bytes32 the contract can index by.
   return ethers.id(str);
+}
+
+export function isBytes32Hex(value) {
+  return /^0x[0-9a-fA-F]{64}$/.test(String(value ?? ''));
 }
 
 function pickReadProvider(ethers, walletProvider) {
@@ -76,6 +81,9 @@ function profileContractAddress() {
 // --- WRITE: submit a completed ranked run (player-signed, 1 tx) -------------
 export async function submitRankedSession(walletProvider, {
   sessionId,
+  sessionKey = null,
+  envelopeHash = null,
+  attestation = null,
   gameId,
   score,
   kills = 0,
@@ -87,6 +95,8 @@ export async function submitRankedSession(walletProvider, {
   if (!walletProvider?.request) throw new Error('A connected wallet is required to submit on-chain.');
   if (!sessionId) throw new Error('sessionId is required.');
   if (!gameId) throw new Error('gameId is required.');
+  if (!isBytes32Hex(envelopeHash)) throw new Error('A canonical envelopeHash is required.');
+  if (!attestation?.signature || !attestation?.deadline) throw new Error('A trusted verifier attestation is required.');
 
   const ethers = await loadEthers();
   const browserProvider = new ethers.BrowserProvider(walletProvider);
@@ -100,7 +110,7 @@ export async function submitRankedSession(walletProvider, {
   const signer = await browserProvider.getSigner();
   const contract = new ethers.Contract(scoreContractAddress(), SCORE_REGISTRY_ABI, signer);
 
-  const sessionId32 = await toBytes32Id(sessionId);
+  const sessionId32 = isBytes32Hex(sessionKey) ? sessionKey.toLowerCase() : await toBytes32Id(sessionId);
   const gameId32 = await toBytes32Id(gameId);
   const bossId32 = bossId ? await toBytes32Id(bossId) : ethers.ZeroHash;
   const achievements32 = [];
@@ -108,16 +118,19 @@ export async function submitRankedSession(walletProvider, {
     if (a) achievements32.push(await toBytes32Id(a));
   }
 
-  const tx = await contract.submitSession(
-    sessionId32,
-    gameId32,
-    BigInt(Math.max(0, Math.round(Number(score) || 0))),
-    BigInt(Math.max(0, Math.round(Number(kills) || 0))),
-    BigInt(Math.max(0, Math.round(Number(maxCombo) || 0))),
-    BigInt(Math.max(0, Math.round(Number(survivalSeconds) || 0))),
-    bossId32,
-    achievements32,
-  );
+  const signature = ethers.Signature.from(attestation.signature);
+  const run = {
+    sessionId: sessionId32,
+    gameId: gameId32,
+    score: BigInt(Math.max(0, Math.round(Number(score) || 0))),
+    kills: BigInt(Math.max(0, Math.round(Number(kills) || 0))),
+    maxCombo: BigInt(Math.max(0, Math.round(Number(maxCombo) || 0))),
+    survivalSeconds: BigInt(Math.max(0, Math.round(Number(survivalSeconds) || 0))),
+    bossId: bossId32,
+    envelopeHash: envelopeHash.toLowerCase(),
+    deadline: BigInt(attestation.deadline),
+  };
+  const tx = await contract.submitVerifiedSession(run, achievements32, signature.v, signature.r, signature.s);
   const receipt = await tx.wait();
   return { txHash: tx.hash, receipt, sessionId32 };
 }
@@ -152,6 +165,7 @@ function normalizeRecord(r) {
     survivalSeconds: Number(r.survivalSeconds),
     bossId32: r.bossId,
     submittedAt: Number(r.submittedAt),
+    verified: Boolean(r.verified),
     onChain: true,
   };
 }
@@ -168,7 +182,7 @@ export async function fetchGlobalLeaderboard({ walletProvider = null, scan = 200
     if (total === 0) return { ok: true, records: [], total: 0 };
     const offset = Math.max(0, total - scan);
     const raw = await contract.getRecentSessions(BigInt(offset), BigInt(scan));
-    const records = raw.map(normalizeRecord).filter(Boolean);
+    const records = raw.map(normalizeRecord).filter((record) => record?.verified);
     records.sort((a, b) => b.score - a.score || b.submittedAt - a.submittedAt);
     return { ok: true, records: records.slice(0, top), total };
   } catch (err) {

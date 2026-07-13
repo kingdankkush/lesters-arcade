@@ -2,20 +2,15 @@
 //
 // WHY THIS EXISTS
 // ---------------
-// The handoff (§12.7) is explicit: "The Level 1 boss should be a real final
-// encounter, not a regular enemy with more HP." Today the final boss is exactly
-// that — a `finalBossProxy` flag on an otherwise-generic ranged enemy that runs
-// the same attack loop as a FUD Goblin. Meanwhile buildLevelOneBossChoreographyPlan()
-// (hmh-level-one-balance-pass.mjs) already defines a rich 3-phase encounter
-// (gate-warning → panic-crossfire → extraction-break) with per-phase telegraph
-// frames, add-wave suppression, and attack patterns — but nothing in the runtime
-// consumes it.
+// The Level 1 signature boss is The Rug Pull Baron. Its three-phase encounter
+// (gate-warning → panic-crossfire → extraction-break) uses per-phase telegraphs,
+// add-wave suppression, and attack patterns from buildLevelOneBossChoreographyPlan().
 //
-// This PURE module bridges that gap. It maps the boss proxy's live HP fraction
+// This PURE module maps the signature boss's live HP fraction
 // to the correct choreography phase and returns concrete, runtime-ready combat
 // directives (telegraph frames, whether to suppress adds, the projectile FAN
 // count/spread, shot-speed multiplier, and a phase-entry banner). main.js wires
-// this into the enemy update loop's ranged-fire branch for the boss proxy, so
+// this into the enemy update loop's ranged-fire branch for the signature boss, so
 // the boss genuinely fights differently across its three phases.
 //
 // Pure (no DOM/RNG/chain) so it is fully unit-testable and could also drive a
@@ -68,10 +63,10 @@ export function resolveLevelOneBossPhase(hpFraction, { plan = null } = {}) {
   });
 }
 
-// Build a full runtime directive for the boss proxy given its current + last
+// Build a full runtime directive for the signature boss given its current + last
 // phase. Detects a phase transition (for the entry banner + one-time add wave)
 // and returns everything the update loop needs. `lastPhaseId` is the phase id
-// recorded on the boss proxy from the previous frame (null on first evaluation).
+// recorded on the boss entity from the previous frame (null on first evaluation).
 export function buildLevelOneBossDirective({ hp, maxHp, lastPhaseId = null, plan = null } = {}) {
   const choreography = plan ?? buildLevelOneBossChoreographyPlan();
   return buildPhaseDirective({

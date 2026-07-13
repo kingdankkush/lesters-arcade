@@ -2,7 +2,7 @@
   "actorKey": "lilly",
   "role": "hero",
   "summary": {
-    "status": "pass",
+    "status": "warn",
     "sampledFrameCount": 16
   },
   "checks": [
@@ -20,15 +20,19 @@
     },
     {
       "id": "dimensions",
-      "status": "pass",
+      "status": "warn",
       "canvases": {
-        "96x96": 16
+        "71x96": 8,
+        "54x96": 8
       }
     },
     {
       "id": "pivot-stability",
       "status": "pass",
-      "maxDelta": 0
+      "anchor": "center-bottom",
+      "frameHeights": [
+        96
+      ]
     },
     {
       "id": "tell-duration",
@@ -55,16 +59,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 129,
+        "offPaletteRatio": 0.0367,
+        "offendingHexes": [
+          {
+            "hex": "#b77143",
+            "count": 16,
+            "nearest": "#9c7d16",
+            "distance": 53.83
+          },
+          {
+            "hex": "#a77954",
+            "count": 11,
+            "nearest": "#c9a34e",
+            "distance": 54.37
+          },
+          {
+            "hex": "#917d5d",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 61.3
+          },
+          {
+            "hex": "#95874a",
+            "count": 9,
+            "nearest": "#8c6724",
+            "distance": 50.49
+          },
+          {
+            "hex": "#68d4c1",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 71.62
+          },
+          {
+            "hex": "#615849",
+            "count": 8,
+            "nearest": "#5c6b80",
+            "distance": 58.4
+          },
+          {
+            "hex": "#56c7b4",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 70.84
+          },
+          {
+            "hex": "#73a89f",
+            "count": 7,
+            "nearest": "#6f7b91",
+            "distance": 47.3
+          }
+        ]
       }
     },
     {
@@ -81,10 +134,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 99,
+        "offPaletteRatio": 0.0354,
+        "offendingHexes": [
+          {
+            "hex": "#68593d",
+            "count": 11,
+            "nearest": "#8c6724",
+            "distance": 46.01
+          },
+          {
+            "hex": "#737b47",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47.43
+          },
+          {
+            "hex": "#7bdcd8",
+            "count": 7,
+            "nearest": "#8cb7ff",
+            "distance": 56.38
+          },
+          {
+            "hex": "#526e52",
+            "count": 7,
+            "nearest": "#5c6b80",
+            "distance": 47.17
+          },
+          {
+            "hex": "#68cfc9",
+            "count": 6,
+            "nearest": "#8cb7ff",
+            "distance": 69.2
+          },
+          {
+            "hex": "#c27037",
+            "count": 6,
+            "nearest": "#e34a2e",
+            "distance": 51.13
+          },
+          {
+            "hex": "#969288",
+            "count": 6,
+            "nearest": "#6f7b91",
+            "distance": 46.16
+          },
+          {
+            "hex": "#a87d52",
+            "count": 6,
+            "nearest": "#c9a34e",
+            "distance": 50.49
+          }
+        ]
       }
     },
     {
@@ -95,16 +197,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 129,
+        "offPaletteRatio": 0.0367,
+        "offendingHexes": [
+          {
+            "hex": "#b77143",
+            "count": 16,
+            "nearest": "#9c7d16",
+            "distance": 53.83
+          },
+          {
+            "hex": "#a77954",
+            "count": 11,
+            "nearest": "#c9a34e",
+            "distance": 54.37
+          },
+          {
+            "hex": "#917d5d",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 61.3
+          },
+          {
+            "hex": "#95874a",
+            "count": 9,
+            "nearest": "#8c6724",
+            "distance": 50.49
+          },
+          {
+            "hex": "#68d4c1",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 71.62
+          },
+          {
+            "hex": "#615849",
+            "count": 8,
+            "nearest": "#5c6b80",
+            "distance": 58.4
+          },
+          {
+            "hex": "#56c7b4",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 70.84
+          },
+          {
+            "hex": "#73a89f",
+            "count": 7,
+            "nearest": "#6f7b91",
+            "distance": 47.3
+          }
+        ]
       }
     },
     {
@@ -121,10 +272,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 99,
+        "offPaletteRatio": 0.0354,
+        "offendingHexes": [
+          {
+            "hex": "#68593d",
+            "count": 11,
+            "nearest": "#8c6724",
+            "distance": 46.01
+          },
+          {
+            "hex": "#737b47",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47.43
+          },
+          {
+            "hex": "#7bdcd8",
+            "count": 7,
+            "nearest": "#8cb7ff",
+            "distance": 56.38
+          },
+          {
+            "hex": "#526e52",
+            "count": 7,
+            "nearest": "#5c6b80",
+            "distance": 47.17
+          },
+          {
+            "hex": "#68cfc9",
+            "count": 6,
+            "nearest": "#8cb7ff",
+            "distance": 69.2
+          },
+          {
+            "hex": "#c27037",
+            "count": 6,
+            "nearest": "#e34a2e",
+            "distance": 51.13
+          },
+          {
+            "hex": "#969288",
+            "count": 6,
+            "nearest": "#6f7b91",
+            "distance": 46.16
+          },
+          {
+            "hex": "#a87d52",
+            "count": 6,
+            "nearest": "#c9a34e",
+            "distance": 50.49
+          }
+        ]
       }
     },
     {
@@ -135,16 +335,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 113,
+        "offPaletteRatio": 0.0322,
+        "offendingHexes": [
+          {
+            "hex": "#b46f42",
+            "count": 16,
+            "nearest": "#8c6724",
+            "distance": 50.64
+          },
+          {
+            "hex": "#a47753",
+            "count": 11,
+            "nearest": "#8c6724",
+            "distance": 55.15
+          },
+          {
+            "hex": "#8f7b5c",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 59.54
+          },
+          {
+            "hex": "#938549",
+            "count": 9,
+            "nearest": "#8c6724",
+            "distance": 48.15
+          },
+          {
+            "hex": "#66d0be",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 71.94
+          },
+          {
+            "hex": "#605748",
+            "count": 8,
+            "nearest": "#3a342f",
+            "distance": 57.39
+          },
+          {
+            "hex": "#55c4b1",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 67.5
+          },
+          {
+            "hex": "#b6ab96",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 48.92
+          }
+        ]
       }
     },
     {
@@ -161,10 +410,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.0386,
+        "offendingHexes": [
+          {
+            "hex": "#66583c",
+            "count": 11,
+            "nearest": "#8c6724",
+            "distance": 47.38
+          },
+          {
+            "hex": "#717946",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47
+          },
+          {
+            "hex": "#9e9047",
+            "count": 8,
+            "nearest": "#c9a34e",
+            "distance": 47.53
+          },
+          {
+            "hex": "#65623c",
+            "count": 8,
+            "nearest": "#8c6724",
+            "distance": 46.07
+          },
+          {
+            "hex": "#79d8d4",
+            "count": 7,
+            "nearest": "#8cb7ff",
+            "distance": 57.44
+          },
+          {
+            "hex": "#516c51",
+            "count": 7,
+            "nearest": "#5c6b80",
+            "distance": 48.28
+          },
+          {
+            "hex": "#66cbc6",
+            "count": 6,
+            "nearest": "#a8b4c4",
+            "distance": 69.92
+          },
+          {
+            "hex": "#bf6e36",
+            "count": 6,
+            "nearest": "#9c7d16",
+            "distance": 49.74
+          }
+        ]
       }
     },
     {
@@ -175,16 +473,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 124,
+        "offPaletteRatio": 0.0353,
+        "offendingHexes": [
+          {
+            "hex": "#9f8b46",
+            "count": 16,
+            "nearest": "#c9a34e",
+            "distance": 49.03
+          },
+          {
+            "hex": "#ad7245",
+            "count": 13,
+            "nearest": "#8c6724",
+            "distance": 47.95
+          },
+          {
+            "hex": "#837154",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 49.85
+          },
+          {
+            "hex": "#664a32",
+            "count": 9,
+            "nearest": "#4a3514",
+            "distance": 46.1
+          },
+          {
+            "hex": "#5dbfae",
+            "count": 8,
+            "nearest": "#1fa29b",
+            "distance": 71.04
+          },
+          {
+            "hex": "#4eb4a2",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 50.81
+          },
+          {
+            "hex": "#a79d8a",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 62.4
+          },
+          {
+            "hex": "#987857",
+            "count": 6,
+            "nearest": "#8c6724",
+            "distance": 55.08
+          }
+        ]
       }
     },
     {
@@ -201,10 +548,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 87,
+        "offPaletteRatio": 0.0311,
+        "offendingHexes": [
+          {
+            "hex": "#9f7a50",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 51.56
+          },
+          {
+            "hex": "#676f40",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47.09
+          },
+          {
+            "hex": "#5c5a37",
+            "count": 8,
+            "nearest": "#3a342f",
+            "distance": 51.61
+          },
+          {
+            "hex": "#6fc6c3",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 59.78
+          },
+          {
+            "hex": "#4a634a",
+            "count": 7,
+            "nearest": "#2e3a4d",
+            "distance": 49.74
+          },
+          {
+            "hex": "#5dbab6",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 67.21
+          },
+          {
+            "hex": "#98958a",
+            "count": 6,
+            "nearest": "#6f7b91",
+            "distance": 49.05
+          },
+          {
+            "hex": "#ba713a",
+            "count": 6,
+            "nearest": "#9c7d16",
+            "distance": 48.37
+          }
+        ]
       }
     },
     {
@@ -215,16 +611,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 124,
+        "offPaletteRatio": 0.0353,
+        "offendingHexes": [
+          {
+            "hex": "#9f8b46",
+            "count": 16,
+            "nearest": "#c9a34e",
+            "distance": 49.03
+          },
+          {
+            "hex": "#ad7245",
+            "count": 13,
+            "nearest": "#8c6724",
+            "distance": 47.95
+          },
+          {
+            "hex": "#837154",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 49.85
+          },
+          {
+            "hex": "#664a32",
+            "count": 9,
+            "nearest": "#4a3514",
+            "distance": 46.1
+          },
+          {
+            "hex": "#5dbfae",
+            "count": 8,
+            "nearest": "#1fa29b",
+            "distance": 71.04
+          },
+          {
+            "hex": "#4eb4a2",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 50.81
+          },
+          {
+            "hex": "#a79d8a",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 62.4
+          },
+          {
+            "hex": "#987857",
+            "count": 6,
+            "nearest": "#8c6724",
+            "distance": 55.08
+          }
+        ]
       }
     },
     {
@@ -241,10 +686,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 87,
+        "offPaletteRatio": 0.0311,
+        "offendingHexes": [
+          {
+            "hex": "#9f7a50",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 51.56
+          },
+          {
+            "hex": "#676f40",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47.09
+          },
+          {
+            "hex": "#5c5a37",
+            "count": 8,
+            "nearest": "#3a342f",
+            "distance": 51.61
+          },
+          {
+            "hex": "#6fc6c3",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 59.78
+          },
+          {
+            "hex": "#4a634a",
+            "count": 7,
+            "nearest": "#2e3a4d",
+            "distance": 49.74
+          },
+          {
+            "hex": "#5dbab6",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 67.21
+          },
+          {
+            "hex": "#98958a",
+            "count": 6,
+            "nearest": "#6f7b91",
+            "distance": 49.05
+          },
+          {
+            "hex": "#ba713a",
+            "count": 6,
+            "nearest": "#9c7d16",
+            "distance": 48.37
+          }
+        ]
       }
     },
     {
@@ -255,16 +749,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 124,
+        "offPaletteRatio": 0.0353,
+        "offendingHexes": [
+          {
+            "hex": "#9f8b46",
+            "count": 16,
+            "nearest": "#c9a34e",
+            "distance": 49.03
+          },
+          {
+            "hex": "#ad7245",
+            "count": 13,
+            "nearest": "#8c6724",
+            "distance": 47.95
+          },
+          {
+            "hex": "#837154",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 49.85
+          },
+          {
+            "hex": "#664a32",
+            "count": 9,
+            "nearest": "#4a3514",
+            "distance": 46.1
+          },
+          {
+            "hex": "#5dbfae",
+            "count": 8,
+            "nearest": "#1fa29b",
+            "distance": 71.04
+          },
+          {
+            "hex": "#4eb4a2",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 50.81
+          },
+          {
+            "hex": "#a79d8a",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 62.4
+          },
+          {
+            "hex": "#987857",
+            "count": 6,
+            "nearest": "#8c6724",
+            "distance": 55.08
+          }
+        ]
       }
     },
     {
@@ -281,10 +824,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 87,
+        "offPaletteRatio": 0.0311,
+        "offendingHexes": [
+          {
+            "hex": "#9f7a50",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 51.56
+          },
+          {
+            "hex": "#676f40",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47.09
+          },
+          {
+            "hex": "#5c5a37",
+            "count": 8,
+            "nearest": "#3a342f",
+            "distance": 51.61
+          },
+          {
+            "hex": "#6fc6c3",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 59.78
+          },
+          {
+            "hex": "#4a634a",
+            "count": 7,
+            "nearest": "#2e3a4d",
+            "distance": 49.74
+          },
+          {
+            "hex": "#5dbab6",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 67.21
+          },
+          {
+            "hex": "#98958a",
+            "count": 6,
+            "nearest": "#6f7b91",
+            "distance": 49.05
+          },
+          {
+            "hex": "#ba713a",
+            "count": 6,
+            "nearest": "#9c7d16",
+            "distance": 48.37
+          }
+        ]
       }
     },
     {
@@ -295,16 +887,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 113,
+        "offPaletteRatio": 0.0322,
+        "offendingHexes": [
+          {
+            "hex": "#b46f42",
+            "count": 16,
+            "nearest": "#8c6724",
+            "distance": 50.64
+          },
+          {
+            "hex": "#a47753",
+            "count": 11,
+            "nearest": "#8c6724",
+            "distance": 55.15
+          },
+          {
+            "hex": "#8f7b5c",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 59.54
+          },
+          {
+            "hex": "#938549",
+            "count": 9,
+            "nearest": "#8c6724",
+            "distance": 48.15
+          },
+          {
+            "hex": "#66d0be",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 71.94
+          },
+          {
+            "hex": "#605748",
+            "count": 8,
+            "nearest": "#3a342f",
+            "distance": 57.39
+          },
+          {
+            "hex": "#55c4b1",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 67.5
+          },
+          {
+            "hex": "#b6ab96",
+            "count": 7,
+            "nearest": "#a8b4c4",
+            "distance": 48.92
+          }
+        ]
       }
     },
     {
@@ -321,10 +962,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 108,
+        "offPaletteRatio": 0.0386,
+        "offendingHexes": [
+          {
+            "hex": "#66583c",
+            "count": 11,
+            "nearest": "#8c6724",
+            "distance": 47.38
+          },
+          {
+            "hex": "#717946",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47
+          },
+          {
+            "hex": "#9e9047",
+            "count": 8,
+            "nearest": "#c9a34e",
+            "distance": 47.53
+          },
+          {
+            "hex": "#65623c",
+            "count": 8,
+            "nearest": "#8c6724",
+            "distance": 46.07
+          },
+          {
+            "hex": "#79d8d4",
+            "count": 7,
+            "nearest": "#8cb7ff",
+            "distance": 57.44
+          },
+          {
+            "hex": "#516c51",
+            "count": 7,
+            "nearest": "#5c6b80",
+            "distance": 48.28
+          },
+          {
+            "hex": "#66cbc6",
+            "count": 6,
+            "nearest": "#a8b4c4",
+            "distance": 69.92
+          },
+          {
+            "hex": "#bf6e36",
+            "count": 6,
+            "nearest": "#9c7d16",
+            "distance": 49.74
+          }
+        ]
       }
     },
     {
@@ -335,16 +1025,65 @@
         "status": "pass",
         "failures": [],
         "opaqueCornerCount": 0,
-        "haloPixelCount": 0,
+        "haloPixelCount": 1,
         "strayIslandCount": 0,
-        "componentCount": 1
+        "componentCount": 7
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 3514,
+        "offPaletteCount": 129,
+        "offPaletteRatio": 0.0367,
+        "offendingHexes": [
+          {
+            "hex": "#b77143",
+            "count": 16,
+            "nearest": "#9c7d16",
+            "distance": 53.83
+          },
+          {
+            "hex": "#a77954",
+            "count": 11,
+            "nearest": "#c9a34e",
+            "distance": 54.37
+          },
+          {
+            "hex": "#917d5d",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 61.3
+          },
+          {
+            "hex": "#95874a",
+            "count": 9,
+            "nearest": "#8c6724",
+            "distance": 50.49
+          },
+          {
+            "hex": "#68d4c1",
+            "count": 8,
+            "nearest": "#a8b4c4",
+            "distance": 71.62
+          },
+          {
+            "hex": "#615849",
+            "count": 8,
+            "nearest": "#5c6b80",
+            "distance": 58.4
+          },
+          {
+            "hex": "#56c7b4",
+            "count": 7,
+            "nearest": "#1fa29b",
+            "distance": 70.84
+          },
+          {
+            "hex": "#73a89f",
+            "count": 7,
+            "nearest": "#6f7b91",
+            "distance": 47.3
+          }
+        ]
       }
     },
     {
@@ -361,10 +1100,59 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1609,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2799,
+        "offPaletteCount": 99,
+        "offPaletteRatio": 0.0354,
+        "offendingHexes": [
+          {
+            "hex": "#68593d",
+            "count": 11,
+            "nearest": "#8c6724",
+            "distance": 46.01
+          },
+          {
+            "hex": "#737b47",
+            "count": 10,
+            "nearest": "#8c6724",
+            "distance": 47.43
+          },
+          {
+            "hex": "#7bdcd8",
+            "count": 7,
+            "nearest": "#8cb7ff",
+            "distance": 56.38
+          },
+          {
+            "hex": "#526e52",
+            "count": 7,
+            "nearest": "#5c6b80",
+            "distance": 47.17
+          },
+          {
+            "hex": "#68cfc9",
+            "count": 6,
+            "nearest": "#8cb7ff",
+            "distance": 69.2
+          },
+          {
+            "hex": "#c27037",
+            "count": 6,
+            "nearest": "#e34a2e",
+            "distance": 51.13
+          },
+          {
+            "hex": "#969288",
+            "count": 6,
+            "nearest": "#6f7b91",
+            "distance": 46.16
+          },
+          {
+            "hex": "#a87d52",
+            "count": 6,
+            "nearest": "#c9a34e",
+            "distance": 50.49
+          }
+        ]
       }
     }
   ]

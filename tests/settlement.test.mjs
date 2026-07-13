@@ -11,8 +11,8 @@ import {
 
 const WALLET = '0x' + 'a'.repeat(40);
 
-test('settlement is live (contracts deployed to LitVM testnet)', () => {
-  assert.equal(SETTLEMENT_LIVE, true);
+test('ranked settlement fails closed until the verifier contract and attestation service are approved', () => {
+  assert.equal(SETTLEMENT_LIVE, false);
 });
 
 test('estimateSettlementGas scales with achievements + profile change', () => {

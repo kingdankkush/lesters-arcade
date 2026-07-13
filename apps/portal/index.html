@@ -44,13 +44,13 @@
       .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
     </style>
     <link rel="preload" href="./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg" as="image" fetchpriority="high" />
-    <link rel="modulepreload" href="./dist/main.js?v=hmh-jul12-infrastructure-v3-v39" />
+    <link rel="modulepreload" href="./dist/main.js?v=hmh-jul12-canonical-ranked-v40" />
     <!-- Deferred stylesheets -->
-    <link rel="preload" href="./styles.css?v=hmh-jul12-infrastructure-v3-v39" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-jul12-infrastructure-v3-v39" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles.css?v=hmh-jul12-canonical-ranked-v40" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-jul12-canonical-ranked-v40" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
-      <link rel="stylesheet" href="./styles.css?v=hmh-jul12-infrastructure-v3-v39" />
-      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-jul12-infrastructure-v3-v39" />
+      <link rel="stylesheet" href="./styles.css?v=hmh-jul12-canonical-ranked-v40" />
+      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-jul12-canonical-ranked-v40" />
     </noscript>
   </head>
   <body>
@@ -200,7 +200,7 @@
               <img class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg" alt="Hard Money Heroes — Ranked" loading="lazy" decoding="async" />
               <span class="arcade-icon" aria-hidden="true">★</span>
               <strong>Play Ranked</strong>
-              <span>Publishes your run on-chain to LitVM. Testnet: only the zkLTC gas to write it — free from the faucet.</span>
+              <span>Tracks a canonical local Ranked Testnet run. Verified on-chain publishing is temporarily disabled.</span>
             </button>
           </div>
           <div id="officialRankedTooltip" class="ranked-tooltip"></div>
@@ -221,12 +221,13 @@
             <button id="officialLevelBackButton" class="back-nav-button" type="button">← Back to Hero Select</button>
             <p class="eyebrow">Level 1 Boot Sequence</p>
             <h2>Level 1: The Crypto Wasteland</h2>
-            <p>An isometric survival run. <strong>Desktop:</strong> move with WASD / arrow keys; your gun <strong>auto-fires toward your mouse</strong>. <strong>Mobile:</strong> drag to move and you fire in your heading direction. Survive escalating waves, <strong>earn XP from kills and power-ups</strong>, and pick upgrades on level-up. Reach the 20:00 extraction to win.</p>
+            <p>An open-ended isometric survival run. <strong>Desktop:</strong> move with WASD / arrow keys; your gun <strong>auto-fires toward your mouse</strong>. <strong>Mobile:</strong> drag to move and you fire in your heading direction. Survive escalating waves, <strong>earn XP from kills and power-ups</strong>, defeat recurring bosses, and pick upgrades on level-up. Your score keeps climbing until the run ends when your hero falls.</p>
             <div class="level-control-strip">
               <span>⌨ WASD / arrows: move (desktop)</span>
               <span>🖱 Mouse: aim — gun auto-fires</span>
               <span>🖱 Left click: shoot · Right click: grenade</span>
-              <span>📱 Mobile: drag to move + fire heading</span>
+              <span>⚡ Ctrl: dash in movement direction</span>
+              <span>📱 Mobile: twin sticks + DASH / NADE buttons</span>
               <span>💣 Grenade: right click / F · 📱 NADE button</span>
               <span>⬆ Level-up: pick 1 of 2 (+reroll) · ⎋ Esc pause</span>
             </div>
@@ -469,7 +470,7 @@
             <button id="paidPlayButton" class="primary-button mode-banner-button" style="background-image: linear-gradient(180deg, rgba(4,11,26,0.4) 0%, rgba(4,11,26,0.5) 45%, rgba(4,11,26,0.9) 100%), url('./assets/generated/hmh-banners/ranked-banner.jpg');">
               <span class="mode-banner-copy">
                 <strong class="mode-banner-title">Play Ranked ⛓</strong>
-                <small class="mode-banner-desc">Publishes your run on-chain to LitVM. Testnet: zkLTC gas only.</small>
+                <small class="mode-banner-desc">Canonical local Ranked Testnet preview. Verified chain publishing is temporarily disabled.</small>
               </span>
             </button>
           </div>
@@ -545,7 +546,7 @@
       </div>
     </main>
 
-    <script type="module" src="./dist/main.js?v=hmh-jul12-infrastructure-v3-v39"></script>
+    <script type="module" src="./dist/main.js?v=hmh-jul12-canonical-ranked-v40"></script>
     <script>
       // Register the service worker for offline + repeat-visit caching. Fails
       // silently on unsupported browsers / file:// and never blocks the app.

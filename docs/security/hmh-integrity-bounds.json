@@ -1,0 +1,62 @@
+{
+  "version": "hmh-level-1-integrity-v2",
+  "gameId": "hard-money-heroes",
+  "levelId": "level-1-crypto-wasteland",
+  "minBossClearSeconds": 45,
+  "tolerance": {
+    "score": 3,
+    "kills": 1.6,
+    "xpPerKill": 1.35,
+    "combo": 1.5
+  },
+  "windows": [
+    {
+      "survivalSeconds": 60,
+      "ceilings": {
+        "level": 1,
+        "survivalSeconds": 60,
+        "maxKills": 560,
+        "maxScore": 247600,
+        "maxCombo": 672,
+        "maxXpPerKill": 115,
+        "killRatePerSecond": 7
+      }
+    },
+    {
+      "survivalSeconds": 300,
+      "ceilings": {
+        "level": 1,
+        "survivalSeconds": 300,
+        "maxKills": 2240,
+        "maxScore": 934000,
+        "maxCombo": 2688,
+        "maxXpPerKill": 115,
+        "killRatePerSecond": 7
+      }
+    },
+    {
+      "survivalSeconds": 900,
+      "ceilings": {
+        "level": 1,
+        "survivalSeconds": 900,
+        "maxKills": 6440,
+        "maxScore": 2650000,
+        "maxCombo": 7728,
+        "maxXpPerKill": 115,
+        "killRatePerSecond": 7
+      }
+    },
+    {
+      "survivalSeconds": 2700,
+      "ceilings": {
+        "level": 1,
+        "survivalSeconds": 2700,
+        "maxKills": 19040,
+        "maxScore": 7798000,
+        "maxCombo": 22848,
+        "maxXpPerKill": 115,
+        "killRatePerSecond": 7
+      }
+    }
+  ]
+}

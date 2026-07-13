@@ -3,9 +3,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { HMH_WO110_BOSS_REDO } from '../apps/portal/assets/generated/hmh-wo110-boss-redo/hmh-wo110-boss-redo-manifest.mjs';
 import {
   LESTER_BLASTER_ENEMY_CATALOG,
-  HMH_LEVEL_ONE_BOSS_PROXY_ROSTER,
+  HMH_LEVEL_ONE_BOSS_ROSTER,
 } from '../apps/portal/src/arcade-core.mjs';
 import { HMH_PLAYABLE_CHARACTER_VISUAL_KITS } from '../apps/portal/src/hmh-character-config.mjs';
 
@@ -180,21 +181,22 @@ function actorCoverage(key, actor, options = {}) {
   });
 }
 
-function bossProxyByEnemyId() {
-  return new Map(HMH_LEVEL_ONE_BOSS_PROXY_ROSTER.map((entry) => [entry.enemyId, entry]));
+function bossEntryByEnemyId() {
+  return new Map(HMH_LEVEL_ONE_BOSS_ROSTER.map((entry) => [entry.enemyId, entry]));
 }
 
 function rosterKeyFromAssetKey(assetKey = '') {
   return String(assetKey).split('/').filter(Boolean).at(-1) ?? '';
 }
 
-function actorKeyForEnemy(enemy, bossProxy = null) {
-  const proxyKey = rosterKeyFromAssetKey(bossProxy?.animatedCuratedAssetKey);
-  if (proxyKey && HMH_ANIMATED_ROSTER[proxyKey]) return proxyKey;
+function actorKeyForEnemy(enemy, bossEntry = null) {
+  if (enemy.id === HMH_WO110_BOSS_REDO.actor.id) return enemy.id;
+  const rosterKey = rosterKeyFromAssetKey(bossEntry?.animatedCuratedAssetKey);
+  if (rosterKey && HMH_ANIMATED_ROSTER[rosterKey]) return rosterKey;
   if (HMH_ANIMATED_ROSTER[enemy.id]) return enemy.id;
   if (enemy.enemyKey && ENEMY_KEY_TO_ROSTER_KEY[enemy.enemyKey]) return ENEMY_KEY_TO_ROSTER_KEY[enemy.enemyKey];
   if (String(enemy.id).includes('cave') && HMH_ANIMATED_ROSTER['trench-degen']) return 'trench-degen';
-  return proxyKey || enemy.id;
+  return rosterKey || enemy.id;
 }
 
 function isRangedEnemy(enemy = {}) {
@@ -206,19 +208,21 @@ function isRangedEnemy(enemy = {}) {
 }
 
 function levelOneShipScopeRows(actorReports) {
-  const proxyMap = bossProxyByEnemyId();
+  const bossMap = bossEntryByEnemyId();
   return Object.freeze(LESTER_BLASTER_ENEMY_CATALOG
     .filter((enemy) => Number(enemy.spawnAfterSeconds ?? 0) <= 480)
     .map((enemy) => {
-      const proxy = proxyMap.get(enemy.id) ?? null;
-      const actorKey = actorKeyForEnemy(enemy, proxy);
-      const actor = actorReports[actorKey] ?? actorCoverage(actorKey, HMH_ANIMATED_ROSTER[actorKey] ?? { role: 'enemy', animations: {} }, { ranged: isRangedEnemy(enemy) });
-      const role = proxy?.role ?? (String(enemy.class ?? '').includes('miniboss') ? 'mini-boss' : 'enemy');
+      const bossEntry = bossMap.get(enemy.id) ?? null;
+      const actorKey = actorKeyForEnemy(enemy, bossEntry);
+      const actor = enemy.id === HMH_WO110_BOSS_REDO.actor.id
+        ? { summary: { status: 'complete', missingStates: [], partialStates: [] } }
+        : actorReports[actorKey] ?? actorCoverage(actorKey, HMH_ANIMATED_ROSTER[actorKey] ?? { role: 'enemy', animations: {} }, { ranged: isRangedEnemy(enemy) });
+      const role = bossEntry?.role ?? (String(enemy.class ?? '').includes('miniboss') ? 'mini-boss' : 'enemy');
       return Object.freeze({
         enemyId: enemy.id,
         title: enemy.title,
         actorKey,
-        source: proxy ? `boss-proxy:${proxy.zoneId}` : enemy.enemyKey ? `enemyKey:${enemy.enemyKey}` : 'catalog-id',
+        source: bossEntry ? `${bossEntry.role === 'boss' ? 'signature-boss' : 'boss-roster'}:${bossEntry.zoneId}` : enemy.enemyKey ? `enemyKey:${enemy.enemyKey}` : 'catalog-id',
         role,
         spawnAfterSeconds: enemy.spawnAfterSeconds ?? 0,
         ranged: isRangedEnemy(enemy),

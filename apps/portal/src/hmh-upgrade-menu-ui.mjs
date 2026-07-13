@@ -159,6 +159,7 @@ function buildCard(choice, index, options) {
   const branchLabel = choice.category === 'weapon' ? 'Weapon Branch' : category.label;
   const tone = choice.presentation?.tone ?? (rarity === 'golden' ? 'gold' : category.tone);
   const rarityLabel = choice.presentation?.label ?? String(rarity).toUpperCase();
+  const slotRole = choice.slotRole ?? (index === 0 ? 'continuation' : 'new');
   return Object.freeze({
     id: choice.id,
     title: choice.title,
@@ -179,10 +180,13 @@ function buildCard(choice, index, options) {
     }),
     icon: choice.presentation?.icon ?? category.icon,
     gainLabel: choiceGainLabel(choice),
+    effectLabel: choiceGainLabel(choice),
+    rarityLabel,
+    decisionLabel: slotRole === 'continuation' ? 'STAY COURSE' : 'DIVERSIFY',
     rankLabel: `Rank ${choice.currentLevel ?? 0} → ${choice.nextLevel ?? 1}`,
     completionLabel: completionLabel(choice),
     rankPips,
-    slotRole: choice.slotRole ?? (index === 0 ? 'continuation' : 'new'),
+    slotRole,
     slotLabel: choice.slotLabel ?? (index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'),
     slotReason: choice.slotReason ?? null,
     dataset: Object.freeze({ skill: choice.id, tone, category: choice.category ?? 'unknown', rarity, slot: choice.slotRole ?? (index === 0 ? 'continuation' : 'new'), uiChrome: LEVEL_UP_CARD_CHROME.id, chromeTone: tone }),
@@ -206,12 +210,12 @@ export function buildUpgradeMenuPresentation({
   })));
   const remaining = Math.max(0, Number(rerollsRemaining ?? 0) || 0);
   return Object.freeze({
-    version: 'compact-upgrade-menu-ui-v3',
-    title: 'Choose One Upgrade',
-    subtitle: level ? `Level ${level} draft` : 'Upgrade draft',
-    instructions: 'Pick one upgrade. Press 1 or 2, or tap a card.',
+    version: 'tactical-upgrade-draft-v4',
+    title: 'Choose Your Edge',
+    subtitle: level ? `Level ${level} // build decision` : 'Build decision',
+    instructions: 'Compare the effect, then press 1 or 2.',
     shell: Object.freeze({
-      layout: 'compact-two-card-tooltip-draft',
+      layout: 'tactical-two-card-draft',
       accessibility: 'Compact 44px-minimum tap targets with icons, rarity labels, rank pips, and tooltip/ARIA details instead of visible description clutter.',
       cardCount: cards.length,
       chrome: LEVEL_UP_CARD_CHROME,

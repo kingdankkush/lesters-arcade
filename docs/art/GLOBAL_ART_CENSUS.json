@@ -2,14 +2,14 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 16299,
-    "totalActors": 72,
+    "totalAssets": 16763,
+    "totalActors": 73,
     "layerCount": 8,
-    "runtimeActorCount": 37,
-    "runtimeCompleteActorCount": 33,
+    "runtimeActorCount": 38,
+    "runtimeCompleteActorCount": 34,
     "runtimePartialActorCount": 4,
     "runtimeZeroAnimationActorCount": 0,
-    "runtimeStrictRenderableActorCount": 37,
+    "runtimeStrictRenderableActorCount": 38,
     "runtimeAutoRepairedZeroAnimationActorCount": 0,
     "runtimeDeferredOrPurgedZeroAnimationActorCount": 0,
     "runtimeUnresolvedZeroAnimationActorCount": 0,
@@ -21,13 +21,13 @@
       "label": "Runtime animated roster",
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
-      "actorCount": 37,
-      "assetCount": 14835,
-      "animationStateCount": 288,
-      "completeActorCount": 33,
+      "actorCount": 38,
+      "assetCount": 15299,
+      "animationStateCount": 294,
+      "completeActorCount": 34,
       "partialActorCount": 4,
       "zeroAnimationActorCount": 0,
-      "levelOneShipEnemyCount": 23,
+      "levelOneShipEnemyCount": 22,
       "sampleKeys": [
         "lester",
         "whale-dumper-boss",
@@ -197,8 +197,8 @@
     "overallScore": 80,
     "categories": {
       "animationCoverage": {
-        "score": 92,
-        "summary": "33/37 actors complete; 0 zero-animation actors",
+        "score": 93,
+        "summary": "34/38 actors complete; 0 zero-animation actors",
         "gaps": [
           "bitcoin-maximalist-riot-cop: partial coverage",
           "influencer-camera-drone: partial coverage",
@@ -208,7 +208,7 @@
       },
       "sourcePolicy": {
         "score": 9,
-        "summary": "1464/16299 counted assets carry repo-owned/original/curated policy text",
+        "summary": "1464/16763 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {
@@ -224,15 +224,15 @@
       "strictRuntimeActors": {
         "score": 100,
         "summary": {
-          "runtimeActorCount": 37,
+          "runtimeActorCount": 38,
           "rawZeroAnimationActorCount": 0,
           "autoRepairedZeroAnimationActorCount": 0,
           "deferredOrPurgedZeroAnimationActorCount": 0,
           "ruledZeroAnimationActorCount": 0,
           "unresolvedZeroAnimationActorCount": 0,
-          "strictRenderableActorCount": 37
+          "strictRenderableActorCount": 38
         },
-        "text": "0/0 zero-animation actor(s) have runtime repair or defer/purge rulings; 37/37 actors remain strict-runtime renderable.",
+        "text": "0/0 zero-animation actor(s) have runtime repair or defer/purge rulings; 38/38 actors remain strict-runtime renderable.",
         "gaps": []
       }
     }

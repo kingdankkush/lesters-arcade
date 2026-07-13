@@ -28,6 +28,7 @@ contract ScoreSubmissionRegistry {
     uint64 public constant MAX_COMBO = 10_000;
     uint64 public constant MAX_SURVIVAL_SECONDS = 24 hours;
     uint256 public constant MAX_ACHIEVEMENTS_PER_SESSION = 32;
+    uint256 private constant SECP256K1_HALF_ORDER = 0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0;
 
     struct ScoreRecord {
         bytes32 sessionId;
@@ -43,11 +44,25 @@ contract ScoreSubmissionRegistry {
         bool exists;
     }
 
+    struct VerifiedRun {
+        bytes32 sessionId;
+        bytes32 gameId;
+        uint256 score;
+        uint64 kills;
+        uint64 maxCombo;
+        uint64 survivalSeconds;
+        bytes32 bossId;
+        bytes32 envelopeHash;
+        uint64 deadline;
+    }
+
     address public immutable gameRegistry;
+    address public immutable trustedVerifier;
 
     mapping(bytes32 => ScoreRecord) public scoresBySession;
     mapping(address => bytes32[]) private _playerSessions;
     mapping(bytes32 => bytes32[]) private _sessionAchievements;
+    mapping(bytes32 => bytes32) public sessionEnvelopeHash;
     bytes32[] private _allSessions;
 
     event ScoreSubmitted(
@@ -64,9 +79,45 @@ contract ScoreSubmissionRegistry {
     event SessionSubmitted(bytes32 indexed sessionId, bool verified);
     event AchievementUnlocked(address indexed player, bytes32 indexed achievementId, bytes32 indexed sessionId);
 
-    constructor(address _gameRegistry) {
+    constructor(address _gameRegistry, address _trustedVerifier) {
         require(_gameRegistry != address(0), "Invalid registry");
+        require(_trustedVerifier != address(0), "Invalid verifier");
         gameRegistry = _gameRegistry;
+        trustedVerifier = _trustedVerifier;
+    }
+
+    function attestationDigest(VerifiedRun calldata run, address player, bytes32 achievementsHash)
+        public view returns (bytes32)
+    {
+        bytes32 runHash = keccak256(abi.encode(run));
+        bytes32 payload = keccak256(abi.encode(address(this), block.chainid, player, achievementsHash, runHash));
+        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", payload));
+    }
+
+    function submitVerifiedSession(
+        VerifiedRun calldata run,
+        bytes32[] calldata achievements,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external {
+        require(block.timestamp <= run.deadline, "ATTESTATION_EXPIRED");
+        require(run.envelopeHash != bytes32(0), "EMPTY_ENVELOPE_HASH");
+        bytes32 digest = attestationDigest(run, msg.sender, keccak256(abi.encode(achievements)));
+        require(_recover(digest, v, r, s) == trustedVerifier, "INVALID_ATTESTATION");
+        sessionEnvelopeHash[run.sessionId] = run.envelopeHash;
+        _submitSession(
+            run.sessionId, run.gameId, run.score, run.kills, run.maxCombo,
+            run.survivalSeconds, run.bossId, achievements, true
+        );
+    }
+
+    function _recover(bytes32 digest, uint8 v, bytes32 r, bytes32 s) private pure returns (address) {
+        require(v == 27 || v == 28, "INVALID_SIGNATURE_V");
+        require(uint256(s) <= SECP256K1_HALF_ORDER, "INVALID_SIGNATURE_S");
+        address signer = ecrecover(digest, v, r, s);
+        require(signer != address(0), "INVALID_SIGNATURE");
+        return signer;
     }
 
     function submitSession(

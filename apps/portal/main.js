@@ -30,6 +30,12 @@ import { planEnemyAttackPattern } from './src/hmh-attack-patterns.mjs';
 import { grenadeCapacityForRun, grenadeRefillForPickup, planLevelOneGrenadeThrow, resolveGrenadeTypeForRun } from './src/hmh-grenade-economy.mjs';
 import { buildGrenadeAimPreview, classifyGrenadeRelease, grenadeAimType, isGrenadeAimCancel } from './src/hmh-grenade-aim.mjs';
 import { buildWave2GameFeelProfile, integrateWave2Movement } from './src/hmh-game-feel-tuning.mjs';
+import {
+  applyUpgradeRevive,
+  buildUpgradeRuntimePolicy,
+  evolutionScoreMultiplier,
+  upgradedClipSize,
+} from './src/hmh-upgrade-runtime.mjs';
 import { createInProcessGameAdapter } from './src/game-adapter.mjs';
 
 import { biomeAt, parallaxIndexForBiome, propsForBiome } from './src/biome-model.mjs';
@@ -109,6 +115,7 @@ import {
   buildCharacterSelectEntries,
   buildCharacterStatIdentityRoster,
   HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG,
+  playableCharacterStatIdentityFor,
   resolveSelectedCharacterId,
   setPreferredCharacter,
 } from './src/hmh-character-config.mjs';
@@ -198,7 +205,7 @@ import {
   ROGUELIKE_LEVEL_CAP,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
-  levelOneRoguelikeBossProxyRoster,
+  levelOneRoguelikeBossRoster,
   levelOneThreatBeatAt,
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
   buildLevelOneBoundaryObstaclesNear,
@@ -211,6 +218,7 @@ import {
   grantRoguelikeXp,
   applyRoguelikeSkillUpgrade,
   calculateExtractionScore,
+  hmhCampaignLevelAllowsExtraction,
   getHmhLevelTarget,
   LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY,
   recordScore,
@@ -223,22 +231,21 @@ import {
   scheduleBossEncounter,
   simulateLesterBlasterRun,
   startPlaySession,
-  formatUrlSessionId,
-  nextGlobalSessionId,
   AVATAR_RULES,
   validateAvatarFile,
   computeAvatarResize,
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
 } from './src/arcade-core.mjs';
-import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas } from './src/settlement.mjs';
+import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
+import { CURRENT_RANKED_SEASON_ID, finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from './src/session-integrity.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
 import { bossBeatHealthMultiplier } from './src/hmh-boss-balance-pass.mjs';
 import { submitRankedSession, fetchGlobalLeaderboard, fetchPlayerSessions, fetchProfile, submitProfile, explorerTxUrl, checkRankedReadiness } from './src/litvm-chain-client.mjs';
 import { recordCadenceScore } from './src/leaderboard-engine.mjs';
 import { applySeedLeaderboard, formatSurvive, leaderboardEntryProvenance, summarizeVisibleLeaderboardProvenance } from './src/leaderboard-seed.mjs';
-import { loadArcadeState, saveArcadeState, appendRunRecord } from './src/persistence.mjs';
+import { loadArcadeState, saveArcadeState, appendRunRecord, saveActiveSessionCheckpoint, clearActiveSessionCheckpoint } from './src/persistence.mjs';
 
 const DEBUG_ARCADE_RUNTIME = typeof window !== 'undefined' && window.localStorage?.getItem('lestersArcadeDebug') === '1';
 const DEV_CABINETS_ENABLED = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('devCabinets') === '1';
@@ -730,7 +737,13 @@ function wo110BossRuntimeFrame(boss, frame = combat.frame) {
     : null;
   const asset = wo110BossAssetForRuntime({ phase, superMove, deathSpectacle: hp <= 0 || boss.deathSpectacle });
   const image = wo110BossImage(asset);
-  return image ? { image, asset } : null;
+  return image ? {
+    image,
+    img: image,
+    ready: Boolean(image.complete && image.naturalWidth > 0),
+    src: asset?.src ?? '',
+    asset,
+  } : null;
 }
 
 function productionSpriteFrame(sprite, frame = combat.frame, fpsFallback = 8) {
@@ -1567,6 +1580,11 @@ const combat = {
   velocityX: 0,
   jumpsLeft: 2,
   health: PLAYER_MAX_HEALTH,
+  maxHealth: PLAYER_MAX_HEALTH,
+  reviveCharges: 0,
+  dashCooldownRemaining: 0,
+  dashFrames: 0,
+  scoreBonus: 0,
   lives: 1,
   score: 0,
   kills: 0,
@@ -1626,6 +1644,7 @@ const combat = {
   lastMeleeFrame: -999,
   boss: null,
   bossDefeated: false,
+  bossDeathSpectacle: null,
   miniBossLock: false,
   triggeredBossBeatIds: new Set(),
   activePoiEncounterId: null,
@@ -1852,6 +1871,11 @@ function renderOfficialCharacterSelect() {
     appendText(info, 'strong', hero.name, 'hero-name');
     appendText(info, 'span', hero.tagline, 'hero-tagline');
     appendText(info, 'p', hero.bio, 'hero-bio');
+    const loadout = el('div', { className: 'hero-loadout', ariaLabel: `${hero.name} starting loadout` });
+    const starterWeapon = weaponById(hero.startingWeaponId);
+    appendText(loadout, 'span', `STARTER · ${starterWeapon.title.toUpperCase()}`, 'hero-loadout-weapon');
+    appendText(loadout, 'span', `${hero.passive.title}: ${hero.passive.description}`, 'hero-loadout-passive');
+    info.append(loadout);
     const statBox = el('div', { className: 'hero-stats' });
     renderHeroStatBars(statBox, hero.stats);
     info.append(statBox);
@@ -2107,15 +2131,16 @@ function gameplaySyncCopy() {
       ? 'level boss lock'
       : `Wave ${combat.waveIndex}/${combat.wavesThisStage || 1}`;
   const lockCopy = combat.scrollLockReason ? ` // ${combat.scrollLockReason}` : '';
-  const healthCopy = `HP ${Math.max(0, Math.round(combat.health))}%`;
+  const healthCopy = `HP ${Math.max(0, Math.round((combat.health / Math.max(1, combat.maxHealth ?? PLAYER_MAX_HEALTH)) * 100))}%`;
   return `${modeCopy} // ${healthCopy} // Stage ${combat.stageIndex}/${combat.stageCount} // ${phase}${lockCopy}`;
 }
 
 function currentGameOverSummaryModel() {
   const session = currentSession ?? lastCompletedSession;
   const level = currentCampaignLevel();
-  const cleared = Boolean(combat.clearedCampaignLevelId) || Boolean(combat.bossDefeated);
-  const extraction = calculateExtractionScore({
+  const extractionAllowed = hmhCampaignLevelAllowsExtraction(level.id);
+  const cleared = extractionAllowed && (Boolean(combat.clearedCampaignLevelId) || Boolean(combat.bossDefeated));
+  const extraction = extractionAllowed ? calculateExtractionScore({
     baseScore: combat.score || lastRunScore,
     elapsedSeconds: combat.elapsedGameSeconds || lastRunElapsedSeconds,
     level: level.number,
@@ -2125,7 +2150,7 @@ function currentGameOverSummaryModel() {
     noDamageSeconds: combat.noDamageSeconds,
     maxCombo: combat.maxCombo,
     deaths: combat.gameOver && !cleared ? 1 : 0,
-  });
+  }) : null;
   return buildGameOverSummaryModel({
     session,
     score: combat.score || lastRunScore,
@@ -2216,8 +2241,72 @@ function renderGameOverSummary() {
   }
 }
 
+function recordCurrentSessionEvent(type, payload = {}) {
+  if (!currentSession?.isPaid || !currentSession.evidence) return false;
+  return recordSessionEvent(currentSession.evidence, { step: combat.frame, type, payload });
+}
+
+function currentCanonicalSessionIdentity() {
+  if (!currentSession?.isPaid) return null;
+  return {
+    ...currentSession.canonicalContext,
+    chainId: LITVM_LITEFORGE_NETWORK.chainId,
+    scoreRegistryAddress: LITVM_CONTRACT_ADDRESSES.scoreSubmissionRegistry,
+    seasonId: CURRENT_RANKED_SEASON_ID,
+    seed: combat.roguelikeRun?.seed ?? 0,
+    nonce: currentSession.sessionNonce,
+  };
+}
+
+function currentCanonicalFinalState() {
+  return {
+    hp: Math.max(0, Number(combat.health) || 0),
+    mapX: Number((Number(combat.playerMapX) || 0).toFixed(4)),
+    mapY: Number((Number(combat.playerMapY) || 0).toFixed(4)),
+    score: Math.max(0, Math.round(Number(combat.score) || 0)),
+    kills: Math.max(0, Math.floor(Number(combat.kills) || 0)),
+    maxCombo: Math.max(0, Math.floor(Number(combat.maxCombo) || 0)),
+    survivalSeconds: Math.max(0, Number((Number(combat.elapsedGameSeconds) || 0).toFixed(3))),
+    level: Math.max(1, Math.floor(Number(combat.roguelikeRun?.level) || 1)),
+    bossKills: Math.max(0, Math.floor(Number(combat.bossKills) || 0)),
+    characterId: combat.characterId ?? null,
+    killedBy: combat.killedBy ?? null,
+  };
+}
+
+async function finalizeCurrentSessionEvidence() {
+  const identity = currentCanonicalSessionIdentity();
+  if (!identity || !currentSession.evidence) return null;
+  return finalizeSessionEvidence({ identity, evidence: currentSession.evidence, finalState: currentCanonicalFinalState() });
+}
+
+let sessionCheckpointInFlight = false;
+async function checkpointCurrentSessionEvidence() {
+  if (sessionCheckpointInFlight || !currentSession?.isPaid || !currentSession.evidence || combat.gameOverSubmitted) return;
+  sessionCheckpointInFlight = true;
+  try {
+    const envelope = await finalizeCurrentSessionEvidence();
+    if (!envelope) return;
+    saveActiveSessionCheckpoint(state, {
+      sessionId: currentSession.sessionId,
+      stepIndex: combat.frame,
+      inputHash: envelope.inputHash,
+      eventHash: envelope.eventHash,
+      stateHash: envelope.finalStateHash,
+      envelopeHash: envelope.envelopeHash,
+      score: combat.score,
+      kills: combat.kills,
+      survivalSeconds: combat.elapsedGameSeconds,
+    });
+    persistArcadeStateSoon();
+  } finally {
+    sessionCheckpointInFlight = false;
+  }
+}
+
 function submitCombatGameOver() {
   if (!combat.gameOver || !currentSession?.isPaid || combat.gameOverSubmitted) return;
+  recordCurrentSessionEvent('run-end', currentCanonicalFinalState());
   lastRunPreviousBestScore = currentPlayerBestScoreForMode(currentSession?.mode);
   sessionRunStreak += 1;
   lastSettlementQueued = false;
@@ -2244,6 +2333,7 @@ function submitCombatGameOver() {
   // Ranked run history (persisted): feeds the profile run log + future
   // cross-game ArcadeProfile aggregation.
   appendRunRecord(state, {
+    sessionId: currentSession.sessionId,
     gameId: 'lester-blaster',
     wallet: connectedWallet,
     mode: currentSession?.mode ?? 'paid',
@@ -2257,6 +2347,7 @@ function submitCombatGameOver() {
   persistArcadeStateSoon();
   // GameRegistry: child game -> parent sync packet (local now, LitVM SessionLedger later)
   submitGameRun('hard-money-heroes', {
+    sessionId: currentSession.sessionId,
     score: Math.max(0, Math.round(combat.score)),
     kills: combat.kills,
     survivalTime: Math.round(combat.elapsedGameSeconds || 0),
@@ -2292,6 +2383,28 @@ function retryPublishGameOver() {
 }
 
 async function settleRankedRun(settlementInput, runStats = {}) {
+  const sessionEnvelope = await finalizeCurrentSessionEvidence();
+  if (!sessionEnvelope) {
+    lastSettlementError = 'Canonical replay evidence was unavailable; the ranked run was not published.';
+    lastSettlementQueued = false;
+    lastSettlementSucceeded = false;
+    renderGameOverSummary();
+    renderCombatMenuActionGrid();
+    return;
+  }
+  settlementInput = {
+    ...settlementInput,
+    sessionKey: sessionEnvelope.sessionKey,
+    sessionEvidence: sessionEnvelope,
+  };
+  const persistedRun = state.runHistory?.find((run) => run.sessionId === settlementInput.sessionId);
+  if (persistedRun) {
+    persistedRun.sessionKey = sessionEnvelope.sessionKey;
+    persistedRun.inputHash = sessionEnvelope.inputHash;
+    persistedRun.eventHash = sessionEnvelope.eventHash;
+    persistedRun.finalStateHash = sessionEnvelope.finalStateHash;
+    persistedRun.envelopeHash = sessionEnvelope.envelopeHash;
+  }
   // Run integrity gate (handoff §17): before publishing a ranked run on-chain,
   // sanity-check it against physically-achievable ceilings derived from the
   // Level 1 balance constants. A tampered client can submit an impossible run
@@ -2337,6 +2450,9 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     try {
       const { txHash } = await submitRankedSession(provider, {
         sessionId: settlementInput.sessionId,
+        sessionKey: settlementInput.sessionKey,
+        envelopeHash: settlementInput.sessionEvidence.envelopeHash,
+        attestation: settlementInput.verifierAttestation ?? null,
         gameId: settlementInput.gameId,
         score: settlementInput.score,
         kills: runStats.kills ?? 0,
@@ -2359,6 +2475,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
         integrity,
       };
       applySettlement(state, settlement);
+      clearActiveSessionCheckpoint(state, settlementInput.sessionId, { submitted: true });
       persistArcadeStateSoon();
       const shortTx = `${txHash.slice(0, 10)}…${txHash.slice(-6)}`;
       if (dom.combatStatus) {
@@ -2398,6 +2515,7 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     const settlement = await settleRun(plan, { live: false });
     settlement.integrity = integrity;
     applySettlement(state, settlement);
+    clearActiveSessionCheckpoint(state, settlementInput.sessionId, { submitted: false });
     persistArcadeStateSoon();
     lastSettlementQueued = false;
     lastSettlementSucceeded = true;
@@ -2557,7 +2675,7 @@ function renderLevelUpActionGrid() {
   for (const card of presentation.cards) {
     const cardWrap = el('div', { className: `level-up-slot level-up-slot-${card.slotRole ?? 'draft'}` });
     const slotHead = el('div', { className: 'level-up-slot-head' });
-    appendText(slotHead, 'span', card.slotLabel ?? (card.index === 0 ? 'CONTINUE YOUR BUILD' : 'NEW TREE'), 'level-up-slot-label');
+    appendText(slotHead, 'span', card.decisionLabel ?? (card.index === 0 ? 'CONTINUE' : 'DIVERSIFY'), 'level-up-slot-label');
     appendText(slotHead, 'span', `KEY ${card.index + 1}`, 'level-up-shortcut');
     cardWrap.append(slotHead);
     const button = el('button', { className: `combat-menu-action ${card.chrome?.className ?? 'level-up-upgrade-card'} ${card.rarity === 'golden' ? 'is-golden-card' : ''}`, type: 'button', dataset: { ...card.dataset, rarity: card.rarity ?? 'common' } });
@@ -2566,13 +2684,18 @@ function renderLevelUpActionGrid() {
     const badge = el('span', { className: 'upgrade-card-badge', textContent: card.icon });
     badge.setAttribute('aria-hidden', 'true');
     const titleWrap = el('div', { className: 'upgrade-card-titlewrap' });
-    appendText(titleWrap, 'span', card.branchLabel.toUpperCase(), 'upgrade-card-cat');
-    appendText(titleWrap, 'span', card.chrome?.rarityLabel ?? card.presentation?.label ?? String(card.rarity ?? 'common').toUpperCase(), 'upgrade-card-rarity');
+    const cardTaxonomy = el('div', { className: 'upgrade-card-taxonomy' });
+    appendText(cardTaxonomy, 'span', card.branchLabel.toUpperCase(), 'upgrade-card-cat');
+    appendText(cardTaxonomy, 'span', card.rarityLabel, 'upgrade-card-rarity');
+    titleWrap.append(cardTaxonomy);
     if (card.rarity === 'golden') appendText(titleWrap, 'span', 'POWER MOMENT // GOLDEN CARD', 'upgrade-card-tone-tag');
     if (card.category.colorblindTag) appendText(titleWrap, 'span', card.category.colorblindTag, 'upgrade-card-tone-tag');
     appendText(titleWrap, 'strong', card.title, 'upgrade-card-title');
     head.append(badge, titleWrap);
-    appendText(head, 'span', card.gainLabel, 'upgrade-card-gain');
+    const effect = el('div', { className: 'upgrade-card-effect' });
+    appendText(effect, 'span', 'EFFECT', 'upgrade-card-effect-label');
+    appendText(effect, 'strong', card.effectLabel, 'upgrade-card-gain');
+    head.append(effect);
     button.append(head);
 
     // Mobile-safe card: the upgrade effect must be visible on the card itself.
@@ -2580,8 +2703,10 @@ function renderLevelUpActionGrid() {
     // select the card before the player could read the effect.
     if (card.description) appendText(button, 'p', card.description, 'upgrade-card-description');
     const meta = el('div', { className: 'upgrade-card-meta' });
-    appendText(meta, 'span', card.completionLabel, 'upgrade-card-completion');
-    appendText(meta, 'span', card.rankLabel, 'upgrade-card-ranklabel');
+    const progressCopy = el('div', { className: 'upgrade-card-progress-copy' });
+    appendText(progressCopy, 'span', card.completionLabel, 'upgrade-card-completion');
+    appendText(progressCopy, 'span', card.rankLabel, 'upgrade-card-ranklabel');
+    meta.append(progressCopy);
     const tooltip = el('span', { className: 'upgrade-card-tooltip', textContent: 'ⓘ', title: card.tooltip || card.ariaLabel });
     tooltip.setAttribute('aria-label', `Upgrade details: ${card.tooltip || card.ariaLabel}`);
     meta.append(tooltip);
@@ -2636,20 +2761,69 @@ function renderCombatMenuActionGrid() {
     if (action.id === 'exit-to-arcade') return { ...action, run: exitToArcade };
     return { ...action, run: () => {} };
   });
-  const signature = actions.map((action) => `${action.id}:${action.label}:${action.enabled}`).join('|');
+  const elapsedSeconds = Math.max(0, Math.floor(combat.elapsedGameSeconds ?? 0));
+  const elapsedLabel = `${Math.floor(elapsedSeconds / 60)}:${String(elapsedSeconds % 60).padStart(2, '0')}`;
+  const weaponTitle = weaponById(combat.weaponId)?.title ?? 'The Settler';
+  const runSignature = `${elapsedLabel}:${combat.roguelikeRun?.level ?? 1}:${Math.round(combat.health)}:${combat.score}:${weaponTitle}`;
+  const signature = `${menu.version}:${menu.state}:${runSignature}:` + actions.map((action) => `${action.id}:${action.label}:${action.enabled}`).join('|');
   if (dom.combatMenuActionGrid.dataset.signature === signature) return;
   dom.combatMenuActionGrid.dataset.signature = signature;
   dom.combatMenuActionGrid.replaceChildren();
-  for (const action of actions) {
-    const button = el('button', { className: `combat-menu-action ${action.danger ? 'danger-action' : ''}`, type: 'button' });
+
+  const buildActionButton = (action) => {
+    const button = el('button', {
+      className: `combat-menu-action pause-console-action ${action.primary ? 'primary-action' : ''} ${action.danger ? 'danger-action' : ''}`,
+      type: 'button',
+      dataset: { action: action.id },
+    });
     button.disabled = action.enabled === false;
-    button.append(renderArcadeIcon(action.icon, action.label), document.createTextNode(action.label));
+    button.append(renderArcadeIcon(action.icon, action.label));
+    const copy = el('span', { className: 'pause-action-copy' });
+    appendText(copy, 'strong', action.label, 'pause-action-label');
+    if (action.hint) appendText(copy, 'small', action.hint, 'pause-action-hint');
+    button.append(copy);
     button.addEventListener('click', () => {
       if (button.disabled) return;
       playSfxCue('menu-click');
       action.run();
     });
-    dom.combatMenuActionGrid.append(button);
+    return button;
+  };
+
+  if (menu.state === 'paused') {
+    const shell = el('div', { className: 'pause-console-shell', dataset: { ui: menu.version } });
+    const snapshot = el('div', { className: 'pause-run-snapshot', ariaLabel: 'Current run snapshot' });
+    for (const metric of [
+      { label: 'SURVIVED', value: elapsedLabel },
+      { label: 'LEVEL', value: String(combat.roguelikeRun?.level ?? 1) },
+      { label: 'HEALTH', value: `${Math.max(0, Math.round(combat.health))} / ${Math.max(1, Math.round(combat.maxHealth ?? PLAYER_MAX_HEALTH))}` },
+      { label: 'SCORE', value: Math.max(0, Math.round(combat.score)).toLocaleString() },
+      { label: 'WEAPON', value: weaponTitle.toUpperCase(), wide: true },
+    ]) {
+      const item = el('div', { className: `pause-run-metric ${metric.wide ? 'is-wide' : ''}` });
+      appendText(item, 'span', metric.label);
+      appendText(item, 'strong', metric.value);
+      snapshot.append(item);
+    }
+    shell.append(snapshot);
+
+    const actionById = new Map(actions.map((action) => [action.id, action]));
+    for (const group of menu.groups) {
+      const groupActions = group.actionIds.map((id) => actionById.get(id)).filter(Boolean);
+      if (!groupActions.length) continue;
+      const section = el('section', { className: `pause-action-group pause-action-group-${group.id}` });
+      appendText(section, 'p', group.label, 'pause-action-group-label');
+      const controls = el('div', { className: 'pause-action-group-controls' });
+      for (const action of groupActions) controls.append(buildActionButton(action));
+      section.append(controls);
+      shell.append(section);
+    }
+    dom.combatMenuActionGrid.append(shell);
+    return;
+  }
+
+  for (const action of actions) {
+    dom.combatMenuActionGrid.append(buildActionButton(action));
   }
 }
 
@@ -2766,7 +2940,7 @@ function renderRoguelikeStatBar() {
     { id: 'survived', label: 'SURVIVED', value: formatSeconds(combat.elapsedGameSeconds), tone: threatTone },
     { id: 'level', label: 'LEVEL', value: `${level.number} · ${director.difficultyLabel.toUpperCase()}`, tone: 'cyan' },
     { id: 'obj', label: 'OBJECTIVE', value: routeWorldState?.statusLabel ?? objective.shortLabel, tone: guidance ? 'orange' : (routeWorldState?.tone ?? 'cyan') },
-    { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}`, tone: 'red' },
+    { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}/${Math.max(1, Math.round(combat.maxHealth ?? PLAYER_MAX_HEALTH))}`, tone: 'red' },
     { id: 'score', label: 'SCORE', value: Math.round(combat.score).toLocaleString(), tone: 'gold' },
     { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
     { id: 'rank', label: 'RANK', value: `${run.level}`, tone: 'green' },
@@ -2966,6 +3140,8 @@ function syncCombatOverlay() {
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
     officialScoreSubmitted: lastSettlementSucceeded,
   });
+  const menuEyebrow = dom.combatMenuPanel?.querySelector(':scope > .eyebrow');
+  if (menuEyebrow) menuEyebrow.textContent = combat.levelUpPaused ? 'LEVEL UP' : menu.kicker;
   if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.levelUpPaused ? `Level ${combat.roguelikeRun?.level ?? 1} Upgrade` : menu.title;
   if (dom.combatMenuCopy) {
     dom.combatMenuCopy.textContent = combat.gameOver
@@ -3339,6 +3515,29 @@ function weaponById(weaponId) {
   };
 }
 
+function currentUpgradeRuntimePolicy() {
+  return buildUpgradeRuntimePolicy(combat.roguelikeRun?.stats ?? {});
+}
+
+function syncUpgradeRuntimeState({ grantMaxHealthIncrease = false } = {}) {
+  if (!combat.roguelikeRun) return currentUpgradeRuntimePolicy();
+  const policy = currentUpgradeRuntimePolicy();
+  const previousMaxHealth = combat.maxHealth ?? PLAYER_MAX_HEALTH;
+  const nextMaxHealth = Math.max(1, Math.round(PLAYER_MAX_HEALTH * (combat.roguelikeRun.stats.maxHealth ?? 1)));
+  combat.maxHealth = nextMaxHealth;
+  if (grantMaxHealthIncrease && nextMaxHealth > previousMaxHealth) {
+    combat.health = Math.min(nextMaxHealth, combat.health + (nextMaxHealth - previousMaxHealth));
+  } else {
+    combat.health = Math.min(combat.health, nextMaxHealth);
+  }
+  combat.reviveCharges = Math.max(combat.reviveCharges ?? 0, policy.reviveCharges);
+  const weapon = weaponById(combat.weaponId);
+  combat.clipSize = upgradedClipSize(weapon.clip ?? 8, policy);
+  combat.clip = Math.min(combat.clip ?? combat.clipSize, combat.clipSize);
+  combat.ammo = combat.clip;
+  return policy;
+}
+
 function projectileProfileForWeapon(weaponId) {
   // Bullets are coded combat VFX, not sprites. This profile controls the physics
   // object (rate/clip comes from weaponById) and the canvas-only tracer/slug look
@@ -3594,6 +3793,7 @@ function beginStage(stageIndex = 1) {
   combat.waveEnemiesSpawned = 0;
   combat.nextWaveSpawnFrame = combat.frame + 30;
   combat.bossDefeated = false;
+  combat.bossDeathSpectacle = null;
   combat.miniBossLock = false;
   combat.scrollLockReason = null;
   combat.props = createStageProps(combat.stageIndex, 'travel');
@@ -4814,13 +5014,15 @@ function renderOfficialModeSelect() {
   dom.officialRankedTooltip.dataset.state = connectedWallet ? '' : 'guest';
   if (!connectedWallet) {
     appendText(dom.officialRankedTooltip, 'strong', 'Free Mode is open to guests');
-    appendText(dom.officialRankedTooltip, 'span', 'Play Free right now with no wallet. Ranked publishes your run on-chain, so tapping it will prompt you to connect a wallet first.');
+    appendText(dom.officialRankedTooltip, 'span', 'Play Free right now with no wallet. Ranked preview uses a connected wallet for identity, but verified chain publishing is temporarily disabled.');
   } else {
-    appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: needs testnet ${ranked.token}`);
+    appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: local verified-preview mode`);
     appendText(dom.officialRankedTooltip, 'span', ranked.copy);
   }
-  const link = el('a', { className: 'wallet-link', textContent: 'Get zkLTC faucet', href: ranked.faucetUrl, target: '_blank', rel: 'noreferrer' });
-  dom.officialRankedTooltip.append(link);
+  if (SETTLEMENT_LIVE) {
+    const link = el('a', { className: 'wallet-link', textContent: 'Get zkLTC faucet', href: ranked.faucetUrl, target: '_blank', rel: 'noreferrer' });
+    dom.officialRankedTooltip.append(link);
+  }
 }
 
 function renderOfficialGameplay() {
@@ -4938,7 +5140,7 @@ async function startOfficialMode(mode) {
         dom.officialRankedTooltip.dataset.state = 'needs-wallet';
         dom.officialRankedTooltip.replaceChildren();
         appendText(dom.officialRankedTooltip, 'strong', 'Connect a real wallet to play Ranked');
-        appendText(dom.officialRankedTooltip, 'span', 'Ranked publishes your run on-chain and needs a real EVM wallet (MetaMask/Rabby) with testnet zkLTC. Free Mode is always available.');
+        appendText(dom.officialRankedTooltip, 'span', 'Ranked preview needs a real EVM wallet (MetaMask/Rabby) for identity. It does not publish or require zkLTC while verified settlement is disabled. Free Mode is always available.');
       }
       return;
     }
@@ -4994,6 +5196,14 @@ function requestRankedEntry() {
     dom.rankedEntryApprove.addEventListener('click', onApprove);
     dom.rankedEntryCancel.addEventListener('click', onCancel);
 
+    if (!SETTLEMENT_LIVE) {
+      if (dom.rankedEntryBalance) dom.rankedEntryBalance.textContent = 'Not required';
+      dom.rankedEntryStatus.dataset.state = 'ok';
+      dom.rankedEntryStatus.textContent = '✓ Local Ranked Testnet preview. Canonical evidence is saved locally; no chain transaction will occur.';
+      dom.rankedEntryApprove.disabled = false;
+      return;
+    }
+
     // Run the readiness check (chain + balance) and paint the result.
     const runCheck = async () => {
       dom.rankedEntryApprove.disabled = true;
@@ -5024,8 +5234,8 @@ function requestRankedEntry() {
         // Funded check failed → faucet + recheck, block start.
         guard.hidden = false;
         guard.replaceChildren();
-        appendText(guard, 'strong', '⚠ Not enough zkLTC for gas');
-        appendText(guard, 'span', 'Ranked publishes your run on-chain at game over, which costs a little zkLTC gas. Grab free testnet zkLTC from the faucet, then re-check.');
+        appendText(guard, 'strong', 'Verified publishing unavailable');
+        appendText(guard, 'span', 'You can still play the canonical local Ranked Testnet preview. No chain transaction or zkLTC is required while verified settlement is disabled.');
         const faucet = el('a', { className: 'pixel-button', textContent: 'Open zkLTC Faucet', href: LITVM_LITEFORGE_NETWORK.faucetUrl, target: '_blank', rel: 'noreferrer' });
         const recheck = el('button', { className: 'pixel-button', type: 'button', textContent: 'Re-check Balance' });
         recheck.addEventListener('click', () => { recheck.textContent = 'Checking…'; runCheck(); });
@@ -5609,21 +5819,11 @@ async function ensureWalletConnected() {
 // falls back to the game page). The handle is the blockchain-searchable id and
 // the session URL segment.
 function beginTrackedSession({ mode }) {
-  const isPaid = mode === 'paid' || mode === 'ranked';
   const normalizedMode = mode === 'ranked' ? 'paid' : mode;
-  let urlSessionId = null;
-  let sequenceNumber = null;
-  if (isPaid) {
-    const allocated = nextGlobalSessionId(state);
-    urlSessionId = allocated.urlSessionId;
-    sequenceNumber = allocated.sequence;
-  }
   return startPlaySession({
     wallet: connectedWallet ?? MOCK_WALLET,
     gameId: selectedGameId,
     mode: normalizedMode,
-    urlSessionId,
-    sequenceNumber,
   });
 }
 
@@ -6163,7 +6363,12 @@ async function startCombat(options = {}) {
   combat.velocityX = 0;
   combat.velocityY = 0;
   combat.jumpsLeft = 2;
-  combat.health = Math.max(1, Math.min(PLAYER_MAX_HEALTH, carryOver?.health ?? PLAYER_MAX_HEALTH));
+  combat.maxHealth = PLAYER_MAX_HEALTH;
+  combat.health = Math.max(1, Math.min(combat.maxHealth, carryOver?.health ?? combat.maxHealth));
+  combat.reviveCharges = 0;
+  combat.dashCooldownRemaining = 0;
+  combat.dashFrames = 0;
+  combat.scoreBonus = 0;
   combat.lives = 1;
   combat.score = 0;
   combat.kills = 0;
@@ -6206,6 +6411,15 @@ async function startCombat(options = {}) {
     campaignLevelNumber: level.number,
     carryOver: carryOver?.roguelikeRun ?? null,
   });
+  recordCurrentSessionEvent('run-start', {
+    levelId: level.id,
+    seed: combat.roguelikeRun.seed,
+    characterId: combat.characterId,
+  });
+  const heroIdentity = playableCharacterStatIdentityFor(combat.characterId)
+    ?? playableCharacterStatIdentityFor('lit-commando');
+  combat.maxHealth = Math.round(PLAYER_MAX_HEALTH * (combat.roguelikeRun.stats.maxHealth ?? 1));
+  combat.health = clamp(carryOver?.health ?? combat.maxHealth, 1, combat.maxHealth);
   // Dedicated seeded RNG stream for consuming gameplay rolls (crit chance) so a
   // run is fully reproducible from roguelikeRun.seed. The stream lives on the
   // run state beside spawns/drops/boss/draft so replay verifiers can snapshot it.
@@ -6286,7 +6500,8 @@ async function startCombat(options = {}) {
   combat.activePoiEncounterVisualPlan = null;
   combat.activePoiEncounterCenterX = null;
   combat.activePoiEncounterCenterY = null;
-  combat.weaponId = carryOver?.weaponId ?? 'coin-blaster';
+  combat.weaponId = carryOver?.weaponId ?? heroIdentity.startingWeaponId ?? 'coin-blaster';
+  combat.powerUpTimers.weapon = carryOver?.weaponId ? 0 : heroIdentity.startingWeaponDurationSeconds;
   combat.weaponUpgrades = { ...(carryOver?.weaponUpgrades ?? {}) };
   // Clip/reload model: each weapon has a clip; auto-fire empties it, then a timed
   // auto-reload refills it. The starter pistol begins fully loaded.
@@ -6294,6 +6509,7 @@ async function startCombat(options = {}) {
   combat.clipSize = startWeapon.clip ?? 8;
   combat.clip = combat.clipSize;
   combat.ammo = combat.clip; // legacy mirror used by older HUD/snapshot paths
+  syncUpgradeRuntimeState();
   combat.reloading = false;
   combat.reloadRemaining = 0;
   combat.shots = 0;
@@ -6304,6 +6520,7 @@ async function startCombat(options = {}) {
   combat.interactionPrompt = null;
   combat.boss = null;
   combat.bossDefeated = false;
+  combat.bossDeathSpectacle = null;
   combat.miniBossLock = false;
   combat.scrollLockReason = null;
   combat.scroll = 0;
@@ -6650,6 +6867,7 @@ function updateCombatStep(stepMs) {
   const dt = stepMs / 1000;
   combat.frame += 1;
   combat.elapsedGameSeconds += dt;
+  if (combat.frame % 3600 === 0) void checkpointCurrentSessionEvidence();
   combat.noDamageSeconds += dt;
   combat.invulnerableFrames = Math.max(0, combat.invulnerableFrames - 1);
   combat.playerDamageFlash = Math.max(0, (combat.playerDamageFlash ?? 0) - 1);
@@ -7184,11 +7402,17 @@ function rollHitPresentation(baseDamage, source) {
   // so every existing call site gets crits, types, and a styled number without
   // changing its signature. Uses the shared balance model.
   const stats = combat.roguelikeRun?.stats ?? {};
+  const upgradePolicy = buildUpgradeRuntimePolicy(stats);
   const type = currentDamageType();
   const result = computeDamage({
     source: source === 'knife' ? 'melee' : (source ?? 'bullet'),
     type,
-    stats: { ...stats, damage: 1 }, // base already scaled by caller; only roll crit/type here
+    stats: {
+      ...stats,
+      damage: 1,
+      critChanceBonus: upgradePolicy.critChanceBonus,
+      critMultiplierBonus: upgradePolicy.critDamageBonus,
+    }, // base already scaled by caller; only roll crit/type here
     enemyArmored: false,
     // Seeded crit RNG so crit outcomes (which feed damage -> kills -> score) are
     // reproducible from the run seed. Legacy non-roguelike sandbox falls back to
@@ -7196,8 +7420,7 @@ function rollHitPresentation(baseDamage, source) {
     rng: combat.critRng ? () => combat.critRng.float() : Math.random, // cosmetic-rng-ok legacy non-roguelike sandbox fallback only
   });
   // Scale the caller's flat damage by crit/type multiplier ratio.
-  const ratio = result.amount / Math.max(1, Math.round(DAMAGE_BASE_FOR(source)));
-  const finalDamage = Math.max(1, Math.round(baseDamage * (result.crit ? (1.75 + (stats.critMultiplierBonus ?? 0)) : 1)));
+  const finalDamage = Math.max(1, Math.round(baseDamage * (result.crit ? (1.75 + upgradePolicy.critDamageBonus) : 1)));
   return { finalDamage, crit: result.crit, type, color: result.color, label: result.crit ? `${finalDamage}!` : `${finalDamage}` };
 }
 
@@ -7283,15 +7506,16 @@ const DAMAGE_SOURCE_LABELS = Object.freeze({
 function damagePlayer(damage, source = 'hit', attackerTitle = null) {
   if (combat.invulnerableFrames > 0 || damage <= 0 || combat.gameOver) return false;
   const armorScale = combat.roguelikeRun ? Math.max(1, combat.roguelikeRun.stats.armor ?? 1) : 1;
+  const incomingDamageMultiplier = combat.roguelikeRun?.stats?.incomingDamage ?? 1;
   const recovery = calculatePlayerDamageRecovery({
-    damage,
+    damage: damage * incomingDamageMultiplier,
     source,
     armor: armorScale,
     invulnerability: combat.roguelikeRun?.stats?.invulnerability ?? 1,
     baseInvulnerableFrames: LESTER_BLASTER_TACTICAL_COMBAT_V2.health.invulnerabilityAfterHitFrames,
   });
   const applied = recovery.appliedDamage;
-  combat.health = clamp(combat.health - applied, 0, PLAYER_MAX_HEALTH);
+  combat.health = clamp(combat.health - applied, 0, combat.maxHealth ?? PLAYER_MAX_HEALTH);
   combat.combo = 0;
   combat.damageCombo = 0;
   combat.noDamageSeconds = 0;
@@ -7309,6 +7533,19 @@ function damagePlayer(damage, source = 'hit', attackerTitle = null) {
   spawnBlood(combat.playerX + 12, combat.playerY - 40, '#ff476f');
   if (source === 'enemy-melee') spawnText('MELEE HIT', combat.playerX + 24, combat.playerY - 96, '#ffe84d');
   if (combat.health <= LESTER_BLASTER_TACTICAL_COMBAT_V2.health.deathAtPercent) {
+    const revive = applyUpgradeRevive({
+      health: combat.health,
+      maxHealth: combat.maxHealth ?? PLAYER_MAX_HEALTH,
+      reviveCharges: combat.reviveCharges,
+    });
+    if (revive.revived) {
+      combat.health = revive.health;
+      combat.reviveCharges = revive.reviveCharges;
+      combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
+      spawnText('SECOND WALLET', combat.playerX - 32, combat.playerY - 96, '#45ff8a');
+      applyCombatFeedback('revive', { title: 'Second Wallet', sfxVolume: 0.08 }, { x: combat.playerX, y: combat.playerY });
+      return true;
+    }
     combat.health = 0;
     combat.lives = 0;
     combat.active = false;
@@ -7359,11 +7596,11 @@ function killEnemy(enemy) {
 function collectCombatPowerUp(power) {
   combat.powerUpsCollected += 1;
   combat.collectedPowerUpTypes.add(power.id ?? power.effect ?? power.title);
-  if (power.effect === 'heal') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + power.amount);
+  if (power.effect === 'heal') combat.health = Math.min(combat.maxHealth ?? PLAYER_MAX_HEALTH, combat.health + power.amount);
   if (power.effect === 'grenades') combat.grenades += power.amount;
   // 'axes' pickups now grant grenades too (axes removed from the loadout).
   if (power.effect === 'axes') combat.grenades += Math.max(1, Math.round((power.amount ?? 1) / 2));
-  if (power.effect === 'life') combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + 25);
+  if (power.effect === 'life') combat.health = Math.min(combat.maxHealth ?? PLAYER_MAX_HEALTH, combat.health + 25);
   if (power.effect === 'weapon') {
     combat.weaponId = power.weaponId;
     const weapon = weaponById(power.weaponId);
@@ -7382,7 +7619,7 @@ function collectCombatPowerUp(power) {
     combat.reloadRemaining = 0;
   }
   if (power.effect === 'shield') {
-    combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + power.amount * 15);
+    combat.health = Math.min(combat.maxHealth ?? PLAYER_MAX_HEALTH, combat.health + power.amount * 15);
     combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
   }
   if (power.effect === 'scoreMultiplier') spawnText('2X SCORE', power.x, power.y - 20, '#ffe84d');
@@ -7708,6 +7945,7 @@ if (tacticalBalanceDebugEnabled) {
       const samples = combat.renderTimes.slice().sort((a, b) => a - b);
       const averageRenderMs = samples.length ? samples.reduce((sum, value) => sum + value, 0) / samples.length : 0;
       const p95RenderMs = samples[Math.min(samples.length - 1, Math.floor(samples.length * 0.95))] ?? 0;
+      const groundCell = getCombatGroundPlan().cellAt(Math.round(combat.playerMapX), Math.round(combat.playerMapY));
       return {
         fps: combat.fps,
         averageRenderMs,
@@ -7720,12 +7958,67 @@ if (tacticalBalanceDebugEnabled) {
           cssHeight: dom.combatCanvas?.getBoundingClientRect().height ?? 0,
         },
         groundRender: { ...combat.groundRenderStats },
+        groundCell: {
+          terrainRole: groundCell.terrainRole,
+          textureKey: groundCell.textureKey,
+          isBridge: groundCell.isBridge,
+        },
         obstacleCount: currentObstacles().length,
         player: {
           x: combat.playerMapX,
           y: combat.playerMapY,
           boundaryClamped: combat.worldBoundaryClamped,
         },
+      };
+    },
+  });
+  Object.defineProperty(globalThis, '__hmhVisualDebugBoss', {
+    configurable: true,
+    value(requestedPhase = 1) {
+      if (!combat.active || !combat.roguelikeRun) return null;
+      const phase = requestedPhase === 'death' ? 3 : clamp(Math.round(Number(requestedPhase) || 1), 1, 3);
+      const director = currentRoguelikeSpawnDirector(combat.elapsedGameSeconds);
+      combat.enemies = combat.enemies.filter((enemy) => !enemy.signatureBoss);
+      const boss = spawnRoguelikeEnemy(director, {
+        boss: true,
+        elite: true,
+        miniBoss: true,
+        signatureBoss: true,
+        forceEnemyId: 'rug-pull-baron',
+        poiId: 'rugpull-gulch-boss-yard',
+        hpMultiplier: 8,
+        mapX: combat.playerMapX + 4,
+        mapY: combat.playerMapY - 2,
+      });
+      boss.mapX = combat.playerMapX + 4;
+      boss.mapY = combat.playerMapY - 2;
+      const projectedBoss = isoToScreen(boss.mapX, boss.mapY);
+      boss.x = projectedBoss.x;
+      boss.y = projectedBoss.y + 38;
+      boss.hp = boss.maxHp * ({ 1: 0.9, 2: 0.5, 3: 0.2 }[phase] ?? 0.9);
+      boss.phase = phase;
+      boss.lastBossPhaseId = null;
+      updateLevelOneSignatureBoss(director);
+      if (requestedPhase === 'death') {
+        combat.enemies = combat.enemies.filter((enemy) => enemy !== boss);
+        combat.bossDeathSpectacle = {
+          ...boss,
+          hp: 0,
+          phase: 3,
+          deathSpectacle: true,
+          lifeFrames: 90,
+          maxLifeFrames: 90,
+        };
+      }
+      const frame = wo110BossRuntimeFrame(requestedPhase === 'death' ? combat.bossDeathSpectacle : boss);
+      return {
+        id: boss.id,
+        title: boss.title,
+        phase,
+        state: requestedPhase === 'death' ? 'death-spectacle' : frame?.state ?? 'phase-form',
+        assetKey: frame?.asset?.key ?? null,
+        src: frame?.img?.src ?? null,
+        ready: Boolean(frame?.ready),
       };
     },
   });
@@ -7861,6 +8154,8 @@ function handleGrenadePointerMove(event) {
 function updateAutoFire(dt) {
   if (!combat.roguelikeRun || combat.paused || combat.gameOver) return;
   const weapon = weaponById(combat.weaponId);
+  const upgradePolicy = currentUpgradeRuntimePolicy();
+  combat.clipSize = upgradedClipSize(weapon.clip ?? 8, upgradePolicy);
   const reloadStat = combat.roguelikeRun?.stats.reloadSpeed ?? 1;
 
   // Handle an in-progress reload first: tick the timer down (faster with the
@@ -7886,9 +8181,10 @@ function updateAutoFire(dt) {
     return;
   }
 
-  const fireStat = combat.roguelikeRun?.stats.fireRate ?? 1;
+  const fireStat = upgradePolicy.fireRateMultiplier;
   const berserkFire = (combat.powerUpTimers.berserk ?? 0) > 0 ? 1.6 : 1;
-  const shotsPerSecond = (weapon.fireRatePerSecond ?? 3) * fireStat * berserkFire;
+  const movingFireRateMultiplier = combat._heroMoving ? (combat.roguelikeRun?.stats?.movingFireRate ?? 1) : 1;
+  const shotsPerSecond = (weapon.fireRatePerSecond ?? 3) * fireStat * berserkFire * movingFireRateMultiplier;
   combat.autoFireCooldown = (combat.autoFireCooldown ?? 0) - dt;
   if (combat.autoFireCooldown > 0) return;
   // If the pointer isn't steering aim, lock onto the nearest live enemy so the
@@ -7915,6 +8211,7 @@ function updateAutoFire(dt) {
 
 function shootRoguelike() {
   const weapon = weaponById(combat.weaponId);
+  const upgradePolicy = currentUpgradeRuntimePolicy();
   // Clip gate: never fire on an empty clip — updateAutoFire schedules the reload.
   if ((combat.clip ?? 0) <= 0) {
     return;
@@ -7942,7 +8239,8 @@ function shootRoguelike() {
   // instant full-length rays: drawBullets renders short coded tracer segments from
   // each projectile's previous/current world position.
   const pellets = weapon.pellets ?? 1;
-  const spread = pellets > 1 ? profile.spreadRadians : profile.spreadRadians * 0.5;
+  const spreadBase = pellets > 1 ? profile.spreadRadians : profile.spreadRadians * 0.5;
+  const spread = spreadBase * upgradePolicy.spreadMultiplier;
   for (let i = 0; i < pellets; i += 1) {
     const t = pellets === 1 ? 0 : (i / (pellets - 1)) - 0.5;
     const deterministicJitter = pellets === 1 ? ((combat.shots % 3) - 1) * spread : 0;
@@ -7964,6 +8262,10 @@ function shootRoguelike() {
       ttl: profile.ttl,
       maxTtl: profile.ttl,
       hitRadius: profile.hitRadius,
+      pierceRemaining: upgradePolicy.additionalPierceTargets
+        + (upgradePolicy.weaponEvolution === 'settler-rail' && weapon.id === 'coin-blaster' ? 2 : 0),
+      hitEnemies: new Set(),
+      weaponEvolution: upgradePolicy.weaponEvolution,
       visual: {
         color: profile.color,
         coreColor: profile.coreColor,
@@ -8117,13 +8419,14 @@ function selectLevelUpUpgrade(skillId) {
   }
 
   combat.roguelikeRun = applyRoguelikeSkillUpgrade(combat.roguelikeRun, skillId);
+  syncUpgradeRuntimeState({ grantMaxHealthIncrease: true });
   combat.levelUpChoices = [];
   combat.levelUpLockedPreviews = [];
   combat.levelUpPaused = false;
   combat.paused = false;
   closeLevelUpInteractionGate();
-  combat.status = `${skill?.title ?? 'Upgrade'} applied. Survive the 20-minute wall.`;
-  spawnText(`${skill?.title ?? 'UPGRADE'} +5%`, ISO_CENTER_X - 44, ISO_CENTER_Y - 64, '#45ff8a');
+  combat.status = `${skill?.title ?? 'Upgrade'} applied. Prepare for the next pressure wall.`;
+  spawnText(`${skill?.title ?? 'UPGRADE'} APPLIED`, ISO_CENTER_X - 44, ISO_CENTER_Y - 64, '#45ff8a');
   syncCombatOverlay();
 }
 
@@ -8235,7 +8538,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     pressure: director.pressure,
     playerMoveSpeed: 4.15 * (combat.roguelikeRun?.stats?.movementSpeed ?? 1),
   });
-  const affixes = resolveEliteAffixes({
+  const affixes = options.signatureBoss ? [] : resolveEliteAffixes({
     enemyId: spawn.enemy.id,
     elite: elite || miniBoss,
     boss: Boolean(options.boss || spawn.enemy.boss),
@@ -8260,10 +8563,10 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     boss: Boolean(options.boss || spawn.enemy.boss),
     affixes,
     affixIds: affixes.map((affix) => affix.id),
-    nameplateTags: affixes.map((affix) => affix.nameplateTag),
+    nameplateTags: options.signatureBoss ? [(options.title ?? spawn.enemy.title).toUpperCase()] : affixes.map((affix) => affix.nameplateTag),
     affixRuntime,
     immuneToKnockback: Boolean(affixRuntime.immuneToKnockback),
-    finalBossProxy: Boolean(options.finalBossProxy),
+    signatureBoss: Boolean(options.signatureBoss),
     aggroed: Boolean(options.boss || miniBoss || spawn.enemy.boss),
     districtFamily: options.districtFamily ?? districtContext?.districtFamily ?? null,
     poiId,
@@ -8466,7 +8769,7 @@ function damageLevelOneInteractiveObstacle(hitObstacle, damage, source = 'bullet
     const def = powerUpById(powerId);
     if (def) spawnRoguelikePowerUp(def, hitObstacle.worldX, hitObstacle.worldY);
   }
-  if (plan.scoreBonus) combat.score += plan.scoreBonus;
+  if (plan.scoreBonus) combat.scoreBonus += plan.scoreBonus;
   for (const zone of plan.blastZones) applyLevelOneInteractiveBlastZone(zone);
 
   for (const chainedId of plan.chainDetonationIds) {
@@ -8548,6 +8851,18 @@ function updateRoguelikeMovement(dt) {
   let my = (combat.keys.has('s') || combat.keys.has('arrowdown') ? 1 : 0)
     - (combat.keys.has('w') || combat.keys.has('arrowup') ? 1 : 0);
   const usingKeys = mx !== 0 || my !== 0;
+  const upgradePolicy = currentUpgradeRuntimePolicy();
+  combat.dashCooldownRemaining = Math.max(0, (combat.dashCooldownRemaining ?? 0) - dt);
+  if (usingKeys && combat.keys.has('control') && combat.dashCooldownRemaining <= 0) {
+    combat.dashFrames = 8;
+    combat.dashCooldownRemaining = upgradePolicy.dashCooldownSeconds;
+    combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 8);
+    playSfxCue('dash', 0.035);
+  }
+  const dashSpeedMultiplier = (combat.dashFrames ?? 0) > 0
+    ? 3 * upgradePolicy.dashDistanceMultiplier
+    : 1;
+  combat.dashFrames = Math.max(0, (combat.dashFrames ?? 0) - 1);
 
   // On DESKTOP, the mouse is AIM ONLY — movement is WASD/arrows. On TOUCH (no
   // hover cursor) the hero auto-walks toward the touch point.
@@ -8560,6 +8875,19 @@ function updateRoguelikeMovement(dt) {
       mx = pdx / pdist;
       my = pdy / pdist;
     }
+  }
+
+  if (currentSession?.isPaid && currentSession.evidence && combat.frame % 12 === 0) {
+    recordSessionInput(currentSession.evidence, {
+      step: combat.frame,
+      moveX: mx,
+      moveY: my,
+      aimX: combat.manualAim?.x ?? combat.aimMapX,
+      aimY: combat.manualAim?.y ?? combat.aimMapY,
+      shoot: !combat.reloading && (combat.clip ?? 0) > 0,
+      grenade: (combat.activeGrenades?.length ?? 0) > 0,
+      dash: (combat.dashFrames ?? 0) > 0,
+    });
   }
 
   const length = Math.hypot(mx, my) || 1;
@@ -8575,7 +8903,8 @@ function updateRoguelikeMovement(dt) {
   const levelOneInteractivePressure = currentLevelOneInteractiveHazardPressure();
   const liveMoveSpeedMul = (combat.roguelikeRun?.stats.movementSpeed ?? 1)
     * (encounterTerrainPressure.moveSpeedMul ?? 1)
-    * (levelOneInteractivePressure.moveSpeedMul ?? 1);
+    * (levelOneInteractivePressure.moveSpeedMul ?? 1)
+    * dashSpeedMultiplier;
   const liveGameFeelProfile = {
     ...WAVE2_GAME_FEEL_PROFILE,
     movement: {
@@ -8689,17 +9018,20 @@ function updateRoguelikeBullets(dt) {
       bullet.ttl = 0;
       continue;
     }
+    const eligibleEnemies = combat.enemies.filter((enemy) => !bullet.hitEnemies?.has(enemy));
     const hitEnemy = circleTargetHitAlongSegment(
       bullet.prevWorldX,
       bullet.prevWorldY,
       bullet.worldX,
       bullet.worldY,
-      combat.enemies,
+      eligibleEnemies,
       { defaultRadius: bullet.hitRadius ?? 0.72 },
     );
     if (hitEnemy) {
       damageEnemy(hitEnemy, bullet.damage, bullet.weaponId);
-      bullet.ttl = 0;
+      bullet.hitEnemies?.add(hitEnemy);
+      if ((bullet.pierceRemaining ?? 0) > 0) bullet.pierceRemaining -= 1;
+      else bullet.ttl = 0;
     }
   }
   combat.bullets = combat.bullets.filter((bullet) => bullet.ttl > 0);
@@ -8745,13 +9077,41 @@ function trimLooseRoguelikeRewards() {
 }
 
 function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = null } = {}) {
+  recordCurrentSessionEvent('kill', {
+    enemyId: enemy.id,
+    elite: Boolean(enemy.elite),
+    miniBoss: Boolean(enemy.miniBoss),
+    signatureBoss: Boolean(enemy.signatureBoss),
+    score: enemy.score ?? 0,
+  });
   killEnemy(enemy);
-  if (enemy.finalBossProxy) {
+  if (enemy.signatureBoss) {
+    combat.bossDeathSpectacle = {
+      ...enemy,
+      id: 'rug-pull-baron',
+      title: 'The Rug Pull Baron',
+      hp: 0,
+      phase: 3,
+      signatureBoss: true,
+      deathSpectacle: true,
+      lifeFrames: 90,
+      maxLifeFrames: 90,
+    };
     combat.bossKills += 1;
     combat.bossDefeated = true;
     combat.miniBossLock = false;
     combat.scrollLockReason = null;
     combat.completedCampaignPoiIds?.add(enemy.poiEncounterId ?? enemy.poiId ?? 'rugpull-gulch-boss-yard');
+    const signature = playableCharacterStatIdentityFor(combat.characterId)?.signature ?? {};
+    const bossRecoveryFraction = Math.max(0, Number(signature.bossRecoveryFraction) || 0);
+    if (bossRecoveryFraction > 0) {
+      const maxHealth = combat.maxHealth ?? PLAYER_MAX_HEALTH;
+      combat.health = Math.min(maxHealth, combat.health + maxHealth * bossRecoveryFraction);
+    }
+    const bossScoreMultiplier = Math.max(1, Number(signature.bossScoreMultiplier) || 1);
+    if (bossScoreMultiplier > 1) {
+      combat.scoreBonus += Math.round((enemy.score ?? 500) * (bossScoreMultiplier - 1));
+    }
     applyCombatFeedback('boss-clear', {
       title: enemy.title ?? enemy.id,
       sfxVolume: 0.08,
@@ -8774,10 +9134,12 @@ function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = 
 
 function spawnLevelOneBossBeat(beat, director) {
   if (!beat || combat.triggeredBossBeatIds?.has(beat.id)) return false;
-  if (combat.activePoiEncounterId || combat.boss || combat.enemies.some((enemy) => enemy.miniBoss || enemy.finalBossProxy)) return false;
-  const roster = levelOneRoguelikeBossProxyRoster();
+  if (combat.activePoiEncounterId || combat.boss || combat.enemies.some((enemy) => enemy.miniBoss || enemy.signatureBoss)) return false;
+  const roster = levelOneRoguelikeBossRoster();
   const miniBosses = roster.filter((entry) => entry.role === 'mini-boss');
   const majorBoss = roster.find((entry) => entry.role === 'boss');
+  const isMajorBossBeat = beat.type === 'major-boss' || beat.type === 'major-rematch';
+  if (beat.type !== 'mini-boss-pair' && !isMajorBossBeat) return false;
   combat.triggeredBossBeatIds ??= new Set();
   combat.triggeredBossBeatIds.add(beat.id);
   if (beat.type === 'mini-boss-pair') {
@@ -8798,7 +9160,7 @@ function spawnLevelOneBossBeat(beat, director) {
     spawnText(`BOSS BEAT // MINI-BOSS PAIR T${beat.pressureTier}`, ISO_CENTER_X - 142, ISO_CENTER_Y - 82, '#ffe84d');
     return true;
   }
-  if (beat.type === 'major-boss' && majorBoss) {
+  if (isMajorBossBeat && majorBoss) {
     combat.scriptedBossTriggered = true;
     const enemy = spawnRoguelikeEnemy(director, {
       forceEnemyId: majorBoss.enemyId,
@@ -8806,8 +9168,8 @@ function spawnLevelOneBossBeat(beat, director) {
       elite: true,
       miniBoss: true,
       boss: true,
-      finalBossProxy: true,
-      spawnSource: 'boss-beat-major-boss',
+      signatureBoss: true,
+      spawnSource: beat.type === 'major-rematch' ? 'boss-beat-major-rematch' : 'boss-beat-major-boss',
       poiEncounterId: beat.id,
       radiusTiles: ROGUELIKE_MIN_BOSS_SPAWN_DISTANCE_TILES,
       attackTimer: 180,
@@ -8816,7 +9178,7 @@ function spawnLevelOneBossBeat(beat, director) {
       enemy.hp = Math.round(enemy.hp * bossBeatHealthMultiplier(beat.pressureTier));
       enemy.maxHp = enemy.hp;
     }
-    spawnText(`MAJOR BOSS // ${majorBoss.title.toUpperCase()} T${beat.pressureTier}`, ISO_CENTER_X - 154, ISO_CENTER_Y - 88, '#ff476f');
+    spawnText(`${beat.type === 'major-rematch' ? 'BOSS REMATCH' : 'MAJOR BOSS'} // ${majorBoss.title.toUpperCase()} T${beat.pressureTier}`, ISO_CENTER_X - 154, ISO_CENTER_Y - 88, '#ff476f');
     return true;
   }
   return false;
@@ -8953,7 +9315,7 @@ function updateRoguelikeEnemies(director, dt) {
         const speed = calculateEnemyChaseSpeed({
           enemySpeed: enemy.speed ?? 1,
           elite: enemy.elite,
-          boss: Boolean(enemy.boss || enemy.miniBoss || enemy.finalBossProxy),
+          boss: Boolean(enemy.boss || enemy.miniBoss || enemy.signatureBoss),
           pressure: director.pressure,
           encounterSpeedMul: encounterBehavior.speedMul ?? 1,
           slowFactor,
@@ -9009,9 +9371,9 @@ function updateRoguelikeEnemies(director, dt) {
       // Mini-boss 2-phase enrage (handoff §12.7): POI mini-bosses tighten their
       // attack cadence + gain a small fan (ranged) below 50% HP, with a one-time
       // ENRAGED banner. Returns null for non-mini-boss enemies so they keep the
-      // generic AI untouched. finalBossProxy is handled by its own controller.
+      // generic AI untouched. The signature boss is handled by its own controller.
       let miniBossDirective = null;
-      if (enemy.miniBoss && !enemy.finalBossProxy) {
+      if (enemy.miniBoss && !enemy.signatureBoss) {
         miniBossDirective = buildLevelOneMiniBossDirective({
           poiId: enemy.poiEncounterId ?? enemy.poiId,
           hp: enemy.hp,
@@ -9043,7 +9405,7 @@ function updateRoguelikeEnemies(director, dt) {
       if (enemy.ranged && enemy.attackTimer <= 0) {
         const shotSpeed = 5.2 * director.projectileSpeedMultiplier;
         enemy.state = 'ranged-attack';
-        if (enemy.finalBossProxy) {
+        if (enemy.signatureBoss) {
           // Real 3-phase boss encounter (handoff §12.7): the volley shape,
           // cadence, add-suppression, and telegraph all come from the phase
           // controller keyed to the boss's live HP, not the generic single shot.
@@ -9300,11 +9662,12 @@ function updateRoguelikePowerUps() {
 function applyRoguelikePowerUp(power) {
   combat.powerUpsCollected += 1;
   combat.collectedPowerUpTypes.add(power.id ?? power.effect ?? power.title);
+  recordCurrentSessionEvent('pickup', { id: power.id ?? power.effect ?? power.title, effect: power.effect ?? null });
   const px = power.x;
   const py = power.y - 28;
   switch (power.effect) {
     case 'heal':
-      combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 25));
+      combat.health = Math.min(combat.maxHealth ?? PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 25));
       break;
     case 'ammo':
       combat.clip = Math.min(combat.clipSize ?? combat.clip ?? 0, (combat.clip ?? 0) + (power.amount ?? combat.clipSize ?? 8));
@@ -9324,11 +9687,11 @@ function applyRoguelikePowerUp(power) {
       break;
     }
     case 'shield':
-      combat.health = Math.min(PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 1) * 15);
+      combat.health = Math.min(combat.maxHealth ?? PLAYER_MAX_HEALTH, combat.health + (power.amount ?? 1) * 15);
       combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 180);
       break;
     case 'scoreBonus':
-      combat.score += power.score ?? 500;
+      combat.scoreBonus += power.score ?? 500;
       spawnText(`+${(power.score ?? 500).toLocaleString()}`, px, py, '#ffe84d');
       break;
     case 'magnet':
@@ -9345,14 +9708,14 @@ function applyRoguelikePowerUp(power) {
       break;
     case 'screenNuke': {
       // Liquidation Nuke: clear every on-screen enemy and reward the kills through
-      // the same resolver as normal combat. This is important for the temporary
-      // Level 1 final boss proxy: bypassing the resolver would leave extraction
-      // permanently locked if the nuke killed the boss.
+      // the same resolver as normal combat. This is important for the Level 1
+      // signature boss: bypassing the resolver would lose boss-kill
+      // scoring, rewards, encounter cleanup, and long-run progression state.
       const doomed = [...combat.enemies];
       for (const enemy of doomed) {
         enemy.hp = 0;
         resolveRoguelikeEnemyDeath(enemy, {
-          dropRewards: Boolean(enemy.elite || enemy.miniBoss || enemy.finalBossProxy),
+          dropRewards: Boolean(enemy.elite || enemy.miniBoss || enemy.signatureBoss),
           forceXpValue: Math.max(6, Math.round(calculateRoguelikeKillXp(enemy) * 0.75)),
         });
       }
@@ -9384,28 +9747,30 @@ function updateRoguelikePowerUpTimers(dt) {
   }
 }
 
-function spawnLevelOneFinalBossProxy(director) {
+function spawnLevelOneSignatureBoss(director) {
   const choreography = buildLevelOneBossChoreographyPlan();
-  const bossProxy = levelOneRoguelikeBossProxyRoster().find((entry) => entry.role === 'boss');
-  if (!bossProxy) return null;
+  const bossEntry = levelOneRoguelikeBossRoster().find((entry) => entry.role === 'boss');
+  if (!bossEntry) return null;
   combat.scriptedBossTriggered = true;
   combat.miniBossLock = true;
-  combat.scrollLockReason = `BOSS LOCK // ${bossProxy.title}`;
-  lastBossId = bossProxy.enemyId;
-  spawnText(`BOSS: ${bossProxy.title.toUpperCase()}`, ISO_CENTER_X - 98, ISO_CENTER_Y - 112, '#ffe84d');
-  spawnText(choreography.finalBoss.phases[0]?.pattern?.toUpperCase() ?? 'CLEAR HIM TO REVEAL EXTRACTION', ISO_CENTER_X - 138, ISO_CENTER_Y - 84, '#ff7b2f');
+  combat.scrollLockReason = `BOSS LOCK // ${bossEntry.title}`;
+  lastBossId = bossEntry.enemyId;
+  playSfxCue('boss-warning', 0.1);
+  spawnText(`BOSS: ${bossEntry.title.toUpperCase()}`, ISO_CENTER_X - 98, ISO_CENTER_Y - 112, '#ffe84d');
+  spawnText(choreography.finalBoss.phases[0]?.pattern?.toUpperCase() ?? 'BREAK HIM, CLAIM THE PAYOUT, KEEP MOVING', ISO_CENTER_X - 138, ISO_CENTER_Y - 84, '#ff7b2f');
   const bossPoint = levelOneWorldV3BossPoint();
   return spawnRoguelikeEnemy(director, {
-    forceEnemyId: bossProxy.enemyId,
-    title: bossProxy.title,
-    spawnSource: 'level-1-final-boss-proxy',
-    poiId: bossProxy.zoneId,
-    poiEncounterId: bossProxy.zoneId,
+    forceEnemyId: bossEntry.enemyId,
+    title: bossEntry.title,
+    spawnSource: 'level-1-signature-boss',
+    poiId: bossEntry.zoneId,
+    poiEncounterId: bossEntry.zoneId,
     elite: true,
     miniBoss: true,
     boss: true,
-    finalBossProxy: true,
+    signatureBoss: true,
     ranged: true,
+    phase: 1,
     mapX: bossPoint.x,
     mapY: bossPoint.y,
     angleRadians: Math.PI * 0.15,
@@ -9415,22 +9780,29 @@ function spawnLevelOneFinalBossProxy(director) {
   });
 }
 
-function updateLevelOneFinalBossProxy(director) {
+function updateLevelOneSignatureBoss(director) {
   const level = currentCampaignLevel();
   if (level.id !== DEFAULT_CAMPAIGN_LEVEL_ID) return;
   // Drive boss phase-entry FX (banner + one-time add wave) once per frame,
   // independent of the firing cadence, so the escalation reads clearly even
-  // between volleys. Keyed off the live boss proxy's HP via the phase controller.
-  if (combat.scriptedBossTriggered && !combat.bossDefeated) {
-    const bossEnemy = combat.enemies.find((e) => e.finalBossProxy && e.hp > 0);
+  // between volleys. Keyed off the live signature boss's HP via the phase controller.
+  if (combat.scriptedBossTriggered) {
+    const bossEnemy = combat.enemies.find((e) => e.signatureBoss && e.hp > 0);
     if (bossEnemy) {
       const directive = buildLevelOneBossDirective({
         hp: bossEnemy.hp,
         maxHp: bossEnemy.maxHp,
         lastPhaseId: bossEnemy.bossPhaseSeenId ?? null,
       });
+      bossEnemy.phase = directive.phase.phaseNumber;
       if (directive.phaseChanged) {
         bossEnemy.bossPhaseSeenId = directive.nextLastPhaseId;
+        recordCurrentSessionEvent('boss-phase', {
+          bossId: bossEnemy.id,
+          phaseId: directive.phase.id,
+          phase: directive.phase.phaseNumber,
+        });
+        playSfxCue('boss-warning', 0.075);
         if (directive.banner) {
           spawnText(directive.banner, ISO_CENTER_X - 120, ISO_CENTER_Y - 100, '#ff7b2f');
         }
@@ -9450,11 +9822,17 @@ function updateLevelOneFinalBossProxy(director) {
   if (combat.elapsedGameSeconds < (level.timings?.bossSpawnSeconds ?? Infinity)) return;
   const bossPoint = levelOneWorldV3BossPoint();
   if (Math.hypot(combat.playerMapX - bossPoint.x, combat.playerMapY - bossPoint.y) > 12) return;
-  spawnLevelOneFinalBossProxy(director);
+  spawnLevelOneSignatureBoss(director);
 }
 
 function syncCampaignProgression() {
   const level = currentCampaignLevel();
+  if (!hmhCampaignLevelAllowsExtraction(level.id)) {
+    combat.extractionPoint = null;
+    combat.clearedCampaignLevelId = null;
+    combat.levelClearSource = null;
+    return;
+  }
   const levelOneBossGateSatisfied = level.id !== DEFAULT_CAMPAIGN_LEVEL_ID || combat.bossDefeated;
   if (!combat.extractionPoint && levelOneBossGateSatisfied && Array.isArray(combat.districtGrid) && combat.districtGrid.length && combat.elapsedGameSeconds >= (level.timings?.extractionSpawnSeconds ?? Infinity)) {
     combat.extractionPoint = level.id === HMH_LEVEL_ONE_ID
@@ -9494,9 +9872,14 @@ function syncCampaignProgression() {
 
 function updateRoguelikeCombatStep(dt, difficulty) {
   if (combat.levelUpPaused) return;
+  if (combat.bossDeathSpectacle) {
+    combat.bossDeathSpectacle.lifeFrames -= 1;
+    if (combat.bossDeathSpectacle.lifeFrames <= 0) combat.bossDeathSpectacle = null;
+  }
   const director = currentRoguelikeSpawnDirector(combat.elapsedGameSeconds);
+  const upgradePolicy = currentUpgradeRuntimePolicy();
   combat.roguelikeRun.spawnDirector = director;
-  updateLevelOneFinalBossProxy(director);
+  updateLevelOneSignatureBoss(director);
   updateRoguelikeMovement(dt);
   updateLevelOneInteractiveHazards(dt);
   updateRoguelikePowerUpTimers(dt);
@@ -9508,10 +9891,15 @@ function updateRoguelikeCombatStep(dt, difficulty) {
   updateRoguelikePowerUps();
   updateParticles(dt);
   updateFloatingTexts();
+  if (upgradePolicy.healthRegenPerSecond > 0 && combat.health > 0) {
+    combat.health = Math.min(combat.maxHealth ?? PLAYER_MAX_HEALTH, combat.health + upgradePolicy.healthRegenPerSecond * dt);
+  }
+  combat.combo = Math.max(0, combat.combo - dt * 0.8 * upgradePolicy.comboDecayMultiplier);
+  combat.damageCombo = Math.max(0, combat.damageCombo - dt * 3.2 * upgradePolicy.comboDecayMultiplier);
   const xpScore = (combat.roguelikeRun.level - 1) * 250
     + Math.round((combat.roguelikeRun.xp || 0) * 1.5)
     + Math.round(combat.roguelikeRun.postCapScoreBonus || 0);
-  combat.score = calculateLesterBlasterScore({
+  const baseScore = calculateLesterBlasterScore({
     elapsedSeconds: combat.elapsedGameSeconds,
     kills: combat.kills,
     maxKillCombo: combat.maxCombo,
@@ -9521,8 +9909,9 @@ function updateRoguelikeCombatStep(dt, difficulty) {
     weaponUpgrades: Object.values(combat.roguelikeRun.skills).some(Boolean) ? ['damage'] : [],
     rareWeaponId: combat.weaponId === 'oracle-slayer' ? combat.weaponId : null,
     difficultyTier: difficulty.tier,
-  }).total + xpScore;
-  combat.score = Math.round(combat.score); // whole-number score only (no decimals)
+  }).total + xpScore + (combat.scoreBonus ?? 0);
+  const evolutionMultiplier = evolutionScoreMultiplier(upgradePolicy, combat.weaponId);
+  combat.score = Math.round(baseScore * upgradePolicy.scoreMultiplier * evolutionMultiplier); // whole-number score only
   combat.longestSurvivalThisRun = Math.max(combat.longestSurvivalThisRun, combat.elapsedGameSeconds);
   // SDK adapter: emit periodic stat updates (throttled to every 30 frames to avoid spam).
   if (gameAdapter && combat.frame % 30 === 0) {
@@ -9884,6 +10273,10 @@ function wave2AnimFrame(slug, frameIdx) {
 // entries. Sparse lattice, biome-matched, kept clear of the player so they never
 // block combat. Frames advance ~8fps for smooth wind/flicker/water motion.
 function collectAnimatedProps(ctx) {
+  // World v3 already supplies authored ambient entities with stable IDs and
+  // positions. Its old camera-relative lattice visibly repopulated as the
+  // player crossed cell boundaries and blinked on undecoded animation frames.
+  if (isLevelOneCuratedRuntime()) return [];
   const ambientFrames = ambientAnimationFramesBySlug();
   if (!Object.keys(ambientFrames).length) return [];
   const out = [];
@@ -9910,8 +10303,8 @@ function collectAnimatedProps(ctx) {
       const pool = BIOME_ANIM_PROPS[biome] ?? BIOME_ANIM_PROPS.town;
       const slug = pool[h % pool.length];
       if (!ambientFrames[slug]) continue;
-      const worldX = cellX + ((h % 5) - 2) + environmentState.wind.x * 0.18;
-      const worldY = cellY + (((h >> 4) % 5) - 2) + environmentState.wind.y * 0.12;
+      const worldX = cellX + ((h % 5) - 2);
+      const worldY = cellY + (((h >> 4) % 5) - 2);
       if (Math.hypot(worldX - combat.playerMapX, worldY - combat.playerMapY) < 4) continue;
       const projected = isoToScreen(worldX, worldY);
       // Per-prop phase offset so they don't all animate in lockstep.
@@ -10003,6 +10396,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   const terrainPresentationStats = {
     cellCount: 0,
     overlayIds: new Set(),
+    textureKeys: new Set(),
     waterFlowCells: 0,
     bridgeLightingCells: 0,
     elevationLightingCells: 0,
@@ -10067,7 +10461,11 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
 
   for (const tile of visibleTiles) {
     const terrainCell = plan.cellAt(tile.worldX, tile.worldY);
-    const terrainPresentation = buildTerrainPresentationForCell(terrainCell, { frame: combat.frame });
+    terrainPresentationStats.textureKeys.add(terrainCell.textureKey);
+    const terrainPresentation = buildTerrainPresentationForCell(terrainCell, {
+      frame: combat.frame,
+      overlayMode: isLevelOneCuratedRuntime() ? 'texture-only' : 'full',
+    });
     const asset = plan.textureForKey(terrainCell.textureKey);
     const image = sbsGroundTileImage(asset);
     if (!imageReady(image)) {
@@ -10166,6 +10564,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     terrainPresentationStats: {
       ...terrainPresentationStats,
       overlayIds: [...terrainPresentationStats.overlayIds].sort(),
+      textureKeys: [...terrainPresentationStats.textureKeys].sort(),
     },
   };
 }
@@ -10188,9 +10587,9 @@ function productionPropForIndex(index) {
 // --- Road network rendering --------------------------------------------------
 // The district generator produces a macro road network (streets between urban
 // districts, trails between groves, boardwalk crossings over water). Roads are
-// rendered as tinted diamond overlays ON TOP of the ground tiles, so they
-// inherit the underlying texture and never depend on art that might not exist.
-// Water crossings draw the wood-bridge sprite (with a plank-tint fallback).
+// rendered as texture-backed masks ON TOP of the ground tiles. Canonical bridge
+// cells do not receive a procedural fill; the authored bridge entity owns that
+// visual so terrain geometry never competes with production art.
 function currentTerrainBiomeAt(seed, worldX, worldY) {
   if ((combat.currentCampaignLevelId ?? HMH_LEVEL_ONE_ID) !== HMH_LEVEL_ONE_ID) {
     return biomeAt(seed, worldX, worldY);
@@ -10203,28 +10602,29 @@ function currentTerrainBiomeAt(seed, worldX, worldY) {
   }).collisionBiome;
 }
 
-const ROAD_SURFACE_STYLE = {
-  town: { fill: 'rgba(50, 54, 62, 0.60)', edge: 'rgba(220, 226, 238, 0.16)' },
-  pavement: { fill: 'rgba(58, 62, 70, 0.58)', edge: 'rgba(220, 226, 238, 0.14)' },
-  road: { fill: 'rgba(46, 50, 58, 0.62)', edge: 'rgba(236, 222, 130, 0.18)' },
-  desert: { fill: 'rgba(196, 168, 112, 0.45)', edge: 'rgba(120, 96, 58, 0.20)' },
-  sand: { fill: 'rgba(196, 168, 112, 0.45)', edge: 'rgba(120, 96, 58, 0.20)' },
-  forest: { fill: 'rgba(112, 84, 52, 0.48)', edge: 'rgba(64, 46, 28, 0.22)' },
-  grass: { fill: 'rgba(132, 102, 62, 0.42)', edge: 'rgba(70, 52, 30, 0.18)' },
-  rocky: { fill: 'rgba(96, 94, 90, 0.46)', edge: 'rgba(50, 48, 46, 0.20)' },
-  default: { fill: 'rgba(108, 92, 64, 0.45)', edge: 'rgba(58, 48, 32, 0.18)' },
-};
+const ROAD_SURFACE_TEXTURE = Object.freeze({
+  town: 'wo103-continuous/asphalt',
+  pavement: 'wo103-continuous/asphalt',
+  road: 'wo103-continuous/asphalt',
+  desert: 'wo103-continuous/dirt',
+  sand: 'wo103-continuous/sand',
+  forest: 'wo103-continuous/dirt',
+  grass: 'wo103-continuous/dirt',
+  rocky: 'wo103-continuous/rocky',
+  default: 'wo103-continuous/dirt',
+});
 
-function traceIsoDiamond(ctx, cx, cy, inset = 0) {
-  const hw = ISO_TILE_WIDTH / 2 - inset;
-  const hh = ISO_TILE_HEIGHT / 2 - inset * 0.5;
-  ctx.beginPath();
-  ctx.moveTo(cx, cy - hh);
-  ctx.lineTo(cx + hw, cy);
-  ctx.lineTo(cx, cy + hh);
-  ctx.lineTo(cx - hw, cy);
-  ctx.closePath();
-}
+const ROAD_SURFACE_ALPHA = Object.freeze({
+  town: 0.88,
+  pavement: 0.86,
+  road: 0.9,
+  desert: 0.74,
+  sand: 0.72,
+  forest: 0.76,
+  grass: 0.74,
+  rocky: 0.8,
+  default: 0.76,
+});
 
 function addIsoDiamondToPath(path, cx, cy, inset = 0) {
   const hw = ISO_TILE_WIDTH / 2 - inset;
@@ -10251,8 +10651,7 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
   const minY = Math.floor(Math.min(...corners.map((c) => c.y))) - PAD;
   const maxY = Math.ceil(Math.max(...corners.map((c) => c.y))) + PAD;
   const roadSurfaceGroups = new Map();
-  const bridgeSurfacePath = new Path2D();
-  const bridgeWearPath = new Path2D();
+  const cameraAnchor = groundPatternAnchorForOrigin(isoToScreen(0, 0));
   ctx.save();
   for (let worldX = minX; worldX <= maxX; worldX += 1) {
     for (let worldY = minY; worldY <= maxY; worldY += 1) {
@@ -10264,33 +10663,28 @@ function drawRoadsAndTransitions(ctx, width, height, cullWidth, cullHeight) {
       const cy = groundPoint.y;
       if (cx < -ISO_TILE_WIDTH || cx > cullWidth + ISO_TILE_WIDTH) continue;
       if (cy < -ISO_TILE_HEIGHT - 80 || cy > cullHeight + ISO_TILE_HEIGHT + 80) continue;
-      if (tile.type === 'bridge') {
-        addIsoDiamondToPath(bridgeSurfacePath, cx, cy);
-        addIsoDiamondToPath(bridgeWearPath, cx, cy, 6);
-        continue;
-      }
-      const style = ROAD_SURFACE_STYLE[tile.role] ?? ROAD_SURFACE_STYLE.default;
-      const styleKey = tile.role in ROAD_SURFACE_STYLE ? tile.role : 'default';
+      if (tile.type === 'bridge') continue;
+      const styleKey = tile.role in ROAD_SURFACE_TEXTURE ? tile.role : 'default';
       let group = roadSurfaceGroups.get(styleKey);
       if (!group) {
-        group = { style, surfacePath: new Path2D(), wearPath: new Path2D() };
+        const textureKey = ROAD_SURFACE_TEXTURE[styleKey];
+        const asset = getCombatGroundPlan()?.textureForKey(textureKey);
+        group = { asset, image: sbsGroundTileImage(asset), alpha: ROAD_SURFACE_ALPHA[styleKey], surfacePath: new Path2D() };
         roadSurfaceGroups.set(styleKey, group);
       }
       addIsoDiamondToPath(group.surfacePath, cx, cy);
-      addIsoDiamondToPath(group.wearPath, cx, cy, 9);
     }
   }
   for (const group of roadSurfaceGroups.values()) {
-    ctx.fillStyle = group.style.fill;
+    if (!imageReady(group.image)) continue;
+    const pattern = ctx.createPattern(group.image, 'repeat');
+    if (!pattern) continue;
+    if (typeof DOMMatrix !== 'undefined' && typeof pattern.setTransform === 'function') {
+      pattern.setTransform(new DOMMatrix().translate(cameraAnchor.x, cameraAnchor.y));
+    }
+    ctx.globalAlpha = group.alpha;
+    ctx.fillStyle = pattern;
     ctx.fill(group.surfacePath);
-  }
-  ctx.fillStyle = 'rgba(75, 48, 30, 0.96)';
-  ctx.fill(bridgeSurfacePath);
-  ctx.fillStyle = 'rgba(151, 102, 55, 0.9)';
-  ctx.fill(bridgeWearPath);
-  for (const group of roadSurfaceGroups.values()) {
-    ctx.fillStyle = group.style.edge;
-    ctx.fill(group.wearPath);
   }
   ctx.restore();
 }
@@ -10439,7 +10833,7 @@ async function precomputeBiomeWorld(ctx, width, height, worldStructure = {}) {
   const envManifest = hmh('HMH_LEVEL_ENVIRONMENT') ?? {};
   const worldProps = envManifest.worldProps ?? [];
   const bgs = envManifest.parallaxBackgrounds ?? [];
-  const { districtGrid } = worldStructure;
+  const { districtGrid, roadNetwork } = worldStructure;
 
   const startBiome = biomeAt(seed, 0, 0);
   const toWarm = new Set();
@@ -10535,6 +10929,7 @@ function preloadWorldPropImages() {
 // moves. Computed once per frame and shared by movement, bullets, and drawing so
 // collision and rendering always agree.
 let _obstacleCacheFrame = -1;
+let _obstacleCacheKey = '';
 let _obstacleCache = [];
 
 // Authored world layout: convert handcrafted landmark placements into runtime
@@ -10641,6 +11036,11 @@ async function prewarmHmhLevelAssets(level, onProgress = () => {}) {
     const image = sbsGroundTileImage(asset);
     if (image) images.push(image);
   }
+  for (const textureKey of new Set(Object.values(ROAD_SURFACE_TEXTURE))) {
+    const asset = plan.textureForKey(textureKey);
+    const image = sbsGroundTileImage(asset);
+    if (image) images.push(image);
+  }
   const curatedObjects = buildLevelOneWorldV3VisibleObjects({
     playerX,
     playerY,
@@ -10685,8 +11085,20 @@ const SCENE_ROLE_TO_STYLE = Object.freeze({
   vehicle: 'bigprop', 'canopy-occluder': 'tree', 'ambient-hazard': 'smallprop', container: 'bigprop',
 });
 
+function currentObstacleCacheKey() {
+  return [
+    combat.frame,
+    combat.playerMapX,
+    combat.playerMapY,
+    combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID,
+    combat.viewportMode,
+    combat.activePoiEncounterId ?? '',
+  ].join('|');
+}
+
 function currentObstacles() {
-  if (_obstacleCacheFrame === combat.frame && _obstacleCache.length >= 0 && _obstacleCacheFrame !== -1) {
+  const cacheKey = currentObstacleCacheKey();
+  if (_obstacleCacheFrame === combat.frame && _obstacleCacheKey === cacheKey && _obstacleCacheFrame !== -1) {
     return _obstacleCache;
   }
   const seed = combat.roguelikeRun?.seed ?? 0;
@@ -10786,6 +11198,7 @@ function currentObstacles() {
   _obstacleCache = [...curatedObstacles, ...sceneObstacles, ...encounterSceneObjects, ...authoredObjects, ...boundaryObstacles];
 
   _obstacleCacheFrame = combat.frame;
+  _obstacleCacheKey = cacheKey;
   return _obstacleCache;
 }
 
@@ -11406,7 +11819,7 @@ function drawRoguelikeScene(ctx, width, height) {
   const animatedEnemies = new Set(combat.enemies
     .map((enemy) => ({
       enemy,
-      priority: (enemy.miniBoss || enemy.finalBossProxy ? -10000 : 0)
+      priority: (enemy.miniBoss || enemy.signatureBoss ? -10000 : 0)
         + Math.hypot((enemy.mapX ?? 0) - combat.playerMapX, (enemy.mapY ?? 0) - combat.playerMapY),
     }))
     .sort((a, b) => a.priority - b.priority)
@@ -11419,6 +11832,20 @@ function drawRoguelikeScene(ctx, width, height) {
         animate: animatedEnemies.has(enemy),
         enemyAnimationFps: enemyRenderBudget.enemyAnimationFps,
       }),
+    });
+  }
+  if (combat.bossDeathSpectacle) {
+    const spectacle = combat.bossDeathSpectacle;
+    const projected = isoToScreen(spectacle.mapX, spectacle.mapY);
+    const spectacleEnemy = { ...spectacle, x: projected.x, y: projected.y + 38 };
+    renderList.push({
+      depth: spectacleEnemy.y,
+      draw: () => {
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, spectacle.lifeFrames / Math.max(1, spectacle.maxLifeFrames * 0.45));
+        drawSingleEnemy(ctx, spectacleEnemy, { animate: true });
+        ctx.restore();
+      },
     });
   }
   if (combat.boss) {
@@ -12485,8 +12912,9 @@ function drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderPr
 
 function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
     const isMini = enemy.miniBoss;
-    const w = isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
-    const h = isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
+    const isSignatureBoss = Boolean(enemy.signatureBoss);
+    const w = isSignatureBoss ? 180 : isMini ? 68 : enemy.class === 'armored' ? 42 : 30;
+    const h = isSignatureBoss ? 216 : isMini ? 62 : enemy.class?.includes('flying') ? 28 : 36;
     // Enemy art is always drawn at 100% runtime scale. Small/large enemies must
     // be authored as different-sized sprites inside their source canvas so hit
     // detection and combat readability stay aligned with the actual footprint.
@@ -12497,44 +12925,69 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
 
     // Canonical actor art first, then animated roster, then biome stills.
     const animFrame = roguelikeEnemyAnimatedFrame(enemy, {
-      animate: renderOptions.animate !== false || Boolean(enemy.miniBoss || enemy.finalBossProxy),
+      animate: renderOptions.animate !== false || Boolean(enemy.miniBoss || enemy.signatureBoss),
       fps: renderOptions.enemyAnimationFps ?? 12,
     });
     const waveFrame = isLevelOneCuratedRuntime() ? null : (isMini ? null : roguelikeEnemyWaveArt(enemy));
     const pipelineFrame = pipelineActorFrame(enemy);
     const overlayFrame = pipelineActorOverlayFrame(enemy);
     const legacyEnemyFrame = isLevelOneCuratedRuntime() ? null : enemyArtFor(enemy);
-    const enemyFrame = (imageReady(pipelineFrame) ? pipelineFrame : null)
+    const wo110Frame = isSignatureBoss ? wo110BossRuntimeFrame(enemy) : null;
+    const enemyFrame = (imageReady(wo110Frame?.image) ? wo110Frame.image : null)
+      ?? (imageReady(pipelineFrame) ? pipelineFrame : null)
       ?? (imageReady(animFrame) ? animFrame : null)
       ?? (imageReady(waveFrame) ? waveFrame : null)
       ?? legacyEnemyFrame;
-    const drewBespokeKit = drawBespokeEnemyKit(ctx, enemy, intent, renderProfile);
+    const drewBespokeKit = isSignatureBoss ? false : drawBespokeEnemyKit(ctx, enemy, intent, renderProfile);
     if (!drewBespokeKit && imageReady(enemyFrame)) {
       const isAnim = enemyFrame === animFrame;
       const isWave = enemyFrame === waveFrame;
       const enemyKey = manifestEnemyKeyFor(enemy);
       const productionEnemy = Boolean(enemyKey && combatArt.enemies[enemyKey]?.productionSlug);
       // Enemy draw size is fixed; silhouette scale is authored in the sprite canvas.
-      const drawSize = Math.round(((isAnim || isWave) ? 88 : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78) * drawScaleMul);
-      enemy.runtimeDrawSize = drawSize;
-      enemy.runtimeDrawHeight = drawSize;
+      const drawSize = isSignatureBoss
+        ? Math.min(wo110Frame?.asset?.renderWidth ?? 216, WO110_TRUE_SCALE_MAX_PX)
+        : Math.round(((isAnim || isWave) ? 88 : productionEnemy ? (isMini ? 132 : enemy.class === 'armored' ? 112 : 98) : 78) * drawScaleMul);
+      const sourceWidth = enemyFrame.naturalWidth || enemyFrame.width || drawSize;
+      const sourceHeight = enemyFrame.naturalHeight || enemyFrame.height || drawSize;
+      const drawHeight = drawSize;
+      const drawWidth = Math.max(1, Math.round(drawHeight * (sourceWidth / sourceHeight)));
+      enemy.runtimeDrawSize = drawWidth;
+      enemy.runtimeDrawHeight = drawHeight;
       ctx.save();
       ctx.imageSmoothingEnabled = false;
-      const ex = Math.round(enemy.x + w / 2 - drawSize / 2);
-      const ey = Math.round(enemy.y - drawSize + 12 + (renderProfile.anchorBiasY ?? 0));
-      drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderProfile, 'behind');
-      drawSpriteImage(ctx, enemyFrame, ex, ey, drawSize, Boolean(enemyFrame._flip));
-      drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderProfile, 'front');
+      const ex = Math.round(enemy.x + w / 2 - drawWidth / 2);
+      const ey = Math.round(enemy.y - drawHeight + 12 + (renderProfile.anchorBiasY ?? 0));
+      const auraX = Math.round(enemy.x + w / 2 - drawHeight / 2);
+      drawLevelOneEnemyReadabilityAura(ctx, enemy, auraX, ey, drawHeight, renderProfile, 'behind');
+      if (enemyFrame._flip) {
+        ctx.save();
+        ctx.translate(ex + drawWidth / 2, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(enemyFrame, -drawWidth / 2, ey, drawWidth, drawHeight);
+        ctx.restore();
+      } else {
+        ctx.drawImage(enemyFrame, ex, ey, drawWidth, drawHeight);
+      }
+      drawLevelOneEnemyReadabilityAura(ctx, enemy, auraX, ey, drawHeight, renderProfile, 'front');
       if (intent.telegraphing) drawEnemyProxyTelegraph(ctx, enemy, renderProfile, drawSize);
       const overlayAlpha = enemy.hp <= 0
         ? 0.62
         : Math.min(0.5, Math.max((enemy.goreFrames ?? 0) / 18, (enemy.hitFlash ?? 0) / 14));
       if (imageReady(overlayFrame) && overlayAlpha > 0) {
-        drawSpriteImage(ctx, overlayFrame, ex, ey, drawSize, Boolean(overlayFrame._flip ?? enemyFrame._flip));
+        if (overlayFrame._flip ?? enemyFrame._flip) {
+          ctx.save();
+          ctx.translate(ex + drawWidth / 2, 0);
+          ctx.scale(-1, 1);
+          ctx.drawImage(overlayFrame, -drawWidth / 2, ey, drawWidth, drawHeight);
+          ctx.restore();
+        } else {
+          ctx.drawImage(overlayFrame, ex, ey, drawWidth, drawHeight);
+        }
         ctx.globalCompositeOperation = 'source-atop';
         ctx.globalAlpha = overlayAlpha;
         ctx.fillStyle = enemy.hp <= 0 ? '#7a0015' : '#cf274f';
-        ctx.fillRect(ex, ey, drawSize, drawSize);
+        ctx.fillRect(ex, ey, drawWidth, drawHeight);
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = 1;
       }
@@ -12542,7 +12995,7 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
         ctx.globalCompositeOperation = 'source-atop';
         ctx.globalAlpha = Math.min(0.8, enemy.hitFlash / 6);
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(ex, ey, drawSize, drawSize);
+        ctx.fillRect(ex, ey, drawWidth, drawHeight);
         ctx.globalCompositeOperation = 'source-over';
         ctx.globalAlpha = 1;
       }
@@ -12554,6 +13007,7 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
       ctx.fillStyle = '#080616';
       ctx.fillRect(enemy.x + 6, enemy.y - h + 9, 7, 7);
     }
+    if (enemy.deathSpectacle) return;
     if (debugHitboxesEnabled) {
       drawRuntimeHitboxOverlay(ctx, runtimeEnemyHitbox(enemy, { debugHitboxes: true }).overlay);
     }
@@ -13563,9 +14017,24 @@ function ensureTouchControls(profile) {
   aimBase.addEventListener('pointerup', releaseAim);
   aimBase.addEventListener('pointercancel', releaseAim);
 
-  // --- Action cluster: grenade only. POWER was the mystery helper button and is desktop-only now. ---
+  // --- Action cluster: dash + grenade. POWER remains a desktop-only sandbox helper. ---
   const cluster = el('div', { className: 'touch-action-cluster' });
   cluster.dataset.side = layout.actionCluster.side;
+  const dashBtn = el('button', { className: 'touch-action-button touch-dash', textContent: '⚡ DASH' });
+  dashBtn.type = 'button';
+  dashBtn.setAttribute('aria-label', 'Dash in the current movement direction.');
+  const releaseTouchDash = () => {
+    combat.keys.delete('control');
+    dashBtn.classList.remove('is-active');
+  };
+  dashBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    combat.keys.add('control');
+    dashBtn.classList.add('is-active');
+    dashBtn.setPointerCapture(e.pointerId);
+  });
+  dashBtn.addEventListener('pointerup', releaseTouchDash);
+  dashBtn.addEventListener('pointercancel', releaseTouchDash);
   const btn = el('button', { className: 'touch-action-button touch-grenade', textContent: '💣 NADE' });
   btn.type = 'button';
   btn.setAttribute('aria-label', 'Grenade. Tap quick throw. Hold to aim.');
@@ -13596,7 +14065,7 @@ function ensureTouchControls(profile) {
     cancelGrenadeAimInput();
     releaseTouchGrenade(e);
   });
-  cluster.append(cancelZone, btn);
+  cluster.append(dashBtn, cancelZone, btn);
   layer.append(cluster);
   layer.addEventListener('pointerdown', (e) => {
     if (combat.grenadeAim?.active && grenadePointer !== null && e.pointerId !== grenadePointer) {

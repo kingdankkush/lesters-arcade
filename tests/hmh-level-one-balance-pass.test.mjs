@@ -64,14 +64,15 @@ test('Level 1 spawn composition changes by authored act and avoids unfair ambush
   assert.ok(Math.min(...[saloon, forest, gasYard, boss].map((entry) => entry.minSpawnDistanceTiles)) >= 18);
 });
 
-test('Level 1 boss choreography has phase gates, add windows, counterplay, and extraction handoff', () => {
+test('Level 1 boss choreography has phase gates, add windows, counterplay, and open-survival payout', () => {
   const plan = buildLevelOneBossChoreographyPlan();
   assert.equal(plan.finalBoss.poiId, 'rugpull-gulch-boss-yard');
   assert.equal(plan.finalBoss.phases.length, 3);
   assert.ok(plan.finalBoss.phases.every((phase) => phase.telegraphFrames >= 45));
   assert.ok(plan.finalBoss.phases.some((phase) => phase.addWaveSuppression === true));
-  assert.equal(plan.finalBoss.onDefeat.unlocksGate, true);
-  assert.equal(plan.finalBoss.onDefeat.activatesExtractionFlare, true);
+  assert.equal(plan.finalBoss.onDefeat.continuesSurvival, true);
+  assert.equal(plan.finalBoss.onDefeat.dropsBossPayout, true);
+  assert.equal(plan.finalBoss.onDefeat.suppressesGenericSpawnsDuringDeathSpectacle, true);
   assert.ok(plan.miniBosses.length >= 3);
   assert.ok(plan.miniBosses.every((miniBoss) => miniBoss.counterplay && miniBoss.rewardHook));
 });
@@ -131,4 +132,12 @@ test('runtime and design scripts consume the Level 1 balance pass helpers', () =
   const syntaxCheckRunner = readFileSync(repoPath('scripts/syntax-check.mjs'), 'utf8');
   assert.equal(syntaxCheckRunner.includes('apps/portal/src/hmh-level-one-balance-pass.mjs'), true, 'check runner should syntax-check the new module');
   assert.equal(syntaxCheckRunner.includes('tests/hmh-level-one-balance-pass.test.mjs'), true, 'check runner should syntax-check the new test');
+});
+
+test('generated Level 1 balance report exposes long-run elite-band values without undefined fields', () => {
+  const report = readFileSync(repoPath('docs/game-design/hard-money-heroes-level-1-balance-telemetry.md'), 'utf8');
+  assert.doesNotMatch(report, /undefined/);
+  assert.match(report, /Swarm fighter kills at elite band: 450/);
+  assert.match(report, /Swarm fighter target level at elite band: \d+/);
+  assert.match(report, /Normal drop chance: 0\.16 → 0\.345/);
 });

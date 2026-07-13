@@ -1,277 +1,156 @@
-// Lester's Arcade — Smart Contract Deploy Script for LitVM LiteForge Testnet
-//
-// Deploys the Lester's Arcade contract suite to LitVM LiteForge testnet (chain ID 4441).
-// Requires:
-//   - DEPLOYER_PRIVATE_KEY env var (the deployer signing secret; never logged)
-//   - RPC_URL env var (defaults to LitVM LiteForge testnet RPC)
-//   - Compiled contract ABIs + bytecodes (run `npm run contracts:compile` first)
-//
-// After deploy, this script prints the contract addresses. Paste them into
-// settlement.mjs LITVM_CONTRACT_ADDRESSES and flip SETTLEMENT_LIVE = true.
-//
-// Usage:
-//   DEPLOYER_PRIVATE_KEY=0x... npm run contracts:deploy
-//
-// IMPORTANT: This script sends real testnet transactions. It requires zkLTC
-// in the deployer wallet (free from the LitVM faucet). All actions are testnet-only.
-
-import { readFileSync, existsSync, writeFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+// Hardened free-ranked LitVM testnet deployment.
+// Dry-run is the default. Broadcasting requires BOTH --broadcast and the exact
+// LITVM_DEPLOY_CONFIRM value below. Never logs credential material.
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ethers } from 'ethers';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const DEPLOYER_PRIVATE_KEY = process.env.DEPLOYER_PRIVATE_KEY;
-const RPC_URL = process.env.RPC_URL || 'https://liteforge.rpc.caldera.xyz/http';
-const CHAIN_ID = 4441;
+const config = JSON.parse(readFileSync(join(root, 'contracts', 'deploy-config.testnet.json'), 'utf8'));
+const BROADCAST_CONFIRM = 'DEPLOY_HARDENED_FREE_RANKED_4441';
+const broadcast = process.argv.includes('--broadcast');
+const archivePath = join(root, 'docs', 'web3', 'archives', 'litvm-score-registry-2026-06-22-legacy-13.json');
+const manifestPath = join(root, 'docs', 'web3', 'hardened-ranked-deployment-manifest.json');
 
-if (!DEPLOYER_PRIVATE_KEY) {
-  console.error('ERROR: DEPLOYER_PRIVATE_KEY env var is required.');
-  console.error('Set it to the deployer wallet signing secret. The script only logs the derived address.');
-  console.error('Example: DEPLOYER_PRIVATE_KEY=0x... npm run contracts:deploy');
-  process.exit(1);
-}
-
-// Check if compiled contract artifacts exist
-const compiledDir = join(root, 'contracts', 'artifacts');
-const requiredContracts = [
-  'PlayerProfileRegistry.json',
-  'GameRegistry.json',
-  'ArcadePaymentRouter.json',
-  'ScoreSubmissionRegistry.json',
-  'SessionLedger.json',
-  'AchievementRegistry.json',
-  'TournamentPool.json',
-];
-
-for (const file of requiredContracts) {
-  if (!existsSync(join(compiledDir, file))) {
-    console.error(`ERROR: ${file} not found in contracts/compiled/. Run 'npm run contracts:compile' first.`);
-    process.exit(1);
-  }
-}
-
-console.log('=== Lester\'s Arcade Contract Deployment ===');
-console.log(`Network: LitVM LiteForge Testnet (chain ID ${CHAIN_ID})`);
-console.log(`RPC: ${RPC_URL}`);
-console.log('Deployer: resolved after wallet initialization');
-console.log('');
-
-// Load compiled contract artifacts
 function loadArtifact(name) {
-  const path = join(compiledDir, `${name}.json`);
-  const raw = JSON.parse(readFileSync(path, 'utf8'));
-  // Artifacts store bytecode under evm.bytecode.object (solc output)
-  const bytecode = raw.bytecode || raw.evm?.bytecode?.object;
-  if (!bytecode) throw new Error(`No bytecode found in ${name}.json`);
-  // Ensure bytecode has 0x prefix
-  return { abi: raw.abi, bytecode: bytecode.startsWith('0x') ? bytecode : '0x' + bytecode };
-}
-
-const artifacts = {
-  PlayerProfileRegistry: loadArtifact('PlayerProfileRegistry'),
-  GameRegistry: loadArtifact('GameRegistry'),
-  ArcadePaymentRouter: loadArtifact('ArcadePaymentRouter'),
-  ScoreSubmissionRegistry: loadArtifact('ScoreSubmissionRegistry'),
-  AchievementRegistry: loadArtifact('AchievementRegistry'),
-  TournamentPool: loadArtifact('TournamentPool'),
-  SessionLedger: loadArtifact('SessionLedger'),
-};
-
-console.log('All contract artifacts loaded successfully.');
-console.log('');
-
-// The actual deployment requires an EVM provider (ethers.js or viem).
-// Since this is a Node.js script, we use a dynamic import of ethers if available.
-// If ethers is not installed, we print the deployment plan for manual execution.
-
-async function deploy() {
-  let ethers;
-  try {
-    ethers = await import('ethers');
-  } catch {
-    console.error('ethers.js is not installed. Install it with: npm install ethers');
-    console.error('');
-    console.error('=== Manual Deployment Plan ===');
-    console.error('Deploy the following contracts in order on LitVM LiteForge testnet:');
-    console.error('');
-    let i = 1;
-    for (const [name, artifact] of Object.entries(artifacts)) {
-      console.error(`${i}. ${name}`);
-      console.error(`   ABI: contracts/compiled/${name}.json`);
-      console.error(`   Bytecode: ${artifact.bytecode?.slice(0, 20) || artifact.evm?.bytecode?.object?.slice(0, 20)}...`);
-      i += 1;
-    }
-    console.error('');
-    console.error('After deployment, paste the addresses into apps/portal/src/settlement.mjs:');
-    console.error('  LITVM_CONTRACT_ADDRESSES = {');
-    console.error('    playerProfileRegistry: "0x...",');
-    console.error('    scoreSubmissionRegistry: "0x...",');
-    console.error('    achievementRegistry: "0x...",');
-    console.error('    arcadePaymentRouter: "0x...",');
-    console.error('  };');
-    console.error('Then set SETTLEMENT_LIVE = true.');
-    process.exit(1);
-  }
-
-  const provider = new ethers.JsonRpcProvider(RPC_URL, CHAIN_ID);
-  const deployer = new ethers.Wallet(DEPLOYER_PRIVATE_KEY, provider);
-
-  console.log(`Deployer address: ${deployer.address}`);
-  const balance = await provider.getBalance(deployer.address);
-  console.log(`Deployer balance: ${ethers.formatEther(balance)} zkLTC`);
-
-  if (balance === 0n) {
-    console.error('ERROR: Deployer wallet has 0 zkLTC. Get testnet funds from the LitVM faucet.');
-    process.exit(1);
-  }
-
-  console.log('');
-  console.log('Deploying contracts...');
-
-  const addresses = {};
-
-  // 1. Deploy PlayerProfileRegistry
-  console.log('1/7: PlayerProfileRegistry...');
-  const playerProfileFactory = new ethers.ContractFactory(
-    artifacts.PlayerProfileRegistry.abi,
-    artifacts.PlayerProfileRegistry.bytecode,
-    deployer,
-  );
-  const playerProfiles = await playerProfileFactory.deploy();
-  await playerProfiles.waitForDeployment();
-  addresses.playerProfileRegistry = await playerProfiles.getAddress();
-  console.log(`   Deployed at: ${addresses.playerProfileRegistry}`);
-
-  // 2. Deploy GameRegistry
-  console.log('2/7: GameRegistry...');
-  const gameRegistryFactory = new ethers.ContractFactory(
-    artifacts.GameRegistry.abi,
-    artifacts.GameRegistry.bytecode,
-    deployer,
-  );
-  const gameRegistry = await gameRegistryFactory.deploy(deployer.address);
-  await gameRegistry.waitForDeployment();
-  addresses.gameRegistry = await gameRegistry.getAddress();
-  console.log(`   Deployed at: ${addresses.gameRegistry}`);
-
-  // 3. Deploy ArcadePaymentRouter (registry-derived routing; entry fees disabled by default)
-  console.log('3/7: ArcadePaymentRouter...');
-  const paymentRouterFactory = new ethers.ContractFactory(
-    artifacts.ArcadePaymentRouter.abi,
-    artifacts.ArcadePaymentRouter.bytecode,
-    deployer,
-  );
-  const paymentRouter = await paymentRouterFactory.deploy(
-    addresses.gameRegistry,
-    deployer.address,
-    deployer.address, // placeholder allowed payment token; WO-131 config replaces before approved deploy
-  );
-  await paymentRouter.waitForDeployment();
-  addresses.arcadePaymentRouter = await paymentRouter.getAddress();
-  console.log(`   Deployed at: ${addresses.arcadePaymentRouter}`);
-
-  // 4. Deploy ScoreSubmissionRegistry (needs deployer as trustedVerifier)
-  console.log('4/7: ScoreSubmissionRegistry...');
-  const scoreSubmissionFactory = new ethers.ContractFactory(
-    artifacts.ScoreSubmissionRegistry.abi,
-    artifacts.ScoreSubmissionRegistry.bytecode,
-    deployer,
-  );
-  const scoreSubmissions = await scoreSubmissionFactory.deploy(addresses.gameRegistry);
-  await scoreSubmissions.waitForDeployment();
-  addresses.scoreSubmissionRegistry = await scoreSubmissions.getAddress();
-  console.log(`   Deployed at: ${addresses.scoreSubmissionRegistry}`);
-
-  // 5. Deploy SessionLedger (needs gameRegistry + paymentRouter + entryToken)
-  console.log('5/7: SessionLedger...');
-  const sessionLedgerFactory = new ethers.ContractFactory(
-    artifacts.SessionLedger.abi,
-    artifacts.SessionLedger.bytecode,
-    deployer,
-  );
-  const sessionLedger = await sessionLedgerFactory.deploy(
-    addresses.gameRegistry,
-    addresses.arcadePaymentRouter,
-    deployer.address, // placeholder entry token (no real ERC-20 on testnet yet)
-  );
-  await sessionLedger.waitForDeployment();
-  addresses.sessionLedger = await sessionLedger.getAddress();
-  console.log(`   Deployed at: ${addresses.sessionLedger}`);
-
-  // 6. Deploy AchievementRegistry (needs sessionLedger)
-  console.log('6/7: AchievementRegistry...');
-  const achievementFactory = new ethers.ContractFactory(
-    artifacts.AchievementRegistry.abi,
-    artifacts.AchievementRegistry.bytecode,
-    deployer,
-  );
-  const achievements = await achievementFactory.deploy(addresses.sessionLedger);
-  await achievements.waitForDeployment();
-  addresses.achievementRegistry = await achievements.getAddress();
-  console.log(`   Deployed at: ${addresses.achievementRegistry}`);
-
-  // 7. Deploy TournamentPool
-  console.log('7/7: TournamentPool...');
-  const tournamentFactory = new ethers.ContractFactory(
-    artifacts.TournamentPool.abi,
-    artifacts.TournamentPool.bytecode,
-    deployer,
-  );
-  const tournaments = await tournamentFactory.deploy();
-  await tournaments.waitForDeployment();
-  addresses.tournamentPool = await tournaments.getAddress();
-  console.log(`   Deployed at: ${addresses.tournamentPool}`);
-
-  console.log('');
-  console.log('=== DEPLOYMENT COMPLETE ===');
-  console.log('');
-  console.log('Paste these addresses into apps/portal/src/settlement.mjs:');
-  console.log('');
-  console.log('export const LITVM_CONTRACT_ADDRESSES = Object.freeze({');
-  console.log(`  playerProfileRegistry: '${addresses.playerProfileRegistry}',`);
-  console.log(`  scoreSubmissionRegistry: '${addresses.scoreSubmissionRegistry}',`);
-  console.log(`  achievementRegistry: '${addresses.achievementRegistry}',`);
-  console.log(`  arcadePaymentRouter: '${addresses.arcadePaymentRouter}',`);
-  console.log(`});`);
-  console.log('');
-  console.log('Then set SETTLEMENT_LIVE = true.');
-  console.log('');
-
-  // Save deployment record
-  const deploymentRecord = {
-    network: 'LitVM LiteForge Testnet',
-    chainId: CHAIN_ID,
-    deployedAt: new Date().toISOString(),
-    deployer: deployer.address,
-    addresses,
+  const artifactPath = join(root, 'contracts', 'artifacts', `${name}.json`);
+  if (!existsSync(artifactPath)) throw new Error(`${name} artifact missing; run npm run contracts:compile`);
+  const artifact = JSON.parse(readFileSync(artifactPath, 'utf8'));
+  const object = artifact.bytecode || artifact.evm?.bytecode?.object;
+  const runtimeObject = artifact.deployedBytecode || artifact.evm?.deployedBytecode?.object;
+  if (!object) throw new Error(`${name} bytecode missing`);
+  const bytecode = object.startsWith('0x') ? object : `0x${object}`;
+  const deployedBytecode = runtimeObject ? (runtimeObject.startsWith('0x') ? runtimeObject : `0x${runtimeObject}`) : null;
+  return {
+    abi: artifact.abi,
+    bytecode,
+    deployedBytecode,
+    sha256: createHash('sha256').update(bytecode).digest('hex'),
   };
-  const recordPath = join(root, 'contracts', 'deployment-record.json');
-  writeFileSync(recordPath, JSON.stringify(deploymentRecord, null, 2));
-  console.log(`Deployment record saved to: contracts/deployment-record.json`);
-
-  // Auto-patch settlement.mjs LITVM_CONTRACT_ADDRESSES so the runtime points at
-  // the freshly deployed contracts without a manual copy/paste step.
-  try {
-    const settlementPath = join(root, 'apps', 'portal', 'src', 'settlement.mjs');
-    let settlementSrc = readFileSync(settlementPath, 'utf8');
-    const block = `export const LITVM_CONTRACT_ADDRESSES = Object.freeze({\n` +
-      `  playerProfileRegistry: '${addresses.playerProfileRegistry}',\n` +
-      `  scoreSubmissionRegistry: '${addresses.scoreSubmissionRegistry}',\n` +
-      `  achievementRegistry: '${addresses.achievementRegistry}',\n` +
-      `  arcadePaymentRouter: '${addresses.arcadePaymentRouter}',\n` +
-      `});`;
-    settlementSrc = settlementSrc.replace(
-      /export const LITVM_CONTRACT_ADDRESSES = Object\.freeze\(\{[\s\S]*?\}\);/,
-      block,
-    );
-    writeFileSync(settlementPath, settlementSrc);
-    console.log('Patched apps/portal/src/settlement.mjs with new addresses.');
-  } catch (err) {
-    console.warn('Could not auto-patch settlement.mjs:', err.message);
-  }
 }
 
-deploy().catch((err) => {
-  console.error('Deployment failed:', err);
-  process.exit(1);
+if (!existsSync(archivePath)) throw new Error('Legacy score archive missing; run npm run contracts:archive-legacy first.');
+const archive = JSON.parse(readFileSync(archivePath, 'utf8'));
+if (archive.recordCount !== config.oldDeployment.expectedScoreRows) {
+  throw new Error(`Legacy archive count ${archive.recordCount} does not match expected ${config.oldDeployment.expectedScoreRows}.`);
+}
+
+const artifacts = Object.freeze({
+  GameRegistry: loadArtifact('GameRegistry'),
+  PlayerProfileRegistry: loadArtifact('PlayerProfileRegistry'),
+  ScoreSubmissionRegistry: loadArtifact('ScoreSubmissionRegistry'),
 });
+const provider = new ethers.JsonRpcProvider(process.env.RPC_URL || config.rpcUrl, config.chainId);
+const network = await provider.getNetwork();
+if (Number(network.chainId) !== config.chainId) throw new Error(`Wrong chain ${network.chainId}; expected ${config.chainId}`);
+const pendingNonce = await provider.getTransactionCount(config.deployer, 'pending');
+const predicted = Object.freeze({
+  gameRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce }),
+  playerProfileRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce + 1 }),
+  scoreSubmissionRegistry: ethers.getCreateAddress({ from: config.deployer, nonce: pendingNonce + 2 }),
+});
+
+const unsignedFactories = {
+  GameRegistry: new ethers.ContractFactory(artifacts.GameRegistry.abi, artifacts.GameRegistry.bytecode),
+  PlayerProfileRegistry: new ethers.ContractFactory(artifacts.PlayerProfileRegistry.abi, artifacts.PlayerProfileRegistry.bytecode),
+  ScoreSubmissionRegistry: new ethers.ContractFactory(artifacts.ScoreSubmissionRegistry.abi, artifacts.ScoreSubmissionRegistry.bytecode),
+};
+const deployTransactions = [
+  { name: 'GameRegistry', nonce: pendingNonce, predictedAddress: predicted.gameRegistry, transaction: await unsignedFactories.GameRegistry.getDeployTransaction(config.operator) },
+  { name: 'PlayerProfileRegistry', nonce: pendingNonce + 1, predictedAddress: predicted.playerProfileRegistry, transaction: await unsignedFactories.PlayerProfileRegistry.getDeployTransaction() },
+  { name: 'ScoreSubmissionRegistry', nonce: pendingNonce + 2, predictedAddress: predicted.scoreSubmissionRegistry, transaction: await unsignedFactories.ScoreSubmissionRegistry.getDeployTransaction(predicted.gameRegistry, config.verifier) },
+];
+const contractRows = [];
+for (const row of deployTransactions) {
+  let gasEstimate = null;
+  try { gasEstimate = (await provider.estimateGas({ from: config.deployer, data: row.transaction.data })).toString(); } catch {}
+  contractRows.push({
+    name: row.name,
+    nonce: row.nonce,
+    predictedAddress: row.predictedAddress,
+    initCodeHash: ethers.keccak256(row.transaction.data),
+    runtimeCodeHash: artifacts[row.name].deployedBytecode ? ethers.keccak256(artifacts[row.name].deployedBytecode) : null,
+    artifactBytecodeSha256: artifacts[row.name].sha256,
+    gasEstimate,
+  });
+}
+const registryInterface = new ethers.Interface(artifacts.GameRegistry.abi);
+const gameId = ethers.id(config.game.slug);
+const postDeployTransactions = [
+  { nonce: pendingNonce + 3, method: 'registerGame', args: [config.game.slug, config.game.title, config.developerWallet, config.game.devBps, config.game.platformBps, config.game.liquidityBps, config.game.treasuryBps, config.game.entryFeeMicroUsdc] },
+  { nonce: pendingNonce + 4, method: 'confirmDevWallet', args: [gameId] },
+  { nonce: pendingNonce + 5, method: 'setPlayable', args: [gameId, true] },
+].map((row) => {
+  const data = registryInterface.encodeFunctionData(row.method, row.args);
+  return { ...row, to: predicted.gameRegistry, data, calldataHash: ethers.keccak256(data) };
+});
+const manifest = {
+  schemaVersion: 1,
+  status: 'UNSIGNED_DRY_RUN',
+  network: config.network,
+  chainId: config.chainId,
+  deployer: config.deployer,
+  observedPendingNonce: pendingNonce,
+  trustedVerifier: config.verifier,
+  contracts: contractRows,
+  postDeployTransactions,
+  excluded: ['PaymentRouter', 'ArcadePaymentRouter', 'SessionLedger', 'AchievementRegistry', 'TournamentPool', 'LestersArcadeCore'],
+  legacyArchive: { path: 'docs/web3/archives/litvm-score-registry-2026-06-22-legacy-13.json', totalSessions: archive.recordCount, checksum: archive.sha256 },
+  broadcastGuard: BROADCAST_CONFIRM,
+};
+writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+console.log(JSON.stringify(manifest, null, 2));
+
+if (!broadcast) {
+  console.log(`\nDRY RUN ONLY. Manifest written to ${manifestPath}. No transaction was signed or broadcast.`);
+  process.exit(0);
+}
+if (process.env.LITVM_DEPLOY_CONFIRM !== BROADCAST_CONFIRM) {
+  throw new Error(`Broadcast blocked. Set LITVM_DEPLOY_CONFIRM=${BROADCAST_CONFIRM} after manifest approval.`);
+}
+if (!process.env.DEPLOYER_PRIVATE_KEY) throw new Error('DEPLOYER_PRIVATE_KEY is required for broadcast.');
+const signer = new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider);
+if (signer.address.toLowerCase() !== config.deployer.toLowerCase()) throw new Error('Configured deployer does not match signing wallet.');
+if (await provider.getTransactionCount(config.deployer, 'pending') !== manifest.observedPendingNonce) throw new Error('Deployer nonce changed after manifest generation; regenerate and re-approve.');
+if (config.operator.toLowerCase() !== signer.address.toLowerCase() || config.developerWallet.toLowerCase() !== signer.address.toLowerCase()) {
+  throw new Error('Atomic deployment requires deployer=operator=developerWallet for registration confirmation.');
+}
+
+async function deploy(name, args) {
+  const factory = new ethers.ContractFactory(artifacts[name].abi, artifacts[name].bytecode, signer);
+  const contract = await factory.deploy(...args);
+  await contract.waitForDeployment();
+  return contract;
+}
+
+const gameRegistry = await deploy('GameRegistry', [config.operator]);
+const profiles = await deploy('PlayerProfileRegistry', []);
+const scores = await deploy('ScoreSubmissionRegistry', [await gameRegistry.getAddress(), config.verifier]);
+await (await gameRegistry.registerGame(config.game.slug, config.game.title, config.developerWallet, config.game.devBps, config.game.platformBps, config.game.liquidityBps, config.game.treasuryBps, config.game.entryFeeMicroUsdc)).wait();
+await (await gameRegistry.confirmDevWallet(gameId)).wait();
+await (await gameRegistry.setPlayable(gameId, true)).wait();
+
+const registered = await gameRegistry.getGame(gameId);
+if (!registered.exists || !registered.playable || registered.devWallet.toLowerCase() !== config.developerWallet.toLowerCase()) throw new Error('Post-deploy GameRegistry read-back failed.');
+if ((await scores.gameRegistry()).toLowerCase() !== (await gameRegistry.getAddress()).toLowerCase()) throw new Error('Score registry wiring mismatch.');
+if ((await scores.trustedVerifier()).toLowerCase() !== config.verifier.toLowerCase()) throw new Error('Verifier wiring mismatch.');
+
+const record = {
+  schemaVersion: 2,
+  network: config.network,
+  chainId: config.chainId,
+  deployedAt: new Date().toISOString(),
+  deployer: signer.address,
+  mode: 'free-ranked-verified',
+  addresses: {
+    gameRegistry: await gameRegistry.getAddress(),
+    playerProfileRegistry: await profiles.getAddress(),
+    scoreSubmissionRegistry: await scores.getAddress(),
+  },
+  gameId,
+  oldDeployment: config.oldDeployment,
+};
+writeFileSync(join(root, 'contracts', 'deployment-record.hardened.json'), `${JSON.stringify(record, null, 2)}\n`);
+console.log(JSON.stringify(record, null, 2));

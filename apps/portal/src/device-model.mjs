@@ -109,7 +109,7 @@ export function buildTouchControlLayout({ leftHanded = false, opacity = 0.4, ori
     floatingOrigins: true,
     moveStick: Object.freeze({ side: moveSide, zone: `bottom-${moveSide}`, minTouchPx: 96 }),
     aimStick: Object.freeze({ side: aimSide, zone: `bottom-${aimSide}`, minTouchPx: 96 }),
-    actionCluster: Object.freeze({ side: aimSide, zone: `${aimSide}-thumb arc`, buttons: Object.freeze(['grenade']), minButtonPx: 56 }),
+    actionCluster: Object.freeze({ side: aimSide, zone: `${aimSide}-thumb arc`, buttons: Object.freeze(['dash', 'grenade']), minButtonPx: 56 }),
     removedMobileControls: Object.freeze(['powerUpButton']),
   });
 }

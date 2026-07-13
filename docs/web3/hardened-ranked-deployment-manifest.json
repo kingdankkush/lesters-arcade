@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "status": "UNSIGNED_DRY_RUN",
+  "network": "LitVM LiteForge Testnet",
+  "chainId": 4441,
+  "deployer": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "observedPendingNonce": 30,
+  "trustedVerifier": "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+  "contracts": [
+    {
+      "name": "GameRegistry",
+      "nonce": 30,
+      "predictedAddress": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
+      "initCodeHash": "0x2e7f690240615ed9ab2d3e0334d5920e65ec6e59be058183a089f230f4c2c199",
+      "runtimeCodeHash": null,
+      "artifactBytecodeSha256": "9c3741885965e3391ffa679a9ce0d7a9aa8f1469ebb7ac58947b96e7402d2079",
+      "gasEstimate": "1249019"
+    },
+    {
+      "name": "PlayerProfileRegistry",
+      "nonce": 31,
+      "predictedAddress": "0xd49EdAD8c5247ce99D12e70a95293291d2Ee191C",
+      "initCodeHash": "0x81af5c5703ceba4d9524494f31a4bfd311f3dbf5b89dec4a9e3e268a22d127d2",
+      "runtimeCodeHash": null,
+      "artifactBytecodeSha256": "2f5020062ff0e90c9dabd254c7387a433524e386ed6e413242b43f9fcad1df67",
+      "gasEstimate": "1036697"
+    },
+    {
+      "name": "ScoreSubmissionRegistry",
+      "nonce": 32,
+      "predictedAddress": "0x55D37C5516F17e12bBd7Ec9ab520D10Cc5098782",
+      "initCodeHash": "0x75776659204c38bfaad168a8110e946b76f7816a545ea8621324ecac388a2f6e",
+      "runtimeCodeHash": null,
+      "artifactBytecodeSha256": "d4c566e8dcc7989de08a57a3ccc08732dca9e9eb7b90581e9433d8f88ee08e8d",
+      "gasEstimate": "1591221"
+    }
+  ],
+  "postDeployTransactions": [
+    {
+      "nonce": 33,
+      "method": "registerGame",
+      "args": [
+        "lester-blaster",
+        "Hard Money Heroes",
+        "0x24501ad94A9245DC88Fb9546929cDA10b91420d4",
+        7500,
+        2500,
+        0,
+        0,
+        0
+      ],
+      "to": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
+      "data": "0xd15162130000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000014000000000000000000000000024501ad94a9245dc88fb9546929cda10b91420d40000000000000000000000000000000000000000000000000000000000001d4c00000000000000000000000000000000000000000000000000000000000009c4000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e6c65737465722d626c6173746572000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001148617264204d6f6e6579204865726f6573000000000000000000000000000000",
+      "calldataHash": "0xae5be3325d6c2dba5592325f721838b00211124ecbedb4a208ddcdbfb55cd0d7"
+    },
+    {
+      "nonce": 34,
+      "method": "confirmDevWallet",
+      "args": [
+        "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e"
+      ],
+      "to": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
+      "data": "0x33cf3157545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+      "calldataHash": "0x348ca2490f19fc5e821686d436abafece6994adb48a3d35e2c4d0dd1f11928a3"
+    },
+    {
+      "nonce": 35,
+      "method": "setPlayable",
+      "args": [
+        "0x545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e",
+        true
+      ],
+      "to": "0x5c53432CEf0Cf023b46Be522888330b07f52f33E",
+      "data": "0x4ea28ded545dd61662e9dc794369142dd2768078f04eb05c60daec6fe35ec6b9f854205e0000000000000000000000000000000000000000000000000000000000000001",
+      "calldataHash": "0x6aecfd9ab7829bd54e270aaf00e67eaddf132034f1845628f03b8a56f6e530c8"
+    }
+  ],
+  "excluded": [
+    "PaymentRouter",
+    "ArcadePaymentRouter",
+    "SessionLedger",
+    "AchievementRegistry",
+    "TournamentPool",
+    "LestersArcadeCore"
+  ],
+  "legacyArchive": {
+    "path": "docs/web3/archives/litvm-score-registry-2026-06-22-legacy-13.json",
+    "totalSessions": 13,
+    "checksum": "c5ee652e29b183d77a3a2c98c7a8e9839f15efb73c334ca200aecf86d8522574"
+  },
+  "broadcastGuard": "DEPLOY_HARDENED_FREE_RANKED_4441"
+}

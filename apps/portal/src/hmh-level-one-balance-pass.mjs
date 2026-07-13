@@ -158,13 +158,13 @@ export function buildLevelOneBossChoreographyPlan() {
     ]),
     finalBoss: Object.freeze({
       poiId: 'rugpull-gulch-boss-yard',
-      title: 'Bandit Captain / Rugpull Baron Proxy',
+      title: 'The Rug Pull Baron',
       phases: Object.freeze([
-        Object.freeze({ id: 'gate-warning', hpPct: [100, 66], telegraphFrames: 60, addWaveSuppression: true, pattern: 'rifle fan + warning sign tell', counterplay: 'use boss gate/warning sign lane to read volleys' }),
-        Object.freeze({ id: 'panic-crossfire', hpPct: [66, 33], telegraphFrames: 54, addWaveSuppression: false, pattern: 'short guard pair then crossfire', counterplay: 'clear guards before pushing extraction lane' }),
-        Object.freeze({ id: 'extraction-break', hpPct: [33, 0], telegraphFrames: 72, addWaveSuppression: true, pattern: 'long windup, fewer adds, stronger boss shots', counterplay: 'survive the tell, then punish during recovery' }),
+        Object.freeze({ id: 'gate-warning', hpPct: [100, 66], telegraphFrames: 60, addWaveSuppression: true, pattern: 'whale dump fan + warning sign tell', counterplay: 'use the boss gate lane to read and sidestep the deliberate fan' }),
+        Object.freeze({ id: 'panic-crossfire', hpPct: [66, 33], telegraphFrames: 54, addWaveSuppression: false, pattern: 'rug-pull chain + guard crossfire', counterplay: 'clear the guard pair before the chain closes the safe lane' }),
+        Object.freeze({ id: 'extraction-break', hpPct: [33, 0], telegraphFrames: 72, addWaveSuppression: true, pattern: 'liquidation wave + punish recovery', counterplay: 'dash through the long tell, then punish during recovery' }),
       ]),
-      onDefeat: Object.freeze({ unlocksGate: true, activatesExtractionFlare: true, suppressesGenericSpawns: true }),
+      onDefeat: Object.freeze({ continuesSurvival: true, dropsBossPayout: true, suppressesGenericSpawnsDuringDeathSpectacle: true }),
     }),
   });
 }
@@ -232,7 +232,8 @@ export function validateLevelOneBalancePass() {
   if (snapshot.mode !== 'open-ended-survival') errors.push('Level 1 must be open-ended survival');
   if (snapshot.checkpoints.at(-1).director.maxEnemiesOnMap < 125) errors.push('elite-band pressure needs dense but continuous swarms');
   if (snapshot.xpPacing.swarmFighter.targetLevelAtEliteBand < 18) errors.push('swarm fighter should keep progressing into the elite band');
-  if (!snapshot.bossChoreography.finalBoss.onDefeat.unlocksGate) errors.push('final boss must unlock the authored gate');
+  if (!snapshot.bossChoreography.finalBoss.onDefeat.continuesSurvival) errors.push('signature boss defeat must continue open-ended survival');
+  if (!snapshot.bossChoreography.finalBoss.onDefeat.dropsBossPayout) errors.push('signature boss defeat must drop its payout');
   if (!snapshot.upgradeVariety.mechanicCards.some((card) => card.id === 'grenade-damage')) errors.push('grenade branch upgrade card missing');
   return Object.freeze({ valid: errors.length === 0, errors: Object.freeze(errors) });
 }

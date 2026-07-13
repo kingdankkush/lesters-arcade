@@ -22,13 +22,16 @@
       "id": "dimensions",
       "status": "pass",
       "canvases": {
-        "96x96": 16
+        "136x136": 16
       }
     },
     {
       "id": "pivot-stability",
       "status": "pass",
-      "maxDelta": 0
+      "anchor": "center-bottom",
+      "frameHeights": [
+        136
+      ]
     },
     {
       "id": "tell-duration",
@@ -61,10 +64,47 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2842,
+        "offPaletteCount": 39,
+        "offPaletteRatio": 0.0137,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 22,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 9,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#7adeea",
+            "count": 5,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          },
+          {
+            "hex": "#724444",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 54.08
+          },
+          {
+            "hex": "#996864",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#a85f88",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 54.67
+          }
+        ]
       }
     },
     {
@@ -81,10 +121,47 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2842,
+        "offPaletteCount": 39,
+        "offPaletteRatio": 0.0137,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 22,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 9,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#7adeea",
+            "count": 5,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          },
+          {
+            "hex": "#724444",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 54.08
+          },
+          {
+            "hex": "#996864",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#a85f88",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 54.67
+          }
+        ]
       }
     },
     {
@@ -101,10 +178,35 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2658,
+        "offPaletteCount": 19,
+        "offPaletteRatio": 0.0071,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 7,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 5,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#7adeea",
+            "count": 4,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          },
+          {
+            "hex": "#996864",
+            "count": 3,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          }
+        ]
       }
     },
     {
@@ -121,10 +223,35 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2658,
+        "offPaletteCount": 19,
+        "offPaletteRatio": 0.0071,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 7,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 5,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#7adeea",
+            "count": 4,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          },
+          {
+            "hex": "#996864",
+            "count": 3,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          }
+        ]
       }
     },
     {
@@ -141,10 +268,47 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2108,
+        "offPaletteCount": 16,
+        "offPaletteRatio": 0.0076,
+        "offendingHexes": [
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#24b2ad",
+            "count": 4,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#a85f88",
+            "count": 2,
+            "nearest": "#c38d7c",
+            "distance": 54.67
+          },
+          {
+            "hex": "#7adeea",
+            "count": 2,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          },
+          {
+            "hex": "#996864",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#895053",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 52.41
+          }
+        ]
       }
     },
     {
@@ -161,10 +325,47 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2108,
+        "offPaletteCount": 16,
+        "offPaletteRatio": 0.0076,
+        "offendingHexes": [
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#24b2ad",
+            "count": 4,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#a85f88",
+            "count": 2,
+            "nearest": "#c38d7c",
+            "distance": 54.67
+          },
+          {
+            "hex": "#7adeea",
+            "count": 2,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          },
+          {
+            "hex": "#996864",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#895053",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 52.41
+          }
+        ]
       }
     },
     {
@@ -181,10 +382,41 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2696,
+        "offPaletteCount": 15,
+        "offPaletteRatio": 0.0056,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 6,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#724444",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 54.08
+          },
+          {
+            "hex": "#996864",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#7adeea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     },
     {
@@ -201,10 +433,41 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2696,
+        "offPaletteCount": 15,
+        "offPaletteRatio": 0.0056,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 6,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#724444",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 54.08
+          },
+          {
+            "hex": "#996864",
+            "count": 1,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#7adeea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     },
     {
@@ -221,10 +484,23 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2850,
+        "offPaletteCount": 8,
+        "offPaletteRatio": 0.0028,
+        "offendingHexes": [
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#24b2ad",
+            "count": 2,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          }
+        ]
       }
     },
     {
@@ -241,10 +517,23 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2850,
+        "offPaletteCount": 8,
+        "offPaletteRatio": 0.0028,
+        "offendingHexes": [
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#24b2ad",
+            "count": 2,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          }
+        ]
       }
     },
     {
@@ -261,10 +550,41 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2623,
+        "offPaletteCount": 14,
+        "offPaletteRatio": 0.0053,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 5,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 5,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#996864",
+            "count": 2,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#895053",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 52.41
+          },
+          {
+            "hex": "#7adeea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     },
     {
@@ -281,10 +601,41 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2623,
+        "offPaletteCount": 14,
+        "offPaletteRatio": 0.0053,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 5,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 5,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#996864",
+            "count": 2,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#895053",
+            "count": 1,
+            "nearest": "#8c6724",
+            "distance": 52.41
+          },
+          {
+            "hex": "#7adeea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     },
     {
@@ -301,10 +652,35 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2042,
+        "offPaletteCount": 18,
+        "offPaletteRatio": 0.0088,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 9,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#996864",
+            "count": 2,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#7adeea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     },
     {
@@ -321,10 +697,35 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2042,
+        "offPaletteCount": 18,
+        "offPaletteRatio": 0.0088,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 9,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 6,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#996864",
+            "count": 2,
+            "nearest": "#c38d7c",
+            "distance": 60.9
+          },
+          {
+            "hex": "#7adeea",
+            "count": 1,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     },
     {
@@ -341,10 +742,35 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2702,
+        "offPaletteCount": 22,
+        "offPaletteRatio": 0.0081,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 9,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 7,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#a85f88",
+            "count": 4,
+            "nearest": "#c38d7c",
+            "distance": 54.67
+          },
+          {
+            "hex": "#7adeea",
+            "count": 2,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     },
     {
@@ -361,10 +787,35 @@
       },
       "palette": {
         "status": "pass",
-        "opaqueCount": 1726,
-        "offPaletteCount": 0,
-        "offPaletteRatio": 0,
-        "offendingHexes": []
+        "opaqueCount": 2702,
+        "offPaletteCount": 22,
+        "offPaletteRatio": 0.0081,
+        "offendingHexes": [
+          {
+            "hex": "#24b2ad",
+            "count": 9,
+            "nearest": "#52bed8",
+            "distance": 64.1
+          },
+          {
+            "hex": "#3395af",
+            "count": 7,
+            "nearest": "#4e82d8",
+            "distance": 52.64
+          },
+          {
+            "hex": "#a85f88",
+            "count": 4,
+            "nearest": "#c38d7c",
+            "distance": 54.67
+          },
+          {
+            "hex": "#7adeea",
+            "count": 2,
+            "nearest": "#8cb7ff",
+            "distance": 47.81
+          }
+        ]
       }
     }
   ]

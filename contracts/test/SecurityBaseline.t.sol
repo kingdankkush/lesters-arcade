@@ -171,7 +171,7 @@ contract SecurityBaselineTest {
     }
 
     function testScoreSubmissionRejectsOutOfBoundsScore() public {
-        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry));
+        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), vm.addr(DEV_SIGNER_PK));
         bytes32[] memory achievements = new bytes32[](0);
 
         vm.expectRevert();
@@ -188,7 +188,7 @@ contract SecurityBaselineTest {
     }
 
     function testScoreSubmissionRejectsUnplayableGameAndTooManyAchievements() public {
-        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry));
+        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), vm.addr(DEV_SIGNER_PK));
         bytes32[] memory achievements = new bytes32[](33);
 
         vm.expectRevert(bytes("TOO_MANY_ACHIEVEMENTS"));
@@ -202,6 +202,46 @@ contract SecurityBaselineTest {
         scores.submitSession(
             keccak256(abi.encodePacked("session-missing")), missingGameId, 100, 1, 1, 60, bytes32(0), none
         );
+    }
+
+    function testVerifierAttestationMarksSessionVerifiedAndBindsEnvelope() public {
+        address verifier = vm.addr(DEV_SIGNER_PK);
+        address player = vm.addr(PLAYER_PK);
+        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), verifier);
+        bytes32[] memory achievements = new bytes32[](1);
+        achievements[0] = keccak256("first-blood");
+        ScoreSubmissionRegistry.VerifiedRun memory run = ScoreSubmissionRegistry.VerifiedRun({
+            sessionId: keccak256("verified-session"), gameId: gameId, score: 12345, kills: 12, maxCombo: 7,
+            survivalSeconds: 90, bossId: keccak256("rug-pull-baron"),
+            envelopeHash: keccak256("canonical-envelope"), deadline: uint64(block.timestamp + 1 hours)
+        });
+        bytes32 digest = scores.attestationDigest(run, player, keccak256(abi.encode(achievements)));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(DEV_SIGNER_PK, digest);
+
+        vm.prank(player);
+        scores.submitVerifiedSession(run, achievements, v, r, s);
+
+        ScoreSubmissionRegistry.ScoreRecord memory record = scores.getSession(run.sessionId);
+        require(record.verified, "session must be verified");
+        require(record.player == player, "attestation must bind player");
+        require(scores.sessionEnvelopeHash(run.sessionId) == run.envelopeHash, "envelope hash mismatch");
+    }
+
+    function testVerifierAttestationRejectsWrongSigner() public {
+        address player = vm.addr(PLAYER_PK);
+        ScoreSubmissionRegistry scores = new ScoreSubmissionRegistry(address(registry), vm.addr(DEV_SIGNER_PK));
+        bytes32[] memory achievements = new bytes32[](0);
+        ScoreSubmissionRegistry.VerifiedRun memory run = ScoreSubmissionRegistry.VerifiedRun({
+            sessionId: keccak256("forged-session"), gameId: gameId, score: 100, kills: 1, maxCombo: 1,
+            survivalSeconds: 10, bossId: bytes32(0), envelopeHash: keccak256("forged-envelope"),
+            deadline: uint64(block.timestamp + 1 hours)
+        });
+        bytes32 digest = scores.attestationDigest(run, player, keccak256(abi.encode(achievements)));
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(0xBAD5A11, digest);
+
+        vm.prank(player);
+        vm.expectRevert(bytes("INVALID_ATTESTATION"));
+        scores.submitVerifiedSession(run, achievements, v, r, s);
     }
 
     function testPaymentRouterSessionLedgerCanOnlyBeSetOnce() public {

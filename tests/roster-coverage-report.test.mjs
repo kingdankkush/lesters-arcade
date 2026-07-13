@@ -55,7 +55,7 @@ test('runtime-derived readability remains marked for actors that are not yet nat
   assert.match(slippageTell.matchedState, /^derived:/);
 });
 
-test('Level 1 ship-scope rows are derived from runtime catalog and boss proxy data', () => {
+test('Level 1 ship-scope rows include curated boss roster and WO-110 signature boss data', () => {
   const report = buildReport();
   const ids = new Set(report.levelOneShipScope.map((row) => row.enemyId));
   const actorKeys = new Set(report.levelOneShipScope.map((row) => row.actorKey));
@@ -63,8 +63,9 @@ test('Level 1 ship-scope rows are derived from runtime catalog and boss proxy da
   assert.ok(ids.has('claim-jumper'));
   assert.ok(ids.has('gas-beast'));
   assert.ok(ids.has('bandit-captain'));
-  assert.ok(actorKeys.has('gas-beast-tank'), 'boss proxy gas-beast-tank should be in the ship-scope matrix');
-  assert.ok(actorKeys.has('evil-banker-ranged'), 'boss proxy evil-banker-ranged should be in the ship-scope matrix');
+  assert.ok(ids.has('rug-pull-baron'));
+  assert.ok(actorKeys.has('gas-beast-tank'), 'mini-boss gas-beast-tank should be in the ship-scope matrix');
+  assert.ok(actorKeys.has('rug-pull-baron'), 'WO-110 signature boss should be in the ship-scope matrix');
   assert.equal(report.scopeRuling.recommendedKeep.includes('gas-beast-tank'), true);
   assert.equal(report.scopeRuling.deferred.includes('chain-reaper-boss'), true);
 });

@@ -21,7 +21,7 @@ test('WO-33 boss balance cards cover all Level 1 boss-class runtime actors', () 
   assert.equal(ids.includes('claim-jumper-sheriff'), true);
   assert.equal(ids.includes('scam-cult-zealot'), true);
   assert.equal(ids.includes('gas-beast'), true);
-  assert.equal(ids.includes('bandit-captain'), true);
+  assert.equal(ids.includes('rug-pull-baron'), true);
   assert.equal(cards.filter((card) => card.role === 'mini-boss').length, 3);
   assert.equal(cards.filter((card) => card.role === 'boss').length, 1);
 });

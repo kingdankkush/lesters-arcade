@@ -1,6 +1,6 @@
 import {
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
-  HMH_LEVEL_ONE_BOSS_PROXY_ROSTER,
+  HMH_LEVEL_ONE_BOSS_ROSTER,
   LESTER_BLASTER_ENEMY_CATALOG,
 } from './arcade-core.mjs';
 import {
@@ -85,7 +85,7 @@ function buildMajorBossBalanceCard(rosterEntry, { plan, schedule }) {
   });
 }
 
-export function buildBossBalanceCards({ roster = HMH_LEVEL_ONE_BOSS_PROXY_ROSTER, schedule = HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE, plan = buildLevelOneBossChoreographyPlan() } = {}) {
+export function buildBossBalanceCards({ roster = HMH_LEVEL_ONE_BOSS_ROSTER, schedule = HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE, plan = buildLevelOneBossChoreographyPlan() } = {}) {
   const miniEntries = roster.filter((entry) => entry.role === 'mini-boss');
   const bossEntry = roster.find((entry) => entry.role === 'boss');
   const cards = [

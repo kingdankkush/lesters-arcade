@@ -67,6 +67,18 @@ test('WO-26 approved faster arcade boss beat schedule is data-only and has no 8-
   assert.equal(beats.some((beat) => beat.startSeconds === 480), false);
 });
 
+test('Level 1 runtime consumes every scheduled major rematch and keeps phase choreography active', () => {
+  const spawnStart = mainSource.indexOf('function spawnLevelOneBossBeat(');
+  const phaseStart = mainSource.indexOf('function updateLevelOneSignatureBoss(');
+  const spawnBlock = mainSource.slice(spawnStart, mainSource.indexOf('\nfunction ', spawnStart + 1));
+  const phaseBlock = mainSource.slice(phaseStart, mainSource.indexOf('\nfunction ', phaseStart + 1));
+
+  assert.ok(HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE.filter((beat) => beat.type === 'major-boss' || beat.type === 'major-rematch').length >= 4);
+  assert.match(spawnBlock, /const isMajorBossBeat = beat\.type === 'major-boss' \|\| beat\.type === 'major-rematch'/);
+  assert.match(spawnBlock, /if \(isMajorBossBeat && majorBoss\)/);
+  assert.doesNotMatch(phaseBlock, /combat\.scriptedBossTriggered && !combat\.bossDefeated/);
+});
+
 test('WO-26 runtime HUD is count-up survival with no target denominator or survival-wall snapshot', () => {
   assert.match(mainSource, /label:\s*'SURVIVED'/);
   assert.equal(mainSource.includes("label: 'SURVIVE', value: `${formatSeconds(combat.elapsedGameSeconds)} /"), false);

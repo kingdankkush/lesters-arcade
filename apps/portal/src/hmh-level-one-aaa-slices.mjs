@@ -54,8 +54,8 @@ export const HMH_LEVEL_ONE_AAA_ROUTE_ACTS = freeze([
   }),
   routeAct('act-04-rugpull-boss-extract', 'Rugpull Boss Yard / Extraction Reveal', [435, 480], ['rugpull-gulch-boss-yard', 'ltc-road-extraction'], {
     lockPolicy: 'boss-yard-lock',
-    cameraGoal: 'boss gate and extraction flares are unmistakable; road out is blocked until the boss proxy dies',
-    playerPromise: 'survive final lock, kill the boss, then follow cyan/gold flares to the extraction pad',
+    cameraGoal: 'boss gate and Rug Pull Baron telegraphs are unmistakable without implying the run ends on victory',
+    playerPromise: 'survive the signature boss, claim the payout, then continue the open-ended run',
     artFocus: ['cohesive-boss-yard-gate', 'cohesive-extraction-flare-road'],
     interactivityFocus: ['boss gate', 'extraction cue'],
   }),

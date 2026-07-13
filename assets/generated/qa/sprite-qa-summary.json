@@ -1,19 +1,19 @@
 {
   "generatedBy": "scripts/sprite-qa.mjs",
   "actorCount": 8,
-  "passCount": 8,
-  "warnCount": 0,
+  "passCount": 4,
+  "warnCount": 4,
   "failCount": 0,
   "reports": [
     {
       "actorKey": "lester",
-      "status": "pass",
+      "status": "warn",
       "jsonPath": "assets/generated/qa/lester-qa.json",
       "pngPath": "assets/generated/qa/lester-qa.png"
     },
     {
       "actorKey": "lilly",
-      "status": "pass",
+      "status": "warn",
       "jsonPath": "assets/generated/qa/lilly-qa.json",
       "pngPath": "assets/generated/qa/lilly-qa.png"
     },
@@ -37,7 +37,7 @@
     },
     {
       "actorKey": "gas-fee-wisp",
-      "status": "pass",
+      "status": "warn",
       "jsonPath": "assets/generated/qa/gas-fee-wisp-qa.json",
       "pngPath": "assets/generated/qa/gas-fee-wisp-qa.png"
     },
@@ -49,7 +49,7 @@
     },
     {
       "actorKey": "gas-beast-tank",
-      "status": "pass",
+      "status": "warn",
       "jsonPath": "assets/generated/qa/gas-beast-tank-qa.json",
       "pngPath": "assets/generated/qa/gas-beast-tank-qa.png"
     }
