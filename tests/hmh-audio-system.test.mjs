@@ -73,3 +73,30 @@ test('WO-41 registry keeps existing CC0 sample manifest cues sample-preferred', 
     assert.equal(HMH_SFX_CUE_REGISTRY[cue].samplePreferred, true, `${cue} should prefer the CC0 sample`);
   }
 });
+
+test('SHIP audio inventory provides at least 64 playable and meaningfully distinct cues', () => {
+  const entries = Object.entries(HMH_SFX_CUE_REGISTRY);
+  assert.ok(entries.length >= 64, `expected >=64 cues, received ${entries.length}`);
+  const required = [
+    'menu-confirm', 'menu-back', 'pause', 'resume', 'low-health',
+    'settler-fire', 'auto-miner-fire', 'hash-rail-charge', 'hash-rail-fire',
+    'spread-ltc-fire', 'litecoin-blade-swing', 'litecoin-blade-hit',
+    'reload-start', 'reload-complete', 'empty-clip', 'critical-hit',
+    'shield-hit', 'shield-break', 'elite-spawn', 'boss-phase', 'boss-death',
+    'health-pickup', 'ammo-pickup', 'shield-pickup', 'one-up-pickup',
+    'upgrade-offer', 'upgrade-pick', 'achievement-unlock', 'wave-start',
+    'wave-clear', 'extraction-ready', 'extraction-complete', 'victory',
+  ];
+  for (const cue of required) assert.ok(HMH_SFX_CUE_REGISTRY[cue], `missing ${cue}`);
+  const families = new Set(entries.map(([, spec]) => spec.family));
+  assert.ok(families.size >= 9, `expected broad family coverage, received ${families.size}`);
+  const signatures = new Set(entries.map(([, spec]) => `${spec.synth}:${spec.tone.join('/')}:${spec.cooldownMs}`));
+  assert.ok(signatures.size >= 52, `expected >=52 distinct cue signatures, received ${signatures.size}`);
+});
+
+test('SHIP runtime routes major gameplay moments into the expanded cue inventory', () => {
+  const main = repoText('apps/portal/main.js');
+  for (const cue of ['settler-fire', 'auto-miner-fire', 'hash-rail-fire', 'spread-ltc-fire', 'litecoin-blade-swing', 'reload-start', 'reload-complete', 'pause', 'resume', 'boss-phase', 'boss-death', 'upgrade-offer', 'upgrade-pick', 'low-health']) {
+    assert.match(main, new RegExp(`['"]${cue}['"]`), `runtime missing ${cue}`);
+  }
+});

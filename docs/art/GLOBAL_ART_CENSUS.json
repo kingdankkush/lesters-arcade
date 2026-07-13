@@ -2,7 +2,7 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 16763,
+    "totalAssets": 15623,
     "totalActors": 73,
     "layerCount": 8,
     "runtimeActorCount": 38,
@@ -13,16 +13,17 @@
     "runtimeAutoRepairedZeroAnimationActorCount": 0,
     "runtimeDeferredOrPurgedZeroAnimationActorCount": 0,
     "runtimeUnresolvedZeroAnimationActorCount": 0,
-    "complianceScore": 80
+    "complianceScore": 98
   },
   "layers": {
     "runtimeAnimatedRoster": {
       "id": "runtimeAnimatedRoster",
       "label": "Runtime animated roster",
       "manifestId": "hmh-animated-roster",
-      "sourcePolicy": "Runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
+      "sourcePolicy": "Repo-owned runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 38,
       "assetCount": 15299,
+      "policyCompliantAssetCount": 15299,
       "animationStateCount": 294,
       "completeActorCount": 34,
       "partialActorCount": 4,
@@ -131,20 +132,20 @@
       "id": "curatedLevelKit",
       "label": "Curated Level 1 kit",
       "manifestId": "hmh-curated-level-kit-v1",
-      "sourcePolicy": "Justin-curated approved assets only; old editor/runtime sprite library is intentionally ignored.",
-      "assetCount": 1216,
+      "sourcePolicy": "curated approved runtime exact set; raw generation sources are vault-only",
+      "assetCount": 76,
       "actorCount": 0,
       "animatedAssetCount": 0,
-      "policyCompliantAssetCount": 1216,
+      "policyCompliantAssetCount": 76,
       "sampleKeys": [
-        "level-1/building/exterior",
-        "level-1/building/ghost-boarded-storefront",
-        "level-1/building/ghost-saloon-front",
-        "level-1/building/house-details",
-        "level-1/building/hunter-0",
-        "level-1/building/hunter-02",
-        "level-1/building/industrial-warehouse-facade",
-        "level-1/building/innercity-billboard-frame"
+        "curated-ground/dirt-tiles-w-trans/00-00",
+        "curated-ground/dirt-tiles/00-00",
+        "curated-ground/dirt-tiles/00-01",
+        "curated-ground/dirt-tiles/00-03",
+        "curated-ground/grass-tiles/00-00",
+        "curated-ground/grass-tiles/00-01",
+        "curated-ground/rock-cliffs/01-00",
+        "curated-ground/sand-tiles/00-00"
       ],
       "notes": [
         "Justin-curated approved assets only; legacy editor sprite library is intentionally excluded."
@@ -194,7 +195,7 @@
     }
   },
   "scorecard": {
-    "overallScore": 80,
+    "overallScore": 98,
     "categories": {
       "animationCoverage": {
         "score": 93,
@@ -207,8 +208,8 @@
         ]
       },
       "sourcePolicy": {
-        "score": 9,
-        "summary": "1464/16763 counted assets carry repo-owned/original/curated policy text",
+        "score": 100,
+        "summary": "15623/15623 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {

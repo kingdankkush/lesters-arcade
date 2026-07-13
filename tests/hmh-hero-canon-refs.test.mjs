@@ -21,19 +21,21 @@ test('WO-92 hero canon manifest captures Justin-approved Lester and Lilly refs',
   assert.equal(manifest.heroes.lilly.count >= 19, true, `expected at least 19 Lilly refs, got ${manifest.heroes.lilly.count}`);
 });
 
-test('WO-92 canon refs have unique ids, repo-local files, previews, and contact sheets', () => {
+test('WO-92 canon refs have unique ids, checksums, and explicit vault-backed source paths', () => {
+  assert.equal(manifest.storagePolicy.repo, 'metadata-only');
+  assert.equal(manifest.storagePolicy.rawMasters, 'vault-only');
   for (const hero of ['lester', 'lilly']) {
     const heroManifest = manifest.heroes[hero];
-    assert.equal(existsSync(repoPath(heroManifest.contactSheet)), true, `${hero} contact sheet should exist`);
+    assert.match(heroManifest.contactSheet, /^vault:\/\/source-assets\/hmh-hero-canon-v1\//);
     const ids = new Set();
     const repoPaths = new Set();
     for (const entry of heroManifest.entries) {
       assert.equal(ids.has(entry.id), false, `${hero} duplicate id ${entry.id}`);
-      assert.equal(repoPaths.has(entry.repo_path), false, `${hero} duplicate repo path ${entry.repo_path}`);
+      assert.equal(repoPaths.has(entry.vault_path), false, `${hero} duplicate vault path ${entry.vault_path}`);
       ids.add(entry.id);
-      repoPaths.add(entry.repo_path);
-      assert.equal(existsSync(repoPath(entry.repo_path)), true, `${entry.repo_path} should exist`);
-      assert.equal(existsSync(repoPath(entry.preview_path)), true, `${entry.preview_path} should exist`);
+      repoPaths.add(entry.vault_path);
+      assert.match(entry.vault_path, /^vault:\/\/source-assets\/hmh-hero-canon-v1\//);
+      assert.match(entry.vault_preview_path, /^vault:\/\/source-assets\/hmh-hero-canon-v1\//);
       assert.equal(entry.width > 0 && entry.height > 0, true, `${entry.id} dimensions should be positive`);
     }
   }

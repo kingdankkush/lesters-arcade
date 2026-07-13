@@ -8,7 +8,7 @@
   "heroes": {
     "lester": {
       "count": 48,
-      "contactSheet": "docs/art/canon/lester/lester-canon-contact-sheet.jpg",
+      "contactSheet": "vault://source-assets/hmh-hero-canon-v1/lester/lester-canon-contact-sheet.jpg",
       "entries": [
         {
           "hero": "lester",
@@ -16,15 +16,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-attack (1).png",
-          "repo_path": "docs/art/canon/lester/source/lester-attack-1.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-attack-1.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 198735
+          "file_size": 198735,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-attack-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-attack-1.jpg"
         },
         {
           "hero": "lester",
@@ -32,15 +32,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-attack.png",
-          "repo_path": "docs/art/canon/lester/source/lester-attack.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-attack.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 607183
+          "file_size": 607183,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-attack.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-attack.jpg"
         },
         {
           "hero": "lester",
@@ -48,15 +48,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lester-CharacterSheet-April26.png",
-          "repo_path": "docs/art/canon/lester/source/lester-charactersheet-april26.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-charactersheet-april26.jpg",
           "width": 3072,
           "height": 2048,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 8305108
+          "file_size": 8305108,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-charactersheet-april26.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-charactersheet-april26.jpg"
         },
         {
           "hero": "lester",
@@ -64,15 +64,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lester-CharacterSheet.png",
-          "repo_path": "docs/art/canon/lester/source/lester-charactersheet.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-charactersheet.jpg",
           "width": 1536,
           "height": 1024,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 2039858
+          "file_size": 2039858,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-charactersheet.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-charactersheet.jpg"
         },
         {
           "hero": "lester",
@@ -80,15 +80,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lester-CharacterSheet2-April26.png",
-          "repo_path": "docs/art/canon/lester/source/lester-charactersheet2-april26.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-charactersheet2-april26.jpg",
           "width": 3072,
           "height": 2048,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 8343640
+          "file_size": 8343640,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-charactersheet2-april26.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-charactersheet2-april26.jpg"
         },
         {
           "hero": "lester",
@@ -96,15 +96,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lester-CharacterSheet3-April26.png",
-          "repo_path": "docs/art/canon/lester/source/lester-charactersheet3-april26.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-charactersheet3-april26.jpg",
           "width": 3072,
           "height": 2048,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 8432633
+          "file_size": 8432633,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-charactersheet3-april26.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-charactersheet3-april26.jpg"
         },
         {
           "hero": "lester",
@@ -112,15 +112,15 @@
           "role": "grenade",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Facing-Grenade.png",
-          "repo_path": "docs/art/canon/lester/source/lester-facing-grenade.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-facing-grenade.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1168616
+          "file_size": 1168616,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-facing-grenade.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-facing-grenade.jpg"
         },
         {
           "hero": "lester",
@@ -128,15 +128,15 @@
           "role": "machine-gun",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Facing-Machine-Gun.png",
-          "repo_path": "docs/art/canon/lester/source/lester-facing-machine-gun.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-facing-machine-gun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1241756
+          "file_size": 1241756,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-facing-machine-gun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-facing-machine-gun.jpg"
         },
         {
           "hero": "lester",
@@ -144,15 +144,15 @@
           "role": "melee-knife",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Facing-Melee-Knife.png",
-          "repo_path": "docs/art/canon/lester/source/lester-facing-melee-knife.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-facing-melee-knife.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1332664
+          "file_size": 1332664,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-facing-melee-knife.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-facing-melee-knife.jpg"
         },
         {
           "hero": "lester",
@@ -160,15 +160,15 @@
           "role": "shotgun",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Facing-Shotgun.png",
-          "repo_path": "docs/art/canon/lester/source/lester-facing-shotgun.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-facing-shotgun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1169432
+          "file_size": 1169432,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-facing-shotgun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-facing-shotgun.jpg"
         },
         {
           "hero": "lester",
@@ -176,15 +176,15 @@
           "role": "reference",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Facing.png",
-          "repo_path": "docs/art/canon/lester/source/lester-facing.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-facing.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1149122
+          "file_size": 1149122,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-facing.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-facing.jpg"
         },
         {
           "hero": "lester",
@@ -192,15 +192,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-idle (1) - Copy.png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-1-copy.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-1-copy.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 541477
+          "file_size": 541477,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-1-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-1-copy.jpg"
         },
         {
           "hero": "lester",
@@ -208,15 +208,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-idle (1).png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-1.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 541477
+          "file_size": 541477,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-1.jpg"
         },
         {
           "hero": "lester",
@@ -224,15 +224,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-idle (1).png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-1-2.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-1-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 626871
+          "file_size": 626871,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-1-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-1-2.jpg"
         },
         {
           "hero": "lester",
@@ -240,15 +240,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-idle (2) - Copy.png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-2-copy.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-2-copy.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 541477
+          "file_size": 541477,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-2-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-2-copy.jpg"
         },
         {
           "hero": "lester",
@@ -256,15 +256,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-idle (2).png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-2.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 541477
+          "file_size": 541477,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-2.jpg"
         },
         {
           "hero": "lester",
@@ -272,15 +272,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-idle (2).png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-2-2.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-2-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 559260
+          "file_size": 559260,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-2-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-2-2.jpg"
         },
         {
           "hero": "lester",
@@ -288,15 +288,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-idle (3).png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-3.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-3.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 638724
+          "file_size": 638724,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-3.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-3.jpg"
         },
         {
           "hero": "lester",
@@ -304,15 +304,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-idle - Copy.png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-copy.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-copy.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 635545
+          "file_size": 635545,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-copy.jpg"
         },
         {
           "hero": "lester",
@@ -320,15 +320,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-idle.png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 635545
+          "file_size": 635545,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle.jpg"
         },
         {
           "hero": "lester",
@@ -336,15 +336,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-idle.png",
-          "repo_path": "docs/art/canon/lester/source/lester-idle-4.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-idle-4.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 164746
+          "file_size": 164746,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-idle-4.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-idle-4.jpg"
         },
         {
           "hero": "lester",
@@ -352,15 +352,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-jump - Copy.png",
-          "repo_path": "docs/art/canon/lester/source/lester-jump-copy.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-jump-copy.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 252006
+          "file_size": 252006,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-jump-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-jump-copy.jpg"
         },
         {
           "hero": "lester",
@@ -368,15 +368,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-jump.png",
-          "repo_path": "docs/art/canon/lester/source/lester-jump.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-jump.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 252006
+          "file_size": 252006,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-jump.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-jump.jpg"
         },
         {
           "hero": "lester",
@@ -384,15 +384,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-jump.png",
-          "repo_path": "docs/art/canon/lester/source/lester-jump-2.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-jump-2.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 205198
+          "file_size": 205198,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-jump-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-jump-2.jpg"
         },
         {
           "hero": "lester",
@@ -400,15 +400,15 @@
           "role": "melee-knife",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-Knife.png",
-          "repo_path": "docs/art/canon/lester/source/lester-knife.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-knife.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1387570
+          "file_size": 1387570,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-knife.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-knife.jpg"
         },
         {
           "hero": "lester",
@@ -416,15 +416,15 @@
           "role": "shotgun",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Left-Side-Shotgun.png",
-          "repo_path": "docs/art/canon/lester/source/lester-left-side-shotgun.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-left-side-shotgun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1302069
+          "file_size": 1302069,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-left-side-shotgun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-left-side-shotgun.jpg"
         },
         {
           "hero": "lester",
@@ -432,15 +432,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Left-SideProfile.png",
-          "repo_path": "docs/art/canon/lester/source/lester-left-sideprofile.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-left-sideprofile.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1187501
+          "file_size": 1187501,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-left-sideprofile.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-left-sideprofile.jpg"
         },
         {
           "hero": "lester",
@@ -448,15 +448,15 @@
           "role": "grenade",
           "direction": "west",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-LeftSide-Grenade.png",
-          "repo_path": "docs/art/canon/lester/source/lester-leftside-grenade.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-leftside-grenade.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1289043
+          "file_size": 1289043,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-leftside-grenade.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-leftside-grenade.jpg"
         },
         {
           "hero": "lester",
@@ -464,15 +464,15 @@
           "role": "machine-gun",
           "direction": "west",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-LeftSide-Machine-Gun.png",
-          "repo_path": "docs/art/canon/lester/source/lester-leftside-machine-gun.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-leftside-machine-gun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1304536
+          "file_size": 1304536,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-leftside-machine-gun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-leftside-machine-gun.jpg"
         },
         {
           "hero": "lester",
@@ -480,15 +480,15 @@
           "role": "headshot",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lester-PFP-Example-01.png",
-          "repo_path": "docs/art/canon/lester/source/lester-pfp-example-01.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-pfp-example-01.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1946037
+          "file_size": 1946037,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-pfp-example-01.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-pfp-example-01.jpg"
         },
         {
           "hero": "lester",
@@ -496,15 +496,15 @@
           "role": "headshot",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lester-PFP-Example-02.png",
-          "repo_path": "docs/art/canon/lester/source/lester-pfp-example-02.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-pfp-example-02.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1987369
+          "file_size": 1987369,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-pfp-example-02.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-pfp-example-02.jpg"
         },
         {
           "hero": "lester",
@@ -512,15 +512,15 @@
           "role": "headshot",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lester-PFP-Example-03.png",
-          "repo_path": "docs/art/canon/lester/source/lester-pfp-example-03.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-pfp-example-03.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 2009191
+          "file_size": 2009191,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-pfp-example-03.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-pfp-example-03.jpg"
         },
         {
           "hero": "lester",
@@ -528,15 +528,15 @@
           "role": "shotgun",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Right-Side-Shotgun.png",
-          "repo_path": "docs/art/canon/lester/source/lester-right-side-shotgun.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-right-side-shotgun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1286226
+          "file_size": 1286226,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-right-side-shotgun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-right-side-shotgun.jpg"
         },
         {
           "hero": "lester",
@@ -544,15 +544,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Right-SideProfile.png",
-          "repo_path": "docs/art/canon/lester/source/lester-right-sideprofile.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-right-sideprofile.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1269097
+          "file_size": 1269097,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-right-sideprofile.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-right-sideprofile.jpg"
         },
         {
           "hero": "lester",
@@ -560,15 +560,15 @@
           "role": "grenade",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-RightSide-Grenade.png",
-          "repo_path": "docs/art/canon/lester/source/lester-rightside-grenade.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-rightside-grenade.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1152134
+          "file_size": 1152134,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-rightside-grenade.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-rightside-grenade.jpg"
         },
         {
           "hero": "lester",
@@ -576,15 +576,15 @@
           "role": "machine-gun",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-RightSide-Machine-Gun.png",
-          "repo_path": "docs/art/canon/lester/source/lester-rightside-machine-gun.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-rightside-machine-gun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1092774
+          "file_size": 1092774,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-rightside-machine-gun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-rightside-machine-gun.jpg"
         },
         {
           "hero": "lester",
@@ -592,15 +592,15 @@
           "role": "melee-knife",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester-RightSide-Melee-Knife.png",
-          "repo_path": "docs/art/canon/lester/source/lester-rightside-melee-knife.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-rightside-melee-knife.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1322441
+          "file_size": 1322441,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-rightside-melee-knife.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-rightside-melee-knife.jpg"
         },
         {
           "hero": "lester",
@@ -608,15 +608,15 @@
           "role": "run",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-run (1).png",
-          "repo_path": "docs/art/canon/lester/source/lester-run-1.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-run-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 683178
+          "file_size": 683178,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-run-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-run-1.jpg"
         },
         {
           "hero": "lester",
@@ -624,15 +624,15 @@
           "role": "run",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-run-v1.png",
-          "repo_path": "docs/art/canon/lester/source/lester-run-v1.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-run-v1.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 214161
+          "file_size": 214161,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-run-v1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-run-v1.jpg"
         },
         {
           "hero": "lester",
@@ -640,15 +640,15 @@
           "role": "run",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-run.png",
-          "repo_path": "docs/art/canon/lester/source/lester-run.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-run.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 214161
+          "file_size": 214161,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-run.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-run.jpg"
         },
         {
           "hero": "lester",
@@ -656,15 +656,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Sprites-01.png",
-          "repo_path": "docs/art/canon/lester/source/lester-sprites-01.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-sprites-01.jpg",
           "width": 1448,
           "height": 1086,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1735822
+          "file_size": 1735822,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-sprites-01.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-sprites-01.jpg"
         },
         {
           "hero": "lester",
@@ -672,15 +672,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-Sprites-02.png",
-          "repo_path": "docs/art/canon/lester/source/lester-sprites-02.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-sprites-02.jpg",
           "width": 1448,
           "height": 1086,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1486620
+          "file_size": 1486620,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-sprites-02.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-sprites-02.jpg"
         },
         {
           "hero": "lester",
@@ -688,15 +688,15 @@
           "role": "melee-knife",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-stab.png",
-          "repo_path": "docs/art/canon/lester/source/lester-stab.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-stab.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 258976
+          "file_size": 258976,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-stab.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-stab.jpg"
         },
         {
           "hero": "lester",
@@ -704,15 +704,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\lester-turnaround-example.png",
-          "repo_path": "docs/art/canon/lester/source/lester-turnaround-example.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-turnaround-example.jpg",
           "width": 1996,
           "height": 1653,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 2587819
+          "file_size": 2587819,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-turnaround-example.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-turnaround-example.jpg"
         },
         {
           "hero": "lester",
@@ -720,15 +720,15 @@
           "role": "walk",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-walk (1).png",
-          "repo_path": "docs/art/canon/lester/source/lester-walk-1.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-walk-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 645287
+          "file_size": 645287,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-walk-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-walk-1.jpg"
         },
         {
           "hero": "lester",
@@ -736,15 +736,15 @@
           "role": "walk",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-walk (2).png",
-          "repo_path": "docs/art/canon/lester/source/lester-walk-2.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-walk-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 575269
+          "file_size": 575269,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-walk-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-walk-2.jpg"
         },
         {
           "hero": "lester",
@@ -752,15 +752,15 @@
           "role": "walk",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lester\\Lester-walk.png",
-          "repo_path": "docs/art/canon/lester/source/lester-walk.png",
-          "preview_path": "docs/art/canon/lester/preview/lester-walk.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 205967
+          "file_size": 205967,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lester-walk.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lester-walk.jpg"
         },
         {
           "hero": "lester",
@@ -768,21 +768,21 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\LesterCharacterSheet-Upscaled.png",
-          "repo_path": "docs/art/canon/lester/source/lestercharactersheet-upscaled.png",
-          "preview_path": "docs/art/canon/lester/preview/lestercharactersheet-upscaled.jpg",
           "width": 4800,
           "height": 3200,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 21243798
+          "file_size": 21243798,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lester/source/lestercharactersheet-upscaled.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lester/preview/lestercharactersheet-upscaled.jpg"
         }
       ]
     },
     "lilly": {
       "count": 51,
-      "contactSheet": "docs/art/canon/lilly/lilly-canon-contact-sheet.jpg",
+      "contactSheet": "vault://source-assets/hmh-hero-canon-v1/lilly/lilly-canon-contact-sheet.jpg",
       "entries": [
         {
           "hero": "lilly",
@@ -790,15 +790,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (1) - Copy.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-1-copy.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-1-copy.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 630989
+          "file_size": 630989,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-1-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-1-copy.jpg"
         },
         {
           "hero": "lilly",
@@ -806,15 +806,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (1).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-1.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 630989
+          "file_size": 630989,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-1.jpg"
         },
         {
           "hero": "lilly",
@@ -822,15 +822,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (2) - Copy.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-2-copy.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-2-copy.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 258024
+          "file_size": 258024,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-2-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-2-copy.jpg"
         },
         {
           "hero": "lilly",
@@ -838,15 +838,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (2).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-2.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-2.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 258024
+          "file_size": 258024,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-2.jpg"
         },
         {
           "hero": "lilly",
@@ -854,15 +854,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (3) - Copy.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-3-copy.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-3-copy.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 563448
+          "file_size": 563448,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-3-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-3-copy.jpg"
         },
         {
           "hero": "lilly",
@@ -870,15 +870,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (3).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-3.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-3.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 563448
+          "file_size": 563448,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-3.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-3.jpg"
         },
         {
           "hero": "lilly",
@@ -886,15 +886,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (4) - Copy.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-4-copy.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-4-copy.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 546927
+          "file_size": 546927,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-4-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-4-copy.jpg"
         },
         {
           "hero": "lilly",
@@ -902,15 +902,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (4).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-4.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-4.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 546927
+          "file_size": 546927,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-4.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-4.jpg"
         },
         {
           "hero": "lilly",
@@ -918,15 +918,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (5) - Copy.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-5-copy.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-5-copy.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 541771
+          "file_size": 541771,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-5-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-5-copy.jpg"
         },
         {
           "hero": "lilly",
@@ -934,15 +934,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack (5).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-5.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-5.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 541771
+          "file_size": 541771,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-5.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-5.jpg"
         },
         {
           "hero": "lilly",
@@ -950,15 +950,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack - Copy.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack-copy.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack-copy.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 153419
+          "file_size": 153419,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack-copy.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack-copy.jpg"
         },
         {
           "hero": "lilly",
@@ -966,15 +966,15 @@
           "role": "attack",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-attack.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-attack.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-attack.jpg",
           "width": 1280,
           "height": 1280,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 153419
+          "file_size": 153419,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-attack.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-attack.jpg"
         },
         {
           "hero": "lilly",
@@ -982,15 +982,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lilly-CharacterSheet.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-charactersheet.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-charactersheet.jpg",
           "width": 1536,
           "height": 1024,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1760779
+          "file_size": 1760779,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-charactersheet.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-charactersheet.jpg"
         },
         {
           "hero": "lilly",
@@ -998,15 +998,15 @@
           "role": "grenade",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Grenade.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-facing-grenade.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-facing-grenade.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 535935
+          "file_size": 535935,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-facing-grenade.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-facing-grenade.jpg"
         },
         {
           "hero": "lilly",
@@ -1014,15 +1014,15 @@
           "role": "machine-gun",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-MachineGun.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-facing-machinegun.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-facing-machinegun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 591615
+          "file_size": 591615,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-facing-machinegun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-facing-machinegun.jpg"
         },
         {
           "hero": "lilly",
@@ -1030,15 +1030,15 @@
           "role": "melee-knife",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Melee-Knife.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-facing-melee-knife.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-facing-melee-knife.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 526485
+          "file_size": 526485,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-facing-melee-knife.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-facing-melee-knife.jpg"
         },
         {
           "hero": "lilly",
@@ -1046,15 +1046,15 @@
           "role": "pistol",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Pistol.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-facing-pistol.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-facing-pistol.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 536716
+          "file_size": 536716,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-facing-pistol.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-facing-pistol.jpg"
         },
         {
           "hero": "lilly",
@@ -1062,15 +1062,15 @@
           "role": "shotgun",
           "direction": "south",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-Facing-Shotgun.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-facing-shotgun.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-facing-shotgun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 571122
+          "file_size": 571122,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-facing-shotgun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-facing-shotgun.jpg"
         },
         {
           "hero": "lilly",
@@ -1078,15 +1078,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lilly-FullBody-CharacterSheet-3Shot.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-fullbody-charactersheet-3shot.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-fullbody-charactersheet-3shot.jpg",
           "width": 1672,
           "height": 941,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1412931
+          "file_size": 1412931,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-fullbody-charactersheet-3shot.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-fullbody-charactersheet-3shot.jpg"
         },
         {
           "hero": "lilly",
@@ -1094,15 +1094,15 @@
           "role": "character-sheet",
           "direction": "turnaround",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lilly-FullBody-CharacterSheet.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-fullbody-charactersheet.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-fullbody-charactersheet.jpg",
           "width": 1536,
           "height": 1024,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1606658
+          "file_size": 1606658,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-fullbody-charactersheet.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-fullbody-charactersheet.jpg"
         },
         {
           "hero": "lilly",
@@ -1110,15 +1110,15 @@
           "role": "headshot",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\LDA\\LitVM\\2026\\References and Logos\\Lilly-HeadShot.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-headshot.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-headshot.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1883462
+          "file_size": 1883462,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-headshot.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-headshot.jpg"
         },
         {
           "hero": "lilly",
@@ -1126,15 +1126,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-idle (1).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-idle-1.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-idle-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 578908
+          "file_size": 578908,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-idle-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-idle-1.jpg"
         },
         {
           "hero": "lilly",
@@ -1142,15 +1142,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-idle (2).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-idle-2.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-idle-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 501371
+          "file_size": 501371,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-idle-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-idle-2.jpg"
         },
         {
           "hero": "lilly",
@@ -1158,15 +1158,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-idle (3).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-idle-3.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-idle-3.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 544608
+          "file_size": 544608,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-idle-3.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-idle-3.jpg"
         },
         {
           "hero": "lilly",
@@ -1174,15 +1174,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-idle (4).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-idle-4.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-idle-4.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 494337
+          "file_size": 494337,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-idle-4.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-idle-4.jpg"
         },
         {
           "hero": "lilly",
@@ -1190,15 +1190,15 @@
           "role": "idle",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-idle.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-idle.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-idle.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 312368
+          "file_size": 312368,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-idle.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-idle.jpg"
         },
         {
           "hero": "lilly",
@@ -1206,15 +1206,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-jump (1).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-jump-1.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-jump-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 615068
+          "file_size": 615068,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-jump-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-jump-1.jpg"
         },
         {
           "hero": "lilly",
@@ -1222,15 +1222,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-jump (2).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-jump-2.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-jump-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 620542
+          "file_size": 620542,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-jump-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-jump-2.jpg"
         },
         {
           "hero": "lilly",
@@ -1238,15 +1238,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-jump (3).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-jump-3.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-jump-3.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 642110
+          "file_size": 642110,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-jump-3.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-jump-3.jpg"
         },
         {
           "hero": "lilly",
@@ -1254,15 +1254,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-jump (4).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-jump-4.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-jump-4.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 584879
+          "file_size": 584879,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-jump-4.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-jump-4.jpg"
         },
         {
           "hero": "lilly",
@@ -1270,15 +1270,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-jump (5).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-jump-5.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-jump-5.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 562799
+          "file_size": 562799,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-jump-5.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-jump-5.jpg"
         },
         {
           "hero": "lilly",
@@ -1286,15 +1286,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-jump.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-jump.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-jump.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 365466
+          "file_size": 365466,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-jump.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-jump.jpg"
         },
         {
           "hero": "lilly",
@@ -1302,15 +1302,15 @@
           "role": "grenade",
           "direction": "west",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Grenade.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-leftside-grenade.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-leftside-grenade.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 399192
+          "file_size": 399192,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-leftside-grenade.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-leftside-grenade.jpg"
         },
         {
           "hero": "lilly",
@@ -1318,15 +1318,15 @@
           "role": "machine-gun",
           "direction": "west",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-MachineGun.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-leftside-machinegun.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-leftside-machinegun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 411190
+          "file_size": 411190,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-leftside-machinegun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-leftside-machinegun.jpg"
         },
         {
           "hero": "lilly",
@@ -1334,15 +1334,15 @@
           "role": "melee-knife",
           "direction": "west",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Melee-Knife.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-leftside-melee-knife.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-leftside-melee-knife.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 436429
+          "file_size": 436429,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-leftside-melee-knife.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-leftside-melee-knife.jpg"
         },
         {
           "hero": "lilly",
@@ -1350,15 +1350,15 @@
           "role": "pistol",
           "direction": "west",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Pistol.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-leftside-pistol.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-leftside-pistol.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 421146
+          "file_size": 421146,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-leftside-pistol.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-leftside-pistol.jpg"
         },
         {
           "hero": "lilly",
@@ -1366,15 +1366,15 @@
           "role": "shotgun",
           "direction": "west",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-LeftSide-Shotgun.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-leftside-shotgun.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-leftside-shotgun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 476009
+          "file_size": 476009,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-leftside-shotgun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-leftside-shotgun.jpg"
         },
         {
           "hero": "lilly",
@@ -1382,15 +1382,15 @@
           "role": "grenade",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Grenade.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-rightside-grenade.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-rightside-grenade.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 400816
+          "file_size": 400816,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-rightside-grenade.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-rightside-grenade.jpg"
         },
         {
           "hero": "lilly",
@@ -1398,15 +1398,15 @@
           "role": "machine-gun",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-MachineGun.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-rightside-machinegun.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-rightside-machinegun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 459907
+          "file_size": 459907,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-rightside-machinegun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-rightside-machinegun.jpg"
         },
         {
           "hero": "lilly",
@@ -1414,15 +1414,15 @@
           "role": "melee-knife",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Melee-Knife.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-rightside-melee-knife.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-rightside-melee-knife.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 417924
+          "file_size": 417924,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-rightside-melee-knife.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-rightside-melee-knife.jpg"
         },
         {
           "hero": "lilly",
@@ -1430,15 +1430,15 @@
           "role": "pistol",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Pistol.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-rightside-pistol.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-rightside-pistol.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 431978
+          "file_size": 431978,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-rightside-pistol.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-rightside-pistol.jpg"
         },
         {
           "hero": "lilly",
@@ -1446,15 +1446,15 @@
           "role": "shotgun",
           "direction": "east",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-RightSide-Shotgun.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-rightside-shotgun.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-rightside-shotgun.jpg",
           "width": 1254,
           "height": 1254,
           "mode": "RGBA",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 445856
+          "file_size": 445856,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-rightside-shotgun.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-rightside-shotgun.jpg"
         },
         {
           "hero": "lilly",
@@ -1462,15 +1462,15 @@
           "role": "run",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-run (1).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-run-1.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-run-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 600411
+          "file_size": 600411,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-run-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-run-1.jpg"
         },
         {
           "hero": "lilly",
@@ -1478,15 +1478,15 @@
           "role": "run",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-run (2).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-run-2.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-run-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 584536
+          "file_size": 584536,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-run-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-run-2.jpg"
         },
         {
           "hero": "lilly",
@@ -1494,15 +1494,15 @@
           "role": "run",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-run (3).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-run-3.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-run-3.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 610736
+          "file_size": 610736,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-run-3.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-run-3.jpg"
         },
         {
           "hero": "lilly",
@@ -1510,15 +1510,15 @@
           "role": "run",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-run.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-run.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-run.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 394508
+          "file_size": 394508,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-run.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-run.jpg"
         },
         {
           "hero": "lilly",
@@ -1526,15 +1526,15 @@
           "role": "reference",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly\\Lilly-Sprites.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-sprites.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-sprites.jpg",
           "width": 1448,
           "height": 1086,
           "mode": "RGB",
           "has_alpha": false,
           "alpha_min": null,
           "alpha_max": null,
-          "file_size": 1699845
+          "file_size": 1699845,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-sprites.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-sprites.jpg"
         },
         {
           "hero": "lilly",
@@ -1542,15 +1542,15 @@
           "role": "walk",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-walk (1).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-walk-1.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-walk-1.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 566000
+          "file_size": 566000,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-walk-1.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-walk-1.jpg"
         },
         {
           "hero": "lilly",
@@ -1558,15 +1558,15 @@
           "role": "walk",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-walk (2).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-walk-2.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-walk-2.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 606658
+          "file_size": 606658,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-walk-2.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-walk-2.jpg"
         },
         {
           "hero": "lilly",
@@ -1574,15 +1574,15 @@
           "role": "walk",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-walk (3).png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-walk-3.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-walk-3.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 566224
+          "file_size": 566224,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-walk-3.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-walk-3.jpg"
         },
         {
           "hero": "lilly",
@@ -1590,15 +1590,15 @@
           "role": "walk",
           "direction": "unspecified",
           "source_path": "C:\\Users\\just_\\Desktop\\My Stuff\\Lester's Arcade\\Hard Money Heroes\\Art Assets\\Lilly-walk.png",
-          "repo_path": "docs/art/canon/lilly/source/lilly-walk.png",
-          "preview_path": "docs/art/canon/lilly/preview/lilly-walk.jpg",
           "width": 2048,
           "height": 2048,
           "mode": "P",
           "has_alpha": true,
           "alpha_min": 0,
           "alpha_max": 255,
-          "file_size": 354715
+          "file_size": 354715,
+          "vault_path": "vault://source-assets/hmh-hero-canon-v1/lilly/source/lilly-walk.png",
+          "vault_preview_path": "vault://source-assets/hmh-hero-canon-v1/lilly/preview/lilly-walk.jpg"
         }
       ]
     }
@@ -1629,5 +1629,10 @@
       "victory"
     ],
     "approval": "Justin approved these references as Lester/Lilly canon in chat before generation."
+  },
+  "storagePolicy": {
+    "repo": "metadata-only",
+    "vaultRoot": "source-assets/hmh-hero-canon-v1",
+    "rawMasters": "vault-only"
   }
 }

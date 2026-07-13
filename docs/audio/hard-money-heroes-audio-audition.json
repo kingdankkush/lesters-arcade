@@ -1,0 +1,1246 @@
+{
+  "generatedAt": "2026-07-13T17:26:18.621Z",
+  "cueCount": 83,
+  "signatureCount": 83,
+  "sampleRate": 44100,
+  "cueSeconds": 0.34,
+  "gapSeconds": 0.06,
+  "durationSeconds": 33.202,
+  "reelFile": "hmh-sfx-audition-83-cues.wav",
+  "reelSha256": "fc41d98cfe52d446192916fd1d383126625f62f1434e1d01f61648050e771b6e",
+  "silentCueCount": 0,
+  "clippedCueCount": 0,
+  "status": "PASS",
+  "cues": [
+    {
+      "cue": "wallet-connect",
+      "family": "ui",
+      "synth": "triangle",
+      "tones": [
+        523,
+        659,
+        784
+      ],
+      "peak": 0.073404,
+      "rms": 0.015773,
+      "nonZeroSamples": 7715,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "menu-click",
+      "family": "ui",
+      "synth": "triangle",
+      "tones": [
+        392,
+        523
+      ],
+      "peak": 0.054282,
+      "rms": 0.009661,
+      "nonZeroSamples": 5728,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "hero-select",
+      "family": "ui",
+      "synth": "triangle",
+      "tones": [
+        523,
+        659,
+        784,
+        1047
+      ],
+      "peak": 0.082971,
+      "rms": 0.020113,
+      "nonZeroSamples": 9697,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level-start",
+      "family": "state",
+      "synth": "triangle",
+      "tones": [
+        330,
+        494,
+        660
+      ],
+      "peak": 0.079629,
+      "rms": 0.016706,
+      "nonZeroSamples": 7715,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "jump",
+      "family": "movement",
+      "synth": "triangle",
+      "tones": [
+        420,
+        630
+      ],
+      "peak": 0.055394,
+      "rms": 0.0101,
+      "nonZeroSamples": 5730,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "dash",
+      "family": "movement",
+      "synth": "square",
+      "tones": [
+        260,
+        520,
+        780
+      ],
+      "peak": 0.058241,
+      "rms": 0.019751,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "land",
+      "family": "movement",
+      "synth": "sine",
+      "tones": [
+        120
+      ],
+      "peak": 0.037561,
+      "rms": 0.007857,
+      "nonZeroSamples": 3742,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "weapon-fire",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        180,
+        900
+      ],
+      "peak": 0.054995,
+      "rms": 0.014906,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "melee",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        760,
+        420
+      ],
+      "peak": 0.066318,
+      "rms": 0.018417,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "grenade",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        110,
+        220
+      ],
+      "peak": 0.080288,
+      "rms": 0.022381,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "grenade-boom",
+      "family": "impact",
+      "synth": "square",
+      "tones": [
+        72,
+        110,
+        220,
+        82
+      ],
+      "peak": 0.101094,
+      "rms": 0.040234,
+      "nonZeroSamples": 9702,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "pickup",
+      "family": "reward",
+      "synth": "triangle",
+      "tones": [
+        660,
+        880,
+        990
+      ],
+      "peak": 0.068229,
+      "rms": 0.014973,
+      "nonZeroSamples": 7715,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "xp-pickup",
+      "family": "reward",
+      "synth": "triangle",
+      "tones": [
+        880,
+        1175
+      ],
+      "peak": 0.034842,
+      "rms": 0.005951,
+      "nonZeroSamples": 5719,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level-up",
+      "family": "reward",
+      "synth": "triangle",
+      "tones": [
+        523,
+        784,
+        1047,
+        1568
+      ],
+      "peak": 0.096548,
+      "rms": 0.022984,
+      "nonZeroSamples": 9701,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "enemy-hit",
+      "family": "impact",
+      "synth": "square",
+      "tones": [
+        220,
+        165
+      ],
+      "peak": 0.056202,
+      "rms": 0.015848,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "enemy-death",
+      "family": "impact",
+      "synth": "square",
+      "tones": [
+        196,
+        146,
+        98
+      ],
+      "peak": 0.071731,
+      "rms": 0.02504,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "player-hit",
+      "family": "damage",
+      "synth": "square",
+      "tones": [
+        90,
+        70
+      ],
+      "peak": 0.09705,
+      "rms": 0.026969,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "boss-warning",
+      "family": "boss",
+      "synth": "square",
+      "tones": [
+        70,
+        140,
+        70
+      ],
+      "peak": 0.101112,
+      "rms": 0.034786,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "game-over",
+      "family": "state",
+      "synth": "triangle",
+      "tones": [
+        196,
+        146,
+        98
+      ],
+      "peak": 0.083373,
+      "rms": 0.017927,
+      "nonZeroSamples": 7712,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level1-cache-open",
+      "family": "level1-interactive",
+      "synth": "triangle",
+      "tones": [
+        659,
+        784,
+        988,
+        1319
+      ],
+      "peak": 0.075298,
+      "rms": 0.018321,
+      "nonZeroSamples": 9698,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level1-gas-pump-warning",
+      "family": "level1-interactive",
+      "synth": "square",
+      "tones": [
+        110,
+        82,
+        110
+      ],
+      "peak": 0.080288,
+      "rms": 0.026912,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level1-gas-pump-detonate",
+      "family": "level1-interactive",
+      "synth": "square",
+      "tones": [
+        80,
+        55,
+        120,
+        220
+      ],
+      "peak": 0.101112,
+      "rms": 0.039977,
+      "nonZeroSamples": 9702,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level1-cover-break",
+      "family": "level1-interactive",
+      "synth": "square",
+      "tones": [
+        180,
+        120,
+        95
+      ],
+      "peak": 0.076845,
+      "rms": 0.025654,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level1-mushroom-pulse",
+      "family": "level1-interactive",
+      "synth": "triangle",
+      "tones": [
+        247,
+        370,
+        494
+      ],
+      "peak": 0.05016,
+      "rms": 0.010792,
+      "nonZeroSamples": 7709,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level1-gate-unlock",
+      "family": "level1-interactive",
+      "synth": "triangle",
+      "tones": [
+        196,
+        392,
+        784
+      ],
+      "peak": 0.072016,
+      "rms": 0.016617,
+      "nonZeroSamples": 7716,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "level1-extraction-flare",
+      "family": "level1-interactive",
+      "synth": "triangle",
+      "tones": [
+        523,
+        784,
+        1175
+      ],
+      "peak": 0.076983,
+      "rms": 0.016698,
+      "nonZeroSamples": 7707,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "menu-hover",
+      "family": "ui",
+      "synth": "sine",
+      "tones": [
+        294
+      ],
+      "peak": 0.022867,
+      "rms": 0.004715,
+      "nonZeroSamples": 3693,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "menu-confirm",
+      "family": "ui",
+      "synth": "triangle",
+      "tones": [
+        440,
+        659,
+        880
+      ],
+      "peak": 0.061115,
+      "rms": 0.012949,
+      "nonZeroSamples": 7709,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "menu-back",
+      "family": "ui",
+      "synth": "triangle",
+      "tones": [
+        587,
+        440
+      ],
+      "peak": 0.048005,
+      "rms": 0.009031,
+      "nonZeroSamples": 5724,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "modal-open",
+      "family": "ui",
+      "synth": "sine",
+      "tones": [
+        330,
+        494
+      ],
+      "peak": 0.044849,
+      "rms": 0.009769,
+      "nonZeroSamples": 5725,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "modal-close",
+      "family": "ui",
+      "synth": "sine",
+      "tones": [
+        494,
+        330
+      ],
+      "peak": 0.043004,
+      "rms": 0.009464,
+      "nonZeroSamples": 5721,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "setting-toggle",
+      "family": "ui",
+      "synth": "square",
+      "tones": [
+        740,
+        988
+      ],
+      "peak": 0.046908,
+      "rms": 0.013086,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "error-denied",
+      "family": "ui",
+      "synth": "square",
+      "tones": [
+        196,
+        185,
+        174
+      ],
+      "peak": 0.071183,
+      "rms": 0.024215,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "profile-save",
+      "family": "ui",
+      "synth": "triangle",
+      "tones": [
+        392,
+        587,
+        784
+      ],
+      "peak": 0.059507,
+      "rms": 0.012693,
+      "nonZeroSamples": 7713,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "footstep-dirt",
+      "family": "movement",
+      "synth": "sine",
+      "tones": [
+        86,
+        73
+      ],
+      "peak": 0.023673,
+      "rms": 0.005561,
+      "nonZeroSamples": 5726,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "footstep-road",
+      "family": "movement",
+      "synth": "square",
+      "tones": [
+        118,
+        96
+      ],
+      "peak": 0.022645,
+      "rms": 0.006034,
+      "nonZeroSamples": 5732,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "dodge-start",
+      "family": "movement",
+      "synth": "sawtooth",
+      "tones": [
+        310,
+        620,
+        930
+      ],
+      "peak": 0.048857,
+      "rms": 0.010644,
+      "nonZeroSamples": 7711,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "dodge-end",
+      "family": "movement",
+      "synth": "sine",
+      "tones": [
+        620,
+        310
+      ],
+      "peak": 0.034847,
+      "rms": 0.007315,
+      "nonZeroSamples": 5724,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "splash-step",
+      "family": "movement",
+      "synth": "sine",
+      "tones": [
+        102,
+        136,
+        92
+      ],
+      "peak": 0.026072,
+      "rms": 0.007548,
+      "nonZeroSamples": 7710,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "brush-rustle",
+      "family": "movement",
+      "synth": "sawtooth",
+      "tones": [
+        154,
+        181,
+        147
+      ],
+      "peak": 0.018372,
+      "rms": 0.003914,
+      "nonZeroSamples": 7687,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "settler-fire",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        170,
+        820
+      ],
+      "peak": 0.052855,
+      "rms": 0.014677,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "auto-miner-fire",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        145,
+        690
+      ],
+      "peak": 0.039968,
+      "rms": 0.011253,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "hash-rail-charge",
+      "family": "weapon",
+      "synth": "sawtooth",
+      "tones": [
+        110,
+        220,
+        440,
+        880
+      ],
+      "peak": 0.050212,
+      "rms": 0.013121,
+      "nonZeroSamples": 9692,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "hash-rail-fire",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        82,
+        330,
+        1320
+      ],
+      "peak": 0.08441,
+      "rms": 0.028735,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "spread-ltc-fire",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        155,
+        233,
+        349
+      ],
+      "peak": 0.063094,
+      "rms": 0.021434,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "litecoin-blade-swing",
+      "family": "weapon",
+      "synth": "sawtooth",
+      "tones": [
+        920,
+        610,
+        390
+      ],
+      "peak": 0.054873,
+      "rms": 0.011557,
+      "nonZeroSamples": 7712,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "litecoin-blade-hit",
+      "family": "impact",
+      "synth": "square",
+      "tones": [
+        260,
+        130,
+        520
+      ],
+      "peak": 0.06848,
+      "rms": 0.023554,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "grenade-prime",
+      "family": "weapon",
+      "synth": "sine",
+      "tones": [
+        220,
+        233,
+        247
+      ],
+      "peak": 0.041257,
+      "rms": 0.010372,
+      "nonZeroSamples": 7706,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "grenade-throw",
+      "family": "weapon",
+      "synth": "triangle",
+      "tones": [
+        330,
+        220,
+        165
+      ],
+      "peak": 0.048036,
+      "rms": 0.011013,
+      "nonZeroSamples": 7712,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "reload-start",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        260,
+        195
+      ],
+      "peak": 0.038102,
+      "rms": 0.010884,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "reload-complete",
+      "family": "weapon",
+      "synth": "triangle",
+      "tones": [
+        390,
+        585
+      ],
+      "peak": 0.044724,
+      "rms": 0.008027,
+      "nonZeroSamples": 5722,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "empty-clip",
+      "family": "weapon",
+      "synth": "square",
+      "tones": [
+        120,
+        108
+      ],
+      "peak": 0.043673,
+      "rms": 0.011069,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "bullet-wall",
+      "family": "impact",
+      "synth": "square",
+      "tones": [
+        310,
+        205
+      ],
+      "peak": 0.033881,
+      "rms": 0.00944,
+      "nonZeroSamples": 5732,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "bullet-armor",
+      "family": "impact",
+      "synth": "square",
+      "tones": [
+        430,
+        215
+      ],
+      "peak": 0.046908,
+      "rms": 0.013017,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "critical-hit",
+      "family": "impact",
+      "synth": "triangle",
+      "tones": [
+        740,
+        1110,
+        1480
+      ],
+      "peak": 0.072348,
+      "rms": 0.015111,
+      "nonZeroSamples": 7712,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "shield-hit",
+      "family": "damage",
+      "synth": "sine",
+      "tones": [
+        880,
+        660,
+        990
+      ],
+      "peak": 0.056338,
+      "rms": 0.013988,
+      "nonZeroSamples": 7704,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "shield-break",
+      "family": "damage",
+      "synth": "square",
+      "tones": [
+        990,
+        660,
+        330,
+        165
+      ],
+      "peak": 0.089923,
+      "rms": 0.035574,
+      "nonZeroSamples": 9702,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "enemy-spawn",
+      "family": "state",
+      "synth": "sine",
+      "tones": [
+        147,
+        196
+      ],
+      "peak": 0.02479,
+      "rms": 0.005896,
+      "nonZeroSamples": 5703,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "elite-spawn",
+      "family": "state",
+      "synth": "square",
+      "tones": [
+        98,
+        196,
+        294
+      ],
+      "peak": 0.069553,
+      "rms": 0.023541,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "enemy-melee-tell",
+      "family": "impact",
+      "synth": "sawtooth",
+      "tones": [
+        210,
+        315
+      ],
+      "peak": 0.045501,
+      "rms": 0.008261,
+      "nonZeroSamples": 5706,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "enemy-ranged-tell",
+      "family": "impact",
+      "synth": "triangle",
+      "tones": [
+        520,
+        390
+      ],
+      "peak": 0.040547,
+      "rms": 0.007729,
+      "nonZeroSamples": 5726,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "boss-phase",
+      "family": "boss",
+      "synth": "sawtooth",
+      "tones": [
+        65,
+        130,
+        260,
+        520
+      ],
+      "peak": 0.08034,
+      "rms": 0.02092,
+      "nonZeroSamples": 9701,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "boss-hit",
+      "family": "boss",
+      "synth": "square",
+      "tones": [
+        105,
+        157
+      ],
+      "peak": 0.0589,
+      "rms": 0.016615,
+      "nonZeroSamples": 5733,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "boss-death",
+      "family": "boss",
+      "synth": "triangle",
+      "tones": [
+        82,
+        123,
+        196,
+        392,
+        784
+      ],
+      "peak": 0.08779,
+      "rms": 0.025869,
+      "nonZeroSamples": 11685,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "health-pickup",
+      "family": "reward",
+      "synth": "sine",
+      "tones": [
+        523,
+        698,
+        1047
+      ],
+      "peak": 0.069714,
+      "rms": 0.017114,
+      "nonZeroSamples": 7711,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "ammo-pickup",
+      "family": "reward",
+      "synth": "square",
+      "tones": [
+        330,
+        440,
+        550
+      ],
+      "peak": 0.056202,
+      "rms": 0.018959,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "shield-pickup",
+      "family": "reward",
+      "synth": "sine",
+      "tones": [
+        659,
+        988,
+        1319
+      ],
+      "peak": 0.07578,
+      "rms": 0.018633,
+      "nonZeroSamples": 7709,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "one-up-pickup",
+      "family": "reward",
+      "synth": "triangle",
+      "tones": [
+        523,
+        659,
+        784,
+        1047,
+        1319
+      ],
+      "peak": 0.093417,
+      "rms": 0.024574,
+      "nonZeroSamples": 11683,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "upgrade-offer",
+      "family": "reward",
+      "synth": "triangle",
+      "tones": [
+        392,
+        587,
+        880
+      ],
+      "peak": 0.067758,
+      "rms": 0.014586,
+      "nonZeroSamples": 7710,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "upgrade-pick",
+      "family": "reward",
+      "synth": "triangle",
+      "tones": [
+        587,
+        880,
+        1175
+      ],
+      "peak": 0.077492,
+      "rms": 0.01667,
+      "nonZeroSamples": 7707,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "upgrade-reroll",
+      "family": "reward",
+      "synth": "sine",
+      "tones": [
+        880,
+        659,
+        988
+      ],
+      "peak": 0.061005,
+      "rms": 0.01516,
+      "nonZeroSamples": 7712,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "achievement-unlock",
+      "family": "reward",
+      "synth": "triangle",
+      "tones": [
+        523,
+        784,
+        1047,
+        1568,
+        2093
+      ],
+      "peak": 0.096548,
+      "rms": 0.025677,
+      "nonZeroSamples": 11681,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "combo-tier",
+      "family": "reward",
+      "synth": "square",
+      "tones": [
+        440,
+        660,
+        990
+      ],
+      "peak": 0.060216,
+      "rms": 0.020476,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "rare-drop",
+      "family": "reward",
+      "synth": "sine",
+      "tones": [
+        784,
+        1175,
+        1568
+      ],
+      "peak": 0.088887,
+      "rms": 0.021793,
+      "nonZeroSamples": 7698,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "pause",
+      "family": "state",
+      "synth": "sine",
+      "tones": [
+        392,
+        294
+      ],
+      "peak": 0.038742,
+      "rms": 0.008329,
+      "nonZeroSamples": 5694,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "resume",
+      "family": "state",
+      "synth": "sine",
+      "tones": [
+        294,
+        392
+      ],
+      "peak": 0.04192,
+      "rms": 0.008705,
+      "nonZeroSamples": 5695,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "low-health",
+      "family": "damage",
+      "synth": "square",
+      "tones": [
+        88,
+        88,
+        110
+      ],
+      "peak": 0.062625,
+      "rms": 0.022947,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "wave-start",
+      "family": "state",
+      "synth": "square",
+      "tones": [
+        196,
+        294,
+        392
+      ],
+      "peak": 0.072801,
+      "rms": 0.024743,
+      "nonZeroSamples": 7717,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "wave-clear",
+      "family": "state",
+      "synth": "triangle",
+      "tones": [
+        392,
+        587,
+        784
+      ],
+      "peak": 0.06992,
+      "rms": 0.014915,
+      "nonZeroSamples": 7714,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "checkpoint",
+      "family": "state",
+      "synth": "sine",
+      "tones": [
+        330,
+        494,
+        740
+      ],
+      "peak": 0.069794,
+      "rms": 0.017099,
+      "nonZeroSamples": 7710,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "extraction-ready",
+      "family": "state",
+      "synth": "triangle",
+      "tones": [
+        262,
+        523,
+        1047
+      ],
+      "peak": 0.080104,
+      "rms": 0.016637,
+      "nonZeroSamples": 7711,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "extraction-complete",
+      "family": "state",
+      "synth": "sine",
+      "tones": [
+        523,
+        784,
+        1047,
+        1568
+      ],
+      "peak": 0.095677,
+      "rms": 0.027027,
+      "nonZeroSamples": 9690,
+      "silent": false,
+      "clipped": false
+    },
+    {
+      "cue": "victory",
+      "family": "state",
+      "synth": "triangle",
+      "tones": [
+        392,
+        523,
+        659,
+        784,
+        1047
+      ],
+      "peak": 0.10041,
+      "rms": 0.026521,
+      "nonZeroSamples": 11681,
+      "silent": false,
+      "clipped": false
+    }
+  ]
+}

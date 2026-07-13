@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { deflateSync, inflateSync } from 'node:zlib';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -5,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { LESTER_BLASTER_ENEMY_CATALOG } from '../apps/portal/src/arcade-core.mjs';
+import { assetSrcForFrameRef, parseAtlasFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 
 export const MASTER_PALETTE = Object.freeze([
   '#173B72', '#345D9D', '#4E82D8', '#8CB7FF',
@@ -450,10 +452,30 @@ function actorRole(actorKey, actor) {
 }
 
 function resolveFramePath(repoRoot, framePath) {
-  const clean = String(framePath).replace(/^\.\//, '');
+  const clean = assetSrcForFrameRef(framePath).replace(/^\.\//, '');
   const fromPortal = path.join(repoRoot, 'apps/portal', clean);
   if (existsSync(fromPortal)) return fromPortal;
   return path.join(repoRoot, clean);
+}
+
+function readRgbaFrame(repoRoot, frameRef) {
+  const region = parseAtlasFrameRef(frameRef);
+  const filePath = resolveFramePath(repoRoot, frameRef);
+  if (!region) return readRgbaPng(filePath);
+  const rgba = execFileSync('ffmpeg', [
+    '-v', 'error',
+    '-i', filePath,
+    '-vf', `crop=${region.width}:${region.height}:${region.x}:${region.y}`,
+    '-frames:v', '1',
+    '-f', 'rawvideo',
+    '-pix_fmt', 'rgba',
+    'pipe:1',
+  ], { maxBuffer: region.width * region.height * 4 + 1024 * 1024 });
+  return Object.freeze({
+    width: region.width,
+    height: region.height,
+    pixels: new Uint8ClampedArray(rgba.buffer, rgba.byteOffset, rgba.byteLength),
+  });
 }
 
 function sampleFramePaths(actor, { maxFramesPerActor = 16 } = {}) {
@@ -492,9 +514,8 @@ export function buildActorSpriteQaReport({ repoRoot = repoRootFromHere(), actorK
   const pivotFrames = [];
 
   for (const sample of samples) {
-    const filePath = resolveFramePath(repoRoot, sample.framePath);
     try {
-      const frame = readRgbaPng(filePath);
+      const frame = readRgbaFrame(repoRoot, sample.framePath);
       dimensions.set(`${frame.width}x${frame.height}`, (dimensions.get(`${frame.width}x${frame.height}`) ?? 0) + 1);
       const palette = [...MASTER_PALETTE, ...(ACTOR_PALETTE_EXTENSIONS[actorKey] ?? [])];
       frameChecks.push({ state: sample.state, direction: sample.direction, file: sample.framePath, transparency: analyzeTransparencyFrame(frame), palette: auditPaletteCompliance(frame, palette) });

@@ -6,6 +6,24 @@
   "outputDirectory": "apps/portal",
   "headers": [
     {
+      "source": "/dist/chunks/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(dist/main.js|assets/.*|styles.css|styles-arcade-polish.css|src/design-tokens.css)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {

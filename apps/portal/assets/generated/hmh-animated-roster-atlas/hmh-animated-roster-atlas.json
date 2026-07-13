@@ -1,0 +1,657 @@
+{
+  "version": "hmh-animated-roster-atlas-v1",
+  "format": "lossless-webp-frame-ref-v1",
+  "maxTextureSize": 4096,
+  "padding": 1,
+  "actorCount": 38,
+  "sourceFrameRefs": 15299,
+  "uniqueFramePixels": 10663,
+  "atlasPageCount": 44,
+  "atlasBytes": 57392440,
+  "actors": [
+    {
+      "actor": "lester",
+      "sourceFrameRefs": 704,
+      "uniqueFramePixels": 332,
+      "deduplicatedRefs": 372,
+      "atlasPages": 1,
+      "atlasBytes": 2351916,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/lester/lester-00.webp",
+          "width": 560,
+          "height": 4018,
+          "bytes": 2351916
+        }
+      ]
+    },
+    {
+      "actor": "whale-dumper-boss",
+      "sourceFrameRefs": 607,
+      "uniqueFramePixels": 453,
+      "deduplicatedRefs": 154,
+      "atlasPages": 1,
+      "atlasBytes": 272780,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/whale-dumper-boss/whale-dumper-boss-00.webp",
+          "width": 4082,
+          "height": 4050,
+          "bytes": 272780
+        }
+      ]
+    },
+    {
+      "actor": "gas-fee-wisp",
+      "sourceFrameRefs": 528,
+      "uniqueFramePixels": 20,
+      "deduplicatedRefs": 508,
+      "atlasPages": 1,
+      "atlasBytes": 98684,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/gas-fee-wisp/gas-fee-wisp-00.webp",
+          "width": 1722,
+          "height": 90,
+          "bytes": 98684
+        }
+      ]
+    },
+    {
+      "actor": "fud-goblin",
+      "sourceFrameRefs": 544,
+      "uniqueFramePixels": 33,
+      "deduplicatedRefs": 511,
+      "atlasPages": 1,
+      "atlasBytes": 21026,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/fud-goblin/fud-goblin-00.webp",
+          "width": 3102,
+          "height": 94,
+          "bytes": 21026
+        }
+      ]
+    },
+    {
+      "actor": "chain-reaper-boss",
+      "sourceFrameRefs": 592,
+      "uniqueFramePixels": 466,
+      "deduplicatedRefs": 126,
+      "atlasPages": 1,
+      "atlasBytes": 95662,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/chain-reaper-boss/chain-reaper-boss-00.webp",
+          "width": 4018,
+          "height": 4018,
+          "bytes": 95662
+        }
+      ]
+    },
+    {
+      "actor": "bit-whale-boss",
+      "sourceFrameRefs": 592,
+      "uniqueFramePixels": 476,
+      "deduplicatedRefs": 116,
+      "atlasPages": 1,
+      "atlasBytes": 88954,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/bit-whale-boss/bit-whale-boss-00.webp",
+          "width": 4018,
+          "height": 4018,
+          "bytes": 88954
+        }
+      ]
+    },
+    {
+      "actor": "warren-spear-rider",
+      "sourceFrameRefs": 528,
+      "uniqueFramePixels": 436,
+      "deduplicatedRefs": 92,
+      "atlasPages": 1,
+      "atlasBytes": 66462,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/warren-spear-rider/warren-spear-rider-00.webp",
+          "width": 4018,
+          "height": 4018,
+          "bytes": 66462
+        }
+      ]
+    },
+    {
+      "actor": "rugpull-summoner",
+      "sourceFrameRefs": 480,
+      "uniqueFramePixels": 376,
+      "deduplicatedRefs": 104,
+      "atlasPages": 1,
+      "atlasBytes": 53382,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/rugpull-summoner/rugpull-summoner-00.webp",
+          "width": 4018,
+          "height": 4018,
+          "bytes": 53382
+        }
+      ]
+    },
+    {
+      "actor": "gas-beast-tank",
+      "sourceFrameRefs": 528,
+      "uniqueFramePixels": 20,
+      "deduplicatedRefs": 508,
+      "atlasPages": 1,
+      "atlasBytes": 98684,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/gas-beast-tank/gas-beast-tank-00.webp",
+          "width": 1722,
+          "height": 90,
+          "bytes": 98684
+        }
+      ]
+    },
+    {
+      "actor": "crypto-bro-rusher",
+      "sourceFrameRefs": 64,
+      "uniqueFramePixels": 40,
+      "deduplicatedRefs": 24,
+      "atlasPages": 1,
+      "atlasBytes": 2644,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/crypto-bro-rusher/crypto-bro-rusher-00.webp",
+          "width": 3920,
+          "height": 98,
+          "bytes": 2644
+        }
+      ]
+    },
+    {
+      "actor": "evil-banker-ranged",
+      "sourceFrameRefs": 64,
+      "uniqueFramePixels": 40,
+      "deduplicatedRefs": 24,
+      "atlasPages": 1,
+      "atlasBytes": 2520,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/evil-banker-ranged/evil-banker-ranged-00.webp",
+          "width": 3920,
+          "height": 98,
+          "bytes": 2520
+        }
+      ]
+    },
+    {
+      "actor": "trench-degen",
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
+      "atlasPages": 2,
+      "atlasBytes": 4950926,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/trench-degen/trench-degen-00.webp",
+          "width": 4064,
+          "height": 4064,
+          "bytes": 3217390
+        },
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/trench-degen/trench-degen-01.webp",
+          "width": 4064,
+          "height": 4064,
+          "bytes": 1733536
+        }
+      ]
+    },
+    {
+      "actor": "lilly",
+      "sourceFrameRefs": 704,
+      "uniqueFramePixels": 372,
+      "deduplicatedRefs": 332,
+      "atlasPages": 1,
+      "atlasBytes": 2641238,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/lilly/lilly-00.webp",
+          "width": 620,
+          "height": 4018,
+          "bytes": 2641238
+        }
+      ]
+    },
+    {
+      "actor": "lit-commando",
+      "sourceFrameRefs": 752,
+      "uniqueFramePixels": 492,
+      "deduplicatedRefs": 260,
+      "atlasPages": 1,
+      "atlasBytes": 590712,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/lit-commando/lit-commando-00.webp",
+          "width": 4002,
+          "height": 4002,
+          "bytes": 590712
+        }
+      ]
+    },
+    {
+      "actor": "lit-valkyrie",
+      "sourceFrameRefs": 640,
+      "uniqueFramePixels": 387,
+      "deduplicatedRefs": 253,
+      "atlasPages": 1,
+      "atlasBytes": 611800,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/lit-valkyrie/lit-valkyrie-00.webp",
+          "width": 4002,
+          "height": 4002,
+          "bytes": 611800
+        }
+      ]
+    },
+    {
+      "actor": "paper-hand",
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
+      "atlasPages": 2,
+      "atlasBytes": 5601288,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/paper-hand/paper-hand-00.webp",
+          "width": 4046,
+          "height": 4046,
+          "bytes": 4117216
+        },
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/paper-hand/paper-hand-01.webp",
+          "width": 4046,
+          "height": 4046,
+          "bytes": 1484072
+        }
+      ]
+    },
+    {
+      "actor": "honeypot-turret",
+      "sourceFrameRefs": 394,
+      "uniqueFramePixels": 394,
+      "deduplicatedRefs": 0,
+      "atlasPages": 1,
+      "atlasBytes": 3230776,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/honeypot-turret/honeypot-turret-00.webp",
+          "width": 4092,
+          "height": 4094,
+          "bytes": 3230776
+        }
+      ]
+    },
+    {
+      "actor": "slippage-skater",
+      "sourceFrameRefs": 384,
+      "uniqueFramePixels": 344,
+      "deduplicatedRefs": 40,
+      "atlasPages": 1,
+      "atlasBytes": 3079576,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/slippage-skater/slippage-skater-00.webp",
+          "width": 4074,
+          "height": 4074,
+          "bytes": 3079576
+        }
+      ]
+    },
+    {
+      "actor": "claim-jumper",
+      "sourceFrameRefs": 584,
+      "uniqueFramePixels": 56,
+      "deduplicatedRefs": 528,
+      "atlasPages": 1,
+      "atlasBytes": 379252,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/claim-jumper/claim-jumper-00.webp",
+          "width": 3990,
+          "height": 3990,
+          "bytes": 379252
+        }
+      ]
+    },
+    {
+      "actor": "scam-cult-zealot",
+      "sourceFrameRefs": 160,
+      "uniqueFramePixels": 160,
+      "deduplicatedRefs": 0,
+      "atlasPages": 1,
+      "atlasBytes": 706866,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/scam-cult-zealot/scam-cult-zealot-00.webp",
+          "width": 4080,
+          "height": 4074,
+          "bytes": 706866
+        }
+      ]
+    },
+    {
+      "actor": "sybil-drone",
+      "sourceFrameRefs": 252,
+      "uniqueFramePixels": 252,
+      "deduplicatedRefs": 0,
+      "atlasPages": 1,
+      "atlasBytes": 1840886,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/sybil-drone/sybil-drone-00.webp",
+          "width": 4088,
+          "height": 4088,
+          "bytes": 1840886
+        }
+      ]
+    },
+    {
+      "actor": "mev-reaper",
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
+      "atlasPages": 2,
+      "atlasBytes": 5296048,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/mev-reaper/mev-reaper-00.webp",
+          "width": 4064,
+          "height": 4064,
+          "bytes": 3488108
+        },
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/mev-reaper/mev-reaper-01.webp",
+          "width": 4064,
+          "height": 4064,
+          "bytes": 1807940
+        }
+      ]
+    },
+    {
+      "actor": "phishing-angler",
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
+      "atlasPages": 2,
+      "atlasBytes": 5136020,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/phishing-angler/phishing-angler-00.webp",
+          "width": 3870,
+          "height": 3870,
+          "bytes": 2968656
+        },
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/phishing-angler/phishing-angler-01.webp",
+          "width": 3870,
+          "height": 3870,
+          "bytes": 2167364
+        }
+      ]
+    },
+    {
+      "actor": "plaza-warden",
+      "sourceFrameRefs": 544,
+      "uniqueFramePixels": 482,
+      "deduplicatedRefs": 62,
+      "atlasPages": 1,
+      "atlasBytes": 2614730,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/plaza-warden/plaza-warden-00.webp",
+          "width": 4076,
+          "height": 4076,
+          "bytes": 2614730
+        }
+      ]
+    },
+    {
+      "actor": "bridge-exploiter",
+      "sourceFrameRefs": 536,
+      "uniqueFramePixels": 466,
+      "deduplicatedRefs": 70,
+      "atlasPages": 1,
+      "atlasBytes": 2793012,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/bridge-exploiter/bridge-exploiter-00.webp",
+          "width": 4034,
+          "height": 4034,
+          "bytes": 2793012
+        }
+      ]
+    },
+    {
+      "actor": "the-obfuscator",
+      "sourceFrameRefs": 592,
+      "uniqueFramePixels": 516,
+      "deduplicatedRefs": 76,
+      "atlasPages": 1,
+      "atlasBytes": 2059346,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/the-obfuscator/the-obfuscator-00.webp",
+          "width": 4008,
+          "height": 4034,
+          "bytes": 2059346
+        }
+      ]
+    },
+    {
+      "actor": "bitcoin-maximalist-riot-cop",
+      "sourceFrameRefs": 96,
+      "uniqueFramePixels": 88,
+      "deduplicatedRefs": 8,
+      "atlasPages": 1,
+      "atlasBytes": 637572,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/bitcoin-maximalist-riot-cop/bitcoin-maximalist-riot-cop-00.webp",
+          "width": 4074,
+          "height": 4074,
+          "bytes": 637572
+        }
+      ]
+    },
+    {
+      "actor": "rug-rat",
+      "sourceFrameRefs": 208,
+      "uniqueFramePixels": 208,
+      "deduplicatedRefs": 0,
+      "atlasPages": 1,
+      "atlasBytes": 918738,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/rug-rat/rug-rat-00.webp",
+          "width": 4050,
+          "height": 4072,
+          "bytes": 918738
+        }
+      ]
+    },
+    {
+      "actor": "liquidation-cascade-golem",
+      "sourceFrameRefs": 64,
+      "uniqueFramePixels": 40,
+      "deduplicatedRefs": 24,
+      "atlasPages": 1,
+      "atlasBytes": 2416,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/liquidation-cascade-golem/liquidation-cascade-golem-00.webp",
+          "width": 3920,
+          "height": 98,
+          "bytes": 2416
+        }
+      ]
+    },
+    {
+      "actor": "influencer-camera-drone",
+      "sourceFrameRefs": 63,
+      "uniqueFramePixels": 63,
+      "deduplicatedRefs": 0,
+      "atlasPages": 1,
+      "atlasBytes": 345092,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/influencer-camera-drone/influencer-camera-drone-00.webp",
+          "width": 3950,
+          "height": 3950,
+          "bytes": 345092
+        }
+      ]
+    },
+    {
+      "actor": "nft-valet",
+      "sourceFrameRefs": 119,
+      "uniqueFramePixels": 112,
+      "deduplicatedRefs": 7,
+      "atlasPages": 1,
+      "atlasBytes": 743314,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/nft-valet/nft-valet-00.webp",
+          "width": 4004,
+          "height": 4004,
+          "bytes": 743314
+        }
+      ]
+    },
+    {
+      "actor": "stablecoin-socialite",
+      "sourceFrameRefs": 56,
+      "uniqueFramePixels": 56,
+      "deduplicatedRefs": 0,
+      "atlasPages": 1,
+      "atlasBytes": 456224,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/stablecoin-socialite/stablecoin-socialite-00.webp",
+          "width": 4092,
+          "height": 4092,
+          "bytes": 456224
+        }
+      ]
+    },
+    {
+      "actor": "coyote-pack-runner",
+      "sourceFrameRefs": 424,
+      "uniqueFramePixels": 376,
+      "deduplicatedRefs": 48,
+      "atlasPages": 1,
+      "atlasBytes": 415444,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/coyote-pack-runner/coyote-pack-runner-00.webp",
+          "width": 4002,
+          "height": 4002,
+          "bytes": 415444
+        }
+      ]
+    },
+    {
+      "actor": "wild-boar",
+      "sourceFrameRefs": 424,
+      "uniqueFramePixels": 376,
+      "deduplicatedRefs": 48,
+      "atlasPages": 2,
+      "atlasBytes": 914216,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/wild-boar/wild-boar-00.webp",
+          "width": 3914,
+          "height": 3914,
+          "bytes": 874422
+        },
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/wild-boar/wild-boar-01.webp",
+          "width": 3090,
+          "height": 206,
+          "bytes": 39794
+        }
+      ]
+    },
+    {
+      "actor": "buzzard",
+      "sourceFrameRefs": 408,
+      "uniqueFramePixels": 360,
+      "deduplicatedRefs": 48,
+      "atlasPages": 1,
+      "atlasBytes": 453588,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/buzzard/buzzard-00.webp",
+          "width": 4002,
+          "height": 4002,
+          "bytes": 453588
+        }
+      ]
+    },
+    {
+      "actor": "rattlesnake",
+      "sourceFrameRefs": 408,
+      "uniqueFramePixels": 360,
+      "deduplicatedRefs": 48,
+      "atlasPages": 1,
+      "atlasBytes": 577578,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/rattlesnake/rattlesnake-00.webp",
+          "width": 4002,
+          "height": 4002,
+          "bytes": 577578
+        }
+      ]
+    },
+    {
+      "actor": "scorpion-ambusher",
+      "sourceFrameRefs": 128,
+      "uniqueFramePixels": 107,
+      "deduplicatedRefs": 21,
+      "atlasPages": 1,
+      "atlasBytes": 96914,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/scorpion-ambusher/scorpion-ambusher-00.webp",
+          "width": 4070,
+          "height": 4002,
+          "bytes": 96914
+        }
+      ]
+    },
+    {
+      "actor": "wasteland-debt-collector",
+      "sourceFrameRefs": 336,
+      "uniqueFramePixels": 336,
+      "deduplicatedRefs": 0,
+      "atlasPages": 2,
+      "atlasBytes": 7146154,
+      "atlases": [
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/wasteland-debt-collector/wasteland-debt-collector-00.webp",
+          "width": 3870,
+          "height": 3870,
+          "bytes": 4814562
+        },
+        {
+          "src": "./assets/generated/hmh-animated-roster-atlas/wasteland-debt-collector/wasteland-debt-collector-01.webp",
+          "width": 3870,
+          "height": 3870,
+          "bytes": 2331592
+        }
+      ]
+    }
+  ]
+}

@@ -43,15 +43,15 @@
       .official-app { position: relative; }
       .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
     </style>
-    <link rel="stylesheet" href="./src/design-tokens.css?v=hmh-ship-polish-v41" />
+    <link rel="stylesheet" href="./src/design-tokens.css?v=hmh-ship-polish-v42" />
     <link rel="preload" href="./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg" as="image" fetchpriority="high" />
-    <link rel="modulepreload" href="./dist/main.js?v=hmh-ship-polish-v41" />
+    <link rel="modulepreload" href="./dist/main.js?v=hmh-ship-polish-v42" />
     <!-- Deferred stylesheets -->
-    <link rel="preload" href="./styles.css?v=hmh-ship-polish-v41" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-ship-polish-v41" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles.css?v=hmh-ship-polish-v42" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-ship-polish-v42" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
-      <link rel="stylesheet" href="./styles.css?v=hmh-ship-polish-v41" />
-      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-ship-polish-v41" />
+      <link rel="stylesheet" href="./styles.css?v=hmh-ship-polish-v42" />
+      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-ship-polish-v42" />
     </noscript>
   </head>
   <body>
@@ -116,12 +116,12 @@
             <span id="arcadeMusicProgressFill" class="arcade-music-progress-fill"></span>
           </div>
           <div class="arcade-music-controls" aria-label="Arcade music controls">
-            <button id="arcadeMusicPreviousButton" class="arcade-music-button" type="button" aria-label="Previous song">⏮</button>
-            <button id="arcadeMusicPlayButton" class="arcade-music-button primary" type="button" aria-label="Play arcade music">▶</button>
-            <button id="arcadeMusicMuteButton" class="arcade-music-button" type="button" aria-label="Mute arcade music">🔊</button>
-            <button id="arcadeMusicNextButton" class="arcade-music-button" type="button" aria-label="Next song">⏭</button>
-            <button id="arcadeMusicShuffleButton" class="arcade-music-button" type="button" aria-label="Turn shuffle on" aria-pressed="false">⇄</button>
-            <button id="arcadeMusicExpandButton" class="arcade-music-button" type="button" aria-label="Expand arcade music player">▾</button>
+            <button id="arcadeMusicPreviousButton" class="arcade-music-button" type="button" aria-label="Previous song"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#previous"></use></svg></button>
+            <button id="arcadeMusicPlayButton" class="arcade-music-button primary" type="button" aria-label="Play arcade music"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#play"></use></svg></button>
+            <button id="arcadeMusicMuteButton" class="arcade-music-button" type="button" aria-label="Mute arcade music"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#volume"></use></svg></button>
+            <button id="arcadeMusicNextButton" class="arcade-music-button" type="button" aria-label="Next song"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#next"></use></svg></button>
+            <button id="arcadeMusicShuffleButton" class="arcade-music-button" type="button" aria-label="Turn shuffle on" aria-pressed="false"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#shuffle"></use></svg></button>
+            <button id="arcadeMusicExpandButton" class="arcade-music-button" type="button" aria-label="Expand arcade music player"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#chevron-down"></use></svg></button>
           </div>
           <div class="arcade-music-expanded-panel">
             <span class="arcade-music-duration-label">Length <strong id="arcadeMusicDuration">0:00</strong></span>
@@ -184,7 +184,7 @@
         </section>
 
         <section id="officialModeSelect" class="official-view mode-select-view" hidden>
-          <button id="officialModeBackButton" class="back-nav-button" type="button">← Back to Cabinets</button>
+          <button id="officialModeBackButton" class="back-nav-button" type="button"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#back"></use></svg> Back to Cabinets</button>
           <div>
             <p class="eyebrow">Selected Cabinet</p>
             <h2>Hard Money Heroes</h2>
@@ -193,13 +193,13 @@
           <div class="official-mode-grid">
             <button id="officialFreeModeButton" class="mode-card" type="button">
               <img class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg" alt="Hard Money Heroes — Free Mode" loading="lazy" decoding="async" />
-              <span class="arcade-icon" aria-hidden="true">∞</span>
+              <svg class="arcade-svg-icon arcade-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#infinity"></use></svg>
               <strong>Free Mode</strong>
               <span>Practice only. No official score, progress, achievements, or chain writes.</span>
             </button>
             <button id="officialRankedModeButton" class="mode-card ranked-card" type="button">
               <img class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg" alt="Hard Money Heroes — Ranked" loading="lazy" decoding="async" />
-              <span class="arcade-icon" aria-hidden="true">★</span>
+              <svg class="arcade-svg-icon arcade-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#star"></use></svg>
               <strong>Play Ranked</strong>
               <span>Tracks a canonical local Ranked Testnet run. Verified on-chain publishing is temporarily disabled.</span>
             </button>
@@ -208,7 +208,7 @@
         </section>
 
         <section id="officialCharacterSelect" class="official-view character-select-view" hidden>
-          <button id="officialCharacterBackButton" class="back-nav-button" type="button">← Back to Mode Select</button>
+          <button id="officialCharacterBackButton" class="back-nav-button" type="button"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#back"></use></svg> Back to Mode Select</button>
           <div class="char-select-head">
             <p class="eyebrow">Choose Your Hero</p>
             <h2>Hard Money Heroes</h2>
@@ -219,7 +219,7 @@
 
         <section id="officialLevelIntro" class="official-view level-intro-view" hidden>
           <div class="level-intro-card">
-            <button id="officialLevelBackButton" class="back-nav-button" type="button">← Back to Hero Select</button>
+            <button id="officialLevelBackButton" class="back-nav-button" type="button"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#back"></use></svg> Back to Hero Select</button>
             <p class="eyebrow">Level 1 Boot Sequence</p>
             <h2>Level 1: The Crypto Wasteland</h2>
             <p>An open-ended isometric survival run. <strong>Desktop:</strong> move with WASD / arrow keys; your gun <strong>auto-fires toward your mouse</strong>. <strong>Mobile:</strong> drag to move and you fire in your heading direction. Survive escalating waves, <strong>earn XP from kills and power-ups</strong>, defeat recurring bosses, and pick upgrades on level-up. Your score keeps climbing until the run ends when your hero falls.</p>
@@ -547,7 +547,7 @@
       </div>
     </main>
 
-    <script type="module" src="./dist/main.js?v=hmh-ship-polish-v41"></script>
+    <script type="module" src="./dist/main.js?v=hmh-ship-polish-v42"></script>
     <script>
       // Register the service worker for offline + repeat-visit caching. Fails
       // silently on unsupported browsers / file:// and never blocks the app.

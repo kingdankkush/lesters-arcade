@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { assetSrcForFrameRef } from './atlas-frame-ref.mjs';
 import {
   LEVEL_1_PIXELLAB_RUNTIME_ASSET_KEYS,
   LEVEL_1_PIXELLAB_RUNTIME_MAP_UPGRADES,
@@ -17,7 +18,8 @@ function repoPath(path) {
 }
 
 function frameExists(src) {
-  return typeof src === 'string' && src.startsWith('./assets/generated/') && existsSync(repoPath(`apps/portal/${src.replace(/^\.\//, '')}`));
+  const assetSrc = assetSrcForFrameRef(src);
+  return typeof assetSrc === 'string' && assetSrc.startsWith('./assets/generated/') && existsSync(repoPath(`apps/portal/${assetSrc.replace(/^\.\//, '')}`));
 }
 
 function buildPaperHandMatrix(entry = HMH_ANIMATED_ROSTER['paper-hand']) {

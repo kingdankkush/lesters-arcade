@@ -2,6 +2,29 @@
 
 All notable Lester's Arcade and Hard Money Heroes changes are documented here. The project uses human-readable release headings; contract deployments are tracked separately and never implied by a web release.
 
+## 1.3.0 - 2026-07-13
+
+### Added
+
+- Lossless WebP animation atlases with crop-aware DOM and Canvas 2D rendering for the complete Hard Money Heroes actor roster.
+- An 83-cue gameplay audio registry, automated audition evidence, and expanded runtime cue triggers.
+- Five-viewport responsive browser certification, unified SVG UI icons, reusable project skills, and a literal 30-minute browser soak harness.
+
+### Changed
+
+- Raw/source art families and reproducible QA outputs now live in the external asset vault while exact runtime assets and metadata remain in Git.
+- Static assets, music, and proof images are optimized for smaller transfers; service-worker and CDN cache policies now match the v42 release epoch.
+- The local ship gate now includes responsive browser evidence, visual regression, regenerated asset-reference auditing, strict repository health, security, contracts, and production build checks.
+
+### Performance
+
+- Reduced the release candidate from roughly 30,000 tracked files / 929MB to no more than 8,000 tracked files / 350MB without dropping live animation coverage.
+- Replaced more than 15,000 loose actor-frame requests with 44 actor-scoped atlas pages and preserved lazy-loading boundaries.
+
+### Deployment boundary
+
+- This is a portal/game release only. It does not broadcast transactions, deploy contracts, rotate addresses, or change on-chain settlement approval.
+
 ## 1.2.1 - 2026-07-13
 
 ### Added

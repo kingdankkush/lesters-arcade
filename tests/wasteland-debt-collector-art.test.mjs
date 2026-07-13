@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { assetSrcForFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 import { bespokeEnemyVisualKitFor } from '../apps/portal/src/hmh-encounter-visuals.mjs';
 
 const DIRECTIONS = Object.freeze(['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west']);
@@ -24,10 +25,10 @@ test('Wasteland Debt Collector has approved 8-direction production sprite covera
     for (const direction of DIRECTIONS) {
       assert.equal(animation[direction].length, 7, `${state}/${direction} should have 7 frames`);
       for (const src of animation[direction]) {
-        assert.match(src, /^\.\/assets\/generated\/hmh-animated-roster\/wasteland-debt-collector\//);
+        assert.match(src, /^\.\/assets\/generated\/hmh-animated-roster-atlas\/wasteland-debt-collector\//);
         assert.doesNotMatch(src, /C:|Users|Downloads|\\/i, 'runtime frame paths must not leak local source paths');
         assert.equal(
-          existsSync(join(repoRoot, 'apps/portal', src.replace('./', ''))),
+          existsSync(join(repoRoot, 'apps/portal', assetSrcForFrameRef(src).replace('./', ''))),
           true,
           `${state}/${direction} frame should exist on disk: ${src}`,
         );

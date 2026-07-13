@@ -71,6 +71,7 @@ async function run() {
 
   const outMain = resolve(outdir, 'main.js');
   const minSize = statSync(outMain).size;
+  const entryDeltaPct = 100 * (minSize / rawSize - 1);
 
   if (wantMeta) {
     const { writeFileSync } = await import('node:fs');
@@ -83,8 +84,8 @@ async function run() {
   for (const f of chunkFiles) totalOut += statSync(resolve(__dirname, f)).size;
 
   console.log('\n=== Bundle report ===');
-  console.log(`Raw main.js:        ${human(rawSize)}`);
-  console.log(`Minified main.js:   ${human(minSize)}  (${(100 * (1 - minSize / rawSize)).toFixed(1)}% smaller)`);
+  console.log(`Source main.js:     ${human(rawSize)}`);
+  console.log(`Bundled main.js:    ${human(minSize)}  (${entryDeltaPct >= 0 ? '+' : ''}${entryDeltaPct.toFixed(1)}% vs source entry; imports included)`);
   console.log(`Total emitted JS:   ${human(totalOut)} across ${chunkFiles.length} files`);
   console.log(`Output dir:         apps/portal/dist/`);
 }

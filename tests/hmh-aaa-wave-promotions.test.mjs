@@ -5,13 +5,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { assetSrcForFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIRECTIONS = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west'];
 const STATES = ['idle', 'walk', 'run', 'attack-tell', 'attack', 'hit', 'death', 'spawn-in'];
 
 function framePath(src) {
-  return path.join(ROOT, 'apps/portal', src.replace(/^\.\//, ''));
+  return path.resolve(ROOT, 'apps/portal', assetSrcForFrameRef(src).replace(/^\.\//, ''));
 }
 
 function assertCompleteAaaEnemy(actorKey) {

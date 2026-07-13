@@ -31,7 +31,7 @@ test('WO-119 promotes Paper Hand to a complete PixelLab AAA 8-direction runtime 
     assert.ok(WO119_REQUIRED_STATES.includes(row.state), `${row.state} is a required runtime state`);
     assert.ok(WO119_REQUIRED_DIRECTIONS.includes(row.direction), `${row.direction} is a required direction`);
     assert.equal(row.exists, true, `${row.actorKey}/${row.state}/${row.direction} frames exist`);
-    assert.equal(row.firstFrame.startsWith('./assets/generated/hmh-animated-roster/paper-hand/'), true);
+    assert.equal(row.firstFrame.startsWith('./assets/generated/hmh-animated-roster-atlas/paper-hand/'), true);
   }
 
   const repair = repairRuntimeActorKey('paper-hand');

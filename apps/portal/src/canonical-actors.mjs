@@ -5,8 +5,7 @@
 // Source: Justin's hand-made art, ingested by scripts/ingest-hmh-canonical-art.py.
 // Generation tools only ADD frames/tilesets/VFX; they never redesign characters.
 
-import { HMH_WO93_LESTER_MATRIX } from '../assets/generated/hmh-hero-matrix/wo93-v1/lester/lester.mjs';
-import { HMH_WO93_LILLY_MATRIX } from '../assets/generated/hmh-hero-matrix/wo93-v1/lilly/lilly.mjs';
+import { HMH_ANIMATED_ROSTER } from '../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { HMH_CANON_TRENCH_DEGEN } from '../assets/generated/hmh-canonical-art/trench-degen/trench-degen.mjs';
 import { HMH_CANON_EVIL_BANKER } from '../assets/generated/hmh-canonical-art/evil-banker/evil-banker.mjs';
 import { HMH_CANON_CRYPTO_BRO } from '../assets/generated/hmh-canonical-art/crypto-bro/crypto-bro.mjs';
@@ -211,9 +210,53 @@ function withDerivedCombatReadability(manifest) {
 
 
 
+const HERO_DIRECTIONS = Object.freeze(['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west']);
+const HERO_STATE_SOURCE = Object.freeze({
+  idle: 'idle',
+  walk: 'walk',
+  run: 'run',
+  'shoot-pistol': 'shoot',
+  'shoot-shotgun': 'shoot',
+  'shoot-mg': 'shoot',
+  melee: 'melee',
+  'throw-grenade': 'throw',
+  hurt: 'hurt',
+  death: 'death',
+  dash: 'dash',
+  victory: 'victory',
+});
+
+function heroManifestFromAnimatedRoster(id) {
+  const actor = HMH_ANIMATED_ROSTER[id];
+  if (!actor) throw new Error(`Animated roster hero missing: ${id}`);
+  const states = Object.fromEntries(Object.entries(HERO_STATE_SOURCE).map(([stateId, sourceId]) => [
+    stateId,
+    Object.freeze({
+      fps: actor.targetFps ?? 12,
+      loop: ['idle', 'walk', 'run'].includes(stateId),
+      frames: cloneFramesMap(actor.animations[sourceId]),
+    }),
+  ]));
+  return Object.freeze({
+    id: `${id}-animated-roster-compat`,
+    role: 'hero',
+    frameSize: Object.freeze([128, 128]),
+    anchor: 'bottom-center',
+    directions: HERO_DIRECTIONS,
+    defaultDirection: 'south',
+    targetFps: actor.targetFps ?? 12,
+    source: 'Canonical HMH animated roster; shared with live gameplay',
+    stateAliases: Object.freeze({ shoot: 'shoot-mg', attack: 'shoot-mg', grenade: 'throw-grenade' }),
+    states: Object.freeze(states),
+  });
+}
+
+export const HMH_ROSTER_LESTER_MATRIX = heroManifestFromAnimatedRoster('lester');
+export const HMH_ROSTER_LILLY_MATRIX = heroManifestFromAnimatedRoster('lilly');
+
 export const CANONICAL_ACTOR_MANIFESTS = Object.freeze({
-  lester: HMH_WO93_LESTER_MATRIX,
-  lilly: HMH_WO93_LILLY_MATRIX,
+  lester: HMH_ROSTER_LESTER_MATRIX,
+  lilly: HMH_ROSTER_LILLY_MATRIX,
   'trench-degen': withDerivedCombatReadability(HMH_CANON_TRENCH_DEGEN),
   'evil-banker': withDerivedCombatReadability(HMH_CANON_EVIL_BANKER),
   'crypto-bro': withDerivedCombatReadability(HMH_CANON_CRYPTO_BRO),

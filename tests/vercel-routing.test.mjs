@@ -11,3 +11,18 @@ test('Vercel rewrites every SPA deep-link namespace used by the arcade router', 
     assert.equal(destinationsBySource.get(source), '/index.html', `${source} should serve the SPA shell`);
   }
 });
+
+test('production caching keeps hashed chunks immutable while stable asset URLs revalidate', () => {
+  const headersBySource = new Map((vercel.headers ?? []).map((entry) => [
+    entry.source,
+    new Map(entry.headers.map((header) => [header.key, header.value])),
+  ]));
+  assert.equal(
+    headersBySource.get('/dist/chunks/(.*)')?.get('Cache-Control'),
+    'public, max-age=31536000, immutable',
+  );
+  assert.equal(
+    headersBySource.get('/(dist/main.js|assets/.*|styles.css|styles-arcade-polish.css|src/design-tokens.css)')?.get('Cache-Control'),
+    'public, max-age=0, s-maxage=31536000, stale-while-revalidate=86400',
+  );
+});

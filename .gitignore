@@ -38,6 +38,10 @@ raw-tool-output/
 contact-sheets/
 contact-sheets/working/
 docs/testing/VISUAL_BASELINES/current/
+assets/generated/qa/
+docs/cleanup/asset-reference-map.json
+docs/cleanup/audio-bitrate-report.json
+docs/testing/hmh-browser-soak.partial.json
 
 # Asset pipeline raw output — belongs in the vault/staging, never in git
 .art-staging/

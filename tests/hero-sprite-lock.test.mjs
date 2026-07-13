@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { assetSrcForFrameRef, parseAtlasFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -24,12 +25,15 @@ const HERO_REQUIRED_STATES = ['idle', 'walk', 'run', 'shoot', 'melee', 'throw', 
 const HERO_DIRECTIONS = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west'];
 
 function resolveRuntimeAsset(src) {
-  return path.resolve(ROOT, 'apps/portal', String(src).replace(/^\.\//, ''));
+  return path.resolve(ROOT, 'apps/portal', assetSrcForFrameRef(src).replace(/^\.\//, ''));
 }
 
-function pngDimensions(filePath) {
+function frameDimensions(ref) {
+  const region = parseAtlasFrameRef(ref);
+  const filePath = resolveRuntimeAsset(ref);
   const buffer = readFileSync(filePath);
-  assert.equal(buffer.toString('ascii', 1, 4), 'PNG', `${filePath} must be a PNG`);
+  if (region) return { width: region.width, height: region.height, bytes: buffer.length };
+  assert.equal(buffer.toString('ascii', 1, 4), 'PNG', `${filePath} must be a PNG or atlas frame`);
   return {
     width: buffer.readUInt32BE(16),
     height: buffer.readUInt32BE(20),
@@ -44,7 +48,7 @@ test('every hero locks to one roster that exists', () => {
   }
 });
 
-test('all playable rosters carry full 8-direction required animation coverage with real PNG frames', () => {
+test('all playable rosters carry full 8-direction required animation coverage with real frame assets', () => {
   for (const key of PLAYABLE_ROSTERS) {
     const anims = HMH_ANIMATED_ROSTER[key]?.animations ?? {};
     for (const state of HERO_REQUIRED_STATES) {
@@ -53,7 +57,7 @@ test('all playable rosters carry full 8-direction required animation coverage wi
         assert.ok(frames.length > 0, `${key}/${state}/${direction} has no frames`);
         const first = resolveRuntimeAsset(frames[0]);
         assert.ok(existsSync(first), `${key}/${state}/${direction} first frame is missing on disk: ${frames[0]}`);
-        assert.ok(first.endsWith('.png'), `${key}/${state}/${direction} first frame should be a PNG: ${frames[0]}`);
+        assert.ok(parseAtlasFrameRef(frames[0]), `${key}/${state}/${direction} should use a bounded atlas frame: ${frames[0]}`);
       }
     }
   }
@@ -69,10 +73,10 @@ test('playable hero manifests do not carry QA-green placeholder identity or tiny
   for (const key of PLAYABLE_ROSTERS) {
     const entry = HMH_ANIMATED_ROSTER[key];
     assert.ok(!String(entry?.character_id ?? '').startsWith('qa-green-native-'), `${key} is still labeled as QA-green placeholder art`);
-    const firstSouthIdle = resolveRuntimeAsset(entry.animations?.idle?.south?.[0]);
-    const dims = pngDimensions(firstSouthIdle);
+    const firstSouthIdle = entry.animations?.idle?.south?.[0];
+    const dims = frameDimensions(firstSouthIdle);
     assert.ok(dims.width >= 45 && dims.height >= 90, `${key} idle/south canvas is too small for production hero art: ${dims.width}x${dims.height}`);
-    assert.ok(dims.bytes >= minimumBytes[key], `${key} idle/south PNG is too tiny/simple and likely placeholder art: ${dims.bytes} bytes`);
+    assert.ok(dims.bytes >= minimumBytes[key], `${key} atlas backing file is unexpectedly tiny: ${dims.bytes} bytes`);
   }
 });
 
@@ -82,9 +86,8 @@ test('no playable hero frame keeps the tiny QA triangle/robot placeholder signat
     for (const [state, dirs] of Object.entries(entry.animations ?? {})) {
       for (const [direction, frames] of Object.entries(dirs ?? {})) {
         for (const frame of frames ?? []) {
-          const resolved = resolveRuntimeAsset(frame);
-          const dims = pngDimensions(resolved);
-          assert.ok(dims.bytes >= 950, `${key}/${state}/${direction}/${path.basename(frame)} is still a tiny placeholder-like frame (${dims.bytes} bytes)`);
+          const dims = frameDimensions(frame);
+          assert.ok(dims.width * dims.height >= 42 * 90, `${key}/${state}/${direction}/${path.basename(frame)} crop is placeholder-sized (${dims.width}x${dims.height})`);
         }
       }
     }

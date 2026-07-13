@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { assetSrcForFrameRef } from '../apps/portal/src/atlas-frame-ref.mjs';
 import { repairRuntimeActorKey } from '../apps/portal/src/hmh-art-repair.mjs';
 
 const repoPath = (relativePath) => fileURLToPath(new URL(`../${relativePath}`, import.meta.url));
@@ -31,8 +32,8 @@ test('WO-109 batch one ships five Level-1 runtime-spawnable enemy redraws with f
         const frames = dirs[direction];
         assert.ok(Array.isArray(frames) && frames.length >= 1, `${actorKey}/${state}/${direction} has frames`);
         for (const frame of frames) {
-          assert.match(frame, new RegExp(`^\\./assets/generated/hmh-animated-roster/${actorKey}/${state}/${direction}/`));
-          assert.ok(existsSync(repoPath(`apps/portal/${frame.replace(/^\.\//, '')}`)), `${frame} exists on disk`);
+          assert.match(frame, new RegExp(`^\\./assets/generated/hmh-animated-roster-atlas/${actorKey}/`));
+          assert.ok(existsSync(repoPath(`apps/portal/${assetSrcForFrameRef(frame).replace(/^\.\//, '')}`)), `${frame} exists on disk`);
         }
       }
     }

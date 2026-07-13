@@ -280,6 +280,15 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
 }
 
+.arcade-svg-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  overflow: visible;
+  vertical-align: -0.12em;
+}
+
 .arcade-icon {
   display: inline-grid;
   place-items: center;
@@ -291,6 +300,11 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   box-shadow: 0 0 12px rgba(25, 247, 255, 0.24);
   font-size: .82em;
   font-weight: 900;
+}
+
+svg.arcade-icon {
+  box-sizing: border-box;
+  padding: 0.22em;
 }
 
 .dev-tool-toggle {
@@ -3845,4 +3859,17 @@ body.suggest-landscape.ingame::after {
   .level-up-overlay .level-up-shell { padding: 10px; }
   .level-up-card-stack { grid-template-columns: 1fr; }
   .level-up-upgrade-card.combat-menu-action { min-height: 168px; }
+}
+
+/* SHIP responsive input floor: this final-cascade invariant prevents compact
+   component rules from shrinking any touch control below 44 × 44 CSS pixels. */
+@media (hover: none), (max-width: 1024px) {
+  button,
+  input,
+  select,
+  textarea,
+  a[role="button"] {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
 }

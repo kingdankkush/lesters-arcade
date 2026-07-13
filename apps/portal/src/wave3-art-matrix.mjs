@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { HMH_ANIMATED_ROSTER } from '../assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
 import { HMH_FINAL_ANIMATION_COMPLETION_PACK } from '../assets/generated/hmh-final-animation-completion/hmh-final-animation-completion-manifest.mjs';
+import { assetSrcForFrameRef } from './atlas-frame-ref.mjs';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 
@@ -13,7 +14,7 @@ export const WAVE3_HERO_DIRECTIONS = Object.freeze(['south', 'south-east', 'east
 export const WAVE3_ENEMY_READABILITY_STATES = Object.freeze(['attack-tell', 'melee-counter', 'hit', 'death', 'optional-gore-overlay']);
 
 function resolveRuntimeAsset(src) {
-  return resolve(repoRoot, 'apps', 'portal', String(src).replace(/^\.\//, ''));
+  return resolve(repoRoot, 'apps', 'portal', assetSrcForFrameRef(src).replace(/^\.\//, ''));
 }
 
 function heroMatrixRows() {
@@ -23,7 +24,7 @@ function heroMatrixRows() {
     for (const state of WAVE3_HERO_STATES) {
       const directions = WAVE3_HERO_DIRECTIONS.map((direction) => {
         const frames = animations[state]?.[direction] ?? [];
-        const existingFrames = frames.filter((frame) => existsSync(resolveRuntimeAsset(frame)) && String(frame).endsWith('.png'));
+        const existingFrames = frames.filter((frame) => existsSync(resolveRuntimeAsset(frame)));
         return Object.freeze({ direction, frameCount: frames.length, firstFrame: frames[0] ?? null, complete: existingFrames.length > 0 });
       });
       rows.push(Object.freeze({
@@ -92,7 +93,7 @@ export function buildWave3ArtMatrixReport() {
   const policy = Object.freeze({
     legacyFallbacksAllowed: false,
     disallowedFallbacks: Object.freeze(['still-only-runtime', 'rectangle-fallback', 'cross-character-roster-swap', 'legacy-combatArt-enemies']),
-    productionRule: 'Runtime heroes must resolve to one locked roster with real PNG frames for each required state/direction; enemy readability must come from the final completion pack, not old combatArt or rectangle placeholders.',
+    productionRule: 'Runtime heroes must resolve to one locked roster with bounded atlas or loose frames for each required state/direction; enemy readability must come from the final completion pack, not old combatArt or rectangle placeholders.',
   });
   const gates = Object.freeze([
     Object.freeze({ id: 'hero-state-direction-matrix', status: heroSummary.missingCells === 0 ? 'pass' : 'fail', metric: `${heroSummary.completeCells}/${heroSummary.totalCells} cells` }),

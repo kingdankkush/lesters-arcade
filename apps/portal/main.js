@@ -17,6 +17,7 @@ import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
+import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
 import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
@@ -305,6 +306,9 @@ function loadImageAsset(src) {
 }
 
 function imageReady(image) {
+  if (typeof HTMLCanvasElement !== 'undefined' && image instanceof HTMLCanvasElement) {
+    return image.width > 0 && image.height > 0;
+  }
   return Boolean(image?.complete && image.naturalWidth > 0);
 }
 
@@ -1010,21 +1014,21 @@ function renderArcadeMusicPlayer() {
   if (dom.arcadeMusicDuration) dom.arcadeMusicDuration.textContent = model.durationLabel;
   if (dom.arcadeMusicProgressFill) dom.arcadeMusicProgressFill.style.width = `${model.progress.percent.toFixed(1)}%`;
   if (dom.arcadeMusicPlayButton) {
-    dom.arcadeMusicPlayButton.textContent = model.playing ? '⏸' : '▶';
+    setButtonIcon(dom.arcadeMusicPlayButton, model.playing ? 'pause' : 'play');
     dom.arcadeMusicPlayButton.setAttribute('aria-label', model.playing ? 'Pause arcade music' : 'Play arcade music');
   }
   if (dom.arcadeMusicMuteButton) {
-    dom.arcadeMusicMuteButton.textContent = model.muted ? '🔇' : '🔊';
+    setButtonIcon(dom.arcadeMusicMuteButton, model.muted ? 'mute' : 'volume');
     dom.arcadeMusicMuteButton.setAttribute('aria-label', model.muted ? 'Unmute arcade music' : 'Mute arcade music');
   }
   if (dom.arcadeMusicShuffleButton) {
-    dom.arcadeMusicShuffleButton.textContent = model.shuffle ? '🔀' : '⇄';
+    setButtonIcon(dom.arcadeMusicShuffleButton, 'shuffle');
     dom.arcadeMusicShuffleButton.classList.toggle('active', model.shuffle);
     dom.arcadeMusicShuffleButton.setAttribute('aria-pressed', String(model.shuffle));
     dom.arcadeMusicShuffleButton.setAttribute('aria-label', model.shuffle ? 'Turn shuffle off' : 'Turn shuffle on');
   }
   if (dom.arcadeMusicExpandButton) {
-    dom.arcadeMusicExpandButton.textContent = model.expanded ? '▴' : '▾';
+    setButtonIcon(dom.arcadeMusicExpandButton, model.expanded ? 'chevron-up' : 'chevron-down');
     dom.arcadeMusicExpandButton.setAttribute('aria-label', model.expanded ? 'Collapse arcade music player' : 'Expand arcade music player');
   }
   if (dom.arcadeMusicQueueList) {
@@ -1274,7 +1278,7 @@ function playSfxSample(cue, volume) {
   return true;
 }
 
-function playSfxSynth(cue, volume) {
+function playSfxSynth(cue, volume, synth = 'triangle') {
   const ctx = combatAudio.audioContext;
   if (!ctx) return false;
   const gain = ctx.createGain();
@@ -1282,7 +1286,7 @@ function playSfxSynth(cue, volume) {
   gain.connect(ctx.destination);
   sfxToneFor(cue).forEach((frequency, index) => {
     const oscillator = ctx.createOscillator();
-    oscillator.type = cue.includes('hit') || cue === 'grenade' ? 'square' : 'triangle';
+    oscillator.type = ['sine', 'square', 'sawtooth', 'triangle'].includes(synth) ? synth : 'triangle';
     oscillator.frequency.value = frequency;
     oscillator.connect(gain);
     const start = ctx.currentTime + index * 0.045;
@@ -1313,7 +1317,26 @@ function playSfxCue(cue, volume = 0.05) {
   // (or permanently, if the sample failed to load).
   if (plan.samplePreferred && playSfxSample(cue, plan.volume)) return true;
   loadSfxSample(cue);
-  return playSfxSynth(cue, plan.volume);
+  return playSfxSynth(cue, plan.volume, plan.synth);
+}
+
+function weaponFireCueFor(weaponId) {
+  return ({
+    'coin-blaster': 'settler-fire',
+    'auto-miner': 'auto-miner-fire',
+    'hash-rail': 'hash-rail-fire',
+    'spread-ltc': 'spread-ltc-fire',
+  })[weaponId] ?? 'weapon-fire';
+}
+
+function pickupCueFor(effect) {
+  return ({
+    heal: 'health-pickup',
+    ammo: 'ammo-pickup',
+    shield: 'shield-pickup',
+    life: 'one-up-pickup',
+    scoreBonus: 'rare-drop',
+  })[effect] ?? 'pickup';
 }
 
 const combatArt = {
@@ -1706,9 +1729,28 @@ function appendText(parent, tagName, text, className) {
   return node;
 }
 
-function renderArcadeIcon(icon, label = '') {
-  const node = el('span', { className: 'arcade-icon', textContent: icon, ariaLabel: label || icon, role: 'img' });
+const ARCADE_ICON_SPRITE = './assets/icons/arcade-ui.svg';
+const ARCADE_ICON_ALIASES = Object.freeze({
+  '▶': 'play', '↻': 'restart', '⚙': 'settings', '★': 'star', '♪': 'volume', '⊘': 'mute',
+  '▣': 'fullscreen', '☰': 'menu', '⏏': 'exit', '⚡': 'star', '🔒': 'lock',
+});
+
+function renderArcadeIcon(iconId, label = '') {
+  const semanticId = ARCADE_ICON_ALIASES[iconId] ?? iconId ?? 'star';
+  const node = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  node.setAttribute('class', 'arcade-svg-icon arcade-icon');
+  node.setAttribute('aria-hidden', 'true');
+  node.setAttribute('focusable', 'false');
+  if (label) node.dataset.iconLabel = label;
+  const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+  use.setAttribute('href', `${ARCADE_ICON_SPRITE}#${semanticId}`);
+  node.append(use);
   return node;
+}
+
+function setButtonIcon(button, iconId) {
+  if (!button) return;
+  button.replaceChildren(renderArcadeIcon(iconId));
 }
 
 function renderAchievementIcon({ iconSrc = null, icon = '🏅', label = 'Achievement badge' } = {}) {
@@ -1736,13 +1778,29 @@ function renderRotatingCabinetSprite(sprite, variant = 'splash') {
   if (Number.isFinite(sprite?.displayScaleX)) rotator.style.setProperty('--hero-rotation-scale-x', String(sprite.displayScaleX));
   if (Number.isFinite(sprite?.displayScaleY)) rotator.style.setProperty('--hero-rotation-scale-y', String(sprite.displayScaleY));
   frames.forEach((frame, index) => {
-    const image = el('img', {
-      className: 'cabinet-rotation-frame',
-      src: frame.src,
-      alt: '',
-    });
-    image.loading = 'eager';
-    image.decoding = 'async';
+    const region = parseAtlasFrameRef(frame.src);
+    let image;
+    if (region) {
+      image = el('canvas', { className: 'cabinet-rotation-frame', ariaHidden: 'true' });
+      image.width = region.width;
+      image.height = region.height;
+      const atlas = loadImageAsset(region.src);
+      const drawRegion = () => image.getContext('2d')?.drawImage(
+        atlas,
+        region.x, region.y, region.width, region.height,
+        0, 0, region.width, region.height,
+      );
+      if (imageReady(atlas)) drawRegion();
+      else atlas.addEventListener('load', drawRegion, { once: true });
+    } else {
+      image = el('img', {
+        className: 'cabinet-rotation-frame',
+        src: frame.src,
+        alt: '',
+      });
+      image.loading = 'eager';
+      image.decoding = 'async';
+    }
     image.style.setProperty('--cabinet-frame-index', String(index));
     image.style.setProperty('--cabinet-frame-delay', `${frameDuration * index}ms`);
     rotator.append(image);
@@ -3107,7 +3165,7 @@ function syncCombatOverlay() {
   if (dom.officialGameplayControls) dom.officialGameplayControls.dataset.mode = currentSession?.mode ?? 'free';
   if (dom.combatPauseButton) dom.combatPauseButton.textContent = combat.paused ? 'Return to Game' : 'Pause';
   if (dom.combatMenuIconButton) {
-    dom.combatMenuIconButton.textContent = combat.paused ? '▶' : '☰';
+    setButtonIcon(dom.combatMenuIconButton, combat.paused ? 'play' : 'menu');
     dom.combatMenuIconButton.setAttribute('aria-label', combat.paused ? 'Resume game' : 'Pause and open game menu');
     dom.combatMenuIconButton.setAttribute('aria-expanded', String(Boolean(combat.paused)));
   }
@@ -3172,7 +3230,7 @@ async function toggleCombatPause(forcePaused) {
   if (!combat.active && !combat.gameOver) return;
   combat.paused = typeof forcePaused === 'boolean' ? forcePaused : !combat.paused;
   if (!combat.paused) combat.menuSettingsOpen = false;
-  playSfxCue('menu-click');
+  playSfxCue(combat.paused ? 'pause' : 'resume');
   // SDK adapter: emit pause/resume lifecycle.
   if (gameAdapter) {
     if (combat.paused) gameAdapter.pause();
@@ -4106,7 +4164,7 @@ function showOfficialPanel(activePanel) {
 function renderOfficialNav() {
   if (!dom.officialNavTabs) return;
   dom.officialNavTabs.replaceChildren();
-  const iconById = { cabinets: '🕹️', profile: '👤', leaderboards: '🏆', settings: '⚙️' };
+  const iconById = { cabinets: 'arcade', profile: 'profile', leaderboards: 'trophy', settings: 'settings' };
   const shell = buildPlatformShellModel(officialAppStep, {
     connected: Boolean(connectedWallet),
     gameSlug: gameSlugFor(selectedGameId),
@@ -4136,7 +4194,7 @@ function renderOfficialNav() {
       button.classList.add('nav-tab-guest');
       button.title = 'Browse as guest — connect a wallet to save progress here';
     }
-    button.append(renderArcadeIcon(iconById[item.id] ?? '◆', item.label), document.createTextNode(item.label));
+    button.append(renderArcadeIcon(iconById[item.id] ?? 'star', item.label), document.createTextNode(item.label));
     button.addEventListener('click', () => {
       playSfxCue('menu-click');
       setOfficialView(item.step);
@@ -4240,7 +4298,7 @@ function renderOfficialCabinets() {
     }
     const copy = el('div', { className: 'cabinet-card-copy' });
     appendText(copy, 'span', isCabinetPlayable ? (isDevOnlyCabinet ? 'DEV HARNESS' : 'PLAYABLE NOW') : 'COMING SOON', 'cabinet-status-label');
-    copy.append(renderArcadeIcon(isCabinetPlayable ? '⚡' : '🔒', isCabinetPlayable ? 'Playable' : 'Locked'));
+    copy.append(renderArcadeIcon(isCabinetPlayable ? 'star' : 'lock', isCabinetPlayable ? 'Playable' : 'Locked'));
     appendText(copy, 'strong', cabinet.title);
     appendText(copy, 'small', cabinet.description);
     card.append(copy);
@@ -4839,7 +4897,9 @@ function renderOfficialLeaderboards() {
   const board = el('article', { className: 'official-info-card leaderboard-board-card leaderboard-board-v9 hmh-visual-polish-v12' });
   const header = el('div', { className: 'leaderboard-header leaderboard-header-v9' });
   const headerCopy = el('div', { className: 'leaderboard-header-copy' });
-  appendText(headerCopy, 'h3', `🏆 ${activeLeaderboardTitle.toUpperCase()}`, 'leaderboard-title');
+  const leaderboardTitle = el('h3', { className: 'leaderboard-title' });
+  leaderboardTitle.append(renderArcadeIcon('trophy'), document.createTextNode(activeLeaderboardTitle.toUpperCase()));
+  headerCopy.append(leaderboardTitle);
   appendText(headerCopy, 'span', `${active.cadence.toUpperCase()} · ${active.periodKey} · ${scoreSourceSummary.label}`, 'cabinet-status-label');
   const headerStats = el('div', { className: 'leaderboard-header-stats' });
   const topScore = active.topEntries[0]?.score ?? 0;
@@ -6025,7 +6085,9 @@ function renderParentOps() {
   const achievements = snapshot?.achievements ?? Object.values(ACHIEVEMENTS).map((achievement) => ({ ...achievement, unlocked: false }));
   for (const achievement of achievements) {
     const item = el('article', { className: `mini-item ${achievement.unlocked ? 'unlocked' : 'locked'}` });
-    appendText(item, 'strong', `${achievement.unlocked ? '🏆' : '🔒'} ${achievement.title}`);
+    const achievementTitle = el('strong');
+    achievementTitle.append(renderArcadeIcon(achievement.unlocked ? 'trophy' : 'lock'), document.createTextNode(achievement.title));
+    item.append(achievementTitle);
     appendText(item, 'span', achievement.description);
     dom.achievementList.append(item);
   }
@@ -6251,7 +6313,9 @@ function renderMenuModel() {
         : 'Available once Hard Money Heroes is playable';
       appendText(card, 'span', reason, 'menu-card-lock');
     } else if (interactive) {
-      appendText(card, 'span', '▶', 'menu-card-cue');
+      const cue = el('span', { className: 'menu-card-cue' });
+      cue.append(renderArcadeIcon('play'));
+      card.append(cue);
     }
     dom.menuModelPanel.append(card);
   }
@@ -6676,12 +6740,13 @@ function shoot() {
   if (Number.isFinite(combat.ammo)) {
     if (combat.ammo <= 0) {
       spawnText('RELOAD!', combat.playerX + 20, combat.playerY - 80, '#ff476f');
+      playSfxCue('empty-clip', 0.03);
       return;
     }
     combat.ammo -= 1;
   }
   combat.shots += 1;
-  playSfxCue('weapon-fire', weapon.id === 'hash-rail' ? 0.045 : 0.035);
+  playSfxCue(weaponFireCueFor(weapon.id), weapon.id === 'hash-rail' ? 0.045 : 0.035);
   const pellets = weapon.pellets ?? 1;
   const spread = pellets > 1 ? pellets : 1;
   for (let i = 0; i < spread; i += 1) {
@@ -6702,7 +6767,7 @@ function shoot() {
 function melee() {
   combat.meleeSwings += 1;
   combat.lastMeleeFrame = combat.frame;
-  playSfxCue('melee');
+  playSfxCue('litecoin-blade-swing');
   spawnSlash(combat.playerX + 48, combat.playerY - 42);
   const meleeBox = {
     x: combat.playerX + 34,
@@ -6732,9 +6797,10 @@ function grenade(options = {}) {
   const hasGrenade = (combat.grenades ?? 0) > 0;
   if (!hasGrenade) {
     spawnText('NO GRENADES', combat.playerX + 20, combat.playerY - 80, '#ff476f');
+    playSfxCue('error-denied', 0.04);
     return;
   }
-  playSfxCue('grenade', 0.075);
+  playSfxCue('grenade-throw', 0.075);
 
   if (combat.roguelikeRun) {
     // Real fused throw (Level Design Bible §6.3): WO-28 routes the single
@@ -7424,6 +7490,7 @@ function updateBoss(difficulty) {
     const clearedBoss = combat.boss;
     spawnExplosion(combat.boss.x + 40, GROUND_Y - 60, '#ffe84d');
     spawnText('BOSS CLEAR +1500', combat.boss.x - 30, GROUND_Y - 140, '#45ff8a');
+    playSfxCue('boss-death', 0.09);
     combat.kills += 1;
     combat.bossKills += 1;
     combat.killsByType[`boss:${clearedBoss.id ?? 'boss'}`] = (combat.killsByType[`boss:${clearedBoss.id ?? 'boss'}`] ?? 0) + 1;
@@ -7619,6 +7686,9 @@ function damagePlayer(damage, source = 'hit', attackerTitle = null) {
     sfxVolume: 0.06,
   }, { x: combat.playerX, y: combat.playerY });
   combat.playerDamageFlash = Math.max(combat.playerDamageFlash ?? 0, hitFeedback.flashFrames);
+  if (combat.health > 0 && combat.health <= (combat.maxHealth ?? PLAYER_MAX_HEALTH) * 0.25) {
+    playSfxCue('low-health', 0.055);
+  }
   spawnBlood(combat.playerX + 12, combat.playerY - 40, '#ff476f');
   if (source === 'enemy-melee') spawnText('MELEE HIT', combat.playerX + 24, combat.playerY - 96, '#ffe84d');
   if (combat.health <= LESTER_BLASTER_TACTICAL_COMBAT_V2.health.deathAtPercent) {
@@ -8255,7 +8325,7 @@ function updateAutoFire(dt) {
       combat.reloading = false;
       combat.clip = combat.clipSize;
       combat.ammo = combat.clip;
-      playSfxCue('pickup', 0.02);
+      playSfxCue('reload-complete', 0.025);
       spawnText('RELOADED', combat.playerX + 20, combat.playerY - 80, '#45ff8a');
     }
     return; // no firing while reloading
@@ -8266,7 +8336,7 @@ function updateAutoFire(dt) {
     combat.reloading = true;
     combat.reloadRemaining = (weapon.reloadSeconds ?? 1.2) / Math.max(0.4, reloadStat);
     spawnText('RELOAD…', combat.playerX + 20, combat.playerY - 80, '#ffe84d');
-    playSfxCue('menu-click', 0.02);
+    playSfxCue('reload-start', 0.025);
     return;
   }
 
@@ -8371,7 +8441,7 @@ function shootRoguelike() {
     emitCombatVfxParticles(createShellCasing(muzzle.x - sideX * 7, muzzle.y - sideY * 4));
   }
   if (gameSettings.screenShake && !gameSettings.reduceMotion) combat.shake = Math.min(8, (combat.shake ?? 0) + profile.screenShake);
-  playSfxCue('weapon-fire', weapon.id === 'auto-miner' ? 0.022 : weapon.id === 'hash-rail' ? 0.045 : 0.035);
+  playSfxCue(weaponFireCueFor(weapon.id), weapon.id === 'auto-miner' ? 0.022 : weapon.id === 'hash-rail' ? 0.045 : 0.035);
 }
 
 function openLevelUpMenu() {
@@ -8393,6 +8463,7 @@ function openLevelUpMenu() {
   });
   document.documentElement.dataset.levelUp = 'true';
   combat.status = 'LEVEL UP: choose one upgrade. The roguelike run is paused until you pick.';
+  playSfxCue('upgrade-offer', 0.065);
   applyCombatFeedback('level-up', {
     level: combat.roguelikeRun?.level ?? 1,
     rerollsRemaining: combat.roguelikeRun?.rerollsRemaining ?? 0,
@@ -8414,6 +8485,7 @@ function rerollLevelUpChoices() {
   });
   combat.levelUpChoices = buildLevelUpPair(offer.options);
   combat.levelUpLockedPreviews = offer.lockedPreviews ?? [];
+  playSfxCue('upgrade-reroll', 0.05);
   syncCombatOverlay();
 }
 
@@ -8503,6 +8575,7 @@ function selectLevelUpUpgrade(skillId) {
       `${titleOfWeapon(weaponId)} ${branchLabel(branchKey)} T${perWeapon[branchKey]}`,
       ISO_CENTER_X - 58, ISO_CENTER_Y - 64, '#ffe84d',
     );
+    playSfxCue('upgrade-pick', 0.07);
     syncCombatOverlay();
     return;
   }
@@ -8516,6 +8589,7 @@ function selectLevelUpUpgrade(skillId) {
   closeLevelUpInteractionGate();
   combat.status = `${skill?.title ?? 'Upgrade'} applied. Prepare for the next pressure wall.`;
   spawnText(`${skill?.title ?? 'UPGRADE'} APPLIED`, ISO_CENTER_X - 44, ISO_CENTER_Y - 64, '#45ff8a');
+  playSfxCue('upgrade-pick', 0.07);
   syncCombatOverlay();
 }
 
@@ -9175,6 +9249,7 @@ function resolveRoguelikeEnemyDeath(enemy, { dropRewards = true, forceXpValue = 
   });
   killEnemy(enemy);
   if (enemy.signatureBoss) {
+    playSfxCue('boss-death', 0.1);
     combat.bossDeathSpectacle = {
       ...enemy,
       id: 'rug-pull-baron',
@@ -9816,6 +9891,7 @@ function applyRoguelikePowerUp(power) {
     default:
       break;
   }
+  playSfxCue(pickupCueFor(power.effect), 0.05);
   applyCombatFeedback('powerup-collect', {
     title: power.title,
     rarity: power.rarity,
@@ -9891,7 +9967,7 @@ function updateLevelOneSignatureBoss(director) {
           phaseId: directive.phase.id,
           phase: directive.phase.phaseNumber,
         });
-        playSfxCue('boss-warning', 0.075);
+        playSfxCue('boss-phase', 0.075);
         if (directive.banner) {
           spawnText(directive.banner, ISO_CENTER_X - 120, ISO_CENTER_Y - 100, '#ff7b2f');
         }
@@ -9937,6 +10013,7 @@ function syncCampaignProgression() {
     if (combat.extractionPoint) {
       spawnText('EXTRACTION LIVE', ISO_CENTER_X - 52, ISO_CENTER_Y - 116, '#45ff8a');
       spawnText(combat.extractionPoint.label, ISO_CENTER_X - 42, ISO_CENTER_Y - 92, '#ffe84d');
+      playSfxCue('extraction-ready', 0.075);
     }
   }
 
@@ -12601,7 +12678,24 @@ function drawEnemies(ctx) {
 const rosterFrameCache = new Map();
 function rosterFrame(src) {
   if (!src) return null;
-  if (!rosterFrameCache.has(src)) rosterFrameCache.set(src, loadImageAsset(src));
+  if (rosterFrameCache.has(src)) return rosterFrameCache.get(src);
+  const region = parseAtlasFrameRef(src);
+  if (!region) {
+    rosterFrameCache.set(src, loadImageAsset(src));
+    return rosterFrameCache.get(src);
+  }
+  const atlas = loadImageAsset(region.src);
+  if (!imageReady(atlas)) return null;
+  const frame = document.createElement('canvas');
+  frame.width = region.width;
+  frame.height = region.height;
+  frame.dataset.atlasFrame = src;
+  frame.getContext('2d')?.drawImage(
+    atlas,
+    region.x, region.y, region.width, region.height,
+    0, 0, region.width, region.height,
+  );
+  rosterFrameCache.set(src, frame);
   return rosterFrameCache.get(src);
 }
 
@@ -12845,9 +12939,10 @@ async function preloadHeroRoster(characterId) {
   const anims = roster?.animations ?? {};
   const idleDirections = anims.idle ?? anims.walk ?? anims.run ?? {};
   const sources = [...new Set(Object.values(idleDirections).map((frames) => frames?.[0]).filter(Boolean))];
-  const images = sources.map((src) => rosterFrame(src)).filter(Boolean);
-  await Promise.all(images.map((image) => decodeImageAsset(image)));
-  return images.filter((image) => imageReady(image)).length;
+  const atlasImages = [...new Set(sources.map(assetSrcForFrameRef))].map((src) => loadImageAsset(src));
+  await Promise.all(atlasImages.map((image) => decodeImageAsset(image)));
+  const frames = sources.map((src) => rosterFrame(src)).filter(Boolean);
+  return frames.filter((image) => imageReady(image)).length;
 }
 
 // --- Roguelike biome-themed enemy sprites (hmh-enemies-wave) -------------------

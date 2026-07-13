@@ -3,7 +3,7 @@
   "validation": {
     "ok": true,
     "gaps": [],
-    "cueCount": 26
+    "cueCount": 83
   },
   "mix": {
     "version": "wo-41-audio-system-v1",
@@ -358,6 +358,737 @@
       ],
       "synth": "triangle",
       "gainMul": 1.05,
+      "samplePreferred": false
+    },
+    "menu-hover": {
+      "family": "ui",
+      "priority": 1,
+      "cooldownMs": 61,
+      "tone": [
+        294
+      ],
+      "synth": "sine",
+      "gainMul": 0.42,
+      "samplePreferred": false
+    },
+    "menu-confirm": {
+      "family": "ui",
+      "priority": 3,
+      "cooldownMs": 123,
+      "tone": [
+        440,
+        659,
+        880
+      ],
+      "synth": "triangle",
+      "gainMul": 0.82,
+      "samplePreferred": false
+    },
+    "menu-back": {
+      "family": "ui",
+      "priority": 2,
+      "cooldownMs": 137,
+      "tone": [
+        587,
+        440
+      ],
+      "synth": "triangle",
+      "gainMul": 0.7,
+      "samplePreferred": false
+    },
+    "modal-open": {
+      "family": "ui",
+      "priority": 2,
+      "cooldownMs": 149,
+      "tone": [
+        330,
+        494
+      ],
+      "synth": "sine",
+      "gainMul": 0.62,
+      "samplePreferred": false
+    },
+    "modal-close": {
+      "family": "ui",
+      "priority": 2,
+      "cooldownMs": 157,
+      "tone": [
+        494,
+        330
+      ],
+      "synth": "sine",
+      "gainMul": 0.6,
+      "samplePreferred": false
+    },
+    "setting-toggle": {
+      "family": "ui",
+      "priority": 2,
+      "cooldownMs": 173,
+      "tone": [
+        740,
+        988
+      ],
+      "synth": "square",
+      "gainMul": 0.58,
+      "samplePreferred": false
+    },
+    "error-denied": {
+      "family": "ui",
+      "priority": 4,
+      "cooldownMs": 311,
+      "tone": [
+        196,
+        185,
+        174
+      ],
+      "synth": "square",
+      "gainMul": 0.88,
+      "samplePreferred": false
+    },
+    "profile-save": {
+      "family": "ui",
+      "priority": 3,
+      "cooldownMs": 331,
+      "tone": [
+        392,
+        587,
+        784
+      ],
+      "synth": "triangle",
+      "gainMul": 0.8,
+      "samplePreferred": false
+    },
+    "footstep-dirt": {
+      "family": "movement",
+      "priority": 1,
+      "cooldownMs": 181,
+      "tone": [
+        86,
+        73
+      ],
+      "synth": "sine",
+      "gainMul": 0.32,
+      "samplePreferred": false
+    },
+    "footstep-road": {
+      "family": "movement",
+      "priority": 1,
+      "cooldownMs": 193,
+      "tone": [
+        118,
+        96
+      ],
+      "synth": "square",
+      "gainMul": 0.28,
+      "samplePreferred": false
+    },
+    "dodge-start": {
+      "family": "movement",
+      "priority": 3,
+      "cooldownMs": 239,
+      "tone": [
+        310,
+        620,
+        930
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.66,
+      "samplePreferred": false
+    },
+    "dodge-end": {
+      "family": "movement",
+      "priority": 2,
+      "cooldownMs": 251,
+      "tone": [
+        620,
+        310
+      ],
+      "synth": "sine",
+      "gainMul": 0.46,
+      "samplePreferred": false
+    },
+    "splash-step": {
+      "family": "movement",
+      "priority": 2,
+      "cooldownMs": 263,
+      "tone": [
+        102,
+        136,
+        92
+      ],
+      "synth": "sine",
+      "gainMul": 0.4,
+      "samplePreferred": false
+    },
+    "brush-rustle": {
+      "family": "movement",
+      "priority": 1,
+      "cooldownMs": 277,
+      "tone": [
+        154,
+        181,
+        147
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.25,
+      "samplePreferred": false
+    },
+    "settler-fire": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 43,
+      "tone": [
+        170,
+        820
+      ],
+      "synth": "square",
+      "gainMul": 0.66,
+      "samplePreferred": false
+    },
+    "auto-miner-fire": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 47,
+      "tone": [
+        145,
+        690
+      ],
+      "synth": "square",
+      "gainMul": 0.5,
+      "samplePreferred": false
+    },
+    "hash-rail-charge": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 353,
+      "tone": [
+        110,
+        220,
+        440,
+        880
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.72,
+      "samplePreferred": false
+    },
+    "hash-rail-fire": {
+      "family": "weapon",
+      "priority": 4,
+      "cooldownMs": 367,
+      "tone": [
+        82,
+        330,
+        1320
+      ],
+      "synth": "square",
+      "gainMul": 1.05,
+      "samplePreferred": false
+    },
+    "spread-ltc-fire": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 79,
+      "tone": [
+        155,
+        233,
+        349
+      ],
+      "synth": "square",
+      "gainMul": 0.78,
+      "samplePreferred": false
+    },
+    "litecoin-blade-swing": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 97,
+      "tone": [
+        920,
+        610,
+        390
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.72,
+      "samplePreferred": false
+    },
+    "litecoin-blade-hit": {
+      "family": "impact",
+      "priority": 3,
+      "cooldownMs": 103,
+      "tone": [
+        260,
+        130,
+        520
+      ],
+      "synth": "square",
+      "gainMul": 0.86,
+      "samplePreferred": false
+    },
+    "grenade-prime": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 283,
+      "tone": [
+        220,
+        233,
+        247
+      ],
+      "synth": "sine",
+      "gainMul": 0.55,
+      "samplePreferred": false
+    },
+    "grenade-throw": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 293,
+      "tone": [
+        330,
+        220,
+        165
+      ],
+      "synth": "triangle",
+      "gainMul": 0.68,
+      "samplePreferred": false
+    },
+    "reload-start": {
+      "family": "weapon",
+      "priority": 2,
+      "cooldownMs": 307,
+      "tone": [
+        260,
+        195
+      ],
+      "synth": "square",
+      "gainMul": 0.48,
+      "samplePreferred": false
+    },
+    "reload-complete": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 317,
+      "tone": [
+        390,
+        585
+      ],
+      "synth": "triangle",
+      "gainMul": 0.62,
+      "samplePreferred": false
+    },
+    "empty-clip": {
+      "family": "weapon",
+      "priority": 3,
+      "cooldownMs": 229,
+      "tone": [
+        120,
+        108
+      ],
+      "synth": "square",
+      "gainMul": 0.54,
+      "samplePreferred": false
+    },
+    "bullet-wall": {
+      "family": "impact",
+      "priority": 1,
+      "cooldownMs": 53,
+      "tone": [
+        310,
+        205
+      ],
+      "synth": "square",
+      "gainMul": 0.42,
+      "samplePreferred": false
+    },
+    "bullet-armor": {
+      "family": "impact",
+      "priority": 2,
+      "cooldownMs": 59,
+      "tone": [
+        430,
+        215
+      ],
+      "synth": "square",
+      "gainMul": 0.58,
+      "samplePreferred": false
+    },
+    "critical-hit": {
+      "family": "impact",
+      "priority": 4,
+      "cooldownMs": 107,
+      "tone": [
+        740,
+        1110,
+        1480
+      ],
+      "synth": "triangle",
+      "gainMul": 0.95,
+      "samplePreferred": false
+    },
+    "shield-hit": {
+      "family": "damage",
+      "priority": 3,
+      "cooldownMs": 127,
+      "tone": [
+        880,
+        660,
+        990
+      ],
+      "synth": "sine",
+      "gainMul": 0.72,
+      "samplePreferred": false
+    },
+    "shield-break": {
+      "family": "damage",
+      "priority": 5,
+      "cooldownMs": 401,
+      "tone": [
+        990,
+        660,
+        330,
+        165
+      ],
+      "synth": "square",
+      "gainMul": 1.12,
+      "samplePreferred": false
+    },
+    "enemy-spawn": {
+      "family": "state",
+      "priority": 1,
+      "cooldownMs": 337,
+      "tone": [
+        147,
+        196
+      ],
+      "synth": "sine",
+      "gainMul": 0.38,
+      "samplePreferred": false
+    },
+    "elite-spawn": {
+      "family": "state",
+      "priority": 4,
+      "cooldownMs": 557,
+      "tone": [
+        98,
+        196,
+        294
+      ],
+      "synth": "square",
+      "gainMul": 0.86,
+      "samplePreferred": false
+    },
+    "enemy-melee-tell": {
+      "family": "impact",
+      "priority": 3,
+      "cooldownMs": 347,
+      "tone": [
+        210,
+        315
+      ],
+      "synth": "sawtooth",
+      "gainMul": 0.64,
+      "samplePreferred": false
+    },
+    "enemy-ranged-tell": {
+      "family": "impact",
+      "priority": 3,
+      "cooldownMs": 359,
+      "tone": [
+        520,
+        390
+      ],
+      "synth": "triangle",
+      "gainMul": 0.6,
+      "samplePreferred": false
+    },
+    "boss-phase": {
+      "family": "boss",
+      "priority": 5,
+      "cooldownMs": 911,
+      "tone": [
+        65,
+        130,
+        260,
+        520
+      ],
+      "synth": "sawtooth",
+      "gainMul": 1.18,
+      "samplePreferred": false
+    },
+    "boss-hit": {
+      "family": "boss",
+      "priority": 3,
+      "cooldownMs": 131,
+      "tone": [
+        105,
+        157
+      ],
+      "synth": "square",
+      "gainMul": 0.76,
+      "samplePreferred": false
+    },
+    "boss-death": {
+      "family": "boss",
+      "priority": 5,
+      "cooldownMs": 1201,
+      "tone": [
+        82,
+        123,
+        196,
+        392,
+        784
+      ],
+      "synth": "triangle",
+      "gainMul": 1.28,
+      "samplePreferred": false
+    },
+    "health-pickup": {
+      "family": "reward",
+      "priority": 3,
+      "cooldownMs": 163,
+      "tone": [
+        523,
+        698,
+        1047
+      ],
+      "synth": "sine",
+      "gainMul": 0.88,
+      "samplePreferred": false
+    },
+    "ammo-pickup": {
+      "family": "reward",
+      "priority": 2,
+      "cooldownMs": 167,
+      "tone": [
+        330,
+        440,
+        550
+      ],
+      "synth": "square",
+      "gainMul": 0.7,
+      "samplePreferred": false
+    },
+    "shield-pickup": {
+      "family": "reward",
+      "priority": 4,
+      "cooldownMs": 179,
+      "tone": [
+        659,
+        988,
+        1319
+      ],
+      "synth": "sine",
+      "gainMul": 0.96,
+      "samplePreferred": false
+    },
+    "one-up-pickup": {
+      "family": "reward",
+      "priority": 5,
+      "cooldownMs": 613,
+      "tone": [
+        523,
+        659,
+        784,
+        1047,
+        1319
+      ],
+      "synth": "triangle",
+      "gainMul": 1.2,
+      "samplePreferred": false
+    },
+    "upgrade-offer": {
+      "family": "reward",
+      "priority": 4,
+      "cooldownMs": 431,
+      "tone": [
+        392,
+        587,
+        880
+      ],
+      "synth": "triangle",
+      "gainMul": 0.92,
+      "samplePreferred": false
+    },
+    "upgrade-pick": {
+      "family": "reward",
+      "priority": 5,
+      "cooldownMs": 443,
+      "tone": [
+        587,
+        880,
+        1175
+      ],
+      "synth": "triangle",
+      "gainMul": 1.05,
+      "samplePreferred": false
+    },
+    "upgrade-reroll": {
+      "family": "reward",
+      "priority": 3,
+      "cooldownMs": 457,
+      "tone": [
+        880,
+        659,
+        988
+      ],
+      "synth": "sine",
+      "gainMul": 0.78,
+      "samplePreferred": false
+    },
+    "achievement-unlock": {
+      "family": "reward",
+      "priority": 5,
+      "cooldownMs": 1301,
+      "tone": [
+        523,
+        784,
+        1047,
+        1568,
+        2093
+      ],
+      "synth": "triangle",
+      "gainMul": 1.25,
+      "samplePreferred": false
+    },
+    "combo-tier": {
+      "family": "reward",
+      "priority": 3,
+      "cooldownMs": 211,
+      "tone": [
+        440,
+        660,
+        990
+      ],
+      "synth": "square",
+      "gainMul": 0.75,
+      "samplePreferred": false
+    },
+    "rare-drop": {
+      "family": "reward",
+      "priority": 5,
+      "cooldownMs": 701,
+      "tone": [
+        784,
+        1175,
+        1568
+      ],
+      "synth": "sine",
+      "gainMul": 1.12,
+      "samplePreferred": false
+    },
+    "pause": {
+      "family": "state",
+      "priority": 2,
+      "cooldownMs": 223,
+      "tone": [
+        392,
+        294
+      ],
+      "synth": "sine",
+      "gainMul": 0.52,
+      "samplePreferred": false
+    },
+    "resume": {
+      "family": "state",
+      "priority": 2,
+      "cooldownMs": 227,
+      "tone": [
+        294,
+        392
+      ],
+      "synth": "sine",
+      "gainMul": 0.54,
+      "samplePreferred": false
+    },
+    "low-health": {
+      "family": "damage",
+      "priority": 5,
+      "cooldownMs": 1703,
+      "tone": [
+        88,
+        88,
+        110
+      ],
+      "synth": "square",
+      "gainMul": 0.78,
+      "samplePreferred": false
+    },
+    "wave-start": {
+      "family": "state",
+      "priority": 4,
+      "cooldownMs": 1009,
+      "tone": [
+        196,
+        294,
+        392
+      ],
+      "synth": "square",
+      "gainMul": 0.9,
+      "samplePreferred": false
+    },
+    "wave-clear": {
+      "family": "state",
+      "priority": 4,
+      "cooldownMs": 1013,
+      "tone": [
+        392,
+        587,
+        784
+      ],
+      "synth": "triangle",
+      "gainMul": 0.94,
+      "samplePreferred": false
+    },
+    "checkpoint": {
+      "family": "state",
+      "priority": 4,
+      "cooldownMs": 1031,
+      "tone": [
+        330,
+        494,
+        740
+      ],
+      "synth": "sine",
+      "gainMul": 0.88,
+      "samplePreferred": false
+    },
+    "extraction-ready": {
+      "family": "state",
+      "priority": 5,
+      "cooldownMs": 1103,
+      "tone": [
+        262,
+        523,
+        1047
+      ],
+      "synth": "triangle",
+      "gainMul": 1.05,
+      "samplePreferred": false
+    },
+    "extraction-complete": {
+      "family": "state",
+      "priority": 5,
+      "cooldownMs": 1601,
+      "tone": [
+        523,
+        784,
+        1047,
+        1568
+      ],
+      "synth": "sine",
+      "gainMul": 1.2,
+      "samplePreferred": false
+    },
+    "victory": {
+      "family": "state",
+      "priority": 5,
+      "cooldownMs": 2003,
+      "tone": [
+        392,
+        523,
+        659,
+        784,
+        1047
+      ],
+      "synth": "triangle",
+      "gainMul": 1.3,
       "samplePreferred": false
     }
   }

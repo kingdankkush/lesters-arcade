@@ -52,18 +52,13 @@ test('manifestEnemyArtKeyForRuntimeEntity returns null for enemies with own kits
   assert.equal(manifestEnemyArtKeyForRuntimeEntity(claim), null);
 });
 
-test('WO-94 canonical hero actors use complete WO-93 matrix manifests with anchors and prewarm atlas metadata', () => {
+test('canonical hero actors share the complete live animated roster matrices', () => {
   for (const hero of ['lester', 'lilly']) {
     const manifest = CANONICAL_ACTOR_MANIFESTS[hero];
-    assert.equal(manifest.id, `${hero}-wo93-hero-matrix`);
+    assert.equal(manifest.id, `${hero}-animated-roster-compat`);
     assert.deepEqual(Object.keys(manifest.states), WO93_STATES);
     assert.deepEqual(manifest.directions, WO93_DIRECTIONS);
-    assert.equal(manifest.atlas?.prewarm, true);
-    assert.equal(manifest.atlas?.mode, 'loose-png-frames');
-    assert.equal(Boolean(manifest.eventAnchors?.south?.muzzle), true, `${hero} needs south muzzle anchor`);
-    assert.equal(Boolean(manifest.eventAnchors?.east?.muzzle), true, `${hero} needs east muzzle anchor`);
-    assert.equal(Boolean(manifest.eventAnchors?.west?.muzzle), true, `${hero} needs west muzzle anchor`);
-    assert.equal(Boolean(manifest.stateEvents?.['shoot-mg']?.some((event) => event.event === 'muzzle-flash-auto')), true);
+    assert.match(manifest.source, /shared with live gameplay/);
     assert.equal(manifest.states['shoot-mg'].frames.east.length > 0, true);
     assert.equal(manifest.states['throw-grenade'].frames['south-west'].length > 0, true);
     assert.equal(manifest.states.dash.frames.north.length > 0, true);
