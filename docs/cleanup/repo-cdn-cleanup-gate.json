@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-03T19:14:10.369Z",
+  "generatedAt": "2026-07-13T16:08:49.488Z",
   "status": "approval-gated",
   "summary": {
-    "workingTreeBytes": 598968431,
-    "gitBytes": "1.39 GiB",
-    "assetBytes": 560372607,
+    "workingTreeBytes": 1424506262,
+    "gitBytes": "1.54 GiB",
+    "assetBytes": 915429877,
     "cdnCandidateCount": 33,
     "cdnCandidateBytes": 118489898,
-    "vaultExists": true,
+    "vaultExists": false,
     "vaultRemoteConfigured": false
   },
   "largestFiles": [
@@ -18,7 +18,7 @@
     },
     {
       "path": "apps/portal/assets/hmh-level-editor/runtime-sprite-library.json",
-      "sizeBytes": 6813321,
+      "sizeBytes": 6656971,
       "runtimeReferenced": true
     },
     {
@@ -57,9 +57,14 @@
       "runtimeReferenced": true
     },
     {
+      "path": "apps/portal/assets/hmh-curated-level-kit/Universal/Ground-textures/grassland_2x2.png",
+      "sizeBytes": 5012917,
+      "runtimeReferenced": false
+    },
+    {
       "path": "apps/portal/assets/video/arcade-promo-loop.gif",
       "sizeBytes": 4174352,
-      "runtimeReferenced": false
+      "runtimeReferenced": true
     },
     {
       "path": "apps/portal/assets/audio/music/litvm-going-to-the-moon-new-2.mp3",
@@ -104,11 +109,6 @@
     {
       "path": "apps/portal/assets/audio/music/lester-and-lilly-rap-getting-lit-vocals.mp3",
       "sizeBytes": 3236543,
-      "runtimeReferenced": true
-    },
-    {
-      "path": "apps/portal/assets/audio/playlist/lit-zero-16-bit-arcade-music-track-1.mp3",
-      "sizeBytes": 3088772,
       "runtimeReferenced": true
     }
   ],
@@ -179,11 +179,11 @@
     {
       "path": "assets/video/arcade-promo-loop.gif",
       "sizeBytes": 4174352,
-      "runtimeReferenced": false,
+      "runtimeReferenced": true,
       "action": "cdn-candidate",
       "destructive": false,
       "requiresApproval": true,
-      "rationale": "Large media should move to the vault/CDN path before any repo deletion."
+      "rationale": "Runtime-referenced media can move only after MEDIA_BASE/CDN URL support, production URL upload, and live fetch verification."
     },
     {
       "path": "assets/audio/music/litvm-going-to-the-moon-new-2.mp3",

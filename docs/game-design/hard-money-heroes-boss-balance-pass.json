@@ -61,8 +61,8 @@
     },
     {
       "role": "boss",
-      "enemyId": "bandit-captain",
-      "title": "Bandit Captain",
+      "enemyId": "rug-pull-baron",
+      "title": "The Rug Pull Baron",
       "zoneId": "rugpull-gulch-boss-yard",
       "firstSeenSeconds": 510,
       "beatId": "beat-002-major-boss",

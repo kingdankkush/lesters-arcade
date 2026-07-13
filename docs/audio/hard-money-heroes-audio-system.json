@@ -3,7 +3,7 @@
   "validation": {
     "ok": true,
     "gaps": [],
-    "cueCount": 25
+    "cueCount": 26
   },
   "mix": {
     "version": "wo-41-audio-system-v1",
@@ -90,6 +90,19 @@
       "synth": "triangle",
       "gainMul": 0.78,
       "samplePreferred": true
+    },
+    "dash": {
+      "family": "movement",
+      "priority": 3,
+      "cooldownMs": 140,
+      "tone": [
+        260,
+        520,
+        780
+      ],
+      "synth": "square",
+      "gainMul": 0.72,
+      "samplePreferred": false
     },
     "land": {
       "family": "movement",

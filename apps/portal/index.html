@@ -10,7 +10,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="apple-touch-icon" href="./assets/lester-pilot.svg" />
     <title>Lester's Arcade — LitVM Web3 Arcade | Hard Money Heroes</title>
-    <meta name="description" content="Lester's Arcade is a retro Web3 arcade on LitVM LiteForge testnet. Play Hard Money Heroes — a 60fps isometric roguelite twin-stick survival shooter with crypto/Litecoin satire themes. Free to play, connect wallet for ranked runs." />
+    <meta name="description" content="Lester's Arcade is a retro Web3 arcade on LitVM LiteForge testnet. Play Hard Money Heroes, a 60fps isometric roguelite survival shooter. Free play and canonical local Ranked preview are available now." />
     <meta name="keywords" content="Lester's Arcade, Hard Money Heroes, LitVM, Litecoin, Web3 arcade, roguelite, isometric shooter, blockchain gaming, zkLTC, testnet" />
     <meta name="author" content="Lester's Arcade" />
     <meta name="robots" content="index, follow" />
@@ -20,7 +20,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://lestersarcade.io/" />
     <meta property="og:title" content="Lester's Arcade — LitVM Web3 Arcade" />
-    <meta property="og:description" content="Play Hard Money Heroes — a 60fps isometric roguelite survival shooter on LitVM LiteForge testnet. Free to play, ranked runs on-chain." />
+    <meta property="og:description" content="Play Hard Money Heroes, a 60fps isometric roguelite survival shooter. Free play and canonical local Ranked preview are available now." />
     <meta property="og:image" content="https://lestersarcade.io/assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg" />
     <meta property="og:site_name" content="Lester's Arcade" />
 
@@ -28,7 +28,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://lestersarcade.io/" />
     <meta name="twitter:title" content="Lester's Arcade — LitVM Web3 Arcade" />
-    <meta name="twitter:description" content="Play Hard Money Heroes — a 60fps isometric roguelite survival shooter on LitVM LiteForge testnet. Free to play, ranked runs on-chain." />
+    <meta name="twitter:description" content="Play Hard Money Heroes, a 60fps isometric roguelite survival shooter. Free play and canonical local Ranked preview are available now." />
     <meta name="twitter:image" content="https://lestersarcade.io/assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg" />
 
     <!-- Favicon -->
@@ -38,19 +38,20 @@
     <link rel="preconnect" href="https://vercel.com" />
     <!-- Critical CSS inline (first 2KB) to avoid render blocking -->
     <style>
-      body { margin: 0; background: #05070f; color: #e4e4e7; font-family: system-ui, -apple-system, sans-serif; }
+      body { margin: 0; background: var(--navy-950, #05070f); color: var(--text-primary, #e4e4e7); font-family: var(--font-ui, system-ui, sans-serif); }
       .arcade-shell { min-height: 100vh; }
       .official-app { position: relative; }
       .crt-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
     </style>
+    <link rel="stylesheet" href="./src/design-tokens.css?v=hmh-ship-polish-v41" />
     <link rel="preload" href="./assets/generated/hmh-key-art/hard-money-heroes-keyart-bg.jpg" as="image" fetchpriority="high" />
-    <link rel="modulepreload" href="./dist/main.js?v=hmh-jul12-canonical-ranked-v40" />
+    <link rel="modulepreload" href="./dist/main.js?v=hmh-ship-polish-v41" />
     <!-- Deferred stylesheets -->
-    <link rel="preload" href="./styles.css?v=hmh-jul12-canonical-ranked-v40" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-jul12-canonical-ranked-v40" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles.css?v=hmh-ship-polish-v41" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="preload" href="./styles-arcade-polish.css?v=hmh-ship-polish-v41" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript>
-      <link rel="stylesheet" href="./styles.css?v=hmh-jul12-canonical-ranked-v40" />
-      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-jul12-canonical-ranked-v40" />
+      <link rel="stylesheet" href="./styles.css?v=hmh-ship-polish-v41" />
+      <link rel="stylesheet" href="./styles-arcade-polish.css?v=hmh-ship-polish-v41" />
     </noscript>
   </head>
   <body>
@@ -62,7 +63,7 @@
         <div id="rankedEntryModal" class="ranked-entry-overlay" hidden role="dialog" aria-modal="true" aria-label="Ranked pre-flight check">
           <div class="ranked-entry-card">
             <p class="eyebrow">Ranked · Pre-Flight Check</p>
-            <p class="ranked-entry-copy">Ranked is official: when your run ends, your score, kills, combo, achievements, and name are published on-chain to LitVM as a permanent record. On testnet the only cost is the <strong>zkLTC gas</strong> to write it. We check below that you're set up before you start, so you never finish a run and get stuck unable to publish.</p>
+            <p class="ranked-entry-copy">Ranked preview creates a canonical local session with deterministic integrity evidence. Verified on-chain publishing remains disabled until the hardened verifier deployment is separately approved. No transaction or zkLTC is required for this preview.</p>
             <div class="ranked-entry-rows">
               <div class="ranked-entry-row"><span>Network</span><strong id="rankedEntryNetwork">LitVM LiteForge · 4441</strong></div>
               <div class="ranked-entry-row"><span>Wallet</span><strong id="rankedEntryWallet">—</strong></div>
@@ -74,7 +75,7 @@
               <button id="rankedEntryCancel" class="back-nav-button" type="button">Cancel</button>
               <button id="rankedEntryApprove" class="primary-button big-action" type="button">Start Ranked Run</button>
             </div>
-            <p class="tiny-note" id="rankedEntryFootnote">Testnet only. No signature or transaction is needed to start — you'll confirm one zkLTC-gas transaction in your wallet automatically when the run ends, to publish your score.</p>
+            <p class="tiny-note" id="rankedEntryFootnote">Testnet preview only. Your wallet identifies the local session. No score transaction is sent while verified settlement is disabled.</p>
           </div>
         </div>
 
@@ -546,7 +547,7 @@
       </div>
     </main>
 
-    <script type="module" src="./dist/main.js?v=hmh-jul12-canonical-ranked-v40"></script>
+    <script type="module" src="./dist/main.js?v=hmh-ship-polish-v41"></script>
     <script>
       // Register the service worker for offline + repeat-visit caching. Fails
       // silently on unsupported browsers / file:// and never blocks the app.

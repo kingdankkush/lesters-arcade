@@ -16,6 +16,7 @@ import { registerGame, getSharedPlayerProfile, submitGameRun } from './src/game-
 import { buildSiweChallenge, isValidLogin, createProviderRegistry } from './src/wallet-auth.mjs';
 import { HMH_SFX_MANIFEST } from './assets/audio/sfx/sfx-manifest.mjs';
 import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManualAim, buildManualGrenadeTarget, buildManualAimInputModel, buildTouchControlLayout, combatCanvasRenderScale, shouldMirrorMovementIntoAim } from './src/device-model.mjs';
+import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
 import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
@@ -237,7 +238,7 @@ import {
   buildPlayerArcadeSnapshot,
   buildProfileExperienceV2Model,
 } from './src/arcade-core.mjs';
-import { buildSettlementPlan, settleRun, SETTLEMENT_LIVE, estimateSettlementGas, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
+import { SETTLEMENT_LIVE, estimateSettlementGas, LITVM_CONTRACT_ADDRESSES } from './src/settlement.mjs';
 import { validateRunPlausibility } from './src/hmh-run-integrity.mjs';
 import { CURRENT_RANKED_SEASON_ID, finalizeSessionEvidence, recordSessionEvent, recordSessionInput } from './src/session-integrity.mjs';
 import { buildLevelOneBossDirective, computeBossVolleyVectors, buildLevelOneMiniBossDirective } from './src/hmh-level-one-boss.mjs';
@@ -920,6 +921,7 @@ const combatAudio = {
 const gameSettings = {
   screenShake: true,
   gore: true,
+  autoEnterFullscreen: true,
   reduceMotion: false,
   reduceFlash: false,
   colorblindTags: false,
@@ -2123,7 +2125,9 @@ function currentPlayerBestScoreForMode(mode = currentSession?.mode ?? officialSe
 
 function gameplaySyncCopy() {
   const modeCopy = officialSelectedMode === 'ranked'
-    ? 'Ranked testnet: official score sync is held until game-over submission; restart requires a new paid credit.'
+    ? SETTLEMENT_LIVE
+      ? 'Ranked testnet: verified score sync is held until game-over submission; restart creates a new verified session.'
+      : 'Ranked preview: canonical evidence is saved locally; no transaction or on-chain leaderboard write occurs.'
     : 'Free practice: local sandbox only; restart is free and never writes profile/leaderboard state.';
   const phase = combat.stagePhase === 'travel'
     ? `player-led advance to Stage ${combat.stageIndex} engagement`
@@ -2165,6 +2169,7 @@ function currentGameOverSummaryModel() {
     previousBestScore: lastRunPreviousBestScore || currentPlayerBestScoreForMode(session?.mode),
     sessionStreak: sessionRunStreak || 1,
     backgroundSettlementQueued: Boolean(lastSettlementQueued && !lastSettlementSucceeded),
+    settlementLive: SETTLEMENT_LIVE,
   });
 }
 
@@ -2436,6 +2441,23 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     console.warn('[integrity] ranked run flagged suspicious (published, marked for review):', integrity.flags);
   }
 
+  if (!SETTLEMENT_LIVE) {
+    clearActiveSessionCheckpoint(state, settlementInput.sessionId, { submitted: false });
+    persistArcadeStateSoon();
+    lastSettlementQueued = false;
+    lastSettlementSucceeded = false;
+    lastSettlementError = null;
+    lastSettlementTxUrl = null;
+    if (dom.combatStatus) {
+      dom.combatStatus.textContent = 'Canonical Ranked preview saved locally. No transaction was sent; verified on-chain publishing remains disabled.';
+    }
+    if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
+    if (officialAppStep === 'profile') renderOfficialProfile();
+    renderGameOverSummary();
+    renderCombatMenuActionGrid();
+    return;
+  }
+
   // LIVE player-signed path: if settlement is live AND the player connected a
   // real injected wallet (not the mock), submit the run on-chain from THEIR
   // wallet (one confirmation, they pay the zkLTC gas). Otherwise fall back to
@@ -2509,28 +2531,14 @@ async function settleRankedRun(settlementInput, runStats = {}) {
     }
   }
 
-  // SIMULATED fallback (mock wallet / offline QA): deterministic receipt.
-  try {
-    const plan = buildSettlementPlan(settlementInput);
-    const settlement = await settleRun(plan, { live: false });
-    settlement.integrity = integrity;
-    applySettlement(state, settlement);
-    clearActiveSessionCheckpoint(state, settlementInput.sessionId, { submitted: false });
-    persistArcadeStateSoon();
-    lastSettlementQueued = false;
-    lastSettlementSucceeded = true;
-    const shortTx = settlement.primaryTxHash ? `${settlement.primaryTxHash.slice(0, 10)}…${settlement.primaryTxHash.slice(-6)}` : 'pending';
-    if (dom.combatStatus) {
-      dom.combatStatus.textContent = `Official score recorded (simulated settlement — connect a real wallet for an on-chain publish). Tx ${shortTx}.`;
-    }
-    if (officialAppStep === 'leaderboards') renderOfficialLeaderboards();
-    if (officialAppStep === 'profile') renderOfficialProfile();
-  } catch (err) {
-    if (dom.combatStatus) {
-      dom.combatStatus.textContent = `Score recorded, but settlement is pending: ${err.message}`;
-    }
-    console.warn('[settlement] failed:', err);
+  lastSettlementQueued = false;
+  lastSettlementSucceeded = false;
+  lastSettlementError = 'Verified publishing requires an approved deployment and a real injected wallet.';
+  if (dom.combatStatus) {
+    dom.combatStatus.textContent = 'Canonical evidence is preserved, but no transaction was sent. Verified publishing requires an approved deployment and a real injected wallet.';
   }
+  renderGameOverSummary();
+  renderCombatMenuActionGrid();
 }
 
 const activeLevelUpPointerIds = new Set();
@@ -2749,6 +2757,7 @@ function renderCombatMenuActionGrid() {
     viewportMode: combat.viewportMode,
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
     officialScoreSubmitted: lastSettlementSucceeded,
+    officialSubmissionEnabled: SETTLEMENT_LIVE,
   });
   const actions = menu.actions.map((action) => {
     if (action.id === 'resume') return { ...action, run: () => toggleCombatPause(false) };
@@ -3139,13 +3148,14 @@ function syncCombatOverlay() {
     viewportMode: combat.viewportMode,
     currentMode: currentSession?.mode ?? officialSelectedMode ?? 'free',
     officialScoreSubmitted: lastSettlementSucceeded,
+    officialSubmissionEnabled: SETTLEMENT_LIVE,
   });
   const menuEyebrow = dom.combatMenuPanel?.querySelector(':scope > .eyebrow');
   if (menuEyebrow) menuEyebrow.textContent = combat.levelUpPaused ? 'LEVEL UP' : menu.kicker;
   if (dom.combatMenuTitle) dom.combatMenuTitle.textContent = combat.levelUpPaused ? `Level ${combat.roguelikeRun?.level ?? 1} Upgrade` : menu.title;
   if (dom.combatMenuCopy) {
     dom.combatMenuCopy.textContent = combat.gameOver
-      ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again restarts free mode immediately; ranked mode requires a new paid credit.`
+      ? `${combat.gameOverReason || 'Lester was defeated.'} Score ${combat.score.toLocaleString()} // ${combat.kills} enemies cleared. Play Again starts a fresh ${SETTLEMENT_LIVE ? 'verified session' : 'free local Ranked preview'}.`
       : combat.levelUpPaused
         ? 'The isometric roguelike run is paused. Pick one of two guided augments: continue your build or start a new tree. Reroll refreshes both slots.'
         : menu.copy;
@@ -3235,6 +3245,13 @@ function toggleCombatAutoAimSetting() {
   syncCombatOverlay();
 }
 
+function toggleAutoEnterFullscreenSetting() {
+  gameSettings.autoEnterFullscreen = !gameSettings.autoEnterFullscreen;
+  saveGameSettings();
+  playSfxCue('menu-click');
+  syncCombatOverlay();
+}
+
 function toggleTouchHandednessSetting() {
   gameSettings.touchLeftHanded = !gameSettings.touchLeftHanded;
   saveGameSettings();
@@ -3272,6 +3289,7 @@ function renderCombatSettingsPanel() {
     { id: 'music', label: combat.musicEnabled ? 'Music On' : 'Music Off', run: toggleCombatMusic },
     { id: 'gore', label: gameSettings.gore ? 'Gore On' : 'Gore Off', run: toggleCombatGoreSetting },
     { id: 'viewport', label: combat.viewportMode === 'fullscreen' || combat.viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', run: cycleCombatViewport },
+    { id: 'auto-fullscreen', label: gameSettings.autoEnterFullscreen ? 'Auto Fullscreen On' : 'Auto Fullscreen Off', run: toggleAutoEnterFullscreenSetting },
   ];
   for (const action of quickActions) {
     const button = el('button', { className: 'combat-menu-action combat-settings-action', type: 'button' });
@@ -3326,7 +3344,9 @@ async function restartCombatRun() {
   playSfxCue('level-start');
   const wasPaid = currentSession?.isPaid || officialSelectedMode === 'ranked';
   if (wasPaid) {
-    dom.combatStatus.textContent = 'Ranked restart selected: this starts a fresh local ranked attempt and represents a new testnet credit in the official flow. Prior ranked state is not silently resubmitted.';
+    dom.combatStatus.textContent = SETTLEMENT_LIVE
+      ? 'Ranked restart selected: this starts a fresh verified session. Prior ranked state is not silently resubmitted.'
+      : 'Ranked preview restarted locally with a fresh canonical session. No transaction is sent.';
     currentSession = beginTrackedSession({ mode: 'paid' });
   } else {
     dom.combatStatus.textContent = 'Free practice restarted from Level 1 Stage 1. No profile, leaderboard, transaction, or ranked state is written.';
@@ -3356,13 +3376,21 @@ function resizeCombatCanvas() {
   const canvas = dom.combatCanvas;
   if (!canvas) return;
   const rect = canvas.getBoundingClientRect();
-  const dpr = combatCanvasRenderScale({
+  const performanceDpr = combatCanvasRenderScale({
     cssWidth: rect.width,
     cssHeight: rect.height,
     devicePixelRatio: window.devicePixelRatio || 1,
   });
-  const targetWidth = Math.max(1, Math.round(rect.width * dpr));
-  const targetHeight = Math.max(1, Math.round(rect.height * dpr));
+  const fit = computeCombatViewportFit({
+    cssWidth: rect.width,
+    cssHeight: rect.height,
+    devicePixelRatio: window.devicePixelRatio || 1,
+    maxDevicePixelRatio: performanceDpr,
+  });
+  const targetWidth = fit.backingStore.width;
+  const targetHeight = fit.backingStore.height;
+  canvas.dataset.orientation = fit.orientation;
+  canvas.dataset.worldZoom = String(fit.worldZoom);
   if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
     canvas.width = targetWidth;
     canvas.height = targetHeight;
@@ -3378,8 +3406,49 @@ function scheduleCombatViewportRelayout(delayMs = 0) {
   if (delayMs > 0) setTimeout(relayout, delayMs);
 }
 
-async function requestCombatFullscreen() {
+function fullscreenEnvironment() {
   const target = dom.officialCombatMount ?? dom.officialGameplay ?? dom.combatCanvas;
+  const standalone = Boolean(
+    window.matchMedia?.('(display-mode: standalone)')?.matches
+    || window.navigator?.standalone,
+  );
+  const isIos = /iPad|iPhone|iPod/.test(window.navigator?.userAgent ?? '')
+    || (window.navigator?.platform === 'MacIntel' && (window.navigator?.maxTouchPoints ?? 0) > 1);
+  return {
+    target,
+    capability: browserFullscreenCapability({
+      hasRequestFullscreen: Boolean(target?.requestFullscreen),
+      standalone,
+      isIos,
+    }),
+  };
+}
+
+function showIosFullscreenInstallTip() {
+  const storageKey = 'hmh-ios-fullscreen-tip-dismissed';
+  try {
+    if (localStorage.getItem(storageKey) === 'true') return;
+  } catch { /* storage may be unavailable */ }
+  if (document.getElementById('hmhIosFullscreenTip')) return;
+  const tip = el('aside', {
+    id: 'hmhIosFullscreenTip',
+    className: 'fullscreen-install-tip',
+    role: 'status',
+    ariaLive: 'polite',
+  });
+  appendText(tip, 'strong', 'Want true fullscreen on iPhone or iPad?');
+  appendText(tip, 'span', 'Use Share → Add to Home Screen. Safari play still fills the visible viewport and respects safe areas.');
+  const dismiss = el('button', { type: 'button', className: 'ghost-button', textContent: 'Got it' });
+  dismiss.addEventListener('click', () => {
+    try { localStorage.setItem(storageKey, 'true'); } catch { /* storage may be unavailable */ }
+    tip.remove();
+  });
+  tip.append(dismiss);
+  (dom.officialCombatMount ?? document.body).append(tip);
+}
+
+async function requestCombatFullscreen() {
+  const { target, capability } = fullscreenEnvironment();
   const screenWidth = window.screen?.width ?? window.innerWidth;
   const screenHeight = window.screen?.height ?? window.innerHeight;
   const model = buildFullscreenViewportModel({
@@ -3391,6 +3460,16 @@ async function requestCombatFullscreen() {
   combat.viewportMode = 'fullscreen';
   dom.officialCombatMount?.style.setProperty('--combat-fullscreen-width', `${model.devicePixels.width}px`);
   dom.officialCombatMount?.style.setProperty('--combat-fullscreen-height', `${model.devicePixels.height}px`);
+  if (!capability.canEnter) {
+    combat.viewportMode = 'expanded-fullscreen';
+    combat.status = capability.mode === 'standalone'
+      ? 'Standalone play is already chromeless. The combat canvas is fitted to the full app viewport.'
+      : 'Browser element fullscreen is unavailable. The combat canvas is fitted to the full visible viewport.';
+    if (capability.showInstallTip) showIosFullscreenInstallTip();
+    scheduleCombatViewportRelayout(120);
+    syncCombatOverlay();
+    return;
+  }
   try {
     if (!document.fullscreenElement && target?.requestFullscreen) {
       await target.requestFullscreen({ navigationUI: 'hide' });
@@ -5126,7 +5205,9 @@ async function startOfficialMode(mode) {
           dom.officialRankedTooltip.dataset.state = 'needs-wallet';
           dom.officialRankedTooltip.replaceChildren();
           appendText(dom.officialRankedTooltip, 'strong', 'Connect a wallet to play Ranked');
-          appendText(dom.officialRankedTooltip, 'span', 'Ranked runs publish your score on-chain, so they need a connected wallet. Free Mode is always available without one.');
+          appendText(dom.officialRankedTooltip, 'span', SETTLEMENT_LIVE
+            ? 'Verified Ranked runs publish your score on-chain, so they need a connected wallet. Free Mode is always available without one.'
+            : 'Ranked preview uses your wallet address as canonical session identity. It does not publish or require zkLTC while settlement is disabled. Free Mode is always wallet-free.');
         }
         return;
       }
@@ -5350,11 +5431,19 @@ function waitForPlayerReady() {
       playSfxCue('menu-click', 0.05);
       resolve();
     };
-    const onActivate = () => cleanup();
+    let activating = false;
+    const onActivate = async () => {
+      if (activating) return;
+      activating = true;
+      if (gameSettings.autoEnterFullscreen && !document.fullscreenElement) {
+        await requestCombatFullscreen();
+      }
+      cleanup();
+    };
     const onKey = (e) => {
       if (e.key === ' ' || e.key === 'Spacebar' || e.key === 'Enter') {
         e.preventDefault();
-        cleanup();
+        onActivate();
       }
     };
     overlay.addEventListener('click', onActivate);
@@ -13679,6 +13768,11 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   const key = event.key.toLowerCase();
+  if (officialAppStep === 'gameplay' && event.altKey && key === 'enter') {
+    event.preventDefault();
+    if (!event.repeat) cycleCombatViewport();
+    return;
+  }
   if (combat.levelUpPaused) {
     event.preventDefault();
     if (event.repeat || !levelUpSelectionReady()) return;

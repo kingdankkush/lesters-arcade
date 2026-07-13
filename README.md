@@ -6,7 +6,7 @@ Lester's Arcade is the parent dapp: one wallet-connected arcade shell, one playe
 
 🔗 **Live:** [lestersarcade.io](https://lestersarcade.io)  
 🕹️ **Flagship cabinet:** [Hard Money Heroes](#hard-money-heroes)  
-🧪 **Current local gate:** 972 passing tests, syntax check, contract structure check, build gate
+🧪 **Current local gate:** `npm run ship:gate` (automated code/art/security/browser gates plus a strict repo budget)
 
 ![Hero](https://lestersarcade.io/assets/generated/hmh-key-art/hmh-loading-keyart-1.jpg)
 
@@ -17,10 +17,10 @@ Lester's Arcade is the parent dapp: one wallet-connected arcade shell, one playe
 | Area | Status | Notes |
 | --- | --- | --- |
 | Lester's Arcade portal | Live | Wallet-ready arcade shell with cabinet loader, profile surfaces, leaderboards, music, and responsive controls. |
-| Hard Money Heroes | Live, actively polished | Isometric crypto-satire roguelite with finite authored Level 1 world, compact upgrade UI, ranked/free modes, character unlock progression, and large generated-art pipeline. |
-| LitVM contracts | Ready for approved deployment flow | Solidity contracts live in `contracts/src/`; structure checks pass. No contract deployment or real funds without explicit approval. |
+| Hard Money Heroes | Live, actively polished | Isometric crypto-satire roguelite with a finite authored Level 1 world, compact upgrade UI, free play, and canonical local Ranked preview. |
+| LitVM contracts | Fail-closed preview | Solidity contracts and verification tooling live in `contracts/src/`, but verified settlement is disabled. No deployment, transaction, or real-value economy is implied. |
 | Generated art pipeline | Active | Repo-owned Python/Node pipelines generate hero, enemy, world, UI, VFX, achievement, and certification artifacts. |
-| PixelLab | Available | WO-99 confirmed active Tier 3 access with 10,000 generations remaining; bosses are explicitly queued as future PixelLab completion debt. |
+| Level 1 art | Certified | The 23 runtime-spawnable Level 1 actor rows and four playable heroes have complete ship-scope animation coverage. Future-level city actors remain explicit debt. |
 | Device QA | Desktop fallback verified | Device/input matrix passes locally. Real Android/iOS QA is blocked on this Windows host until `adb`/`scrcpy`/iOS bridge tools and devices are attached. |
 
 ---
@@ -62,7 +62,7 @@ Any LitVM dev team can onboard a cabinet by:
 3. Returning a `{ manifest, entryPoint, adapter }` object from the loader
 4. Passing the sandbox/security and runtime integration checks
 
-See [`docs/THIRD_PARTY_GAME_ONBOARDING.md`](docs/THIRD_PARTY_GAME_ONBOARDING.md) for the contract.
+Start with [`sdk/README.md`](sdk/README.md), then use [`docs/THIRD_PARTY_GAME_ONBOARDING.md`](docs/THIRD_PARTY_GAME_ONBOARDING.md) for the full security contract.
 
 ### Current cabinets
 
@@ -80,8 +80,8 @@ See [`docs/THIRD_PARTY_GAME_ONBOARDING.md`](docs/THIRD_PARTY_GAME_ONBOARDING.md)
 
 ### What is playable now
 
-- **Free mode and ranked mode:** ranked progress is separated from free-mode practice.
-- **Character select:** Lit Commando and Lit Valkyrie are starter heroes; Lester unlocks at 10 settled ranked matches, Lilly at 20.
+- **Free mode and Ranked preview:** Free is wallet-free practice. Ranked preview records canonical local evidence but sends no transaction while verified settlement is disabled.
+- **Character select:** Lit Commando and Lit Valkyrie are starter heroes. Lester/Lilly progression remains local-preview state until verified settlement is approved.
 - **Finite authored Level 1:** a six-biome Crypto Wasteland/Litecoin City map assembled from deterministic macro-biome, road/trail/water connector, POI, micro-scene, and prefab systems.
 - **Smaller runtime map footprint:** Level 1 runtime dimensions were reduced roughly in half for better loading/framerate while preserving finite bounds and spawn safety.
 - **Compact level-up UI:** upgrade cards now fit inside the gameplay window with icon, title, gain, rank pips, and tooltip/ARIA details instead of visible paragraph/keyword clutter.
@@ -124,8 +124,8 @@ Certified 8-direction runtime enemies:
 
 Important current distinction:
 
-- The live runtime has certified enemy kits and partial/proxy coverage for other enemies.
-- Bosses are **not** over-claimed as complete. Warren Spear Rider, Whale Dumper Boss, Chain Reaper Boss, and Bit Whale Boss remain in the PixelLab completion debt matrix until complete 8-direction boss kits are generated and verified.
+- The released Level 1 spawn/proxy table is complete: 23/23 rows have full required runtime coverage.
+- Four future-level city actors remain partial and are not counted as Level 1 ship coverage. See `docs/game-design/SHIP_ART_CENSUS_LOCK.md`.
 
 See [`docs/game-design/hmh-wo99-enemy-canon-uplift.md`](docs/game-design/hmh-wo99-enemy-canon-uplift.md).
 
@@ -158,16 +158,9 @@ Solidity contracts for LitVM deployment live in [`contracts/src/`](contracts/src
 
 See [`contracts/ARCHITECTURE.md`](contracts/ARCHITECTURE.md) for deployment sequence, data flow, security model, fee split, gas reserve model, and upgrade strategy.
 
-### Fee split model
+### Economy status
 
-On testnet, ranked play can remain free with `DEFAULT_ENTRY_FEE_MICRO_USDC = 0`, meaning players only pay network gas for on-chain settlement. When a non-zero entry fee is configured, `SessionLedger` escrows it and `PaymentRouter` splits it per the registered game fee split.
-
-| Share | BPS | Percent | Recipient |
-| --- | ---: | ---: | --- |
-| Developer | 6000 | 60% | Cabinet developer wallet |
-| Platform | 2000 | 20% | Lester's Arcade operator |
-| Liquidity | 1000 | 10% | DEX liquidity pool |
-| Treasury | 1000 | 10% | Community DAO treasury |
+The production portal does not send score or economy transactions. Contract fee-split code is dormant testnet infrastructure and remains subject to a separately approved deployment manifest, verifier posture, legal/license decision, and operator sign-off. See `contracts/ARCHITECTURE.md`; do not infer a live economy from repository constants.
 
 ---
 
@@ -176,10 +169,10 @@ On testnet, ranked play can remain free with `DEFAULT_ENTRY_FEE_MICRO_USDC = 0`,
 Current verified local results:
 
 ```bash
-npm test              # 972 passing tests across 8 suites
-npm run check         # Syntax check: 246 JS modules + 30 Python scripts
+npm test              # Full Node test suite
+npm run check         # JavaScript/Python syntax check
 npm run contracts:check
-npm run vercel:build  # assets verify + tests + syntax + contracts + static build
+npm run ship:gate     # complete automated release gate; strict repo budget is last
 ```
 
 Additional project gates used during Hard Money Heroes production:

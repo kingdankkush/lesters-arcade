@@ -90,6 +90,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/hmh-terrain-presentation.mjs",
     "apps/portal/src/hmh-upgrade-menu-ui.mjs",
     "apps/portal/src/hmh-upgrade-runtime.mjs",
+    "apps/portal/src/hmh-viewport-fit.mjs",
     "apps/portal/src/hmh-wo103-114-continuation.mjs",
     "apps/portal/src/hmh-wo107-checkpoint2.mjs",
     "apps/portal/src/hmh-wo111-114-ship-candidate.mjs",

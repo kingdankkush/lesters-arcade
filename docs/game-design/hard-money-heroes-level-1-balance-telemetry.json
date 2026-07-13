@@ -534,7 +534,7 @@
     ],
     "finalBoss": {
       "poiId": "rugpull-gulch-boss-yard",
-      "title": "Bandit Captain / Rugpull Baron Proxy",
+      "title": "The Rug Pull Baron",
       "phases": [
         {
           "id": "gate-warning",
@@ -544,8 +544,8 @@
           ],
           "telegraphFrames": 60,
           "addWaveSuppression": true,
-          "pattern": "rifle fan + warning sign tell",
-          "counterplay": "use boss gate/warning sign lane to read volleys"
+          "pattern": "whale dump fan + warning sign tell",
+          "counterplay": "use the boss gate lane to read and sidestep the deliberate fan"
         },
         {
           "id": "panic-crossfire",
@@ -555,8 +555,8 @@
           ],
           "telegraphFrames": 54,
           "addWaveSuppression": false,
-          "pattern": "short guard pair then crossfire",
-          "counterplay": "clear guards before pushing extraction lane"
+          "pattern": "rug-pull chain + guard crossfire",
+          "counterplay": "clear the guard pair before the chain closes the safe lane"
         },
         {
           "id": "extraction-break",
@@ -566,14 +566,14 @@
           ],
           "telegraphFrames": 72,
           "addWaveSuppression": true,
-          "pattern": "long windup, fewer adds, stronger boss shots",
-          "counterplay": "survive the tell, then punish during recovery"
+          "pattern": "liquidation wave + punish recovery",
+          "counterplay": "dash through the long tell, then punish during recovery"
         }
       ],
       "onDefeat": {
-        "unlocksGate": true,
-        "activatesExtractionFlare": true,
-        "suppressesGenericSpawns": true
+        "continuesSurvival": true,
+        "dropsBossPayout": true,
+        "suppressesGenericSpawnsDuringDeathSpectacle": true
       }
     }
   },

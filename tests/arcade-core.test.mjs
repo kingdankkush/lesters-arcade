@@ -403,7 +403,7 @@ test('wallet connection model exposes injected EVM, mock fallback, LitVM LiteFor
   assert.equal(guest.connectors.some((connector) => connector.id === 'mock-wallet' && connector.safeForPrototype), true);
   assert.equal(guest.connectors.some((connector) => connector.id === 'injected-evm' && connector.available === false), true);
   assert.equal(ready.connectors.some((connector) => connector.id === 'injected-evm' && connector.recommended), true);
-  assert.deepEqual(guest.permissions.writeScopes, ['ranked testnet sessions', 'profile progress', 'achievements', 'official scores', 'transaction receipts']);
+  assert.deepEqual(guest.permissions.writeScopes, ['canonical local Ranked previews', 'local profile progress', 'local achievements', 'preview scores']);
   assert.equal(connectedRightChain.status, 'connected-valid-chain');
   assert.equal(connectedRightChain.wallet, '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd');
   assert.equal(connectedRightChain.walletShort, '0xabcdef…efabcd');
@@ -1711,7 +1711,7 @@ test('UI quality guide model covers controls, tooltips, instructions, branding, 
   assert.equal(guide.tooltips.some((tip) => tip.anchor === 'shootButton' && tip.copy.includes('Left Click')), true);
   assert.equal(guide.controls.keyboard.some((control) => control.action === 'Shoot' && control.key === 'Left Click'), true);
   assert.equal(guide.brand.palette.length >= 7, true);
-  assert.equal(guide.iconLegend.some((icon) => icon.label.includes('Official')), true);
+  assert.equal(guide.iconLegend.some((icon) => icon.label.includes('Preview')), true);
   assert.equal(guide.qualityChecklist.every((item) => item.status === 'prototype-pass' || item.status === 'needs-production-pass'), true);
   assert.equal(LESTER_ARCADE_UI_QUALITY_SYSTEM.instructions.some((instruction) => instruction.title.includes('Survive')), true);
 });
@@ -1833,7 +1833,7 @@ test('streamlined Lester arcade UX keeps public flow simple while preserving hid
   assert.equal(mainSource.includes('renderArcadeIcon'), true);
   assert.equal(indexSource.includes('combatMenuActionGrid'), true);
   assert.equal(indexSource.includes('splashFeaturedCabinet'), true);
-  assert.equal(indexSource.includes('./dist/main.js?v=hmh-jul12-canonical-ranked-v40'), true);
+  assert.equal(indexSource.includes('./dist/main.js?v=hmh-ship-polish-v41'), true);
   assert.equal(mainSource.includes('hardMoneyHeroScreenBackgroundProfile'), true);
   assert.equal(mainSource.includes('renderRotatingCabinetSprite'), true);
   assert.equal(mainSource.includes('desktopCabinetSprite'), true);
@@ -2308,7 +2308,7 @@ test('game-over summary model separates free practice from ranked submit, replay
   assert.equal(rankedSummary.channel, 'official');
   assert.equal(rankedSummary.trackingCopy.includes('Retry Publish'), true);
   assert.equal(rankedSummary.actions.some((action) => action.id === 'submit-official-score' && action.enabled), true);
-  assert.equal(rankedSummary.actions.some((action) => action.id === 'play-again-ranked' && action.cost.includes('new testnet credit')), true);
+  assert.equal(rankedSummary.actions.some((action) => action.id === 'play-again-ranked' && action.cost.includes('new verified session')), true);
 
   assert.equal(syncedSummary.actions.find((action) => action.id === 'submit-official-score').enabled, false);
   assert.equal(syncedSummary.trackingCopy.includes('published'), true);

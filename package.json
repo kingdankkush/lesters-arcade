@@ -1,12 +1,14 @@
 {
   "name": "lesters-arcade",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
   "description": "Retro Litecoin/Web3 arcade portal prototype for Lester's Arcade on LitVM.",
   "scripts": {
     "test": "node --test tests/*.test.mjs tests/projectile-pool.test.mjs",
     "check": "node scripts/syntax-check.mjs",
+    "design:tokens": "node scripts/design-token-guard.mjs",
+    "docs:links": "node scripts/docs-link-check.mjs",
     "assets:slice": "python scripts/slice-hmh-generated-assets.py",
     "assets:lester": "python scripts/slice-lester-production-sprites.py",
     "assets:hmh:user": "python scripts/ingest-hard-money-heroes-user-assets.py",
@@ -77,10 +79,12 @@
     "assets:hmh:vfx-ui-chrome": "python scripts/generate-hmh-vfx-ui-chrome.py",
     "repo:audit": "node scripts/repo-cleanup-audit.mjs",
     "repo:health": "node scripts/repo-health.mjs",
+    "repo:health:strict": "node scripts/repo-health.mjs --strict",
     "repo:cdn-gate": "node scripts/repo-cdn-cleanup-gate.mjs",
     "profile:wo71": "node scripts/hmh-minute12-profile.mjs",
     "upgrades:tree-map": "node scripts/generate-upgrade-tree-map.mjs",
-    "vault:status": "node scripts/vault-sync.mjs status"
+    "vault:status": "node scripts/vault-sync.mjs status",
+    "ship:gate": "node scripts/ship-gate.mjs"
   },
   "keywords": [
     "litecoin",

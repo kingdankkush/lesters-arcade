@@ -8,6 +8,9 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const portalAssets = path.join(root, 'apps/portal/assets');
 const keepMapPath = path.join(root, 'docs/cleanup/asset-reference-map.json');
 const SKIP_DIRS = new Set(['.git', 'node_modules', '.vercel', '.hermes', 'dist']);
+const STRICT = process.argv.includes('--strict');
+const SHIP_MAX_TRACKED_FILES = 8_000;
+const SHIP_MAX_TRACKED_BYTES = 350 * 1024 * 1024;
 
 function slash(p) {
   return p.split(path.sep).join('/');
@@ -78,10 +81,15 @@ const offKeepList = keepAssets.size === 0
 
 const totalBytes = allFiles.reduce((sum, file) => sum + statSync(file).size, 0);
 const gitBytes = gitFiles.reduce((sum, file) => sum + statSync(file).size, 0);
+const trackedBytes = tracked.reduce((sum, file) => {
+  const absolute = path.join(root, file);
+  return sum + (existsSync(absolute) ? statSync(absolute).size : 0);
+}, 0);
 
 console.log('Lester\'s Arcade repo health');
 console.log('===========================');
 console.log(`Tracked files: ${tracked.length}`);
+console.log(`Tracked bytes: ${humanBytes(trackedBytes)}`);
 console.log(`Working tree files (excluding .git/node_modules/.vercel/dist): ${allFiles.length}`);
 console.log(`Working tree bytes (same exclusions): ${humanBytes(totalBytes)}`);
 console.log(`.git bytes: ${humanBytes(gitBytes)}`);
@@ -99,4 +107,17 @@ if (keepAssets.size === 0) {
 } else {
   console.log(`Off-keep-list asset additions/candidates (first ${offKeepList.length}):`);
   for (const asset of offKeepList) console.log(`- ${asset}`);
+}
+
+if (STRICT) {
+  const violations = [];
+  if (tracked.length > SHIP_MAX_TRACKED_FILES) violations.push(`tracked files ${tracked.length} > ${SHIP_MAX_TRACKED_FILES}`);
+  if (trackedBytes > SHIP_MAX_TRACKED_BYTES) violations.push(`tracked bytes ${humanBytes(trackedBytes)} > ${humanBytes(SHIP_MAX_TRACKED_BYTES)}`);
+  if (violations.length) {
+    console.error(`\nSHIP repo budget failed: ${violations.join('; ')}.`);
+    console.error('Atlas-aware runtime packaging and CDN migration are required; do not delete referenced loose frames to force this gate green.');
+    process.exitCode = 1;
+  } else {
+    console.log('\nSHIP repo budget passed.');
+  }
 }

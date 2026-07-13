@@ -245,9 +245,9 @@ export const LESTER_ARCADE_WALLET_RAILS = Object.freeze({
   ]),
   permissions: Object.freeze({
     readScopes: Object.freeze(['wallet address', 'chain id', 'parent arcade profile', 'child game progress']),
-    writeScopes: Object.freeze(['ranked testnet sessions', 'profile progress', 'achievements', 'official scores', 'transaction receipts']),
+    writeScopes: Object.freeze(['canonical local Ranked previews', 'local profile progress', 'local achievements', 'preview scores']),
     freeModeRule: 'free practice never writes progress, achievements, scores, or transactions to the parent account',
-    paidModeRule: 'ranked testnet runs create a parent-sync packet for progress, achievements, leaderboard, and receipt state',
+    paidModeRule: 'Ranked preview creates canonical local evidence and parent-sync preview state; verified settlement remains disabled',
   }),
   verifier: Object.freeze({
     currentStatus: 'prototype-local-unverified',
@@ -284,8 +284,8 @@ export const LESTER_ARCADE_BRAND_SYSTEM = Object.freeze({
   icons: Object.freeze([
     Object.freeze({ id: 'wallet', symbol: '▣', label: 'Wallet / parent account', usage: 'login, profile, synced account state' }),
     Object.freeze({ id: 'cabinet', symbol: '▥', label: 'Cabinet dApp', usage: 'game-selection and child machines' }),
-    Object.freeze({ id: 'coin', symbol: '◉', label: 'Ranked credit', usage: 'ranked testnet session and score eligibility' }),
-    Object.freeze({ id: 'trophy', symbol: '★', label: 'Official leaderboard', usage: 'ranked high-score tracking' }),
+    Object.freeze({ id: 'coin', symbol: '◉', label: 'Ranked preview', usage: 'canonical local session identity and evidence' }),
+    Object.freeze({ id: 'trophy', symbol: '★', label: 'Preview leaderboard', usage: 'local Ranked preview score tracking' }),
     Object.freeze({ id: 'guide', symbol: '?', label: 'Guide / tooltip', usage: 'beginner help and hover hints' }),
     Object.freeze({ id: 'weapon', symbol: '⌁', label: 'Weapon / pickup', usage: 'loadouts, power-ups, combat cards' }),
     Object.freeze({ id: 'boss', symbol: '⚠', label: 'Boss / danger', usage: 'scroll locks, boss phases, hazard warnings' }),
@@ -558,7 +558,7 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   }),
   profileRules: Object.freeze({
     walletIsPrimaryKey: true,
-    walletLockCopy: 'Progress, high scores, achievements, uploads, and ranked testnet submissions are assigned to the connected wallet. Sign out to use a different wallet.',
+    walletLockCopy: 'Local progress, preview scores, achievements, and uploads are assigned to the connected wallet. No score transaction is sent while verified settlement is disabled.',
     username: Object.freeze({ editable: true, minLength: 3, maxLength: 18, appearsOnLeaderboards: true }),
     avatar: Object.freeze({ editable: true, upload: true, requiredPixels: 150, shape: 'square', appearsOnLeaderboards: true }),
   }),
@@ -3709,12 +3709,13 @@ export function buildCombatOptionsMenuModel({
   viewportMode = 'fullscreen',
   currentMode = 'free',
   officialScoreSubmitted = false,
+  officialSubmissionEnabled = true,
 } = {}) {
   const official = currentMode === 'paid' || currentMode === 'ranked';
   const actions = [
     ...(gameOver ? [] : [Object.freeze({ id: 'resume', label: 'Resume Run', hint: 'ESC', icon: '▶', enabled: paused, group: 'continue', primary: true })]),
     Object.freeze({ id: 'toggle-settings', label: 'Gameplay Settings', hint: 'AIM · FLASH · SHAKE', icon: '⚙', enabled: true, group: 'system' }),
-    ...(gameOver && official ? [Object.freeze({ id: 'submit-official-score', label: officialScoreSubmitted ? 'Score Synced' : 'Submit Official Score', icon: '★', enabled: !officialScoreSubmitted })] : []),
+    ...(gameOver && official && officialSubmissionEnabled ? [Object.freeze({ id: 'submit-official-score', label: officialScoreSubmitted ? 'Score Synced' : 'Submit Official Score', icon: '★', enabled: !officialScoreSubmitted })] : []),
     Object.freeze({ id: 'restart', label: gameOver ? 'Play Again' : (official ? 'Restart Ranked Run' : 'Restart Practice Run'), hint: gameOver ? 'NEW RUN' : 'LOSE CURRENT RUN', icon: '↻', enabled: true, group: 'leave', danger: true }),
     Object.freeze({ id: 'toggle-music', label: musicEnabled ? 'Music On' : 'Music Off', hint: 'AUDIO', icon: musicEnabled ? '♪' : '⊘', enabled: true, group: 'system' }),
     Object.freeze({ id: 'toggle-fullscreen', label: viewportMode === 'fullscreen' || viewportMode === 'expanded-fullscreen' ? 'Windowed Mode' : 'Full Screen', hint: 'DISPLAY', icon: '▣', enabled: true, group: 'system' }),
@@ -3734,7 +3735,9 @@ export function buildCombatOptionsMenuModel({
     title: gameOver ? 'Game Over' : 'Run Paused',
     state: gameOver ? 'game-over' : paused ? 'paused' : 'running',
     copy: gameOver
-      ? 'Review the run summary, submit eligible ranked scores, restart, or exit cleanly back to Lester’s Arcade.'
+      ? officialSubmissionEnabled
+        ? 'Review the run summary, submit eligible ranked scores, restart, or exit cleanly back to Lester’s Arcade.'
+        : 'Review the canonical local preview, restart, or exit cleanly back to Lester’s Arcade. Verified publishing is disabled.'
       : 'Your position and build are locked. Resume when ready.',
     groups,
     actions: Object.freeze(actions),
@@ -3994,7 +3997,7 @@ export function buildHardMoneyHeroesAnimationProductionBriefs(coverage = buildHa
   });
 }
 
-export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false, extraction = null, killedBy = null, bestUpgrade = null, runSeed = null, previousBestScore = null, sessionStreak = 1, backgroundSettlementQueued = false } = {}) {
+export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSeconds = 0, kills = 0, bossesDefeated = 0, acceptedForGlobalLeaderboard = false, extraction = null, killedBy = null, bestUpgrade = null, runSeed = null, previousBestScore = null, sessionStreak = 1, backgroundSettlementQueued = false, settlementLive = true } = {}) {
   const official = Boolean(session?.isPaid || session?.mode === 'paid' || session?.leaderboardEligible);
   const safeScore = Number.isFinite(score) ? Math.max(0, Math.round(score)) : 0;
   const safeElapsed = Number.isFinite(elapsedSeconds) ? Math.max(0, Math.round(elapsedSeconds)) : 0;
@@ -4018,6 +4021,8 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
   });
   const settlement = Object.freeze(!official
     ? { status: 'local-only', copy: 'Free practice stays local; nothing publishes in the background.' }
+    : !settlementLive
+      ? { status: 'verified-preview', copy: 'Canonical evidence was saved locally. Verified on-chain publishing is disabled.' }
     : acceptedForGlobalLeaderboard
       ? { status: 'published', copy: 'Run is already published on-chain and reflected in leaderboard/profile state.' }
       : backgroundSettlementQueued
@@ -4047,7 +4052,7 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
   const metrics = Object.freeze(metricList);
   const runItBackAction = Object.freeze({ id: 'run-it-back', label: 'Run It Back', cost: oneMoreRun.copy, target: 'instant-restart', enabled: true, estimatedSeconds: oneMoreRun.estimatedRestartSeconds });
   const baseActions = [
-    Object.freeze({ id: official ? 'play-again-ranked' : 'play-again-free', label: official ? 'Play Again Ranked' : 'Play Again Free', cost: official ? 'requires new testnet credit' : 'free', target: 'level-intro', enabled: true }),
+    Object.freeze({ id: official ? 'play-again-ranked' : 'play-again-free', label: official ? 'Play Again Ranked' : 'Play Again Free', cost: official ? (settlementLive ? 'new verified session' : 'free local preview') : 'free', target: 'level-intro', enabled: true }),
     Object.freeze({ id: 'return-to-game-menu', label: 'Game Menu', cost: 'none', target: 'mode-select', enabled: true }),
     Object.freeze({ id: 'return-to-arcade', label: 'Exit to Lester’s Arcade', cost: 'none', target: 'cabinet-select', enabled: true }),
   ];
@@ -4059,6 +4064,22 @@ export function buildGameOverSummaryModel({ session = null, score = 0, elapsedSe
       title: 'Practice Run Complete',
       metrics,
       trackingCopy: 'Free practice result is not tracked: no progress, achievements, official scores, or transactions were written.',
+      actions: Object.freeze([runItBackAction, ...baseActions]),
+      oneMoreRun,
+      personalBest,
+      streak,
+      settlement,
+      exitRampCopy: LESTER_ARCADE_PUBLIC_EXPERIENCE_LOOP.exitRamps.find((ramp) => ramp.id === 'return-to-arcade')?.copy,
+    });
+  }
+
+  if (!settlementLive) {
+    return Object.freeze({
+      channel: 'official',
+      state: 'ranked-preview-saved',
+      title: 'Ranked Preview Saved',
+      metrics,
+      trackingCopy: 'Canonical session evidence is saved locally. No transaction was sent and this preview is not an on-chain leaderboard record.',
       actions: Object.freeze([runItBackAction, ...baseActions]),
       oneMoreRun,
       personalBest,

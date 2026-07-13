@@ -255,9 +255,9 @@
   ],
   "integration": {
     "sharedExplorationCache": "runtime updates the exploration trail once per frame, then shares it with vision fog and minimap",
-    "visionFogDrawCells": 948,
+    "visionFogDrawCells": 160,
     "visionFogVisibleCells": 9,
-    "minimapFogCells": 948,
+    "minimapFogCells": 160,
     "minimapRevealedCells": 9
   },
   "decision": {

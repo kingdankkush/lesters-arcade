@@ -1,0 +1,106 @@
+:root {
+  color-scheme: dark;
+
+  /* Brand palette */
+  --litecoin-blue: #345dcc;
+  --litecoin-blue-bright: #6f9bff;
+  --silver-050: #f9fbff;
+  --silver-100: #eaf2ff;
+  --silver-200: #d6e4ff;
+  --silver-300: #b4c4df;
+  --silver-500: #7f93b8;
+  --navy-950: #05070f;
+  --navy-900: #070512;
+  --navy-850: #0d182a;
+  --navy-800: #121a2d;
+  --brass: #c9a34e;
+  --brass-bright: #ffe84d;
+  --fiat-magenta: #ff3df2;
+  --fiat-red: #ff476f;
+  --fiat-orange: #ff7b2f;
+  --crypto-cyan: #19f7ff;
+  --crypto-green: #45ff8a;
+
+  /* Semantic colors */
+  --surface-page: var(--navy-900);
+  --surface: rgba(18, 11, 44, 0.88);
+  --surface-raised: rgba(7, 17, 36, 0.92);
+  --surface-glass: rgba(255, 255, 255, 0.06);
+  --text-primary: #f9f7ff;
+  --text-secondary: #b4aed4;
+  --text-inverse: #04121f;
+  --accent: var(--crypto-cyan);
+  --accent-secondary: var(--fiat-magenta);
+  --danger: var(--fiat-red);
+  --success: var(--crypto-green);
+  --warning: var(--brass-bright);
+  --border-subtle: rgba(255, 255, 255, 0.16);
+  --focus-ring: 0 0 0 3px rgba(25, 247, 255, 0.42);
+
+  /* Rarity */
+  --rarity-common: #c7d0dc;
+  --rarity-uncommon: var(--crypto-green);
+  --rarity-rare: var(--litecoin-blue-bright);
+  --rarity-epic: #9b7aad;
+  --rarity-legendary: var(--brass-bright);
+
+  /* Typography: two system-hosted families, no third-party font request */
+  --font-display: "Trebuchet MS", "Arial Black", system-ui, sans-serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Lucida Console", "SFMono-Regular", Consolas, monospace;
+  --type-12: 0.75rem;
+  --type-14: 0.875rem;
+  --type-16: 1rem;
+  --type-20: 1.25rem;
+  --type-28: 1.75rem;
+  --type-40: 2.5rem;
+
+  /* Spacing, radius, and shadow scales */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 28px;
+  --shadow-neon: 0 0 32px rgba(25, 247, 255, 0.12);
+  --shadow-panel: var(--shadow-neon), inset 0 0 24px rgba(255, 61, 242, 0.06);
+
+  /* Runtime responsive controls */
+  --hud-scale: 1;
+  --touch-control-idle-opacity: 0.4;
+  --touch-control-active-opacity: 0.7;
+
+  /* Compatibility aliases used by the existing portal and canvas chrome */
+  --bg: var(--surface-page);
+  --panel: var(--surface);
+  --panel-2: var(--surface-raised);
+  --glass: var(--surface-glass);
+  --neon-pink: var(--fiat-magenta);
+  --neon-cyan: var(--crypto-cyan);
+  --neon-yellow: var(--brass-bright);
+  --neon-green: var(--crypto-green);
+  --neon-red: var(--fiat-red);
+  --text: var(--text-primary);
+  --muted: var(--text-secondary);
+  --border: var(--border-subtle);
+  --mono: var(--font-mono);
+  font-family: var(--font-ui);
+}
+
+.tabular-numerals,
+[data-stat],
+.stat-chip strong,
+.arcade-music-time {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  box-shadow: var(--focus-ring);
+}
