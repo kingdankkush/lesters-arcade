@@ -109,7 +109,7 @@ Developer harness:
 2. The Chikun cabinet becomes clickable and loads the reference SDK slice.
 3. Public users without the flag see a desaturated COMING SOON cabinet and no leaderboard filter.
 
-- **Manifest**: `games/chikun/game.manifest.json` (already created)
+- **Manifest**: `apps/portal/games/chikun/game.manifest.json` (canonical)
 - **Cabinet art**: `apps/portal/assets/generated/chikun-cabinet/` (6 angle sprites)
 - **Game registry**: `apps/portal/src/game-registry.mjs` (already registered)
 - **Adapter pattern**: `apps/portal/src/game-adapter.mjs` (reference implementation)
