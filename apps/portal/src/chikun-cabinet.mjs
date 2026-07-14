@@ -1,13 +1,19 @@
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
 
+export const CHIKUN_FIXED_STEP_HZ = 60;
+export const CHIKUN_MAX_FLAP_TRANSITIONS = 4_096;
+const CHIKUN_MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
+const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v1';
+
 export const CHIKUN_VERTICAL_SLICE_CONFIG = Object.freeze({
   gameId: 'chikun',
   title: "Chikun's Escape",
-  version: 'vertical-slice-v1',
+  version: 'deterministic-core-v2',
   sdkVersion: ARCADE_SDK_VERSION,
   rules: Object.freeze({
     input: 'tap-to-flap',
+    fixedStepHz: CHIKUN_FIXED_STEP_HZ,
     gravityPerTick: 0.34,
     flapImpulse: -2.85,
     ceilingY: 0,
@@ -31,6 +37,44 @@ export function buildChikunVerticalSliceConfig() {
   return CHIKUN_VERTICAL_SLICE_CONFIG;
 }
 
+function normalizeSeed(value) {
+  return Math.floor(Number(value) || 0) >>> 0;
+}
+
+function normalizeMaxTicks(value) {
+  const ticks = Math.floor(Number(value));
+  if (!Number.isFinite(ticks)) return 60;
+  return Math.max(1, Math.min(CHIKUN_MAX_RUN_TICKS, ticks));
+}
+
+function normalizeFlapSteps(taps, maxTicks) {
+  const raw = Array.isArray(taps) ? taps : [];
+  if (raw.length > CHIKUN_MAX_FLAP_TRANSITIONS) {
+    throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
+  }
+  const unique = new Set();
+  for (const value of raw) {
+    const step = Math.max(0, Math.floor(Number(value) || 0));
+    if (step < maxTicks) unique.add(step);
+  }
+  const flapSteps = [...unique].sort((a, b) => a - b);
+  if (flapSteps.length > CHIKUN_MAX_FLAP_TRANSITIONS) {
+    throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
+  }
+  return Object.freeze(flapSteps);
+}
+
+function buildChikunEvidence({ seed, taps, maxTicks }) {
+  const normalizedMaxTicks = normalizeMaxTicks(maxTicks);
+  return Object.freeze({
+    version: CHIKUN_EVIDENCE_VERSION,
+    seed: normalizeSeed(seed),
+    fixedStepHz: CHIKUN_FIXED_STEP_HZ,
+    maxTicks: normalizedMaxTicks,
+    flapSteps: normalizeFlapSteps(taps, normalizedMaxTicks),
+  });
+}
+
 function deterministicRoll(seed, tick, salt = 0) {
   let x = Math.imul((seed >>> 0) ^ Math.imul(tick + 1, 0x9e3779b1) ^ salt, 0x85ebca6b) >>> 0;
   x ^= x >>> 13;
@@ -39,8 +83,8 @@ function deterministicRoll(seed, tick, salt = 0) {
   return (x >>> 0) / 0xffffffff;
 }
 
-export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
-  const tapSet = new Set((Array.isArray(taps) ? taps : []).map((tick) => Math.max(0, Math.floor(Number(tick) || 0))));
+function simulateCanonicalEvidence(evidence) {
+  const tapSet = new Set(evidence.flapSteps);
   const cfg = CHIKUN_VERTICAL_SLICE_CONFIG;
   let y = 52;
   let velocity = 0;
@@ -50,10 +94,12 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
   let survivedTicks = 0;
   let crashed = false;
 
-  for (let tick = 0; tick < Math.max(1, Math.floor(maxTicks)); tick += 1) {
+  for (let tick = 0; tick < evidence.maxTicks; tick += 1) {
     if (tapSet.has(tick)) velocity = cfg.rules.flapImpulse;
     velocity += cfg.rules.gravityPerTick;
-    const wind = tick % cfg.hazards[1].cadenceTicks === 0 ? (deterministicRoll(seed, tick, 19) - 0.5) * 2 * cfg.hazards[1].driftPerTick : 0;
+    const wind = tick % cfg.hazards[1].cadenceTicks === 0
+      ? (deterministicRoll(evidence.seed, tick, 19) - 0.5) * 2 * cfg.hazards[1].driftPerTick
+      : 0;
     y += velocity + wind;
     survivedTicks = tick + 1;
 
@@ -63,7 +109,7 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
     }
 
     if (tick > 0 && tick % cfg.hazards[0].cadenceTicks === 0) {
-      const gapCenter = 22 + deterministicRoll(seed, tick, 7) * 56;
+      const gapCenter = 22 + deterministicRoll(evidence.seed, tick, 7) * 56;
       const halfGap = cfg.hazards[0].safeGapHeight / 2;
       if (y < gapCenter - halfGap || y > gapCenter + halfGap) {
         crashed = true;
@@ -74,7 +120,7 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
     }
 
     if (tick > 0 && tick % cfg.pickups[0].cadenceTicks === 0) {
-      const coinY = 18 + deterministicRoll(seed, tick, 55) * 64;
+      const coinY = 18 + deterministicRoll(evidence.seed, tick, 55) * 64;
       if (Math.abs(y - coinY) <= 18) {
         coinsCollected += 1;
         score += cfg.rules.score.coinValue;
@@ -88,15 +134,74 @@ export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
   if (survivedTicks >= 10) achievements.push('chikun-first-flight');
   if (coinsCollected >= 3) achievements.push('chikun-stack-three');
 
-  return Object.freeze({
-    gameId: 'chikun',
+  const survivalTime = Number((survivedTicks / CHIKUN_FIXED_STEP_HZ).toFixed(6));
+  const finalState = Object.freeze({
+    step: survivedTicks,
+    y: Number(y.toFixed(6)),
+    velocity: Number(velocity.toFixed(6)),
     score: Math.max(0, Math.round(score)),
     coinsCollected,
     forksPassed,
-    survivalTime: survivedTicks,
+    survivalTicks: survivedTicks,
+    survivalTime,
+    crashed,
+  });
+
+  return Object.freeze({
+    gameId: 'chikun',
+    seed: evidence.seed,
+    fixedStepHz: CHIKUN_FIXED_STEP_HZ,
+    score: finalState.score,
+    coinsCollected,
+    forksPassed,
+    survivalTicks: survivedTicks,
+    survivalTime,
     crashed,
     achievements: Object.freeze(achievements),
+    finalState,
+    evidence,
   });
+}
+
+export function simulateChikunRun({ seed = 1, taps = [], maxTicks = 60 } = {}) {
+  return simulateCanonicalEvidence(buildChikunEvidence({ seed, taps, maxTicks }));
+}
+
+export function replayChikunRun(evidence = {}) {
+  if (!evidence || typeof evidence !== 'object' || Array.isArray(evidence)) {
+    throw new Error('Chikun replay evidence must be an object');
+  }
+  if (evidence.version !== CHIKUN_EVIDENCE_VERSION) {
+    throw new Error(`Unsupported Chikun evidence version: ${String(evidence.version ?? '')}`);
+  }
+  if (evidence.fixedStepHz !== CHIKUN_FIXED_STEP_HZ) {
+    throw new Error(`Chikun evidence fixedStepHz must be ${CHIKUN_FIXED_STEP_HZ}`);
+  }
+  const maxTicks = Math.floor(Number(evidence.maxTicks));
+  if (!Number.isFinite(maxTicks) || maxTicks < 1 || maxTicks > CHIKUN_MAX_RUN_TICKS) {
+    throw new Error('Chikun evidence maxTicks is outside the supported run budget');
+  }
+  if (!Array.isArray(evidence.flapSteps)) {
+    throw new Error('Chikun evidence flapSteps must be an array');
+  }
+  if (evidence.flapSteps.length > CHIKUN_MAX_FLAP_TRANSITIONS) {
+    throw new Error(`Chikun flap evidence exceeds ${CHIKUN_MAX_FLAP_TRANSITIONS} transitions`);
+  }
+  let previousStep = -1;
+  for (const value of evidence.flapSteps) {
+    if (!Number.isInteger(value) || value < 0 || value >= maxTicks) {
+      throw new Error('Chikun evidence flapSteps must be integers within maxTicks');
+    }
+    if (value <= previousStep) {
+      throw new Error('Chikun evidence flapSteps must be strictly increasing');
+    }
+    previousStep = value;
+  }
+  return simulateCanonicalEvidence(buildChikunEvidence({
+    seed: evidence.seed,
+    taps: evidence.flapSteps,
+    maxTicks,
+  }));
 }
 
 export function createChikunCabinet({ sessionId = null } = {}) {
@@ -112,16 +217,24 @@ export function createChikunCabinet({ sessionId = null } = {}) {
       return adapter.start({ mode: config.mode ?? 'free' });
     },
     simulate(options = {}) {
-      const result = simulateChikunRun(options);
+      const context = adapter.getInitContext();
+      const seed = context?.mode === 'ranked'
+        ? context.seed
+        : (options.seed ?? context?.seed ?? 1);
+      const result = simulateChikunRun({ ...options, seed });
       adapter.emitStatUpdate({ score: result.score, kills: 0, survivalTime: result.survivalTime });
       return result;
     },
     submitRun(result = {}) {
       const safe = {
         score: Math.max(0, Math.round(Number(result.score) || 0)),
-        survivalTime: Math.max(0, Math.round(Number(result.survivalTime) || 0)),
+        survivalTime: Math.max(0, Number(result.survivalTime) || 0),
+        survivalTicks: Math.max(0, Math.round(Number(result.survivalTicks) || 0)),
         coinsCollected: Math.max(0, Math.round(Number(result.coinsCollected) || 0)),
-        achievements: Array.isArray(result.achievements) ? result.achievements : [],
+        forksPassed: Math.max(0, Math.round(Number(result.forksPassed) || 0)),
+        achievements: Array.isArray(result.achievements) ? [...result.achievements] : [],
+        evidence: result.evidence ?? null,
+        finalState: result.finalState ?? null,
       };
       adapter.submitScore(safe.score, { survivalTime: safe.survivalTime, coinsCollected: safe.coinsCollected });
       adapter.end({ score: safe.score, survivalTime: safe.survivalTime });
@@ -155,7 +268,9 @@ export async function loadChikunGame() {
         return Object.freeze({
           score: Math.max(0, Math.round(Number(raw.score) || 0)),
           coinsCollected: Math.max(0, Math.round(Number(raw.coinsCollected) || 0)),
-          survivalTime: Math.max(0, Math.round(Number(raw.survivalTime ?? raw.survivalTimeSeconds) || 0)),
+          forksPassed: Math.max(0, Math.round(Number(raw.forksPassed) || 0)),
+          survivalTicks: Math.max(0, Math.round(Number(raw.survivalTicks) || 0)),
+          survivalTime: Math.max(0, Number(raw.survivalTime ?? raw.survivalTimeSeconds) || 0),
           achievements: Object.freeze(Array.isArray(raw.achievements) ? [...raw.achievements] : []),
         });
       },

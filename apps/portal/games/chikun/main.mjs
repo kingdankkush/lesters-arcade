@@ -1,11 +1,15 @@
-// Chikun's Escape — Cabinet SDK v1 vertical slice entry.
+// Chikun's Escape — Cabinet SDK v1 deterministic core entry.
 // The parent portal owns wallet/profile/ranked writes. This entry exposes only
-// deterministic game-loop helpers and SDK event emission through the adapter.
+// fixed-step deterministic helpers, bounded flap evidence, replay, and SDK
+// event emission through the adapter.
 
 export {
+  CHIKUN_FIXED_STEP_HZ,
+  CHIKUN_MAX_FLAP_TRANSITIONS,
   buildChikunVerticalSliceConfig,
   createChikunCabinet,
   loadChikunGame,
+  replayChikunRun,
   simulateChikunRun,
 } from '../../src/chikun-cabinet.mjs';
 

@@ -54,6 +54,25 @@ test('buildInitContext rejects bad gameId/mode', () => {
   assert.throws(() => buildInitContext({ gameId: 'x', mode: 'paid-real-money' }));
 });
 
+test('buildInitContext freezes parent-issued deterministic session metadata without exposing signing capability', () => {
+  const ctx = buildInitContext({
+    gameId: 'chikun',
+    sessionId: 'game-session-000000057',
+    mode: 'ranked',
+    seed: 0xffffffff + 55,
+    buildHash: 'chikun-deterministic-core-v1',
+    seasonId: 'chikun-season-preview-1',
+    rankedEligible: true,
+  });
+
+  assert.equal(ctx.seed, 54);
+  assert.equal(ctx.buildHash, 'chikun-deterministic-core-v1');
+  assert.equal(ctx.seasonId, 'chikun-season-preview-1');
+  assert.equal('provider' in ctx, false);
+  assert.equal('signer' in ctx, false);
+  assert.equal(Object.isFrozen(ctx), true);
+});
+
 test('buildArcadeMessage stamps source/version/gameId and rejects unknown types', () => {
   const msg = buildArcadeMessage('arcade.statUpdate', { score: 100, kills: 3 }, { gameId: 'hmh', seq: 5 });
   assert.equal(msg.source, 'lesters-arcade-sdk');

@@ -5,7 +5,11 @@ import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/envi
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
-import { createCanonicalSessionHandle, createSessionEvidenceState } from './session-integrity.mjs';
+import {
+  CURRENT_RANKED_SEASON_ID,
+  createCanonicalSessionHandle,
+  createSessionEvidenceState,
+} from './session-integrity.mjs';
 import {
   LEADERBOARD_CADENCES,
   recordCadenceScore,
@@ -2125,6 +2129,8 @@ export const ARCADE_GAMES = Object.freeze([
     livesFree: Infinity,
     tagline: 'Tap to flap. Dodge the forks. Stack the silver.',
     systemRole: 'child-dapp-cartridge',
+    rankedSeasonId: 'chikun-season-preview-1',
+    cabinetVersion: '0.2.0',
     parentSystem: 'Lester\'s Arcade',
     presentation: Object.freeze({
       medium: 'snes-cartridge',
@@ -4935,6 +4941,17 @@ export function nextGlobalSessionId(state) {
   };
 }
 
+export function deriveSessionSeed({ sessionId, gameId, seasonId, buildHash } = {}) {
+  const parts = [sessionId, gameId, seasonId, buildHash].map((value) => String(value ?? '').trim());
+  if (parts.some((value) => !value)) throw new Error('sessionId, gameId, seasonId, and buildHash are required to derive a session seed');
+  let hash = 0x811c9dc5;
+  for (const character of parts.join('|')) {
+    hash ^= character.codePointAt(0);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash >>> 0;
+}
+
 export function startPlaySession({
   wallet,
   gameId,
@@ -4964,6 +4981,9 @@ export function startPlaySession({
   const canonicalSessionId = isPaid
     ? (urlSessionId ?? createCanonicalSessionHandle({ uuid: nonce }))
     : `${gameId}-free-${nonce}`;
+  const buildHash = `site-${SITE_VERSION}:game-${GAME_VERSION}${game.cabinetVersion ? `:cabinet-${game.cabinetVersion}` : ''}`;
+  const seasonId = game.rankedSeasonId ?? CURRENT_RANKED_SEASON_ID;
+  const seed = deriveSessionSeed({ sessionId: canonicalSessionId, gameId, seasonId, buildHash });
   const evidence = createSessionEvidenceState({ sessionId: canonicalSessionId });
 
   return {
@@ -4974,11 +4994,16 @@ export function startPlaySession({
     sequenceNumber: sequenceNumber,
     sessionNonce: nonce,
     evidence,
+    buildHash,
+    seasonId,
+    seed,
     canonicalContext: Object.freeze({
       sessionId: canonicalSessionId,
       wallet: normalizedWallet,
       gameId,
-      buildHash: `site-${SITE_VERSION}:game-${GAME_VERSION}`,
+      buildHash,
+      seasonId,
+      seed,
     }),
     wallet: normalizedWallet,
     gameId,

@@ -92,6 +92,7 @@ import {
   createInitialArcadeState,
   createPlayerProfile,
   createRoguelikeRunState,
+  deriveSessionSeed,
   getCartridgeSelectModel,
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
@@ -455,6 +456,31 @@ test('ranked sessions use one UUID-backed canonical id across routing and eviden
   assert.equal(session.canonicalContext.wallet, wallet);
   assert.equal(session.canonicalContext.gameId, 'lester-blaster');
   assert.equal(session.canonicalContext.buildHash, 'site-1.3.0:game-1.3.0');
+});
+
+test('parent session allocator issues deterministic seed, build, and season bindings for every cabinet', () => {
+  const common = {
+    wallet: `0x${'7'.repeat(40)}`,
+    gameId: 'chikun',
+    mode: 'paid',
+    sessionNonce: '123e4567-e89b-42d3-a456-426614174000',
+    allowDevCabinet: true,
+  };
+  const a = startPlaySession(common);
+  const b = startPlaySession(common);
+  const changed = startPlaySession({ ...common, sessionNonce: '123e4567-e89b-42d3-a456-426614174001' });
+
+  assert.equal(deriveSessionSeed(a.canonicalContext), a.seed);
+  assert.equal(a.seed, b.seed);
+  assert.notEqual(a.seed, changed.seed);
+  assert.equal(Number.isInteger(a.seed), true);
+  assert.equal(a.seed >= 0 && a.seed <= 0xffffffff, true);
+  assert.equal(a.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.2.0');
+  assert.equal(a.seasonId, 'chikun-season-preview-1');
+  assert.equal(a.canonicalContext.seed, a.seed);
+  assert.equal(a.canonicalContext.buildHash, a.buildHash);
+  assert.equal(a.canonicalContext.seasonId, a.seasonId);
+  assert.equal(Object.isFrozen(a.canonicalContext), true);
 });
 
 test('paid mode session uses free-entry (testnet) economics and leaderboard eligibility', () => {

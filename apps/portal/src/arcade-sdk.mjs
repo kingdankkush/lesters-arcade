@@ -68,6 +68,9 @@ export function buildInitContext({
   aspect = '16:9',
   reducedMotion = false,
   locale = 'en',
+  seed = 0,
+  buildHash = null,
+  seasonId = null,
 } = {}) {
   if (typeof gameId !== 'string' || gameId.trim() === '') {
     throw new Error('buildInitContext: gameId is required');
@@ -86,6 +89,9 @@ export function buildInitContext({
     aspect,
     reducedMotion: Boolean(reducedMotion),
     locale,
+    seed: Math.floor(Number(seed) || 0) >>> 0,
+    buildHash: typeof buildHash === 'string' && buildHash.trim() ? buildHash.trim() : null,
+    seasonId: typeof seasonId === 'string' && seasonId.trim() ? seasonId.trim() : null,
     // Explicit capability ceiling: a game can ONLY ask, never do.
     capabilities: Object.freeze({ canRequestWalletAction: true, canWriteOfficialState: false }),
   });

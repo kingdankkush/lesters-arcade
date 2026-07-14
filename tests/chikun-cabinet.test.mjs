@@ -6,9 +6,12 @@ import { fileURLToPath } from 'node:url';
 import { parseInboundMessage } from '../apps/portal/src/arcade-sdk.mjs';
 import { validateGameManifest } from '../apps/portal/src/game-manifest.mjs';
 import {
+  CHIKUN_FIXED_STEP_HZ,
+  CHIKUN_MAX_FLAP_TRANSITIONS,
   buildChikunVerticalSliceConfig,
   createChikunCabinet,
   loadChikunGame,
+  replayChikunRun,
   simulateChikunRun,
 } from '../apps/portal/src/chikun-cabinet.mjs';
 import {
@@ -27,6 +30,7 @@ test('WO-55 Chikun ships a valid playable ranked Cabinet SDK manifest', () => {
   const result = validateGameManifest(raw);
   assert.equal(result.valid, true, result.errors.join('; '));
   assert.equal(result.manifest.id, 'chikun');
+  assert.equal(result.manifest.version, '0.2.0');
   assert.equal(result.manifest.status, 'playable');
   assert.equal(result.manifest.controlScheme, 'tap');
   assert.equal(result.manifest.rankedEligible, true);
@@ -50,6 +54,71 @@ test('WO-55 Chikun vertical slice has deterministic flap/fork/coin scoring rules
   assert.equal(a.score > 0, true);
   assert.equal(a.survivalTime > 0, true);
   assert.equal(Array.isArray(a.achievements), true);
+});
+
+test('Chikun deterministic core normalizes bounded flap evidence and replays the exact final state', () => {
+  const result = simulateChikunRun({
+    seed: 55,
+    taps: [18, 4, 4, -3, 11, 27, 999],
+    maxTicks: 48,
+  });
+
+  assert.equal(CHIKUN_FIXED_STEP_HZ, 60);
+  assert.equal(result.seed, 55);
+  assert.equal(result.fixedStepHz, CHIKUN_FIXED_STEP_HZ);
+  assert.equal(result.evidence.version, 'chikun-flap-evidence-v1');
+  assert.deepEqual(result.evidence.flapSteps, [0, 4, 11, 18, 27]);
+  assert.equal(Object.isFrozen(result.evidence), true);
+  assert.equal(Object.isFrozen(result.evidence.flapSteps), true);
+
+  const replayed = replayChikunRun(result.evidence);
+  assert.deepEqual(replayed, result);
+  assert.deepEqual(replayed.finalState, result.finalState);
+});
+
+test('Chikun evidence fails closed when flap transitions exceed the bounded replay budget', () => {
+  const taps = Array.from({ length: CHIKUN_MAX_FLAP_TRANSITIONS + 1 }, (_, step) => step);
+  assert.throws(
+    () => simulateChikunRun({ seed: 55, taps, maxTicks: taps.length + 1 }),
+    /flap evidence exceeds/i,
+  );
+  assert.throws(
+    () => simulateChikunRun({ seed: 55, taps: Array(CHIKUN_MAX_FLAP_TRANSITIONS + 1).fill(0), maxTicks: 48 }),
+    /flap evidence exceeds/i,
+  );
+});
+
+test('Chikun replay rejects non-canonical flap evidence before simulation', () => {
+  const evidence = simulateChikunRun({ seed: 55, taps: [4, 11, 18], maxTicks: 48 }).evidence;
+  assert.throws(() => replayChikunRun({ ...evidence, flapSteps: '4,11,18' }), /flapSteps must be an array/i);
+  assert.throws(() => replayChikunRun({ ...evidence, flapSteps: [4, 4, 11] }), /strictly increasing/i);
+  assert.throws(() => replayChikunRun({ ...evidence, flapSteps: [4, 48] }), /within maxTicks/i);
+});
+
+test('ranked Chikun cabinet binds simulation to the parent-issued seed and session metadata', () => {
+  const session = startPlaySession({
+    wallet: WALLET,
+    gameId: 'chikun',
+    mode: 'paid',
+    sessionNonce: '123e4567-e89b-42d3-a456-426614174057',
+    allowDevCabinet: true,
+  });
+  const cabinet = createChikunCabinet({ sessionId: session.sessionId });
+  const ctx = cabinet.init({
+    mode: 'ranked',
+    seed: session.seed,
+    buildHash: session.buildHash,
+    seasonId: session.seasonId,
+    rankedEligible: session.leaderboardEligible,
+  });
+  cabinet.start({ mode: 'ranked' });
+
+  const result = cabinet.simulate({ seed: 999, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
+  assert.equal(ctx.seed, session.seed);
+  assert.equal(ctx.buildHash, 'site-1.3.0:game-1.3.0:cabinet-0.2.0');
+  assert.equal(ctx.seasonId, 'chikun-season-preview-1');
+  assert.equal(result.seed, session.seed);
+  assert.deepEqual(result, simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 }));
 });
 
 test('WO-55 Chikun cabinet emits valid free/ranked SDK events through the public adapter path', () => {
@@ -82,6 +151,8 @@ test('WO-72 portal model keeps Chikun dev-testable but public coming soon', () =
   assert.equal(game.status, 'coming-soon');
   assert.equal(game.devPlayable, true);
   assert.equal(game.systemRole, 'child-dapp-cartridge');
+  assert.equal(game.cabinetVersion, '0.2.0');
+  assert.equal(game.rankedSeasonId, 'chikun-season-preview-1');
   assert.equal(game.presentation.cartridgeAsset.endsWith('cartridge-chikun.svg'), true);
   const cartridge = getCartridgeSelectModel().find((entry) => entry.id === 'chikun');
   assert.equal(cartridge.status, 'coming-soon');
@@ -103,8 +174,11 @@ test('WO-72 portal model keeps Chikun dev-testable but public coming soon', () =
 
 test('WO-55 Chikun loader returns the vertical slice instead of a placeholder stub', async () => {
   const loaded = await loadChikunGame();
+  const publicEntry = await import('../apps/portal/games/chikun/main.mjs');
   assert.equal(loaded.manifest.id, 'chikun');
-  assert.equal(loaded.manifest.version, 'vertical-slice-v1');
+  assert.equal(loaded.manifest.version, 'deterministic-core-v2');
+  assert.equal(publicEntry.CHIKUN_FIXED_STEP_HZ, 60);
+  assert.equal(typeof publicEntry.replayChikunRun, 'function');
   const entry = loaded.entryPoint({ sessionId: 'game-session-000000056' });
   assert.equal(entry.loaded, true);
   assert.equal(entry.cabinet.id, 'chikun');
