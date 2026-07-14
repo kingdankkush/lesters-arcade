@@ -116,8 +116,21 @@ export function createInProcessGameAdapter({ gameId = null, sessionId = null, ra
     submitScore(score, runStats = {}) {
       if (state !== 'running' && state !== 'ended') return false;
       const payload = normalizeSurvivalTime({ ...runStats, score });
-      emit(SDK_EVENTS[4], { score: payload.score, survivalTime: payload.survivalTime }); // arcade.scoreSubmit
-      return true;
+      const {
+        replayClaim = null,
+        score: normalizedScore,
+        survivalTime,
+        survived: _survived,
+        survivalSeconds: _survivalSeconds,
+        ...gameRunStats
+      } = payload;
+      const scorePayload = {
+        score: normalizedScore,
+        survivalTime,
+        runStats: gameRunStats,
+        ...(replayClaim ? { replayClaim } : {}),
+      };
+      return emit(SDK_EVENTS[4], scorePayload) !== null; // arcade.scoreSubmit
     },
 
     end(result = {}) {

@@ -6,6 +6,7 @@ import { inflateSync } from 'node:zlib';
 
 import { HMH_HD_SPRITE_ATLAS_MANIFEST } from '../apps/portal/assets/generated/hmh-hd-sprite-atlas.mjs';
 import { HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG } from '../apps/portal/src/hmh-character-config.mjs';
+import { buildChikunReplayClaim, simulateChikunRun } from '../apps/portal/src/chikun-cabinet.mjs';
 import {
   buildLevelOneCuratedVisibleSceneObjects,
   levelOneCuratedAssetSrc,
@@ -268,7 +269,16 @@ test('WO-58 profile v2 model builds trophy room, session feed, achievements, col
   });
   const chikunHandle = nextGlobalSessionId(state);
   const sessionB = startPlaySession({ wallet, gameId: 'chikun', mode: 'paid', urlSessionId: chikunHandle.urlSessionId, sequenceNumber: chikunHandle.sequence, allowDevCabinet: true });
-  recordScore(state, sessionB, 1280, { elapsedSeconds: 94, coins: 17, maxCombo: 4 });
+  const chikunRun = simulateChikunRun({ seed: sessionB.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
+  const replayClaim = buildChikunReplayClaim({ buildHash: sessionB.buildHash, seasonId: sessionB.seasonId, result: chikunRun });
+  recordScore(state, sessionB, chikunRun.score, {
+    survivalTime: chikunRun.survivalTime,
+    survivalTicks: chikunRun.survivalTicks,
+    coinsCollected: chikunRun.coinsCollected,
+    forksPassed: chikunRun.forksPassed,
+    achievements: chikunRun.achievements,
+    replayClaim,
+  });
   applySettlement(state, {
     ...resultA.settlementInput,
     mode: 'simulated',
@@ -303,7 +313,7 @@ test('WO-58 profile v2 model builds trophy room, session feed, achievements, col
   assert.equal(model.achievements.recent.length > 0, true);
 
   assert.equal(model.collection.games.some((game) => game.id === 'lester-blaster' && game.played && game.bestScore === 7200), true);
-  assert.equal(model.collection.games.some((game) => game.id === 'chikun' && game.played && game.bestScore === 1280), true);
+  assert.equal(model.collection.games.some((game) => game.id === 'chikun' && game.played && game.bestScore === chikunRun.score), true);
   assert.equal(model.collection.characters.some((character) => character.id === 'lester-original' && character.unlocked), true);
 });
 

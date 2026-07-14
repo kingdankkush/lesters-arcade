@@ -53,6 +53,16 @@ function isFiniteNumber(v) {
   return typeof v === 'number' && Number.isFinite(v);
 }
 
+function boundedJsonObjectErrors(value, label, maxBytes) {
+  if (!isPlainObject(value)) return [`${label} must be an object`];
+  try {
+    const bytes = new TextEncoder().encode(JSON.stringify(value)).byteLength;
+    return bytes <= maxBytes ? [] : [`${label} exceeds ${maxBytes} bytes`];
+  } catch {
+    return [`${label} must be JSON-serializable`];
+  }
+}
+
 // Build the context object the parent hands a game at init(). CRITICAL: this
 // object carries identity + capability FLAGS only — never a wallet provider,
 // signer, private key, or any function that can move funds or write official
@@ -141,6 +151,18 @@ export function validateEventPayload(type, payload) {
     case 'arcade.scoreSubmit':
       if (!isFiniteNumber(p.score) || p.score < 0) errors.push('scoreSubmit.score must be a non-negative number');
       if (!isFiniteNumber(p.survivalTime) || p.survivalTime < 0) errors.push('scoreSubmit.survivalTime (seconds) must be a non-negative number');
+      if (p.runStats != null) errors.push(...boundedJsonObjectErrors(p.runStats, 'scoreSubmit.runStats', 16_384));
+      if (p.replayClaim != null) {
+        errors.push(...boundedJsonObjectErrors(p.replayClaim, 'scoreSubmit.replayClaim', 65_536));
+        if (isPlainObject(p.replayClaim)) {
+          if (typeof p.replayClaim.version !== 'string' || !p.replayClaim.version.trim()) errors.push('scoreSubmit.replayClaim.version is required');
+          if (!Number.isInteger(p.replayClaim.seed) || p.replayClaim.seed < 0 || p.replayClaim.seed > 0xffffffff) errors.push('scoreSubmit.replayClaim.seed must be a uint32');
+          if (typeof p.replayClaim.buildHash !== 'string' || !p.replayClaim.buildHash.trim()) errors.push('scoreSubmit.replayClaim.buildHash is required');
+          if (typeof p.replayClaim.seasonId !== 'string' || !p.replayClaim.seasonId.trim()) errors.push('scoreSubmit.replayClaim.seasonId is required');
+          if (!isPlainObject(p.replayClaim.evidence)) errors.push('scoreSubmit.replayClaim.evidence must be an object');
+          if (!isPlainObject(p.replayClaim.finalState)) errors.push('scoreSubmit.replayClaim.finalState must be an object');
+        }
+      }
       break;
     case 'arcade.gameOver':
       if (!isFiniteNumber(p.score) || p.score < 0) errors.push('gameOver.score must be a non-negative number');

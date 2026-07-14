@@ -1,6 +1,8 @@
 import { ARCADE_SDK_VERSION } from './arcade-sdk.mjs';
 import { createInProcessGameAdapter } from './game-adapter.mjs';
 
+export const CHIKUN_CABINET_VERSION = '0.2.0';
+export const CHIKUN_RUNTIME_VERSION = 'deterministic-core-v2';
 export const CHIKUN_FIXED_STEP_HZ = 60;
 export const CHIKUN_MAX_FLAP_TRANSITIONS = 4_096;
 const CHIKUN_MAX_RUN_TICKS = CHIKUN_FIXED_STEP_HZ * 60 * 60;
@@ -9,7 +11,8 @@ const CHIKUN_EVIDENCE_VERSION = 'chikun-flap-evidence-v1';
 export const CHIKUN_VERTICAL_SLICE_CONFIG = Object.freeze({
   gameId: 'chikun',
   title: "Chikun's Escape",
-  version: 'deterministic-core-v2',
+  version: CHIKUN_CABINET_VERSION,
+  runtimeVersion: CHIKUN_RUNTIME_VERSION,
   sdkVersion: ARCADE_SDK_VERSION,
   rules: Object.freeze({
     input: 'tap-to-flap',
@@ -204,6 +207,50 @@ export function replayChikunRun(evidence = {}) {
   }));
 }
 
+function sameJson(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function assertCanonicalChikunResult(result, replayed) {
+  for (const field of ['seed', 'score', 'coinsCollected', 'forksPassed', 'survivalTicks', 'survivalTime', 'crashed']) {
+    if (result?.[field] !== replayed[field]) throw new Error(`Chikun result ${field} does not match canonical replay`);
+  }
+  if (!sameJson(result?.achievements, replayed.achievements)) throw new Error('Chikun result achievements do not match canonical replay');
+  if (!sameJson(result?.finalState, replayed.finalState)) throw new Error('Chikun result finalState does not match canonical replay');
+}
+
+export function buildChikunReplayClaim({ buildHash, seasonId, result } = {}) {
+  if (typeof buildHash !== 'string' || !buildHash.trim()) throw new Error('Chikun replay buildHash is required');
+  if (typeof seasonId !== 'string' || !seasonId.trim()) throw new Error('Chikun replay seasonId is required');
+  const replayed = replayChikunRun(result?.evidence);
+  assertCanonicalChikunResult(result, replayed);
+  return Object.freeze({
+    version: 'chikun-parent-replay-v1',
+    seed: replayed.seed,
+    buildHash: buildHash.trim(),
+    seasonId: seasonId.trim(),
+    evidence: replayed.evidence,
+    finalState: replayed.finalState,
+  });
+}
+
+export function verifyChikunReplayClaim({ expectedSeed, expectedBuildHash, expectedSeasonId, score, runStats = {}, replayClaim } = {}) {
+  if (!replayClaim || typeof replayClaim !== 'object' || Array.isArray(replayClaim)) throw new Error('Chikun replay claim is required');
+  if (replayClaim.version !== 'chikun-parent-replay-v1') throw new Error('Unsupported Chikun parent replay claim version');
+  if (replayClaim.seed !== expectedSeed || replayClaim.buildHash !== expectedBuildHash || replayClaim.seasonId !== expectedSeasonId) {
+    throw new Error('Chikun replay claim does not match the parent session binding');
+  }
+  const replayed = replayChikunRun(replayClaim.evidence);
+  if (replayed.seed !== expectedSeed) throw new Error('Chikun replay seed does not match the parent session seed');
+  if (!sameJson(replayClaim.finalState, replayed.finalState)) throw new Error('Chikun replay finalState does not match canonical replay');
+  if (score !== replayed.score) throw new Error('Chikun submitted score does not match canonical replay');
+  for (const field of ['coinsCollected', 'forksPassed', 'survivalTicks', 'survivalTime']) {
+    if (runStats?.[field] !== replayed[field]) throw new Error(`Chikun submitted ${field} does not match canonical replay`);
+  }
+  if (!sameJson(runStats?.achievements, replayed.achievements)) throw new Error('Chikun submitted achievements do not match canonical replay');
+  return replayed;
+}
+
 export function createChikunCabinet({ sessionId = null } = {}) {
   const adapter = createInProcessGameAdapter({ gameId: 'chikun', sessionId, rankedEligible: true });
   return Object.freeze({
@@ -226,19 +273,40 @@ export function createChikunCabinet({ sessionId = null } = {}) {
       return result;
     },
     submitRun(result = {}) {
-      const safe = {
-        score: Math.max(0, Math.round(Number(result.score) || 0)),
-        survivalTime: Math.max(0, Number(result.survivalTime) || 0),
-        survivalTicks: Math.max(0, Math.round(Number(result.survivalTicks) || 0)),
-        coinsCollected: Math.max(0, Math.round(Number(result.coinsCollected) || 0)),
-        forksPassed: Math.max(0, Math.round(Number(result.forksPassed) || 0)),
-        achievements: Array.isArray(result.achievements) ? [...result.achievements] : [],
-        evidence: result.evidence ?? null,
-        finalState: result.finalState ?? null,
+      const context = adapter.getInitContext();
+      const buildHash = context?.buildHash ?? `cabinet-${CHIKUN_CABINET_VERSION}`;
+      const seasonId = context?.seasonId ?? 'chikun-free-practice';
+      const replayClaim = buildChikunReplayClaim({ buildHash, seasonId, result });
+      const runStats = {
+        survivalTime: result.survivalTime,
+        survivalTicks: result.survivalTicks,
+        coinsCollected: result.coinsCollected,
+        forksPassed: result.forksPassed,
+        achievements: result.achievements,
       };
-      adapter.submitScore(safe.score, { survivalTime: safe.survivalTime, coinsCollected: safe.coinsCollected });
+      const canonical = verifyChikunReplayClaim({
+        expectedSeed: context?.mode === 'ranked' ? context.seed : replayClaim.seed,
+        expectedBuildHash: buildHash,
+        expectedSeasonId: seasonId,
+        score: result.score,
+        runStats,
+        replayClaim,
+      });
+      const safe = Object.freeze({
+        score: canonical.score,
+        survivalTime: canonical.survivalTime,
+        survivalTicks: canonical.survivalTicks,
+        coinsCollected: canonical.coinsCollected,
+        forksPassed: canonical.forksPassed,
+        achievements: canonical.achievements,
+        evidence: canonical.evidence,
+        finalState: canonical.finalState,
+        replayClaim,
+      });
+      const submitted = adapter.submitScore(safe.score, { ...runStats, replayClaim });
+      if (!submitted) throw new Error('Chikun score intent failed SDK validation');
       adapter.end({ score: safe.score, survivalTime: safe.survivalTime });
-      return Object.freeze(safe);
+      return safe;
     },
     teardown() {
       return adapter.teardown();
@@ -250,7 +318,8 @@ export async function loadChikunGame() {
   const manifest = Object.freeze({
     id: 'chikun',
     title: CHIKUN_VERTICAL_SLICE_CONFIG.title,
-    version: CHIKUN_VERTICAL_SLICE_CONFIG.version,
+    version: CHIKUN_CABINET_VERSION,
+    runtimeVersion: CHIKUN_RUNTIME_VERSION,
     config: CHIKUN_VERTICAL_SLICE_CONFIG,
     assets: Object.freeze([
       './assets/cabinet-chikun.svg',

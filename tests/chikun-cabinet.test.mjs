@@ -6,8 +6,11 @@ import { fileURLToPath } from 'node:url';
 import { parseInboundMessage } from '../apps/portal/src/arcade-sdk.mjs';
 import { validateGameManifest } from '../apps/portal/src/game-manifest.mjs';
 import {
+  CHIKUN_CABINET_VERSION,
   CHIKUN_FIXED_STEP_HZ,
   CHIKUN_MAX_FLAP_TRANSITIONS,
+  CHIKUN_RUNTIME_VERSION,
+  buildChikunReplayClaim,
   buildChikunVerticalSliceConfig,
   createChikunCabinet,
   loadChikunGame,
@@ -15,22 +18,30 @@ import {
   simulateChikunRun,
 } from '../apps/portal/src/chikun-cabinet.mjs';
 import {
+  buildCabinetInitContextFromSession,
   buildParentSyncPacket,
+  createInitialArcadeState,
   getCartridgeSelectModel,
   getGame,
+  recordScore,
   startPlaySession,
 } from '../apps/portal/src/arcade-core.mjs';
 
 const WALLET = '0x1234567890abcdef1234567890abcdef12345678';
 
-test('WO-55 Chikun ships a valid playable ranked Cabinet SDK manifest', () => {
+test('WO-55 Chikun ships one valid playable ranked Cabinet SDK manifest', () => {
   const manifestPath = fileURLToPath(new URL('../apps/portal/games/chikun/game.manifest.json', import.meta.url));
+  const staleManifestPath = fileURLToPath(new URL('../games/chikun/game.manifest.json', import.meta.url));
   assert.equal(existsSync(manifestPath), true);
+  assert.equal(existsSync(staleManifestPath), false, 'the divergent root Chikun manifest must be consolidated away');
   const raw = JSON.parse(readFileSync(manifestPath, 'utf8'));
   const result = validateGameManifest(raw);
   assert.equal(result.valid, true, result.errors.join('; '));
   assert.equal(result.manifest.id, 'chikun');
-  assert.equal(result.manifest.version, '0.2.0');
+  assert.equal(result.manifest.version, CHIKUN_CABINET_VERSION);
+  assert.equal(raw.runtimeVersion, CHIKUN_RUNTIME_VERSION);
+  assert.equal(CHIKUN_CABINET_VERSION, '0.2.0');
+  assert.equal(CHIKUN_RUNTIME_VERSION, 'deterministic-core-v2');
   assert.equal(result.manifest.status, 'playable');
   assert.equal(result.manifest.controlScheme, 'tap');
   assert.equal(result.manifest.rankedEligible, true);
@@ -41,6 +52,8 @@ test('WO-55 Chikun ships a valid playable ranked Cabinet SDK manifest', () => {
 test('WO-55 Chikun vertical slice has deterministic flap/fork/coin scoring rules', () => {
   const config = buildChikunVerticalSliceConfig();
   assert.equal(config.gameId, 'chikun');
+  assert.equal(config.version, CHIKUN_CABINET_VERSION);
+  assert.equal(config.runtimeVersion, CHIKUN_RUNTIME_VERSION);
   assert.equal(config.sdkVersion, '1.0.0');
   assert.equal(config.rules.input, 'tap-to-flap');
   assert.equal(config.rules.score.coinValue, 25);
@@ -104,13 +117,8 @@ test('ranked Chikun cabinet binds simulation to the parent-issued seed and sessi
     allowDevCabinet: true,
   });
   const cabinet = createChikunCabinet({ sessionId: session.sessionId });
-  const ctx = cabinet.init({
-    mode: 'ranked',
-    seed: session.seed,
-    buildHash: session.buildHash,
-    seasonId: session.seasonId,
-    rankedEligible: session.leaderboardEligible,
-  });
+  const parentInit = buildCabinetInitContextFromSession(session);
+  const ctx = cabinet.init(parentInit);
   cabinet.start({ mode: 'ranked' });
 
   const result = cabinet.simulate({ seed: 999, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
@@ -121,16 +129,46 @@ test('ranked Chikun cabinet binds simulation to the parent-issued seed and sessi
   assert.deepEqual(result, simulateChikunRun({ seed: session.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 }));
 });
 
-test('WO-55 Chikun cabinet emits valid free/ranked SDK events through the public adapter path', () => {
-  const cabinet = createChikunCabinet({ sessionId: 'game-session-000000055' });
+test('ranked Chikun cabinet rejects a tampered result before emitting a score intent', () => {
+  const session = startPlaySession({
+    wallet: WALLET,
+    gameId: 'chikun',
+    mode: 'paid',
+    sessionNonce: '123e4567-e89b-42d3-a456-426614174058',
+    allowDevCabinet: true,
+  });
+  const cabinet = createChikunCabinet({ sessionId: session.sessionId });
+  const events = [];
+  cabinet.adapter.on((message) => events.push(message));
+  cabinet.init(buildCabinetInitContextFromSession(session));
+  cabinet.start({ mode: 'ranked' });
+  const result = cabinet.simulate({ taps: [3, 8, 13, 21, 34], maxTicks: 48 });
+
+  assert.throws(() => cabinet.submitRun({ ...result, score: result.score + 5_000 }), /canonical replay/i);
+  assert.deepEqual(events.map((event) => event.type), [
+    'arcade.ready',
+    'arcade.sessionStart',
+    'arcade.statUpdate',
+  ]);
+});
+
+test('WO-55 Chikun cabinet emits replay evidence through the public adapter path', () => {
+  const session = startPlaySession({
+    wallet: WALLET,
+    gameId: 'chikun',
+    mode: 'paid',
+    sessionNonce: '123e4567-e89b-42d3-a456-426614174055',
+    allowDevCabinet: true,
+  });
+  const cabinet = createChikunCabinet({ sessionId: session.sessionId });
   const events = [];
   cabinet.adapter.on((message) => events.push(message));
 
-  const ctx = cabinet.init({ mode: 'ranked', displayName: 'Chikun Tester', walletShort: '0x1234…5678', rankedEligible: true });
+  const ctx = cabinet.init(buildCabinetInitContextFromSession(session));
   assert.equal(ctx.gameId, 'chikun');
   assert.equal(ctx.capabilities.canWriteOfficialState, false);
   cabinet.start({ mode: 'ranked' });
-  const result = cabinet.simulate({ seed: 55, taps: [3, 8, 13, 21, 34] });
+  const result = cabinet.simulate({ taps: [3, 8, 13, 21, 34] });
   cabinet.submitRun(result);
 
   assert.deepEqual(events.map((event) => event.type), [
@@ -144,6 +182,17 @@ test('WO-55 Chikun cabinet emits valid free/ranked SDK events through the public
     const parsed = parseInboundMessage(event, { expectedGameId: 'chikun' });
     assert.equal(parsed.valid, true, `${event.type}: ${parsed.errors.join('; ')}`);
   }
+  const scoreIntent = events.find((event) => event.type === 'arcade.scoreSubmit');
+  assert.equal(scoreIntent.payload.replayClaim.version, 'chikun-parent-replay-v1');
+  assert.equal(scoreIntent.payload.replayClaim.seed, session.seed);
+  assert.equal(scoreIntent.payload.replayClaim.buildHash, session.buildHash);
+  assert.deepEqual(scoreIntent.payload.replayClaim.evidence, result.evidence);
+  assert.deepEqual(scoreIntent.payload.replayClaim.finalState, result.finalState);
+  assert.equal(scoreIntent.payload.runStats.coinsCollected, result.coinsCollected);
+  assert.equal(scoreIntent.payload.runStats.forksPassed, result.forksPassed);
+  const parentPacket = buildParentSyncPacket(session, scoreIntent.payload);
+  assert.equal(parentPacket.replayVerification.status, 'local-replay-passed');
+  assert.equal(parentPacket.scoreClaim.runStats.survivalTime, result.survivalTime);
 });
 
 test('WO-72 portal model keeps Chikun dev-testable but public coming soon', () => {
@@ -151,7 +200,7 @@ test('WO-72 portal model keeps Chikun dev-testable but public coming soon', () =
   assert.equal(game.status, 'coming-soon');
   assert.equal(game.devPlayable, true);
   assert.equal(game.systemRole, 'child-dapp-cartridge');
-  assert.equal(game.cabinetVersion, '0.2.0');
+  assert.equal(game.cabinetVersion, CHIKUN_CABINET_VERSION);
   assert.equal(game.rankedSeasonId, 'chikun-season-preview-1');
   assert.equal(game.presentation.cartridgeAsset.endsWith('cartridge-chikun.svg'), true);
   const cartridge = getCartridgeSelectModel().find((entry) => entry.id === 'chikun');
@@ -167,16 +216,53 @@ test('WO-72 portal model keeps Chikun dev-testable but public coming soon', () =
   const ranked = startPlaySession({ wallet: WALLET, gameId: 'chikun', mode: 'paid', urlSessionId: 'game-session-000000055', sequenceNumber: 55, allowDevCabinet: true });
   assert.equal(ranked.leaderboardEligible, true);
   assert.equal(ranked.urlSessionId, 'game-session-000000055');
-  const packet = buildParentSyncPacket(ranked, { score: 155, runStats: { survivalTime: 42, coinsCollected: 3 } });
+  const run = simulateChikunRun({ seed: ranked.seed, taps: [3, 8, 13, 21, 34], maxTicks: 48 });
+  const replayClaim = buildChikunReplayClaim({
+    buildHash: ranked.buildHash,
+    seasonId: ranked.seasonId,
+    result: run,
+  });
+  const runStats = {
+    survivalTime: run.survivalTime,
+    survivalTicks: run.survivalTicks,
+    coinsCollected: run.coinsCollected,
+    forksPassed: run.forksPassed,
+    achievements: run.achievements,
+  };
+
+  assert.throws(
+    () => buildParentSyncPacket(ranked, { score: run.score, runStats }),
+    /replay claim is required/i,
+  );
+  assert.throws(
+    () => buildParentSyncPacket(ranked, { score: run.score + 1, runStats, replayClaim }),
+    /canonical replay/i,
+  );
+
+  const packet = buildParentSyncPacket(ranked, { score: run.score, runStats, replayClaim });
   assert.equal(packet.childGame.id, 'chikun');
   assert.equal(packet.writeSets.includes('official scores'), true);
+  assert.equal(packet.replayVerification.status, 'local-replay-passed');
+  assert.equal(packet.verifier.status === 'verified', false, 'local replay must not claim official settlement verification');
+
+  const state = createInitialArcadeState();
+  assert.throws(
+    () => recordScore(state, ranked, run.score + 1, { ...runStats, replayClaim }),
+    /canonical replay/i,
+  );
+  assert.equal(state.leaderboards.chikun.length, 0);
+  const accepted = recordScore(state, ranked, run.score, { ...runStats, replayClaim });
+  assert.equal(accepted.acceptedForGlobalLeaderboard, true);
 });
 
 test('WO-55 Chikun loader returns the vertical slice instead of a placeholder stub', async () => {
   const loaded = await loadChikunGame();
   const publicEntry = await import('../apps/portal/games/chikun/main.mjs');
   assert.equal(loaded.manifest.id, 'chikun');
-  assert.equal(loaded.manifest.version, 'deterministic-core-v2');
+  assert.equal(loaded.manifest.version, CHIKUN_CABINET_VERSION);
+  assert.equal(loaded.manifest.runtimeVersion, CHIKUN_RUNTIME_VERSION);
+  assert.equal(publicEntry.CHIKUN_CABINET_VERSION, CHIKUN_CABINET_VERSION);
+  assert.equal(publicEntry.CHIKUN_RUNTIME_VERSION, CHIKUN_RUNTIME_VERSION);
   assert.equal(publicEntry.CHIKUN_FIXED_STEP_HZ, 60);
   assert.equal(typeof publicEntry.replayChikunRun, 'function');
   const entry = loaded.entryPoint({ sessionId: 'game-session-000000056' });

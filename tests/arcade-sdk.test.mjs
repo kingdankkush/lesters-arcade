@@ -94,6 +94,25 @@ test('validateEventPayload enforces per-event schema', () => {
   assert.equal(validateEventPayload('arcade.achievement', { id: 'first-blood' }).valid, true);
   assert.equal(validateEventPayload('arcade.achievement', { id: '' }).valid, false);
   assert.equal(validateEventPayload('arcade.scoreSubmit', { score: 900, survivalTime: 120 }).valid, true);
+  const replayPayload = {
+    score: 900,
+    survivalTime: 120,
+    runStats: { coinsCollected: 3, forksPassed: 2 },
+    replayClaim: {
+      version: 'chikun-parent-replay-v1',
+      seed: 55,
+      buildHash: 'site-1.3.0:game-1.3.0:cabinet-0.2.0',
+      seasonId: 'chikun-season-preview-1',
+      evidence: { version: 'chikun-flap-evidence-v1', seed: 55, fixedStepHz: 60, maxTicks: 48, flapSteps: [3, 8] },
+      finalState: { score: 900 },
+    },
+  };
+  assert.equal(validateEventPayload('arcade.scoreSubmit', replayPayload).valid, true);
+  assert.equal(validateEventPayload('arcade.scoreSubmit', { ...replayPayload, runStats: [] }).valid, false);
+  assert.equal(validateEventPayload('arcade.scoreSubmit', {
+    ...replayPayload,
+    replayClaim: { ...replayPayload.replayClaim, padding: 'x'.repeat(70_000) },
+  }).valid, false);
   assert.equal(validateEventPayload('arcade.scoreSubmit', { score: 900 }).valid, false); // missing survivalTime
   assert.equal(validateEventPayload('arcade.gameOver', { score: 0 }).valid, true);
   assert.equal(validateEventPayload('arcade.requestWalletAction', { action: 'connect' }).valid, true);

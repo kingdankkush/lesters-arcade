@@ -136,6 +136,9 @@ describe('game-adapter', () => {
       assert.equal(parsed.valid, true, `${event.type}: ${parsed.errors.join('; ')}`);
     }
     assert.equal(events.find((event) => event.type === 'arcade.achievement').payload.id, 'first-blood');
-    assert.equal(events.find((event) => event.type === 'arcade.scoreSubmit').payload.survivalTime, 180);
+    const scoreSubmit = events.find((event) => event.type === 'arcade.scoreSubmit');
+    assert.equal(scoreSubmit.payload.survivalTime, 180);
+    assert.equal(scoreSubmit.payload.runStats.kills, 12);
+    assert.equal(scoreSubmit.payload.runStats.maxCombo, 4);
   });
 });

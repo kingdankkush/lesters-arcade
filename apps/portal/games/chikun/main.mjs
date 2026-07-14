@@ -4,13 +4,17 @@
 // event emission through the adapter.
 
 export {
+  CHIKUN_CABINET_VERSION,
   CHIKUN_FIXED_STEP_HZ,
   CHIKUN_MAX_FLAP_TRANSITIONS,
+  CHIKUN_RUNTIME_VERSION,
+  buildChikunReplayClaim,
   buildChikunVerticalSliceConfig,
   createChikunCabinet,
   loadChikunGame,
   replayChikunRun,
   simulateChikunRun,
+  verifyChikunReplayClaim,
 } from '../../src/chikun-cabinet.mjs';
 
 export { createChikunCabinet as default } from '../../src/chikun-cabinet.mjs';

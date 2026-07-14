@@ -5,6 +5,7 @@ import { HMH_ENVIRONMENT_ASSET_MANIFEST } from '../assets/hard-money-heroes/envi
 import { HMH_CABINET_SPRITE_MANIFEST } from '../assets/hard-money-heroes/cabinet/hmh-cabinet-sprite-manifest.mjs';
 import { LESTER_ARCADE_PLAYLIST_MANIFEST } from './arcade-playlist-manifest.mjs';
 import { SITE_VERSION, GAME_VERSION } from './version-tracking.mjs';
+import { CHIKUN_CABINET_VERSION, CHIKUN_RUNTIME_VERSION, verifyChikunReplayClaim } from './chikun-cabinet.mjs';
 import {
   CURRENT_RANKED_SEASON_ID,
   createCanonicalSessionHandle,
@@ -2130,7 +2131,7 @@ export const ARCADE_GAMES = Object.freeze([
     tagline: 'Tap to flap. Dodge the forks. Stack the silver.',
     systemRole: 'child-dapp-cartridge',
     rankedSeasonId: 'chikun-season-preview-1',
-    cabinetVersion: '0.2.0',
+    cabinetVersion: CHIKUN_CABINET_VERSION,
     parentSystem: 'Lester\'s Arcade',
     presentation: Object.freeze({
       medium: 'snes-cartridge',
@@ -5026,11 +5027,58 @@ export function startPlaySession({
   };
 }
 
-export function buildParentSyncPacket(session, { score = null, runStats = {}, unlockedAchievements = [] } = {}) {
+export function buildCabinetInitContextFromSession(session, player = {}) {
+  if (!session?.sessionId || !session?.gameId || !session?.buildHash || !session?.seasonId || !Number.isInteger(session?.seed)) {
+    throw new Error('canonical parent session bindings are required for cabinet init');
+  }
+  return Object.freeze({
+    mode: session.leaderboardEligible ? 'ranked' : 'free',
+    rankedEligible: Boolean(session.leaderboardEligible),
+    seed: session.seed >>> 0,
+    buildHash: session.buildHash,
+    seasonId: session.seasonId,
+    displayName: player.displayName ?? null,
+    walletShort: player.walletShort ?? null,
+    aspect: player.aspect ?? '16:9',
+    reducedMotion: Boolean(player.reducedMotion),
+    locale: player.locale ?? 'en',
+  });
+}
+
+export function buildParentSyncPacket(session, { score = null, survivalTime = null, runStats = {}, replayClaim = null, unlockedAchievements = [] } = {}) {
   if (!session?.wallet || !session?.gameId) {
     throw new Error('session with wallet and gameId is required');
   }
   const game = getGame(session.gameId);
+  const submittedRunStats = Object.freeze({
+    ...runStats,
+    ...(survivalTime != null ? { survivalTime } : {}),
+  });
+  const replayed = game.id === 'chikun' && (session.leaderboardEligible || replayClaim)
+    ? verifyChikunReplayClaim({
+      expectedSeed: session.seed,
+      expectedBuildHash: session.buildHash,
+      expectedSeasonId: session.seasonId,
+      score,
+      runStats: submittedRunStats,
+      replayClaim,
+    })
+    : null;
+  const canonicalRunStats = replayed ? Object.freeze({
+    survivalTime: replayed.survivalTime,
+    survivalTicks: replayed.survivalTicks,
+    coinsCollected: replayed.coinsCollected,
+    forksPassed: replayed.forksPassed,
+    achievements: replayed.achievements,
+  }) : Object.freeze({ ...submittedRunStats });
+  const canonicalReplayClaim = replayed ? Object.freeze({
+    version: 'chikun-parent-replay-v1',
+    seed: replayed.seed,
+    buildHash: session.buildHash,
+    seasonId: session.seasonId,
+    evidence: replayed.evidence,
+    finalState: replayed.finalState,
+  }) : null;
   const writeSets = session.leaderboardEligible
     ? ['profile progress', 'achievements', 'official scores', 'transaction receipts']
     : [];
@@ -5059,9 +5107,16 @@ export function buildParentSyncPacket(session, { score = null, runStats = {}, un
     writeSets,
     scoreClaim: Object.freeze({
       score,
-      runStats: { ...runStats },
+      runStats: canonicalRunStats,
       unlockedAchievements: [...unlockedAchievements],
+      replayClaim: canonicalReplayClaim,
     }),
+    replayVerification: replayed ? Object.freeze({
+      status: 'local-replay-passed',
+      evidenceVersion: replayed.evidence.version,
+      runtimeVersion: CHIKUN_RUNTIME_VERSION,
+      seed: replayed.seed,
+    }) : null,
     transactionClaim: session.revenueSplit ? Object.freeze({
       kind: 'paid-session',
       amountMicroUsdc: session.entryFeeMicroUsdc,
@@ -5169,8 +5224,22 @@ export function recordScore(state, session, score, runStats = {}) {
     throw new Error('score must be a non-negative integer');
   }
 
-  const profile = ensureProfile(state, session.wallet);
+  const replayClaim = runStats?.replayClaim ?? null;
+  runStats = { ...runStats };
+  delete runStats.replayClaim;
   const game = getGame(session.gameId);
+  if (session.leaderboardEligible && game.id === 'chikun') {
+    verifyChikunReplayClaim({
+      expectedSeed: session.seed,
+      expectedBuildHash: session.buildHash,
+      expectedSeasonId: session.seasonId,
+      score,
+      runStats,
+      replayClaim,
+    });
+  }
+
+  const profile = ensureProfile(state, session.wallet);
   const progress = ensureGameProgress(profile, game.id);
 
   if (!session.leaderboardEligible) {
@@ -5197,7 +5266,7 @@ export function recordScore(state, session, score, runStats = {}) {
   profile.totalPaidRuns += 1;
   profile.xp += Math.max(25, Math.floor(score / 20));
   const unlockedAchievements = maybeUnlockRunAchievements(profile, score, runStats, progress);
-  const parentSync = buildParentSyncPacket(session, { score, runStats, unlockedAchievements });
+  const parentSync = buildParentSyncPacket(session, { score, runStats, replayClaim, unlockedAchievements });
   updateRank(profile);
   syncConfiguredCharacterUnlocks(profile, HARD_MONEY_HEROES_CHARACTER_SLOT_CONFIG);
 

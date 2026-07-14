@@ -2,6 +2,7 @@
   "id": "chikun",
   "name": "Chikun's Escape",
   "version": "0.2.0",
+  "runtimeVersion": "deterministic-core-v2",
   "sdkVersion": "1.0.0",
   "status": "playable",
   "aspectSupport": ["9:16", "16:9"],
