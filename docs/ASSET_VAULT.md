@@ -21,6 +21,7 @@ Current folders:
 - `~/lesters-arcade-vault/pixellab-raw/repo-droppings-zip-txt-root-docs/VAULT-MANIFEST.json` — SHA-256 manifest for removed tracked `*.zip`, `*.txt`, root PDF, and root PDF generator.
 - `~/lesters-arcade-vault/pixellab-raw/hmh-animated-roster-unreferenced-20260702/VAULT-MANIFEST.json` — SHA-256 manifest for 5,593 `hmh-animated-roster` PNGs not referenced by `hmh-animated-roster.mjs` or roster ledgers after consolidation.
 - `~/lesters-arcade-vault/superseded-art/hmh-curated-level-kit-full-source/` — full former `apps/portal/assets/hmh-curated-level-kit/` tree, 11,833 files, copied and `diff -rq` verified before the repo was reduced to the 1,216-file manifest-referenced subset at `apps/portal/assets/generated/hmh-curated-level-kit/source/`.
+- `~/lesters-arcade-vault/reference/chikuns-escape/source-handoff-3af8df2d-20260714/` — Louie's complete 20-file Chikun's Escape source handoff from commit `3af8df2d`, preserved with `VAULT-MANIFEST.json` SHA-256 verification before the raw React, Supabase, reference, and media bundle was removed from the production tree. Only reviewed, optimized runtime derivatives may return to the repo.
 
 ## Sync command
 
