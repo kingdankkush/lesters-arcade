@@ -4,6 +4,7 @@ import test from 'node:test';
 
 import {
   GROUND_PLANE_Y_OFFSET,
+  groundEntityContactPointForProjection,
   groundPatternAnchorForOrigin,
   groundTileLatticePointForProjection,
 } from '../apps/portal/src/hmh-ground-plane-rendering.mjs';
@@ -47,6 +48,21 @@ test('WO-60 ground pattern anchor matches rounded tile lattice origin for fracti
   }
 });
 
+test('actors and props share the rendered ground lattice instead of independent magic offsets', () => {
+  const projected = { x: 413.4, y: 207.6 };
+  assert.deepEqual(
+    groundEntityContactPointForProjection(projected),
+    groundTileLatticePointForProjection(projected),
+  );
+
+  const syncBody = functionBody('syncProjectedPlayerPosition');
+  const obstacleBody = functionBody('buildObstacleRenderEntries');
+  assert.match(syncBody, /groundEntityContactPointForProjection\(projected\)/);
+  assert.match(obstacleBody, /groundEntityContactPointForProjection\(isoToScreen\(/);
+  assert.doesNotMatch(syncBody, /projected\.y \+ 50/);
+  assert.doesNotMatch(syncBody, /projected\.x - 18/);
+});
+
 test('roguelike ground pass batches diamonds by texture key and fills world-anchored patterns', () => {
   assert.match(mainSource, /function drawGroundPlanPatternTiles\(/);
   const body = functionBody('drawGroundPlanPatternTiles');
@@ -77,6 +93,13 @@ test('drawProductionIsoTile no longer performs per-tile texture lookup or edge b
   assert.doesNotMatch(body, /biomeGroundTileForWorld\(/);
   assert.doesNotMatch(body, /drawLevelOneGroundEdgeBreakup\(/);
   assert.match(body, /drawShadedIsoTile\(/);
+});
+
+test('curated Level 1 never substitutes polygon tiles for prerendered ground art', () => {
+  const body = functionBody('drawGroundPlanPatternTiles');
+  assert.doesNotMatch(body, /fallbackTiles/);
+  assert.doesNotMatch(body, /drawProductionIsoTile\(/);
+  assert.match(body, /curatedGroundFallbackPattern/);
 });
 
 test('WO-60 all ground-plane tile and road positions use the shared rounded lattice helper', () => {

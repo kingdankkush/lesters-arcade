@@ -46,7 +46,7 @@ import { sceneObjectsNear, SCENE_TEMPLATES, groundThemeForCell, SCENE_CELL } fro
 import { HMH_LEVEL_ONE_ID, levelOneGroundEdgeBreakupForTile, selectHmhGroundTile } from './src/hmh-ground-selection.mjs';
 import { buildGroundPlan } from './src/hmh-ground-plan.mjs';
 import { buildLevelOneRoadTileIndex, classifyLevelOneTraversal, levelOneRoadTileKey } from './src/hmh-level-one-traversal.mjs';
-import { groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
+import { groundEntityContactPointForProjection, groundPatternAnchorForOrigin, groundTileLatticePointForProjection } from './src/hmh-ground-plane-rendering.mjs';
 import { buildTerrainEdgeBlendsForCell, buildTerrainPresentationForCell } from './src/hmh-terrain-presentation.mjs';
 import {
   propDrawRectForGroundContact,
@@ -1876,24 +1876,26 @@ function heroRotationSprite(characterId) {
 }
 const HERO_ROSTER_BASE = buildCharacterStatIdentityRoster();
 
-// Glyph per hero skill type, shown beside the stat label on the hero cards.
-const HERO_STAT_ICONS = {
-  Power: '💥',
-  Speed: '⚡',
-  Armor: '🛡️',
-  Luck: '🍀',
-  Damage: '💥',
-  Health: '❤️',
-  'Fire Rate': '🔥',
-  Crit: '🎯',
-};
+// Semantic sprite IDs per hero skill type, shown beside stat labels.
+const HERO_STAT_ICON_IDS = Object.freeze({
+  Power: 'offense',
+  Speed: 'mobility',
+  Armor: 'defense',
+  Luck: 'economy',
+  Damage: 'offense',
+  Health: 'defense',
+  'Fire Rate': 'weapon',
+  Crit: 'control',
+});
 
 function renderHeroStatBars(container, stats) {
   for (const [label, value] of stats) {
     const row = el('div', { className: 'hero-stat-row' });
     const labelWrap = el('div', { className: 'hero-stat-label' });
-    const icon = HERO_STAT_ICONS[label] || '•';
-    labelWrap.append(el('span', { className: 'hero-stat-icon', textContent: icon, ariaHidden: 'true' }));
+    const iconId = HERO_STAT_ICON_IDS[label] ?? 'augment';
+    const iconWrap = el('span', { className: 'hero-stat-icon', ariaHidden: 'true' });
+    iconWrap.append(renderArcadeIcon(iconId, label));
+    labelWrap.append(iconWrap);
     labelWrap.append(el('span', { className: 'hero-stat-name', textContent: label }));
     row.append(labelWrap);
     const track = el('div', { className: 'hero-stat-track' });
@@ -2747,7 +2749,8 @@ function renderLevelUpActionGrid() {
     const button = el('button', { className: `combat-menu-action ${card.chrome?.className ?? 'level-up-upgrade-card'} ${card.rarity === 'golden' ? 'is-golden-card' : ''}`, type: 'button', dataset: { ...card.dataset, rarity: card.rarity ?? 'common' } });
     button.dataset.levelUpChoice = card.id;
     const head = el('div', { className: 'upgrade-card-head' });
-    const badge = el('span', { className: 'upgrade-card-badge', textContent: card.icon });
+    const badge = el('span', { className: 'upgrade-card-badge' });
+    badge.append(renderArcadeIcon(card.iconId, card.branchLabel));
     badge.setAttribute('aria-hidden', 'true');
     const titleWrap = el('div', { className: 'upgrade-card-titlewrap' });
     const cardTaxonomy = el('div', { className: 'upgrade-card-taxonomy' });
@@ -7993,8 +7996,9 @@ function screenToIso(screenX, screenY) {
 
 function syncProjectedPlayerPosition() {
   const projected = isoToScreen(combat.playerMapX, combat.playerMapY);
-  combat.playerX = projected.x - 18;
-  combat.playerY = projected.y + 50;
+  const groundContact = groundEntityContactPointForProjection(projected);
+  combat.playerX = groundContact.x;
+  combat.playerY = groundContact.y;
 }
 
 if (tacticalBalanceDebugEnabled) {
@@ -8748,9 +8752,9 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     score: spawn.enemy.score + (options.boss ? 900 : miniBoss ? 220 : elite ? 80 : 0),
     state: ranged ? 'ranged-fire' : 'chase-player',
   };
-  const projected = isoToScreen(enemy.mapX, enemy.mapY);
+  const projected = groundEntityContactPointForProjection(isoToScreen(enemy.mapX, enemy.mapY));
   enemy.x = projected.x;
-  enemy.y = projected.y + 38;
+  enemy.y = projected.y;
   combat.enemies.push(enemy);
   return enemy;
 }
@@ -9641,9 +9645,9 @@ function updateRoguelikeEnemies(director, dt) {
         }
       }
     }
-    const projected = isoToScreen(enemy.mapX, enemy.mapY);
+    const projected = groundEntityContactPointForProjection(isoToScreen(enemy.mapX, enemy.mapY));
     enemy.x = projected.x;
-    enemy.y = projected.y + 38;
+    enemy.y = projected.y;
   }
 
   // Single pass over the enemy list: handle the dead (XP/drops) and keep
@@ -10553,6 +10557,16 @@ function groundPlanPatternForGroup(ctx, group) {
   return pattern;
 }
 
+function curatedGroundFallbackPattern(plan) {
+  const asset = plan.textureForKey('world-v3-material/packed-dirt');
+  const image = sbsGroundTileImage(asset);
+  return imageReady(image) ? Object.freeze({ asset, image }) : null;
+}
+
+function drawMissingGroundTextureTiles(ctx, tiles) {
+  for (const tile of tiles) drawProductionIsoTile(ctx, tile.cx, tile.cy, tile.worldX, tile.worldY);
+}
+
 function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   const groundPassStartedAt = typeof performance !== 'undefined' ? performance.now() : 0;
   const plan = getCombatGroundPlan();
@@ -10569,7 +10583,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     castShadowCells: 0,
     edgeBlendStrips: 0,
   };
-  const fallbackTiles = [];
+  const missingTextureTiles = [];
   const cameraAnchor = groundPatternAnchorForOrigin(isoToScreen(0, 0));
 
   const addDiamond = (path, tile, elevationPx = 0) => {
@@ -10632,11 +10646,17 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
       frame: combat.frame,
       overlayMode: isLevelOneCuratedRuntime() ? 'texture-only' : 'full',
     });
-    const asset = plan.textureForKey(terrainCell.textureKey);
-    const image = sbsGroundTileImage(asset);
+    let asset = plan.textureForKey(terrainCell.textureKey);
+    let image = sbsGroundTileImage(asset);
     if (!imageReady(image)) {
-      fallbackTiles.push(tile);
-      continue;
+      const fallback = isLevelOneCuratedRuntime() ? curatedGroundFallbackPattern(plan) : null;
+      if (fallback) {
+        asset = fallback.asset;
+        image = fallback.image;
+      } else {
+        missingTextureTiles.push(tile);
+        continue;
+      }
     }
     const groupKey = `${terrainCell.textureKey}|${terrainPresentation.elevationPx}`;
     let group = textureGroups.get(groupKey);
@@ -10714,9 +10734,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     terrainPresentationStats.lastOverlayId = overlayId;
   }
 
-  for (const tile of fallbackTiles) {
-    drawProductionIsoTile(ctx, tile.cx, tile.cy, tile.worldX, tile.worldY);
-  }
+  if (!isLevelOneCuratedRuntime()) drawMissingGroundTextureTiles(ctx, missingTextureTiles);
 
   const cacheStats = typeof plan.terrainCellCacheStats === 'function'
     ? plan.terrainCellCacheStats()
@@ -11197,6 +11215,9 @@ async function prewarmHmhLevelAssets(level, onProgress = () => {}) {
   const playerX = combat.playerMapX ?? 0;
   const playerY = combat.playerMapY ?? 0;
   const images = [];
+  const curatedFallbackAsset = plan.textureForKey('world-v3-material/packed-dirt');
+  const curatedFallbackImage = sbsGroundTileImage(curatedFallbackAsset);
+  if (curatedFallbackImage) images.push(curatedFallbackImage);
   for (const textureKey of plan.textureKeysNear(playerX, playerY, 22)) {
     const asset = plan.textureForKey(textureKey);
     const image = sbsGroundTileImage(asset);
@@ -11506,7 +11527,7 @@ function buildObstacleRenderEntries(ctx) {
     const motion = o.ambientLife?.motion ?? null;
     const renderWorldX = o.worldX + (Number(motion?.worldOffsetX) || 0);
     const renderWorldY = o.worldY + (Number(motion?.worldOffsetY) || 0);
-    const projected = isoToScreen(renderWorldX, renderWorldY);
+    const projected = groundEntityContactPointForProjection(isoToScreen(renderWorldX, renderWorldY));
     const { drawWidth: w, drawHeight: drawH, radius } = resolveDrawMetricsForFootprint(img, footprint, style);
     const rect = propDrawRectForGroundContact({
       projected,
@@ -12002,8 +12023,8 @@ function drawRoguelikeScene(ctx, width, height) {
   }
   if (combat.bossDeathSpectacle) {
     const spectacle = combat.bossDeathSpectacle;
-    const projected = isoToScreen(spectacle.mapX, spectacle.mapY);
-    const spectacleEnemy = { ...spectacle, x: projected.x, y: projected.y + 38 };
+    const projected = groundEntityContactPointForProjection(isoToScreen(spectacle.mapX, spectacle.mapY));
+    const spectacleEnemy = { ...spectacle, x: projected.x, y: projected.y };
     renderList.push({
       depth: spectacleEnemy.y,
       draw: () => {
@@ -12539,7 +12560,9 @@ function playerFacingLeft() {
 function drawPlayer(ctx) {
   const x = combat.playerX;
   const y = combat.playerY;
-  const bob = combat.active ? Math.sin(combat.frame * 0.28) * 2 : 0;
+  // Roster sheets already contain authored walk-cycle motion. Keep the feet
+  // pinned to the terrain lattice instead of adding a second synthetic hover.
+  const bob = 0;
   const heroFrame = selectHeroFrame();
   const hero = combatArt.hero;
   const blink = combat.invulnerableFrames > 0 && Math.floor(combat.invulnerableFrames / 6) % 2 === 0;
@@ -12557,21 +12580,8 @@ function drawPlayer(ctx) {
   ctx.imageSmoothingEnabled = false;
   if (blink) ctx.globalAlpha = 0.54;
 
-  // A compact cyan foot marker keeps the selected hero readable against dark,
-  // similarly colored terrain and also covers the brief frame-decode handoff.
-  if (isoPlan) {
-    const marker = isoPlan.marker;
-    ctx.save();
-    ctx.globalAlpha *= 0.72;
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = '#19f7ff';
-    ctx.strokeStyle = '#7ffcff';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.ellipse(marker.x, marker.y, marker.radiusX, marker.radiusY, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.restore();
-  }
+  // Curated roster frames own their contact shadow. Do not add a procedural
+  // ellipse beneath the hero; it reads as a floating hologram over the tiles.
 
   if (imageReady(heroFrame)) {
     const productionHero = Boolean(hero?.productionSlug);

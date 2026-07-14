@@ -2773,6 +2773,24 @@ export function buildLevelOneBoundaryObstaclesNear({
         : side === 'west' ? 'riverbank'
           : 'fence';
     const visual = boundaryVisualForSide(side, index);
+    const centerX = visual.footprintTiles.w * 0.5;
+    const centerY = visual.footprintTiles.h * 0.5;
+    const halfSpan = spacing * 0.5 + 0.15;
+    const halfThickness = 0.7;
+    const horizontal = side === 'north' || side === 'south';
+    const collisionPolygon = horizontal
+      ? Object.freeze([
+          Object.freeze([centerX - halfSpan, centerY - halfThickness]),
+          Object.freeze([centerX + halfSpan, centerY - halfThickness]),
+          Object.freeze([centerX + halfSpan, centerY + halfThickness]),
+          Object.freeze([centerX - halfSpan, centerY + halfThickness]),
+        ])
+      : Object.freeze([
+          Object.freeze([centerX - halfThickness, centerY - halfSpan]),
+          Object.freeze([centerX + halfThickness, centerY - halfSpan]),
+          Object.freeze([centerX + halfThickness, centerY + halfSpan]),
+          Object.freeze([centerX - halfThickness, centerY + halfSpan]),
+        ]);
     segments.push(Object.freeze({
       id: `level-one-boundary-${side}-${index}`,
       worldX: Number(x.toFixed(3)),
@@ -2783,6 +2801,7 @@ export function buildLevelOneBoundaryObstaclesNear({
       sceneRole: visual.role,
       curatedAssetKey: visual.key,
       footprintTiles: Object.freeze(visual.footprintTiles),
+      collisionPolygons: Object.freeze([collisionPolygon]),
       boundarySide: side,
       naturalEdgeType,
       drawOrderBias: visual.drawOrderBias,

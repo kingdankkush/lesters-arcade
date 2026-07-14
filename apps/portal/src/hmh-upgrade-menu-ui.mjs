@@ -1,16 +1,40 @@
 const CATEGORY_STYLES = Object.freeze({
-  offense: Object.freeze({ icon: '⚔', tone: 'red', label: 'Offense' }),
-  defense: Object.freeze({ icon: '🛡', tone: 'cyan', label: 'Defense' }),
-  mobility: Object.freeze({ icon: '🥾', tone: 'green', label: 'Mobility' }),
-  utility: Object.freeze({ icon: '✦', tone: 'gold', label: 'Utility' }),
-  economy: Object.freeze({ icon: '💎', tone: 'gold', label: 'Economy' }),
-  control: Object.freeze({ icon: '🌀', tone: 'cyan', label: 'Control' }),
-  throwable: Object.freeze({ icon: '💣', tone: 'orange', label: 'Throwable' }),
-  status: Object.freeze({ icon: '🔥', tone: 'orange', label: 'Status' }),
-  weapon: Object.freeze({ icon: '🔫', tone: 'weapon', label: 'Weapon Branch' }),
-  'weapon-evolution': Object.freeze({ icon: '★', tone: 'gold', label: 'Golden Evolution' }),
-  fallback: Object.freeze({ icon: '▲', tone: 'cyan', label: 'Augment' }),
+  offense: Object.freeze({ iconId: 'offense', tone: 'red', label: 'Offense' }),
+  defense: Object.freeze({ iconId: 'defense', tone: 'cyan', label: 'Defense' }),
+  mobility: Object.freeze({ iconId: 'mobility', tone: 'green', label: 'Mobility' }),
+  utility: Object.freeze({ iconId: 'utility', tone: 'gold', label: 'Utility' }),
+  economy: Object.freeze({ iconId: 'economy', tone: 'gold', label: 'Economy' }),
+  control: Object.freeze({ iconId: 'control', tone: 'cyan', label: 'Control' }),
+  throwable: Object.freeze({ iconId: 'throwable', tone: 'orange', label: 'Throwable' }),
+  status: Object.freeze({ iconId: 'status', tone: 'orange', label: 'Status' }),
+  weapon: Object.freeze({ iconId: 'weapon', tone: 'weapon', label: 'Weapon Branch' }),
+  'weapon-evolution': Object.freeze({ iconId: 'star', tone: 'gold', label: 'Golden Evolution' }),
+  fallback: Object.freeze({ iconId: 'augment', tone: 'cyan', label: 'Augment' }),
 });
+
+const SEMANTIC_CATEGORY_ALIASES = Object.freeze({
+  damage: 'offense',
+  'crit-chance': 'offense',
+  'crit-damage': 'offense',
+  'projectile-speed': 'offense',
+  pierce: 'offense',
+  'spread-control': 'control',
+  'max-hp': 'defense',
+  armor: 'defense',
+  'movement-speed': 'mobility',
+  'reload-speed': 'utility',
+  'pickup-magnet': 'utility',
+  'magazine-size': 'weapon',
+  'fire-rate': 'weapon',
+  'grenade-capacity': 'throwable',
+  'grenade-damage': 'throwable',
+  'grenade-radius': 'throwable',
+});
+
+function semanticCategoryForChoice(choice = {}) {
+  const raw = String(choice.category ?? 'fallback');
+  return SEMANTIC_CATEGORY_ALIASES[raw] ?? raw;
+}
 
 const LEVEL_UP_CARD_CHROME = Object.freeze({
   id: 'level-up-card-frame',
@@ -153,7 +177,8 @@ function completionLabel(choice) {
 }
 
 function buildCard(choice, index, options) {
-  const category = upgradeCategoryStyle(choice.category, options);
+  const semanticCategory = semanticCategoryForChoice(choice);
+  const category = upgradeCategoryStyle(semanticCategory, options);
   const rankPips = buildRankPips(choice);
   const rarity = choice.rarity ?? 'common';
   const branchLabel = choice.category === 'weapon' ? 'Weapon Branch' : category.label;
@@ -178,7 +203,7 @@ function buildCard(choice, index, options) {
       rarityLabel,
       cornerPips: RARITY_CORNER_PIPS[rarity] ?? 2,
     }),
-    icon: choice.presentation?.icon ?? category.icon,
+    iconId: choice.presentation?.iconId ?? category.iconId,
     gainLabel: choiceGainLabel(choice),
     effectLabel: choiceGainLabel(choice),
     rarityLabel,

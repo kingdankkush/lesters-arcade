@@ -25,5 +25,8 @@ No contract deployment, wallet transaction, external post, or production account
 ## Verification
 - Run focused level/collision/AI tests.
 - Run `npm run test`, `npm run check`, and `npm run contracts:check`.
-- Always run `npm run visual:regression` for render/world changes and inspect seed 1337 captures.
+- On Windows/MSYS, verify Foundry before the full gate: `command -v forge || export PATH="$HOME/.foundry/bin:$PATH"`.
+- Run `npm run visual:responsive` after menu, HUD, or level-up changes and require all 30 captures to pass.
+- Always run `npm run visual:regression` for render/world changes and inspect seed 1337 captures before `npm run visual:accept`.
+- Run `npm run ship:gate` on the final stable tree; do not change tracked files while it is running.
 - Serve `apps/portal` as the web root and inspect the browser console.

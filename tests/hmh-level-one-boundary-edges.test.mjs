@@ -21,6 +21,23 @@ test('WO-22 boundary obstacles form solid natural edges around the finite Level 
   assert.ok(edges.some((edge) => edge.worldY === world.maxY && edge.boundarySide === 'south'));
 });
 
+test('boundary collision strips match visible segment direction and leave no pass-through gaps', () => {
+  const spacing = 6;
+  const world = buildLevelOneRunWorldDimensions({ width: 100, height: 100 });
+  const edges = buildLevelOneBoundaryObstaclesNear({ world, playerX: world.minX, playerY: 0, window: 80, segmentSpacingTiles: spacing });
+  assert.ok(edges.every((edge) => edge.collisionPolygons?.length === 1));
+
+  for (const side of ['north', 'south', 'west', 'east']) {
+    const alongAxis = side === 'north' || side === 'south' ? 'worldX' : 'worldY';
+    const localAxis = side === 'north' || side === 'south' ? 0 : 1;
+    const segments = edges.filter((edge) => edge.boundarySide === side).sort((a, b) => a[alongAxis] - b[alongAxis]);
+    for (const edge of segments) {
+      const values = edge.collisionPolygons[0].map((point) => point[localAxis]);
+      assert.ok(Math.max(...values) - Math.min(...values) >= spacing, `${edge.id} collider must span to its neighbor`);
+    }
+  }
+});
+
 test('WO-22 boundary obstacle query only returns nearby edge segments for render/collision budget', () => {
   const world = buildLevelOneRunWorldDimensions({ width: 1000, height: 800 });
   const center = buildLevelOneBoundaryObstaclesNear({ world, playerX: 0, playerY: 0, window: 30 });

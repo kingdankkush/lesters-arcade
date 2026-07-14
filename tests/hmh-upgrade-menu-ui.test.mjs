@@ -50,13 +50,30 @@ test('WO-73 upgrade menu presentation labels the two-card continuation/new draft
   assert.deepEqual(model.cards[0].rankPips.map((pip) => pip.state), ['filled', 'next', 'empty', 'empty', 'empty']);
 });
 
-test('WO-40 upgrade category style covers all live card categories with text-safe fallbacks', () => {
+test('legacy gameplay categories map to distinct semantic production icons', () => {
+  const model = buildUpgradeMenuPresentation({
+    choices: [
+      { id: 'damage-alpha', title: 'Damage Alpha', category: 'damage' },
+      { id: 'max-health', title: 'Cold Storage', category: 'max-hp' },
+      { id: 'move-speed', title: 'Street Runner', category: 'movement-speed' },
+      { id: 'grenade-capacity', title: 'Nade Pockets', category: 'grenade-capacity' },
+    ],
+  });
+  assert.deepEqual(model.cards.map((card) => card.iconId), ['offense', 'defense', 'mobility', 'throwable']);
+  assert.deepEqual(model.cards.map((card) => card.branchLabel), ['Offense', 'Defense', 'Mobility', 'Throwable']);
+});
+
+test('WO-40 upgrade category style covers all live card categories with production SVG icon IDs', () => {
+  const source = repoText('apps/portal/src/hmh-upgrade-menu-ui.mjs');
+  const sprite = repoText('apps/portal/assets/icons/arcade-ui.svg');
   for (const category of ['offense', 'defense', 'mobility', 'utility', 'economy', 'control', 'throwable', 'status', 'weapon', 'unknown']) {
     const style = upgradeCategoryStyle(category);
-    assert.ok(style.icon.length > 0, `${category} icon`);
+    assert.ok(style.iconId.length > 0, `${category} icon ID`);
+    assert.match(sprite, new RegExp(`id=["']${style.iconId}["']`), `${category} icon exists in sprite`);
     assert.ok(style.tone.length > 0, `${category} tone`);
     assert.ok(style.label.length > 0, `${category} label`);
   }
+  assert.doesNotMatch(source, /⚔|🛡|🥾|💎|🌀|💣|🔥|🔫/);
 });
 
 test('WO-40 upgrade menu supports locked previews and mobile-safe shell metadata', () => {
@@ -86,6 +103,7 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(main.includes('level-up-shell'), true);
   assert.equal(main.includes('level-up-slot-label'), true);
   assert.equal(main.includes('upgrade-card-tooltip'), true);
+  assert.equal(main.includes('badge.append(renderArcadeIcon(card.iconId'), true);
   assert.equal(main.includes("appendText(button, 'p', card.description, 'upgrade-card-desc')"), false);
   assert.equal(main.includes('upgrade-locked-preview-rail'), false);
   assert.equal(main.includes("document.addEventListener('lostpointercapture', releaseLevelUpPointer, true)"), true);
@@ -96,6 +114,7 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(css.includes('.upgrade-card-tooltip'), true);
   assert.equal(css.includes('.pause-console-shell'), true);
   assert.equal(css.includes('.upgrade-card-effect'), true);
+  assert.match(css, /\.mode-card span \{[\s\S]*?white-space: normal/);
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-upgrade-menu-ui.mjs'), true);
   assert.equal(syntaxCheck.includes('tests/hmh-upgrade-menu-ui.test.mjs'), true);
 });

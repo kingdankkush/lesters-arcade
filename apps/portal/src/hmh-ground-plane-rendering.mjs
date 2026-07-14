@@ -12,16 +12,23 @@ function roundScreenCoord(value = 0) {
   return Math.round(Number.isFinite(n) ? n : 0);
 }
 
-export function groundPatternAnchorForOrigin(origin = {}) {
+export function groundTileLatticePointForProjection(projected) {
   return Object.freeze({
-    x: roundScreenCoord(origin.x),
-    y: roundScreenCoord((origin.y ?? 0) + GROUND_PLANE_Y_OFFSET),
+    x: Math.round(Number(projected?.x) || 0),
+    y: Math.round((Number(projected?.y) || 0) + GROUND_PLANE_Y_OFFSET),
   });
 }
 
-export function groundTileLatticePointForProjection(projected = {}) {
+// Actors, props, bridge overlays, and visible collision boundaries must enter
+// draw/depth helpers from the exact same raster lattice as the ground pass.
+// Keeping this semantic alias separate makes accidental magic offsets testable.
+export function groundEntityContactPointForProjection(projected) {
+  return groundTileLatticePointForProjection(projected);
+}
+
+export function groundPatternAnchorForOrigin(originProjected = {}) {
   return Object.freeze({
-    x: roundScreenCoord(projected.x),
-    y: roundScreenCoord(projected.y) + GROUND_PLANE_Y_OFFSET,
+    x: roundScreenCoord(originProjected.x),
+    y: roundScreenCoord(originProjected.y) + GROUND_PLANE_Y_OFFSET,
   });
 }
