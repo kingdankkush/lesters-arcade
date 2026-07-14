@@ -1,0 +1,112 @@
+/* ============================================================================
+   CHIKUN'S ESCAPE — game-scoped CSS
+   ----------------------------------------------------------------------------
+   This is the ONLY custom (non-Tailwind) CSS the game components rely on.
+   Everything else in the original site's globals.css was landing-page chrome
+   and is NOT needed here.
+
+   TWO other theme dependencies live OUTSIDE this file:
+     1. Custom Tailwind color tokens (ink / bone / glow) → see tailwind-tokens.js
+     2. The UI font (Hanken Grotesk), imported + applied just below.
+   The CANVAS game needs neither — its art is hardcoded hex + system-ui text.
+
+   The game components (ArisGame.tsx, Leaderboard.tsx) reference exactly:
+     .arise-page                  — the page/section wrapper the game sits in
+     .arise-live-dot              — pulsing LIVE dot on the leaderboard tape
+     body.is-arise-fullscreen ... — user-toggled fullscreen mode
+     CSS vars: --arise-vh, --arise-vh-px  (set inline by JS at runtime)
+
+   NOTE ON TAILWIND: the components also use ~105 Tailwind utility classes
+   (flex, text-*, bg-*, rounded-*, etc.). If Lester's Arcade uses Tailwind,
+   they just work. If NOT, either add Tailwind, or the equivalent utilities
+   must be provided. See INTEGRATION.md → "Styling".
+   ============================================================================ */
+
+/* ── UI font ────────────────────────────────────────────────────────────────
+   The React overlay UI (menus, leaderboard, HUD text) inherited "Hanken
+   Grotesk" from the original site's <body>. The in-CANVAS text does NOT use it
+   (it's hardcoded to system-ui), so this only affects the HTML overlay. Applied
+   to .arise-page so it's scoped to the game and won't fight the arcade's own
+   font elsewhere. Remove this block to let the game inherit the arcade's font.
+   (Original site also loaded "Permanent Marker" as a display font, but the game
+   components never use it, so it's omitted.) */
+@import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800;900&display=swap");
+.arise-page {
+  font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+}
+
+/* ── Page wrapper ──────────────────────────────────────────────────────────
+   The game is centered inside an element with class `arise-page`. Provides
+   safe-area padding (iPhone notch / home indicator) and disables iOS
+   pull-to-refresh so a downward flap-tap can't reload the page.
+   The original wrapper also sets `background-color: #2b5ede` inline. */
+.arise-page {
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  overscroll-behavior-y: contain;
+}
+@media (min-width: 640px) {
+  .arise-page {
+    padding-bottom: max(48px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Leaderboard LIVE dot ──────────────────────────────────────────────────
+   Pulsing green dot next to the "TOP 20 — LIVE" tape in Leaderboard.tsx. */
+@keyframes arise-live-blink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0.25; }
+}
+.arise-live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #2EE862;
+  box-shadow: 0 0 10px #2EE862;
+  animation: arise-live-blink 1.4s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arise-live-dot {
+    animation: none;
+  }
+}
+
+/* ── Fullscreen mode ───────────────────────────────────────────────────────
+   ArisGame.tsx toggles `is-arise-fullscreen` on <body> when the player taps
+   the maximize button in the HUD (YouTube-style). It hides the page's own
+   header/footer and the leaderboard, then lets the game frame fill the
+   viewport at 16:9 with intentional letterboxing.
+
+   IMPORTANT COUPLING: these selectors assume the game's DOM neighbours.
+   - `body.is-arise-fullscreen > header/footer` hides the PARENT SITE's nav +
+     footer. In Lester's Arcade these selectors may need to target the
+     arcade's chrome elements instead (or be removed if the arcade handles
+     fullscreen its own way).
+   - `#leaderboard` is the id on the <Leaderboard> wrapper (see Leaderboard.tsx).
+   - `.ariseFrame` is the game frame's class (set in ArisGame.tsx). */
+body.is-arise-fullscreen > header,
+body.is-arise-fullscreen > footer {
+  display: none !important;
+}
+body.is-arise-fullscreen .arise-page {
+  padding: 0 !important;
+  min-height: var(--arise-vh-px, 100dvh);
+}
+body.is-arise-fullscreen #leaderboard {
+  display: none !important;
+}
+body.is-arise-fullscreen .ariseFrame {
+  --arise-vh: var(--arise-vh-px, 100dvh);
+  border-width: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.is-arise-fullscreen .arise-page > div:first-child {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
