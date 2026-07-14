@@ -1038,8 +1038,10 @@ test('Level 1 open-ended survival pressure climbs continuously into the elite ba
   assert.ok(oldWall.pressure < 0.75, `8 minutes should not be full pressure, got ${oldWall.pressure}`);
   assert.notEqual(oldWall.difficultyLabel, 'survival-wall');
   assert.ok(eliteBand.pressure > oldWall.pressure, 'pressure should keep climbing after the old 8-minute mark');
-  assert.ok(eliteBand.maxEnemiesOnMap >= 125, `elite band needs dense swarms, got ${eliteBand.maxEnemiesOnMap}`);
-  assert.ok(eliteBand.spawnIntervalSeconds <= 0.45, `elite spawn cadence should overwhelm weak builds, got ${eliteBand.spawnIntervalSeconds}`);
+  assert.ok(eliteBand.maxEnemiesOnMap <= 64, `elite band must respect the body-count ceiling, got ${eliteBand.maxEnemiesOnMap}`);
+  assert.ok(eliteBand.threatBudget >= 50, `elite band needs weighted threat pressure, got ${eliteBand.threatBudget}`);
+  assert.ok(eliteBand.attackTokenCap <= 5, `elite band must remain readable, got ${eliteBand.attackTokenCap} attack tokens`);
+  assert.ok(eliteBand.spawnIntervalSeconds <= 0.6, `elite spawn cadence should sustain pressure, got ${eliteBand.spawnIntervalSeconds}`);
   assert.ok(eliteBand.chaseEnemyShare >= opening.chaseEnemyShare, 'late game should lean into enemies chasing the player');
   assert.ok(levelOneRoguelikeDropChance({ elapsedSeconds: 0, rare: false }) < levelOneRoguelikeDropChance({ elapsedSeconds: 25 * 60, rare: false }));
 
@@ -1177,12 +1179,16 @@ test('WO-71 minute-12 performance budget applies justified render LOD without to
   assert.equal(openingBudget.obstacleRenderRadiusWindowed, 18);
   assert.equal(openingBudget.groundOverscanFullscreenTiles, 20);
 
-  assert.equal(minute12Director.maxEnemiesOnMap >= 110, true, `minute 12 should be a heavy swarm profile, got ${minute12Director.maxEnemiesOnMap}`);
+  assert.equal(minute12Director.maxEnemiesOnMap >= 50 && minute12Director.maxEnemiesOnMap <= 64, true, `minute 12 should be a capped heavy swarm profile, got ${minute12Director.maxEnemiesOnMap}`);
+  assert.ok(minute12Director.threatBudget >= 45, `minute 12 should carry weighted threat pressure, got ${minute12Director.threatBudget}`);
   assert.equal(minute12Budget.lodStage, 'pressure-lod');
   assert.ok(minute12Budget.maxAnimatedEnemies < minute12Director.maxEnemiesOnMap, 'late swarms should animate only the nearest/readable enemies');
   assert.ok(minute12Budget.enemyAnimationFps <= 10, `late enemy animation fps should drop, got ${minute12Budget.enemyAnimationFps}`);
   assert.ok(minute12Budget.obstacleRenderRadiusWindowed <= 16);
   assert.ok(minute12Budget.groundOverscanFullscreenTiles <= 14);
+  const profileSource = readFileSync(new URL('../scripts/hmh-minute12-profile.mjs', import.meta.url), 'utf8');
+  assert.match(profileSource, /applyLod: minute12\.budget\.lodStage === 'pressure-lod'/);
+  assert.doesNotMatch(profileSource, /maxEnemiesOnMap >= 110/);
 });
 
 test('Level 1 opening keeps the hero lane clear while resolving authored POI props', () => {

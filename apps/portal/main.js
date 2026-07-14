@@ -25,7 +25,12 @@ import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-dama
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
 import { runtimeBossHitbox, runtimeEnemyHitbox } from './src/hmh-hurtbox-runtime.mjs';
 import { computeChainDetonation } from './src/destructible-chains.mjs';
-import { computeSeparation, blendSteering } from './src/enemy-steering.mjs';
+import {
+  computeSeparation,
+  blendSteering,
+  enemyAiUpdateStride,
+  shouldUpdateEnemyAi,
+} from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
 import { rollLevelOnePowerUpDrop } from './src/hmh-drop-economy.mjs';
 import { planEnemyAttackPattern } from './src/hmh-attack-patterns.mjs';
@@ -107,6 +112,7 @@ import {
 } from './src/hmh-level-one-visible-runtime.mjs';
 import { buildLevelOneWorldV3VisibleObjects } from './src/hmh-level-one-world-v3-objects.mjs';
 import {
+  levelOneLayoutV4SpawnRequest,
   levelOneWorldV3BossPoint,
   levelOneWorldV3DistrictContextAt,
   levelOneWorldV3ExtractionPoint,
@@ -204,6 +210,8 @@ import {
   getLesterBlasterDifficultyAt,
   getRoguelikeSpawnDirectorAt,
   levelOneRoguelikeSpawnDirectorAt,
+  buildLevelOneSpawnBudgetState,
+  levelOneRoguelikeSpawnBudgetAllows,
   ROGUELIKE_LEVEL_CAP,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
@@ -8652,8 +8660,18 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     activePoiId: poiId,
     forceEnemyId: options.forceEnemyId ?? null,
   });
-  const angle = options.angleRadians ?? ((((combat.frame * 37) + combat.enemies.length * 71) % 360) * Math.PI / 180);
-  const radius = options.radiusTiles ?? Math.max(actComposition.minSpawnDistanceTiles, 10 + (combat.frame % 5));
+  const spawnSeed = options.seed ?? (combat.frame + combat.kills + combat.enemies.length);
+  const isLevelOneSpawn = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID;
+  const layoutSpawnRequest = isLevelOneSpawn
+    ? levelOneLayoutV4SpawnRequest({
+        playerX: combat.playerMapX,
+        playerY: combat.playerMapY,
+        seed: spawnSeed,
+        minDistanceTiles: Math.max(actComposition.minSpawnDistanceTiles, 18),
+      })
+    : null;
+  const angle = options.angleRadians ?? layoutSpawnRequest?.angleRadians ?? ((((combat.frame * 37) + combat.enemies.length * 71) % 360) * Math.PI / 180);
+  const radius = options.radiusTiles ?? Math.max(layoutSpawnRequest?.distanceTiles ?? 0, actComposition.minSpawnDistanceTiles, 10 + (combat.frame % 5));
   const rangedRoll = ((combat.frame + combat.enemies.length) % 100) / 100;
   const rangedShare = Math.min(director.rangedEnemyShare, actComposition.rangedEnemyShare ?? director.rangedEnemyShare);
   const ranged = options.ranged ?? (spawn.enemy.preferredRangeMode === 'ranged'
@@ -8663,8 +8681,9 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
       : rangedRoll < rangedShare);
   const elite = options.elite ?? ((((combat.frame + combat.kills) % 100) / 100) < director.eliteEnemyShare);
   const miniBoss = Boolean(options.miniBoss);
-  const desiredMapX = options.mapX ?? (combat.playerMapX + Math.cos(angle) * radius);
-  const desiredMapY = options.mapY ?? (combat.playerMapY + Math.sin(angle) * radius);
+  const useAuthoredLayoutPoint = layoutSpawnRequest && options.angleRadians == null && options.radiusTiles == null;
+  const desiredMapX = options.mapX ?? (useAuthoredLayoutPoint ? layoutSpawnRequest.desiredX : combat.playerMapX + Math.cos(angle) * radius);
+  const desiredMapY = options.mapY ?? (useAuthoredLayoutPoint ? layoutSpawnRequest.desiredY : combat.playerMapY + Math.sin(angle) * radius);
   const isPoiSpawn = String(options.spawnSource ?? '').startsWith('poi-');
   const minSpawnDistance = options.minDistanceTiles
     ?? (spawn.enemy.boss
@@ -8740,11 +8759,15 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     poiEncounterId: options.poiEncounterId ?? null,
     macroRole: districtContext?.macroRole ?? null,
     spawnSource: options.spawnSource ?? (spawn.spawnContext?.source ?? 'timeline'),
+    spawnLayoutZoneId: layoutSpawnRequest?.zoneId ?? null,
+    spawnLaneId: layoutSpawnRequest?.laneId ?? null,
+    spawnLaneRole: layoutSpawnRequest?.laneRole ?? null,
     spawnBoundsAdjusted: Boolean(safeSpawn.boundsAdjusted),
     spawnResolverFound: Boolean(safeSpawn.found),
     balanceCard,
     speedLaw: balanceCard.speedLaw,
     attackTimer: Math.max(options.attackTimer ?? (ranged ? 110 + (combat.frame % 50) : 90), ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES),
+    attackTokenHeld: false,
     spawnFrames: Math.max(0, options.spawnFrames ?? 18),
     tellFrames: 0,
     recoveryFrames: Math.max(balanceCard.readability.recoveryFrames, miniBoss ? Math.max(spawn.ai?.recoveryFrames ?? 20, 28) : (spawn.ai?.recoveryFrames ?? 20)),
@@ -8752,6 +8775,15 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     score: spawn.enemy.score + (options.boss ? 900 : miniBoss ? 220 : elite ? 80 : 0),
     state: ranged ? 'ranged-fire' : 'chase-player',
   };
+  const scriptedSpawn = Boolean(options.boss || miniBoss || isPoiSpawn || String(enemy.spawnSource).startsWith('boss-beat-'));
+  if (isLevelOneSpawn && !scriptedSpawn && options.ignoreSpawnBudget !== true) {
+    const spawnBudget = buildLevelOneSpawnBudgetState({
+      elapsedSeconds: combat.elapsedGameSeconds,
+      enemies: combat.enemies,
+      enemyProjectiles: combat.enemyShots.length,
+    });
+    if (!levelOneRoguelikeSpawnBudgetAllows(spawnBudget, enemy)) return null;
+  }
   const projected = groundEntityContactPointForProjection(isoToScreen(enemy.mapX, enemy.mapY));
   enemy.x = projected.x;
   enemy.y = projected.y;
@@ -9361,11 +9393,12 @@ function updateLevelOneBossBeatSchedule(director) {
   }
 }
 
-function emitEnemyPatternActions(enemy, patternPlan, shotSpeed = 5.2) {
+function emitEnemyPatternActions(enemy, patternPlan, shotSpeed = 5.2, projectileCap = Number.POSITIVE_INFINITY) {
   const actions = patternPlan?.actions ?? [];
   let emittedShots = 0;
   for (const action of actions) {
     if (action.type === 'shot') {
+      if (combat.enemyShots.length >= projectileCap) continue;
       combat.enemyShots.push({
         worldX: enemy.mapX,
         worldY: enemy.mapY,
@@ -9379,6 +9412,7 @@ function emitEnemyPatternActions(enemy, patternPlan, shotSpeed = 5.2) {
       });
       emittedShots += 1;
     } else if (action.type === 'mortar-marker') {
+      if (combat.enemyShots.length >= projectileCap) continue;
       const dirX = action.x - enemy.mapX;
       const dirY = action.y - enemy.mapY;
       const d = Math.hypot(dirX, dirY) || 1;
@@ -9405,7 +9439,7 @@ function emitEnemyPatternActions(enemy, patternPlan, shotSpeed = 5.2) {
       spawnText('POOL', enemy.x - 8, enemy.y - 58, '#45ff8a');
     }
   }
-  if (!emittedShots && enemy.ranged) {
+  if (!emittedShots && enemy.ranged && combat.enemyShots.length < projectileCap) {
     const dx = combat.playerMapX - enemy.mapX;
     const dy = combat.playerMapY - enemy.mapY;
     const distance = Math.hypot(dx, dy) || 1;
@@ -9428,16 +9462,44 @@ function updateRoguelikeEnemies(director, dt) {
   updateLevelOneBossBeatSchedule(director);
   const actComposition = buildLevelOneSpawnCompositionAt(combat.elapsedGameSeconds);
   const genericSpawnsSuppressed = actComposition.genericSpawnSuppression && !combat.activePoiEncounterId && !combat.scriptedBossTriggered;
-  while (!genericSpawnsSuppressed && !combat.activePoiEncounterId && combat.roguelikeSpawnTimer <= 0 && combat.enemies.length < director.maxEnemiesOnMap) {
-    spawnRoguelikeEnemy(director);
+  const levelOneBudgeted = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID;
+  let spawnBudget = levelOneBudgeted
+    ? buildLevelOneSpawnBudgetState({
+        elapsedSeconds: combat.elapsedGameSeconds,
+        enemies: combat.enemies,
+        enemyProjectiles: combat.enemyShots.length,
+      })
+    : null;
+  let spawnedThisStep = 0;
+  const spawnBurstCap = Math.max(1, director.spawnBurstCap ?? 3);
+  while (
+    !genericSpawnsSuppressed
+    && !combat.activePoiEncounterId
+    && combat.roguelikeSpawnTimer <= 0
+    && combat.enemies.length < director.maxEnemiesOnMap
+    && spawnedThisStep < spawnBurstCap
+    && (!spawnBudget || levelOneRoguelikeSpawnBudgetAllows(spawnBudget, { ranged: false }))
+  ) {
+    const spawnedEnemy = spawnRoguelikeEnemy(director);
+    if (!spawnedEnemy) break;
+    spawnedThisStep += 1;
     combat.roguelikeSpawnTimer += director.spawnIntervalSeconds;
+    if (levelOneBudgeted) {
+      spawnBudget = buildLevelOneSpawnBudgetState({
+        elapsedSeconds: combat.elapsedGameSeconds,
+        enemies: combat.enemies,
+        enemyProjectiles: combat.enemyShots.length,
+      });
+    }
   }
 
   const slowFactor = (combat.powerUpTimers.slowEnemies ?? 0) > 0 ? 0.4 : 1;
-  // Snapshot enemy positions once per step for separation steering, so the swarm
-  // spreads into a readable crescent instead of stacking on one pixel. Built once
-  // (not per-enemy) to keep the cost O(n * neighborsConsidered), not O(n^2) blind.
+  // At the 64-body shipping cap, the ten-neighbor early-exit scan benchmarks
+  // faster than Map-backed spatial buckets in V8 and allocates no per-enemy data.
   const enemyPositions = combat.enemies.map((e) => ({ x: e.mapX, y: e.mapY }));
+  const attackTokenCap = Math.max(1, director.attackTokenCap ?? 8);
+  const enemyProjectileCap = Math.max(12, director.enemyProjectileCap ?? 96);
+  let attackTokensInUse = combat.enemies.reduce((count, enemy) => count + (enemy.attackTokenHeld ? 1 : 0), 0);
   const runSeed = combat.roguelikeRun?.seed ?? 0;
   const obstacles = currentObstacles();
   const enemyWorldBounds = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
@@ -9467,35 +9529,71 @@ function updateRoguelikeEnemies(director, dt) {
         ? 'strafe'
         : 'chase-player';
     if (recovering) {
+      if (enemy.attackTokenHeld) {
+        enemy.attackTokenHeld = false;
+        attackTokensInUse = Math.max(0, attackTokensInUse - 1);
+      }
       enemy.recoveryFramesRemaining -= 1;
       enemy.tellFrames = 0;
       enemy.postVolley = enemy.ranged;
+      enemy.cachedMoveVx = 0;
+      enemy.cachedMoveVy = 0;
+      enemy.cachedMoveMode = 'idle';
     } else {
-      // Local separation push from nearby enemies, blended with the homing
-      // direction so the swarm advances but fans out laterally.
-      const sep = computeSeparation({ x: enemy.mapX, y: enemy.mapY }, enemyPositions, {
-        radius: 1.15,
-        selfIndex: ei,
-        maxNeighbors: 10,
+      // Nearby movement refreshes steering every frame. Mid/far enemies cache
+      // steering for two or three frames, but bounded collision/water resolution
+      // still runs every simulation step so throttling cannot tunnel through seams.
+      const aiStride = enemyAiUpdateStride({
+        distanceTiles: distance,
+        boss: Boolean(enemy.boss || enemy.signatureBoss),
+        miniBoss: Boolean(enemy.miniBoss),
       });
-      if (distance > desiredDistance) {
-        const playerMoveSpeed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
-        const speed = calculateEnemyChaseSpeed({
-          enemySpeed: enemy.speed ?? 1,
-          elite: enemy.elite,
-          boss: Boolean(enemy.boss || enemy.miniBoss || enemy.signatureBoss),
-          pressure: director.pressure,
-          encounterSpeedMul: encounterBehavior.speedMul ?? 1,
-          slowFactor,
-          playerMoveSpeed,
+      const refreshSteeringThisStep = shouldUpdateEnemyAi({ frame: combat.frame, enemyIndex: ei, stride: aiStride });
+      const movementDt = Math.min(dt, 0.05);
+      if (refreshSteeringThisStep) {
+        const sep = computeSeparation({ x: enemy.mapX, y: enemy.mapY }, enemyPositions, {
+            radius: 1.15,
+            selfIndex: ei,
+            maxNeighbors: 10,
         });
-        // Blend homing toward the player with separation from neighbors.
-        const dir = blendSteering({ x: dx / distance, y: dy / distance }, sep, 0.6);
+        if (distance > desiredDistance) {
+          const playerMoveSpeed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
+          const speed = calculateEnemyChaseSpeed({
+            enemySpeed: enemy.speed ?? 1,
+            elite: enemy.elite,
+            boss: Boolean(enemy.boss || enemy.miniBoss || enemy.signatureBoss),
+            pressure: director.pressure,
+            encounterSpeedMul: encounterBehavior.speedMul ?? 1,
+            slowFactor,
+            playerMoveSpeed,
+          });
+          const dir = blendSteering({ x: dx / distance, y: dy / distance }, sep, 0.6);
+          enemy.cachedMoveVx = dir.x * speed;
+          enemy.cachedMoveVy = dir.y * speed;
+          enemy.cachedMoveMode = 'chase';
+        } else if (enemy.ranged) {
+          const dir = blendSteering({ x: -dx / distance, y: -dy / distance }, sep, 0.5);
+          enemy.cachedMoveVx = dir.x * 0.55 * slowFactor;
+          enemy.cachedMoveVy = dir.y * 0.55 * slowFactor;
+          enemy.cachedMoveMode = 'retreat';
+        } else {
+          enemy.cachedMoveVx = 0;
+          enemy.cachedMoveVy = 0;
+          enemy.cachedMoveMode = 'idle';
+        }
+      }
+      const cachedMoveMode = enemy.cachedMoveMode ?? 'idle';
+      const cachedMoveVx = Number.isFinite(enemy.cachedMoveVx) ? enemy.cachedMoveVx : 0;
+      const cachedMoveVy = Number.isFinite(enemy.cachedMoveVy) ? enemy.cachedMoveVy : 0;
+      const cachedMovementMatchesState = cachedMoveMode === 'chase'
+        ? distance > desiredDistance
+        : cachedMoveMode === 'retreat' && enemy.ranged && distance <= desiredDistance;
+      if (cachedMovementMatchesState && (cachedMoveVx !== 0 || cachedMoveVy !== 0)) {
         const fromX = enemy.mapX;
         const fromY = enemy.mapY;
-        const toX = fromX + dir.x * speed * dt;
-        const toY = fromY + dir.y * speed * dt;
-        const boundedMove = resolveTrackingAiMove({
+        const toX = fromX + cachedMoveVx * movementDt;
+        const toY = fromY + cachedMoveVy * movementDt;
+        const moveOptions = {
           seed: runSeed,
           fromX,
           fromY,
@@ -9508,32 +9606,19 @@ function updateRoguelikeEnemies(director, dt) {
           obstacles,
           biomeAt: currentTerrainBiomeAt,
           worldBounds: enemyWorldBounds,
-        });
+        };
+        const boundedMove = cachedMoveMode === 'chase'
+          ? resolveTrackingAiMove({
+              ...moveOptions,
+              targetX: combat.playerMapX,
+              targetY: combat.playerMapY,
+              detourSide: ((ei + runSeed) & 1) === 0 ? 1 : -1,
+            })
+          : resolveBoundedAiMove(moveOptions);
         enemy.mapX = boundedMove.x;
         enemy.mapY = boundedMove.y;
         enemy.worldBoundsAdjusted = Boolean(boundedMove.boundsAdjusted);
-        enemy.pathDetoured = Boolean(boundedMove.detoured);
-      } else if (enemy.ranged) {
-        // Back away to maintain range, still avoiding neighbors + terrain.
-        const dir = blendSteering({ x: -dx / distance, y: -dy / distance }, sep, 0.5);
-        const fromX = enemy.mapX;
-        const fromY = enemy.mapY;
-        const toX = fromX + dir.x * 0.55 * dt * slowFactor;
-        const toY = fromY + dir.y * 0.55 * dt * slowFactor;
-        const boundedMove = resolveBoundedAiMove({
-          seed: runSeed,
-          fromX,
-          fromY,
-          toX,
-          toY,
-          radius: 0.4,
-          obstacles,
-          biomeAt: currentTerrainBiomeAt,
-          worldBounds: enemyWorldBounds,
-        });
-        enemy.mapX = boundedMove.x;
-        enemy.mapY = boundedMove.y;
-        enemy.worldBoundsAdjusted = Boolean(boundedMove.boundsAdjusted);
+        enemy.pathDetoured = cachedMoveMode === 'chase' && Boolean(boundedMove.detoured);
       }
       enemy.attackTimer -= 1;
       // Mini-boss 2-phase enrage (handoff §12.7): POI mini-bosses tighten their
@@ -9557,20 +9642,34 @@ function updateRoguelikeEnemies(director, dt) {
       }
       const miniBossResetMul = miniBossDirective?.phase?.attackResetMul ?? 1;
       const telegraphFrames = 18 + (encounterBehavior.telegraphBonusFrames ?? 0);
-      enemy.tellFrames = enemy.attackTimer < telegraphFrames ? telegraphFrames - enemy.attackTimer : 0;
+      const priorityAttacker = Boolean(enemy.signatureBoss || enemy.boss || enemy.miniBoss);
+      const attackGateOpen = enemy.ranged ? distance <= 16 : distance <= 1.4;
+      if (enemy.attackTokenHeld && !attackGateOpen) {
+        enemy.attackTokenHeld = false;
+        attackTokensInUse = Math.max(0, attackTokensInUse - 1);
+      }
+      if (!enemy.attackTokenHeld && attackGateOpen && enemy.attackTimer < telegraphFrames && (priorityAttacker || attackTokensInUse < attackTokenCap)) {
+        enemy.attackTokenHeld = true;
+        attackTokensInUse += 1;
+      }
+      if (!enemy.attackTokenHeld && enemy.attackTimer < telegraphFrames) enemy.attackTimer = telegraphFrames;
+      enemy.tellFrames = enemy.attackTokenHeld && enemy.attackTimer < telegraphFrames ? telegraphFrames - enemy.attackTimer : 0;
       if (enemy.tellFrames > 0) {
         enemy.state = enemy.ranged ? 'telegraph' : 'melee-tell';
         enemy.windingUp = enemy.id === 'claim-jumper' || enemy.id === 'claim-jumper-sheriff' || enemy.id === 'scam-cult-zealot' || enemy.id === 'coyote-pack-runner';
         enemy.burrowing = enemy.id === 'scorpion-ambusher';
       }
-      if (!enemy.ranged && distance < 0.82 && enemy.attackTimer <= 0) {
+      if (!enemy.ranged && distance < 0.82 && enemy.attackTimer <= 0 && enemy.attackTokenHeld) {
         enemy.lunging = enemy.id === 'coyote-pack-runner' || enemy.id === 'scorpion-ambusher';
         enemy.state = 'attack';
         damagePlayer(calculateEnemyMeleeDamage({ normalHitDamage: NORMAL_HIT_DAMAGE, elite: enemy.elite }), 'enemy-melee', enemy.elite ? `Elite ${enemy.title ?? 'enemy'}` : enemy.title);
         enemy.attackTimer = Math.round(calculateMeleeAttackResetFrames({ preferredResetFrames: encounterBehavior.attackResetFrames ?? 46 }) * miniBossResetMul);
         enemy.recoveryFramesRemaining = enemy.recoveryFrames ?? 20;
+        enemy.attackTokenHeld = false;
+        attackTokensInUse = Math.max(0, attackTokensInUse - 1);
       }
-      if (enemy.ranged && enemy.attackTimer <= 0) {
+      const projectileBudgetAvailable = combat.enemyShots.length < enemyProjectileCap;
+      if (enemy.ranged && enemy.attackTimer <= 0 && enemy.attackTokenHeld && (projectileBudgetAvailable || enemy.signatureBoss)) {
         const shotSpeed = 5.2 * director.projectileSpeedMultiplier;
         enemy.state = 'ranged-attack';
         if (enemy.signatureBoss) {
@@ -9590,6 +9689,7 @@ function updateRoguelikeEnemies(director, dt) {
             phase: boss,
           });
           for (const v of vectors) {
+            if (combat.enemyShots.length >= enemyProjectileCap) break;
             combat.enemyShots.push({
               worldX: enemy.mapX,
               worldY: enemy.mapY,
@@ -9612,6 +9712,7 @@ function updateRoguelikeEnemies(director, dt) {
             phase: miniBossDirective.phase,
           });
           for (const v of vectors) {
+            if (combat.enemyShots.length >= enemyProjectileCap) break;
             combat.enemyShots.push({
               worldX: enemy.mapX,
               worldY: enemy.mapY,
@@ -9638,11 +9739,17 @@ function updateRoguelikeEnemies(director, dt) {
           });
           enemy.attackPatternId = patternPlan.patternId;
           enemy.activeTelegraphDecal = patternPlan.telegraphDecal;
-          emitEnemyPatternActions(enemy, patternPlan, shotSpeed);
+          emitEnemyPatternActions(enemy, patternPlan, shotSpeed, enemyProjectileCap);
           const baseReset = encounterBehavior.attackResetFrames ?? Math.max(34, Math.round(92 - director.pressure * 38));
           enemy.attackTimer = Math.round((baseReset / patternPlan.frequencyMultiplier) * miniBossResetMul);
           enemy.recoveryFramesRemaining = Math.max(enemy.recoveryFrames ?? 20, patternPlan.recoveryFrames);
         }
+        enemy.attackTokenHeld = false;
+        attackTokensInUse = Math.max(0, attackTokensInUse - 1);
+      } else if (enemy.ranged && enemy.attackTimer <= 0 && enemy.attackTokenHeld && !projectileBudgetAvailable) {
+        enemy.attackTimer = 8;
+        enemy.attackTokenHeld = false;
+        attackTokensInUse = Math.max(0, attackTokensInUse - 1);
       }
     }
     const projected = groundEntityContactPointForProjection(isoToScreen(enemy.mapX, enemy.mapY));
@@ -12002,8 +12109,15 @@ function drawRoguelikeScene(ctx, width, height) {
     });
   }
   const enemyRenderBudget = currentLevelOnePerformanceBudget();
-  const maxAnimatedEnemies = Math.max(0, enemyRenderBudget.maxAnimatedEnemies ?? combat.enemies.length);
-  const animatedEnemies = new Set(combat.enemies
+  const enemyRenderMargin = 180;
+  const visibleEnemies = combat.enemies.filter((enemy) => (
+    enemy.x >= -enemyRenderMargin
+    && enemy.x <= width + enemyRenderMargin
+    && enemy.y >= -enemyRenderMargin
+    && enemy.y <= height + enemyRenderMargin
+  ));
+  const maxAnimatedEnemies = Math.max(0, enemyRenderBudget.maxAnimatedEnemies ?? visibleEnemies.length);
+  const animatedEnemies = new Set(visibleEnemies
     .map((enemy) => ({
       enemy,
       priority: (enemy.miniBoss || enemy.signatureBoss ? -10000 : 0)
@@ -12012,7 +12126,7 @@ function drawRoguelikeScene(ctx, width, height) {
     .sort((a, b) => a.priority - b.priority)
     .slice(0, maxAnimatedEnemies)
     .map((entry) => entry.enemy));
-  for (const enemy of combat.enemies) {
+  for (const enemy of visibleEnemies) {
     renderList.push({
       depth: enemy.y,
       draw: () => drawSingleEnemy(ctx, enemy, {
@@ -13084,15 +13198,45 @@ function drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderPr
       ctx.fill();
     }
   } else if (phase === 'front') {
-    const danger = (enemy.attackTimer < 18) || enemy.telegraphFrames > 0 || enemy.windupFrames > 0;
+    const danger = Boolean(enemy.attackTokenHeld)
+      || (enemy.tellFrames ?? 0) > 0
+      || (enemy.telegraphFrames ?? 0) > 0
+      || (enemy.windupFrames ?? 0) > 0;
     if (danger) {
-      ctx.globalAlpha = 0.82;
-      ctx.strokeStyle = renderProfile.telegraphColor ?? '#ffe84d';
-      ctx.lineWidth = 2;
+      const tellProgress = Math.max(0, Math.min(1, (enemy.tellFrames ?? 1) / 18));
+      const pulse = 0.72 + Math.sin((combat.frame + (enemy.mapX ?? 0) * 3) * 0.34) * 0.18;
+      const telegraphColor = enemy.ranged
+        ? (renderProfile.telegraphColor ?? '#ff5ce1')
+        : '#ffe84d';
+      ctx.globalAlpha = Math.max(0.68, Math.min(1, pulse + tellProgress * 0.16));
+      ctx.strokeStyle = telegraphColor;
+      ctx.fillStyle = enemy.ranged ? 'rgba(255, 92, 225, 0.13)' : 'rgba(255, 232, 77, 0.14)';
+      ctx.lineWidth = elite ? 4 : 3;
+      ctx.setLineDash(enemy.ranged ? [7, 4] : []);
       ctx.beginPath();
-      ctx.moveTo(centerX - drawSize * 0.22, ey + drawSize * 0.1);
-      ctx.lineTo(centerX, ey - drawSize * 0.02);
-      ctx.lineTo(centerX + drawSize * 0.22, ey + drawSize * 0.1);
+      ctx.ellipse(centerX, footY + 1, drawSize * 0.48, drawSize * 0.18, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.globalAlpha = 0.96;
+      ctx.strokeStyle = telegraphColor;
+      ctx.fillStyle = 'rgba(8, 6, 18, 0.78)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      if (enemy.ranged) {
+        ctx.moveTo(centerX, ey - drawSize * 0.1);
+        ctx.lineTo(centerX + drawSize * 0.14, ey + drawSize * 0.04);
+        ctx.lineTo(centerX, ey + drawSize * 0.18);
+        ctx.lineTo(centerX - drawSize * 0.14, ey + drawSize * 0.04);
+        ctx.closePath();
+      } else {
+        ctx.moveTo(centerX - drawSize * 0.22, ey + drawSize * 0.12);
+        ctx.lineTo(centerX, ey - drawSize * 0.06);
+        ctx.lineTo(centerX + drawSize * 0.22, ey + drawSize * 0.12);
+        ctx.closePath();
+      }
+      ctx.fill();
       ctx.stroke();
     }
     if (hpRatio < 0.35 && enemy.hp > 0) {

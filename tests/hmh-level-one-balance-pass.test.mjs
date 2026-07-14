@@ -4,10 +4,20 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import {
+  buildLevelOneSpawnBudgetState,
   createRoguelikeRunState,
   chooseRoguelikeUpgradeOptions,
   LESTER_BLASTER_ROGUELIKE_SKILL_LIBRARY,
+  levelOneEnemyThreatCost,
+  levelOneRoguelikeSpawnBudgetAllows,
+  levelOneRoguelikeSpawnDirectorAt,
 } from '../apps/portal/src/arcade-core.mjs';
+import {
+  buildSeparationSpatialHash,
+  computeSpatialSeparation,
+  enemyAiUpdateStride,
+  shouldUpdateEnemyAi,
+} from '../apps/portal/src/enemy-steering.mjs';
 import {
   calculatePlayerDamageRecovery,
 } from '../apps/portal/src/hmh-combat-balance.mjs';
@@ -42,7 +52,12 @@ test('Level 1 telemetry snapshot samples open-ended elite-band survival targets'
   assert.equal(snapshot.checkpoints.length, 6);
   assert.equal(snapshot.checkpoints[0].actId, 'safe-road-controls');
   assert.equal(snapshot.checkpoints.at(-1).actId, 'rugpull-boss-yard-extraction');
-  assert.ok(snapshot.checkpoints.at(-1).director.maxEnemiesOnMap >= 125);
+  const lateDirector = snapshot.checkpoints.at(-1).director;
+  assert.ok(lateDirector.maxEnemiesOnMap <= 64);
+  assert.ok(lateDirector.threatBudget >= 50);
+  assert.ok(lateDirector.attackTokenCap <= 5);
+  assert.ok(lateDirector.enemyProjectileCap <= 72);
+  assert.ok(lateDirector.healthMultiplier > snapshot.checkpoints[0].director.healthMultiplier);
   assert.ok(snapshot.killsModel.swarmFighter.killsAtEliteBand >= 400);
   assert.ok(snapshot.xpPacing.swarmFighter.targetLevelAtEliteBand >= 18);
   assert.ok(snapshot.xpPacing.firstUpgradeExpectedSeconds >= 45 && snapshot.xpPacing.firstUpgradeExpectedSeconds <= 75);
@@ -140,4 +155,99 @@ test('generated Level 1 balance report exposes long-run elite-band values withou
   assert.match(report, /Swarm fighter kills at elite band: 450/);
   assert.match(report, /Swarm fighter target level at elite band: \d+/);
   assert.match(report, /Normal drop chance: 0\.16 → 0\.345/);
+});
+
+
+test('late-run Level 1 pressure shifts to threat quality instead of unbounded raw enemy count', () => {
+  const opening = levelOneRoguelikeSpawnDirectorAt(0);
+  const late = levelOneRoguelikeSpawnDirectorAt(30 * 60);
+  assert.ok(opening.maxEnemiesOnMap <= 18);
+  assert.ok(late.maxEnemiesOnMap <= 64, `late cap must respect readability/performance ceiling, got ${late.maxEnemiesOnMap}`);
+  assert.ok(late.attackTokenCap <= 5);
+  assert.ok(late.enemyProjectileCap <= 72);
+  assert.ok(late.spawnBurstCap <= 3);
+  assert.ok(late.threatBudget > opening.threatBudget);
+  assert.ok(late.healthMultiplier > opening.healthMultiplier);
+  assert.ok(late.eliteEnemyShare > opening.eliteEnemyShare);
+});
+
+test('enemy threat costs prioritize elites and bosses over raw body count', () => {
+  const melee = levelOneEnemyThreatCost({ ranged: false });
+  const ranged = levelOneEnemyThreatCost({ ranged: true });
+  const elite = levelOneEnemyThreatCost({ ranged: true, elite: true });
+  const miniBoss = levelOneEnemyThreatCost({ miniBoss: true, elite: true });
+  const boss = levelOneEnemyThreatCost({ boss: true, signatureBoss: true });
+  assert.ok(melee < ranged);
+  assert.ok(ranged < elite);
+  assert.ok(elite < miniBoss);
+  assert.ok(miniBoss < boss);
+});
+
+test('spawn budget rejects extra bodies, threat overflow, and projectile soup deterministically', () => {
+  const enemies = Array.from({ length: 40 }, (_, index) => ({
+    id: `enemy-${index}`,
+    hp: 10,
+    ranged: index % 3 === 0,
+    elite: index % 7 === 0,
+  }));
+  const state = buildLevelOneSpawnBudgetState({ elapsedSeconds: 20 * 60, enemies, enemyProjectiles: 0 });
+  assert.equal(state.enemyCount, 40);
+  assert.ok(state.threatUsed >= 40);
+  assert.equal(levelOneRoguelikeSpawnBudgetAllows(state, { ranged: false }), state.remainingEnemySlots > 0 && state.remainingThreat >= levelOneEnemyThreatCost({ ranged: false }));
+
+  const projectileLocked = buildLevelOneSpawnBudgetState({
+    elapsedSeconds: 20 * 60,
+    enemies,
+    enemyProjectiles: state.enemyProjectileCap,
+  });
+  assert.equal(projectileLocked.projectileSaturated, true);
+  assert.equal(levelOneRoguelikeSpawnBudgetAllows(projectileLocked, { ranged: true }), false);
+});
+
+test('spatial separation queries only neighboring buckets and remains deterministic', () => {
+  const agents = [
+    { x: 0, y: 0 },
+    { x: 0.4, y: 0 },
+    { x: -0.5, y: 0.2 },
+    { x: 20, y: 20 },
+    { x: -20, y: -20 },
+  ];
+  const hash = buildSeparationSpatialHash(agents, { cellSize: 1.2 });
+  const a = computeSpatialSeparation(agents[0], agents, hash, { selfIndex: 0, radius: 1.2, maxNeighbors: 10 });
+  const b = computeSpatialSeparation(agents[0], agents, hash, { selfIndex: 0, radius: 1.2, maxNeighbors: 10 });
+  assert.deepEqual(a, b);
+  assert.equal(a.count, 2);
+  assert.ok(Number.isFinite(a.x) && Number.isFinite(a.y));
+  assert.ok(hash.bucketCount < agents.length);
+});
+
+test('AI movement cadence keeps bosses and nearby threats full-rate while throttling distant stragglers', () => {
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 6 }), 1);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 40, boss: true }), 1);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 40, miniBoss: true }), 1);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 18 }), 2);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 32 }), 3);
+  assert.equal(shouldUpdateEnemyAi({ frame: 12, enemyIndex: 0, stride: 3 }), true);
+  assert.equal(shouldUpdateEnemyAi({ frame: 13, enemyIndex: 0, stride: 3 }), false);
+});
+
+test('runtime consumes spawn budgets, attack tokens, measured capped steering, and burst limits', () => {
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.match(main, /buildLevelOneSpawnBudgetState/);
+  assert.match(main, /levelOneRoguelikeSpawnBudgetAllows/);
+  assert.match(main, /computeSeparation/);
+  assert.doesNotMatch(main, /computeSpatialSeparation/);
+  assert.match(main, /maxNeighbors: 10/);
+  assert.match(main, /enemyAiUpdateStride/);
+  assert.doesNotMatch(main, /const movementDt = dt \* aiStride/);
+  assert.match(main, /cachedMoveMode/);
+  assert.match(main, /const movementDt = Math\.min\(dt, 0\.05\)/);
+  assert.match(main, /const spawnedEnemy = spawnRoguelikeEnemy\(director\)/);
+  assert.match(main, /if \(!spawnedEnemy\) break;[\s\S]*spawnedThisStep \+= 1;[\s\S]*roguelikeSpawnTimer \+= director\.spawnIntervalSeconds/);
+  assert.match(main, /spawnBurstCap/);
+  assert.match(main, /attackTokenCap/);
+  assert.match(main, /attackTokenHeld/);
+  assert.match(main, /Boolean\(enemy\.attackTokenHeld\)/);
+  assert.match(main, /ctx\.ellipse\(centerX, footY \+ 1/);
+  assert.match(main, /enemyProjectileCap/);
 });

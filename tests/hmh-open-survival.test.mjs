@@ -36,19 +36,24 @@ test('WO-26 Level 1 uses one open-ended continuous pressure curve, not an 8-minu
   assert.ok(oldWall.pressure < 0.75, `8:00 cannot be a full-pressure milestone, got ${oldWall.pressure}`);
   assert.ok(oldWall.difficultyLabel !== 'survival-wall');
   assert.ok(eliteBand.pressure > 0.9, `elite band should be overwhelming by 25:00, got ${eliteBand.pressure}`);
-  assert.ok(eliteBand.maxEnemiesOnMap >= 125, `25:00 cap pressure should be high, got ${eliteBand.maxEnemiesOnMap}`);
+  assert.ok(eliteBand.maxEnemiesOnMap <= 64, `25:00 must respect the body-count ceiling, got ${eliteBand.maxEnemiesOnMap}`);
+  assert.ok(eliteBand.threatBudget >= 50, `25:00 needs weighted threat pressure, got ${eliteBand.threatBudget}`);
+  assert.ok(eliteBand.attackTokenCap <= 5, `25:00 must preserve attack readability, got ${eliteBand.attackTokenCap}`);
 });
 
 test('WO-26 difficulty knobs are continuous over a 30-minute simulation', () => {
   assert.ok(maxSingleSecondDelta('spawnIntervalSeconds') <= 0.02);
   assert.ok(maxSingleSecondDelta('maxEnemiesOnMap') <= 1);
+  assert.ok(maxSingleSecondDelta('threatBudget') <= 0.2);
+  assert.ok(maxSingleSecondDelta('attackTokenCap') <= 1);
+  assert.ok(maxSingleSecondDelta('enemyProjectileCap') <= 1);
   assert.ok(maxSingleSecondDelta('eliteEnemyShare') <= 0.01);
   assert.ok(maxSingleSecondDelta('healthMultiplier') <= 0.02);
   assert.ok(maxSingleSecondDelta('damageMultiplier') <= 0.01);
 
   assert.ok(levelOneRoguelikeDropChance({ elapsedSeconds: 20 * 60, rare: false }) > levelOneRoguelikeDropChance({ elapsedSeconds: 60, rare: false }));
-  assert.ok(levelOneRoguelikePickupAssistAt({ elapsedSeconds: 20 * 60, activeEnemies: 130 }).xpAttractRadiusMultiplier > 1);
-  assert.ok(levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds: 20 * 60, activeEnemies: 130 }).maxParticles <= 180);
+  assert.ok(levelOneRoguelikePickupAssistAt({ elapsedSeconds: 20 * 60, activeEnemies: 64 }).xpAttractRadiusMultiplier > 1);
+  assert.ok(levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds: 20 * 60, activeEnemies: 64 }).maxParticles <= 180);
   assert.ok(mainSource.includes('groundOverscanFullscreenTiles'), 'runtime should use the Level 1 budget for fullscreen ground overscan');
   assert.ok(mainSource.includes('maxAnimatedEnemies'), 'runtime should cap animated enemy sprites during late swarms');
   assert.ok(mainSource.includes('enemyAnimationFps'), 'runtime should lower off-peak enemy animation fps under pressure');

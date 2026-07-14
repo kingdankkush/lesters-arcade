@@ -37,6 +37,7 @@ import { normalizeProfileIdentity } from './hmh-profile-parity.mjs';
 import { createSeededSubstreams } from './seeded-rng.mjs';
 import { gameSlugFor } from './arcade-router.mjs';
 import { levelOneWorldV3WorldBounds } from './hmh-level-one-world-v3-runtime.mjs';
+import { levelOneLayoutV4BoundaryPaletteForSide } from './hmh-level-one-world-v3-gameplay.mjs';
 
 export {
   LEADERBOARD_CADENCES,
@@ -114,7 +115,7 @@ export const HARD_MONEY_HEROES_CANON = Object.freeze({
     Object.freeze({
       id: 'the-slums',
       title: 'Level 1 — Crypto Wasteland',
-      route: 'Desert Approach → Ghost Town → Crossroads → City Threshold',
+      route: 'Desert Approach → Ghost Town → North Forest / South Salvage Loops → Crossroads → Rugpull Gulch → City Threshold',
       boss: 'The Rug Pull Baron',
       visualShift: 'sun-bleached roads, ghost-town ruins, dry forests, and oasis breaks gradually frame Litecoin City on the horizon',
       enemyTeaching: Object.freeze(['FUD Goblins', 'Paper Hands', 'Rug Rats', 'Honeypot Turrets', 'Gas Fee Wisps', 'Slippage Skaters']),
@@ -2238,11 +2239,23 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
   }),
   director: Object.freeze({
     spawnIntervalStartSeconds: 2.45,
-    spawnIntervalFloorSeconds: 0.34,
+    spawnIntervalFloorSeconds: 0.46,
     spawnIntervalTauSeconds: 420,
     maxEnemiesStart: 14,
-    maxEnemiesCap: 140,
-    maxEnemiesTauSeconds: 480,
+    maxEnemiesCap: 64,
+    maxEnemiesTauSeconds: 420,
+    threatBudgetStart: 16,
+    threatBudgetCap: 60,
+    threatBudgetTauSeconds: 600,
+    attackTokenStart: 2,
+    attackTokenCap: 5,
+    attackTokenTauSeconds: 540,
+    enemyProjectileStart: 20,
+    enemyProjectileCap: 72,
+    enemyProjectileTauSeconds: 600,
+    spawnBurstStart: 1,
+    spawnBurstCap: 3,
+    spawnBurstTauSeconds: 720,
     chaseShareStart: 0.62,
     chaseShareCap: 0.78,
     chaseShareTauSeconds: 520,
@@ -2300,8 +2313,8 @@ export const HMH_LEVEL_ONE_PLAYTEST_BALANCE = Object.freeze({
     hitSparkEveryNthHitCap: 3,
     deathBurstStartScale: 1,
     deathBurstCapScale: 0.62,
-    maxAnimatedEnemiesStart: 72,
-    maxAnimatedEnemiesCap: 48,
+    maxAnimatedEnemiesStart: 56,
+    maxAnimatedEnemiesCap: 36,
     enemyAnimationFpsStart: 12,
     enemyAnimationFpsCap: 8,
     obstacleRenderRadiusWindowedStart: 18,
@@ -2743,28 +2756,13 @@ export function buildLevelOneBoundaryObstaclesNear({
   const py = Number(playerY) || 0;
   const segments = [];
   const boundaryVisualForSide = (side, index) => {
-    const rotation = Math.abs(index) % 3;
-    if (side === 'north') {
-      return rotation === 0
-        ? { key: 'wo102-megaprop/forest-rock-outcrop', role: 'wall', footprintTiles: { w: 5.2, h: 2.8 }, drawOrderBias: -4 }
-        : { key: rotation === 1 ? 'level-1/prop/oval-rock4-ground-shadow' : 'level-1/prop/desert-09', role: 'wall', footprintTiles: { w: 2.4, h: 1.4 }, drawOrderBias: -3 };
-    }
-    if (side === 'south') {
-      return rotation === 0
-        ? { key: 'level-1/flora/broken-tree3', role: 'tree', footprintTiles: { w: 2.2, h: 2.8 }, drawOrderBias: 4 }
-        : { key: rotation === 1 ? 'level-1/prop/dragon-bones-body-ground-shadow' : 'level-1/prop/oval-rock5-ground-shadow', role: 'wall', footprintTiles: { w: 2.8, h: 1.5 }, drawOrderBias: 3 };
-    }
-    if (side === 'west') {
-      const key = rotation === 0
-        ? 'world-v3-infrastructure/canyon-boundary-straight'
-        : rotation === 1
-          ? 'world-v3-infrastructure/canyon-boundary-bend'
-          : 'world-v3-infrastructure/canyon-boundary-buttress';
-      return { key, role: 'wall', footprintTiles: { w: 5.6, h: 2.4 }, drawOrderBias: 2 };
-    }
-    return rotation === 0
-      ? { key: 'wo105-world/container-cover-line', role: 'container', footprintTiles: { w: 3.6, h: 1.6 }, drawOrderBias: 3 }
-      : { key: rotation === 1 ? 'level-1/prop/blue-gray-ruins1' : 'level-1/prop/brown-ruins2', role: 'wall', footprintTiles: { w: 2.6, h: 1.5 }, drawOrderBias: 3 };
+    const palette = levelOneLayoutV4BoundaryPaletteForSide(side, index);
+    return {
+      key: palette.assetKey,
+      role: palette.sceneRole,
+      footprintTiles: palette.footprintTiles,
+      drawOrderBias: palette.drawOrderBias,
+    };
   };
   const add = (side, x, y, index) => {
     if (Math.abs(x - px) > reach || Math.abs(y - py) > reach) return;
@@ -2904,6 +2902,10 @@ export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0, { seed = 0 
     pressure: Number(pressure.toFixed(3)),
     spawnIntervalSeconds: smoothKnobAt(seconds, d.spawnIntervalStartSeconds, d.spawnIntervalFloorSeconds, d.spawnIntervalTauSeconds, 3),
     maxEnemiesOnMap: Math.round(smoothKnobAt(seconds, d.maxEnemiesStart, d.maxEnemiesCap, d.maxEnemiesTauSeconds, 3)),
+    threatBudget: smoothKnobAt(seconds, d.threatBudgetStart, d.threatBudgetCap, d.threatBudgetTauSeconds, 2),
+    attackTokenCap: Math.round(smoothKnobAt(seconds, d.attackTokenStart, d.attackTokenCap, d.attackTokenTauSeconds, 3)),
+    enemyProjectileCap: Math.round(smoothKnobAt(seconds, d.enemyProjectileStart, d.enemyProjectileCap, d.enemyProjectileTauSeconds, 3)),
+    spawnBurstCap: Math.round(smoothKnobAt(seconds, d.spawnBurstStart, d.spawnBurstCap, d.spawnBurstTauSeconds, 3)),
     chaseEnemyShare: smoothKnobAt(seconds, d.chaseShareStart, d.chaseShareCap, d.chaseShareTauSeconds, 3),
     rangedEnemyShare: smoothKnobAt(seconds, d.rangedShareStart, d.rangedShareCap, d.rangedShareTauSeconds, 3),
     eliteEnemyShare: smoothKnobAt(seconds, d.eliteShareStart, d.eliteShareCap, d.eliteShareTauSeconds, 3),
@@ -2916,6 +2918,42 @@ export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0, { seed = 0 
     damageMultiplier: smoothKnobAt(seconds, d.damageMultiplierStart, d.damageMultiplierCap, d.damageMultiplierTauSeconds, 3),
     difficultyLabel,
   });
+}
+
+export function levelOneEnemyThreatCost(enemy = {}) {
+  if (enemy.signatureBoss || enemy.boss) return 12;
+  if (enemy.miniBoss) return 6;
+  let cost = enemy.ranged ? 1.35 : 1;
+  if (enemy.elite) cost += 1.4;
+  if (Array.isArray(enemy.affixIds)) cost += Math.min(1.2, enemy.affixIds.length * 0.3);
+  return Number(cost.toFixed(2));
+}
+
+export function buildLevelOneSpawnBudgetState({ elapsedSeconds = 0, enemies = [], enemyProjectiles = 0 } = {}) {
+  const director = levelOneRoguelikeSpawnDirectorAt(elapsedSeconds);
+  const livingEnemies = (Array.isArray(enemies) ? enemies : []).filter((enemy) => (enemy?.hp ?? 1) > 0);
+  const threatUsed = livingEnemies.reduce((total, enemy) => total + levelOneEnemyThreatCost(enemy), 0);
+  const projectileCount = Math.max(0, Math.round(Number(enemyProjectiles) || 0));
+  return Object.freeze({
+    enemyCount: livingEnemies.length,
+    threatUsed: Number(threatUsed.toFixed(2)),
+    threatCap: director.threatBudget,
+    remainingThreat: Number(Math.max(0, director.threatBudget - threatUsed).toFixed(2)),
+    maxEnemiesOnMap: director.maxEnemiesOnMap,
+    remainingEnemySlots: Math.max(0, director.maxEnemiesOnMap - livingEnemies.length),
+    attackTokenCap: director.attackTokenCap,
+    enemyProjectileCap: director.enemyProjectileCap,
+    enemyProjectileCount: projectileCount,
+    projectileSaturated: projectileCount >= director.enemyProjectileCap,
+    spawnBurstCap: director.spawnBurstCap,
+  });
+}
+
+export function levelOneRoguelikeSpawnBudgetAllows(budgetState, enemy = {}) {
+  if (!budgetState || budgetState.remainingEnemySlots <= 0) return false;
+  if (budgetState.remainingThreat < levelOneEnemyThreatCost(enemy)) return false;
+  if (enemy.ranged && budgetState.projectileSaturated) return false;
+  return true;
 }
 
 export function buildLevelOnePlaytestBalanceModel() {

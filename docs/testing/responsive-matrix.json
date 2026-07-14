@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-14T01:49:29.514Z",
+  "generatedAt": "2026-07-14T17:55:22.793Z",
   "viewportCount": 5,
   "stateCount": 6,
   "captureCount": 30,
@@ -24,7 +24,7 @@
       "visibleInteractiveCount": 13,
       "consoleIssues": [],
       "screenshot": "iphone-portrait--splash.png",
-      "screenshotSha256": "32b7ae8a022d8682705e7f4d60eed0a9811bd8fbbaa53e15517b05f6b7d634a1",
+      "screenshotSha256": "3f96138d442beea98b88c0d0fda58a9b887adbe514a21c1c739d89944f291176",
       "pass": true
     },
     {
@@ -46,7 +46,7 @@
       "visibleInteractiveCount": 14,
       "consoleIssues": [],
       "screenshot": "iphone-portrait--cabinet-select.png",
-      "screenshotSha256": "9008388bffe8ed3f70390bf709b31c7f64d31d7f7643e72a497cdaf60d5ee438",
+      "screenshotSha256": "8a9767396128f7a7d2677eaabb89736533c6249ddec62b1353f86d95c9d2a830",
       "pass": true
     },
     {
@@ -68,7 +68,7 @@
       "visibleInteractiveCount": 13,
       "consoleIssues": [],
       "screenshot": "iphone-portrait--mode-select.png",
-      "screenshotSha256": "613a18ebe134b12ee14810dce43f20d9eb5d754ce25fa6b180873ecc50039f03",
+      "screenshotSha256": "165769a7f2fdd3a43e1db3e96b2eda6ef97b4a77f3682f435ee35abe6ea986e1",
       "pass": true
     },
     {
@@ -90,7 +90,7 @@
       "visibleInteractiveCount": 11,
       "consoleIssues": [],
       "screenshot": "iphone-portrait--profile.png",
-      "screenshotSha256": "9275a489c9880f492c1839d9e4dd6214050d61a1134e296dc0f22383ed906bba",
+      "screenshotSha256": "61c7932c19c2a4581d0748e3ac0ff6752feb7d4a4f130853e45a2f0f2e0a7ce4",
       "pass": true
     },
     {
@@ -134,7 +134,7 @@
       "visibleInteractiveCount": 10,
       "consoleIssues": [],
       "screenshot": "iphone-portrait--settings.png",
-      "screenshotSha256": "cf706e46d4c71aa6e595166f75e2ea74e6be5c316aa39a717264452dcda6d2e7",
+      "screenshotSha256": "0922bc1e835dc837de899d4c83d9e51a6d9f745a01ce664064b94d7cc63e61c9",
       "pass": true
     },
     {
@@ -156,7 +156,7 @@
       "visibleInteractiveCount": 13,
       "consoleIssues": [],
       "screenshot": "android-portrait--splash.png",
-      "screenshotSha256": "8c73bd9982bad6e9da13285adf83c7666ba6543c947b5e422856c78a7f2cd15a",
+      "screenshotSha256": "20a32474bc53d6e9a34963f4881088ce4d9ca161d1a7f23dad5588da1b3cf211",
       "pass": true
     },
     {
@@ -178,7 +178,7 @@
       "visibleInteractiveCount": 14,
       "consoleIssues": [],
       "screenshot": "android-portrait--cabinet-select.png",
-      "screenshotSha256": "8d75082da7695832c76f73ccb0b822698220b5b7aeda70887bb9c676fb4918e6",
+      "screenshotSha256": "c8be5a6ad715ccb0cf9b3e920794ddf70302677318bf2aa04da4bb77abfdebb6",
       "pass": true
     },
     {
@@ -222,7 +222,7 @@
       "visibleInteractiveCount": 11,
       "consoleIssues": [],
       "screenshot": "android-portrait--profile.png",
-      "screenshotSha256": "426c2aa897de67b5f0119cecc08773b6d0378aca71b1e42cd38ed85d0bc33c85",
+      "screenshotSha256": "ce823448259270bb22b3bde11ed50235d69a6ffc88a0c8903f00e397760eead6",
       "pass": true
     },
     {
@@ -244,7 +244,7 @@
       "visibleInteractiveCount": 21,
       "consoleIssues": [],
       "screenshot": "android-portrait--scores.png",
-      "screenshotSha256": "2535bf4e0107ae2ff8573ee4465f5c15a465f033c4412b10cfb25c2b8c5b293c",
+      "screenshotSha256": "a0c9db426c3ab5c861bc3a2982a524da618a3ed69dda4b2ec94afa013148d222",
       "pass": true
     },
     {
@@ -266,7 +266,7 @@
       "visibleInteractiveCount": 10,
       "consoleIssues": [],
       "screenshot": "android-portrait--settings.png",
-      "screenshotSha256": "e866340d03bdf759a1e0250913fe7ad08bfc119a42059a26ad664e68c07d5011",
+      "screenshotSha256": "8fb182aa5037e5fa8ce7f4d71d0bff1153226442f6f39b260df097832bfa9ffc",
       "pass": true
     },
     {
@@ -288,7 +288,7 @@
       "visibleInteractiveCount": 13,
       "consoleIssues": [],
       "screenshot": "phone-landscape--splash.png",
-      "screenshotSha256": "8031e09e82705796e359070ed9678f9115d941db08d11715ee2f236090e150b9",
+      "screenshotSha256": "eea3a5a7621215ef71a8bdc1893a40babcc3e6930e2f1f6feeb80fde1be07766",
       "pass": true
     },
     {
@@ -310,7 +310,7 @@
       "visibleInteractiveCount": 14,
       "consoleIssues": [],
       "screenshot": "phone-landscape--cabinet-select.png",
-      "screenshotSha256": "60546ba2bc95dd4b918c50f9866c978de478ecf5036c85edfa103da2f0d7b948",
+      "screenshotSha256": "3423a7002c234460a3d723ecff26b58ccaf8cd0376667c7eafca815f9df85f3e",
       "pass": true
     },
     {
@@ -332,7 +332,7 @@
       "visibleInteractiveCount": 13,
       "consoleIssues": [],
       "screenshot": "phone-landscape--mode-select.png",
-      "screenshotSha256": "ee687a81718badbc3acb6c3a432b4f59aa96ec0715f77a069b9050ca2398feae",
+      "screenshotSha256": "bdc7ede086f09a203c83e1b2ba77b53e857a2393f563f35e81c121d29a3b68ae",
       "pass": true
     },
     {
@@ -354,7 +354,7 @@
       "visibleInteractiveCount": 11,
       "consoleIssues": [],
       "screenshot": "phone-landscape--profile.png",
-      "screenshotSha256": "f73414c52f8107755f46dbed77de89dd1c1b9d34e0cee087a05c3c8ff5df408b",
+      "screenshotSha256": "db98ccaebd8bca094cbefbb50a67f9e05e41a1ffa7dc47ba7feb3a94b9c25e37",
       "pass": true
     },
     {
@@ -376,7 +376,7 @@
       "visibleInteractiveCount": 23,
       "consoleIssues": [],
       "screenshot": "phone-landscape--scores.png",
-      "screenshotSha256": "b024e288f0d8907e343bc27b2219c326ed9375c488bee5a36113c1732d06183e",
+      "screenshotSha256": "0d9fed9ffebf3cce91643632386e65fc35cabd5f13caaa2bf82f0d17e53625ce",
       "pass": true
     },
     {
@@ -398,7 +398,7 @@
       "visibleInteractiveCount": 10,
       "consoleIssues": [],
       "screenshot": "phone-landscape--settings.png",
-      "screenshotSha256": "2a31d11175499878d9ddcdd4a4a6143f9eec7a7183258ee97f213a8f00a1a649",
+      "screenshotSha256": "be1fccc68ba0c0974cf59706fd1019c493156b87fd16ed3953bedd0ae7167006",
       "pass": true
     },
     {
@@ -420,7 +420,7 @@
       "visibleInteractiveCount": 14,
       "consoleIssues": [],
       "screenshot": "tablet-landscape--splash.png",
-      "screenshotSha256": "034179c1c0b3c6afc6a475e77688e098320ccd26044b58042c23fe10ce783523",
+      "screenshotSha256": "b601edbb2f6581bb5d64530c37fac00eb8760c2b34120d7d36cda2e5fdc0bb7d",
       "pass": true
     },
     {
@@ -442,7 +442,7 @@
       "visibleInteractiveCount": 14,
       "consoleIssues": [],
       "screenshot": "tablet-landscape--cabinet-select.png",
-      "screenshotSha256": "236eeae279bcb6fca4f83a6fc5474a5a9cc87d702a38fee93f954bd2f2df6731",
+      "screenshotSha256": "d50de9f54edff9c40e166c7889bb78ef0c6b9a550fe046eb85dbc7a0d4c43645",
       "pass": true
     },
     {
@@ -464,7 +464,7 @@
       "visibleInteractiveCount": 13,
       "consoleIssues": [],
       "screenshot": "tablet-landscape--mode-select.png",
-      "screenshotSha256": "7ff232d27aa75b76e51380b8f53754248e5117f70ba977bfd2b404c67311e07d",
+      "screenshotSha256": "989cb0d9c45a19f5c76ef201dc331abc40fb9b68930222084adb79dd0083390d",
       "pass": true
     },
     {
@@ -486,7 +486,7 @@
       "visibleInteractiveCount": 11,
       "consoleIssues": [],
       "screenshot": "tablet-landscape--profile.png",
-      "screenshotSha256": "09228d41be17936f96bf4f30256f4f2b2c4e9a2213af5ed6bee798d5ef45fc18",
+      "screenshotSha256": "cdf9e3d478cc20d8c063fdca9d484628cb28b781ee8c155aee367c39df8d486b",
       "pass": true
     },
     {
@@ -530,7 +530,7 @@
       "visibleInteractiveCount": 10,
       "consoleIssues": [],
       "screenshot": "tablet-landscape--settings.png",
-      "screenshotSha256": "86d75ef644d35cdc6e75d27000dc2c46ad9b29b34186f68db80577b0ebabccc1",
+      "screenshotSha256": "19da3d9471bb965e9616d4e13e0203f0717ac7e35e66793ad3ca3eea6cf70422",
       "pass": true
     },
     {
@@ -552,7 +552,7 @@
       "visibleInteractiveCount": 14,
       "consoleIssues": [],
       "screenshot": "desktop--splash.png",
-      "screenshotSha256": "6cf10f749e6ce44d933cbfba8793e618a2c587fb08b0b449c7bdbf5b9541cdcf",
+      "screenshotSha256": "662c7c98647cdd60d78e9e1951500c1f96884970777aa081bbf41d8189082565",
       "pass": true
     },
     {
@@ -574,7 +574,7 @@
       "visibleInteractiveCount": 14,
       "consoleIssues": [],
       "screenshot": "desktop--cabinet-select.png",
-      "screenshotSha256": "2f45b000c27016518dbdef5e1580f788ae9f7f97190b8b839d9d956c40075cd3",
+      "screenshotSha256": "784d5f2c1fa4c38d9386dae02bad4aba06bf50822269a7194391a3c4e6ef92f4",
       "pass": true
     },
     {
@@ -596,7 +596,7 @@
       "visibleInteractiveCount": 13,
       "consoleIssues": [],
       "screenshot": "desktop--mode-select.png",
-      "screenshotSha256": "06677e95d2470e94cc47180683ce39d328541c34f10b7cad5524ba8e2a0a72c3",
+      "screenshotSha256": "649a5b0682fc20ee6325e7285211b111309ce85ffe51df0ae55157c8ae5c4d68",
       "pass": true
     },
     {
@@ -640,7 +640,7 @@
       "visibleInteractiveCount": 23,
       "consoleIssues": [],
       "screenshot": "desktop--scores.png",
-      "screenshotSha256": "47ecf0289089c1a684873252308154b7afe601275be3ce8ed37c50772f12408a",
+      "screenshotSha256": "b0700b750881e1153859ad17abec296b655459241c5b6e70048390b5940fa066",
       "pass": true
     },
     {
@@ -662,7 +662,7 @@
       "visibleInteractiveCount": 10,
       "consoleIssues": [],
       "screenshot": "desktop--settings.png",
-      "screenshotSha256": "df04d53fd633c29c9589d915dd5b0a3199aa28dd3e7cf3091d6975156846aa41",
+      "screenshotSha256": "9d721475e7c0d431415fda9cab27c0bc9934e0c4d92d5fda2cf076e5924fff34",
       "pass": true
     }
   ]

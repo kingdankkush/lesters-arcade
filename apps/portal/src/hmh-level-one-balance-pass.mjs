@@ -219,6 +219,12 @@ export function buildLevelOneBalanceTelemetrySnapshot({ sampleSeconds = [0, 300,
       minPoiSupportSpawnDistanceTiles: 20,
       minMiniBossSpawnDistanceTiles: 24,
       bossGenericSpawnSuppression: true,
+      maxVisibleEnemyTarget: HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.maxEnemiesCap,
+      threatBudgetCap: HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.threatBudgetCap,
+      attackTokenCap: HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.attackTokenCap,
+      enemyProjectileCap: HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.enemyProjectileCap,
+      spawnBurstCap: HMH_LEVEL_ONE_PLAYTEST_BALANCE.director.spawnBurstCap,
+      pressurePolicy: 'scale roles, elites, durability, formations, and threat beats before raw body count',
     }),
     bossChoreography: buildLevelOneBossChoreographyPlan(),
     upgradeVariety: buildLevelOneUpgradeVarietyPlan(),
@@ -230,7 +236,11 @@ export function validateLevelOneBalancePass() {
   const snapshot = buildLevelOneBalanceTelemetrySnapshot();
   if (snapshot.areas.length !== 6) errors.push('all six recommendation areas must be represented');
   if (snapshot.mode !== 'open-ended-survival') errors.push('Level 1 must be open-ended survival');
-  if (snapshot.checkpoints.at(-1).director.maxEnemiesOnMap < 125) errors.push('elite-band pressure needs dense but continuous swarms');
+  const lateDirector = snapshot.checkpoints.at(-1).director;
+  if (lateDirector.maxEnemiesOnMap > 64) errors.push('elite-band raw body count exceeds the readability and performance ceiling');
+  if (lateDirector.threatBudget < 50) errors.push('elite-band pressure needs a substantial weighted threat budget');
+  if (lateDirector.attackTokenCap > 5) errors.push('elite-band simultaneous attack tokens exceed the combat readability ceiling');
+  if (lateDirector.enemyProjectileCap > 72) errors.push('elite-band hostile projectiles exceed the screen-readability ceiling');
   if (snapshot.xpPacing.swarmFighter.targetLevelAtEliteBand < 18) errors.push('swarm fighter should keep progressing into the elite band');
   if (!snapshot.bossChoreography.finalBoss.onDefeat.continuesSurvival) errors.push('signature boss defeat must continue open-ended survival');
   if (!snapshot.bossChoreography.finalBoss.onDefeat.dropsBossPayout) errors.push('signature boss defeat must drop its payout');

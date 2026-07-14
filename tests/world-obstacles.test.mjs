@@ -140,6 +140,46 @@ test('tracking AI detours around authored walls instead of remaining stuck on th
   assert.ok(position.x > 6, `tracking enemy should route beyond the wall, got ${position.x},${position.y}`);
 });
 
+test('cached low-FPS AI steps cannot tunnel through narrow walls or water banks', () => {
+  const wall = [{ id: 'narrow-wall', worldX: 3, worldY: 0, radius: 0.5, footprintTiles: { w: 1, h: 6 }, solid: true }];
+  let wallPosition = { x: 0, y: 0 };
+  for (let frame = 0; frame < 12; frame += 1) {
+    wallPosition = resolveTrackingAiMove({
+      seed: 1337,
+      fromX: wallPosition.x,
+      fromY: wallPosition.y,
+      toX: wallPosition.x + 1.5,
+      toY: wallPosition.y,
+      targetX: 10,
+      targetY: 0,
+      detourSide: 1,
+      radius: 0.4,
+      obstacles: wall,
+      biomeAt: () => 'road',
+    });
+    assert.equal(obstacleHitAt(wallPosition.x, wallPosition.y, wall), null, `frame ${frame} entered the narrow wall`);
+  }
+
+  const waterBank = (_seed, x) => (x >= 4 ? 'water' : 'road');
+  let bankPosition = { x: 0, y: 8 };
+  for (let frame = 0; frame < 12; frame += 1) {
+    bankPosition = resolveTrackingAiMove({
+      seed: 1337,
+      fromX: bankPosition.x,
+      fromY: bankPosition.y,
+      toX: bankPosition.x + 1.5,
+      toY: bankPosition.y,
+      targetX: 10,
+      targetY: bankPosition.y,
+      detourSide: 1,
+      radius: 0.4,
+      obstacles: [],
+      biomeAt: waterBank,
+    });
+    assert.ok(bankPosition.x <= 3.5, `frame ${frame} crossed the water bank at ${bankPosition.x}`);
+  }
+});
+
 test('authored footprints replace oversized fallback circles so clear lanes beside buildings stay open', () => {
   const obstacles = [{ worldX: 10, worldY: 5, radius: 5, footprintTiles: { w: 6, h: 2 }, solid: true }];
   const resolved = resolvePlayerCollision(10, 2, 10, 3, 0.4, obstacles);

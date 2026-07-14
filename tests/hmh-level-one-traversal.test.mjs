@@ -79,7 +79,8 @@ test('live player, enemy, spawn, road, and projectile paths consume traversal an
   assert.match(source, /buildLevelOneRoadTileIndex\(\{/);
   assert.match(source, /function currentTerrainBiomeAt\(/);
   assert.match(source, /resolveWaterCollision\([^;]+currentTerrainBiomeAt[^;]+radius:\s*0\.42/s);
-  assert.ok((source.match(/biomeAt: currentTerrainBiomeAt/g) ?? []).length >= 3, 'spawn and both AI move branches should use rendered-terrain collision');
+  assert.ok((source.match(/biomeAt: currentTerrainBiomeAt/g) ?? []).length >= 2, 'spawn and shared per-frame AI move options should use rendered-terrain collision');
+  assert.match(source, /const moveOptions = \{[\s\S]*biomeAt: currentTerrainBiomeAt[\s\S]*resolveTrackingAiMove\([\s\S]*resolveBoundedAiMove\(moveOptions\)/);
   assert.ok((source.match(/obstacleHitAlongSegment\(/g) ?? []).length >= 2, 'player and enemy shots should use swept prop collision');
 });
 

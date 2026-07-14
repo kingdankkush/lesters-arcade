@@ -1,5 +1,9 @@
 import { LEVEL_ONE_AUTHORED_PREFAB_STAMPS } from './hmh-level-one-visible-runtime.mjs';
 import {
+  HMH_LEVEL_ONE_LAYOUT_V4,
+  HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS,
+} from './hmh-level-one-world-v3-gameplay.mjs';
+import {
   authoredCellToWorld,
   HMH_LEVEL_ONE_WORLD_V3,
   levelOneWorldV3CellAt,
@@ -8,11 +12,7 @@ import {
 const STAMP_BY_ID = new Map(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.map((stamp) => [stamp.id, stamp]));
 const SPAWN_CLEAR_RADIUS = 5;
 
-const STAMP_PLACEMENTS = Object.freeze([
-  Object.freeze({ stampId: 'desert-road-salvage-wall', anchorId: 'spawn', kind: 'spawn' }),
-  Object.freeze({ stampId: 'ruined-camp-bone-yard', anchorId: 'old-hashrate-camp', kind: 'poi' }),
-  Object.freeze({ stampId: 'compact-southeast-glow-bank', anchorId: 'wrecked-lighthouse', kind: 'poi' }),
-]);
+const STAMP_PLACEMENTS = HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS;
 
 const ANCHOR_BY_ID = new Map([
   ...Object.entries(HMH_LEVEL_ONE_WORLD_V3.anchors).map(([id, anchor]) => [id, { id, ...anchor }]),
@@ -98,7 +98,7 @@ function objectFromStamp(placement, stamp, object, index) {
   if (Math.hypot(world.x, world.y) < SPAWN_CLEAR_RADIUS && solid) return null;
   const footprint = Object.freeze({ ...(object.metadata?.footprintTiles ?? DEFAULT_FOOTPRINT[object.use] ?? DEFAULT_FOOTPRINT.dressing) });
   return Object.freeze({
-    id: `world-v3-${placement.anchorId}-${stamp.id}-${index}`,
+    id: `world-v3-${placement.id}-${index}`,
     assetKey: object.assetKey,
     gridX: world.x,
     gridY: world.y,
@@ -110,6 +110,8 @@ function objectFromStamp(placement, stamp, object, index) {
     sourceZoneId: placement.anchorId,
     authoredPrefabStamp: true,
     prefabStampId: stamp.id,
+    layoutVersion: HMH_LEVEL_ONE_LAYOUT_V4.id,
+    layoutPlacementId: placement.id,
     routeBeat: placement.kind,
     exactAssetKey: object.assetKey,
     footprintTiles: footprint,

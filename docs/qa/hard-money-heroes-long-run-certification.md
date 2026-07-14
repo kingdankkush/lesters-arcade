@@ -16,75 +16,75 @@ This is a deterministic baseline-player balance simulation. It certifies data-mo
 - Completed runs: 40
 - Invalid runs: 0
 - Survival rate: 100.0%
-- Hero median score spread: 24.73%
+- Hero median score spread: 25.78%
 - Minimum major bosses defeated: 4
-- Maximum tracked objects: 497
-- Certification digest: `0af5a55d`
+- Maximum tracked objects: 337
+- Certification digest: `e3e9e262`
 
 ## Hero medians
 
 | Hero | Runs | Median score | Median kills | Median level | Survival | Minimum major bosses |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| lit-commando | 10 | 343801 | 1185 | 56.5 | 100.0% | 4 |
-| lit-valkyrie | 10 | 382970 | 1490 | 61 | 100.0% | 4 |
-| lester-original | 10 | 300776 | 1059 | 57.5 | 100.0% | 4 |
-| lilly | 10 | 302093 | 1161 | 58 | 100.0% | 4 |
+| lit-commando | 10 | 306477 | 1169 | 54 | 100.0% | 4 |
+| lit-valkyrie | 10 | 345575 | 1468 | 60.5 | 100.0% | 4 |
+| lester-original | 10 | 265622 | 1016 | 55 | 100.0% | 4 |
+| lilly | 10 | 322719 | 1139 | 56.5 | 100.0% | 4 |
 
 ## Certified builds
 
 | Build | Hero | Runs | Completed | Median KPM | Median score | Minimum bosses | Selected lane cards | Result |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
-| Settler Rail | lester | 5 | 5 | 37.17 | 346155 | 4 | damage-alpha, pierce, rate-of-fire, evolve-settler-rail | PASS |
-| Hashstorm Overdrive | lit-commando | 5 | 5 | 40.37 | 350648 | 4 | rate-of-fire, magazine-size, reload-hands, evolve-hashstorm-overdrive | PASS |
-| Crit Candle | lit-valkyrie | 5 | 5 | 47.37 | 313445 | 4 | critical-chance, critical-damage, projectile-speed, evolve-crit-candle | PASS |
-| Crypto Bomb Orbit | lilly | 5 | 5 | 37.63 | 277387 | 4 | grenade-capacity, grenade-damage, grenade-radius, launcher-rig, homing-cluster, block-buster, evolve-crypto-bomb-orbit | PASS |
-| Wasteland Bulwark | lit-commando | 5 | 5 | 31.23 | 223461 | 4 | max-health, armor, health-regen, revive, combo-retention | PASS |
-| Velocity Dividend | lit-valkyrie | 5 | 5 | 38.27 | 340927 | 4 | dash-cooldown, dash-distance, move-speed, pickup-radius, xp-gain, power-up-luck, coin-value | PASS |
+| Settler Rail | lester | 5 | 5 | 37.8 | 345356 | 4 | damage-alpha, pierce, rate-of-fire, evolve-settler-rail | PASS |
+| Hashstorm Overdrive | lit-commando | 5 | 5 | 40.67 | 354226 | 4 | rate-of-fire, magazine-size, reload-hands, evolve-hashstorm-overdrive | PASS |
+| Crit Candle | lit-valkyrie | 5 | 5 | 48.2 | 303898 | 4 | critical-chance, critical-damage, projectile-speed, evolve-crit-candle | PASS |
+| Crypto Bomb Orbit | lilly | 5 | 5 | 37.83 | 253160 | 4 | grenade-capacity, grenade-damage, grenade-radius, launcher-rig, homing-cluster, block-buster, evolve-crypto-bomb-orbit | PASS |
+| Wasteland Bulwark | lit-commando | 5 | 5 | 34.5 | 331540 | 4 | max-health, armor, health-regen, revive, combo-retention | PASS |
+| Velocity Dividend | lit-valkyrie | 5 | 5 | 36.83 | 332710 | 4 | dash-cooldown, dash-distance, move-speed, pickup-radius, xp-gain, power-up-luck, coin-value | PASS |
 
 ## Run matrix
 
 | Hero | Seed | Result | Score | Kills | Level | Bosses | Max enemies | Max objects | Digest |
 | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| lit-commando | 1337 | time-limit | 275840 | 1290 | 59 | 4 | 137 | 492 | `946370e5` |
-| lit-commando | 1338 | time-limit | 232947 | 993 | 51 | 4 | 137 | 485 | `2c0e278e` |
-| lit-commando | 1339 | time-limit | 357710 | 1249 | 55 | 4 | 137 | 489 | `a2d0bcc6` |
-| lit-commando | 1340 | time-limit | 370769 | 1306 | 63 | 4 | 137 | 487 | `30f36bc3` |
-| lit-commando | 1341 | time-limit | 301626 | 1426 | 59 | 4 | 137 | 494 | `a3986914` |
-| lit-commando | 1342 | time-limit | 373290 | 1296 | 56 | 4 | 137 | 497 | `6fe5ee2e` |
-| lit-commando | 1343 | time-limit | 434780 | 1120 | 57 | 4 | 137 | 484 | `5de4a17b` |
-| lit-commando | 1344 | time-limit | 411815 | 1043 | 52 | 4 | 137 | 486 | `076ca5e6` |
-| lit-commando | 1345 | time-limit | 293240 | 960 | 53 | 4 | 137 | 454 | `ad6881ee` |
-| lit-commando | 1346 | time-limit | 329891 | 1086 | 57 | 4 | 137 | 478 | `c2d037af` |
-| lit-valkyrie | 1337 | time-limit | 414439 | 1485 | 65 | 4 | 137 | 443 | `8d9c6c87` |
-| lit-valkyrie | 1338 | time-limit | 347561 | 1711 | 64 | 4 | 137 | 477 | `8d2733d0` |
-| lit-valkyrie | 1339 | time-limit | 264071 | 1176 | 56 | 4 | 137 | 428 | `82b8ee3e` |
-| lit-valkyrie | 1340 | time-limit | 417221 | 1517 | 63 | 4 | 137 | 462 | `7320ba9d` |
-| lit-valkyrie | 1341 | time-limit | 332553 | 1617 | 66 | 4 | 137 | 491 | `00f9029d` |
-| lit-valkyrie | 1342 | time-limit | 403615 | 1438 | 60 | 4 | 137 | 463 | `b2d8f395` |
-| lit-valkyrie | 1343 | time-limit | 284425 | 1331 | 59 | 4 | 137 | 473 | `1cd3e49f` |
-| lit-valkyrie | 1344 | time-limit | 417842 | 1495 | 60 | 4 | 137 | 489 | `de678d5c` |
-| lit-valkyrie | 1345 | time-limit | 430163 | 1555 | 62 | 4 | 136 | 488 | `d99caf9f` |
-| lit-valkyrie | 1346 | time-limit | 362324 | 1249 | 57 | 4 | 137 | 425 | `f824c163` |
-| lester-original | 1337 | time-limit | 249334 | 1092 | 61 | 4 | 137 | 466 | `650fac82` |
-| lester-original | 1338 | time-limit | 245832 | 1065 | 56 | 4 | 137 | 429 | `966fb1a5` |
-| lester-original | 1339 | time-limit | 333033 | 1077 | 60 | 4 | 137 | 470 | `12666c8f` |
-| lester-original | 1340 | time-limit | 301292 | 934 | 55 | 4 | 137 | 437 | `31bb4cb6` |
-| lester-original | 1341 | time-limit | 212491 | 855 | 53 | 4 | 137 | 429 | `a3c5e1d1` |
-| lester-original | 1342 | time-limit | 307117 | 974 | 53 | 4 | 137 | 456 | `be16e274` |
-| lester-original | 1343 | time-limit | 300260 | 1052 | 55 | 4 | 137 | 456 | `90164c63` |
-| lester-original | 1344 | time-limit | 337617 | 1096 | 59 | 4 | 137 | 482 | `001819b2` |
-| lester-original | 1345 | time-limit | 353402 | 1136 | 61 | 4 | 137 | 487 | `f0818390` |
-| lester-original | 1346 | time-limit | 239785 | 1028 | 60 | 4 | 137 | 437 | `9cda4901` |
-| lilly | 1337 | time-limit | 274300 | 1251 | 60 | 4 | 137 | 468 | `1ee2f145` |
-| lilly | 1338 | time-limit | 318236 | 1068 | 58 | 4 | 137 | 440 | `0b5f4a0b` |
-| lilly | 1339 | time-limit | 353060 | 1206 | 56 | 4 | 137 | 448 | `b7a27021` |
-| lilly | 1340 | time-limit | 310538 | 1023 | 54 | 4 | 137 | 439 | `1fb28d85` |
-| lilly | 1341 | time-limit | 293647 | 1372 | 59 | 4 | 137 | 455 | `f92fbb79` |
-| lilly | 1342 | time-limit | 383942 | 1339 | 58 | 4 | 137 | 478 | `4648df78` |
-| lilly | 1343 | time-limit | 330423 | 1115 | 54 | 4 | 137 | 450 | `159b1718` |
-| lilly | 1344 | time-limit | 249043 | 1101 | 54 | 4 | 137 | 442 | `af9d655d` |
-| lilly | 1345 | time-limit | 264024 | 1206 | 59 | 4 | 137 | 448 | `30c931bf` |
-| lilly | 1346 | time-limit | 246836 | 1105 | 59 | 4 | 137 | 452 | `5037bcf3` |
+| lit-commando | 1337 | time-limit | 277774 | 1291 | 56 | 4 | 63 | 332 | `62a0e37a` |
+| lit-commando | 1338 | time-limit | 243621 | 1057 | 52 | 4 | 63 | 317 | `659ee351` |
+| lit-commando | 1339 | time-limit | 341601 | 1232 | 55 | 4 | 63 | 322 | `6268b04a` |
+| lit-commando | 1340 | time-limit | 426326 | 1105 | 53 | 4 | 63 | 323 | `1b77c79d` |
+| lit-commando | 1341 | time-limit | 401163 | 1426 | 59 | 4 | 63 | 335 | `ea0ab538` |
+| lit-commando | 1342 | time-limit | 485277 | 1296 | 56 | 4 | 63 | 337 | `a061fabe` |
+| lit-commando | 1343 | time-limit | 312485 | 1057 | 52 | 4 | 63 | 308 | `3efe691c` |
+| lit-commando | 1344 | time-limit | 232032 | 999 | 51 | 4 | 63 | 306 | `5b6d8597` |
+| lit-commando | 1345 | time-limit | 300468 | 977 | 53 | 4 | 63 | 306 | `016e72e2` |
+| lit-commando | 1346 | time-limit | 286109 | 1312 | 57 | 4 | 63 | 327 | `b801b59c` |
+| lit-valkyrie | 1337 | time-limit | 445554 | 1616 | 68 | 4 | 62 | 319 | `7d518a9b` |
+| lit-valkyrie | 1338 | time-limit | 441084 | 1604 | 62 | 4 | 63 | 326 | `54d08e0c` |
+| lit-valkyrie | 1339 | time-limit | 315546 | 1158 | 59 | 4 | 63 | 260 | `f34883d1` |
+| lit-valkyrie | 1340 | time-limit | 327687 | 1603 | 62 | 4 | 63 | 316 | `dbff416f` |
+| lit-valkyrie | 1341 | time-limit | 334460 | 1609 | 63 | 4 | 63 | 324 | `2c975d61` |
+| lit-valkyrie | 1342 | time-limit | 383362 | 1347 | 58 | 4 | 63 | 299 | `26eeb152` |
+| lit-valkyrie | 1343 | time-limit | 298568 | 1395 | 59 | 4 | 63 | 293 | `b80819d3` |
+| lit-valkyrie | 1344 | time-limit | 407487 | 1444 | 60 | 4 | 63 | 309 | `fb25c61f` |
+| lit-valkyrie | 1345 | time-limit | 312404 | 1491 | 61 | 4 | 63 | 311 | `0e2b87eb` |
+| lit-valkyrie | 1346 | time-limit | 356689 | 1238 | 57 | 4 | 63 | 261 | `ca4dfb08` |
+| lester-original | 1337 | time-limit | 263624 | 1176 | 63 | 4 | 63 | 306 | `74a5d27e` |
+| lester-original | 1338 | time-limit | 335011 | 1085 | 56 | 4 | 63 | 273 | `3bea5688` |
+| lester-original | 1339 | time-limit | 283173 | 877 | 53 | 4 | 63 | 270 | `480d9e76` |
+| lester-original | 1340 | time-limit | 240360 | 1019 | 54 | 4 | 63 | 293 | `81363569` |
+| lester-original | 1341 | time-limit | 280903 | 842 | 50 | 4 | 63 | 262 | `9dbb585d` |
+| lester-original | 1342 | time-limit | 306609 | 961 | 54 | 4 | 63 | 279 | `806ff79e` |
+| lester-original | 1343 | time-limit | 221173 | 896 | 53 | 4 | 63 | 272 | `ca7a5e9c` |
+| lester-original | 1344 | time-limit | 259493 | 1143 | 59 | 4 | 63 | 313 | `a542b1a6` |
+| lester-original | 1345 | time-limit | 267619 | 1173 | 63 | 4 | 63 | 324 | `a6d2c8e5` |
+| lester-original | 1346 | time-limit | 236733 | 1013 | 60 | 4 | 63 | 274 | `f95ff98c` |
+| lilly | 1337 | time-limit | 328914 | 1107 | 54 | 4 | 63 | 274 | `ff8f6a1d` |
+| lilly | 1338 | time-limit | 286396 | 1171 | 61 | 4 | 63 | 275 | `cd4488a4` |
+| lilly | 1339 | time-limit | 339256 | 1146 | 55 | 4 | 63 | 278 | `aef2de15` |
+| lilly | 1340 | time-limit | 216130 | 904 | 50 | 4 | 63 | 268 | `a8983166` |
+| lilly | 1341 | time-limit | 407966 | 1458 | 66 | 4 | 63 | 311 | `324fd310` |
+| lilly | 1342 | time-limit | 316523 | 1040 | 57 | 4 | 63 | 278 | `760fa121` |
+| lilly | 1343 | time-limit | 252441 | 1131 | 59 | 4 | 63 | 285 | `427b5745` |
+| lilly | 1344 | time-limit | 246267 | 1080 | 53 | 4 | 63 | 283 | `cfececc2` |
+| lilly | 1345 | time-limit | 349857 | 1195 | 56 | 4 | 63 | 287 | `69d3b709` |
+| lilly | 1346 | time-limit | 343657 | 1169 | 61 | 4 | 63 | 283 | `7d3b661a` |
 
 ## Remaining live evidence
 

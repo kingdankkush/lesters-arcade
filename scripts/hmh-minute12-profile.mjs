@@ -105,7 +105,7 @@ const report = {
   checkpoints,
   integration: integrationProfile(),
   decision: {
-    applyLod: minute12.budget.lodStage === 'pressure-lod' && minute12.director.maxEnemiesOnMap >= 110,
+    applyLod: minute12.budget.lodStage === 'pressure-lod',
     reason: `Minute 12 reaches ${minute12.director.maxEnemiesOnMap} active-enemy budget at ${minute12.budget.pressure} pressure, so LOD is justified for animation, obstacle radius, and tile overscan while opening remains ${checkpoints[0].budget.lodStage}.`,
   },
 };

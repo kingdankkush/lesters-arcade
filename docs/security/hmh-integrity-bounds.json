@@ -15,11 +15,11 @@
       "ceilings": {
         "level": 1,
         "survivalSeconds": 60,
-        "maxKills": 560,
-        "maxScore": 247600,
-        "maxCombo": 672,
+        "maxKills": 256,
+        "maxScore": 126000,
+        "maxCombo": 308,
         "maxXpPerKill": 115,
-        "killRatePerSecond": 7
+        "killRatePerSecond": 3.2
       }
     },
     {
@@ -27,11 +27,11 @@
       "ceilings": {
         "level": 1,
         "survivalSeconds": 300,
-        "maxKills": 2240,
-        "maxScore": 934000,
-        "maxCombo": 2688,
+        "maxKills": 1024,
+        "maxScore": 447600,
+        "maxCombo": 1229,
         "maxXpPerKill": 115,
-        "killRatePerSecond": 7
+        "killRatePerSecond": 3.2
       }
     },
     {
@@ -39,11 +39,11 @@
       "ceilings": {
         "level": 1,
         "survivalSeconds": 900,
-        "maxKills": 6440,
-        "maxScore": 2650000,
-        "maxCombo": 7728,
+        "maxKills": 2944,
+        "maxScore": 1251600,
+        "maxCombo": 3533,
         "maxXpPerKill": 115,
-        "killRatePerSecond": 7
+        "killRatePerSecond": 3.2
       }
     },
     {
@@ -51,11 +51,11 @@
       "ceilings": {
         "level": 1,
         "survivalSeconds": 2700,
-        "maxKills": 19040,
-        "maxScore": 7798000,
-        "maxCombo": 22848,
+        "maxKills": 8704,
+        "maxScore": 3663600,
+        "maxCombo": 10445,
         "maxXpPerKill": 115,
-        "killRatePerSecond": 7
+        "killRatePerSecond": 3.2
       }
     }
   ]
