@@ -168,7 +168,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 [hidden] { display: none !important; }
 
 .official-shell {
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -3345,7 +3345,31 @@ body.suggest-landscape.ingame::after {
 .settlement-history-card { border-left: 3px solid var(--litecoin-blue); }
 
 /* Mode-select banners (Free Mode / Play Ranked key art) */
+.mode-select-heading { max-width: 860px; }
+.mode-art-note {
+  display: inline-flex;
+  align-items: center;
+  margin: 8px 0 0;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 210, 90, 0.46);
+  border-radius: 999px;
+  background: rgba(35, 20, 4, 0.72);
+  color: #ffe69a;
+  font-size: 0.66rem;
+  line-height: 1.3;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+.mode-art-note[hidden] { display: none; }
 .mode-card { position: relative; overflow: hidden; }
+.mode-card[data-art-status="temporary-derived"] {
+  border-color: rgba(25, 247, 255, 0.52);
+  background: linear-gradient(180deg, rgba(9, 33, 48, 0.92), rgba(5, 10, 26, 0.96));
+}
+.mode-card[data-art-status="temporary-derived"].ranked-card {
+  border-color: rgba(255, 210, 90, 0.56);
+  background: linear-gradient(180deg, rgba(47, 17, 22, 0.94), rgba(13, 8, 24, 0.96));
+}
 .mode-card-banner {
   display: block;
   width: 100%;

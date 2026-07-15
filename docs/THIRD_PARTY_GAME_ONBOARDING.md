@@ -115,13 +115,69 @@ Developer harness:
 - **Adapter pattern**: `apps/portal/src/game-adapter.mjs` (reference implementation)
 
 ### Chikun integration checklist
-- [ ] Create `games/chikun/loader.mjs` — loads the Chikun game code
-- [ ] Implement the game (one-button flappy-bird with Litecoin coin mechanic)
-- [ ] Emit `arcade.ready` → `arcade.sessionStart` → `arcade.statUpdate` → `arcade.scoreSubmit` → `arcade.gameOver`
-- [ ] Support both 9:16 (mobile portrait) and 16:9 (desktop/landscape)
-- [ ] Pass security scan (no wallet access, no eval, no remote code)
-- [ ] Flip `status` from `coming-soon` to `playable` in the manifest + registry
-- [ ] QA playtest
+- [x] Create the canonical `apps/portal/games/chikun/` loader and manifest path
+- [x] Implement the deterministic reference vertical slice and parent replay verification
+- [x] Emit the parent SDK session/score/game-over path without direct wallet access
+- [x] Pass the third-party security and public Coming Soon regression gates
+- [ ] Port Louie's complete game into the sandboxed cabinet runtime
+- [ ] Support and visually certify both 9:16 and 16:9 play
+- [ ] Replace temporary mode-selection art and complete production gameplay art
+- [ ] Complete Louie/Justin QA and resolve asset rights, creator wallet, and revenue split
+- [ ] Flip `status` from `coming-soon` only after all public-launch gates pass
+
+### Chikun art production request
+
+Already preserved in the external Lester asset vault:
+
+- `chikun-coast.png`, `chikun-flap.png`, and `chikun-fall.png`: 2752×1536 RGB character illustrations flattened over a dark gray matte
+- `bigcorp-tower.png`: 2752×1536 RGB tower art with white side gutters
+- Six transparent 400×531 cabinet-rotation frames
+- The 135-second source soundtrack
+
+Do not resend those unless cleaner layered or transparent masters exist. The current 2400×525 mode-select atlas is a dev-only derivative. Public approval and written commercial-use, modification, hosting, and redistribution rights remain pending.
+
+Immediate selection-screen replacements:
+
+1. **Free Mode banner**: 2400×1050 layered master; 1200×525 WebP export, sRGB, ≤180 KiB. Chikun flying free in cyan/blue daylight with open sky. Keep action inside the center 80%. No baked UI, wallet, token, score, or leaderboard claims.
+2. **Ranked banner**: 2400×1050 layered master; 1200×525 WebP export, sRGB, ≤180 KiB. Chikun pushing toward Big Corp with gold/red/magenta pressure lighting. Do not imply gambling, rewards, NFTs, verified settlement, or on-chain publishing.
+3. **Mode-selection backdrop**: 2560×1440 layered master; 1600×900 WebP export, sRGB, ≤350 KiB. Corporate city/industrial escape scene with dark center/lower-middle negative space for cards. It must survive desktop, tablet, portrait-phone, and landscape-phone `background-size: cover` crops.
+4. **Logo lockup**: horizontal transparent SVG plus 1600×500 PNG fallback, in full-color and white/knockout variants, with no baked glow, shadow, or background plate.
+
+Gameplay P0 art:
+
+- Coast/idle flight: 6–8 transparent frames
+- Flap/impulse: 4–6 frames
+- Hit/shield impact: 4–6 frames
+- Fall/death: 6–8 frames
+- Optional boss-clear/victory: 6–8 frames
+- Preferred 512×512 source cells with documented pivot, order, and FPS
+- Modular top/bottom Big Corp towers with at least three variants and a sliding-panel variant
+- Litecoin coin eight-frame spin
+- Shield, Magnet, and Slowmo pickup icons at 128×128 transparent masters
+- Standard drone, missile, and telegraph art
+- Big Corp Helicopter, Drone Swarm, and The CEO encounter art
+
+Four P0 parallax environment sets, each with separable sky/cloud, far skyline, near skyline/tower, and optional foreground atmosphere layers on a 2560×1440 master:
+
+- **The Yard**: urban daylight and industrial/corporate confinement
+- **Corporate Heights**: purple/orange sunset and lit elevated towers
+- **Blue Hour**: indigo city, magenta accents, moving towers, drones, and panels
+- **Midnight**: near-black sky, cyan city lights, maximum neon contrast
+
+P1 art:
+
+- Skins: Chikun/default, Neon, 24 Karat, Ice, Trollbox, Shadow, Inferno
+- Trails: Standard, Neon, Gold, Cyan, Rainbow
+- Ten 256×256 achievement-badge masters
+- Four zone-entry emblems, boss-warning frame/icon, pause/game-over/run-summary/unlock panels, and Chikun-specific leaderboard stat icons
+
+Delivery requirements:
+
+- Include creator/source attribution and disclose whether AI tools were used
+- Use clean alpha without matte halos, sRGB, and no remote runtime dependencies
+- Keep accessible UI copy in HTML rather than baking it into art
+- Keep masters in the asset vault and commit only optimized runtime derivatives
+- Initial Chikun code plus critical visuals target ≤1.5 MiB; total payload target ≤4 MiB; optional soundtrack target ≤2 MiB
 
 ## 6. Mock Parent Harness
 

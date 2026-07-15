@@ -74,6 +74,7 @@ import {
   buildOfficialRunStatusModel,
   chooseArcadeMusicNextIndex,
   buildGameOverSummaryModel,
+  buildGameModeSelectModel,
   buildParentSyncPacket,
   buildHardMoneyHeroesAnimationCoverageReport,
   buildPlayerArcadeSnapshot,
@@ -1756,6 +1757,47 @@ test('UI quality guide model covers controls, tooltips, instructions, branding, 
   assert.equal(guide.iconLegend.some((icon) => icon.label.includes('Preview')), true);
   assert.equal(guide.qualityChecklist.every((item) => item.status === 'prototype-pass' || item.status === 'needs-production-pass'), true);
   assert.equal(LESTER_ARCADE_UI_QUALITY_SYSTEM.instructions.some((instruction) => instruction.title.includes('Survive')), true);
+});
+
+test('Chikun mode selection uses canonical title, game-specific copy, and temporary dev art without changing launch gates', () => {
+  const hardMoneyHeroes = buildGameModeSelectModel('lester-blaster');
+  assert.equal(hardMoneyHeroes.title, 'Hard Money Heroes');
+  assert.equal(hardMoneyHeroes.artStatus, 'production');
+  assert.match(hardMoneyHeroes.free.bannerAsset, /hard-money-heroes-free-mode-banner\.jpg$/);
+  assert.match(hardMoneyHeroes.ranked.bannerAsset, /hard-money-heroes-ranked-banner\.jpg$/);
+
+  const chikun = buildGameModeSelectModel('chikun');
+  assert.equal(chikun.title, "Chikun's Escape");
+  assert.equal(chikun.artStatus, 'temporary-derived');
+  assert.match(chikun.copy, /development harness/i);
+  assert.match(chikun.free.copy, /local score only/i);
+  assert.equal(chikun.ranked.official, false);
+  assert.equal(chikun.ranked.requiresZkLtc, false);
+  assert.match(chikun.ranked.copy, /parent replay verification/i);
+  assert.match(chikun.ranked.copy, /publishing remains disabled/i);
+  assert.equal(chikun.backgroundPosition, 'right center');
+  assert.equal(chikun.free.bannerAsset, chikun.ranked.bannerAsset);
+  assert.equal(chikun.backgroundAsset, chikun.free.bannerAsset);
+  assert.equal(chikun.free.bannerPosition, 'left center');
+  assert.equal(chikun.ranked.bannerPosition, 'right center');
+
+  const assetPath = fileURLToPath(new URL(`../apps/portal/${chikun.backgroundAsset.replace('./', '')}`, import.meta.url));
+  assert.equal(existsSync(assetPath) && statSync(assetPath).size > 100_000, true, `${chikun.backgroundAsset} exists`);
+
+  const portalHtml = readFileSync(fileURLToPath(new URL('../apps/portal/index.html', import.meta.url)), 'utf8');
+  const portalMain = readFileSync(fileURLToPath(new URL('../apps/portal/main.js', import.meta.url)), 'utf8');
+  for (const id of ['officialModeTitle', 'officialModeArtNote', 'officialFreeModeBanner', 'officialRankedModeBanner']) {
+    assert.match(portalHtml, new RegExp(`id=["']${id}["']`));
+    assert.match(portalMain, new RegExp(`#${id}`));
+  }
+  assert.match(portalMain, /buildGameModeSelectModel\(selectedGame\(\)\.id\)/);
+  assert.match(portalMain, /SETTLEMENT_LIVE && ranked\.requiresZkLtc/);
+
+  const chikunGame = ARCADE_GAMES.find((game) => game.id === 'chikun');
+  const chikunCabinet = LESTERS_ARCADE_V2_APP_SHELL.cabinets.find((cabinet) => cabinet.id === 'chikun');
+  assert.equal(chikunGame.title, "Chikun's Escape");
+  assert.equal(chikunGame.publicPlayable, false);
+  assert.equal(chikunCabinet.playable, false);
 });
 
 test('V2 app shell hides prototype chrome behind full-screen wallet profile, cabinet, and leaderboard navigation', () => {

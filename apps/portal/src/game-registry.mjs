@@ -20,7 +20,7 @@ const REGISTERED_GAMES = {
   }),
   'chikun': Object.freeze({
     id: 'chikun',
-    name: 'Chikun: The Flying Coin',
+    name: "Chikun's Escape",
     devWallet: null, // set when Chikun creator provides their wallet
     feeSplit: { dev: 75, platform: 25, liquidity: 0, treasury: 0 }, // 75% creator / 25% Lester's Arcade
     adapter: 'games/chikun/main.mjs',

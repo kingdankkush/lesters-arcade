@@ -69,7 +69,7 @@ Start with [`sdk/README.md`](sdk/README.md), then use [`docs/THIRD_PARTY_GAME_ON
 | Cabinet | ID | Status |
 | --- | --- | --- |
 | Hard Money Heroes | `hard-money-heroes` | 🟢 Live flagship cabinet |
-| Chikun: The Flying Coin | `chikun` | 🟡 Loader-ready / coming soon |
+| Chikun's Escape | `chikun` | 🟡 Loader-ready / coming soon |
 | Lilly's Lightning Pinball | `lilly-pinball` | 🔒 Planned |
 
 ---

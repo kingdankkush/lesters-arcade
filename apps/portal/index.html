@@ -185,23 +185,24 @@
 
         <section id="officialModeSelect" class="official-view mode-select-view" hidden>
           <button id="officialModeBackButton" class="back-nav-button" type="button"><svg class="arcade-svg-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#back"></use></svg> Back to Cabinets</button>
-          <div>
-            <p class="eyebrow">Selected Cabinet</p>
-            <h2>Hard Money Heroes</h2>
-            <p class="machine-copy">Your Lester’s Arcade session is active. Choose Free Mode for local guest practice, or connect a wallet and choose Play Ranked for an official LitVM testnet run.</p>
+          <div class="mode-select-heading">
+            <p id="officialModeEyebrow" class="eyebrow">Selected Cabinet</p>
+            <h2 id="officialModeTitle">Hard Money Heroes</h2>
+            <p id="officialModeCopy" class="machine-copy">Your Lester’s Arcade session is active. Choose Free Mode for local guest practice, or connect a wallet and choose Play Ranked for a canonical LitVM testnet preview.</p>
+            <p id="officialModeArtNote" class="mode-art-note" hidden>Temporary derived art is active in the development harness. Final production art is still required.</p>
           </div>
           <div class="official-mode-grid">
             <button id="officialFreeModeButton" class="mode-card" type="button">
-              <img class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg" alt="Hard Money Heroes — Free Mode" loading="lazy" decoding="async" />
+              <img id="officialFreeModeBanner" class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg" alt="Hard Money Heroes Free Mode key art" loading="lazy" decoding="async" />
               <svg class="arcade-svg-icon arcade-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#infinity"></use></svg>
-              <strong>Free Mode</strong>
-              <span>Practice only. No official score, progress, achievements, or chain writes.</span>
+              <strong id="officialFreeModeTitle">Free Mode</strong>
+              <span id="officialFreeModeCopy">Practice only. No official score, progress, achievements, or chain writes.</span>
             </button>
             <button id="officialRankedModeButton" class="mode-card ranked-card" type="button">
-              <img class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg" alt="Hard Money Heroes — Ranked" loading="lazy" decoding="async" />
+              <img id="officialRankedModeBanner" class="mode-card-banner" src="./assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg" alt="Hard Money Heroes Ranked key art" loading="lazy" decoding="async" />
               <svg class="arcade-svg-icon arcade-icon" aria-hidden="true" focusable="false"><use href="./assets/icons/arcade-ui.svg#star"></use></svg>
-              <strong>Play Ranked</strong>
-              <span>Tracks a canonical local Ranked Testnet run. Verified on-chain publishing is temporarily disabled.</span>
+              <strong id="officialRankedModeTitle">Play Ranked</strong>
+              <span id="officialRankedModeCopy">Tracks a canonical local Ranked Testnet run. Verified on-chain publishing is temporarily disabled.</span>
             </button>
           </div>
           <div id="officialRankedTooltip" class="ranked-tooltip"></div>

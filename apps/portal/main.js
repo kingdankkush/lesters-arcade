@@ -173,6 +173,7 @@ import {
   LESTER_BLASTER_WEAPON_SYSTEM,
   advanceTacticalCameraModel,
   buildGameOverSummaryModel,
+  buildGameModeSelectModel,
   buildHardMoneyHeroesAnimationCoverageReport,
   buildLeaderboardModel,
   buildLeaderboardExperienceV2Model,
@@ -907,6 +908,20 @@ function applyHardMoneyHeroScreenBackground(node, screenId) {
   node.style.backgroundColor = profile.backgroundColor;
 }
 
+function applyGameModeSelectBackground(node, model) {
+  if (!node || !model) return;
+  if (model.gameId === 'lester-blaster') {
+    applyHardMoneyHeroScreenBackground(node, 'modeSelect');
+    return;
+  }
+  const scrim = 'linear-gradient(180deg, rgba(3,6,23,0.88) 0%, rgba(3,6,23,0.46) 28%, rgba(3,6,23,0.48) 64%, rgba(3,6,23,0.92) 100%)';
+  node.style.backgroundImage = `${scrim}, url("${model.backgroundAsset}")`;
+  node.style.backgroundSize = 'cover, cover';
+  node.style.backgroundPosition = `center, ${model.backgroundPosition}`;
+  node.style.backgroundRepeat = 'no-repeat, no-repeat';
+  node.style.backgroundColor = '#030617';
+}
+
 const arcadeMusic = {
   context: 'arcade',
   queue: buildArcadeMusicQueueForContext('arcade'),
@@ -1402,8 +1417,18 @@ const dom = {
   officialProfileCopy: document.querySelector('#officialProfileCopy'),
   officialCabinetGrid: document.querySelector('#officialCabinetGrid'),
   officialModeSelect: document.querySelector('#officialModeSelect'),
+  officialModeEyebrow: document.querySelector('#officialModeEyebrow'),
+  officialModeTitle: document.querySelector('#officialModeTitle'),
+  officialModeCopy: document.querySelector('#officialModeCopy'),
+  officialModeArtNote: document.querySelector('#officialModeArtNote'),
   officialFreeModeButton: document.querySelector('#officialFreeModeButton'),
+  officialFreeModeBanner: document.querySelector('#officialFreeModeBanner'),
+  officialFreeModeTitle: document.querySelector('#officialFreeModeTitle'),
+  officialFreeModeCopy: document.querySelector('#officialFreeModeCopy'),
   officialRankedModeButton: document.querySelector('#officialRankedModeButton'),
+  officialRankedModeBanner: document.querySelector('#officialRankedModeBanner'),
+  officialRankedModeTitle: document.querySelector('#officialRankedModeTitle'),
+  officialRankedModeCopy: document.querySelector('#officialRankedModeCopy'),
   officialModeBackButton: document.querySelector('#officialModeBackButton'),
   rankedEntryModal: document.querySelector('#rankedEntryModal'),
   rankedEntryWallet: document.querySelector('#rankedEntryWallet'),
@@ -5153,23 +5178,43 @@ function renderOfficialArcadeFloor() {
 }
 
 function renderOfficialModeSelect() {
-  applyHardMoneyHeroScreenBackground(dom.officialModeSelect, 'modeSelect');
-  const ranked = LESTERS_ARCADE_V2_APP_SHELL.modeSelect.ranked;
+  const modeSelect = buildGameModeSelectModel(selectedGame().id);
+  const ranked = modeSelect.ranked;
+  applyGameModeSelectBackground(dom.officialModeSelect, modeSelect);
+  dom.officialModeSelect.dataset.gameId = modeSelect.gameId;
+  dom.officialModeSelect.dataset.artStatus = modeSelect.artStatus;
+  dom.officialModeEyebrow.textContent = modeSelect.eyebrow;
+  dom.officialModeTitle.textContent = modeSelect.title;
+  dom.officialModeCopy.textContent = modeSelect.copy;
+  dom.officialModeArtNote.hidden = modeSelect.artStatus === 'production';
+  dom.officialModeArtNote.textContent = modeSelect.artStatus === 'production'
+    ? ''
+    : 'Temporary derived art is active in the development harness. Final production art is still required before public launch.';
+
+  const syncModeCard = (button, banner, title, copy, model) => {
+    button.dataset.artStatus = modeSelect.artStatus;
+    if (banner.getAttribute('src') !== model.bannerAsset) banner.src = model.bannerAsset;
+    banner.style.objectPosition = model.bannerPosition ?? 'center';
+    banner.alt = model.bannerAlt;
+    title.textContent = model.label;
+    copy.textContent = model.copy;
+  };
+  syncModeCard(dom.officialFreeModeButton, dom.officialFreeModeBanner, dom.officialFreeModeTitle, dom.officialFreeModeCopy, modeSelect.free);
+  syncModeCard(dom.officialRankedModeButton, dom.officialRankedModeBanner, dom.officialRankedModeTitle, dom.officialRankedModeCopy, ranked);
+
   // Guest-aware ranked card: surface that ranked needs a wallet, but keep it
   // clickable so the tap triggers the connect flow (guest-first).
-  if (dom.officialRankedModeButton) {
-    dom.officialRankedModeButton.dataset.needsWallet = connectedWallet ? 'false' : 'true';
-  }
+  dom.officialRankedModeButton.dataset.needsWallet = connectedWallet ? 'false' : 'true';
   dom.officialRankedTooltip.replaceChildren();
   dom.officialRankedTooltip.dataset.state = connectedWallet ? '' : 'guest';
   if (!connectedWallet) {
-    appendText(dom.officialRankedTooltip, 'strong', 'Free Mode is open to guests');
-    appendText(dom.officialRankedTooltip, 'span', 'Play Free right now with no wallet. Ranked preview uses a connected wallet for identity, but verified chain publishing is temporarily disabled.');
+    appendText(dom.officialRankedTooltip, 'strong', `${modeSelect.free.label} is open to guests`);
+    appendText(dom.officialRankedTooltip, 'span', `${modeSelect.free.copy} Connect a wallet when you want ${ranked.label}.`);
   } else {
     appendText(dom.officialRankedTooltip, 'strong', `${ranked.label}: local verified-preview mode`);
     appendText(dom.officialRankedTooltip, 'span', ranked.copy);
   }
-  if (SETTLEMENT_LIVE) {
+  if (SETTLEMENT_LIVE && ranked.requiresZkLtc) {
     const link = el('a', { className: 'wallet-link', textContent: 'Get zkLTC faucet', href: ranked.faucetUrl, target: '_blank', rel: 'noreferrer' });
     dom.officialRankedTooltip.append(link);
   }

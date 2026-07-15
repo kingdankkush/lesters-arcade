@@ -1079,6 +1079,25 @@
   .ad-banner-vertical { display: none !important; }
 }
 
+/* Keep the fixed jukebox out of the Free/Ranked cards. Wide screens place it
+   in the backdrop's reserved upper-right negative space; medium screens move it
+   into flow. The existing <=720px rule below already handles mobile. */
+@media (min-width: 1360px) {
+  #officialApp[data-step="mode-select"] .arcade-music-player {
+    top: 110px;
+    bottom: auto;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1359px) {
+  #officialApp[data-step="mode-select"] .arcade-music-player {
+    position: static;
+    align-self: flex-end;
+    width: min(360px, 100%);
+    margin: 10px 0 14px;
+  }
+}
+
 @media (max-width: 720px) {
   .official-app {
     padding: 10px;

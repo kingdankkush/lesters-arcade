@@ -489,6 +489,75 @@ export const LESTER_ARCADE_WORKFLOW_AUTOMATION = Object.freeze({
   backlogTemplate: Object.freeze(['design intent', 'player-facing change', 'model/test contract', 'runtime/CSS work', 'asset/audio need', 'verification evidence']),
 });
 
+export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
+  'lester-blaster': Object.freeze({
+    gameId: 'lester-blaster',
+    title: 'Hard Money Heroes',
+    eyebrow: 'Selected Cabinet',
+    copy: 'Your Lester’s Arcade session is active. Choose Free Mode for local guest practice, or connect a wallet and choose Play Ranked for a canonical LitVM testnet preview.',
+    artStatus: 'production',
+    backgroundAsset: './assets/generated/hmh-banners/hmh-keyart-bg.jpg',
+    backgroundPosition: 'center center',
+    free: Object.freeze({
+      label: HMH_COPY_SHEET.modeSelect.free.label,
+      official: false,
+      icon: 'infinity',
+      bannerAsset: './assets/generated/hmh-banners/hard-money-heroes-free-mode-banner.jpg',
+      bannerAlt: 'Hard Money Heroes Free Mode key art',
+      copy: HMH_COPY_SHEET.modeSelect.free.copy,
+    }),
+    ranked: Object.freeze({
+      label: HMH_COPY_SHEET.modeSelect.ranked.label,
+      official: true,
+      icon: 'star',
+      requiresZkLtc: true,
+      chainId: 4441,
+      token: 'zkLTC',
+      faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
+      bannerAsset: './assets/generated/hmh-banners/hard-money-heroes-ranked-banner.jpg',
+      bannerAlt: 'Hard Money Heroes Ranked key art',
+      copy: HMH_COPY_SHEET.modeSelect.ranked.copy,
+    }),
+  }),
+  chikun: Object.freeze({
+    gameId: 'chikun',
+    title: "Chikun's Escape",
+    eyebrow: 'Selected Cabinet // Development Harness',
+    copy: 'Choose Free Mode for guest practice or Play Ranked for a wallet-bound deterministic preview. Chikun remains in the development harness while production art and public-launch gates are completed.',
+    artStatus: 'temporary-derived',
+    backgroundAsset: './assets/generated/chikun-mode-select/chikun-mode-select-art.webp',
+    backgroundPosition: 'right center',
+    free: Object.freeze({
+      label: 'Free Mode',
+      official: false,
+      icon: 'infinity',
+      bannerAsset: './assets/generated/chikun-mode-select/chikun-mode-select-art.webp',
+      bannerPosition: 'left center',
+      bannerAlt: "Chikun's Escape Free Mode temporary key art",
+      copy: 'Guest practice with a local score only. No official progress, achievements, leaderboard placement, or chain writes.',
+    }),
+    ranked: Object.freeze({
+      label: 'Play Ranked',
+      official: false,
+      icon: 'star',
+      requiresZkLtc: false,
+      chainId: 4441,
+      token: 'zkLTC',
+      faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
+      bannerAsset: './assets/generated/chikun-mode-select/chikun-mode-select-art.webp',
+      bannerPosition: 'right center',
+      bannerAlt: "Chikun's Escape Ranked preview temporary key art",
+      copy: 'Wallet-bound deterministic preview with parent replay verification. Official on-chain publishing remains disabled.',
+    }),
+  }),
+});
+
+export function buildGameModeSelectModel(gameId = 'lester-blaster') {
+  const model = CABINET_MODE_SELECT_PRESENTATIONS[gameId];
+  if (!model) throw new Error(`No mode-select presentation registered for ${gameId}`);
+  return model;
+}
+
 export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
   layout: 'full-screen-arcade-app',
   productionDomain: 'lestersarcade.io',
@@ -543,10 +612,8 @@ export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
     Object.freeze({ id: 'mweb-invaders', gameId: 'mweb-invaders', title: 'MWEB Invaders', status: 'coming-soon', playable: false, description: 'Descending rows of privacy-shattering aliens — shield your Lit wallet!', bannerArt: './assets/generated/hmh-banners/mweb-invaders-keyart.jpg' }),
     Object.freeze({ id: 'litvm-legends', gameId: 'litvm-legends', title: 'LitVM Legends', status: 'coming-soon', playable: false, description: 'Co-op dungeon crawl through endless LitVM realms (but its actually LTC).', bannerArt: './assets/generated/hmh-banners/litvm-legends-keyart.jpg' }),
   ]),
-  modeSelect: Object.freeze({
-    free: Object.freeze({ label: HMH_COPY_SHEET.modeSelect.free.label, official: false, copy: HMH_COPY_SHEET.modeSelect.free.copy }),
-    ranked: Object.freeze({ label: HMH_COPY_SHEET.modeSelect.ranked.label, official: true, requiresZkLtc: true, chainId: 4441, token: 'zkLTC', faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl, copy: HMH_COPY_SHEET.modeSelect.ranked.copy }),
-  }),
+  modeSelect: CABINET_MODE_SELECT_PRESENTATIONS['lester-blaster'],
+  modeSelectByGame: CABINET_MODE_SELECT_PRESENTATIONS,
   gameIntro: Object.freeze({
     id: 'hard-money-heroes-intro-splash',
     videoSrc: './assets/video/hard-money-heroes-intro.mp4',
@@ -2118,7 +2185,7 @@ export const ARCADE_GAMES = Object.freeze([
   },
   {
     id: 'chikun',
-    title: 'Chikun: The Flying Coin',
+    title: "Chikun's Escape",
     cabinet: 'FLAPPY CABINET 04',
     genre: 'One-button flappy-bird arcade with Litecoin coin mechanic',
     status: 'coming-soon',
