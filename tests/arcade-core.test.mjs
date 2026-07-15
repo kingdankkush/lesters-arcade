@@ -1775,6 +1775,8 @@ test('Chikun mode selection uses canonical title, game-specific copy, and tempor
   assert.equal(chikun.ranked.requiresZkLtc, false);
   assert.match(chikun.ranked.copy, /parent replay verification/i);
   assert.match(chikun.ranked.copy, /publishing remains disabled/i);
+  assert.match(chikun.free.bannerAlt, /cyan synthwave grid/i);
+  assert.match(chikun.ranked.bannerAlt, /Big Corp tower.*red synthwave grid/i);
   assert.equal(chikun.backgroundPosition, 'right center');
   assert.equal(chikun.free.bannerAsset, chikun.ranked.bannerAsset);
   assert.equal(chikun.backgroundAsset, chikun.free.bannerAsset);
@@ -1790,7 +1792,10 @@ test('Chikun mode selection uses canonical title, game-specific copy, and tempor
     assert.match(portalHtml, new RegExp(`id=["']${id}["']`));
     assert.match(portalMain, new RegExp(`#${id}`));
   }
-  assert.match(portalMain, /buildGameModeSelectModel\(selectedGame\(\)\.id\)/);
+  assert.equal(buildGameModeSelectModel('future-unregistered-cabinet'), null);
+  assert.match(portalMain, /buildGameModeSelectModel\(game\.id\)/);
+  assert.match(portalMain, /Mode selection blocked safely/);
+  assert.match(portalMain, /This unconfigured game cannot start a session/);
   assert.match(portalMain, /SETTLEMENT_LIVE && ranked\.requiresZkLtc/);
 
   const chikunGame = ARCADE_GAMES.find((game) => game.id === 'chikun');

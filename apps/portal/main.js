@@ -5178,7 +5178,42 @@ function renderOfficialArcadeFloor() {
 }
 
 function renderOfficialModeSelect() {
-  const modeSelect = buildGameModeSelectModel(selectedGame().id);
+  const game = selectedGame();
+  const modeSelect = buildGameModeSelectModel(game.id);
+  if (!modeSelect) {
+    dom.officialModeSelect.dataset.gameId = game.id;
+    dom.officialModeSelect.dataset.artStatus = 'unconfigured';
+    dom.officialModeSelect.style.backgroundImage = 'linear-gradient(180deg, rgba(3,6,23,0.94), rgba(3,6,23,0.78))';
+    dom.officialModeSelect.style.backgroundSize = 'cover';
+    dom.officialModeSelect.style.backgroundPosition = 'center';
+    dom.officialModeSelect.style.backgroundRepeat = 'no-repeat';
+    dom.officialModeSelect.style.backgroundColor = '#030617';
+    dom.officialModeEyebrow.textContent = 'Selected Cabinet // Mode Configuration Required';
+    dom.officialModeTitle.textContent = game.title;
+    dom.officialModeCopy.textContent = 'This cabinet does not have a registered mode-selection presentation yet. Return to the cabinet floor and choose an available game.';
+    dom.officialModeArtNote.hidden = false;
+    dom.officialModeArtNote.textContent = 'Mode selection is unavailable. No session, profile, leaderboard, wallet, or chain action has started.';
+    dom.officialFreeModeButton.disabled = true;
+    dom.officialRankedModeButton.disabled = true;
+    dom.officialFreeModeButton.dataset.artStatus = 'unconfigured';
+    dom.officialRankedModeButton.dataset.artStatus = 'unconfigured';
+    dom.officialRankedModeButton.dataset.needsWallet = 'false';
+    dom.officialFreeModeBanner.hidden = true;
+    dom.officialRankedModeBanner.hidden = true;
+    dom.officialFreeModeTitle.textContent = 'Unavailable';
+    dom.officialRankedModeTitle.textContent = 'Unavailable';
+    dom.officialFreeModeCopy.textContent = 'No Free Mode presentation is registered for this cabinet.';
+    dom.officialRankedModeCopy.textContent = 'No Ranked presentation is registered for this cabinet.';
+    dom.officialRankedTooltip.replaceChildren();
+    appendText(dom.officialRankedTooltip, 'strong', 'Mode selection blocked safely');
+    appendText(dom.officialRankedTooltip, 'span', 'Return to Cabinets. This unconfigured game cannot start a session.');
+    return;
+  }
+
+  dom.officialFreeModeButton.disabled = false;
+  dom.officialRankedModeButton.disabled = false;
+  dom.officialFreeModeBanner.hidden = false;
+  dom.officialRankedModeBanner.hidden = false;
   const ranked = modeSelect.ranked;
   applyGameModeSelectBackground(dom.officialModeSelect, modeSelect);
   dom.officialModeSelect.dataset.gameId = modeSelect.gameId;

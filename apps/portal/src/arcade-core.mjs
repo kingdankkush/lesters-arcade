@@ -533,7 +533,7 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       icon: 'infinity',
       bannerAsset: './assets/generated/chikun-mode-select/chikun-mode-select-art.webp',
       bannerPosition: 'left center',
-      bannerAlt: "Chikun's Escape Free Mode temporary key art",
+      bannerAlt: "Chikun flying over a cyan synthwave grid for Free Mode",
       copy: 'Guest practice with a local score only. No official progress, achievements, leaderboard placement, or chain writes.',
     }),
     ranked: Object.freeze({
@@ -546,16 +546,14 @@ export const CABINET_MODE_SELECT_PRESENTATIONS = Object.freeze({
       faucetUrl: LITVM_LITEFORGE_NETWORK.faucetUrl,
       bannerAsset: './assets/generated/chikun-mode-select/chikun-mode-select-art.webp',
       bannerPosition: 'right center',
-      bannerAlt: "Chikun's Escape Ranked preview temporary key art",
+      bannerAlt: "Chikun flying toward a Big Corp tower over a red synthwave grid for Ranked preview",
       copy: 'Wallet-bound deterministic preview with parent replay verification. Official on-chain publishing remains disabled.',
     }),
   }),
 });
 
 export function buildGameModeSelectModel(gameId = 'lester-blaster') {
-  const model = CABINET_MODE_SELECT_PRESENTATIONS[gameId];
-  if (!model) throw new Error(`No mode-select presentation registered for ${gameId}`);
-  return model;
+  return CABINET_MODE_SELECT_PRESENTATIONS[gameId] ?? null;
 }
 
 export const LESTERS_ARCADE_V2_APP_SHELL = Object.freeze({
