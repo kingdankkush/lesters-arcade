@@ -29,7 +29,7 @@ export const HMH_LEVEL_ONE_WASTELAND_POIS = Object.freeze([
     districtId: 'country-road',
     lane: 'north-spur',
     telegraph: 'dark cave mouth, pine silhouette wall, and goblin chatter tucked behind the roadside tree line',
-    miniBoss: Object.freeze({ id: 'cave-warren-alpha', title: 'Cave Warren Alpha', phases: 2, telegraphFrames: 24, adds: ['FUD Goblins'], counterplay: 'kite the rush into the cave mouth bottleneck and punish after the leap tell.' }),
+    miniBoss: Object.freeze({ id: 'cave-warren-alpha', title: 'Cave Warren Alpha', phases: 2, telegraphFrames: 24, adds: ['FUD Mine Zombies'], counterplay: 'kite the rush into the cave mouth bottleneck and punish after the leap tell.' }),
     reward: Object.freeze({ type: 'xp-luck-or-summon', examples: Object.freeze(['Green Candle Luck', 'Satellite Wallets', 'XP burst cache']) }),
     riskRewardRead: 'mid-risk forest detour that swaps long sightlines for ambush pressure and fast XP.',
   }),

@@ -1177,6 +1177,10 @@ test('Level 1 assigns curated mini-bosses and the true-scale Rug Pull Baron sign
   assert.equal(roster.find((entry) => entry.role === 'boss')?.enemyId, 'rug-pull-baron');
   assert.equal(roster.find((entry) => entry.role === 'boss')?.animatedCuratedAssetKey, 'wo110/rug-pull-baron-phase-1');
   assert.ok(roster.every((entry) => entry.humanoid === true), 'Level 1 bosses should retain readable humanoid silhouettes');
+  const gasBeast = roster.find((entry) => entry.enemyId === 'gas-beast');
+  assert.equal(gasBeast?.runtimeActorKey, 'wild-boar');
+  assert.equal(gasBeast?.animatedCuratedAssetKey, undefined);
+  assert.ok(roster.every((entry) => !/(beast|golem|animal|drone|turret|goblin)/i.test(entry.title)), 'Level 1 named encounters should present as humans or zombies');
 });
 
 test('Level 1 late-swarm budget keeps rewards collectible while capping visual spam', () => {
@@ -1462,6 +1466,34 @@ test('enemy catalog adds authored Crypto Wasteland regional enemies with explici
   }
 });
 
+test('legacy creature enemy IDs resolve to explicit human or zombie PixelLab actors', () => {
+  const byId = Object.fromEntries(LESTER_BLASTER_ENEMY_CATALOG.map((enemy) => [enemy.id, enemy]));
+  const replacements = {
+    'fud-goblin': 'scorpion-ambusher',
+    'fud-goblin-cave': 'scorpion-ambusher',
+    'gas-fee-wisp': 'wild-boar',
+    'gas-beast': 'wild-boar',
+    'sybil-drone': 'sybil-drone',
+    'rug-rat': 'rattlesnake',
+    'honeypot-turret': 'sybil-drone',
+    'coyote-pack-runner': 'coyote-pack-runner',
+    'wild-boar': 'wild-boar',
+    buzzard: 'buzzard',
+    rattlesnake: 'rattlesnake',
+    'scorpion-ambusher': 'scorpion-ambusher',
+    'liquidation-cascade-golem': 'wild-boar',
+  };
+  for (const [enemyId, runtimeActorKey] of Object.entries(replacements)) {
+    const enemy = byId[enemyId];
+    assert.ok(enemy, `missing replacement enemy ${enemyId}`);
+    assert.equal(enemy.runtimeActorKey, runtimeActorKey, `${enemyId} should select ${runtimeActorKey}`);
+    assert.doesNotMatch(`${enemy.title} ${enemy.class}`, /animal|goblin|drone|turret|golem|beast|wisp|crawler|snake|scorpion/i);
+  }
+  assert.equal(byId.rattlesnake.title, 'Zombie Trapper');
+  assert.equal(byId.rattlesnake.class, 'zombie-trapper');
+  assert.match(byId.rattlesnake.tells, /steel jaw trap|cleaver/i);
+});
+
 test('chooseEnemySpawn biases Level 1 authored districts and POIs toward their local enemy pools', () => {
   const poiSpawn = chooseEnemySpawn({
     elapsedSeconds: 220,
@@ -1517,7 +1549,7 @@ test('chooseEnemySpawn applies authored lane roles deterministically with safe f
     districtFamily: 'desert_approach',
     spawnLaneRole: 'elite',
   });
-  assert.equal(promotedLocalElite.spawnContext.laneRoleApplied, true);
+  assert.equal(promotedLocalElite.spawnContext.laneRoleApplied, false);
   assert.equal(promotedLocalElite.spawnContext.elitePromotionFallback, true);
   assert.equal(Boolean(promotedLocalElite.enemy.boss), false);
 
@@ -2270,7 +2302,7 @@ test('Hard Money Heroes adds Crypto Bro and Gas Beast enemies plus extra Warren 
   assert.equal(manifest.enemies.cryptoBro.title, 'Crypto Bro');
   assert.equal(typeof manifest.enemies.cryptoBro.behavior.primary, 'string');
   assert.equal(manifest.enemies.gasBeast.id, 'gas-beast');
-  assert.equal(manifest.enemies.gasBeast.title, 'Gas Beast');
+  assert.equal(manifest.enemies.gasBeast.title, 'Gas-Tax Zombie Brute');
   assert.equal(typeof manifest.enemies.gasBeast.behavior.primary, 'string');
 
   // Every animation state for the two new enemies must resolve to real PNG frames on disk.
@@ -2846,7 +2878,7 @@ test('buildHardMoneyHeroesStatsModule returns a game-specific breakdown', () => 
   assert.equal(mod.longestSurvivalLabel, '6:12');
   assert.equal(mod.bossKills, 2);
   // Enemy breakdown is sorted by kills desc and resolves readable titles.
-  assert.equal(mod.enemyBreakdown[0].title, 'FUD Goblin');
+  assert.equal(mod.enemyBreakdown[0].title, 'FUD Mine Zombie');
   assert.equal(mod.enemyBreakdown[0].kills, 40);
   // Boss-prefixed keys are separated out.
   assert.ok(mod.bossBreakdown.some((b) => b.kills === 2));

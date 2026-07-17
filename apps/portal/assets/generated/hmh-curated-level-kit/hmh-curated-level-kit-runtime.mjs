@@ -121,7 +121,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/web3-live-readiness.mjs",
     "apps/portal/src/world-obstacles.mjs"
   ],
-  "totalReferencedKeys": 76,
+  "totalReferencedKeys": 75,
   "missing": [],
   "assets": [
     {
@@ -1116,19 +1116,6 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/claim-jumper/anim0/south-west/00.png",
       "width": 188,
       "height": 188,
-      "needsSlicing": false
-    },
-    {
-      "key": "universal/enemy/gas-beast-tank",
-      "label": "00",
-      "category": "enemy",
-      "family": "enemies",
-      "scope": "Universal",
-      "role": "Universal enemy animation source",
-      "source": "Universal/Enemies/gas-beast-tank/anim0/north-west/00.png",
-      "src": "./assets/generated/hmh-curated-level-kit/source/Universal/Enemies/gas-beast-tank/anim0/north-west/00.png",
-      "width": 160,
-      "height": 160,
       "needsSlicing": false
     },
     {

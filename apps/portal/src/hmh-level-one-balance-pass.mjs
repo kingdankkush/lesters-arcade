@@ -154,7 +154,7 @@ export function buildLevelOneBossChoreographyPlan() {
     miniBosses: Object.freeze([
       Object.freeze({ poiId: 'ghost-saloon-mainstreet', title: 'Claim-Jumper Sheriff', phaseCount: 2, telegraphFrames: 48, addWindowSeconds: [0, 12], counterplay: 'break saloon cover/cache before crossing main street', rewardHook: 'saloon cache + first strong upgrade pacing' }),
       Object.freeze({ poiId: 'dead-forest-mushroom-grove', title: 'Scam Cult Zealot Alpha', phaseCount: 2, telegraphFrames: 54, addWindowSeconds: [8, 20], counterplay: 'bait rushers through mushroom pulse downtime', rewardHook: 'spore resistance/mobility read' }),
-      Object.freeze({ poiId: 'warehouse-gas-station-yard', title: 'Gas Beast Tank', phaseCount: 2, telegraphFrames: 50, addWindowSeconds: [5, 18], counterplay: 'chain gas pump detonation into boss armor window', rewardHook: 'grenade/chain economy payoff' }),
+      Object.freeze({ poiId: 'warehouse-gas-station-yard', title: 'Gas-Tax Zombie Brute', phaseCount: 2, telegraphFrames: 50, addWindowSeconds: [5, 18], counterplay: 'chain gas pump detonation into boss armor window', rewardHook: 'grenade/chain economy payoff' }),
     ]),
     finalBoss: Object.freeze({
       poiId: 'rugpull-gulch-boss-yard',

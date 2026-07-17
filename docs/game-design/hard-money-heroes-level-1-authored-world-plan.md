@@ -41,5 +41,5 @@ This preserves roguelite replay while making Level 1 read as handcrafted instead
 - Level 1 metadata clearly reads as Crypto Wasteland.
 - District graph exposes a visible main spine with optional POI spurs.
 - POIs have telegraph, mini-boss seed, and reward category.
-- Enemy roster covers human + animal + contextual cave goblin archetypes.
+- Enemy gameplay roles remain intact, while visible runtime actors use only authored human or zombie silhouettes; legacy animal/mech IDs remain compatibility keys.
 - No persisted IDs are changed.

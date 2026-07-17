@@ -8,6 +8,7 @@ import {
   HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS,
   levelOneEnemyMatchesSpawnLaneRole,
   levelOneLayoutV4BoundaryPaletteForSide,
+  levelOneRouteEncounterPacingAt,
   levelOneLayoutV4SpawnRequest,
   levelOneLayoutV4ZoneAt,
   levelOneSpawnLaneForcesElite,
@@ -49,6 +50,61 @@ test('World v3 POI directives transition from telegraph to approach to arena and
   assert.notEqual(levelOneWorldV3PoiDirectiveAt({ playerX: entry.world.x, playerY: entry.world.y, completedPoiIds: ['rugpull-gulch'] })?.id, 'rugpull-gulch');
 });
 
+test('Level 1 route pacing moves through travel, warning, pressure, arena, and clear with a real respite', () => {
+  const entry = HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS.find((poi) => poi.campaign.id === 'dry-forest-cave');
+  const radius = entry.blueprint.arenaRadius;
+  const atDistance = (distanceTiles, completedPoiIds = [], respitePoiId = null) => levelOneRouteEncounterPacingAt({
+    playerX: entry.world.x - distanceTiles,
+    playerY: entry.world.y,
+    completedPoiIds,
+    respitePoiId,
+  });
+
+  const travel = levelOneRouteEncounterPacingAt({ playerX: -1000, playerY: -1000 });
+  const warning = atDistance(radius + 13);
+  const pressure = atDistance(radius + 5);
+  const arena = atDistance(Math.max(0, radius - 1));
+  const clear = atDistance(Math.max(0, radius - 1), ['dry-forest-cave'], 'dry-forest-cave');
+  const oldCompletedPoi = atDistance(Math.max(0, radius - 1), ['dry-forest-cave']);
+
+  assert.deepEqual([travel.phase, warning.phase, pressure.phase, arena.phase, clear.phase], [
+    'travel',
+    'warning',
+    'pressure',
+    'arena',
+    'clear',
+  ]);
+  assert.equal(clear.genericSpawnSuppression, true);
+  assert.equal(clear.respite, true);
+  assert.notEqual(oldCompletedPoi.phase, 'clear');
+  assert.equal(oldCompletedPoi.genericSpawnSuppression, false);
+  assert.ok(clear.spawnIntervalMul > pressure.spawnIntervalMul);
+  assert.ok(pressure.spawnIntervalMul < warning.spawnIntervalMul);
+  assert.equal(arena.poiId, 'dry-forest-cave');
+});
+
+test('Level 1 route pacing raises readable role pressure by completed-POI tier without spawn soup', () => {
+  const entry = HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS.find((poi) => poi.campaign.id === 'crossroads-trading-post');
+  const playerX = entry.world.x - (entry.blueprint.arenaRadius + 5);
+  const playerY = entry.world.y;
+  const early = levelOneRouteEncounterPacingAt({ playerX, playerY, completedPoiIds: [] });
+  const late = levelOneRouteEncounterPacingAt({
+    playerX,
+    playerY,
+    completedPoiIds: ['rugpull-gulch', 'dry-forest-cave', 'old-hashrate-camp', 'oasis-lakeside'],
+  });
+
+  assert.equal(early.phase, 'pressure');
+  assert.equal(late.phase, 'pressure');
+  assert.equal(early.pressureTier, 0);
+  assert.equal(late.pressureTier, 2);
+  assert.ok(late.rangedShareDelta > early.rangedShareDelta);
+  assert.ok(late.eliteChanceMul > early.eliteChanceMul);
+  assert.ok(late.maxEnemyMul <= 1);
+  assert.ok(late.rangedShareDelta <= 0.12);
+  assert.ok(late.eliteChanceMul <= 1.25);
+});
+
 test('World v3 district context follows authored biome, route, and POI cells', () => {
   assert.equal(levelOneWorldV3DistrictContextAt(0, 0).districtFamily, 'desert-approach');
   const ghost = authoredCellToWorld(24, 65);
@@ -69,6 +125,12 @@ test('World v3 final boss and extraction use the approved boss yard and road-out
 test('World v3 gameplay geography is explicitly integrated and syntax-gated', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(main, /levelOneWorldV3PoiDirectiveAt/);
+  assert.match(main, /levelOneRouteEncounterPacingAt/);
+  assert.match(main, /routePacing\?\.genericSpawnSuppression/);
+  assert.match(main, /routePacing\?\.maxEnemyMul/);
+  assert.match(main, /routePacing\?\.spawnIntervalMul/);
+  assert.match(main, /routePacing\?\.rangedShareDelta/);
+  assert.match(main, /routePacing\?\.eliteChanceMul/);
   assert.match(main, /levelOneWorldV3DistrictContextAt/);
   assert.match(main, /levelOneWorldV3BossPoint/);
   assert.match(main, /levelOneWorldV3ExtractionPoint/);
@@ -77,6 +139,7 @@ test('World v3 gameplay geography is explicitly integrated and syntax-gated', ()
   assert.match(main, /spawnLaneRoleApplied/);
   assert.match(main, /levelOneSpawnLaneTelegraphForRole/);
   assert.match(main, /drawLevelOneSpawnLaneTelegraph/);
+  assert.match(main, /if \(entity\.runtimeActorKey\) return safeRuntimeRosterKey\(entity\.runtimeActorKey\)/);
   assert.match(main, /spawnLaneTelegraphFrames = 24/);
   assert.match(main, /spawnLaneTelegraphStarted && \(enemy\.spawnLaneTelegraphFrames \?\? 0\) > 0/);
   assert.match(main, /if \(\(enemy\.spawnFrames \?\? 0\) > 0\) enemy\.spawnFrames -= 1/);

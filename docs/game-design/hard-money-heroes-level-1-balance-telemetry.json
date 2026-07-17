@@ -555,7 +555,7 @@
       },
       {
         "poiId": "warehouse-gas-station-yard",
-        "title": "Gas Beast Tank",
+        "title": "Gas-Tax Zombie Brute",
         "phaseCount": 2,
         "telegraphFrames": 50,
         "addWindowSeconds": [

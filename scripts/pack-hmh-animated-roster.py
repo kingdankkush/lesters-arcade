@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import shutil
+import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -249,32 +250,160 @@ def rewrite_actor(actor: dict, ref_map: dict[str, str], report: dict) -> dict:
     return output
 
 
+def report_from_packed_actor(actor_key: str, actor: dict) -> dict:
+    atlas = actor.get("atlas") or {}
+    pages = atlas.get("pages") or []
+    return {
+        "actor": actor_key,
+        "sourceFrameRefs": int(atlas.get("sourceFrameRefs") or 0),
+        "uniqueFramePixels": int(atlas.get("uniqueFramePixels") or 0),
+        "deduplicatedRefs": max(0, int(atlas.get("sourceFrameRefs") or 0) - int(atlas.get("uniqueFramePixels") or 0)),
+        "atlasPages": len(pages),
+        "atlasBytes": sum(int(page.get("bytes") or 0) for page in pages),
+        "atlases": pages,
+    }
+
+
+def planned_atlas_page_count(actor: dict, portal_root: Path) -> int:
+    dimensions_by_hash: dict[str, tuple[int, int]] = {}
+    source_by_hash: dict[str, Path] = {}
+    for ref in frame_refs(actor):
+        source = portal_path_for_ref(portal_root, ref)
+        if not source.exists():
+            raise FileNotFoundError(f"Missing roster frame: {source}")
+        digest = file_hash(source)
+        source_by_hash.setdefault(digest, source)
+        if digest not in dimensions_by_hash:
+            with Image.open(source) as image:
+                dimensions_by_hash[digest] = image.size
+    items = sorted(
+        dimensions_by_hash,
+        key=lambda digest: (
+            max(dimensions_by_hash[digest]),
+            dimensions_by_hash[digest][0] * dimensions_by_hash[digest][1],
+            digest,
+        ),
+        reverse=True,
+    )
+    pages: list[Page] = []
+    for digest in items:
+        width, height = dimensions_by_hash[digest]
+        if width + PADDING * 2 > MAX_TEXTURE or height + PADDING * 2 > MAX_TEXTURE:
+            raise ValueError(f"Frame exceeds {MAX_TEXTURE}px atlas limit: {source_by_hash[digest]} ({width}x{height})")
+        if any(page.place(digest, width, height) for page in pages):
+            continue
+        page = Page()
+        if not page.place(digest, width, height):
+            raise RuntimeError(f"Unable to place frame: {source_by_hash[digest]}")
+        pages.append(page)
+    return len(pages)
+
+
+def git_tracked_paths(repo_root: Path) -> set[str]:
+    raw = subprocess.check_output(["git", "ls-files", "-z"], cwd=repo_root)
+    return {part.decode("utf-8").replace("\\", "/") for part in raw.split(b"\0") if part}
+
+
+def repo_relative(path: Path, repo_root: Path) -> str:
+    return path.resolve().relative_to(repo_root).as_posix()
+
+
+def path_is_within(path: str, directory: str) -> bool:
+    return path == directory or path.startswith(f"{directory}/")
+
+
+def projected_tracked_file_count(
+    *,
+    repo_root: Path,
+    roster_root: Path,
+    output_root: Path,
+    manifest_path: Path,
+    actor_page_counts: dict[str, int],
+    cleanup_loose: bool,
+    replace_entire_output: bool,
+) -> int:
+    tracked = git_tracked_paths(repo_root)
+    removed: set[str] = set()
+    output_rel = repo_relative(output_root, repo_root)
+    if replace_entire_output:
+        removed.update(path for path in tracked if path_is_within(path, output_rel))
+    else:
+        for actor_key in actor_page_counts:
+            actor_rel = repo_relative(output_root / actor_key, repo_root)
+            removed.update(path for path in tracked if path_is_within(path, actor_rel))
+    if cleanup_loose:
+        for actor_key in actor_page_counts:
+            loose_rel = repo_relative(roster_root / actor_key, repo_root)
+            removed.update(path for path in tracked if path_is_within(path, loose_rel))
+
+    added = {
+        repo_relative(output_root / actor_key / f"{actor_key}-{index:02d}.webp", repo_root)
+        for actor_key, page_count in actor_page_counts.items()
+        for index in range(page_count)
+    }
+    added.add(repo_relative(manifest_path, repo_root))
+    added.add(repo_relative(output_root / "hmh-animated-roster-atlas.json", repo_root))
+    return len((tracked - removed) | added)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--source-manifest", type=Path)
+    parser.add_argument("--only", help="comma-separated actor keys to repack in place")
+    parser.add_argument("--cleanup-loose", action="store_true", help="remove selected loose source actor directories after successful packing")
+    parser.add_argument("--file-count-cap", type=int, default=8000, help="abort before writing if projected Git tracked files exceed this cap")
     args = parser.parse_args()
     repo_root = args.repo.resolve()
     portal_root = repo_root / "apps" / "portal"
     roster_root = portal_root / "assets" / "generated" / "hmh-animated-roster"
     manifest_path = args.source_manifest or roster_root / "hmh-animated-roster.mjs"
     output_root = portal_root / "assets" / "generated" / "hmh-animated-roster-atlas"
-    if output_root.exists():
+    selected = {part.strip() for part in (args.only or "").split(",") if part.strip()}
+
+    roster = parse_roster_module(manifest_path)
+    missing = sorted(selected - set(roster))
+    if missing:
+        raise SystemExit(f"Unknown --only actor keys: {', '.join(missing)}")
+    target_keys = sorted(selected or set(roster))
+    actor_page_counts = {
+        actor_key: planned_atlas_page_count(roster[actor_key], portal_root)
+        for actor_key in target_keys
+    }
+    projected_count = projected_tracked_file_count(
+        repo_root=repo_root,
+        roster_root=roster_root,
+        output_root=output_root,
+        manifest_path=manifest_path,
+        actor_page_counts=actor_page_counts,
+        cleanup_loose=bool(selected and args.cleanup_loose),
+        replace_entire_output=not selected,
+    )
+    if args.file_count_cap > 0 and projected_count > args.file_count_cap:
+        raise SystemExit(
+            f"Tracked-file cap exceeded before packing: projected {projected_count} > {args.file_count_cap}; no files changed"
+        )
+    print(f"tracked-file preflight: projected {projected_count}/{args.file_count_cap}")
+
+    if not selected and output_root.exists():
         shutil.rmtree(output_root)
     output_root.mkdir(parents=True, exist_ok=True)
 
-    roster = parse_roster_module(manifest_path)
-    packed: dict[str, dict] = {}
-    reports: list[dict] = []
+    packed: dict[str, dict] = dict(roster)
     for actor_key, actor in roster.items():
+        if selected and actor_key not in selected:
+            continue
+        actor_output = output_root / actor_key
+        if actor_output.exists():
+            shutil.rmtree(actor_output)
         ref_map, report = pack_actor(actor_key, actor, portal_root, output_root)
         packed[actor_key] = rewrite_actor(actor, ref_map, report)
-        reports.append(report)
         print(
             f"{actor_key}: {report['sourceFrameRefs']} refs -> {report['uniqueFramePixels']} unique "
             f"-> {report['atlasPages']} pages / {report['atlasBytes']} bytes"
         )
 
+    reports = [report_from_packed_actor(actor_key, actor) for actor_key, actor in packed.items()]
     metadata = {
         "version": "hmh-animated-roster-atlas-v1",
         "format": "lossless-webp-frame-ref-v1",
@@ -295,6 +424,12 @@ def main() -> None:
     )
     manifest_path.write_text(module, encoding="utf-8")
     (output_root / "hmh-animated-roster-atlas.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
+    if selected and args.cleanup_loose:
+        for actor_key in sorted(selected):
+            loose_dir = roster_root / actor_key
+            if loose_dir.exists():
+                shutil.rmtree(loose_dir)
+                print(f"removed loose frames: {loose_dir.relative_to(repo_root)}")
     print(
         f"PASS: {metadata['sourceFrameRefs']} refs -> {metadata['uniqueFramePixels']} unique pixels -> "
         f"{metadata['atlasPageCount']} atlas pages / {metadata['atlasBytes']} bytes"

@@ -87,10 +87,15 @@ test('enemy runtime art stays at 100 percent scale; size differences belong to a
     assert.equal(typeof kit.hitFootprintRadius, 'number', `${id} needs hit footprint metadata`);
   }
 
-  const smallIds = ['rug-rat', 'sybil-drone', 'gas-fee-wisp', 'fud-goblin-cave'];
+  const smallIds = ['rug-rat', 'rattlesnake'];
   for (const id of smallIds) {
     assert.equal(BESPOKE_ENEMY_VISUAL_KITS[id].runtimeScale, 1);
     assert.equal(BESPOKE_ENEMY_VISUAL_KITS[id].spriteAuthoringScale < 1, true, `${id} should be generated smaller within its sprite canvas`);
+  }
+
+  const groundedHumanScaleIds = ['sybil-drone', 'gas-fee-wisp', 'fud-goblin-cave'];
+  for (const id of groundedHumanScaleIds) {
+    assert.equal(BESPOKE_ENEMY_VISUAL_KITS[id].spriteAuthoringScale >= 1, true, `${id} should use a full-size grounded human or zombie silhouette`);
   }
 });
 
@@ -331,7 +336,8 @@ test('WO-52 enemy visual redesign queue is superseded by WO-99 approved PixelLab
   assert.deepEqual(queue.topFive.map((item) => item.exposureRank), [1, 2, 3, 4, 5]);
   assert.equal(queue.topFive.every((item) => item.exposureScore > 0 && item.currentRosterKey && item.redesignBrief.length > 40), true);
   assert.equal(queue.topFive.every((item) => item.contactSheetRequired === true && item.approvalState === queue.approvalState), true);
-  assert.equal(queue.topFive.some((item) => item.enemyId === 'buzzard' && item.currentRosterKey === 'buzzard' && /true 8-direction buzzard/i.test(item.currentArtIssue)), true);
+  assert.equal(queue.topFive.some((item) => item.enemyId === 'buzzard' && item.currentRosterKey === 'buzzard' && item.title === 'Wasteland Raider Scout' && /scope-glint/i.test(item.currentArtIssue)), true);
+  assert.equal(queue.topFive.slice(1).every((item) => !/(coyote|boar|buzzard|rattlesnake|animal|bird|snake)/i.test(`${item.title} ${item.runtimeRole} ${item.redesignBrief}`)), true);
   assert.equal(HMH_ENEMY_VISUAL_REDESIGN_QUEUE, queue);
 });
 

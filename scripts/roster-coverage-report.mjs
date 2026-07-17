@@ -191,7 +191,8 @@ function rosterKeyFromAssetKey(assetKey = '') {
 
 function actorKeyForEnemy(enemy, bossEntry = null) {
   if (enemy.id === HMH_WO110_BOSS_REDO.actor.id) return enemy.id;
-  const rosterKey = rosterKeyFromAssetKey(bossEntry?.animatedCuratedAssetKey);
+  const rosterKey = bossEntry?.runtimeActorKey
+    ?? rosterKeyFromAssetKey(bossEntry?.animatedCuratedAssetKey);
   if (rosterKey && HMH_ANIMATED_ROSTER[rosterKey]) return rosterKey;
   if (HMH_ANIMATED_ROSTER[enemy.id]) return enemy.id;
   if (enemy.enemyKey && ENEMY_KEY_TO_ROSTER_KEY[enemy.enemyKey]) return ENEMY_KEY_TO_ROSTER_KEY[enemy.enemyKey];

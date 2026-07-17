@@ -32,21 +32,23 @@ test('roster coverage report inventories every actor and reflects the native cri
   assert.equal(report.actors['fud-goblin'].states['attack-tell'].status, 'complete');
 });
 
-test('runtime-derived readability remains marked for actors that are not yet native-promoted', () => {
+test('native promotions are reported directly while remaining runtime-derived readability stays explicit', () => {
   const report = buildReport();
 
-  for (const actorKey of ['fud-goblin', 'gas-fee-wisp']) {
+  for (const actorKey of [
+    'fud-goblin',
+    'gas-fee-wisp',
+    'coyote-pack-runner',
+    'wild-boar',
+    'buzzard',
+    'rattlesnake',
+    'scorpion-ambusher',
+    'sybil-drone',
+  ]) {
     const spawn = report.actors[actorKey].states['spawn-in'];
     assert.equal(spawn.status, 'complete', `${actorKey} should have a complete native spawn-in state`);
     assert.equal(spawn.derived, false, `${actorKey} spawn-in should now be native, not derived`);
     assert.doesNotMatch(spawn.matchedState, /^derived:/, `${actorKey} should not report native art as derived`);
-  }
-
-  for (const actorKey of ['coyote-pack-runner', 'wild-boar', 'buzzard', 'rattlesnake']) {
-    const spawn = report.actors[actorKey].states['spawn-in'];
-    assert.equal(spawn.status, 'complete', `${actorKey} should have a complete runtime spawn-in state`);
-    assert.equal(spawn.derived, true, `${actorKey} spawn-in should be explicitly marked as derived runtime readability`);
-    assert.match(spawn.matchedState, /^derived:/, `${actorKey} should not pretend derived spawn art is native`);
   }
 
   const slippageTell = report.actors['slippage-skater'].states['attack-tell'];
@@ -64,9 +66,11 @@ test('Level 1 ship-scope rows include curated boss roster and WO-110 signature b
   assert.ok(ids.has('gas-beast'));
   assert.ok(ids.has('bandit-captain'));
   assert.ok(ids.has('rug-pull-baron'));
-  assert.ok(actorKeys.has('gas-beast-tank'), 'mini-boss gas-beast-tank should be in the ship-scope matrix');
+  assert.ok(actorKeys.has('wild-boar'), 'gas-beast mini-boss should use the promoted Armored Zombie Brute');
+  assert.equal(actorKeys.has('gas-beast-tank'), false, 'legacy gas-beast-tank should not remain in current Level 1 scope');
   assert.ok(actorKeys.has('rug-pull-baron'), 'WO-110 signature boss should be in the ship-scope matrix');
   assert.equal(report.scopeRuling.recommendedKeep.includes('gas-beast-tank'), true);
+  assert.equal(report.scopeRuling.handoffKeepNotInCurrentCatalog.includes('gas-beast-tank'), true);
   assert.equal(report.scopeRuling.deferred.includes('chain-reaper-boss'), true);
 });
 

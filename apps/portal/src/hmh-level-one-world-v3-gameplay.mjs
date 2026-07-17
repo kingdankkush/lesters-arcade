@@ -124,6 +124,72 @@ export function levelOneWorldV3PoiDirectiveAt({ playerX = 0, playerY = 0, comple
   });
 }
 
+const ROUTE_PACING_BY_PHASE = Object.freeze({
+  travel: Object.freeze({ spawnIntervalMul: 1.18, maxEnemyMul: 0.72, rangedShareDelta: 0, eliteChanceMul: 0.7, minSpawnDistanceBonus: 4, genericSpawnSuppression: false, respite: false }),
+  warning: Object.freeze({ spawnIntervalMul: 1.08, maxEnemyMul: 0.84, rangedShareDelta: 0.01, eliteChanceMul: 0.8, minSpawnDistanceBonus: 3, genericSpawnSuppression: false, respite: false }),
+  pressure: Object.freeze({ spawnIntervalMul: 0.88, maxEnemyMul: 1, rangedShareDelta: 0.04, eliteChanceMul: 1, minSpawnDistanceBonus: 0, genericSpawnSuppression: false, respite: false }),
+  arena: Object.freeze({ spawnIntervalMul: 0.8, maxEnemyMul: 1, rangedShareDelta: 0.06, eliteChanceMul: 1.08, minSpawnDistanceBonus: 2, genericSpawnSuppression: false, respite: false }),
+  clear: Object.freeze({ spawnIntervalMul: 1.75, maxEnemyMul: 0.5, rangedShareDelta: -0.05, eliteChanceMul: 0, minSpawnDistanceBonus: 6, genericSpawnSuppression: true, respite: true }),
+});
+
+export function levelOneRouteEncounterPacingAt({ playerX = 0, playerY = 0, completedPoiIds = [], respitePoiId = null } = {}) {
+  const completed = new Set(completedPoiIds);
+  const respiteEntry = respitePoiId && completed.has(respitePoiId)
+    ? HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS.find((entry) => entry.campaign.id === respitePoiId) ?? null
+    : null;
+  const respiteDistance = respiteEntry
+    ? Math.hypot(respiteEntry.world.x - playerX, respiteEntry.world.y - playerY)
+    : Infinity;
+  const respiteThreshold = respiteEntry ? respiteEntry.blueprint.arenaRadius + 10 : 0;
+  const inRespiteRange = Boolean(respiteEntry && respiteDistance <= respiteThreshold);
+
+  let nearest = null;
+  for (const entry of HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS) {
+    if (completed.has(entry.campaign.id)) continue;
+    const distanceTiles = Math.hypot(entry.world.x - playerX, entry.world.y - playerY);
+    if (!nearest || distanceTiles < nearest.distanceTiles) nearest = { entry, distanceTiles };
+  }
+
+  const inRouteBeatRange = nearest && nearest.distanceTiles <= 24;
+  let phase = inRespiteRange ? 'clear' : 'travel';
+  if (!inRespiteRange && inRouteBeatRange) {
+    const arenaThreshold = nearest.entry.blueprint.arenaRadius + 1;
+    const approachThreshold = nearest.entry.blueprint.arenaRadius + 10;
+    if (nearest.distanceTiles <= arenaThreshold) phase = 'arena';
+    else if (nearest.distanceTiles <= approachThreshold) phase = 'pressure';
+    else phase = 'warning';
+  }
+  const focus = inRespiteRange ? { entry: respiteEntry, distanceTiles: respiteDistance } : inRouteBeatRange ? nearest : null;
+
+  const pressureTier = Math.min(3, Math.floor(completed.size / 2));
+  const base = ROUTE_PACING_BY_PHASE[phase];
+  const tierApplies = phase === 'warning' || phase === 'pressure' || phase === 'arena';
+  const spawnIntervalMul = tierApplies
+    ? Math.max(0.75, Number((base.spawnIntervalMul * (1 - pressureTier * 0.04)).toFixed(3)))
+    : base.spawnIntervalMul;
+  const rangedShareDelta = tierApplies
+    ? Math.min(0.12, Number((base.rangedShareDelta + pressureTier * 0.02).toFixed(3)))
+    : base.rangedShareDelta;
+  const eliteChanceMul = tierApplies
+    ? Math.min(1.25, Number((base.eliteChanceMul + pressureTier * 0.08).toFixed(3)))
+    : base.eliteChanceMul;
+
+  return Object.freeze({
+    phase,
+    pressureTier,
+    poiId: focus ? focus.entry.campaign.id : null,
+    distanceTiles: focus ? Number(focus.distanceTiles.toFixed(1)) : null,
+    spawnIntervalMul,
+    maxEnemyMul: base.maxEnemyMul,
+    rangedShareDelta,
+    eliteChanceMul,
+    minSpawnDistanceBonus: base.minSpawnDistanceBonus,
+    genericSpawnSuppression: base.genericSpawnSuppression,
+    respite: base.respite,
+    source: 'hmh-level-one-route-pacing-v1',
+  });
+}
+
 export function levelOneWorldV3BossPoint() {
   return authoredCellToWorld(HMH_LEVEL_ONE_WORLD_V3.anchors.finalBoss.x, HMH_LEVEL_ONE_WORLD_V3.anchors.finalBoss.y);
 }

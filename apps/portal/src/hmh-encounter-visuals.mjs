@@ -175,34 +175,33 @@ export function buildEncounterTerrainPressure({ poiId = null, centerX = 0, cente
 // subdirectories containing per-direction frame PNGs.
 const ENEMY_ROSTER_KEYS = Object.freeze({
   'bandit-captain': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.12, anchorBiasY: -10 },
-  // WO-99: PixelLab account now has a true 8-direction buzzard kit; stop using
-  // the old crypto-bro proxy so the flyer reads as a bird silhouette.
-  buzzard: { rosterKey: 'buzzard', drawScaleMul: 1.06, anchorBiasY: -12 },
+  // Human/zombie replacement wave keeps legacy gameplay IDs but grounds every actor at its feet.
+  buzzard: { rosterKey: 'buzzard', drawScaleMul: 1.04, anchorBiasY: 0 },
   'claim-jumper': { rosterKey: 'claim-jumper', drawScaleMul: 1.04, anchorBiasY: -9 },
   'claim-jumper-sheriff': { rosterKey: 'claim-jumper', drawScaleMul: 1.1, anchorBiasY: -10 },
-  'coyote-pack-runner': { rosterKey: 'coyote-pack-runner', drawScaleMul: 1.08, anchorBiasY: -10 },
-  'fud-goblin-cave': { rosterKey: 'trench-degen', drawScaleMul: 0.96, anchorBiasY: -4 },
-  rattlesnake: { rosterKey: 'rattlesnake', drawScaleMul: 1.08, anchorBiasY: -6 },
+  'coyote-pack-runner': { rosterKey: 'coyote-pack-runner', drawScaleMul: 1.04, anchorBiasY: 0 },
+  'fud-goblin-cave': { rosterKey: 'scorpion-ambusher', drawScaleMul: 1.02, anchorBiasY: 0 },
+  rattlesnake: { rosterKey: 'rattlesnake', drawScaleMul: 0.96, anchorBiasY: 0 },
   'ridge-raider': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.08, anchorBiasY: -10 },
   'scam-cult-zealot': { rosterKey: 'scam-cult-zealot', drawScaleMul: 1.08, anchorBiasY: -9 },
-  'scorpion-ambusher': { rosterKey: 'scorpion-ambusher', drawScaleMul: 1.12, anchorBiasY: -8 },
-  'wild-boar': { rosterKey: 'wild-boar', drawScaleMul: 1.12, anchorBiasY: -7 },
+  'scorpion-ambusher': { rosterKey: 'scorpion-ambusher', drawScaleMul: 1.02, anchorBiasY: 0 },
+  'wild-boar': { rosterKey: 'wild-boar', drawScaleMul: 1.16, anchorBiasY: 0 },
   // Keep Paper Hands on the direct PixelLab runtime kit. The Wasteland Debt
   // Collector sheet animated worse in playtest, so it stays out of live mapping
   // until a better PixelLab replacement is approved and promoted.
   'paper-hand': { rosterKey: 'paper-hand', drawScaleMul: 1.04, anchorBiasY: -8 },
-  'honeypot-turret': { rosterKey: 'honeypot-turret', drawScaleMul: 1.1, anchorBiasY: -4 },
+  'honeypot-turret': { rosterKey: 'sybil-drone', drawScaleMul: 1.04, anchorBiasY: 0 },
   'slippage-skater': { rosterKey: 'slippage-skater', drawScaleMul: 1.06, anchorBiasY: -8 },
   'phishing-angler': { rosterKey: 'phishing-angler', drawScaleMul: 1.04, anchorBiasY: -8 },
   'mev-reaper': { rosterKey: 'mev-reaper', drawScaleMul: 1.08, anchorBiasY: -10 },
-  'liquidation-cascade-golem': { rosterKey: 'liquidation-cascade-golem', drawScaleMul: 1.16, anchorBiasY: -6 },
-  'sybil-drone': { rosterKey: 'sybil-drone', drawScaleMul: 0.92, anchorBiasY: -12 },
-  'rug-rat': { rosterKey: 'rug-rat', drawScaleMul: 0.88, anchorBiasY: -4 },
-  'gas-beast': { rosterKey: 'gas-beast-tank', drawScaleMul: 1.14, anchorBiasY: -4 },
+  'liquidation-cascade-golem': { rosterKey: 'wild-boar', drawScaleMul: 1.22, anchorBiasY: 0 },
+  'sybil-drone': { rosterKey: 'sybil-drone', drawScaleMul: 1.02, anchorBiasY: 0 },
+  'rug-rat': { rosterKey: 'rattlesnake', drawScaleMul: 0.94, anchorBiasY: 0 },
+  'gas-beast': { rosterKey: 'wild-boar', drawScaleMul: 1.18, anchorBiasY: 0 },
   'crypto-bro': { rosterKey: 'crypto-bro-rusher', drawScaleMul: 1.04, anchorBiasY: -8 },
   'evil-banker': { rosterKey: 'evil-banker-ranged', drawScaleMul: 1.06, anchorBiasY: -8 },
-  'fud-goblin': { rosterKey: 'fud-goblin', drawScaleMul: 0.96, anchorBiasY: -4 },
-  'gas-fee-wisp': { rosterKey: 'gas-fee-wisp', drawScaleMul: 0.94, anchorBiasY: -12 },
+  'fud-goblin': { rosterKey: 'scorpion-ambusher', drawScaleMul: 1.0, anchorBiasY: 0 },
+  'gas-fee-wisp': { rosterKey: 'wild-boar', drawScaleMul: 1.1, anchorBiasY: 0 },
   // Level 2 enemies and minibosses
   'plaza-warden': { rosterKey: 'plaza-warden', drawScaleMul: 1.14, anchorBiasY: -8 },
   'bridge-exploiter': { rosterKey: 'bridge-exploiter', drawScaleMul: 1.18, anchorBiasY: -10 },
@@ -256,10 +255,10 @@ const WO52_QUEUE = Object.freeze({
   selectionRationale: 'Top-5 exposure combines Level 1 enemy-animation brief priority, early-run encounter frequency, current runtime proxy/partial-art risk, and WO-99 hero-canon-safe roster uplift.',
   topFive: Object.freeze([
     redesignQueueItem({ enemyId: 'claim-jumper', title: 'Claim-Jumper', exposureRank: 1, exposureScore: 98, currentRosterKey: 'claim-jumper', runtimeRole: 'ranged human opener/mesa pressure', currentArtIssue: 'partial runtime roster has shoot/attack-tell only; needs full silhouette identity review', redesignBrief: 'Rifle-raise outlaw with clear hat/shoulder-set silhouette, scope-glint tell, recoil, reload, cover hop, and readable collapse.' }),
-    redesignQueueItem({ enemyId: 'coyote-pack-runner', title: 'Coyote Pack Runner', exposureRank: 2, exposureScore: 94, currentRosterKey: 'coyote-pack-runner', runtimeRole: 'fast melee pack animal', currentArtIssue: 'high frequency melee threat; lunge tell must survive dust and small-canvas reads', redesignBrief: 'Low stalking coyote with split-flank run, feint-hop tell, bite lunge, skid recovery, and death tumble that never reads as a human proxy.' }),
-    redesignQueueItem({ enemyId: 'wild-boar', title: 'Wild Boar', exposureRank: 3, exposureScore: 89, currentRosterKey: 'wild-boar', runtimeRole: 'straight-line charger', currentArtIssue: 'charge silhouette is gameplay-critical and must stay separate from coyote body language', redesignBrief: 'Heavy head-down boar with hoof scrape anticipation, committed charge, impact skid, stun recoil, and death slide.' }),
-    redesignQueueItem({ enemyId: 'rattlesnake', title: 'Rattlesnake', exposureRank: 4, exposureScore: 84, currentRosterKey: 'rattlesnake', runtimeRole: 'burrow/ambush striker', currentArtIssue: 'small low profile can vanish under ground/noir treatment without a stronger coil/rattle read', redesignBrief: 'Half-buried snake with coil silhouette, tail-rattle tell, strike burst, recoil, and unwind death that contrasts against terrain.' }),
-    redesignQueueItem({ enemyId: 'buzzard', title: 'Buzzard', exposureRank: 5, exposureScore: 78, currentRosterKey: 'buzzard', runtimeRole: 'flyer/dive pressure', currentArtIssue: 'WO-99 found and wired the true 8-direction buzzard kit; keep monitoring dive/flyer readability at 1x.', redesignBrief: 'Circling scavenger bird with bank left/right, tightening shadow dive tell, dive strike, pull-up recovery, and feather-burst death.' }),
+    redesignQueueItem({ enemyId: 'coyote-pack-runner', title: 'Road Zombie Runner', exposureRank: 2, exposureScore: 94, currentRosterKey: 'coyote-pack-runner', runtimeRole: 'fast melee zombie pack rusher', currentArtIssue: 'high frequency melee threat; human-zombie pounce tell must survive dust and small-canvas reads', redesignBrief: 'Low coiled road zombie with split-flank run, shoulder-drop tell, claw pounce, skid recovery, and grounded collapse.' }),
+    redesignQueueItem({ enemyId: 'wild-boar', title: 'Armored Zombie Brute', exposureRank: 3, exposureScore: 89, currentRosterKey: 'wild-boar', runtimeRole: 'straight-line armored zombie charger', currentArtIssue: 'charge silhouette is gameplay-critical and must stay separate from the lighter runner', redesignBrief: 'Broad riot-armored zombie with boot-scrape anticipation, committed shoulder charge, impact skid, stun recoil, and heavy collapse.' }),
+    redesignQueueItem({ enemyId: 'rattlesnake', title: 'Zombie Trapper', exposureRank: 4, exposureScore: 84, currentRosterKey: 'rattlesnake', runtimeRole: 'upright zombie ambush striker', currentArtIssue: 'compact trapper profile can vanish under noir treatment without a strong open-trap and raised-cleaver tell', redesignBrief: 'Upright bipedal human zombie trapper with steel jaw trap, cleaver wind-up, low slash burst, recoil, and readable collapse.' }),
+    redesignQueueItem({ enemyId: 'buzzard', title: 'Wasteland Raider Scout', exposureRank: 5, exposureScore: 78, currentRosterKey: 'buzzard', runtimeRole: 'human ranged harass scout', currentArtIssue: 'scope-glint and rifle posture must remain readable at 1x without airborne offsets', redesignBrief: 'Lean human scout with strafe, held cyan scope tell, controlled rifle recoil, quick relocate, and poncho-and-dust collapse.' }),
   ]),
 });
 

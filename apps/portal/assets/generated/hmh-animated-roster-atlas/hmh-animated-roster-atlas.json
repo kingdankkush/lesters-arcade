@@ -4,10 +4,10 @@
   "maxTextureSize": 4096,
   "padding": 1,
   "actorCount": 38,
-  "sourceFrameRefs": 15299,
-  "uniqueFramePixels": 10663,
+  "sourceFrameRefs": 15943,
+  "uniqueFramePixels": 11184,
   "atlasPageCount": 44,
-  "atlasBytes": 57392440,
+  "atlasBytes": 72034738,
   "actors": [
     {
       "actor": "lester",
@@ -343,17 +343,17 @@
     },
     {
       "actor": "sybil-drone",
-      "sourceFrameRefs": 252,
-      "uniqueFramePixels": 252,
-      "deduplicatedRefs": 0,
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
       "atlasPages": 1,
-      "atlasBytes": 1840886,
+      "atlasBytes": 2311630,
       "atlases": [
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/sybil-drone/sybil-drone-00.webp",
           "width": 4088,
           "height": 4088,
-          "bytes": 1840886
+          "bytes": 2311630
         }
       ]
     },
@@ -547,87 +547,87 @@
     },
     {
       "actor": "coyote-pack-runner",
-      "sourceFrameRefs": 424,
-      "uniqueFramePixels": 376,
-      "deduplicatedRefs": 48,
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
       "atlasPages": 1,
-      "atlasBytes": 415444,
+      "atlasBytes": 3214656,
       "atlases": [
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/coyote-pack-runner/coyote-pack-runner-00.webp",
           "width": 4002,
           "height": 4002,
-          "bytes": 415444
+          "bytes": 3214656
         }
       ]
     },
     {
       "actor": "wild-boar",
-      "sourceFrameRefs": 424,
-      "uniqueFramePixels": 376,
-      "deduplicatedRefs": 48,
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
       "atlasPages": 2,
-      "atlasBytes": 914216,
+      "atlasBytes": 6042836,
       "atlases": [
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/wild-boar/wild-boar-00.webp",
           "width": 3914,
           "height": 3914,
-          "bytes": 874422
+          "bytes": 5562050
         },
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/wild-boar/wild-boar-01.webp",
-          "width": 3090,
-          "height": 206,
-          "bytes": 39794
+          "width": 3914,
+          "height": 2678,
+          "bytes": 480786
         }
       ]
     },
     {
       "actor": "buzzard",
-      "sourceFrameRefs": 408,
-      "uniqueFramePixels": 360,
-      "deduplicatedRefs": 48,
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
       "atlasPages": 1,
-      "atlasBytes": 453588,
+      "atlasBytes": 2871976,
       "atlases": [
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/buzzard/buzzard-00.webp",
-          "width": 4002,
-          "height": 4002,
-          "bytes": 453588
+          "width": 4050,
+          "height": 4050,
+          "bytes": 2871976
         }
       ]
     },
     {
       "actor": "rattlesnake",
-      "sourceFrameRefs": 408,
-      "uniqueFramePixels": 360,
-      "deduplicatedRefs": 48,
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
       "atlasPages": 1,
-      "atlasBytes": 577578,
+      "atlasBytes": 2192690,
       "atlases": [
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/rattlesnake/rattlesnake-00.webp",
-          "width": 4002,
-          "height": 4002,
-          "bytes": 577578
+          "width": 4088,
+          "height": 4088,
+          "bytes": 2192690
         }
       ]
     },
     {
       "actor": "scorpion-ambusher",
-      "sourceFrameRefs": 128,
-      "uniqueFramePixels": 107,
-      "deduplicatedRefs": 21,
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
       "atlasPages": 1,
-      "atlasBytes": 96914,
+      "atlasBytes": 2307136,
       "atlases": [
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/scorpion-ambusher/scorpion-ambusher-00.webp",
-          "width": 4070,
-          "height": 4002,
-          "bytes": 96914
+          "width": 4088,
+          "height": 4088,
+          "bytes": 2307136
         }
       ]
     },

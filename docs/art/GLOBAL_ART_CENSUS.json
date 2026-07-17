@@ -2,7 +2,7 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 15623,
+    "totalAssets": 16266,
     "totalActors": 73,
     "layerCount": 8,
     "runtimeActorCount": 38,
@@ -22,9 +22,9 @@
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Repo-owned runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 38,
-      "assetCount": 15299,
-      "policyCompliantAssetCount": 15299,
-      "animationStateCount": 294,
+      "assetCount": 15943,
+      "policyCompliantAssetCount": 15943,
+      "animationStateCount": 298,
       "completeActorCount": 34,
       "partialActorCount": 4,
       "zeroAnimationActorCount": 0,
@@ -133,10 +133,10 @@
       "label": "Curated Level 1 kit",
       "manifestId": "hmh-curated-level-kit-v1",
       "sourcePolicy": "curated approved runtime exact set; raw generation sources are vault-only",
-      "assetCount": 76,
+      "assetCount": 75,
       "actorCount": 0,
       "animatedAssetCount": 0,
-      "policyCompliantAssetCount": 76,
+      "policyCompliantAssetCount": 75,
       "sampleKeys": [
         "curated-ground/dirt-tiles-w-trans/00-00",
         "curated-ground/dirt-tiles/00-00",
@@ -209,7 +209,7 @@
       },
       "sourcePolicy": {
         "score": 100,
-        "summary": "15623/15623 counted assets carry repo-owned/original/curated policy text",
+        "summary": "16266/16266 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {

@@ -16,9 +16,12 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import re
+import shutil
 import time
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -29,7 +32,10 @@ from mcp.client.streamable_http import streamablehttp_client
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave"
+QA_OUT = ROOT / ".hermes/tmp/hmh-aaa-pixellab-quality-wave"
 LEDGER = OUT / "aaa-quality-wave-ledger.json"
+ROSTER_ROOT = ROOT / "apps/portal/assets/generated/hmh-animated-roster"
+ROSTER_MANIFEST = ROSTER_ROOT / "hmh-animated-roster.mjs"
 UUID_RE = re.compile(r"[0-9a-fA-F-]{36}")
 DIRECTIONS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
 NO_TEXT = "no readable words, no letters, no numbers, no logos, no watermark"
@@ -145,16 +151,107 @@ TARGETS = {
         "reason": "Current candidate has idle only; needs complete replacement if kept in roster.",
         "description": "stablecoin socialite enemy, elegant corrupted gala outfit, coin-clutch purse, champagne-glass dagger, porcelain mask, smug poised silhouette, cool silver and cyan palette",
     },
+    "coyote-pack-runner": {
+        "name": "HMH AAA Road Zombie Runner",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 128,
+        "runtime_frame_size": 172,
+        "priority": 1,
+        "reason": "Replace the old coyote silhouette with a fast human zombie that preserves the authored rusher lane role.",
+        "description": "feral road zombie runner, formerly human wasteland courier, torn denim jacket, dusty work boots, cyan infected eyes, emaciated athletic build, low forward sprint posture, clawed hands",
+        "animationDescriptions": {
+            "attack-tell": "zombie runner drops one shoulder and coils low before a committed pounce, clear anticipation with no hit yet",
+            "attack": "zombie runner performs a fast forward clawing pounce with readable impact and recovery",
+        },
+    },
+    "wild-boar": {
+        "name": "HMH AAA Armored Zombie Brute",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 144,
+        "runtime_frame_size": 204,
+        "priority": 1,
+        "reason": "Replace the old boar and proxy heavy-creature art with one readable armored zombie tank.",
+        "description": "massive armored human zombie brute, rusted road-sign shoulder plates, torn utility vest, heavy boots, broad undead frame, cracked riot helmet, orange infected glow through visor, charging tank silhouette",
+        "animationDescriptions": {
+            "attack-tell": "armored zombie brute plants both feet and lowers its helmet before a straight charge, unmistakable wind-up",
+            "attack": "armored zombie brute commits to a heavy shoulder charge and body slam with strong follow-through",
+        },
+    },
+    "buzzard": {
+        "name": "HMH AAA Wasteland Raider Scout",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 128,
+        "runtime_frame_size": 160,
+        "priority": 1,
+        "reason": "Replace the flying buzzard proxy with a human ranged scout that still owns the harass lane.",
+        "description": "lean human wasteland raider scout, dusty hood and goggles, cropped desert poncho, light rifle, cyan scope glint, agile boots, high-contrast ranged silhouette, original crypto outlaw gear",
+        "animationDescriptions": {
+            "attack-tell": "raider scout shoulders a rifle and holds a bright cyan scope glint before firing, clear ranged anticipation",
+            "attack": "raider scout fires one controlled rifle shot forward with visible recoil and stable planted feet",
+        },
+    },
+    "rattlesnake": {
+        "name": "HMH AAA Zombie Trapper",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 120,
+        "runtime_frame_size": 144,
+        "priority": 1,
+        "reason": "Replace the rattlesnake and small-creature proxies with an upright human zombie ambusher.",
+        "description": "upright bipedal former-human zombie trapper standing on two separate booted human legs, exactly two human arms, torn sleeveless work shirt, leather trap harness, steel jaw trap carried in the left hand, rusted cleaver carried in the right hand, pale dusty human face, cyan infected eyes, compact hunched human silhouette",
+        "animationDescriptions": {
+            "idle": "upright human zombie trapper idles on two planted boots while holding a steel jaw trap and cleaver, readable biped silhouette",
+            "walk": "upright human zombie trapper stalks forward on two booted legs with trap held low and cleaver ready",
+            "run": "upright human zombie trapper sprints forward on two legs with a compact predatory human gait",
+            "attack-tell": "zombie trapper plants both boots, opens the steel jaw trap forward, and raises the cleaver before striking, clear anticipation",
+            "attack": "zombie trapper commits to a low cleaver slash while thrusting the steel jaw trap forward, then recovers upright",
+        },
+    },
+    "scorpion-ambusher": {
+        "name": "HMH AAA Mine Zombie Ambusher",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 128,
+        "runtime_frame_size": 144,
+        "priority": 1,
+        "reason": "Replace the scorpion and cave-goblin proxies with a buried mine zombie that supports ambush and lobber beats.",
+        "description": "undead human mine worker ambusher, unmistakable exposed decayed human face with two infected eyes and visible nose and mouth, cracked yellow hardhat with a small separate cyan lamp mounted above the forehead, shredded coveralls, rusted pickaxe, dust-caked human skin, half-buried rising posture, no face mask, no cyclops visor, no robot head, no mechanical facial features, readable miner zombie silhouette",
+        "animationDescriptions": {
+            "attack-tell": "mine zombie raises its glowing hardhat and pickaxe above the sand before striking, clear anticipation",
+            "attack": "mine zombie swings a rusted pickaxe forward in a committed overhead strike with dust follow-through",
+        },
+    },
+    "sybil-drone": {
+        "name": "HMH AAA Masked Sybil Gunner",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 128,
+        "runtime_frame_size": 144,
+        "priority": 1,
+        "reason": "Replace the drone and turret silhouettes with a human masked formation gunner.",
+        "description": "masked human Sybil gunner, identical blank wallet mask, patched tactical coat, compact machine pistol, cyan target laser, lean formation-fighter silhouette, coordinated crypto cult raider",
+        "animationDescriptions": {
+            "attack-tell": "masked gunner raises a machine pistol and paints a cyan target laser before firing, clear ranged wind-up",
+            "attack": "masked gunner fires a short controlled burst forward with readable weapon recoil and muzzle pose",
+        },
+    },
 }
 
 
 def load_server() -> dict[str, Any]:
     data = json.loads((Path.home() / ".claude.json").read_text(encoding="utf-8"))
-    for project in data.get("projects", {}).values():
-        server = project.get("mcpServers", {}).get("pixellab")
-        if server:
+    candidates = [
+        project.get("mcpServers", {}).get("pixellab")
+        for project in data.get("projects", {}).values()
+    ]
+    candidates.append(data.get("mcpServers", {}).get("pixellab"))
+    for server in candidates:
+        if server and str(server.get("url", "")).endswith("/mcp"):
             return server
-    raise SystemExit("No PixelLab MCP config found in ~/.claude.json")
+    raise SystemExit("No working PixelLab /mcp config found in ~/.claude.json")
 
 
 def text_of(result: Any) -> str:
@@ -163,7 +260,11 @@ def text_of(result: Any) -> str:
 
 def load_ledger() -> dict[str, Any]:
     if LEDGER.exists():
-        return json.loads(LEDGER.read_text(encoding="utf-8"))
+        ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+        ledger.setdefault("id", "hmh-aaa-pixellab-quality-wave-v1")
+        ledger.setdefault("style", STYLE)
+        ledger.setdefault("targets", {})
+        return ledger
     return {"id": "hmh-aaa-pixellab-quality-wave-v1", "style": STYLE, "targets": {}}
 
 
@@ -246,17 +347,38 @@ async def animate(limit: int | None, targets: str | None, max_inflight: int) -> 
                     print(f"skip {key}: no character_id", flush=True)
                     continue
                 cid = entry["character_id"]
-                for anim, desc in ANIMS.items():
+                remote_text = text_of(await session.call_tool("get_character", {"character_id": cid}))
+                remote_coverage = state_direction_coverage_from_listing(remote_text)
+                remote_completed_states = completed_states_from_listing(remote_text)
+                remote_busy = "processing" in remote_text.lower() or "creating" in remote_text.lower()
+                animation_specs = {
+                    **ANIMS,
+                    **(entry.get("spec", {}).get("animationDescriptions") or {}),
+                }
+                for anim, desc in animation_specs.items():
                     if limit is not None and queued >= limit:
                         save_ledger(ledger)
                         print(json.dumps({"queued_now": queued}, indent=2))
                         return
                     anim_entry = entry.setdefault("animations", {}).setdefault(anim, {})
                     raw_status = str(anim_entry.get("raw") or anim_entry.get("error") or "").lower()
-                    if anim_entry.get("status") == "complete":
+                    if anim in remote_completed_states:
+                        anim_entry.update({"status": "complete", "verified_at": int(time.time())})
                         continue
-                    if anim_entry.get("status") == "queued" and not raw_status.startswith("error"):
+                    if anim_entry.get("status") == "queued" and not raw_status.startswith("error") and remote_busy:
                         continue
+                    is_repair = anim_entry.get("status") in {"queued", "complete"} and not remote_busy
+                    directions_to_queue = [
+                        direction
+                        for direction in DIRECTIONS
+                        if len(remote_coverage.get(anim, {}).get(direction, [])) < 6
+                    ] or list(DIRECTIONS)
+                    repair_attempt = int(anim_entry.get("repair_attempts") or 0)
+                    action_description = desc
+                    if is_repair:
+                        repair_attempt += 1
+                        action_description = f"{desc}, repair pass {repair_attempt} for {', '.join(directions_to_queue)}"
+                        print(f"  requeue missing remote state {key}/{anim}: {', '.join(directions_to_queue)}", flush=True)
                     while True:
                         txt = text_of(await session.call_tool("get_character", {"character_id": cid}))
                         if "creating" in txt.lower():
@@ -270,25 +392,33 @@ async def animate(limit: int | None, targets: str | None, max_inflight: int) -> 
                         time.sleep(20)
                     print(f"queue anim {key}/{anim}", flush=True)
                     try:
+                        queue_error = None
                         while True:
                             out = text_of(await session.call_tool("animate_character", {
                                 "character_id": cid,
                                 "mode": "v3",
                                 "animation_name": anim,
-                                "action_description": desc,
-                                "directions": DIRECTIONS,
+                                "action_description": action_description,
+                                "directions": directions_to_queue,
                                 "frame_count": 6,
                                 "confirm_cost": True,
                             }))
-                            if out.lower().startswith("error:"):
-                                anim_entry.update({"status": "queue-error", "directions": DIRECTIONS, "job_ids": [], "queued_at": int(time.time()), "raw": out[:500]})
-                                print(f"  PixelLab slot/error for {key}/{anim}: {out.splitlines()[0]}; wait 75s", flush=True)
-                                save_ledger(ledger)
-                                time.sleep(75)
-                                continue
-                            break
+                            if not out.lower().startswith("error:"):
+                                break
+                            anim_entry.update({"status": "queue-error", "directions": directions_to_queue, "job_ids": [], "queued_at": int(time.time()), "raw": out[:500]})
+                            save_ledger(ledger)
+                            wait_match = re.search(r"wait\s+(\d+)s", out, re.I)
+                            if "job slots" not in out.lower() and not wait_match:
+                                queue_error = out
+                                print(f"  PixelLab queue error for {key}/{anim}: {out.splitlines()[0]}", flush=True)
+                                break
+                            wait_seconds = min(180, max(20, int(wait_match.group(1)) + 5 if wait_match else 80))
+                            print(f"  PixelLab slots busy for {key}/{anim}: wait {wait_seconds}s", flush=True)
+                            time.sleep(wait_seconds)
+                        if queue_error:
+                            continue
                         ids = [u for u in UUID_RE.findall(out) if u != cid]
-                        anim_entry.update({"status": "queued", "directions": DIRECTIONS, "job_ids": ids, "queued_at": int(time.time()), "raw": out[:500]})
+                        anim_entry.update({"status": "queued", "directions": directions_to_queue, "job_ids": ids, "queued_at": int(time.time()), "raw": out[:500], "repair_attempts": repair_attempt})
                         queued += 1
                         print(f"  queued {key}/{anim} ids={len(ids)}", flush=True)
                     except Exception as exc:
@@ -302,29 +432,93 @@ async def animate(limit: int | None, targets: str | None, max_inflight: int) -> 
 
 URL_RE = re.compile(r"https?://[^\s,)\]>'\"]+")
 LABEL_RE = re.compile(r"^\s+(.+?)\s*\((south-east|north-east|north-west|south-west|south|north|east|west),", re.M)
+GROUP_HEADER_RE = re.compile(r"^\s{2}(.+?)\s+—\s+\d+\s+dir\b")
+DIRECTION_LINE_RE = re.compile(r"^\s{4}(south-east|north-east|north-west|south-west|south|north|east|west):\s+(.+)$")
 ANIM_URL_RE = re.compile(r"/animations/([0-9a-f-]{36})/([a-z-]+)/(\d+)\.png")
 
 
 def parse_character_listing(text: str) -> tuple[list[tuple[str, str]], dict[str, dict[str, list[tuple[int, str]]]]]:
-    labels = LABEL_RE.findall(text)
+    labels: list[tuple[str, str]] = []
     groups: dict[str, dict[str, list[tuple[int, str]]]] = {}
+    current_group: str | None = None
+    for line in text.splitlines():
+        header = GROUP_HEADER_RE.match(line)
+        if header:
+            state_name = header.group(1).strip()
+            current_group = f"{state_name}:{len(labels)}"
+            labels.append((state_name, "south"))
+            groups[current_group] = {}
+            continue
+        direction_line = DIRECTION_LINE_RE.match(line)
+        if not direction_line or current_group is None:
+            continue
+        direction = direction_line.group(1)
+        frames: list[tuple[int, str]] = []
+        for url in URL_RE.findall(direction_line.group(2)):
+            match = ANIM_URL_RE.search(url)
+            if match:
+                frames.append((int(match.group(3)), url))
+        if frames:
+            groups[current_group][direction] = frames
+    if groups:
+        return labels, groups
+
+    # Compatibility with the older PixelLab listing shape, which emitted one
+    # label beside each direction-specific animation UUID.
+    legacy_labels = LABEL_RE.findall(text)
+    legacy_groups: dict[str, dict[str, list[tuple[int, str]]]] = {}
     order: list[str] = []
     for url in URL_RE.findall(text):
         match = ANIM_URL_RE.search(url)
         if not match:
             continue
         aid, direction, frame = match.group(1), match.group(2), int(match.group(3))
-        if aid not in groups:
+        if aid not in legacy_groups:
             order.append(aid)
-        groups.setdefault(aid, {}).setdefault(direction, []).append((frame, url))
+        legacy_groups.setdefault(aid, {}).setdefault(direction, []).append((frame, url))
     ordered_labels: list[tuple[str, str]] = []
     for index, aid in enumerate(order):
-        if index < len(labels):
-            ordered_labels.append(labels[index])
-        else:
-            first_dir = next(iter(groups[aid]), "south")
-            ordered_labels.append((f"anim{index}", first_dir))
-    return ordered_labels, {aid: groups[aid] for aid in order}
+        ordered_labels.append(legacy_labels[index] if index < len(legacy_labels) else (f"anim{index}", next(iter(legacy_groups[aid]), "south")))
+    return ordered_labels, {aid: legacy_groups[aid] for aid in order}
+
+
+def state_direction_coverage_from_listing(text: str) -> dict[str, dict[str, list[str]]]:
+    labels, groups = parse_character_listing(text)
+    merged: dict[str, dict[str, list[str]]] = {}
+    for (_group_id, directions), (name, _label_dir) in zip(groups.items(), labels):
+        state = canonical_state_from_label(name)
+        state_directions = merged.setdefault(state, {})
+        for direction, frames in directions.items():
+            urls = [url for _frame, url in frames]
+            if len(urls) >= len(state_directions.get(direction, [])):
+                state_directions[direction] = urls
+    return merged
+
+
+def completed_states_from_listing(text: str) -> set[str]:
+    merged = state_direction_coverage_from_listing(text)
+    return {
+        state
+        for state, directions in merged.items()
+        if all(len(directions.get(direction, [])) >= 6 for direction in DIRECTIONS)
+    }
+
+
+def normalize_downloaded_frame(path: Path, runtime_frame_size: int | None) -> None:
+    target = int(runtime_frame_size or 0)
+    if target <= 0:
+        return
+    with Image.open(path) as source:
+        image = source.convert("RGBA")
+    if image.size == (target, target):
+        return
+    scale = min(target / image.width, target / image.height)
+    width = max(1, round(image.width * scale))
+    height = max(1, round(image.height * scale))
+    resized = image.resize((width, height), Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (target, target), (0, 0, 0, 0))
+    canvas.alpha_composite(resized, ((target - width) // 2, target - height))
+    canvas.save(path)
 
 
 def download(url: str, dest: Path) -> bool:
@@ -340,7 +534,17 @@ def download(url: str, dest: Path) -> bool:
     return dest.stat().st_size > 0
 
 
-async def collect(limit: int | None, targets: str | None) -> None:
+def download_and_normalize(url: str, dest: Path, runtime_frame_size: int | None) -> tuple[Path, bool, str | None]:
+    try:
+        ok = download(url, dest)
+        if ok:
+            normalize_downloaded_frame(dest, runtime_frame_size)
+        return dest, ok, None if ok else "invalid-png"
+    except Exception as exc:
+        return dest, False, f"{type(exc).__name__}:{exc}"
+
+
+async def collect(limit: int | None, targets: str | None, wait_seconds: int = 1800, download_workers: int = 16) -> None:
     ledger = load_ledger()
     server = load_server()
     collected_chars = 0
@@ -354,22 +558,72 @@ async def collect(limit: int | None, targets: str | None) -> None:
                 if limit is not None and collected_chars >= limit:
                     break
                 cid = entry["character_id"]
-                text = text_of(await session.call_tool("get_character", {"character_id": cid}))
-                if "processing" in text.lower() or "creating" in text.lower():
-                    print(f"{key}: still processing", flush=True)
+                deadline = time.monotonic() + max(0, wait_seconds)
+                labels: list[tuple[str, str]] = []
+                groups: dict[str, dict[str, list[tuple[int, str]]]] = {}
+                while True:
+                    text = text_of(await session.call_tool("get_character", {"character_id": cid}))
+                    labels, groups = parse_character_listing(text)
+                    discovered: dict[str, set[str]] = {}
+                    for (_aid, dirs), (name, _label_dir) in zip(groups.items(), labels):
+                        discovered.setdefault(canonical_state_from_label(name), set()).update(
+                            direction for direction, frames in dirs.items() if len(frames) >= 6
+                        )
+                    missing = [
+                        f"{state}/{direction}"
+                        for state in ANIMS
+                        for direction in DIRECTIONS
+                        if direction not in discovered.get(state, set())
+                    ]
+                    still_processing = "processing" in text.lower() or "creating" in text.lower()
+                    if not still_processing and not missing:
+                        break
+                    if time.monotonic() >= deadline:
+                        entry["status"] = "collect-timeout"
+                        entry["collect_error"] = {
+                            "stillProcessing": still_processing,
+                            "missing": missing,
+                            "waitSeconds": wait_seconds,
+                        }
+                        print(f"{key}: collect timeout; missing {len(missing)} state-directions", flush=True)
+                        save_ledger(ledger)
+                        groups = {}
+                        break
+                    print(f"{key}: waiting for complete 8x8 matrix; missing {len(missing)}", flush=True)
+                    time.sleep(20)
+                if not groups:
                     continue
-                labels, groups = parse_character_listing(text)
                 manifest_anims: dict[str, dict[str, list[str]]] = {}
-                for (aid, dirs), (name, _label_dir) in zip(groups.items(), labels):
+                download_jobs: dict[Path, tuple[str, Path, int | None]] = {}
+                runtime_frame_size = entry.get("spec", {}).get("runtime_frame_size")
+                for (_aid, dirs), (name, _label_dir) in zip(groups.items(), labels):
                     canonical = canonical_state_from_label(name)
                     for direction, frames in dirs.items():
                         rels: list[str] = []
                         for frame_index, url in sorted(frames):
                             dest = OUT / "actors" / key / canonical / direction / f"{frame_index:02d}.png"
-                            if download(url, dest):
-                                rels.append(f"./assets/generated/hmh-aaa-pixellab-quality-wave/actors/{key}/{canonical}/{direction}/{frame_index:02d}.png")
+                            download_jobs[dest] = (url, dest, runtime_frame_size)
+                            rels.append(f"./assets/generated/hmh-aaa-pixellab-quality-wave/actors/{key}/{canonical}/{direction}/{frame_index:02d}.png")
                         if rels:
                             manifest_anims.setdefault(canonical, {})[direction] = rels
+                download_errors: list[str] = []
+                worker_count = max(1, min(int(download_workers), 32))
+                print(f"{key}: downloading {len(download_jobs)} frames with {worker_count} workers", flush=True)
+                with ThreadPoolExecutor(max_workers=worker_count) as executor:
+                    futures = {
+                        executor.submit(download_and_normalize, url, dest, size): dest
+                        for dest, (url, _dest, size) in download_jobs.items()
+                    }
+                    for future in as_completed(futures):
+                        dest, ok, error = future.result()
+                        if not ok:
+                            download_errors.append(f"{dest}:{error}")
+                if download_errors:
+                    entry["status"] = "collect-download-error"
+                    entry["collect_error"] = {"downloadErrors": download_errors[:50], "count": len(download_errors)}
+                    print(f"{key}: download errors {len(download_errors)}", flush=True)
+                    save_ledger(ledger)
+                    continue
                 if manifest_anims:
                     entry["status"] = "collected"
                     entry["collected_at"] = int(time.time())
@@ -386,24 +640,24 @@ async def collect(limit: int | None, targets: str | None) -> None:
 
 def write_manifest_and_sheet(ledger: dict[str, Any]) -> None:
     manifest = {key: entry["manifest"] for key, entry in ledger.get("targets", {}).items() if entry.get("manifest")}
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "hmh-aaa-quality-wave-manifest.mjs").write_text(
+    QA_OUT.mkdir(parents=True, exist_ok=True)
+    (QA_OUT / "hmh-aaa-quality-wave-manifest.mjs").write_text(
         "// Generated by scripts/pixellab-hmh-aaa-quality-wave.py. Review candidates before runtime replacement.\n"
         f"export const HMH_AAA_QUALITY_WAVE = Object.freeze({json.dumps(manifest, indent=2)});\n",
         encoding="utf-8",
     )
     thumbs = []
+    qa_states = ["idle", "walk", "run", "attack-tell", "attack", "hit", "death", "spawn-in"]
     for key, entry in manifest.items():
-        for state in ["idle", "walk", "run", "attack-tell", "attack", "hit", "death", "spawn-in"]:
+        for state in qa_states:
             frames = entry.get("animations", {}).get(state, {}).get("south") or []
             if frames:
                 thumbs.append((key, state, ROOT / "apps/portal" / frames[0].replace("./", "")))
-                break
     if not thumbs:
         return
     cell = 132
     label_h = 26
-    cols = min(4, len(thumbs))
+    cols = min(len(qa_states), len(thumbs))
     rows = (len(thumbs) + cols - 1) // cols
     sheet = Image.new("RGBA", (cell * cols, (cell + label_h) * rows), (10, 8, 22, 255))
     draw = ImageDraw.Draw(sheet)
@@ -416,7 +670,124 @@ def write_manifest_and_sheet(ledger: dict[str, Any]) -> None:
         y = (idx // cols) * (cell + label_h) + 4
         sheet.alpha_composite(image, (x, y))
         draw.text(((idx % cols) * cell + 4, y + 114), f"{key[:18]} {state}", fill=(255, 232, 77, 255))
-    sheet.save(OUT / "hmh-aaa-quality-wave-contact-sheet.png")
+    sheet.save(QA_OUT / "hmh-aaa-quality-wave-contact-sheet.png")
+
+
+def parse_runtime_roster() -> tuple[str, dict[str, Any]]:
+    text = ROSTER_MANIFEST.read_text(encoding="utf-8")
+    marker = "export const HMH_ANIMATED_ROSTER = Object.freeze("
+    marker_index = text.index(marker)
+    payload_start = marker_index + len(marker)
+    payload_end = text.rindex(");")
+    return text[:marker_index], json.loads(text[payload_start:payload_end])
+
+
+def atomic_promote_staged(stage_root: Path, actor_keys: list[str], manifest_text: str) -> None:
+    backup_root = stage_root / ".rollback"
+    backup_root.mkdir(parents=True, exist_ok=True)
+    manifest_temp = stage_root / ".hmh-animated-roster.mjs.tmp"
+    with manifest_temp.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(manifest_text)
+        handle.flush()
+        os.fsync(handle.fileno())
+
+    swapped: list[tuple[str, bool]] = []
+    try:
+        ROSTER_ROOT.mkdir(parents=True, exist_ok=True)
+        for key in actor_keys:
+            source = stage_root / key
+            destination = ROSTER_ROOT / key
+            backup = backup_root / key
+            if not source.is_dir():
+                raise FileNotFoundError(f"Missing staged actor directory: {source}")
+            had_existing = destination.exists()
+            if had_existing:
+                destination.replace(backup)
+            swapped.append((key, had_existing))
+            source.replace(destination)
+        os.replace(manifest_temp, ROSTER_MANIFEST)
+    except Exception:
+        for key, had_existing in reversed(swapped):
+            destination = ROSTER_ROOT / key
+            backup = backup_root / key
+            if destination.exists():
+                shutil.rmtree(destination)
+            if had_existing and backup.exists():
+                backup.replace(destination)
+        raise
+    finally:
+        shutil.rmtree(stage_root, ignore_errors=True)
+
+
+def promote(targets: str | None) -> None:
+    if not targets:
+        raise SystemExit("promote requires --targets; broad implicit promotion is disabled")
+    ledger = load_ledger()
+    prefix, roster = parse_runtime_roster()
+    selected = selected_targets(targets)
+    stage_root = ROSTER_ROOT.parent / f".hmh-promote-{os.getpid()}-{time.time_ns()}"
+    stage_root.mkdir(parents=True, exist_ok=False)
+    staged: list[str] = []
+    failures: dict[str, list[str]] = {}
+    for key in selected:
+        entry = ledger.get("targets", {}).get(key) or {}
+        manifest = entry.get("manifest") or {}
+        animations = manifest.get("animations") or {}
+        missing: list[str] = []
+        for state in ANIMS:
+            directions = animations.get(state) or {}
+            for direction in DIRECTIONS:
+                frames = directions.get(direction) or []
+                if len(frames) < 6:
+                    missing.append(f"{state}/{direction}:frames={len(frames)}/6")
+                    continue
+                for frame in frames:
+                    source = ROOT / "apps/portal" / frame.removeprefix("./")
+                    if not source.exists():
+                        missing.append(f"missing-file:{state}/{direction}/{source.name}")
+                        break
+        if missing:
+            failures[key] = missing
+            continue
+        source_dir = OUT / "actors" / key
+        staged_destination = stage_root / key
+        if not source_dir.is_dir():
+            failures[key] = ["missing-actor-directory"]
+            continue
+        try:
+            shutil.copytree(source_dir, staged_destination)
+        except Exception as exc:
+            failures[key] = [f"stage-copy-failed:{type(exc).__name__}:{exc}"]
+            continue
+        canonical_animations: dict[str, dict[str, list[str]]] = {}
+        for state, directions in animations.items():
+            canonical_animations[state] = {
+                direction: [
+                    frame.replace(
+                        f"./assets/generated/hmh-aaa-pixellab-quality-wave/actors/{key}/",
+                        f"./assets/generated/hmh-animated-roster/{key}/",
+                    )
+                    for frame in frames
+                ]
+                for direction, frames in directions.items()
+            }
+        spec = entry.get("spec") or {}
+        visual_type = "zombie" if "zombie" in f"{spec.get('name', '')} {spec.get('description', '')}".lower() else "human"
+        roster[key] = {
+            "role": manifest.get("role", "enemy"),
+            "character_id": manifest.get("character_id"),
+            "source": "pixellab-aaa-human-zombie-wave-v1",
+            "visualType": visual_type,
+            "animations": canonical_animations,
+        }
+        staged.append(key)
+    if failures:
+        shutil.rmtree(stage_root, ignore_errors=True)
+        raise SystemExit(json.dumps({"promotionRejected": failures}, indent=2))
+    marker = "export const HMH_ANIMATED_ROSTER = Object.freeze("
+    manifest_text = prefix + marker + json.dumps(roster, separators=(",", ":")) + ");\n"
+    atomic_promote_staged(stage_root, staged, manifest_text)
+    print(json.dumps({"stagedForAtlasPacking": staged, "requiredStates": list(ANIMS), "directions": DIRECTIONS}, indent=2))
 
 
 def status() -> None:
@@ -433,10 +804,12 @@ def status() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("cmd", choices=["balance", "create", "animate", "collect", "status"])
+    parser.add_argument("cmd", choices=["balance", "create", "animate", "collect", "promote", "status"])
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--targets", default=None)
     parser.add_argument("--max-inflight", type=int, default=3)
+    parser.add_argument("--collect-timeout", type=int, default=1800)
+    parser.add_argument("--download-workers", type=int, default=16)
     args = parser.parse_args()
     if args.cmd == "balance":
         asyncio.run(balance())
@@ -445,7 +818,9 @@ def main() -> None:
     elif args.cmd == "animate":
         asyncio.run(animate(args.limit, args.targets, args.max_inflight))
     elif args.cmd == "collect":
-        asyncio.run(collect(args.limit, args.targets))
+        asyncio.run(collect(args.limit, args.targets, args.collect_timeout, args.download_workers))
+    elif args.cmd == "promote":
+        promote(args.targets)
     else:
         status()
 

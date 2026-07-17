@@ -6,8 +6,8 @@
     "sourceMapMaxCount": 0
   },
   "metrics": {
-    "mainBytes": 1200918,
-    "totalJsBytes": 5300757,
+    "mainBytes": 1208805,
+    "totalJsBytes": 5400053,
     "jsFileCount": 24,
     "sourceMapCount": 0,
     "initialEntrypoints": [

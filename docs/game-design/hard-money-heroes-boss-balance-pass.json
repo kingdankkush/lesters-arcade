@@ -46,7 +46,7 @@
     {
       "role": "mini-boss",
       "enemyId": "gas-beast",
-      "title": "Gas Beast Tank",
+      "title": "Gas-Tax Zombie Brute",
       "zoneId": "warehouse-gas-station-yard",
       "firstSeenSeconds": 1050,
       "beatId": "beat-005-mini-pair",

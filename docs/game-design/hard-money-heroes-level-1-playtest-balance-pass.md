@@ -6,6 +6,23 @@ Date: 2026-06-30
 
 Tune Level 1 for an 8-minute roguelike shooter session where difficulty clearly ramps, fighting swarms is rewarded, and extraction is gated behind temporary boss/miniboss enemies until bespoke boss art exists.
 
+> **2026-07-17 supersession:** Level 1 now ships as open-ended survival with death as the run endpoint. The historical eight-minute numbers below remain useful as an early pressure probe, but they no longer define extraction timing or the live body-count ceiling.
+
+## Active authored route pacing overlay
+
+`levelOneRouteEncounterPacingAt()` layers deterministic spatial cadence over the time-based director without altering the certified navigation grid:
+
+| Route phase | Player read | Spawn interval | Body-count multiplier | Role pressure |
+| --- | --- | ---: | ---: | --- |
+| `travel` | low-pressure traversal between authored beats | `1.18×` | `0.72×` | reduced elites, longer spawn distance |
+| `warning` | landmark/POI threat enters readable range | `1.08×` | `0.84×` | light ranged preview |
+| `pressure` | approach lanes begin the authored encounter mix | `0.88×` | `1.00×` | ranged and elite mix rises by completed-POI tier |
+| `arena` | POI core preserves attack-tell room and scripted encounter authority | `0.80×` | `1.00×` | bounded role pressure, never a raw-body multiplier above one |
+| `clear` | just-cleared POI creates a deliberate 180-frame recovery pocket | `1.75×` | `0.50×` | generic spawns suppressed only while the explicit respite token is active and the player remains nearby |
+
+Pressure tiers advance every two completed POIs and modify composition before raw body count. Ranged-share bonuses cap at `0.12`; elite chance multipliers cap at `1.25`; the global Level 1 readability/performance ceiling remains authoritative.
+
+
 ## Playtest bugs found
 
 1. **Level 1 was still using the 20-minute survival-wall director.**
@@ -122,7 +139,7 @@ Until bespoke bosses exist, Level 1 uses fully animated humanoid-ish curated ene
 | --- | --- | --- | --- | --- |
 | Mini-boss | Ghost Saloon Main Street | `claim-jumper-sheriff` | Claim-Jumper Sheriff | `universal/enemy/claim-jumper` |
 | Mini-boss | Dead Forest Mushroom Grove | `scam-cult-zealot` | Scam Cult Zealot Alpha | `universal/enemy/scam-cult-zealot` |
-| Mini-boss | Warehouse / Gas Station Yard | `gas-beast` | Gas Beast Tank | `universal/enemy/gas-beast-tank` |
+| Mini-boss | Warehouse / Gas Station Yard | `gas-beast` | Gas-Tax Zombie Brute | `universal/enemy/wild-boar` (armored-zombie replacement slot) |
 | Boss | Rugpull Gulch Boss Yard | `bandit-captain` | Bandit Captain | `universal/enemy/evil-banker-ranged` |
 
 ## Runtime wiring

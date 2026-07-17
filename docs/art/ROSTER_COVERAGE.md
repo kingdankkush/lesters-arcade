@@ -23,9 +23,9 @@ Rows marked `derived:<state><-<source>` reuse existing native animation frames a
 | chain-reaper-boss | boss | complete | attack, attack-tell, death, hit, idle, phase-transition, run, spawn-in, special, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d, shoot:8d→attack, special:8d, phase-transition:8d |
 | whale-dumper-boss | boss | complete | attack, attack-ranged, attack-tell, death, hit, idle, phase-transition, run, spawn-in, special, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d, shoot:8d→attack, special:8d, phase-transition:8d |
 | bitcoin-maximalist-riot-cop | enemy | partial | attack, attack-tell | idle, walk, run, hit, death | none | idle:missing, walk:missing, run:missing, attack-tell:8d, attack:8d, hit:missing, death:missing, spawn-in:8d→derived:spawn-in<-attack |
-| buzzard | enemy | complete | attack, attack-tell, death, hit, idle, run, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d→derived:spawn-in<-idle |
+| buzzard | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | claim-jumper | enemy | complete | attack, attack-tell, death, hit, idle, run, shoot, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
-| coyote-pack-runner | enemy | complete | attack, attack-tell, death, hit, idle, run, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d→derived:spawn-in<-idle |
+| coyote-pack-runner | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | crypto-bro-rusher | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | evil-banker-ranged | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | fud-goblin | enemy | complete | attack, attack-tell, death, hit, hurt, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
@@ -38,17 +38,17 @@ Rows marked `derived:<state><-<source>` reuse existing native animation frames a
 | nft-valet | enemy | partial | attack, death | idle, walk, run, hit | death | idle:missing, walk:missing, run:missing, attack-tell:8d→derived:attack-tell<-attack, attack:8d, hit:missing, death:7d, spawn-in:8d→derived:spawn-in<-attack |
 | paper-hand | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | phishing-angler | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
-| rattlesnake | enemy | complete | attack, attack-tell, death, hit, idle, run, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d→derived:spawn-in<-idle |
+| rattlesnake | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | rug-rat | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d→run, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | rugpull-summoner | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | scam-cult-zealot | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d→run, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | scorpion-ambusher | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | slippage-skater | enemy | complete | attack, death, hit, idle, run, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d→derived:attack-tell<-attack, attack:8d, hit:8d, death:8d, spawn-in:8d→derived:spawn-in<-idle |
 | stablecoin-socialite | enemy | partial | idle | walk, run, attack, hit, death | none | idle:8d, walk:missing, run:missing, attack-tell:8d→derived:attack-tell<-idle, attack:missing, hit:missing, death:missing, spawn-in:8d→derived:spawn-in<-idle |
-| sybil-drone | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d→run, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
+| sybil-drone | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | trench-degen | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | wasteland-debt-collector | enemy | complete | attack, attack-tell, death, hit, idle, walk | none | none | idle:8d, walk:8d, run:8d→walk, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d→derived:spawn-in<-idle |
-| wild-boar | enemy | complete | attack, attack-tell, death, hit, idle, run, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d→derived:spawn-in<-idle |
+| wild-boar | enemy | complete | attack, attack-tell, death, hit, idle, run, spawn-in, walk | none | none | idle:8d, walk:8d, run:8d, attack-tell:8d, attack:8d, hit:8d, death:8d, spawn-in:8d |
 | lester | hero | complete | dash, death, hurt, idle, melee, run, shoot, throw, victory, walk | none | none | idle:8d, walk:8d, run:8d, shoot:8d, melee:8d, throw:8d, dash:8d, hurt:8d, death:8d, victory:8d |
 | lilly | hero | complete | dash, death, hurt, idle, melee, run, shoot, throw, victory, walk | none | none | idle:8d, walk:8d, run:8d, shoot:8d, melee:8d, throw:8d, dash:8d, hurt:8d, death:8d, victory:8d |
 | lit-commando | hero | complete | dash, death, hurt, idle, levelup, melee, run, shoot, shoot-shotgun, throw, victory, walk | none | none | idle:8d, walk:8d, run:8d, shoot:8d, melee:8d, throw:8d, dash:8d, hurt:8d, death:8d, victory:8d |
@@ -64,35 +64,35 @@ The rows below are derived from `LESTER_BLASTER_ENEMY_CATALOG` plus `HMH_LEVEL_O
 
 | Enemy ID | Title | Role | Actor key | Source | Coverage | Missing states | Partial states |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| fud-goblin | FUD Goblin | enemy | fud-goblin | catalog-id | complete | none | none |
+| fud-goblin | FUD Mine Zombie | enemy | fud-goblin | catalog-id | complete | none | none |
 | paper-hand | Paper Hands | enemy | paper-hand | catalog-id | complete | none | none |
-| fud-goblin-cave | Cave FUD Goblin | enemy | trench-degen | enemyKey:trenchDegen | complete | none | none |
+| fud-goblin-cave | Cave FUD Zombie | enemy | trench-degen | enemyKey:trenchDegen | complete | none | none |
 | claim-jumper | Claim Jumper | enemy | claim-jumper | catalog-id | complete | none | none |
 | claim-jumper-sheriff | Claim-Jumper Sheriff | mini-boss | claim-jumper | boss-roster:ghost-saloon-mainstreet | complete | none | none |
 | scam-cult-zealot | Scam Cult Zealot | mini-boss | scam-cult-zealot | boss-roster:dead-forest-mushroom-grove | complete | none | none |
 | crypto-bro | Crypto Bro | enemy | crypto-bro-rusher | enemyKey:cryptoBro | complete | none | none |
-| gas-beast | Gas Beast | mini-boss | gas-beast-tank | boss-roster:warehouse-gas-station-yard | complete | none | none |
-| sybil-drone | Bot Swarm (Sybil Drones) | enemy | sybil-drone | catalog-id | complete | none | none |
-| rug-rat | Rug Rat | enemy | rug-rat | catalog-id | complete | none | none |
-| honeypot-turret | Honeypot Turret | enemy | honeypot-turret | catalog-id | complete | none | none |
-| coyote-pack-runner | Coyote Pack Runner | enemy | coyote-pack-runner | catalog-id | complete | none | none |
-| wild-boar | Wild Boar | enemy | wild-boar | catalog-id | complete | none | none |
-| buzzard | Buzzard | enemy | buzzard | catalog-id | complete | none | none |
-| rattlesnake | Rattlesnake | enemy | rattlesnake | catalog-id | complete | none | none |
-| scorpion-ambusher | Scorpion Ambusher | enemy | scorpion-ambusher | catalog-id | complete | none | none |
+| gas-beast | Gas-Tax Zombie Brute | mini-boss | wild-boar | boss-roster:warehouse-gas-station-yard | complete | none | none |
+| sybil-drone | Sybil Gunner Cell | enemy | sybil-drone | catalog-id | complete | none | none |
+| rug-rat | Rug Trapper Zombie | enemy | rug-rat | catalog-id | complete | none | none |
+| honeypot-turret | Honeypot Ambush Gunner | enemy | honeypot-turret | catalog-id | complete | none | none |
+| coyote-pack-runner | Road Zombie Runner | enemy | coyote-pack-runner | catalog-id | complete | none | none |
+| wild-boar | Armored Zombie Brute | enemy | wild-boar | catalog-id | complete | none | none |
+| buzzard | Wasteland Raider Scout | enemy | buzzard | catalog-id | complete | none | none |
+| rattlesnake | Zombie Trapper | enemy | rattlesnake | catalog-id | complete | none | none |
+| scorpion-ambusher | Mine Zombie Ambusher | enemy | scorpion-ambusher | catalog-id | complete | none | none |
 | bandit-captain | Bandit Captain | enemy | evil-banker-ranged | enemyKey:evilBanker | complete | none | none |
 | rug-pull-baron | The Rug Pull Baron | boss | rug-pull-baron | signature-boss:rugpull-gulch-boss-yard | complete | none | none |
 | ridge-raider | Ridge Raider | enemy | evil-banker-ranged | enemyKey:evilBanker | complete | none | none |
 | slippage-skater | Slippage Skater | enemy | slippage-skater | catalog-id | complete | none | none |
 | phishing-angler | Phishing Angler | enemy | phishing-angler | catalog-id | complete | none | none |
 | mev-reaper | MEV Reaper | enemy | mev-reaper | catalog-id | complete | none | none |
-| liquidation-cascade-golem | Liquidation Cascade Golem | enemy | liquidation-cascade-golem | catalog-id | complete | none | none |
+| liquidation-cascade-golem | Liquidation Riot Zombie | enemy | liquidation-cascade-golem | catalog-id | complete | none | none |
 
 ### Scope decision needed before Slice 5 generation
 
 - Recommended keeps from the Wave 3 handoff: gas-beast-tank, crypto-bro-rusher, evil-banker-ranged, warren-spear-rider
-- Zero-animation actors currently proven in Level 1 runtime scope: gas-beast-tank, crypto-bro-rusher, evil-banker-ranged, liquidation-cascade-golem
-- Handoff keep candidates not currently found in the Level 1 spawn catalog/proxy rows: warren-spear-rider
+- Zero-animation actors currently proven in Level 1 runtime scope: crypto-bro-rusher, evil-banker-ranged, liquidation-cascade-golem
+- Handoff keep candidates not currently found in the Level 1 spawn catalog/proxy rows: gas-beast-tank, warren-spear-rider
 - Deferred candidates not currently proven in the Level 1 runtime spawn list: chain-reaper-boss, bit-whale-boss, rugpull-summoner
 - Note: Current runtime catalog proves liquidation-cascade-golem is Level-1-spawnable; do not defer it without cutting or replacing that catalog entry.
 

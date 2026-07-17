@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import { HMH_ANIMATED_ROSTER } from '../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs';
+import { LESTER_BLASTER_ENEMY_CATALOG } from '../apps/portal/src/arcade-core.mjs';
 import { BESPOKE_ENEMY_VISUAL_KITS } from '../apps/portal/src/hmh-encounter-visuals.mjs';
 import {
   HMH_ART_AUTO_REPAIR_MAP,
@@ -99,9 +100,12 @@ test('runtime roster does not ship known QA-green triangle enemy kits after art 
 });
 
 test('Gas Fee Wisp stays quarantined from normal Level 1 spawn pools until bespoke art exists', () => {
-  const core = repoText('apps/portal/src/arcade-core.mjs');
-  assert.equal(core.includes("id: 'gas-fee-wisp'"), true);
-  assert.equal(core.includes("artStatus: 'quarantined-until-bespoke-wisp-art-replaces-gas-beast-proxy'"), true);
-  assert.equal(core.includes("id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 9999"), true);
-  assert.equal(core.includes("id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 35"), false);
+  const wisp = LESTER_BLASTER_ENEMY_CATALOG.find((enemy) => enemy.id === 'gas-fee-wisp');
+  assert.ok(wisp);
+  assert.equal(wisp.title, 'Gas-Tax Zombie');
+  assert.equal(wisp.class, 'quarantined-zombie-hazard');
+  assert.equal(wisp.runtimeActorKey, 'wild-boar');
+  assert.equal(wisp.artStatus, 'quarantined-until-bespoke-wisp-art-replaces-gas-beast-proxy');
+  assert.equal(wisp.spawnAfterSeconds, 9999);
+  assert.deepEqual(wisp.districtFamilies, []);
 });

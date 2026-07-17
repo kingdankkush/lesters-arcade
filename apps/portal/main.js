@@ -113,6 +113,7 @@ import {
 import { buildLevelOneWorldV3VisibleObjects } from './src/hmh-level-one-world-v3-objects.mjs';
 import {
   levelOneLayoutV4SpawnRequest,
+  levelOneRouteEncounterPacingAt,
   levelOneSpawnLaneForcesElite,
   levelOneSpawnLaneTelegraphForRole,
   levelOneWorldV3BossPoint,
@@ -2085,6 +2086,17 @@ function currentCampaignPoi() {
     worldOffsetX: Math.floor((combat.worldWidth ?? 0) / 2),
     worldOffsetY: Math.floor((combat.worldHeight ?? 0) / 2),
     completedPoiIds: [...(combat.completedCampaignPoiIds ?? [])],
+  });
+}
+
+const LEVEL_ONE_ROUTE_RESPITE_FRAMES = 180;
+
+function currentLevelOneRoutePacing() {
+  return levelOneRouteEncounterPacingAt({
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    completedPoiIds: [...(combat.completedCampaignPoiIds ?? [])],
+    respitePoiId: (combat.routePacingRespiteFrames ?? 0) > 0 ? combat.routePacingRespitePoiId : null,
   });
 }
 
@@ -6739,6 +6751,8 @@ async function startCombat(options = {}) {
   combat.grenades = carryOver?.grenades ?? 3;
   combat.axes = 0;
   combat.completedCampaignPoiIds = new Set();
+  combat.routePacingRespitePoiId = null;
+  combat.routePacingRespiteFrames = 0;
   combat.triggeredCampaignPoiIds = new Set();
   combat.triggeredBossBeatIds = new Set();
   combat.activePoiEncounterId = null;
@@ -8809,12 +8823,13 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
   const poiId = options.poiId ?? activePoi?.id ?? districtContext?.poiId ?? districtContext?.poiApproachId ?? null;
   const spawnSeed = options.seed ?? (combat.frame + combat.kills + combat.enemies.length);
   const isLevelOneSpawn = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID;
+  const routePacing = isLevelOneSpawn ? currentLevelOneRoutePacing() : null;
   const layoutSpawnRequest = isLevelOneSpawn
     ? levelOneLayoutV4SpawnRequest({
         playerX: combat.playerMapX,
         playerY: combat.playerMapY,
         seed: spawnSeed,
-        minDistanceTiles: Math.max(actComposition.minSpawnDistanceTiles, 18),
+        minDistanceTiles: Math.max(actComposition.minSpawnDistanceTiles + (routePacing?.minSpawnDistanceBonus ?? 0), 18),
       })
     : null;
   const usesAuthoredLayoutPoint = Boolean(
@@ -8834,9 +8849,9 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     spawnLaneRole,
   });
   const angle = options.angleRadians ?? layoutSpawnRequest?.angleRadians ?? ((((combat.frame * 37) + combat.enemies.length * 71) % 360) * Math.PI / 180);
-  const radius = options.radiusTiles ?? Math.max(layoutSpawnRequest?.distanceTiles ?? 0, actComposition.minSpawnDistanceTiles, 10 + (combat.frame % 5));
+  const radius = options.radiusTiles ?? Math.max(layoutSpawnRequest?.distanceTiles ?? 0, actComposition.minSpawnDistanceTiles + (routePacing?.minSpawnDistanceBonus ?? 0), 10 + (combat.frame % 5));
   const rangedRoll = ((combat.frame + combat.enemies.length) % 100) / 100;
-  const rangedShare = Math.min(director.rangedEnemyShare, actComposition.rangedEnemyShare ?? director.rangedEnemyShare);
+  const rangedShare = Math.max(0, Math.min(1, Math.min(director.rangedEnemyShare, actComposition.rangedEnemyShare ?? director.rangedEnemyShare) + (routePacing?.rangedShareDelta ?? 0)));
   const ranged = options.ranged ?? (spawn.enemy.preferredRangeMode === 'ranged'
     ? true
     : spawn.enemy.preferredRangeMode === 'melee'
@@ -8844,7 +8859,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
       : rangedRoll < rangedShare);
   const elite = options.elite ?? (
     levelOneSpawnLaneForcesElite(spawnLaneRole)
-    || ((((combat.frame + combat.kills) % 100) / 100) < director.eliteEnemyShare)
+    || ((((combat.frame + combat.kills) % 100) / 100) < Math.min(1, director.eliteEnemyShare * (routePacing?.eliteChanceMul ?? 1)))
   );
   const miniBoss = Boolean(options.miniBoss);
   const useAuthoredLayoutPoint = usesAuthoredLayoutPoint;
@@ -8858,7 +8873,7 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
         ? ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES
         : isPoiSpawn
           ? ROGUELIKE_MIN_POI_SUPPORT_SPAWN_DISTANCE_TILES
-          : Math.max(ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES, actComposition.minSpawnDistanceTiles ?? ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES));
+          : Math.max(ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES, (actComposition.minSpawnDistanceTiles ?? ROGUELIKE_MIN_ENEMY_SPAWN_DISTANCE_TILES) + (routePacing?.minSpawnDistanceBonus ?? 0)));
   const spawnWorldBounds = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
     ? buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight })
     : null;
@@ -9033,6 +9048,8 @@ function updateCampaignPoiEncounter(director) {
       combat.activePoiEncounterCenterY = null;
       _themeCellCache.clear();
       combat.completedCampaignPoiIds?.add(clearedId);
+      combat.routePacingRespitePoiId = clearedId;
+      combat.routePacingRespiteFrames = LEVEL_ONE_ROUTE_RESPITE_FRAMES;
       releaseScrollLock(`POI CLEAR // ${clearedTitle}`);
       spawnText(`${String(clearedTitle).toUpperCase()} CLEAR`, ISO_CENTER_X - 94, ISO_CENTER_Y - 60, '#45ff8a');
       dropRoguelikePowerUp(combat.playerMapX, combat.playerMapY, { rare: true });
@@ -9632,9 +9649,16 @@ function updateRoguelikeEnemies(director, dt) {
   combat.roguelikeSpawnTimer -= dt;
   updateCampaignPoiEncounter(director);
   updateLevelOneBossBeatSchedule(director);
+  if ((combat.routePacingRespiteFrames ?? 0) > 0) {
+    combat.routePacingRespiteFrames -= 1;
+    if (combat.routePacingRespiteFrames <= 0) combat.routePacingRespitePoiId = null;
+  }
   const actComposition = buildLevelOneSpawnCompositionAt(combat.elapsedGameSeconds);
-  const genericSpawnsSuppressed = actComposition.genericSpawnSuppression && !combat.activePoiEncounterId && !combat.scriptedBossTriggered;
   const levelOneBudgeted = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID;
+  const routePacing = levelOneBudgeted ? currentLevelOneRoutePacing() : null;
+  combat.routePacing = routePacing;
+  const genericSpawnsSuppressed = (actComposition.genericSpawnSuppression && !combat.activePoiEncounterId && !combat.scriptedBossTriggered)
+    || Boolean(routePacing?.genericSpawnSuppression);
   let spawnBudget = levelOneBudgeted
     ? buildLevelOneSpawnBudgetState({
         elapsedSeconds: combat.elapsedGameSeconds,
@@ -9648,14 +9672,14 @@ function updateRoguelikeEnemies(director, dt) {
     !genericSpawnsSuppressed
     && !combat.activePoiEncounterId
     && combat.roguelikeSpawnTimer <= 0
-    && combat.enemies.length < director.maxEnemiesOnMap
+    && combat.enemies.length < Math.max(1, Math.floor(director.maxEnemiesOnMap * (routePacing?.maxEnemyMul ?? 1)))
     && spawnedThisStep < spawnBurstCap
     && (!spawnBudget || levelOneRoguelikeSpawnBudgetAllows(spawnBudget, { ranged: false }))
   ) {
     const spawnedEnemy = spawnRoguelikeEnemy(director);
     if (!spawnedEnemy) break;
     spawnedThisStep += 1;
-    combat.roguelikeSpawnTimer += director.spawnIntervalSeconds;
+    combat.roguelikeSpawnTimer += director.spawnIntervalSeconds * (routePacing?.spawnIntervalMul ?? 1);
     if (levelOneBudgeted) {
       spawnBudget = buildLevelOneSpawnBudgetState({
         elapsedSeconds: combat.elapsedGameSeconds,
@@ -13016,6 +13040,7 @@ function safeRuntimeRosterKey(candidateKey) {
 }
 
 function rosterKeyForEntity(entity, role) {
+  if (entity.runtimeActorKey) return safeRuntimeRosterKey(entity.runtimeActorKey);
   const hay = `${entity.id ?? ''} ${entity.title ?? ''} ${entity.enemyKey ?? ''} ${entity.class ?? ''}`.toLowerCase();
   let candidateKey = 'fud-goblin';
   if (role === 'boss') {

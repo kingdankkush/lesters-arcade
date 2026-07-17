@@ -34,10 +34,10 @@ export const HMH_LEVEL_EDITOR_MARKER_TOOLS = Object.freeze([
 
 const ENEMY_ASSETS = Object.freeze([
   Object.freeze({ assetKey: 'enemy/claim-jumper', label: 'Claim Jumper', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'claim-jumper' }),
-  Object.freeze({ assetKey: 'enemy/rug-rat', label: 'Rug Rat', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'rug-rat' }),
+  Object.freeze({ assetKey: 'enemy/rug-rat', label: 'Rug Crawler Zombie', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'rug-rat' }),
   Object.freeze({ assetKey: 'enemy/scam-cult-zealot', label: 'Scam Cult Zealot', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'scam-cult-zealot' }),
-  Object.freeze({ assetKey: 'enemy/fud-goblin-cave', label: 'FUD Goblin Cave', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'fud-goblin-cave' }),
-  Object.freeze({ assetKey: 'enemy/wild-boar', label: 'Wild Boar', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'wild-boar' }),
+  Object.freeze({ assetKey: 'enemy/fud-goblin-cave', label: 'Cave FUD Zombie', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'fud-goblin-cave' }),
+  Object.freeze({ assetKey: 'enemy/wild-boar', label: 'Armored Zombie Brute', groupId: 'enemies', markerType: 'enemy-spawn', enemyId: 'wild-boar' }),
 ]);
 
 const MINI_BOSS_ASSETS = Object.freeze([
