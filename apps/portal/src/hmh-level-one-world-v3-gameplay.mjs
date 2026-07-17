@@ -357,6 +357,50 @@ function stableLaneIndex(seed, zoneId, laneCount) {
   return laneCount ? hash % laneCount : 0;
 }
 
+function normalizedLaneRole(value = '') {
+  return String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+const LANE_ROLE_TELEGRAPH_PLANS = Object.freeze({
+  ranged: Object.freeze({ color: '#ff5ce1', fillColor: 'rgba(255, 92, 225, 0.12)', marker: 'diamond', lineDash: Object.freeze([7, 4]) }),
+  rusher: Object.freeze({ color: '#ffe84d', fillColor: 'rgba(255, 232, 77, 0.12)', marker: 'forward-chevron', lineDash: Object.freeze([]) }),
+  flanker: Object.freeze({ color: '#19f7ff', fillColor: 'rgba(25, 247, 255, 0.11)', marker: 'split-chevron', lineDash: Object.freeze([4, 3]) }),
+  elite: Object.freeze({ color: '#ff476f', fillColor: 'rgba(255, 71, 111, 0.14)', marker: 'double-ring', lineDash: Object.freeze([]) }),
+  'boss-add': Object.freeze({ color: '#ff9a3d', fillColor: 'rgba(255, 154, 61, 0.13)', marker: 'guard-brackets', lineDash: Object.freeze([9, 3]) }),
+});
+
+export function levelOneSpawnLaneTelegraphForRole(laneRole = null) {
+  const role = normalizedLaneRole(laneRole);
+  if (role === 'chaser') return LANE_ROLE_TELEGRAPH_PLANS.rusher;
+  if (role === 'boss') return LANE_ROLE_TELEGRAPH_PLANS['boss-add'];
+  return LANE_ROLE_TELEGRAPH_PLANS[role] ?? null;
+}
+
+export function levelOneEnemyMatchesSpawnLaneRole(enemy = {}, laneRole = 'mixed') {
+  const role = normalizedLaneRole(laneRole);
+  if (role === 'mixed' || role === 'support') return !enemy?.boss;
+  if (enemy?.boss) return false;
+
+  const preferredRangeMode = normalizedLaneRole(enemy?.preferredRangeMode);
+  const signature = normalizedLaneRole(`${enemy?.id ?? ''} ${enemy?.class ?? ''} ${enemy?.aiArchetype ?? ''}`);
+  const ranged = preferredRangeMode === 'ranged';
+  const melee = preferredRangeMode === 'melee' || (!preferredRangeMode && !ranged);
+  const rusher = melee && /(swarm|shambler|panic|charge|lunge|rusher|chaser|pack|skater|yanker|burrow|strike)/.test(signature);
+  const flanker = /(flank|pincer|ambush|circle|overshoot|dash|yanker|hook|reaper|angler|zealot)/.test(signature);
+  const elite = /(elite|captain|commander|mini-boss|miniboss|armored|bruiser|zealot|sheriff|reaper|golem)/.test(signature);
+
+  if (role === 'ranged') return ranged;
+  if (role === 'chaser' || role === 'rusher') return rusher;
+  if (role === 'flanker') return flanker;
+  if (role === 'elite') return elite;
+  if (role === 'boss-add' || role === 'boss') return elite || ranged;
+  return false;
+}
+
+export function levelOneSpawnLaneForcesElite(laneRole = null) {
+  return normalizedLaneRole(laneRole) === 'elite';
+}
+
 export function levelOneLayoutV4SpawnRequest({ playerX = 0, playerY = 0, seed = 0, minDistanceTiles = 18 } = {}) {
   const zoneRecord = levelOneLayoutV4ZoneAt(playerX, playerY);
   const lanes = zoneRecord?.spawnLanes?.length ? zoneRecord.spawnLanes : [{ id: 'fallback-east', angleDeg: 0, role: 'mixed' }];

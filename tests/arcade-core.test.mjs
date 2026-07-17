@@ -1443,10 +1443,16 @@ test('enemy catalog adds authored Crypto Wasteland regional enemies with explici
   const claimJumper = byId['claim-jumper'];
   const coyote = byId['coyote-pack-runner'];
   const scorpion = byId['scorpion-ambusher'];
+  const openingGoblin = byId['fud-goblin'];
+  const caveGoblin = byId['fud-goblin-cave'];
+  const rugRat = byId['rug-rat'];
 
   assert.ok(claimJumper);
   assert.ok(coyote);
   assert.ok(scorpion);
+  assert.ok(openingGoblin.districtFamilies.includes('desert_approach'), 'opening desert lanes need the canonical tutorial chaser');
+  assert.equal(caveGoblin.preferredRangeMode, 'ranged', 'the torch-lob cave goblin should fill the authored cave-mouth ranged lane');
+  assert.ok(rugRat.poiIds.includes('rugpull-gulch'), 'Rug Rats should fill Rugpull Gulch chaser lanes and remain available to Baron choreography');
   for (const enemy of [claimJumper, coyote, scorpion]) {
     assert.equal(Array.isArray(enemy.districtFamilies), true);
     assert.equal(enemy.districtFamilies.length >= 1, true);
@@ -1477,6 +1483,66 @@ test('chooseEnemySpawn biases Level 1 authored districts and POIs toward their l
   assert.equal(districtSpawn.enemy.animationStates.includes('attack-tell'), true);
 });
 
+test('chooseEnemySpawn applies authored lane roles deterministically with safe fallback and forced-POI precedence', () => {
+  const rangedIds = new Set();
+  for (let seed = 0; seed < 12; seed += 1) {
+    const spawn = chooseEnemySpawn({
+      elapsedSeconds: 220,
+      seed,
+      districtFamily: 'country_road',
+      spawnLaneRole: 'ranged',
+    });
+    rangedIds.add(spawn.enemy.id);
+    assert.equal(spawn.enemy.preferredRangeMode, 'ranged');
+    assert.equal(spawn.enemy.boss, undefined);
+    assert.equal(spawn.spawnContext.spawnLaneRole, 'ranged');
+    assert.equal(spawn.spawnContext.laneRoleApplied, true);
+    assert.ok(spawn.spawnContext.lanePoolSize >= 1);
+  }
+  assert.ok(rangedIds.has('honeypot-turret') || rangedIds.has('bandit-captain'));
+
+  const elite = chooseEnemySpawn({
+    elapsedSeconds: 220,
+    seed: 7,
+    districtFamily: 'country_road',
+    spawnLaneRole: 'elite',
+  });
+  assert.equal(elite.enemy.id, 'bandit-captain');
+  assert.equal(elite.spawnContext.laneRoleApplied, true);
+  assert.equal(elite.spawnContext.elitePromotionFallback, false);
+
+  const promotedLocalElite = chooseEnemySpawn({
+    elapsedSeconds: 420,
+    seed: 5,
+    districtFamily: 'desert_approach',
+    spawnLaneRole: 'elite',
+  });
+  assert.equal(promotedLocalElite.spawnContext.laneRoleApplied, true);
+  assert.equal(promotedLocalElite.spawnContext.elitePromotionFallback, true);
+  assert.equal(Boolean(promotedLocalElite.enemy.boss), false);
+
+  const openingFallback = chooseEnemySpawn({
+    elapsedSeconds: 20,
+    seed: 2,
+    districtFamily: 'ghost_town',
+    spawnLaneRole: 'ranged',
+  });
+  assert.equal(openingFallback.spawnContext.laneRoleApplied, false);
+  assert.equal(openingFallback.spawnContext.lanePoolSize, 0);
+  assert.ok(['fud-goblin', 'paper-hand'].includes(openingFallback.enemy.id));
+
+  const forcedSheriff = chooseEnemySpawn({
+    elapsedSeconds: 220,
+    seed: 4,
+    districtFamily: 'ghost_town',
+    activePoiId: 'rugpull-gulch',
+    spawnLaneRole: 'rusher',
+    forceEnemyId: 'claim-jumper-sheriff',
+  });
+  assert.equal(forcedSheriff.enemy.id, 'claim-jumper-sheriff');
+  assert.equal(forcedSheriff.spawnContext.source, 'forced-id');
+  assert.equal(forcedSheriff.spawnContext.laneRoleApplied, false);
+});
 
 test('chooseEnemySpawn can force authored POI mini-boss and add-pack enemies without losing local context', () => {
   const sheriff = chooseEnemySpawn({

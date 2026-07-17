@@ -6,9 +6,12 @@ import {
   HMH_LEVEL_ONE_LAYOUT_V4,
   HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS,
   HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS,
+  levelOneEnemyMatchesSpawnLaneRole,
   levelOneLayoutV4BoundaryPaletteForSide,
   levelOneLayoutV4SpawnRequest,
   levelOneLayoutV4ZoneAt,
+  levelOneSpawnLaneForcesElite,
+  levelOneSpawnLaneTelegraphForRole,
   levelOneWorldV3BossPoint,
   levelOneWorldV3DistrictContextAt,
   levelOneWorldV3ExtractionPoint,
@@ -69,9 +72,22 @@ test('World v3 gameplay geography is explicitly integrated and syntax-gated', ()
   assert.match(main, /levelOneWorldV3DistrictContextAt/);
   assert.match(main, /levelOneWorldV3BossPoint/);
   assert.match(main, /levelOneWorldV3ExtractionPoint/);
+  assert.match(main, /levelOneSpawnLaneForcesElite/);
+  assert.match(main, /spawnLaneRole,/);
+  assert.match(main, /spawnLaneRoleApplied/);
+  assert.match(main, /levelOneSpawnLaneTelegraphForRole/);
+  assert.match(main, /drawLevelOneSpawnLaneTelegraph/);
+  assert.match(main, /spawnLaneTelegraphFrames = 24/);
+  assert.match(main, /spawnLaneTelegraphStarted && \(enemy\.spawnLaneTelegraphFrames \?\? 0\) > 0/);
+  assert.match(main, /if \(\(enemy\.spawnFrames \?\? 0\) > 0\) enemy\.spawnFrames -= 1/);
+  assert.match(main, /gameSettings\.reduceMotion\s*\?\s*0\.86/);
+  assert.match(main, /__hmhVisualDebugSpawnLaneRole/);
   const syntax = readFileSync(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
+  const visualRegression = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
   assert.match(syntax, /hmh-level-one-world-v3-gameplay\.mjs/);
   assert.match(syntax, /hmh-level-one-world-v3-gameplay\.test\.mjs/);
+  assert.match(visualRegression, /seed-1337-lane-role-telegraphs/);
+  assert.match(visualRegression, /__hmhVisualDebugLaneRoleEnemies/);
 });
 
 
@@ -137,6 +153,41 @@ test('layout v4 spawn lanes are deterministic, safely distant, and vary by autho
   assert.equal(forestZone.id, 'dry-forest-ridge-loop');
   assert.equal(forest.zoneId, forestZone.id);
   assert.notEqual(forest.laneId, a.laneId);
+});
+
+test('layout v4 lane roles select readable enemy families and promote only explicit elite lanes', () => {
+  const ranged = { id: 'claim-jumper', class: 'rifle-bandit', aiArchetype: 'cover-peek-rifle', preferredRangeMode: 'ranged' };
+  const rusher = { id: 'coyote-pack-runner', class: 'pack-ambusher', aiArchetype: 'pack-feint-lunge', preferredRangeMode: 'melee' };
+  const flanker = { id: 'mev-reaper', class: 'elite-flanker', aiArchetype: 'sandwich-pincer', preferredRangeMode: 'melee' };
+  const elite = { id: 'bandit-captain', class: 'elite-ranged-human', aiArchetype: 'banner-plant-volley', preferredRangeMode: 'ranged' };
+  const caveLobber = { id: 'fud-goblin-cave', class: 'cave-grunt', aiArchetype: 'cave-lob-scatter', preferredRangeMode: 'ranged' };
+  const burrowChaser = { id: 'scorpion-ambusher', class: 'burrow-trap', aiArchetype: 'burrow-tail-strike', preferredRangeMode: 'melee' };
+  const zealotFlanker = { id: 'scam-cult-zealot', class: 'fan-shot-zealot', aiArchetype: 'chant-fan-shot', preferredRangeMode: 'ranged' };
+  const boss = { id: 'rug-pull-baron', class: 'signature-boss-ranged-human', aiArchetype: 'three-phase-arena-control', preferredRangeMode: 'ranged', boss: true };
+
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(ranged, 'ranged'), true);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(rusher, 'ranged'), false);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(rusher, 'rusher'), true);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(caveLobber, 'ranged'), true);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(burrowChaser, 'chaser'), true);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(flanker, 'flanker'), true);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(zealotFlanker, 'flanker'), true);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(elite, 'elite'), true);
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(boss, 'elite'), false, 'generic elite lanes must never duplicate the scripted boss');
+  assert.equal(levelOneEnemyMatchesSpawnLaneRole(ranged, 'mixed'), true);
+  assert.equal(levelOneSpawnLaneForcesElite('elite'), true);
+  assert.equal(levelOneSpawnLaneForcesElite('ranged'), false);
+  assert.equal(levelOneSpawnLaneForcesElite('boss-add'), false);
+
+  const rangedTell = levelOneSpawnLaneTelegraphForRole('ranged');
+  const flankerTell = levelOneSpawnLaneTelegraphForRole('flanker');
+  const eliteTell = levelOneSpawnLaneTelegraphForRole('elite');
+  assert.equal(rangedTell.marker, 'diamond');
+  assert.deepEqual(rangedTell.lineDash, [7, 4]);
+  assert.equal(flankerTell.marker, 'split-chevron');
+  assert.equal(eliteTell.marker, 'double-ring');
+  assert.notEqual(rangedTell.color, flankerTell.color);
+  assert.equal(levelOneSpawnLaneTelegraphForRole('unknown-role'), null);
 });
 
 test('layout v4 perimeter palettes are side-specific and use shipped visible blocker families', () => {

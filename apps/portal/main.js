@@ -113,6 +113,8 @@ import {
 import { buildLevelOneWorldV3VisibleObjects } from './src/hmh-level-one-world-v3-objects.mjs';
 import {
   levelOneLayoutV4SpawnRequest,
+  levelOneSpawnLaneForcesElite,
+  levelOneSpawnLaneTelegraphForRole,
   levelOneWorldV3BossPoint,
   levelOneWorldV3DistrictContextAt,
   levelOneWorldV3ExtractionPoint,
@@ -8175,6 +8177,11 @@ if (tacticalBalanceDebugEnabled) {
       return {
         playerX: combat.playerMapX,
         playerY: combat.playerMapY,
+        combatActive: Boolean(combat.active),
+        gameOver: Boolean(combat.gameOver),
+        paused: Boolean(combat.paused),
+        levelUpPaused: Boolean(combat.roguelikeRun?.pausedForLevelUp),
+        hp: combat.health,
         obstacleIds: obstacles.map((obstacle) => obstacle.id),
         solidObstacles: obstacles
           .filter((obstacle) => obstacle.solid && Number.isFinite(obstacle.worldX) && Number.isFinite(obstacle.worldY))
@@ -8221,6 +8228,73 @@ if (tacticalBalanceDebugEnabled) {
           boundaryClamped: combat.worldBoundaryClamped,
         },
       };
+    },
+  });
+  Object.defineProperty(globalThis, '__hmhVisualDebugSpawnLaneRole', {
+    configurable: true,
+    value(laneRole = 'ranged', dx = 4, dy = 0) {
+      if (!combat.active || !combat.roguelikeRun) {
+        return {
+          error: 'inactive-combat',
+          combatActive: Boolean(combat.active),
+          hasRoguelikeRun: Boolean(combat.roguelikeRun),
+          gameOver: Boolean(combat.gameOver),
+        };
+      }
+      const previousElapsed = combat.elapsedGameSeconds;
+      const debugElapsed = Math.max(previousElapsed, 420);
+      combat.elapsedGameSeconds = debugElapsed;
+      try {
+        const director = currentRoguelikeSpawnDirector(debugElapsed);
+        const targetMapX = combat.playerMapX + (Number(dx) || 0);
+        const targetMapY = combat.playerMapY + (Number(dy) || 0);
+        const enemy = spawnRoguelikeEnemy(director, {
+          spawnLaneRole: String(laneRole),
+          mapX: targetMapX,
+          mapY: targetMapY,
+          ignoreSpawnBudget: true,
+        });
+        if (!enemy) return { error: 'debug-spawn-rejected', spawnLaneRole: String(laneRole) };
+        enemy.mapX = targetMapX;
+        enemy.mapY = targetMapY;
+        const projected = groundEntityContactPointForProjection(isoToScreen(enemy.mapX, enemy.mapY));
+        enemy.x = projected.x;
+        enemy.y = projected.y;
+        enemy.spawnFrames = 120;
+        enemy.spawnLaneTelegraphStarted = true;
+        enemy.spawnLaneTelegraphFrames = 120;
+        enemy.speed = 0;
+        return {
+          id: enemy.id,
+          title: enemy.title,
+          spawnLaneRole: enemy.spawnLaneRole,
+          spawnLaneRoleApplied: enemy.spawnLaneRoleApplied,
+          marker: enemy.spawnLaneTelegraph?.marker ?? null,
+          color: enemy.spawnLaneTelegraph?.color ?? null,
+          elite: enemy.elite,
+        };
+      } finally {
+        combat.elapsedGameSeconds = previousElapsed;
+      }
+    },
+  });
+  Object.defineProperty(globalThis, '__hmhVisualDebugLaneRoleEnemies', {
+    configurable: true,
+    value() {
+      return combat.enemies
+        .filter((enemy) => enemy.spawnLaneTelegraph)
+        .map((enemy) => ({
+          id: enemy.id,
+          spawnLaneRole: enemy.spawnLaneRole,
+          marker: enemy.spawnLaneTelegraph?.marker ?? null,
+          spawnFrames: enemy.spawnFrames ?? 0,
+          spawnLaneTelegraphFrames: enemy.spawnLaneTelegraphFrames ?? 0,
+          hp: enemy.hp,
+          mapX: enemy.mapX,
+          mapY: enemy.mapY,
+          x: enemy.x,
+          y: enemy.y,
+        }));
     },
   });
   Object.defineProperty(globalThis, '__hmhVisualDebugBoss', {
@@ -8733,13 +8807,6 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
   const activeEncounterVisualPlan = combat.activePoiEncounterVisualPlan ?? null;
   const actComposition = buildLevelOneSpawnCompositionAt(combat.elapsedGameSeconds);
   const poiId = options.poiId ?? activePoi?.id ?? districtContext?.poiId ?? districtContext?.poiApproachId ?? null;
-  const spawn = chooseEnemySpawn({
-    elapsedSeconds: combat.elapsedGameSeconds,
-    seed: options.seed ?? (combat.frame + combat.kills + combat.enemies.length),
-    districtFamily: options.districtFamily ?? districtContext?.districtFamily ?? null,
-    activePoiId: poiId,
-    forceEnemyId: options.forceEnemyId ?? null,
-  });
   const spawnSeed = options.seed ?? (combat.frame + combat.kills + combat.enemies.length);
   const isLevelOneSpawn = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID;
   const layoutSpawnRequest = isLevelOneSpawn
@@ -8750,6 +8817,22 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
         minDistanceTiles: Math.max(actComposition.minSpawnDistanceTiles, 18),
       })
     : null;
+  const usesAuthoredLayoutPoint = Boolean(
+    layoutSpawnRequest
+    && options.angleRadians == null
+    && options.radiusTiles == null
+    && options.mapX == null
+    && options.mapY == null
+  );
+  const spawnLaneRole = options.spawnLaneRole ?? (usesAuthoredLayoutPoint ? layoutSpawnRequest?.laneRole : null) ?? null;
+  const spawn = chooseEnemySpawn({
+    elapsedSeconds: combat.elapsedGameSeconds,
+    seed: spawnSeed,
+    districtFamily: options.districtFamily ?? districtContext?.districtFamily ?? null,
+    activePoiId: poiId,
+    forceEnemyId: options.forceEnemyId ?? null,
+    spawnLaneRole,
+  });
   const angle = options.angleRadians ?? layoutSpawnRequest?.angleRadians ?? ((((combat.frame * 37) + combat.enemies.length * 71) % 360) * Math.PI / 180);
   const radius = options.radiusTiles ?? Math.max(layoutSpawnRequest?.distanceTiles ?? 0, actComposition.minSpawnDistanceTiles, 10 + (combat.frame % 5));
   const rangedRoll = ((combat.frame + combat.enemies.length) % 100) / 100;
@@ -8759,9 +8842,12 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     : spawn.enemy.preferredRangeMode === 'melee'
       ? false
       : rangedRoll < rangedShare);
-  const elite = options.elite ?? ((((combat.frame + combat.kills) % 100) / 100) < director.eliteEnemyShare);
+  const elite = options.elite ?? (
+    levelOneSpawnLaneForcesElite(spawnLaneRole)
+    || ((((combat.frame + combat.kills) % 100) / 100) < director.eliteEnemyShare)
+  );
   const miniBoss = Boolean(options.miniBoss);
-  const useAuthoredLayoutPoint = layoutSpawnRequest && options.angleRadians == null && options.radiusTiles == null;
+  const useAuthoredLayoutPoint = usesAuthoredLayoutPoint;
   const desiredMapX = options.mapX ?? (useAuthoredLayoutPoint ? layoutSpawnRequest.desiredX : combat.playerMapX + Math.cos(angle) * radius);
   const desiredMapY = options.mapY ?? (useAuthoredLayoutPoint ? layoutSpawnRequest.desiredY : combat.playerMapY + Math.sin(angle) * radius);
   const isPoiSpawn = String(options.spawnSource ?? '').startsWith('poi-');
@@ -8839,9 +8925,15 @@ function spawnRoguelikeEnemy(director = currentRoguelikeSpawnDirector(combat.ela
     poiEncounterId: options.poiEncounterId ?? null,
     macroRole: districtContext?.macroRole ?? null,
     spawnSource: options.spawnSource ?? (spawn.spawnContext?.source ?? 'timeline'),
-    spawnLayoutZoneId: layoutSpawnRequest?.zoneId ?? null,
-    spawnLaneId: layoutSpawnRequest?.laneId ?? null,
-    spawnLaneRole: layoutSpawnRequest?.laneRole ?? null,
+    spawnLayoutZoneId: useAuthoredLayoutPoint ? layoutSpawnRequest?.zoneId ?? null : null,
+    spawnLaneId: useAuthoredLayoutPoint ? layoutSpawnRequest?.laneId ?? null : null,
+    spawnLaneRole,
+    spawnLaneRoleApplied: Boolean(spawn.spawnContext?.laneRoleApplied),
+    spawnLaneTelegraph: spawn.spawnContext?.laneRoleApplied
+      ? levelOneSpawnLaneTelegraphForRole(spawnLaneRole)
+      : null,
+    spawnLaneTelegraphStarted: false,
+    spawnLaneTelegraphFrames: 0,
     spawnBoundsAdjusted: Boolean(safeSpawn.boundsAdjusted),
     spawnResolverFound: Boolean(safeSpawn.found),
     balanceCard,
@@ -9585,10 +9677,13 @@ function updateRoguelikeEnemies(director, dt) {
   const enemyWorldBounds = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
     ? buildLevelOneRunWorldDimensions({ width: combat.worldWidth, height: combat.worldHeight })
     : null;
+  const telegraphViewportWidth = dom.combatCanvas?.width ?? 1280;
+  const telegraphViewportHeight = dom.combatCanvas?.height ?? 720;
   for (let ei = 0; ei < combat.enemies.length; ei += 1) {
     const enemy = combat.enemies[ei];
     if (enemy.hitFlash > 0) enemy.hitFlash -= 1;
     if ((enemy.goreFrames ?? 0) > 0) enemy.goreFrames -= 1;
+    if ((enemy.spawnFrames ?? 0) > 0) enemy.spawnFrames -= 1;
     const encounterBehavior = combat.activePoiEncounterId
       ? buildEncounterEnemyBehaviorProfile({ poiId: combat.activePoiEncounterId, enemyId: enemy.id })
       : { speedMul: 1, desiredDistanceMul: 1, telegraphBonusFrames: 0, attackResetFrames: null };
@@ -9835,6 +9930,16 @@ function updateRoguelikeEnemies(director, dt) {
     const projected = groundEntityContactPointForProjection(isoToScreen(enemy.mapX, enemy.mapY));
     enemy.x = projected.x;
     enemy.y = projected.y;
+    if (enemy.spawnLaneTelegraph) {
+      const telegraphOnScreen = projected.x >= -96 && projected.x <= telegraphViewportWidth + 96
+        && projected.y >= -96 && projected.y <= telegraphViewportHeight + 96;
+      if (!enemy.spawnLaneTelegraphStarted && telegraphOnScreen) {
+        enemy.spawnLaneTelegraphStarted = true;
+        enemy.spawnLaneTelegraphFrames = 24;
+      } else if (enemy.spawnLaneTelegraphStarted && (enemy.spawnLaneTelegraphFrames ?? 0) > 0) {
+        enemy.spawnLaneTelegraphFrames -= 1;
+      }
+    }
   }
 
   // Single pass over the enemy list: handle the dead (XP/drops) and keep
@@ -13248,6 +13353,61 @@ function drawEnemyProxyTelegraph(ctx, enemy, renderProfile, drawSize) {
   ctx.restore();
 }
 
+function drawLevelOneSpawnLaneTelegraph(ctx, enemy, centerX, footY, drawSize) {
+  const plan = enemy.spawnLaneTelegraph;
+  if (!plan || (enemy.spawnLaneTelegraphFrames ?? 0) <= 0) return;
+
+  const pulse = gameSettings.reduceMotion
+    ? 0.86
+    : 0.76 + Math.sin((combat.frame + (enemy.mapX ?? 0) * 5) * 0.42) * 0.18;
+  const radiusX = drawSize * 0.5;
+  const radiusY = drawSize * 0.19;
+  const markerY = footY - drawSize * 0.04;
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.globalAlpha = Math.max(0.58, Math.min(0.96, pulse));
+  ctx.strokeStyle = plan.color;
+  ctx.fillStyle = plan.fillColor;
+  ctx.lineWidth = enemy.elite ? 4 : 3;
+  ctx.setLineDash([...(plan.lineDash ?? [])]);
+  ctx.beginPath();
+  ctx.ellipse(centerX, footY, radiusX, radiusY, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.beginPath();
+  if (plan.marker === 'diamond') {
+    ctx.moveTo(centerX, markerY - 9);
+    ctx.lineTo(centerX + 9, markerY);
+    ctx.lineTo(centerX, markerY + 9);
+    ctx.lineTo(centerX - 9, markerY);
+    ctx.closePath();
+  } else if (plan.marker === 'forward-chevron') {
+    ctx.moveTo(centerX - 12, markerY + 6);
+    ctx.lineTo(centerX, markerY - 7);
+    ctx.lineTo(centerX + 12, markerY + 6);
+  } else if (plan.marker === 'split-chevron') {
+    ctx.moveTo(centerX - 4, markerY - 8);
+    ctx.lineTo(centerX - 15, markerY);
+    ctx.lineTo(centerX - 4, markerY + 8);
+    ctx.moveTo(centerX + 4, markerY - 8);
+    ctx.lineTo(centerX + 15, markerY);
+    ctx.lineTo(centerX + 4, markerY + 8);
+  } else if (plan.marker === 'double-ring') {
+    ctx.ellipse(centerX, footY, radiusX * 0.7, radiusY * 0.68, 0, 0, Math.PI * 2);
+  } else if (plan.marker === 'guard-brackets') {
+    ctx.moveTo(centerX - 15, markerY - 8);
+    ctx.lineTo(centerX - 15, markerY + 8);
+    ctx.lineTo(centerX - 7, markerY + 8);
+    ctx.moveTo(centerX + 15, markerY - 8);
+    ctx.lineTo(centerX + 15, markerY + 8);
+    ctx.lineTo(centerX + 7, markerY + 8);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
 function drawLevelOneEnemyReadabilityAura(ctx, enemy, ex, ey, drawSize, renderProfile = {}, phase = 'behind') {
   if (!isLevelOneCuratedRuntime()) return;
   const centerX = ex + drawSize / 2;
@@ -13378,6 +13538,7 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
       const ey = Math.round(enemy.y - drawHeight + 12 + (renderProfile.anchorBiasY ?? 0));
       const auraX = Math.round(enemy.x + w / 2 - drawHeight / 2);
       drawLevelOneEnemyReadabilityAura(ctx, enemy, auraX, ey, drawHeight, renderProfile, 'behind');
+      drawLevelOneSpawnLaneTelegraph(ctx, enemy, enemy.x + w / 2, enemy.y + (renderProfile.anchorBiasY ?? 0), drawHeight);
       if (enemyFrame._flip) {
         ctx.save();
         ctx.translate(ex + drawWidth / 2, 0);
@@ -13419,6 +13580,14 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
       }
       ctx.restore();
     } else if (!drewBespokeKit) {
+      const fallbackTelegraphSize = isSignatureBoss ? 216 : isMini ? 132 : 88;
+      drawLevelOneSpawnLaneTelegraph(
+        ctx,
+        enemy,
+        enemy.x + w / 2,
+        enemy.y + (renderProfile.anchorBiasY ?? 0),
+        fallbackTelegraphSize,
+      );
       if (isLevelOneCuratedRuntime()) return;
       ctx.fillStyle = renderProfile.fallbackColor ?? (isMini ? '#ff7b2f' : enemy.class?.includes('flying') ? '#6d3cff' : enemy.class === 'armored' ? '#aab6d3' : '#ff476f');
       ctx.fillRect(enemy.x, enemy.y - h, w, h);

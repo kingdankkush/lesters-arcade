@@ -367,6 +367,32 @@ try {
   const liveEvidence = await writeEvidenceCapture(client, 'seed-1337-live-spawn');
   captures.push(liveEvidence);
 
+  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(0, 0)`);
+  const laneRoleProbe = await runInPage(client, `
+    (() => [
+      globalThis.__hmhVisualDebugSpawnLaneRole?.('ranged', 4, -1),
+      globalThis.__hmhVisualDebugSpawnLaneRole?.('flanker', 2, 3),
+      globalThis.__hmhVisualDebugSpawnLaneRole?.('rusher', -3, 1),
+      globalThis.__hmhVisualDebugSpawnLaneRole?.('elite', -2, -3),
+    ])()
+  `);
+  const expectedLaneMarkers = ['diamond', 'split-chevron', 'forward-chevron', 'double-ring'];
+  if (!Array.isArray(laneRoleProbe)
+    || laneRoleProbe.length !== expectedLaneMarkers.length
+    || laneRoleProbe.some((entry, index) => !entry?.spawnLaneRoleApplied || entry.marker !== expectedLaneMarkers[index])
+    || laneRoleProbe.at(-1)?.elite !== true) {
+    throw new Error(`HMH authored lane-role telegraph probe failed: ${JSON.stringify(laneRoleProbe)}`);
+  }
+  await sleep(100);
+  const laneRoleLiveEnemies = await runInPage(client, `globalThis.__hmhVisualDebugLaneRoleEnemies?.()`);
+  if (!Array.isArray(laneRoleLiveEnemies)
+    || laneRoleLiveEnemies.length !== expectedLaneMarkers.length
+    || laneRoleLiveEnemies.some((entry) => entry.spawnFrames <= 0 || entry.spawnLaneTelegraphFrames <= 0 || entry.hp <= 0)) {
+    throw new Error(`HMH authored lane-role enemies did not survive to visual capture: ${JSON.stringify(laneRoleLiveEnemies)}`);
+  }
+  captures.push(await writeEvidenceCapture(client, 'seed-1337-lane-role-telegraphs'));
+  await runInPage(client, `globalThis.__hmhVisualDebugSetPosition?.(0, 0)`);
+
   await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
   await sleep(LIVE_WALK_REAL_TIME_MS);
   await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'd', code: 'KeyD', windowsVirtualKeyCode: 68 });
@@ -434,6 +460,20 @@ try {
     targetId: collisionTarget.id,
     horizontalStopX: horizontalCollision?.playerX ?? null,
     verticalStopY: verticalCollision?.playerY ?? null,
+    horizontalState: {
+      active: horizontalCollision?.combatActive ?? null,
+      gameOver: horizontalCollision?.gameOver ?? null,
+      paused: horizontalCollision?.paused ?? null,
+      levelUpPaused: horizontalCollision?.levelUpPaused ?? null,
+      hp: horizontalCollision?.hp ?? null,
+    },
+    verticalState: {
+      active: verticalCollision?.combatActive ?? null,
+      gameOver: verticalCollision?.gameOver ?? null,
+      paused: verticalCollision?.paused ?? null,
+      levelUpPaused: verticalCollision?.levelUpPaused ?? null,
+      hp: verticalCollision?.hp ?? null,
+    },
   };
   if (!(collisionProbe.horizontalStopX > horizontalStartX + 0.2 && collisionProbe.horizontalStopX <= horizontalLimitX + 0.2)
       || !(collisionProbe.verticalStopY < verticalStartY - 0.2 && collisionProbe.verticalStopY >= verticalLimitY - 0.2)) {
@@ -628,7 +668,7 @@ try {
   if (!antiSlide.canvasWidth || !antiSlide.canvasHeight) throw new Error(`Anti-slide probe could not read canvas dimensions: ${JSON.stringify(antiSlide)}`);
 
   const changed = captures.filter((capture) => capture.status === 'changed');
-  const report = { portalUrl, bootResult, propPersistenceProbe, collisionProbe, runtimeProfile, boundaryProbe, levelUpViewportProbe, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
+  const report = { portalUrl, bootResult, laneRoleProbe, laneRoleLiveEnemies, propPersistenceProbe, collisionProbe, runtimeProfile, boundaryProbe, levelUpViewportProbe, antiSlide, activeEvidenceDistinct, compactWorldTourPositions, captures };
   await mkdir(currentDir, { recursive: true });
   await writeFile(`${currentDir}/visual-regression-report.json`, `${JSON.stringify(report, null, 2)}\n`);
   console.log(JSON.stringify(report, null, 2));

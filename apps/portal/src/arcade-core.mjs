@@ -42,7 +42,11 @@ import { normalizeProfileIdentity } from './hmh-profile-parity.mjs';
 import { createSeededSubstreams } from './seeded-rng.mjs';
 import { gameSlugFor } from './arcade-router.mjs';
 import { levelOneWorldV3WorldBounds } from './hmh-level-one-world-v3-runtime.mjs';
-import { levelOneLayoutV4BoundaryPaletteForSide } from './hmh-level-one-world-v3-gameplay.mjs';
+import {
+  levelOneEnemyMatchesSpawnLaneRole,
+  levelOneLayoutV4BoundaryPaletteForSide,
+  levelOneSpawnLaneForcesElite,
+} from './hmh-level-one-world-v3-gameplay.mjs';
 
 export {
   LEADERBOARD_CADENCES,
@@ -1809,17 +1813,17 @@ export const LESTER_BLASTER_ENVIRONMENTS = Object.freeze([
 ]);
 
 export const LESTER_BLASTER_ENEMY_CATALOG = Object.freeze([
-  Object.freeze({ id: 'fud-goblin', title: 'FUD Goblin', class: 'grunt', baseHealth: 7, damage: 7, speed: 1.8, score: 80, spawnAfterSeconds: 0, aiArchetype: 'swarm-shambler', districtFamilies: Object.freeze(['ghost_town', 'country_road', 'residential_edge']), animationStates: Object.freeze(['shamble', 'lob-sell', 'attack-tell', 'hit', 'red-candle-pop']), attackPatterns: Object.freeze(['slow-sell-arc', 'swarm-body-block']), deathEffect: 'puff of red candle smoke + always-on silver impact sparks', tells: 'mouth opens with SELL bubble wind-up' }),
+  Object.freeze({ id: 'fud-goblin', title: 'FUD Goblin', class: 'grunt', baseHealth: 7, damage: 7, speed: 1.8, score: 80, spawnAfterSeconds: 0, aiArchetype: 'swarm-shambler', districtFamilies: Object.freeze(['desert_approach', 'ghost_town', 'country_road', 'residential_edge']), animationStates: Object.freeze(['shamble', 'lob-sell', 'attack-tell', 'hit', 'red-candle-pop']), attackPatterns: Object.freeze(['slow-sell-arc', 'swarm-body-block']), deathEffect: 'puff of red candle smoke + always-on silver impact sparks', tells: 'mouth opens with SELL bubble wind-up' }),
   Object.freeze({ id: 'gas-fee-wisp', title: 'Gas Fee Wisp', class: 'hazard-flyer', baseHealth: 10, damage: 8, speed: 2.2, score: 140, spawnAfterSeconds: 9999, aiArchetype: 'hover-taxer', districtFamilies: Object.freeze([]), preferredRangeMode: 'ranged', artStatus: 'quarantined-until-bespoke-wisp-art-replaces-gas-beast-proxy', animationStates: Object.freeze(['float', 'tax-pulse', 'attack-tell', 'tar-drop', 'hit', 'pop']), attackPatterns: Object.freeze(['resource-tax', 'sticky-tar-puddle']), deathEffect: 'orange flame pop + pump handle fragments', tells: 'gas-pump body glows before taxing' }),
   Object.freeze({ id: 'paper-hand', title: 'Paper Hands', class: 'panic-melee', baseHealth: 12, damage: 9, speed: 2.0, score: 120, spawnAfterSeconds: 0, aiArchetype: 'panic-charge-flee', districtFamilies: Object.freeze(['ghost_town', 'inner_city']), preferredRangeMode: 'melee', animationStates: Object.freeze(['tremble', 'panic-charge', 'attack-tell', 'wild-swing', 'flee', 'hit', 'crumple', 'death']), attackPatterns: Object.freeze(['wild-melee', 'ally-collision-chaos']), deathEffect: 'white paper confetti + optional red flecks if gore enabled', tells: 'crumpled hands shake before charge' }),
-  Object.freeze({ id: 'fud-goblin-cave', title: 'Cave FUD Goblin', class: 'cave-grunt', baseHealth: 9, damage: 8, speed: 2.05, score: 110, spawnAfterSeconds: 45, aiArchetype: 'cave-lob-scatter', districtFamilies: Object.freeze(['country_road', 'dry_forest_cave']), poiIds: Object.freeze(['dry-forest-cave']), preferredRangeMode: 'melee', enemyKey: 'trenchDegen', animationStates: Object.freeze(['idle', 'run', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['torch-lob', 'cave-mouth-scatter']), deathEffect: 'torch ash burst + cave dust puff', tells: 'bright torch-up silhouette before the cave toss' }),
+  Object.freeze({ id: 'fud-goblin-cave', title: 'Cave FUD Goblin', class: 'cave-grunt', baseHealth: 9, damage: 8, speed: 2.05, score: 110, spawnAfterSeconds: 45, aiArchetype: 'cave-lob-scatter', districtFamilies: Object.freeze(['country_road', 'dry_forest_cave']), poiIds: Object.freeze(['dry-forest-cave']), preferredRangeMode: 'ranged', enemyKey: 'trenchDegen', animationStates: Object.freeze(['idle', 'run', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['torch-lob', 'cave-mouth-scatter']), deathEffect: 'torch ash burst + cave dust puff', tells: 'bright torch-up silhouette before the cave toss' }),
   Object.freeze({ id: 'claim-jumper', title: 'Claim Jumper', class: 'rifle-bandit', baseHealth: 16, damage: 12, speed: 2.1, score: 190, spawnAfterSeconds: 120, aiArchetype: 'cover-peek-rifle', districtFamilies: Object.freeze(['ghost_town', 'residential_edge']), poiIds: Object.freeze(['rugpull-gulch', 'mesa-overlook']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'reload', 'hit', 'death']), attackPatterns: Object.freeze(['cover-peek-rifle', 'false-front-reposition']), deathEffect: 'hat flip + coin-spur sparks + dust burst', tells: 'rifle sights glint before the lane shot' }),
   Object.freeze({ id: 'claim-jumper-sheriff', title: 'Claim-Jumper Sheriff', class: 'rifle-bandit-miniboss', baseHealth: 42, damage: 17, speed: 1.85, score: 620, spawnAfterSeconds: 180, aiArchetype: 'cover-peek-rifle-commander', districtFamilies: Object.freeze(['ghost_town']), poiIds: Object.freeze(['rugpull-gulch']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'reload', 'command-point', 'hit', 'death']), attackPatterns: Object.freeze(['cover-peek-rifle', 'false-front-reposition', 'command-volley']), deathEffect: 'sheriff badge spin + coin-spur sparks + dust plume', tells: 'badge glint and scoped rifle raise before the command volley' }),
   Object.freeze({ id: 'scam-cult-zealot', title: 'Scam Cult Zealot', class: 'fan-shot-zealot', baseHealth: 21, damage: 14, speed: 2.15, score: 255, spawnAfterSeconds: 125, aiArchetype: 'chant-fan-shot', districtFamilies: Object.freeze(['ghost_town']), poiIds: Object.freeze(['rugpull-gulch']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'attack-tell', 'attack', 'reload', 'hit', 'death']), attackPatterns: Object.freeze(['fan-shot-blast', 'chant-aura-stepback']), deathEffect: 'flare ash + robe shred + red dust burst', tells: 'lantern flare pulses before the shotgun fan' }),
   Object.freeze({ id: 'crypto-bro', title: 'Crypto Bro', class: 'kol-ranged-grunt', baseHealth: 18, damage: 12, speed: 1.9, score: 210, spawnAfterSeconds: 55, aiArchetype: 'taunt-strafe-shooter', districtFamilies: Object.freeze(['inner_city', 'residential_edge']), preferredRangeMode: 'ranged', enemyKey: 'cryptoBro', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['phone-taunt-shot', 'jump-back-flex', 'close-knife-panic']), deathEffect: 'shattered phone pixels + green candle confetti', tells: 'phone screen flashes before the shot/taunt' }),
   Object.freeze({ id: 'gas-beast', title: 'Gas Beast', class: 'armored-bruiser', baseHealth: 32, damage: 16, speed: 0.95, score: 340, spawnAfterSeconds: 115, aiArchetype: 'gas-cloud-area-denial', districtFamilies: Object.freeze(['inner_city', 'residential_edge']), preferredRangeMode: 'melee', enemyKey: 'gasBeast', animationStates: Object.freeze(['idle', 'walk', 'run', 'jump', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['gas-tax-pulse', 'slow-claw-swipe', 'short-hop-body-check']), deathEffect: 'orange/blue gas burst + ETH fee shards', tells: 'chest vents glow orange before gas pulse' }),
   Object.freeze({ id: 'sybil-drone', title: 'Bot Swarm (Sybil Drones)', class: 'formation-flyer', baseHealth: 9, damage: 10, speed: 2.4, score: 150, spawnAfterSeconds: 80, aiArchetype: 'parent-drone-formation', districtFamilies: Object.freeze(['desert_approach', 'inner_city']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['hover', 'attack-tell', 'sync-strafe', 'laser-ping', 'scatter', 'hit', 'explode']), attackPatterns: Object.freeze(['formation-laser-ping', 'parent-drone-scatter']), deathEffect: 'cyan electric shards + wallet-address pixels', tells: 'blank wallet face flashes red target dot' }),
-  Object.freeze({ id: 'rug-rat', title: 'Rug Rat', class: 'disruptor', baseHealth: 8, damage: 7, speed: 3.3, score: 130, spawnAfterSeconds: 70, aiArchetype: 'platform-yanker', districtFamilies: Object.freeze(['ghost_town', 'country_road']), preferredRangeMode: 'melee', animationStates: Object.freeze(['scurry', 'attack-tell', 'rug-drag', 'floor-yank', 'hit', 'escape', 'death']), attackPatterns: Object.freeze(['platform-yank', 'low-dash-knockback']), deathEffect: 'torn carpet scraps + red dust puff', tells: 'tiny rolled rug lifts before dash' }),
+  Object.freeze({ id: 'rug-rat', title: 'Rug Rat', class: 'disruptor', baseHealth: 8, damage: 7, speed: 3.3, score: 130, spawnAfterSeconds: 70, aiArchetype: 'platform-yanker', districtFamilies: Object.freeze(['ghost_town', 'country_road']), poiIds: Object.freeze(['rugpull-gulch', 'rugpull-gulch-boss-yard']), preferredRangeMode: 'melee', animationStates: Object.freeze(['scurry', 'attack-tell', 'rug-drag', 'floor-yank', 'hit', 'escape', 'death']), attackPatterns: Object.freeze(['platform-yank', 'low-dash-knockback']), deathEffect: 'torn carpet scraps + red dust puff', tells: 'tiny rolled rug lifts before dash' }),
   Object.freeze({ id: 'honeypot-turret', title: 'Honeypot Turret', class: 'stationary-trap', baseHealth: 18, damage: 13, speed: 0, score: 220, spawnAfterSeconds: 90, aiArchetype: 'loot-bait-trap', districtFamilies: Object.freeze(['country_road', 'inner_city']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['fake-loot', 'snap-open', 'attack-tell', 'clamp-fire', 'hit', 'shatter', 'death']), attackPatterns: Object.freeze(['short-range-spread', 'clamp-burst']), deathEffect: 'golden hex shards + blue reveal sparks', tells: 'too-perfect loot glow pulses twice' }),
   Object.freeze({ id: 'coyote-pack-runner', title: 'Coyote Pack Runner', class: 'pack-ambusher', baseHealth: 18, damage: 13, speed: 3.5, score: 235, spawnAfterSeconds: 90, aiArchetype: 'pack-feint-lunge', districtFamilies: Object.freeze(['country_road', 'dry_forest_cave']), poiIds: Object.freeze(['dry-forest-cave', 'crossroads-trading-post']), preferredRangeMode: 'melee', animationStates: Object.freeze(['idle', 'run', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['pack-feint-lunge', 'side-lane-collapse']), deathEffect: 'dust skid + bone-chip burst', tells: 'head drops and shoulders coil before the pack leap' }),
   Object.freeze({ id: 'wild-boar', title: 'Wild Boar', class: 'charger-animal', baseHealth: 24, damage: 15, speed: 3.1, score: 275, spawnAfterSeconds: 105, aiArchetype: 'straight-line-charge', districtFamilies: Object.freeze(['country_road', 'dry_forest_cave']), poiIds: Object.freeze(['dry-forest-cave', 'crossroads-trading-post']), preferredRangeMode: 'melee', animationStates: Object.freeze(['idle', 'run', 'attack-tell', 'attack', 'hit', 'death']), attackPatterns: Object.freeze(['hoof-scrape-charge', 'recovery-skid-turn']), deathEffect: 'dirt spray + tusk-chip burst', tells: 'front hoof scrapes dirt before the charge commits' }),
@@ -3550,7 +3554,7 @@ function enemyMatchesPoi(enemy, poiId) {
   return (enemy.poiIds ?? []).some((value) => normalizeSpawnAffinity(value) === target);
 }
 
-export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0, districtFamily = null, activePoiId = null, forceEnemyId = null } = {}) {
+export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0, districtFamily = null, activePoiId = null, forceEnemyId = null, spawnLaneRole = null } = {}) {
   const difficulty = getLesterBlasterDifficultyAt(elapsedSeconds);
   const eligible = LESTER_BLASTER_ENEMY_CATALOG.filter((enemy) => enemy.spawnAfterSeconds <= elapsedSeconds);
   const fallbackPool = eligible.length ? eligible : [LESTER_BLASTER_ENEMY_CATALOG[0]];
@@ -3561,14 +3565,27 @@ export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0, districtFamily 
   const poiPool = activePoiId ? fallbackPool.filter((enemy) => enemyMatchesPoi(enemy, activePoiId)) : [];
   const districtPool = districtFamily ? fallbackPool.filter((enemy) => enemyMatchesDistrictFamily(enemy, districtFamily)) : [];
   const themedPool = poiPool.length ? poiPool : districtPool.length ? districtPool : fallbackPool;
+  const lanePool = spawnLaneRole
+    ? themedPool.filter((enemy) => levelOneEnemyMatchesSpawnLaneRole(enemy, spawnLaneRole))
+    : [];
+  const elitePromotionFallback = Boolean(
+    !forcedEnemy
+    && lanePool.length === 0
+    && levelOneSpawnLaneForcesElite(spawnLaneRole)
+    && themedPool.some((enemy) => !enemy?.boss)
+  );
+  const laneRoleApplied = !forcedEnemy && (lanePool.length > 0 || elitePromotionFallback);
+  const selectionPool = lanePool.length > 0 ? lanePool : themedPool;
   const source = forcedEnemy ? 'forced-id' : poiPool.length ? 'poi' : districtPool.length ? 'district-family' : 'timeline';
   const rawIndex = Math.abs(Math.floor(seed));
   const rawEnemy = LESTER_BLASTER_ENEMY_CATALOG[rawIndex % LESTER_BLASTER_ENEMY_CATALOG.length];
   const enemy = forcedEnemy
     ? forcedEnemy
-    : source === 'timeline'
-      ? (rawEnemy?.spawnAfterSeconds <= elapsedSeconds ? rawEnemy : (fallbackPool.at(-1) ?? LESTER_BLASTER_ENEMY_CATALOG[0]))
-      : (themedPool[rawIndex % themedPool.length] ?? themedPool[0] ?? LESTER_BLASTER_ENEMY_CATALOG[0]);
+    : laneRoleApplied
+      ? (selectionPool[rawIndex % selectionPool.length] ?? selectionPool[0] ?? LESTER_BLASTER_ENEMY_CATALOG[0])
+      : source === 'timeline'
+        ? (rawEnemy?.spawnAfterSeconds <= elapsedSeconds ? rawEnemy : (fallbackPool.at(-1) ?? LESTER_BLASTER_ENEMY_CATALOG[0]))
+        : (themedPool[rawIndex % themedPool.length] ?? themedPool[0] ?? LESTER_BLASTER_ENEMY_CATALOG[0]);
   const environmentIndex = Math.min(LESTER_BLASTER_ENVIRONMENTS.length - 1, Math.floor((elapsedSeconds / 60) / 4));
   const environment = LESTER_BLASTER_ENVIRONMENTS[environmentIndex];
 
@@ -3598,7 +3615,11 @@ export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0, districtFamily 
       districtFamily: districtFamily ?? null,
       activePoiId: activePoiId ?? null,
       forceEnemyId: forceEnemyId ?? null,
-      poolSize: forcedEnemy ? 1 : themedPool.length,
+      spawnLaneRole: spawnLaneRole ?? null,
+      laneRoleApplied,
+      elitePromotionFallback,
+      lanePoolSize: lanePool.length,
+      poolSize: forcedEnemy ? 1 : selectionPool.length,
     },
   };
 }
