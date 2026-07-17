@@ -25,10 +25,29 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-from PIL import Image, ImageDraw
+try:
+    from PIL import Image, ImageDraw
+except ModuleNotFoundError:
+    Image = None
+    ImageDraw = None
 
-from mcp import ClientSession
-from mcp.client.streamable_http import streamablehttp_client
+try:
+    from mcp import ClientSession
+    from mcp.client.streamable_http import streamablehttp_client
+except ModuleNotFoundError:
+    ClientSession = None
+    streamablehttp_client = None
+
+
+def require_pillow() -> None:
+    if Image is None or ImageDraw is None:
+        raise RuntimeError("Pillow is required for image normalization and contact-sheet generation")
+
+
+def require_mcp_client() -> None:
+    if ClientSession is None or streamablehttp_client is None:
+        raise RuntimeError("The Python MCP client is required for PixelLab remote commands")
+
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "apps/portal/assets/generated/hmh-aaa-pixellab-quality-wave"
@@ -280,6 +299,7 @@ def selected_targets(names: str | None) -> list[str]:
 
 
 async def balance() -> None:
+    require_mcp_client()
     server = load_server()
     async with streamablehttp_client(server["url"], headers=server.get("headers", {})) as (read, write, _):
         async with ClientSession(read, write) as session:
@@ -288,6 +308,7 @@ async def balance() -> None:
 
 
 async def create(limit: int | None, targets: str | None) -> None:
+    require_mcp_client()
     ledger = load_ledger()
     server = load_server()
     made = 0
@@ -335,6 +356,7 @@ def inflight_count(txt: str) -> int:
 
 
 async def animate(limit: int | None, targets: str | None, max_inflight: int) -> None:
+    require_mcp_client()
     ledger = load_ledger()
     server = load_server()
     queued = 0
@@ -508,6 +530,7 @@ def normalize_downloaded_frame(path: Path, runtime_frame_size: int | None) -> No
     target = int(runtime_frame_size or 0)
     if target <= 0:
         return
+    require_pillow()
     with Image.open(path) as source:
         image = source.convert("RGBA")
     if image.size == (target, target):
@@ -545,6 +568,7 @@ def download_and_normalize(url: str, dest: Path, runtime_frame_size: int | None)
 
 
 async def collect(limit: int | None, targets: str | None, wait_seconds: int = 1800, download_workers: int = 16) -> None:
+    require_mcp_client()
     ledger = load_ledger()
     server = load_server()
     collected_chars = 0
@@ -655,6 +679,7 @@ def write_manifest_and_sheet(ledger: dict[str, Any]) -> None:
                 thumbs.append((key, state, ROOT / "apps/portal" / frames[0].replace("./", "")))
     if not thumbs:
         return
+    require_pillow()
     cell = 132
     label_h = 26
     cols = min(len(qa_states), len(thumbs))

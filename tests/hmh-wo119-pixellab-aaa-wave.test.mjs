@@ -116,12 +116,21 @@ test('WO-119 docs, proof, syntax gate, and PixelLab generator are wired', () => 
 
 test('PixelLab remote completion merges one-direction repair groups into their canonical state', () => {
   const probe = spawnSync('python', ['-c', String.raw`
-import importlib.util
+import builtins, importlib.util
 from pathlib import Path
 p = Path('scripts/pixellab-hmh-aaa-quality-wave.py').resolve()
 spec = importlib.util.spec_from_file_location('wave', p)
 m = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(m)
+real_import = builtins.__import__
+def optional_deps_absent(name, *args, **kwargs):
+    if name.split('.')[0] in {'PIL', 'mcp'}:
+        raise ModuleNotFoundError(name)
+    return real_import(name, *args, **kwargs)
+builtins.__import__ = optional_deps_absent
+try:
+    spec.loader.exec_module(m)
+finally:
+    builtins.__import__ = real_import
 gid = '11111111-1111-1111-1111-111111111111'
 def direction_line(direction):
     urls = ', '.join(f'https://example.invalid/animations/{gid}/{direction}/{i}.png' for i in range(6))
