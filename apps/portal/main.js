@@ -114,6 +114,7 @@ import { buildLevelOneWorldV3VisibleObjects } from './src/hmh-level-one-world-v3
 import {
   levelOneLayoutV4SpawnRequest,
   levelOneRouteEncounterPacingAt,
+  levelOneRouteObjectiveHudState,
   levelOneSpawnLaneForcesElite,
   levelOneSpawnLaneTelegraphForRole,
   levelOneWorldV3BossPoint,
@@ -3051,12 +3052,19 @@ function renderRoguelikeStatBar() {
         extractionPoint: combat.extractionPoint,
       })
     : null;
+  const routePacing = level.id === DEFAULT_CAMPAIGN_LEVEL_ID ? currentLevelOneRoutePacing() : null;
+  const objectiveHud = levelOneRouteObjectiveHudState({
+    routePacing,
+    poiDirective: guidance ? null : activePoi,
+    fallbackLabel: guidance?.label ?? routeWorldState?.statusLabel ?? objective.shortLabel,
+    fallbackTone: guidance ? 'orange' : (routeWorldState?.tone ?? 'cyan'),
+  });
   const threatTone = director.pressure >= 0.8 ? 'red' : director.pressure >= 0.6 ? 'orange' : 'cyan';
   const grenadeType = resolveGrenadeTypeForRun(run);
   const stats = [
     { id: 'survived', label: 'SURVIVED', value: formatSeconds(combat.elapsedGameSeconds), tone: threatTone },
     { id: 'level', label: 'LEVEL', value: `${level.number} · ${director.difficultyLabel.toUpperCase()}`, tone: 'cyan' },
-    { id: 'obj', label: 'OBJECTIVE', value: routeWorldState?.statusLabel ?? objective.shortLabel, tone: guidance ? 'orange' : (routeWorldState?.tone ?? 'cyan') },
+    { id: 'obj', label: 'OBJECTIVE', value: objectiveHud.label, tone: objectiveHud.tone, directional: objectiveHud.directional },
     { id: 'hp', label: 'HP', value: `${Math.max(0, Math.round(combat.health))}/${Math.max(1, Math.round(combat.maxHealth ?? PLAYER_MAX_HEALTH))}`, tone: 'red' },
     { id: 'score', label: 'SCORE', value: Math.round(combat.score).toLocaleString(), tone: 'gold' },
     { id: 'kills', label: 'KILLS', value: `${combat.kills}`, tone: 'gold' },
@@ -3074,8 +3082,8 @@ function renderRoguelikeStatBar() {
     activeFx.push(`${chip.status === 'evolved' ? 'EVOLVED' : chip.status === 'ready' ? 'GOLDEN READY' : 'SYNERGY'} ${chip.title.toUpperCase()}`);
   }
   if (guidance) activeFx.push(`GUIDE ${guidance.label}`);
-  else if (activePoi) activeFx.push(`POI ${activePoi.label}`);
-  else activeFx.push(objective.label.toUpperCase());
+  else if (activePoi && level.id !== DEFAULT_CAMPAIGN_LEVEL_ID) activeFx.push(`POI ${activePoi.label}`);
+  else if (!objectiveHud.directional && objectiveHud.phase === 'travel') activeFx.push(objective.label.toUpperCase());
   if (routeWorldState?.hudChip) activeFx.push(routeWorldState.hudChip);
   if (routeWorldState?.ctaLabel) activeFx.push(routeWorldState.ctaLabel);
   if (activeEncounterVisualPlan?.banner) activeFx.push(`ARENA ${activeEncounterVisualPlan.banner}`);
@@ -3101,6 +3109,7 @@ function renderRoguelikeStatBar() {
   const chips = el('div', { className: 'stat-chips' });
   for (const s of stats) {
     const chip = el('div', { className: 'stat-chip', dataset: { tone: s.tone, stat: s.id } });
+    if (s.directional) chip.dataset.directional = 'true';
     appendText(chip, 'span', s.label);
     appendText(chip, 'strong', s.value);
     if (gameSettings.colorblindTags) appendText(chip, 'small', `Tone ${String(s.tone).toUpperCase()}`, 'stat-tone-tag');
@@ -8191,6 +8200,9 @@ if (tacticalBalanceDebugEnabled) {
       return {
         playerX: combat.playerMapX,
         playerY: combat.playerMapY,
+        campaignLevelId: combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID,
+        routePacing: currentLevelOneRoutePacing(),
+        activePoi: currentCampaignPoi(),
         combatActive: Boolean(combat.active),
         gameOver: Boolean(combat.gameOver),
         paused: Boolean(combat.paused),

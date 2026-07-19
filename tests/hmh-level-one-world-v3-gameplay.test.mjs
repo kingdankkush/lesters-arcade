@@ -9,6 +9,7 @@ import {
   levelOneEnemyMatchesSpawnLaneRole,
   levelOneLayoutV4BoundaryPaletteForSide,
   levelOneRouteEncounterPacingAt,
+  levelOneRouteObjectiveHudState,
   levelOneLayoutV4SpawnRequest,
   levelOneLayoutV4ZoneAt,
   levelOneSpawnLaneForcesElite,
@@ -83,6 +84,47 @@ test('Level 1 route pacing moves through travel, warning, pressure, arena, and c
   assert.equal(arena.poiId, 'dry-forest-cave');
 });
 
+test('Level 1 primary objective promotes direction only during warning and pressure', () => {
+  const entry = HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS.find((poi) => poi.campaign.id === 'dry-forest-cave');
+  const radius = entry.blueprint.arenaRadius;
+  const stateAt = (distanceTiles, completedPoiIds = [], respitePoiId = null) => {
+    const input = {
+      playerX: entry.world.x - distanceTiles,
+      playerY: entry.world.y,
+      completedPoiIds,
+    };
+    return levelOneRouteObjectiveHudState({
+      routePacing: levelOneRouteEncounterPacingAt({ ...input, respitePoiId }),
+      poiDirective: levelOneWorldV3PoiDirectiveAt(input),
+      fallbackLabel: 'SAFE ROAD',
+      fallbackTone: 'cyan',
+    });
+  };
+
+  const warning = stateAt(radius + 13);
+  const pressure = stateAt(radius + 5);
+  const arena = stateAt(Math.max(0, radius - 1));
+  const clear = stateAt(Math.max(0, radius - 1), ['dry-forest-cave'], 'dry-forest-cave');
+  const travel = levelOneRouteObjectiveHudState({
+    routePacing: levelOneRouteEncounterPacingAt({ playerX: -1000, playerY: -1000 }),
+    poiDirective: null,
+    fallbackLabel: 'SAFE ROAD',
+    fallbackTone: 'cyan',
+  });
+
+  assert.equal(warning.directional, true);
+  assert.equal(warning.tone, 'cyan');
+  assert.match(warning.label, /DRY FOREST CAVE · E \d+T/);
+  assert.equal(pressure.directional, true);
+  assert.equal(pressure.tone, 'orange');
+  assert.equal(arena.directional, false);
+  assert.equal(clear.directional, false);
+  assert.equal(travel.directional, false);
+  assert.equal(arena.label, 'SAFE ROAD');
+  assert.equal(clear.label, 'SAFE ROAD');
+  assert.equal(travel.label, 'SAFE ROAD');
+});
+
 test('Level 1 route pacing raises readable role pressure by completed-POI tier without spawn soup', () => {
   const entry = HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS.find((poi) => poi.campaign.id === 'crossroads-trading-post');
   const playerX = entry.world.x - (entry.blueprint.arenaRadius + 5);
@@ -126,6 +168,10 @@ test('World v3 gameplay geography is explicitly integrated and syntax-gated', ()
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   assert.match(main, /levelOneWorldV3PoiDirectiveAt/);
   assert.match(main, /levelOneRouteEncounterPacingAt/);
+  assert.match(main, /levelOneRouteObjectiveHudState/);
+  assert.match(main, /objectiveHud\.directional/);
+  assert.match(main, /activePoi && level\.id !== DEFAULT_CAMPAIGN_LEVEL_ID/);
+  assert.match(main, /objectiveHud\.phase === 'travel'/);
   assert.match(main, /routePacing\?\.genericSpawnSuppression/);
   assert.match(main, /routePacing\?\.maxEnemyMul/);
   assert.match(main, /routePacing\?\.spawnIntervalMul/);
@@ -145,6 +191,8 @@ test('World v3 gameplay geography is explicitly integrated and syntax-gated', ()
   assert.match(main, /if \(\(enemy\.spawnFrames \?\? 0\) > 0\) enemy\.spawnFrames -= 1/);
   assert.match(main, /gameSettings\.reduceMotion\s*\?\s*0\.86/);
   assert.match(main, /__hmhVisualDebugSpawnLaneRole/);
+  const styles = readFileSync(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url), 'utf8');
+  assert.match(styles, /data-stat="obj"\]\[data-directional="true"\]/);
   const syntax = readFileSync(new URL('../scripts/syntax-check.mjs', import.meta.url), 'utf8');
   const visualRegression = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
   assert.match(syntax, /hmh-level-one-world-v3-gameplay\.mjs/);

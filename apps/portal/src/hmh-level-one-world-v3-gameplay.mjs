@@ -190,6 +190,29 @@ export function levelOneRouteEncounterPacingAt({ playerX = 0, playerY = 0, compl
   });
 }
 
+export function levelOneRouteObjectiveHudState({
+  routePacing = null,
+  poiDirective = null,
+  fallbackLabel = 'LEVEL 1 ROUTE',
+  fallbackTone = 'cyan',
+} = {}) {
+  const phase = routePacing?.phase ?? 'travel';
+  const directional = Boolean(
+    poiDirective
+    && routePacing?.poiId
+    && poiDirective.id === routePacing.poiId
+    && (phase === 'warning' || phase === 'pressure'),
+  );
+  return Object.freeze({
+    label: directional ? poiDirective.label : fallbackLabel,
+    tone: directional && phase === 'pressure' ? 'orange' : fallbackTone,
+    directional,
+    phase,
+    poiId: directional ? poiDirective.id : null,
+    source: 'hmh-level-one-route-objective-hud-v1',
+  });
+}
+
 export function levelOneWorldV3BossPoint() {
   return authoredCellToWorld(HMH_LEVEL_ONE_WORLD_V3.anchors.finalBoss.x, HMH_LEVEL_ONE_WORLD_V3.anchors.finalBoss.y);
 }

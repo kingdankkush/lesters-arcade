@@ -41,6 +41,16 @@
   border: 1px solid rgba(255, 255, 255, 0.07);
   white-space: nowrap;
 }
+.roguelike-stat-bar .stat-chip[data-stat="obj"][data-directional="true"] {
+  flex: 1 1 260px;
+  min-width: min(100%, 230px);
+  border-color: rgba(25, 247, 255, 0.34);
+  background: linear-gradient(90deg, rgba(25, 247, 255, 0.1), rgba(2, 6, 16, 0.55));
+}
+.roguelike-stat-bar .stat-chip[data-stat="obj"][data-directional="true"] strong {
+  white-space: normal;
+  line-height: 1.18;
+}
 .roguelike-stat-bar .stat-chip span {
   font: 700 0.6rem/1 "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0.1em;
@@ -97,6 +107,10 @@
   .roguelike-stat-bar { gap: 5px 7px; padding: 6px 8px; }
   .roguelike-stat-bar .stat-chip { padding: 2px 6px; }
   .roguelike-stat-bar .stat-chip strong { font-size: 0.78rem; }
+  .roguelike-stat-bar .stat-chip[data-stat="obj"][data-directional="true"] {
+    flex-basis: 100%;
+    order: -1;
+  }
   /* Phone: keep only the vitals readable at a glance — hide secondary chips so
      the bar stays ONE row and the game window keeps maximum height. */
   .roguelike-stat-bar .stat-hero { display: none; }
