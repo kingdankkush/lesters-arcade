@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeSeparation, blendSteering } from '../apps/portal/src/enemy-steering.mjs';
+import { computeSeparation, blendSteering, isCatMouseTrackingMode, planCatAndMouseSteering } from '../apps/portal/src/enemy-steering.mjs';
 
 test('no neighbors -> zero separation', () => {
   const s = computeSeparation({ x: 0, y: 0 }, [], {});
@@ -81,4 +81,71 @@ test('blendSteering with zero separation equals homing', () => {
   const blended = blendSteering(homing, { x: 0, y: 0 }, 0.65);
   assert.ok(Math.abs(blended.x - 0.6) < 1e-9);
   assert.ok(Math.abs(blended.y - 0.8) < 1e-9);
+});
+
+test('ranged enemies reacquire around cover instead of walking directly into it', () => {
+  assert.equal(isCatMouseTrackingMode('reacquire'), true);
+  assert.equal(isCatMouseTrackingMode('intercept'), true);
+  assert.equal(isCatMouseTrackingMode('orbit'), false);
+  const plan = planCatAndMouseSteering({
+    ranged: true,
+    distanceTiles: 9,
+    desiredDistanceTiles: 5.2,
+    hasLineOfSight: false,
+    homing: { x: 1, y: 0 },
+    orbitSide: 1,
+  });
+  assert.equal(plan.mode, 'reacquire');
+  assert.equal(plan.usesCover, true);
+  assert.ok(plan.direction.x > 0, 'enemy must still close toward the player');
+  assert.ok(plan.direction.y > 0, 'enemy must choose a deterministic lateral detour');
+  assert.ok(Math.abs(Math.hypot(plan.direction.x, plan.direction.y) - 1) < 1e-9);
+});
+
+test('ranged enemies orbit at firing distance and disengage when crowded', () => {
+  const orbit = planCatAndMouseSteering({
+    ranged: true,
+    distanceTiles: 5.5,
+    desiredDistanceTiles: 5.2,
+    hasLineOfSight: true,
+    homing: { x: 1, y: 0 },
+    orbitSide: -1,
+  });
+  assert.equal(orbit.mode, 'orbit');
+  assert.ok(orbit.direction.y < 0);
+
+  const disengage = planCatAndMouseSteering({
+    ranged: true,
+    distanceTiles: 2,
+    desiredDistanceTiles: 5.2,
+    hasLineOfSight: true,
+    homing: { x: 1, y: 0 },
+  });
+  assert.equal(disengage.mode, 'disengage');
+  assert.ok(disengage.direction.x < 0);
+});
+
+test('melee hunters lead a moving player instead of following the old position', () => {
+  const plan = planCatAndMouseSteering({
+    ranged: false,
+    distanceTiles: 8,
+    desiredDistanceTiles: 0.72,
+    hasLineOfSight: true,
+    homing: { x: 1, y: 0 },
+    playerVelocity: { x: 0, y: 4 },
+  });
+  assert.equal(plan.mode, 'intercept');
+  assert.ok(plan.direction.x > 0);
+  assert.ok(plan.direction.y > 0, 'intercept should lead the moving player');
+
+  const hold = planCatAndMouseSteering({
+    ranged: false,
+    distanceTiles: 0.6,
+    desiredDistanceTiles: 0.72,
+    hasLineOfSight: true,
+    homing: { x: 1, y: 0 },
+  });
+  assert.equal(hold.mode, 'hold');
+  assert.equal(hold.speedMul, 0);
+  assert.deepEqual(hold.direction, { x: 0, y: 0 });
 });

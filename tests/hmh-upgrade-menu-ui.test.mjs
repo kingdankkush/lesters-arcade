@@ -100,6 +100,9 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
 
   assert.equal(main.includes("./src/hmh-upgrade-menu-ui.mjs"), true);
   assert.equal(main.includes('buildUpgradeMenuPresentation({'), true);
+  assert.equal(main.includes('levelUpContainer.dataset.density = layout.density'), true);
+  assert.equal(main.includes("--level-up-card-min-height"), true);
+  assert.equal(main.includes("--level-up-description-lines"), true);
   assert.equal(main.includes('level-up-shell'), true);
   assert.equal(main.includes('level-up-slot-label'), true);
   assert.equal(main.includes('upgrade-card-tooltip'), true);
@@ -112,6 +115,9 @@ test('WO-40 runtime, styles, and syntax gate are wired', () => {
   assert.equal(css.includes('.level-up-slot-label'), true);
   assert.equal(css.includes('.upgrade-card-meter'), true);
   assert.equal(css.includes('.upgrade-card-tooltip'), true);
+  assert.match(css, /level-up-overlay\[data-density="spacious"\]/);
+  assert.match(css, /level-up-overlay\[data-density="phone"\]/);
+  assert.match(css, /var\(--level-up-card-min-height/);
   assert.equal(css.includes('.pause-console-shell'), true);
   assert.equal(css.includes('.upgrade-card-effect'), true);
   assert.match(css, /\.mode-card span \{[\s\S]*?white-space: normal/);
@@ -165,6 +171,8 @@ test('responsive level-up layout uses a compact two-column grid in short landsca
   assert.equal(layout.maxHeight, 374);
   assert.equal(layout.maxWidth, 792);
   assert.equal(layout.cardsScrollable, true);
+  assert.equal(layout.density, 'short');
+  assert.ok(layout.cardMinHeight <= 144);
 });
 
 test('touch tablets use a centered two-column draft instead of a stretched phone sheet', () => {
@@ -181,6 +189,38 @@ test('touch tablets use a centered two-column draft instead of a stretched phone
   assert.equal(layout.maxWidth, 752);
   assert.equal(layout.maxHeight, 520);
   assert.equal(layout.insetTop, 252);
+});
+
+test('ultrawide level-up layout uses spacious chrome without stretching cards edge to edge', () => {
+  const layout = buildLevelUpViewportLayout({
+    width: 2560,
+    height: 1080,
+    cardCount: 2,
+    isTouch: false,
+  });
+  assert.equal(layout.mode, 'desktop-grid');
+  assert.equal(layout.density, 'spacious');
+  assert.equal(layout.columns, 2);
+  assert.ok(layout.maxWidth >= 960 && layout.maxWidth <= 1120);
+  assert.equal(layout.maxHeight, 660);
+  assert.equal(layout.insetTop, 210);
+  assert.ok(layout.cardMinHeight >= 220);
+  assert.equal(layout.descriptionLines, 3);
+});
+
+test('narrow phone level-up layout keeps one readable card column and 44px actions', () => {
+  const layout = buildLevelUpViewportLayout({
+    width: 320,
+    height: 568,
+    cardCount: 2,
+    isTouch: true,
+  });
+  assert.equal(layout.mode, 'portrait-sheet');
+  assert.equal(layout.columns, 1);
+  assert.equal(layout.density, 'phone');
+  assert.ok(layout.maxWidth <= 304);
+  assert.ok(layout.cardMinHeight >= 148);
+  assert.equal(layout.minimumActionSize, 44);
 });
 
 test('level-up interaction gate waits for shield time and preexisting pointer release', () => {

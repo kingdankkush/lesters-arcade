@@ -3,6 +3,7 @@ import {
   authoredCellToWorld,
   HMH_LEVEL_ONE_WORLD_V3,
   levelOneWorldV3CellAt,
+  levelOneWorldV3ElevationAt,
 } from './hmh-level-one-world-v3-runtime.mjs';
 
 const CAMPAIGN_POI_BY_ID = new Map(HMH_LEVEL_ONE_WASTELAND_POIS.map((poi) => [poi.id, poi]));
@@ -28,6 +29,55 @@ const DISTRICT_BY_BIOME = Object.freeze({
   C: 'residential-edge',
   S: 'residential-edge',
 });
+
+export const LEVEL_ONE_ELEVATION_TACTICAL_BANDS = Object.freeze([
+  Object.freeze({ elevation: 0, id: 'riverbed', label: 'RIVERBED', traversal: 'basin' }),
+  Object.freeze({ elevation: 1, id: 'lowland', label: 'LOWLAND', traversal: 'flat' }),
+  Object.freeze({ elevation: 2, id: 'bench', label: 'MESA BENCH', traversal: 'rise' }),
+  Object.freeze({ elevation: 3, id: 'ridge', label: 'RIDGELINE', traversal: 'high-ground' }),
+  Object.freeze({ elevation: 4, id: 'summit', label: 'SUMMIT SHELF', traversal: 'cliff-edge' }),
+]);
+
+const ELEVATION_BAND_BY_VALUE = new Map(LEVEL_ONE_ELEVATION_TACTICAL_BANDS.map((band) => [band.elevation, band]));
+
+export function levelOneElevationBandAt(worldX = 0, worldY = 0) {
+  const cell = levelOneWorldV3CellAt(worldX, worldY);
+  const elevation = Math.max(0, Math.min(4, Math.round(Number(cell.elevation) || 0)));
+  const band = ELEVATION_BAND_BY_VALUE.get(elevation) ?? LEVEL_ONE_ELEVATION_TACTICAL_BANDS[1];
+  return Object.freeze({ ...band, elevation, blocked: Boolean(cell.blocked), biome: cell.biome, terrain: cell.terrain });
+}
+
+export function levelOneElevationTraversalSpeedMultiplier(fromX = 0, fromY = 0, toX = fromX, toY = fromY) {
+  const fromElevation = levelOneWorldV3ElevationAt(fromX, fromY);
+  const toElevation = levelOneWorldV3ElevationAt(toX, toY);
+  const elevationDelta = toElevation - fromElevation;
+  if (!elevationDelta) return 1;
+  if (elevationDelta > 0) return Math.max(0.78, 1 - Math.min(3, elevationDelta) * 0.08);
+  return Math.min(1.08, 1 + Math.min(2, Math.abs(elevationDelta)) * 0.04);
+}
+
+export function levelOneElevationTraversalProfile({ fromX = 0, fromY = 0, toX = fromX, toY = fromY } = {}) {
+  const from = levelOneElevationBandAt(fromX, fromY);
+  const to = levelOneElevationBandAt(toX, toY);
+  const elevationDelta = to.elevation - from.elevation;
+  if (!elevationDelta) return Object.freeze({ from, to, elevationDelta: 0, transition: 'flat', moveSpeedMul: 1 });
+  if (elevationDelta > 0) {
+    return Object.freeze({
+      from,
+      to,
+      elevationDelta,
+      transition: 'climb',
+      moveSpeedMul: levelOneElevationTraversalSpeedMultiplier(fromX, fromY, toX, toY),
+    });
+  }
+  return Object.freeze({
+    from,
+    to,
+    elevationDelta,
+    transition: 'descent',
+    moveSpeedMul: levelOneElevationTraversalSpeedMultiplier(fromX, fromY, toX, toY),
+  });
+}
 
 function headingFor(dx, dy) {
   const horizontal = dx < -1 ? 'W' : dx > 1 ? 'E' : '';

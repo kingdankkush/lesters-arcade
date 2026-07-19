@@ -53,6 +53,13 @@ export function levelOneWorldV3WorldBounds() {
   return Object.freeze({ minX: -SPAWN_X, maxX: WIDTH - 1 - SPAWN_X, minY: -SPAWN_Y, maxY: HEIGHT - 1 - SPAWN_Y, width: WIDTH, height: HEIGHT });
 }
 
+export function levelOneWorldV3ElevationAt(worldX = 0, worldY = 0) {
+  const x = Math.round(Number(worldX) || 0) + SPAWN_X;
+  const y = Math.round(Number(worldY) || 0) + SPAWN_Y;
+  if (!authoredInBounds(x, y)) return 4;
+  return Math.max(0, Math.min(4, DATA.layers.elevation[y].charCodeAt(x) - 48));
+}
+
 export function levelOneWorldV3CellAt(worldX = 0, worldY = 0) {
   const authored = worldToAuthoredCell(worldX, worldY);
   const raw = rawCellAtAuthored(authored.x, authored.y);

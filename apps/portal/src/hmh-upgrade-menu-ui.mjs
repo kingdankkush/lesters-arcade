@@ -89,14 +89,21 @@ export function buildLevelUpViewportLayout({
         : 'desktop-grid';
   const availableWidth = Math.max(224, viewportWidth - insetLeft - insetRight);
   const availableHeight = Math.max(224, viewportHeight - baseInsetTop - insetBottom);
-  const maxWidth = Math.min(mode === 'portrait-sheet' ? 480 : 792, availableWidth);
-  const maxHeight = Math.min(mode === 'tablet-grid' ? 520 : availableHeight, availableHeight);
-  const insetTop = baseInsetTop + (mode === 'tablet-grid' ? Math.max(0, (availableHeight - maxHeight) / 2) : 0);
+  const spaciousDesktop = mode === 'desktop-grid' && viewportWidth >= 1600 && viewportHeight >= 800;
+  const phone = mode === 'portrait-sheet' && viewportWidth < 420;
+  const density = shortLandscape ? 'short' : phone ? 'phone' : spaciousDesktop ? 'spacious' : 'standard';
+  const widthCap = mode === 'portrait-sheet' ? 480 : spaciousDesktop ? 1040 : 792;
+  const maxWidth = Math.min(widthCap, availableWidth);
+  const boundedPanelHeight = mode === 'tablet-grid' ? 520 : spaciousDesktop ? 660 : availableHeight;
+  const maxHeight = Math.min(boundedPanelHeight, availableHeight);
+  const centeredPanel = mode === 'tablet-grid' || spaciousDesktop;
+  const insetTop = baseInsetTop + (centeredPanel ? Math.max(0, (availableHeight - maxHeight) / 2) : 0);
   const columns = Math.max(1, Number(cardCount) > 1 && mode !== 'portrait-sheet' ? 2 : 1);
 
   return Object.freeze({
-    version: 'responsive-level-up-layout-v1',
+    version: 'responsive-level-up-layout-v2',
     mode,
+    density,
     columns,
     compact: shortLandscape,
     insetTop,
@@ -105,6 +112,9 @@ export function buildLevelUpViewportLayout({
     insetLeft,
     maxWidth,
     maxHeight,
+    cardMinHeight: shortLandscape ? 132 : phone ? 152 : spaciousDesktop ? 224 : 176,
+    descriptionLines: spaciousDesktop ? 3 : shortLandscape ? 1 : 2,
+    minimumActionSize: 44,
     cardsScrollable: true,
   });
 }

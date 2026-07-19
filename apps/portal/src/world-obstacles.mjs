@@ -258,11 +258,12 @@ export function drawRectIntersectsViewport(rect, viewport, overscan = 0) {
     && y <= viewportHeight + margin;
 }
 
-export function circleTargetHitAlongSegment(fromX, fromY, toX, toY, targets, { defaultRadius = 0.72 } = {}) {
+export function circleTargetHitAlongSegment(fromX, fromY, toX, toY, targets, { defaultRadius = 0.72, excludedTargets = null } = {}) {
   let nearest = null;
   let nearestT = Infinity;
   for (const target of targets ?? []) {
     if (!target || Number(target.hp) <= 0) continue;
+    if (excludedTargets?.has?.(target)) continue;
     const centerX = Number(target.mapX ?? target.worldX ?? target.x);
     const centerY = Number(target.mapY ?? target.worldY ?? target.y);
     if (!Number.isFinite(centerX) || !Number.isFinite(centerY)) continue;

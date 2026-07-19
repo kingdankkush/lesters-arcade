@@ -2957,6 +2957,121 @@ export function levelOneRoguelikePerformanceBudgetAt({ elapsedSeconds = 0, activ
   });
 }
 
+// Runtime-only rendering quality governor for sustained Hard Money Heroes runs.
+// It never changes simulation timing, enemy counts, damage, projectiles, spawning,
+// XP, or settlement evidence. It only layers visual work reductions over the
+// existing elapsed-time Level 1 performance budget.
+const HMH_ADAPTIVE_MAX_TIER = 3;
+const HMH_ADAPTIVE_PRESSURE_FRAMES = 45;
+const HMH_ADAPTIVE_URGENT_PRESSURE_FRAMES = 12;
+const HMH_ADAPTIVE_RECOVERY_FRAMES = 240;
+
+function finiteAdaptiveMetric(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+export function createAdaptivePerformanceState() {
+  return Object.freeze({
+    version: 'hmh-adaptive-render-governor-v1',
+    tier: 0,
+    pressureFrames: 0,
+    recoveryFrames: 0,
+    reason: 'full-fidelity',
+  });
+}
+
+export function advanceAdaptivePerformanceState(previous = createAdaptivePerformanceState(), {
+  averageFrameMs = 16.67,
+  averageRenderMs = 0,
+  activeEnemies = 0,
+  bossActive = false,
+} = {}) {
+  let tier = Math.max(0, Math.min(HMH_ADAPTIVE_MAX_TIER, Math.round(finiteAdaptiveMetric(previous?.tier))));
+  let pressureFrames = Math.max(0, Math.round(finiteAdaptiveMetric(previous?.pressureFrames)));
+  let recoveryFrames = Math.max(0, Math.round(finiteAdaptiveMetric(previous?.recoveryFrames)));
+  let reason = previous?.reason ?? 'full-fidelity';
+  const frameMs = Math.max(0, finiteAdaptiveMetric(averageFrameMs, 16.67));
+  const renderMs = Math.max(0, finiteAdaptiveMetric(averageRenderMs));
+  const enemies = Math.max(0, Math.round(finiteAdaptiveMetric(activeEnemies)));
+
+  if (bossActive && enemies >= 32 && tier < 1) {
+    return Object.freeze({
+      version: 'hmh-adaptive-render-governor-v1',
+      tier: 1,
+      pressureFrames: 0,
+      recoveryFrames: 0,
+      reason: 'boss-swarm-preemptive',
+    });
+  }
+
+  const urgentPressure = frameMs >= 27 || renderMs >= 18;
+  const sustainedPressure = frameMs >= 20 || renderMs >= 13;
+  const stable = frameMs <= 17.5 && renderMs <= 10;
+
+  if (sustainedPressure) {
+    pressureFrames += 1;
+    recoveryFrames = 0;
+    const threshold = urgentPressure ? HMH_ADAPTIVE_URGENT_PRESSURE_FRAMES : HMH_ADAPTIVE_PRESSURE_FRAMES;
+    if (pressureFrames >= threshold && tier < HMH_ADAPTIVE_MAX_TIER) {
+      tier += 1;
+      pressureFrames = 0;
+      reason = urgentPressure ? 'urgent-frame-pressure' : 'sustained-frame-pressure';
+    }
+  } else if (stable) {
+    pressureFrames = Math.max(0, pressureFrames - 2);
+    if (tier > 0) {
+      recoveryFrames = Math.min(HMH_ADAPTIVE_RECOVERY_FRAMES, recoveryFrames + 1);
+      if (recoveryFrames >= HMH_ADAPTIVE_RECOVERY_FRAMES) {
+        tier -= 1;
+        recoveryFrames = 0;
+        reason = tier === 0 ? 'full-fidelity' : 'stable-recovery';
+      }
+    } else {
+      recoveryFrames = 0;
+    }
+  } else {
+    pressureFrames = Math.max(0, pressureFrames - 1);
+    recoveryFrames = Math.max(0, recoveryFrames - 1);
+  }
+
+  return Object.freeze({
+    version: 'hmh-adaptive-render-governor-v1',
+    tier,
+    pressureFrames,
+    recoveryFrames,
+    reason,
+  });
+}
+
+const HMH_ADAPTIVE_TIER_SCALE = Object.freeze([
+  Object.freeze({ particles: 1, texts: 1, death: 1, animated: 1, animationFps: 1, obstacles: 1, overscan: 1, extraSparkStride: 0 }),
+  Object.freeze({ particles: 0.85, texts: 0.88, death: 0.9, animated: 0.85, animationFps: 0.92, obstacles: 0.9, overscan: 0.82, extraSparkStride: 1 }),
+  Object.freeze({ particles: 0.68, texts: 0.72, death: 0.76, animated: 0.7, animationFps: 0.82, obstacles: 0.8, overscan: 0.66, extraSparkStride: 1 }),
+  Object.freeze({ particles: 0.52, texts: 0.58, death: 0.64, animated: 0.55, animationFps: 0.75, obstacles: 0.68, overscan: 0.5, extraSparkStride: 2 }),
+]);
+
+export function applyAdaptivePerformanceBudget(baseBudget = {}, state = createAdaptivePerformanceState()) {
+  const tier = Math.max(0, Math.min(HMH_ADAPTIVE_MAX_TIER, Math.round(finiteAdaptiveMetric(state?.tier))));
+  const scale = HMH_ADAPTIVE_TIER_SCALE[tier];
+  const scaled = (key, multiplier, floor) => Math.max(floor, Math.round(finiteAdaptiveMetric(baseBudget[key], floor) * multiplier));
+  return Object.freeze({
+    ...baseBudget,
+    maxParticles: scaled('maxParticles', scale.particles, 72),
+    maxFloatingTexts: scaled('maxFloatingTexts', scale.texts, 32),
+    hitSparkEveryNthHit: Math.max(1, Math.round(finiteAdaptiveMetric(baseBudget.hitSparkEveryNthHit, 1)) + scale.extraSparkStride),
+    deathBurstScale: Math.max(0.4, finiteAdaptiveMetric(baseBudget.deathBurstScale, 1) * scale.death),
+    maxAnimatedEnemies: scaled('maxAnimatedEnemies', scale.animated, 18),
+    enemyAnimationFps: scaled('enemyAnimationFps', scale.animationFps, 6),
+    obstacleRenderRadiusWindowed: scaled('obstacleRenderRadiusWindowed', scale.obstacles, 10),
+    obstacleRenderRadiusFullscreen: scaled('obstacleRenderRadiusFullscreen', scale.obstacles, 22),
+    groundOverscanWindowedTiles: scaled('groundOverscanWindowedTiles', scale.overscan, 2),
+    groundOverscanFullscreenTiles: scaled('groundOverscanFullscreenTiles', scale.overscan, 5),
+    adaptiveTier: tier,
+    adaptiveReason: state?.reason ?? 'full-fidelity',
+  });
+}
+
 export function levelOneRoguelikeSpawnDirectorAt(elapsedSeconds = 0, { seed = 0 } = {}) {
   const seconds = Math.max(0, Number(elapsedSeconds) || 0);
   const minutes = seconds / 60;

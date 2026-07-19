@@ -155,3 +155,79 @@ export function shouldUpdateEnemyAi({ frame = 0, enemyIndex = 0, stride = 1 } = 
   const safeStride = Math.max(1, Math.round(Number(stride) || 1));
   return (Math.max(0, Math.round(Number(frame) || 0)) + Math.max(0, Math.round(Number(enemyIndex) || 0))) % safeStride === 0;
 }
+
+function normalizedDirection(vector, fallback = { x: 1, y: 0 }) {
+  const x = Number(vector?.x) || 0;
+  const y = Number(vector?.y) || 0;
+  const length = Math.hypot(x, y);
+  if (length <= 1e-6) return { x: fallback.x, y: fallback.y };
+  return { x: x / length, y: y / length };
+}
+
+const CAT_MOUSE_TRACKING_MODES = new Set(['advance', 'reacquire', 'intercept', 'flank']);
+
+export function isCatMouseTrackingMode(mode = '') {
+  return CAT_MOUSE_TRACKING_MODES.has(String(mode));
+}
+
+/**
+ * Cheap deterministic pursuit policy that turns solid level geometry into
+ * cat-and-mouse counterplay. Ranged actors orbit while they have a shot,
+ * disengage if crowded, and move laterally to reacquire through blocked LOS.
+ * Melee actors lead a moving player instead of following their old position.
+ */
+export function planCatAndMouseSteering({
+  ranged = false,
+  distanceTiles = 0,
+  desiredDistanceTiles = 1,
+  hasLineOfSight = true,
+  homing = { x: 1, y: 0 },
+  playerVelocity = { x: 0, y: 0 },
+  orbitSide = 1,
+} = {}) {
+  const toward = normalizedDirection(homing);
+  const distance = Math.max(0, Number(distanceTiles) || 0);
+  const desired = Math.max(0.25, Number(desiredDistanceTiles) || 1);
+  const side = Number(orbitSide) < 0 ? -1 : 1;
+  const lateral = { x: -toward.y * side, y: toward.x * side };
+
+  if (ranged && !hasLineOfSight) {
+    return Object.freeze({
+      mode: 'reacquire',
+      direction: normalizedDirection({ x: toward.x + lateral.x * 0.72, y: toward.y + lateral.y * 0.72 }, toward),
+      speedMul: 0.92,
+      usesCover: true,
+    });
+  }
+  if (ranged && distance < desired * 0.72) {
+    return Object.freeze({ mode: 'disengage', direction: { x: -toward.x, y: -toward.y }, speedMul: 1.08, usesCover: false });
+  }
+  if (ranged && distance <= desired * 1.35) {
+    return Object.freeze({
+      mode: 'orbit',
+      direction: normalizedDirection({ x: lateral.x + toward.x * 0.12, y: lateral.y + toward.y * 0.12 }, lateral),
+      speedMul: 0.72,
+      usesCover: false,
+    });
+  }
+  if (ranged) {
+    return Object.freeze({ mode: 'advance', direction: toward, speedMul: 0.86, usesCover: false });
+  }
+  if (distance <= desired) {
+    return Object.freeze({ mode: 'hold', direction: { x: 0, y: 0 }, speedMul: 0, usesCover: false });
+  }
+
+  const velocity = normalizedDirection(playerVelocity, { x: 0, y: 0 });
+  const playerSpeed = Math.hypot(Number(playerVelocity?.x) || 0, Number(playerVelocity?.y) || 0);
+  const leadWeight = playerSpeed > 0.15 ? Math.min(0.42, playerSpeed * 0.075) : 0;
+  const direction = normalizedDirection({
+    x: toward.x + velocity.x * leadWeight + (!hasLineOfSight ? lateral.x * 0.48 : 0),
+    y: toward.y + velocity.y * leadWeight + (!hasLineOfSight ? lateral.y * 0.48 : 0),
+  }, toward);
+  return Object.freeze({
+    mode: hasLineOfSight ? 'intercept' : 'flank',
+    direction,
+    speedMul: hasLineOfSight ? 1 : 0.94,
+    usesCover: !hasLineOfSight,
+  });
+}

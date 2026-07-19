@@ -29,6 +29,8 @@ import {
   computeSeparation,
   blendSteering,
   enemyAiUpdateStride,
+  isCatMouseTrackingMode,
+  planCatAndMouseSteering,
   shouldUpdateEnemyAi,
 } from './src/enemy-steering.mjs';
 import { computeGoreDampening } from './src/gore-system.mjs';
@@ -113,6 +115,7 @@ import {
 import { buildLevelOneWorldV3VisibleObjects } from './src/hmh-level-one-world-v3-objects.mjs';
 import {
   levelOneLayoutV4SpawnRequest,
+  levelOneElevationTraversalSpeedMultiplier,
   levelOneRouteEncounterPacingAt,
   levelOneRouteObjectiveHudState,
   levelOneSpawnLaneForcesElite,
@@ -220,6 +223,9 @@ import {
   ROGUELIKE_LEVEL_CAP,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
+  advanceAdaptivePerformanceState,
+  applyAdaptivePerformanceBudget,
+  createAdaptivePerformanceState,
   levelOneRoguelikeBossRoster,
   levelOneThreatBeatAt,
   HMH_LEVEL_ONE_BOSS_BEAT_SCHEDULE,
@@ -1734,6 +1740,7 @@ const combat = {
   frameTimes: [],
   renderTimes: [],
   fps: 60,
+  adaptivePerformance: createAdaptivePerformanceState(),
   groundRenderStats: { passMs: 0, groupCount: 0, cacheSize: 0, cacheHits: 0, cacheMisses: 0 },
   status: 'Attract mode: choose free or paid, then start the 60fps combat test.',
   gameOverSubmitted: false,
@@ -2059,11 +2066,12 @@ function currentLevelOnePerformanceBudget() {
       groundOverscanFullscreenTiles: 20,
     };
   }
-  return levelOneRoguelikePerformanceBudgetAt({
+  const scheduledBudget = levelOneRoguelikePerformanceBudgetAt({
     elapsedSeconds: combat.elapsedGameSeconds,
     activeEnemies: combat.enemies?.length ?? 0,
     reduceMotion: Boolean(gameSettings.reduceMotion),
   });
+  return applyAdaptivePerformanceBudget(scheduledBudget, combat.adaptivePerformance);
 }
 
 function currentCampaignPoi() {
@@ -2733,12 +2741,15 @@ function applyLevelUpOverlayLayout(levelUpContainer) {
     isTouch: profile.isTouch,
   });
   levelUpContainer.dataset.layout = layout.mode;
+  levelUpContainer.dataset.density = layout.density;
   levelUpContainer.dataset.compact = String(layout.compact);
   levelUpContainer.style.setProperty('--level-up-top', `${Math.round(viewport.offsetTop + layout.insetTop)}px`);
   levelUpContainer.style.setProperty('--level-up-left', `${Math.round(viewport.offsetLeft + viewport.width / 2)}px`);
   levelUpContainer.style.setProperty('--level-up-max-width', `${Math.round(layout.maxWidth)}px`);
   levelUpContainer.style.setProperty('--level-up-max-height', `${Math.round(layout.maxHeight)}px`);
   levelUpContainer.style.setProperty('--level-up-columns', String(layout.columns));
+  levelUpContainer.style.setProperty('--level-up-card-min-height', `${Math.round(layout.cardMinHeight)}px`);
+  levelUpContainer.style.setProperty('--level-up-description-lines', String(layout.descriptionLines));
   levelUpContainer.classList.add('level-up-overlay');
 }
 
@@ -6614,6 +6625,9 @@ async function startCombat(options = {}) {
   combat.startedAt = performance.now();
 
   combat.frame = 0;
+  combat.frameTimes.length = 0;
+  combat.renderTimes.length = 0;
+  combat.adaptivePerformance = createAdaptivePerformanceState();
   _obstacleCacheFrame = -1;
   _obstacleCache = [];
   combat.elapsedGameSeconds = 0;
@@ -8235,6 +8249,12 @@ if (tacticalBalanceDebugEnabled) {
         averageRenderMs,
         p95RenderMs,
         sampleCount: samples.length,
+        adaptivePerformance: { ...combat.adaptivePerformance },
+        enemyPursuitModes: combat.enemies.reduce((counts, enemy) => {
+          const mode = enemy.pursuitMode ?? 'unplanned';
+          counts[mode] = (counts[mode] ?? 0) + 1;
+          return counts;
+        }, {}),
         canvas: {
           internalWidth: dom.combatCanvas?.width ?? 0,
           internalHeight: dom.combatCanvas?.height ?? 0,
@@ -9322,8 +9342,14 @@ function updateRoguelikeMovement(dt) {
   if (movement.speed > 0.01) {
     const fromX = combat.playerMapX;
     const fromY = combat.playerMapY;
-    const toX = fromX + movement.vx * dt;
-    const toY = fromY + movement.vy * dt;
+    const rawToX = fromX + movement.vx * dt;
+    const rawToY = fromY + movement.vy * dt;
+    const elevationMoveSpeedMul = (combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID) === DEFAULT_CAMPAIGN_LEVEL_ID
+      ? levelOneElevationTraversalSpeedMultiplier(fromX, fromY, rawToX, rawToY)
+      : 1;
+    combat.elevationMoveSpeedMul = elevationMoveSpeedMul;
+    const toX = fromX + (rawToX - fromX) * elevationMoveSpeedMul;
+    const toY = fromY + (rawToY - fromY) * elevationMoveSpeedMul;
     // Solid obstacles (buildings/trees/objects) block movement: the player slides
     // along / stops at their footprint instead of walking through them.
     const afterObstacles = resolvePlayerCollision(fromX, fromY, toX, toY, 0.42, currentObstacles());
@@ -9418,14 +9444,13 @@ function updateRoguelikeBullets(dt) {
       bullet.ttl = 0;
       continue;
     }
-    const eligibleEnemies = combat.enemies.filter((enemy) => !bullet.hitEnemies?.has(enemy));
     const hitEnemy = circleTargetHitAlongSegment(
       bullet.prevWorldX,
       bullet.prevWorldY,
       bullet.worldX,
       bullet.worldY,
-      eligibleEnemies,
-      { defaultRadius: bullet.hitRadius ?? 0.72 },
+      combat.enemies,
+      { defaultRadius: bullet.hitRadius ?? 0.72, excludedTargets: bullet.hitEnemies },
     );
     if (hitEnemy) {
       damageEnemy(hitEnemy, bullet.damage, bullet.weaponId);
@@ -9767,43 +9792,59 @@ function updateRoguelikeEnemies(director, dt) {
             selfIndex: ei,
             maxNeighbors: 10,
         });
-        if (distance > desiredDistance) {
-          const playerMoveSpeed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
-          const speed = calculateEnemyChaseSpeed({
-            enemySpeed: enemy.speed ?? 1,
-            elite: enemy.elite,
-            boss: Boolean(enemy.boss || enemy.miniBoss || enemy.signatureBoss),
-            pressure: director.pressure,
-            encounterSpeedMul: encounterBehavior.speedMul ?? 1,
-            slowFactor,
-            playerMoveSpeed,
-          });
-          const dir = blendSteering({ x: dx / distance, y: dy / distance }, sep, 0.6);
-          enemy.cachedMoveVx = dir.x * speed;
-          enemy.cachedMoveVy = dir.y * speed;
-          enemy.cachedMoveMode = 'chase';
-        } else if (enemy.ranged) {
-          const dir = blendSteering({ x: -dx / distance, y: -dy / distance }, sep, 0.5);
-          enemy.cachedMoveVx = dir.x * 0.55 * slowFactor;
-          enemy.cachedMoveVy = dir.y * 0.55 * slowFactor;
-          enemy.cachedMoveMode = 'retreat';
-        } else {
-          enemy.cachedMoveVx = 0;
-          enemy.cachedMoveVy = 0;
-          enemy.cachedMoveMode = 'idle';
-        }
+        // LOS is sampled only on the existing AI stride. This makes buildings,
+        // cliff props, and town walls useful cover without adding a per-frame
+        // obstacle scan for distant enemies.
+        const hasLineOfSight = distance > 24 || !obstacleHitAlongSegment(
+          enemy.mapX,
+          enemy.mapY,
+          combat.playerMapX,
+          combat.playerMapY,
+          obstacles,
+          0.9,
+        );
+        const pursuit = planCatAndMouseSteering({
+          ranged: Boolean(enemy.ranged),
+          distanceTiles: distance,
+          desiredDistanceTiles: desiredDistance,
+          hasLineOfSight,
+          homing: { x: dx / distance, y: dy / distance },
+          playerVelocity: { x: combat.velocityX ?? 0, y: combat.velocityY ?? 0 },
+          orbitSide: ((ei + runSeed) & 1) === 0 ? 1 : -1,
+        });
+        const playerMoveSpeed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
+        const speed = calculateEnemyChaseSpeed({
+          enemySpeed: enemy.speed ?? 1,
+          elite: enemy.elite,
+          boss: Boolean(enemy.boss || enemy.miniBoss || enemy.signatureBoss),
+          pressure: director.pressure,
+          encounterSpeedMul: encounterBehavior.speedMul ?? 1,
+          slowFactor,
+          playerMoveSpeed,
+        }) * pursuit.speedMul;
+        const separationWeight = pursuit.mode === 'orbit' ? 0.34 : pursuit.mode === 'disengage' ? 0.46 : 0.6;
+        const dir = blendSteering(pursuit.direction, sep, separationWeight);
+        enemy.cachedMoveVx = dir.x * speed;
+        enemy.cachedMoveVy = dir.y * speed;
+        enemy.cachedMoveMode = pursuit.mode;
+        enemy.pursuitMode = pursuit.mode;
+        enemy.hasLineOfSight = hasLineOfSight;
+        enemy.usingCoverTactic = pursuit.usesCover;
       }
-      const cachedMoveMode = enemy.cachedMoveMode ?? 'idle';
+      const cachedMoveMode = enemy.cachedMoveMode ?? 'hold';
       const cachedMoveVx = Number.isFinite(enemy.cachedMoveVx) ? enemy.cachedMoveVx : 0;
       const cachedMoveVy = Number.isFinite(enemy.cachedMoveVy) ? enemy.cachedMoveVy : 0;
-      const cachedMovementMatchesState = cachedMoveMode === 'chase'
-        ? distance > desiredDistance
-        : cachedMoveMode === 'retreat' && enemy.ranged && distance <= desiredDistance;
+      const cachedMovementMatchesState = cachedMoveMode !== 'hold' && cachedMoveMode !== 'idle';
       if (cachedMovementMatchesState && (cachedMoveVx !== 0 || cachedMoveVy !== 0)) {
         const fromX = enemy.mapX;
         const fromY = enemy.mapY;
-        const toX = fromX + cachedMoveVx * movementDt;
-        const toY = fromY + cachedMoveVy * movementDt;
+        const rawToX = fromX + cachedMoveVx * movementDt;
+        const rawToY = fromY + cachedMoveVy * movementDt;
+        const elevationMoveSpeedMul = levelOneBudgeted
+          ? levelOneElevationTraversalSpeedMultiplier(fromX, fromY, rawToX, rawToY)
+          : 1;
+        const toX = fromX + (rawToX - fromX) * elevationMoveSpeedMul;
+        const toY = fromY + (rawToY - fromY) * elevationMoveSpeedMul;
         const moveOptions = {
           seed: runSeed,
           fromX,
@@ -9818,7 +9859,8 @@ function updateRoguelikeEnemies(director, dt) {
           biomeAt: currentTerrainBiomeAt,
           worldBounds: enemyWorldBounds,
         };
-        const boundedMove = cachedMoveMode === 'chase'
+        const trackingMove = isCatMouseTrackingMode(cachedMoveMode);
+        const boundedMove = trackingMove
           ? resolveTrackingAiMove({
               ...moveOptions,
               targetX: combat.playerMapX,
@@ -9829,7 +9871,7 @@ function updateRoguelikeEnemies(director, dt) {
         enemy.mapX = boundedMove.x;
         enemy.mapY = boundedMove.y;
         enemy.worldBoundsAdjusted = Boolean(boundedMove.boundsAdjusted);
-        enemy.pathDetoured = cachedMoveMode === 'chase' && Boolean(boundedMove.detoured);
+        enemy.pathDetoured = trackingMove && Boolean(boundedMove.detoured);
       }
       enemy.attackTimer -= 1;
       // Mini-boss 2-phase enrage (handoff §12.7): POI mini-bosses tighten their
@@ -12554,6 +12596,10 @@ function drawSceneLighting(ctx, width, height) {
   ctx.restore();
 }
 
+function isAdaptiveBossThreat(enemy) {
+  return Boolean(enemy?.boss || enemy?.miniBoss || enemy?.signatureBoss);
+}
+
 function drawCombatScene(timestamp = 0) {
   const canvas = dom.combatCanvas;
   // Heartbeat gate: when there is no active run and we are not on the game-over
@@ -12591,6 +12637,15 @@ function drawCombatScene(timestamp = 0) {
   if (combat.frameTimes.length > 45) combat.frameTimes.shift();
   const avgFrame = combat.frameTimes.reduce((sum, frame) => sum + frame, 0) / combat.frameTimes.length;
   combat.fps = Math.round(1000 / Math.max(avgFrame, 1));
+  const avgRender = combat.renderTimes.length
+    ? combat.renderTimes.reduce((sum, frame) => sum + frame, 0) / combat.renderTimes.length
+    : 0;
+  combat.adaptivePerformance = advanceAdaptivePerformanceState(combat.adaptivePerformance, {
+    averageFrameMs: avgFrame,
+    averageRenderMs: avgRender,
+    activeEnemies: combat.enemies?.length ?? 0,
+    bossActive: Boolean(combat.enemies?.some(isAdaptiveBossThreat)),
+  });
   if (dom.fpsPill) dom.fpsPill.textContent = `${combat.fps}fps / target ${LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps}`;
 
   while (combat.accumulatorMs >= FIXED_STEP_MS) {

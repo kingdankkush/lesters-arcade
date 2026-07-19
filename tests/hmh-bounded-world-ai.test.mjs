@@ -45,14 +45,15 @@ test('WO-24 bounded AI move still applies obstacle and water resolution before b
   assert.equal(moved.boundsAdjusted, false);
 });
 
-test('runtime uses obstacle-tracking pursuit for chase and bounded movement for ranged backaway', () => {
+test('runtime uses obstacle-tracking pursuit for intercept/reacquire and bounded movement for orbit/disengage', () => {
   const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
   const updateBlock = main.slice(main.indexOf('function updateRoguelikeEnemies'), main.indexOf('function dropRoguelikePowerUp'));
 
   assert.ok(main.includes('resolveTrackingAiMove'), 'main.js should import the obstacle-tracking movement helper');
-  assert.ok(updateBlock.includes('resolveTrackingAiMove({'), 'chasing enemies should detour around authored obstacles');
-  assert.ok(updateBlock.includes('resolveBoundedAiMove(moveOptions)'), 'ranged backaway should retain bounded movement');
-  assert.ok(updateBlock.includes("enemy.cachedMoveMode = 'chase'"), 'sampled steering should cache chase velocity');
+  assert.ok(updateBlock.includes('resolveTrackingAiMove({'), 'tracking pursuit modes should detour around authored obstacles');
+  assert.ok(updateBlock.includes('resolveBoundedAiMove(moveOptions)'), 'orbit and disengage should retain bounded movement');
+  assert.ok(updateBlock.includes('enemy.cachedMoveMode = pursuit.mode'), 'sampled steering should cache the tactical pursuit mode');
+  assert.ok(updateBlock.includes('isCatMouseTrackingMode(cachedMoveMode)'), 'tracking modes should avoid per-enemy inline array allocation');
   assert.ok(updateBlock.includes('const movementDt = Math.min(dt, 0.05)'), 'collision movement should run in capped per-frame steps');
   assert.match(updateBlock, /boss: Boolean\(enemy\.boss \|\| enemy\.miniBoss \|\| enemy\.signatureBoss\)/, 'bosses should use the persistent catch-up pursuit speed law');
   assert.ok(updateBlock.includes('worldBounds: enemyWorldBounds'), 'enemy AI should receive finite world bounds');

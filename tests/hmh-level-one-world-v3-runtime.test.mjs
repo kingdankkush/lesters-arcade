@@ -7,6 +7,7 @@ import {
   authoredCellToWorld,
   buildLevelOneWorldV3Reachability,
   levelOneWorldV3CellAt,
+  levelOneWorldV3ElevationAt,
   levelOneWorldV3NeighborMask,
   levelOneWorldV3WorldBounds,
   worldToAuthoredCell,
@@ -55,6 +56,21 @@ test('Blueprint v3 runtime cell metadata controls terrain, traversal, routes, an
   assert.equal(stoneBridge.terrain, 'Q');
   assert.equal(stoneBridge.groundNav, '.');
   assert.equal(levelOneWorldV3CellAt(500, 500).groundNav, '#', 'outside the finite world must be blocked');
+});
+
+test('Blueprint v3 scalar elevation lookup matches cell metadata without building runtime cell objects', () => {
+  for (const [x, y] of [[0, 0], [16, -13], [30, -58], [79, -43], [91, 21]]) {
+    assert.equal(levelOneWorldV3ElevationAt(x, y), Number(levelOneWorldV3CellAt(x, y).elevation));
+  }
+  const spawn = HMH_LEVEL_ONE_WORLD_V3.anchors.spawn;
+  for (let authoredY = 0; authoredY < 100; authoredY += 1) {
+    for (let authoredX = 0; authoredX < 100; authoredX += 1) {
+      const elevation = levelOneWorldV3ElevationAt(authoredX - spawn.x, authoredY - spawn.y);
+      assert.equal(elevation, Number(HMH_LEVEL_ONE_WORLD_V3.layers.elevation[authoredY][authoredX]));
+      assert.ok(elevation >= 0 && elevation <= 4);
+    }
+  }
+  assert.equal(levelOneWorldV3ElevationAt(500, 500), 4);
 });
 
 test('Blueprint v3 edge masks are reciprocal and deterministic across every neighbor seam', () => {

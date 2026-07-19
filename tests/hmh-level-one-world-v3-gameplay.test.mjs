@@ -6,7 +6,11 @@ import {
   HMH_LEVEL_ONE_LAYOUT_V4,
   HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS,
   HMH_LEVEL_ONE_WORLD_V3_GAMEPLAY_POIS,
+  LEVEL_ONE_ELEVATION_TACTICAL_BANDS,
   levelOneEnemyMatchesSpawnLaneRole,
+  levelOneElevationBandAt,
+  levelOneElevationTraversalProfile,
+  levelOneElevationTraversalSpeedMultiplier,
   levelOneLayoutV4BoundaryPaletteForSide,
   levelOneRouteEncounterPacingAt,
   levelOneRouteObjectiveHudState,
@@ -156,6 +160,35 @@ test('World v3 district context follows authored biome, route, and POI cells', (
   assert.equal(context.source, 'hmh-level-one-world-v3');
 });
 
+test('Level 1 exposes four-plus traversable elevation ranges with readable tactical labels', () => {
+  assert.ok(LEVEL_ONE_ELEVATION_TACTICAL_BANDS.length >= 4);
+  const samples = [
+    authoredCellToWorld(55, 58),
+    authoredCellToWorld(71, 9),
+    authoredCellToWorld(1, 7),
+    authoredCellToWorld(14, 7),
+    authoredCellToWorld(1, 1),
+  ].map(({ x, y }) => levelOneElevationBandAt(x, y));
+  assert.deepEqual(samples.map((sample) => sample.elevation), [0, 1, 2, 3, 4]);
+  assert.equal(new Set(samples.map((sample) => sample.label)).size, 5);
+});
+
+test('elevation traversal makes climbs deliberate, descents fluid, and flat movement neutral', () => {
+  const low = authoredCellToWorld(71, 9);
+  const bench = authoredCellToWorld(1, 7);
+  const flat = levelOneElevationTraversalProfile({ fromX: low.x, fromY: low.y, toX: low.x + 0.1, toY: low.y });
+  const climb = levelOneElevationTraversalProfile({ fromX: low.x, fromY: low.y, toX: bench.x, toY: bench.y });
+  const descent = levelOneElevationTraversalProfile({ fromX: bench.x, fromY: bench.y, toX: low.x, toY: low.y });
+  assert.equal(flat.transition, 'flat');
+  assert.equal(flat.moveSpeedMul, 1);
+  assert.equal(climb.transition, 'climb');
+  assert.ok(climb.moveSpeedMul >= 0.78 && climb.moveSpeedMul < 1);
+  assert.equal(descent.transition, 'descent');
+  assert.ok(descent.moveSpeedMul > 1 && descent.moveSpeedMul <= 1.08);
+  assert.equal(levelOneElevationTraversalSpeedMultiplier(low.x, low.y, bench.x, bench.y), climb.moveSpeedMul);
+  assert.equal(levelOneElevationTraversalSpeedMultiplier(bench.x, bench.y, low.x, low.y), descent.moveSpeedMul);
+});
+
 test('World v3 final boss and extraction use the approved boss yard and road-out anchors', () => {
   assert.deepEqual(levelOneWorldV3BossPoint(), authoredCellToWorld(87, 35));
   const extraction = levelOneWorldV3ExtractionPoint();
@@ -180,6 +213,11 @@ test('World v3 gameplay geography is explicitly integrated and syntax-gated', ()
   assert.match(main, /levelOneWorldV3DistrictContextAt/);
   assert.match(main, /levelOneWorldV3BossPoint/);
   assert.match(main, /levelOneWorldV3ExtractionPoint/);
+  assert.match(main, /levelOneElevationTraversalSpeedMultiplier/);
+  assert.match(main, /planCatAndMouseSteering/);
+  assert.match(main, /pursuitMode/);
+  assert.match(main, /hasLineOfSight/);
+  assert.match(main, /elevationMoveSpeedMul/);
   assert.match(main, /levelOneSpawnLaneForcesElite/);
   assert.match(main, /spawnLaneRole,/);
   assert.match(main, /spawnLaneRoleApplied/);
@@ -190,6 +228,8 @@ test('World v3 gameplay geography is explicitly integrated and syntax-gated', ()
   assert.match(main, /spawnLaneTelegraphStarted && \(enemy\.spawnLaneTelegraphFrames \?\? 0\) > 0/);
   assert.match(main, /if \(\(enemy\.spawnFrames \?\? 0\) > 0\) enemy\.spawnFrames -= 1/);
   assert.match(main, /gameSettings\.reduceMotion\s*\?\s*0\.86/);
+  assert.doesNotMatch(main, /eligibleEnemies\s*=\s*combat\.enemies\.filter/);
+  assert.match(main, /excludedTargets:\s*bullet\.hitEnemies/);
   assert.match(main, /__hmhVisualDebugSpawnLaneRole/);
   const styles = readFileSync(new URL('../apps/portal/styles-arcade-polish.css', import.meta.url), 'utf8');
   assert.match(styles, /data-stat="obj"\]\[data-directional="true"\]/);

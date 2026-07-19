@@ -583,15 +583,17 @@ try {
   }
 
   const levelUpViewportProbe = [];
-  const probeLevelUpViewport = async ({ name, width, height, orientation }) => {
+  const probeLevelUpViewport = async ({ name, width, height, orientation, expectedDensity, expectedHeight = null, expectedTop = null, mobile = true }) => {
     await client.send('Emulation.setDeviceMetricsOverride', {
       width,
       height,
       deviceScaleFactor: 1,
-      mobile: true,
+      mobile,
       screenOrientation: { type: orientation, angle: orientation === 'portraitPrimary' ? 0 : 90 },
     });
-    await client.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+    await client.send('Emulation.setTouchEmulationEnabled', mobile
+      ? { enabled: true, maxTouchPoints: 5 }
+      : { enabled: false });
     await sleep(450);
     const data = await runInPage(client, `
       (() => {
@@ -603,6 +605,7 @@ try {
         return {
           viewport: { width: innerWidth, height: innerHeight },
           layout: overlay?.dataset.layout ?? null,
+          density: overlay?.dataset.density ?? null,
           armed: overlay?.dataset.armed ?? null,
           overlay: rect ? { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height } : null,
           cardCount: buttons.length,
@@ -621,7 +624,9 @@ try {
       && data.overlay.right <= width + tolerance
       && data.overlay.bottom <= height + tolerance;
     const choicesArmed = data.armed === 'true';
-    if (!inViewport || data.cardCount !== 2 || !choicesArmed || !data.buttonsEnabled || !data.touchControlsHidden || data.bodyOverflow !== 'hidden') {
+    const heightMatches = expectedHeight == null || Math.abs(data.overlay?.height - expectedHeight) <= tolerance;
+    const topMatches = expectedTop == null || Math.abs(data.overlay?.top - expectedTop) <= tolerance;
+    if (!inViewport || !heightMatches || !topMatches || data.density !== expectedDensity || data.cardCount !== 2 || !choicesArmed || !data.buttonsEnabled || !data.touchControlsHidden || data.bodyOverflow !== 'hidden') {
       throw new Error(`HMH ${name} level-up layout failed: ${JSON.stringify(data)}`);
     }
     levelUpViewportProbe.push({ name, ...data });
@@ -640,9 +645,10 @@ try {
   const levelUpOpened = await runInPage(client, `globalThis.__hmhVisualDebugOpenLevelUp?.()`);
   if (!levelUpOpened?.choices?.length) throw new Error(`HMH level-up debug hook did not open a draft: ${JSON.stringify(levelUpOpened)}`);
   await sleep(520);
-  await probeLevelUpViewport({ name: 'level-up-portrait-390x844', width: 390, height: 844, orientation: 'portraitPrimary' });
-  await probeLevelUpViewport({ name: 'level-up-landscape-844x390', width: 844, height: 390, orientation: 'landscapePrimary' });
-  await probeLevelUpViewport({ name: 'level-up-tablet-768x1024', width: 768, height: 1024, orientation: 'portraitPrimary' });
+  await probeLevelUpViewport({ name: 'level-up-portrait-390x844', width: 390, height: 844, orientation: 'portraitPrimary', expectedDensity: 'phone' });
+  await probeLevelUpViewport({ name: 'level-up-landscape-844x390', width: 844, height: 390, orientation: 'landscapePrimary', expectedDensity: 'short' });
+  await probeLevelUpViewport({ name: 'level-up-tablet-768x1024', width: 768, height: 1024, orientation: 'portraitPrimary', expectedDensity: 'standard' });
+  await probeLevelUpViewport({ name: 'level-up-desktop-1920x1080', width: 1920, height: 1080, orientation: 'landscapePrimary', expectedDensity: 'spacious', expectedHeight: 660, expectedTop: 210, mobile: false });
 
   await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: '1', code: 'Digit1', windowsVirtualKeyCode: 49 });
   await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: '1', code: 'Digit1', windowsVirtualKeyCode: 49 });

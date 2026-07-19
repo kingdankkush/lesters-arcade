@@ -3958,3 +3958,95 @@ body.suggest-landscape.ingame::after {
   .upgrade-card-badge .arcade-icon { width: 20px; height: 20px; }
   .level-up-slot { padding-top: 5px; }
 }
+
+/* Level Up Draft v5: final-cascade responsive art and geometry contract. */
+.level-up-overlay .level-up-shell {
+  width: 100%;
+  gap: clamp(8px, 1.4vw, 16px);
+  border-color: rgba(255, 232, 77, 0.66);
+  border-radius: clamp(12px, 1.6vw, 20px);
+  background-image:
+    linear-gradient(145deg, rgba(5, 10, 24, 0.84), rgba(26, 10, 34, 0.9)),
+    url('./assets/generated/hmh-vfx-ui-chrome/level-up-card-frame.png');
+  background-size: cover, 100% 100%;
+  background-position: center;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.72),
+    0 0 42px rgba(25, 247, 255, 0.15),
+    inset 0 0 30px rgba(255, 232, 77, 0.045);
+}
+.level-up-overlay .level-up-upgrade-card.combat-menu-action {
+  min-height: var(--level-up-card-min-height, 176px);
+  border-radius: 12px;
+  background-image:
+    linear-gradient(155deg, rgba(255, 95, 162, 0.12), rgba(5, 10, 24, 0.9) 52%, rgba(25, 247, 255, 0.07)),
+    url('./assets/generated/hmh-vfx-ui-chrome/level-up-card-frame.png');
+  background-size: cover, 100% 100%;
+  background-position: center;
+  box-shadow: inset 4px 0 0 var(--card-accent), 0 8px 22px rgba(0, 0, 0, 0.34);
+}
+.level-up-overlay .upgrade-card-description {
+  display: -webkit-box;
+  -webkit-line-clamp: var(--level-up-description-lines, 2);
+  line-clamp: var(--level-up-description-lines, 2);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.level-up-overlay[data-density="spacious"] .level-up-shell {
+  grid-template-rows: auto auto auto auto;
+  align-content: center;
+  padding: 22px 24px;
+}
+.level-up-overlay[data-density="spacious"] .level-up-title { font-size: clamp(1.7rem, 2vw, 2.15rem); }
+.level-up-overlay[data-density="spacious"] .level-up-card-stack { gap: 18px; }
+.level-up-overlay[data-density="spacious"] .upgrade-card-badge { width: 46px; height: 46px; }
+.level-up-overlay[data-density="spacious"] .upgrade-card-title { font-size: 1.08rem; }
+.level-up-overlay[data-density="spacious"] .upgrade-card-description { font-size: 0.76rem; }
+.level-up-overlay[data-density="short"] .level-up-shell {
+  gap: 6px;
+  padding: 8px 10px;
+}
+.level-up-overlay[data-density="short"] .level-up-shell-head {
+  grid-template-columns: auto 1fr;
+  padding-bottom: 5px;
+}
+.level-up-overlay[data-density="short"] .level-up-kicker { display: none; }
+.level-up-overlay[data-density="short"] .level-up-upgrade-card.combat-menu-action {
+  gap: 5px;
+  padding: 8px 10px;
+}
+.level-up-overlay[data-density="short"] .upgrade-card-description { font-size: 0.58rem; }
+.level-up-overlay[data-density="phone"] .level-up-shell {
+  gap: 8px;
+  padding: 9px;
+}
+.level-up-overlay[data-density="phone"] .level-up-shell-head {
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 3px;
+  padding-bottom: 6px;
+}
+.level-up-overlay[data-density="phone"] .level-up-kicker {
+  grid-row: auto;
+  display: block;
+  padding: 3px 6px;
+  writing-mode: horizontal-tb;
+}
+.level-up-overlay[data-density="phone"] .level-up-title { font-size: 1.08rem; }
+.level-up-overlay[data-density="phone"] .level-up-subtitle { font-size: 0.59rem; }
+.level-up-overlay[data-density="phone"] .level-up-upgrade-card.combat-menu-action {
+  gap: 7px;
+  padding: 10px;
+}
+.level-up-overlay[data-density="phone"] .upgrade-card-head {
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 7px;
+}
+.level-up-overlay[data-density="phone"] .upgrade-card-description {
+  font-size: 0.64rem;
+  line-height: 1.35;
+}
+@media (prefers-reduced-motion: reduce) {
+  .level-up-overlay .level-up-upgrade-card:hover,
+  .level-up-overlay .level-up-upgrade-card:focus-visible { transform: none; }
+}

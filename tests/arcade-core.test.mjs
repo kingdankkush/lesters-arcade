@@ -119,6 +119,9 @@ import {
   levelOneRoguelikeDropChance,
   levelOneRoguelikePickupAssistAt,
   levelOneRoguelikePerformanceBudgetAt,
+  advanceAdaptivePerformanceState,
+  applyAdaptivePerformanceBudget,
+  createAdaptivePerformanceState,
   levelOneRoguelikeBossRoster,
 
   recordScore,
@@ -1230,6 +1233,107 @@ test('WO-71 minute-12 performance budget applies justified render LOD without to
   const profileSource = readFileSync(new URL('../scripts/hmh-minute12-profile.mjs', import.meta.url), 'utf8');
   assert.match(profileSource, /applyLod: minute12\.budget\.lodStage === 'pressure-lod'/);
   assert.doesNotMatch(profileSource, /maxEnemiesOnMap >= 110/);
+});
+
+test('adaptive performance governor escalates only after sustained frame pressure', () => {
+  let state = createAdaptivePerformanceState();
+  for (let frame = 0; frame < 44; frame += 1) {
+    state = advanceAdaptivePerformanceState(state, { averageFrameMs: 22, averageRenderMs: 14, activeEnemies: 36 });
+  }
+  assert.equal(state.tier, 0);
+  state = advanceAdaptivePerformanceState(state, { averageFrameMs: 22, averageRenderMs: 14, activeEnemies: 36 });
+  assert.equal(state.tier, 1);
+  assert.equal(state.reason, 'sustained-frame-pressure');
+});
+
+test('adaptive performance governor handles urgent pressure, tier caps, and tier-zero telemetry', () => {
+  let urgent = createAdaptivePerformanceState();
+  for (let frame = 0; frame < 11; frame += 1) {
+    urgent = advanceAdaptivePerformanceState(urgent, { averageFrameMs: 28, averageRenderMs: 19, activeEnemies: 40 });
+  }
+  assert.equal(urgent.tier, 0);
+  urgent = advanceAdaptivePerformanceState(urgent, { averageFrameMs: 28, averageRenderMs: 19, activeEnemies: 40 });
+  assert.equal(urgent.tier, 1);
+  assert.equal(urgent.reason, 'urgent-frame-pressure');
+
+  let capped = { ...createAdaptivePerformanceState(), tier: 3, reason: 'urgent-frame-pressure' };
+  for (let frame = 0; frame < 60; frame += 1) {
+    capped = advanceAdaptivePerformanceState(capped, { averageFrameMs: 35, averageRenderMs: 24, activeEnemies: 55 });
+  }
+  assert.equal(capped.tier, 3);
+
+  let calm = createAdaptivePerformanceState();
+  for (let frame = 0; frame < 1000; frame += 1) {
+    calm = advanceAdaptivePerformanceState(calm, { averageFrameMs: 16.4, averageRenderMs: 8, activeEnemies: 8 });
+  }
+  assert.equal(calm.recoveryFrames, 0);
+});
+
+test('large boss fights preemptively enter a safe render tier without changing simulation', () => {
+  const state = advanceAdaptivePerformanceState(createAdaptivePerformanceState(), {
+    averageFrameMs: 16.7,
+    averageRenderMs: 8,
+    activeEnemies: 40,
+    bossActive: true,
+  });
+  assert.equal(state.tier, 1);
+  assert.equal(state.reason, 'boss-swarm-preemptive');
+  const repeated = advanceAdaptivePerformanceState(state, {
+    averageFrameMs: 16.7,
+    averageRenderMs: 8,
+    activeEnemies: 40,
+    bossActive: true,
+  });
+  assert.equal(repeated.tier, 1);
+  assert.equal(repeated.reason, 'boss-swarm-preemptive');
+  assert.equal(repeated.recoveryFrames, 1);
+});
+
+test('adaptive performance governor recovers quality slowly after stable frames', () => {
+  let state = { ...createAdaptivePerformanceState(), tier: 2, reason: 'sustained-frame-pressure' };
+  for (let frame = 0; frame < 239; frame += 1) {
+    state = advanceAdaptivePerformanceState(state, { averageFrameMs: 16.4, averageRenderMs: 8, activeEnemies: 12 });
+  }
+  assert.equal(state.tier, 2);
+  state = advanceAdaptivePerformanceState(state, { averageFrameMs: 16.4, averageRenderMs: 8, activeEnemies: 12 });
+  assert.equal(state.tier, 1);
+  assert.equal(state.reason, 'stable-recovery');
+});
+
+test('adaptive budget reduces render work monotonically while retaining readable animation floors', () => {
+  const base = {
+    maxParticles: 150,
+    maxFloatingTexts: 64,
+    hitSparkEveryNthHit: 3,
+    deathBurstScale: 0.62,
+    maxAnimatedEnemies: 36,
+    enemyAnimationFps: 8,
+    obstacleRenderRadiusWindowed: 15,
+    obstacleRenderRadiusFullscreen: 34,
+    groundOverscanWindowedTiles: 4,
+    groundOverscanFullscreenTiles: 10,
+  };
+  const tier1 = applyAdaptivePerformanceBudget(base, { tier: 1 });
+  const tier3 = applyAdaptivePerformanceBudget(base, { tier: 3 });
+  assert.ok(tier1.maxParticles < base.maxParticles);
+  assert.ok(tier3.maxParticles < tier1.maxParticles);
+  assert.ok(tier3.maxAnimatedEnemies >= 18);
+  assert.ok(tier3.enemyAnimationFps >= 6);
+  assert.ok(tier3.obstacleRenderRadiusWindowed >= 10);
+  assert.equal(tier3.adaptiveTier, 3);
+});
+
+test('live frame loop advances the governor and layers it over the elapsed-time render budget', () => {
+  const main = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
+  assert.match(main, /createAdaptivePerformanceState/);
+  assert.match(main, /advanceAdaptivePerformanceState/);
+  assert.match(main, /applyAdaptivePerformanceBudget/);
+  assert.match(main, /combat\.adaptivePerformance = advanceAdaptivePerformanceState/);
+  assert.match(main, /applyAdaptivePerformanceBudget\(scheduledBudget, combat\.adaptivePerformance\)/);
+  assert.match(main, /adaptivePerformance: \{ \.\.\.combat\.adaptivePerformance \}/);
+  assert.match(main, /enemyPursuitModes:/);
+  assert.match(main, /bossActive:/);
+  assert.match(main, /some\(isAdaptiveBossThreat\)/);
 });
 
 test('Level 1 opening keeps the hero lane clear while resolving authored POI props', () => {

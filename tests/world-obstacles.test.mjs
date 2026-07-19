@@ -233,6 +233,19 @@ test('swept actor hit detection catches fast bullets that cross an enemy between
   assert.equal(circleTargetHitAlongSegment(0, 3, 12, 3, enemies, { defaultRadius: 0.72 }), null);
 });
 
+test('piercing bullets skip already-hit targets without allocating a filtered target list', () => {
+  const enemies = [
+    { id: 'already-hit', mapX: 3, mapY: 0, hp: 10, hitRadius: 0.7 },
+    { id: 'next-hit', mapX: 6, mapY: 0, hp: 10, hitRadius: 0.7 },
+  ];
+  const excludedTargets = new Set([enemies[0]]);
+  assert.equal(circleTargetHitAlongSegment(0, 0, 10, 0, enemies, {
+    defaultRadius: 0.72,
+    excludedTargets,
+  })?.id, 'next-hit');
+  assert.equal(enemies.length, 2, 'the shared enemy list must remain untouched');
+});
+
 test('findNearestDrySpawn moves an initial player start off water', () => {
   const waterAtOrigin = (seed, x, y) => (Math.hypot(x, y) < 3 ? 'water' : 'desert');
   const spawn = findNearestDrySpawn(99, 0, 0, waterAtOrigin, { maxRadius: 8, step: 1 });
