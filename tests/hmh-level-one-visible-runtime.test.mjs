@@ -39,6 +39,9 @@ test('Level 1 visible runtime builds curated authored objects around the actual 
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-fences-barricades-')), true, 'opening should use the new fence/barricade sheet for authored route boundaries');
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-industrial-mining-')), true, 'opening should use the new crypto-industrial sheet as roadside dressing');
   assert.equal(objects.some((object) => object.assetKey.startsWith('curated/jul9-landmark-microscene-')), true, 'opening should use the new micro-scene sheet for authored POI flavor');
+  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-buildings-landmarks-01-gas-station-kiosk'), true, 'opening should read as an authored roadside fuel stop');
+  assert.equal(objects.some((object) => object.assetKey === 'curated/jul9-landmark-microscene-09-broken-arcade-cabinet'), true, 'Lester flavor should use the small broken-cabinet microscene');
+  assert.equal(objects.some((object) => object.assetKey === 'level-1/building/arcade-cabinet'), false, 'building-scale arcade cabinet must not overwhelm the opening gameplay view');
   assert.equal(objects.some((object) => object.assetKey === 'level-1/prop/bus-stop-sign' || object.assetKey === 'level1-authored-stamp/river-bridge-arrow-sign'), true, 'opening should include route signage without covering the hero start');
   assert.equal(objects.every((object) => levelOneCuratedAssetSrc(object.assetKey)), true, 'every object should resolve through the Level 1 runtime art policy');
 });
@@ -173,9 +176,15 @@ test('active prefab composition selects coherent scenes instead of placing every
   for (const retired of [
     'ghost-town-frontage-pocket',
     'forest-mushroom-ring',
+    'roadside-arcade-cache',
   ]) {
     assert.equal(activeIds.has(retired), false, `${retired} should not overlap its replacement composition`);
   }
+  const fuelStop = LEVEL_ONE_ACTIVE_PREFAB_STAMPS.find((stamp) => stamp.id === 'roadside-fuel-stop-cache');
+  assert.ok(fuelStop, 'the retired arcade stamp should be replaced by one coherent roadside fuel-stop stamp');
+  assert.ok(fuelStop.assetKeys.includes('curated/jul9-buildings-landmarks-01-gas-station-kiosk'));
+  assert.ok(fuelStop.assetKeys.includes('curated/jul9-vehicles-street-junk-12-gas-pump-pair'));
+  assert.ok(fuelStop.assetKeys.includes('curated/jul9-landmark-microscene-09-broken-arcade-cabinet'));
   const anchorCounts = new Map();
   for (const stamp of LEVEL_ONE_ACTIVE_PREFAB_STAMPS) {
     const key = `${stamp.anchor.x}|${stamp.anchor.y}`;

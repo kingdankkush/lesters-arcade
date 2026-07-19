@@ -1,4 +1,4 @@
-import { LEVEL_ONE_AUTHORED_PREFAB_STAMPS } from './hmh-level-one-visible-runtime.mjs';
+import { LEVEL_ONE_ACTIVE_PREFAB_STAMPS } from './hmh-level-one-visible-runtime.mjs';
 import {
   HMH_LEVEL_ONE_LAYOUT_V4,
   HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS,
@@ -9,7 +9,7 @@ import {
   levelOneWorldV3CellAt,
 } from './hmh-level-one-world-v3-runtime.mjs';
 
-const STAMP_BY_ID = new Map(LEVEL_ONE_AUTHORED_PREFAB_STAMPS.map((stamp) => [stamp.id, stamp]));
+const STAMP_BY_ID = new Map(LEVEL_ONE_ACTIVE_PREFAB_STAMPS.map((stamp) => [stamp.id, stamp]));
 const SPAWN_CLEAR_RADIUS = 5;
 
 const STAMP_PLACEMENTS = HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS;

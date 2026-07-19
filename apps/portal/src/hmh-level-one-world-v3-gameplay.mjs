@@ -410,7 +410,7 @@ const ZONES = freeze([
 
 export const HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS = freezeArray([
   { id: 'v4-spawn-salvage-wall', stampId: 'desert-road-salvage-wall', anchorId: 'spawn', kind: 'spawn' },
-  { id: 'v4-spawn-arcade-cache', stampId: 'roadside-arcade-cache', anchorId: 'spawn', kind: 'spawn' },
+  { id: 'v4-spawn-fuel-stop-cache', stampId: 'roadside-fuel-stop-cache', anchorId: 'spawn', kind: 'spawn' },
   { id: 'v4-ghost-frontage-row', stampId: 'ghost-town-frontage-pocket', anchorId: 'ghost-saloon-square', kind: 'poi' },
   { id: 'v4-ghost-bank-plaza', stampId: 'wo105-bank-plaza-arena-checkpoint', anchorId: 'ghost-saloon-square', kind: 'poi' },
   { id: 'v4-ghost-civic-pocket', stampId: 'civic-park-town-pocket', anchorId: 'ghost-saloon-square', kind: 'poi' },

@@ -174,12 +174,12 @@ const OPENING_LANDMARKS = Object.freeze([
   openingSpec('saloon-silhouette-telegraph', 'curated/jul9-roadside-buildings-large-00-motel-office-front', 'landmark', 32, 2, {
     notes: 'distant motel-office mass frames the next combat beat',
   }),
-  openingSpec('storefront-side-anchor', 'curated/jul9-ghost-town-facade-modules-03-collapsed-roadside-shop', 'landmark', 9, 2, {
-    notes: 'collapsed facade module gives the spawn camera a ghost-town edge',
+  openingSpec('fuel-stop-kiosk-anchor', 'curated/jul9-buildings-landmarks-01-gas-station-kiosk', 'landmark', 10, 11, {
+    notes: 'small gas-station kiosk, pump pair, and wrecks establish a coherent roadside fuel-stop pocket outside the spawn-safe radius',
   }),
-  openingSpec('route-arcade-cache', 'level-1/building/arcade-cabinet', 'dressing', 12, 8, {
+  openingSpec('route-broken-arcade-cache', 'curated/jul9-landmark-microscene-09-broken-arcade-cabinet', 'dressing', 12, 8, {
     solid: false,
-    notes: 'small Lester arcade landmark rewards the first detour read without blocking the scene',
+    notes: 'small damaged Lester cabinet rewards the first detour without reading as a building-scale portal prop',
   }),
 ]);
 
@@ -496,13 +496,13 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'level-1/prop/desert-14', use: 'dressing', dx: 2, dy: 3, solid: false },
     { assetKey: 'level-1/prop/rocky-05', use: 'boundary', dx: 0, dy: 5, solid: true },
   ], { label: 'Ruined camp bone yard', routeBeat: 'pressure', anchor: { x: 28, y: -8 }, routeRead: 'ruined camp' }),
-  prefabStamp('roadside-arcade-cache', 'desert-approach', [
-    { assetKey: 'level-1/building/arcade-cabinet', use: 'landmark', dx: -3, dy: -1, solid: false },
-    { assetKey: 'level-1/building/soda-machine', use: 'dressing', dx: 3, dy: -1, solid: false },
-    { assetKey: 'level-1/building/wooden-crate', use: 'dressing', dx: 5, dy: 2, solid: false },
-    { assetKey: 'curated/jul9-vehicles-street-junk-10-metal-barricade', use: 'dressing', dx: -5, dy: 2, solid: false },
-    { assetKey: 'level-1/prop/desert-08', use: 'boundary', dx: 0, dy: 4, solid: true },
-  ], { label: 'Roadside arcade cache', routeBeat: 'spawn', anchor: { x: 10, y: 8 }, routeRead: 'coin-slot fantasy and roadside props create a reward pocket' }),
+  prefabStamp('roadside-fuel-stop-cache', 'desert-approach', [
+    { assetKey: 'curated/jul9-buildings-landmarks-01-gas-station-kiosk', use: 'landmark', dx: 6, dy: 6, solid: true, metadata: { footprintTiles: { w: 3.2, h: 2.0 } } },
+    { assetKey: 'curated/jul9-vehicles-street-junk-12-gas-pump-pair', use: 'dressing', dx: 2, dy: 5, solid: true, metadata: { footprintTiles: { w: 1.8, h: 1.0 } } },
+    { assetKey: 'curated/jul9-landmark-microscene-09-broken-arcade-cabinet', use: 'dressing', dx: 7, dy: 2, solid: false },
+    { assetKey: 'curated/jul9-vehicles-street-junk-10-metal-barricade', use: 'boundary', dx: -5, dy: -4, solid: true },
+    { assetKey: 'curated/jul9-small-cover-loot-07-glowing-pickup-pedestal', use: 'dressing', dx: 4, dy: 2, solid: false },
+  ], { label: 'Roadside fuel-stop cache', routeBeat: 'spawn', anchor: { x: 10, y: 8 }, routeRead: 'kiosk, pumps, barricade, and a damaged Lester cabinet create one coherent first-detour reward pocket' }),
   prefabStamp('litecoin-extraction-beacon-pad', 'finale-extraction', [
     { assetKey: 'level1-authored-stamp/extraction-pad-litcoin-beacon', use: 'landmark', dx: 1, dy: -2, solid: false, notes: 'new generated beacon makes the extraction pad read as the final route target' },
     { assetKey: 'level-1/building/town-10', use: 'landmark', dx: 5, dy: -4, solid: true },
@@ -514,6 +514,7 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
 const RETIRED_OVERLAPPING_PREFAB_STAMP_IDS = new Set([
   'ghost-town-frontage-pocket',
   'forest-mushroom-ring',
+  'roadside-arcade-cache',
 ]);
 
 export const LEVEL_ONE_ACTIVE_PREFAB_STAMPS = Object.freeze(

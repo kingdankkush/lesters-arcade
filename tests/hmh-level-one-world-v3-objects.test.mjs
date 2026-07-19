@@ -41,12 +41,16 @@ test('World v3 includes every POI, boss, extraction, bridge-bank, and natural te
   const report = levelOneWorldV3ObjectReport();
   for (const stampId of [
     'desert-road-salvage-wall',
+    'roadside-fuel-stop-cache',
     'ruined-camp-bone-yard',
     'compact-southeast-glow-bank',
     'world-v3-pine-creek-timber-bridge',
   ]) assert.ok(report.byStamp[stampId] > 0, `missing authored stamp ${stampId}`);
 
   for (const retiredStampId of [
+    'roadside-arcade-cache',
+    'ghost-town-frontage-pocket',
+    'forest-mushroom-ring',
     'ghost-town-facade-row-pocket',
     'wo104-forest-canopy-cliff-checkpoint',
     'compact-northwest-desert-outcrop',
