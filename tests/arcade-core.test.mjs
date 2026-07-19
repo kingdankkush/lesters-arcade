@@ -1570,6 +1570,40 @@ test('enemy catalog adds authored Crypto Wasteland regional enemies with explici
   }
 });
 
+test('Level 2 influencer camera operator is forced by authored encounters but excluded from natural Level 1 spawns', () => {
+  const forced = chooseEnemySpawn({
+    elapsedSeconds: 0,
+    seed: 0,
+    forceEnemyId: 'influencer-camera-drone',
+  });
+  assert.equal(forced.enemy.id, 'influencer-camera-drone');
+  assert.equal(forced.enemy.title, 'Influencer Camera Operator');
+  assert.equal(forced.enemy.class, 'ranged-human-camera-support');
+  assert.equal(forced.enemy.runtimeActorKey, 'influencer-camera-drone');
+  assert.equal(forced.enemy.preferredRangeMode, 'ranged');
+  assert.equal(forced.enemy.spawnAfterSeconds, 9999);
+  assert.deepEqual(forced.enemy.districtFamilies, []);
+  assert.equal(forced.spawnContext.source, 'forced-id');
+  assert.doesNotMatch(`${forced.enemy.title} ${forced.enemy.class}`, /drone|bot|mech|animal/i);
+
+  const deterministicPins = [
+    { elapsedSeconds: 0, seed: 0, enemyId: 'fud-goblin' },
+    { elapsedSeconds: 0, seed: 19, enemyId: 'paper-hand' },
+    { elapsedSeconds: 20 * 60, seed: 1, enemyId: 'liquidation-cascade-golem' },
+    { elapsedSeconds: 20 * 60, seed: 19, enemyId: 'ridge-raider' },
+  ];
+  for (const pin of deterministicPins) {
+    assert.equal(chooseEnemySpawn(pin).enemy.id, pin.enemyId, `natural seed ${pin.seed} must preserve its pre-authored-catalog mapping`);
+  }
+
+  for (let seed = 0; seed < 100; seed += 1) {
+    for (const elapsedSeconds of [0, 20 * 60]) {
+      const natural = chooseEnemySpawn({ elapsedSeconds, seed });
+      assert.notEqual(natural.enemy.id, 'influencer-camera-drone');
+    }
+  }
+});
+
 test('legacy creature enemy IDs resolve to explicit human or zombie PixelLab actors', () => {
   const byId = Object.fromEntries(LESTER_BLASTER_ENEMY_CATALOG.map((enemy) => [enemy.id, enemy]));
   const replacements = {

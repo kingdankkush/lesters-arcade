@@ -147,6 +147,168 @@ assert set(coverage['walk']) == set(m.DIRECTIONS), coverage
   assert.equal(probe.status, 0, probe.stderr || probe.stdout);
 });
 
+test('PixelLab quality wave preserves the influencer runtime ID while replacing the drone with a human camera operator', () => {
+  const probe = spawnSync('python', ['-c', String.raw`
+import builtins, importlib.util
+from pathlib import Path
+p = Path('scripts/pixellab-hmh-aaa-quality-wave.py').resolve()
+spec = importlib.util.spec_from_file_location('wave', p)
+m = importlib.util.module_from_spec(spec)
+real_import = builtins.__import__
+def optional_deps_absent(name, *args, **kwargs):
+    if name.split('.')[0] in {'PIL', 'mcp'}:
+        raise ModuleNotFoundError(name)
+    return real_import(name, *args, **kwargs)
+builtins.__import__ = optional_deps_absent
+try:
+    spec.loader.exec_module(m)
+finally:
+    builtins.__import__ = real_import
+actor = m.TARGETS['influencer-camera-drone']
+assert actor['body_type'] == 'humanoid', actor
+description = actor['description'].lower()
+assert 'human' in description and 'camera' in description, description
+for forbidden in ('floating ring-light bot', 'robot head', 'mechanical body'):
+    assert forbidden not in description, description
+progress = '''custom-walking (west): 95% ~0s
+custom-walking (north): 0% ~900s'''
+assert m.remote_jobs_busy(progress), progress
+assert m.inflight_count(progress) == 2, m.inflight_count(progress)
+overlap = '''processing: 50% ~30s
+creating animation'''
+assert m.inflight_count(overlap) == 2, m.inflight_count(overlap)
+assert not m.remote_jobs_busy('reprocessing complete'), 'busy matching must use whole status words'
+assert not m.remote_jobs_busy('custom-walking (west): 100% ~0s'), '100 percent is complete, not inflight'
+assert m.inflight_count('custom-walking (west): 100% ~0s') == 0
+assert not m.remote_jobs_busy('idle — 8 dir complete'), 'completed listings must not stay busy'
+`], {
+    cwd: fileURLToPath(repoUrl('.')),
+    encoding: 'utf8',
+  });
+  assert.equal(probe.status, 0, probe.stderr || probe.stdout);
+});
+
+test('promoted influencer camera operator ships a complete human 8-state runtime matrix', async () => {
+  const { HMH_ANIMATED_ROSTER } = await import('../apps/portal/assets/generated/hmh-animated-roster/hmh-animated-roster.mjs');
+  const actor = HMH_ANIMATED_ROSTER['influencer-camera-drone'];
+  assert.ok(actor, 'runtime/save ID must remain stable');
+  assert.equal(actor.visualType, 'human');
+  assert.equal(actor.character_id, 'a7caa385-ae1c-47c7-a9a9-a5e7950ad4b5');
+  assert.match(actor.source, /pixellab-aaa-human-zombie-wave-v1/);
+  const expectedStates = ['idle', 'walk', 'run', 'attack-tell', 'attack', 'hit', 'death', 'spawn-in'];
+  const expectedDirections = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west'];
+  for (const state of expectedStates) {
+    assert.deepEqual(Object.keys(actor.animations[state] ?? {}).sort(), expectedDirections.toSorted(), `${state} must ship all eight facings`);
+    for (const direction of expectedDirections) {
+      assert.ok(actor.animations[state][direction].length >= 6, `${state}/${direction} needs at least six frames`);
+    }
+  }
+});
+
+test('PixelLab ledger compaction preserves resumability while dropping raw responses and staging manifests', () => {
+  const scriptPath = fileURLToPath(repoUrl('scripts/pixellab-hmh-aaa-quality-wave.py'));
+  const repoRoot = fileURLToPath(new URL('..', import.meta.url));
+  const probe = spawnSync('python', ['-c', String.raw`
+import importlib.util, os
+from pathlib import Path
+path = Path(os.environ['HMH_WAVE_SCRIPT'])
+spec = importlib.util.spec_from_file_location('hmh_wave', path)
+m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+ledger = {
+  'targets': {
+    'influencer-camera-drone': {
+      'spec': {'body_type': 'humanoid'},
+      'character_id': 'human-camera-operator',
+      'status': 'collected',
+      'created_at': 1,
+      'collected_at': 2,
+      'raw_create': 'large remote response',
+      'manifest': {'animations': {'idle': {'south': ['staging.png']}}},
+      'animations': {
+        'idle': {
+          'status': 'complete',
+          'directions': ['south'],
+          'job_ids': ['job-1', 'job-1'],
+          'queued_at': 3,
+          'raw': 'large queue response',
+          'repair_attempts': 2,
+        }
+      },
+    },
+    'bad-actor': {
+      'status': 'collected',
+      'raw_create': 'keep until every selected target validates',
+      'manifest': {'animations': {}},
+      'animations': {'idle': {'status': 'complete', 'repair_attempts': 'invalid'}},
+    },
+    'missing-status': {'raw_create': 'invalid entry', 'animations': {}},
+    'queued-actor': {'status': 'queued', 'raw_create': 'still needed', 'animations': {}},
+    'unharvested-actor': {'status': 'collected', 'raw_create': 'missing manifest', 'animations': {}},
+    'untouched': {'status': 'collected', 'manifest': {'keep': True}},
+  }
+}
+m.load_ledger = lambda: ledger
+m.save_ledger = lambda value: None
+m.selected_targets = lambda targets: [item.strip() for item in targets.split(',')]
+try:
+  m.compact_ledger(None)
+  raise AssertionError('compact-ledger must require an explicit target')
+except SystemExit as exc:
+  assert '--targets' in str(exc)
+try:
+  m.compact_ledger('missing-actor')
+  raise AssertionError('compact-ledger must reject unknown targets')
+except SystemExit as exc:
+  assert 'missing-actor' in str(exc)
+ledger['targets']['influencer-camera-drone']['animations']['idle']['repair_attempts'] = 'invalid'
+try:
+  m.compact_ledger('influencer-camera-drone')
+  raise AssertionError('compact-ledger must reject malformed repair metadata')
+except SystemExit as exc:
+  assert 'repair_attempts' in str(exc)
+assert 'raw_create' in ledger['targets']['influencer-camera-drone'], 'failed compaction must not save a partial entry'
+ledger['targets']['influencer-camera-drone']['animations']['idle']['repair_attempts'] = 2
+try:
+  m.compact_ledger('influencer-camera-drone,bad-actor')
+  raise AssertionError('multi-target validation must be atomic')
+except SystemExit as exc:
+  assert 'bad-actor/idle' in str(exc)
+assert 'raw_create' in ledger['targets']['influencer-camera-drone'], 'a later invalid target must not compact an earlier target in memory'
+try:
+  m.compact_ledger('missing-status')
+  raise AssertionError('compact-ledger must reject missing status metadata')
+except SystemExit as exc:
+  assert 'missing status' in str(exc)
+try:
+  m.compact_ledger('queued-actor')
+  raise AssertionError('compact-ledger must preserve in-progress generation metadata')
+except SystemExit as exc:
+  assert 'not collected or promoted' in str(exc)
+try:
+  m.compact_ledger('unharvested-actor')
+  raise AssertionError('compact-ledger must preserve collected entries until their manifest exists')
+except SystemExit as exc:
+  assert 'missing its staging manifest' in str(exc)
+m.compact_ledger('influencer-camera-drone')
+entry = ledger['targets']['influencer-camera-drone']
+assert entry['status'] == 'promoted'
+assert entry['character_id'] == 'human-camera-operator'
+assert entry['animations']['idle']['job_ids'] == ['job-1']
+assert entry['animations']['idle']['repair_attempts'] == 2
+assert 'raw' not in entry['animations']['idle']
+assert 'raw_create' not in entry
+assert 'manifest' not in entry
+assert ledger['targets']['untouched']['manifest'] == {'keep': True}
+`], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    env: { ...process.env, HMH_WAVE_SCRIPT: scriptPath },
+  });
+  assert.equal(probe.status, 0, probe.stderr || probe.stdout);
+  assert.match(readFileSync(scriptPath, 'utf8'), /compact-ledger/);
+});
+
 test('PixelLab promotion restores the prior actor when atomic manifest commit fails', () => {
   const probe = spawnSync('python', ['-c', String.raw`
 import importlib.util, os, tempfile

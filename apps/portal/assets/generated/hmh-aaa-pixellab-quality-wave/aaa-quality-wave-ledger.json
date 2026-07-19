@@ -4690,6 +4690,164 @@
           }
         }
       }
+    },
+    "influencer-camera-drone": {
+      "spec": {
+        "name": "HMH AAA Influencer Camera Operator",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 128,
+        "runtime_frame_size": 144,
+        "priority": 1,
+        "reason": "Replace the legacy floating camera drone with a human camera operator while preserving the runtime and save ID.",
+        "description": "human wasteland influencer camera operator enemy, torn luxury streetwear, shoulder-mounted broadcast camera, broken ring-light backpack, handheld flash controller, smug exhausted human face, cyan lens flare, lean paparazzi silhouette",
+        "animationDescriptions": {
+          "attack-tell": "human camera operator plants both feet, shoulders the broadcast camera, and holds a bright cyan focus light on the target before firing, clear ranged anticipation",
+          "attack": "human camera operator triggers a harsh camera-flash blast with visible recoil, then lowers the shoulder camera into a readable recovery pose"
+        }
+      },
+      "character_id": "a7caa385-ae1c-47c7-a9a9-a5e7950ad4b5",
+      "created_at": 1784472835,
+      "collected_at": 1784476431,
+      "status": "promoted",
+      "animations": {
+        "idle": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784473244,
+          "job_ids": [
+            "37d110aa-57a5-403d-9f50-96621e740e03"
+          ]
+        },
+        "walk": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784473266,
+          "job_ids": [
+            "7037becc-3c6a-4903-90ca-dfed025caa6b"
+          ]
+        },
+        "run": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784474188,
+          "job_ids": [
+            "9c500f38-6c71-4064-8464-3b035a2b1afc"
+          ]
+        },
+        "attack-tell": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784474205,
+          "job_ids": [
+            "a3be0a88-a955-45b9-83ae-7762d5e18f5c"
+          ]
+        },
+        "attack": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784474720,
+          "job_ids": [
+            "8545492a-7dd7-4276-a371-3c0bc07c3f90"
+          ]
+        },
+        "hit": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784475143,
+          "job_ids": [
+            "3e456b89-5208-4b7d-a2a1-0d9c7be9f25c"
+          ]
+        },
+        "death": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784475560,
+          "job_ids": [
+            "343f0a33-88b0-4e4c-85e5-bf6fae4a3d11"
+          ]
+        },
+        "spawn-in": {
+          "status": "complete",
+          "directions": [
+            "south",
+            "south-east",
+            "east",
+            "north-east",
+            "north",
+            "north-west",
+            "west",
+            "south-west"
+          ],
+          "queued_at": 1784475818,
+          "job_ids": [
+            "ea432c9e-dfba-43cb-9030-eda08e1ee8ff"
+          ]
+        }
+      }
     }
   }
 }

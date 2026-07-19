@@ -1838,7 +1838,12 @@ export const LESTER_BLASTER_ENEMY_CATALOG = Object.freeze([
   Object.freeze({ id: 'phishing-angler', title: 'Phishing Angler', class: 'zoning-hook', baseHealth: 24, damage: 16, speed: 1.2, score: 300, spawnAfterSeconds: 180, aiArchetype: 'fake-wallet-lure', districtFamilies: Object.freeze(['residential_edge', 'inner_city']), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle-cast', 'attack-tell', 'popup-lure', 'reel', 'melee', 'hit', 'fade', 'death']), attackPatterns: Object.freeze(['connect-wallet-lure', 'hook-reel']), deathEffect: 'fake popup shatter + cloak smoke', tells: 'glowing Connect Wallet lure appears before hook is active' }),
   Object.freeze({ id: 'mev-reaper', title: 'MEV Reaper', class: 'elite-flanker', baseHealth: 34, damage: 19, speed: 3.0, score: 420, spawnAfterSeconds: 240, aiArchetype: 'sandwich-pincer', districtFamilies: Object.freeze(['inner_city', 'residential_edge']), preferredRangeMode: 'melee', animationStates: Object.freeze(['cloak', 'attack-tell', 'dash-flank', 'sandwich-strike', 'hit', 'vanish', 'death']), attackPatterns: Object.freeze(['two-sided-pincer', 'same-frame-blade-strike']), deathEffect: 'dark cloak tear + sandwich-blade sparks', tells: 'two shadows split to either side' }),
   Object.freeze({ id: 'liquidation-cascade-golem', title: 'Liquidation Riot Zombie', class: 'armored-zombie-elite', runtimeActorKey: 'wild-boar', baseHealth: 54, damage: 24, speed: 0.9, score: 560, spawnAfterSeconds: 360, aiArchetype: 'slow-armored-shockwave', districtFamilies: Object.freeze(['inner_city']), preferredRangeMode: 'melee', animationStates: Object.freeze(['stomp', 'attack-tell', 'block-stack', 'shockwave', 'crack', 'cascade-collapse', 'death']), attackPatterns: Object.freeze(['armored-stomp', 'death-cascade-shockwave']), deathEffect: 'riot plates collapse into a red margin-call shockwave', tells: 'cracked riot armor flashes red before the zombie slam' }),
+  Object.freeze({ id: 'influencer-camera-drone', title: 'Influencer Camera Operator', class: 'ranged-human-camera-support', runtimeActorKey: 'influencer-camera-drone', baseHealth: 18, damage: 11, speed: 2.15, score: 220, spawnAfterSeconds: 9999, authoredEncounterOnly: true, aiArchetype: 'camera-flash-support', districtFamilies: Object.freeze([]), preferredRangeMode: 'ranged', animationStates: Object.freeze(['idle', 'walk', 'run', 'attack-tell', 'attack', 'hit', 'death', 'spawn-in']), attackPatterns: Object.freeze(['ring-light-focus-tell', 'camera-flash-burst']), deathEffect: 'cyan lens shards + magenta signal sparks', tells: 'ring light tightens to cyan and the shoulder camera charges before the flash burst' }),
 ]);
+
+const LESTER_BLASTER_NATURAL_ENEMY_CATALOG = Object.freeze(
+  LESTER_BLASTER_ENEMY_CATALOG.filter((enemy) => enemy.authoredEncounterOnly !== true),
+);
 
 export const LESTER_BLASTER_PERFORMANCE_TARGETS = Object.freeze({
   targetFps: 60,
@@ -3671,8 +3676,8 @@ function enemyMatchesPoi(enemy, poiId) {
 
 export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0, districtFamily = null, activePoiId = null, forceEnemyId = null, spawnLaneRole = null } = {}) {
   const difficulty = getLesterBlasterDifficultyAt(elapsedSeconds);
-  const eligible = LESTER_BLASTER_ENEMY_CATALOG.filter((enemy) => enemy.spawnAfterSeconds <= elapsedSeconds);
-  const fallbackPool = eligible.length ? eligible : [LESTER_BLASTER_ENEMY_CATALOG[0]];
+  const eligible = LESTER_BLASTER_NATURAL_ENEMY_CATALOG.filter((enemy) => enemy.spawnAfterSeconds <= elapsedSeconds);
+  const fallbackPool = eligible.length ? eligible : [LESTER_BLASTER_NATURAL_ENEMY_CATALOG[0]];
   const forceKey = normalizeSpawnAffinity(forceEnemyId);
   const forcedEnemy = forceKey
     ? (LESTER_BLASTER_ENEMY_CATALOG.find((enemy) => normalizeSpawnAffinity(enemy.id) == forceKey) ?? null)
@@ -3693,7 +3698,7 @@ export function chooseEnemySpawn({ elapsedSeconds = 0, seed = 0, districtFamily 
   const selectionPool = lanePool.length > 0 ? lanePool : themedPool;
   const source = forcedEnemy ? 'forced-id' : poiPool.length ? 'poi' : districtPool.length ? 'district-family' : 'timeline';
   const rawIndex = Math.abs(Math.floor(seed));
-  const rawEnemy = LESTER_BLASTER_ENEMY_CATALOG[rawIndex % LESTER_BLASTER_ENEMY_CATALOG.length];
+  const rawEnemy = LESTER_BLASTER_NATURAL_ENEMY_CATALOG[rawIndex % LESTER_BLASTER_NATURAL_ENEMY_CATALOG.length];
   const enemy = forcedEnemy
     ? forcedEnemy
     : laneRoleApplied

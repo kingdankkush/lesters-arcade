@@ -170,6 +170,20 @@ TARGETS = {
         "reason": "Current candidate has idle only; needs complete replacement if kept in roster.",
         "description": "stablecoin socialite enemy, elegant corrupted gala outfit, coin-clutch purse, champagne-glass dagger, porcelain mask, smug poised silhouette, cool silver and cyan palette",
     },
+    "influencer-camera-drone": {
+        "name": "HMH AAA Influencer Camera Operator",
+        "role": "enemy",
+        "body_type": "humanoid",
+        "size": 128,
+        "runtime_frame_size": 144,
+        "priority": 1,
+        "reason": "Replace the legacy floating camera drone with a human camera operator while preserving the runtime and save ID.",
+        "description": "human wasteland influencer camera operator enemy, torn luxury streetwear, shoulder-mounted broadcast camera, broken ring-light backpack, handheld flash controller, smug exhausted human face, cyan lens flare, lean paparazzi silhouette",
+        "animationDescriptions": {
+            "attack-tell": "human camera operator plants both feet, shoulders the broadcast camera, and holds a bright cyan focus light on the target before firing, clear ranged anticipation",
+            "attack": "human camera operator triggers a harsh camera-flash blast with visible recoil, then lowers the shoulder camera into a readable recovery pose",
+        },
+    },
     "coyote-pack-runner": {
         "name": "HMH AAA Road Zombie Runner",
         "role": "enemy",
@@ -351,8 +365,20 @@ async def create(limit: int | None, targets: str | None) -> None:
     print(json.dumps({"created_now": made, "tracked": len(ledger["targets"])}, indent=2))
 
 
+REMOTE_BUSY_WORD_RE = re.compile(r"\b(?:processing|creating)\b", re.I)
+REMOTE_PROGRESS_RE = re.compile(r":\s*(?:\d|[1-9]\d)%\s*~", re.I)
+
+
 def inflight_count(txt: str) -> int:
-    return len(re.findall(r"processing", txt, re.I))
+    return sum(
+        1
+        for line in txt.splitlines()
+        if REMOTE_BUSY_WORD_RE.search(line) or REMOTE_PROGRESS_RE.search(line)
+    )
+
+
+def remote_jobs_busy(txt: str) -> bool:
+    return bool(REMOTE_BUSY_WORD_RE.search(txt) or REMOTE_PROGRESS_RE.search(txt))
 
 
 async def animate(limit: int | None, targets: str | None, max_inflight: int) -> None:
@@ -372,7 +398,7 @@ async def animate(limit: int | None, targets: str | None, max_inflight: int) -> 
                 remote_text = text_of(await session.call_tool("get_character", {"character_id": cid}))
                 remote_coverage = state_direction_coverage_from_listing(remote_text)
                 remote_completed_states = completed_states_from_listing(remote_text)
-                remote_busy = "processing" in remote_text.lower() or "creating" in remote_text.lower()
+                remote_busy = remote_jobs_busy(remote_text)
                 animation_specs = {
                     **ANIMS,
                     **(entry.get("spec", {}).get("animationDescriptions") or {}),
@@ -827,9 +853,57 @@ def status() -> None:
     print(json.dumps({"targets": rows, "ledger": str(LEDGER)}, indent=2))
 
 
+def compact_ledger(targets: str | None = None) -> None:
+    if not targets:
+        raise SystemExit("compact-ledger requires --targets; compact promoted actors explicitly")
+    ledger = load_ledger()
+    selected = set(selected_targets(targets))
+    missing = sorted(selected - set(ledger.get("targets", {})))
+    if missing:
+        raise SystemExit(f"compact-ledger targets are absent from the ledger: {', '.join(missing)}")
+    compacted_entries: dict[str, dict[str, Any]] = {}
+    for key, entry in list(ledger.get("targets", {}).items()):
+        if key not in selected:
+            continue
+        status = entry.get("status")
+        if not status:
+            raise SystemExit(f"compact-ledger target is missing status metadata: {key}")
+        if status not in {"collected", "promoted"}:
+            raise SystemExit(f"compact-ledger target is not collected or promoted: {key} ({status})")
+        if status == "collected" and not entry.get("manifest"):
+            raise SystemExit(f"compact-ledger collected target is missing its staging manifest: {key}")
+        animations: dict[str, dict[str, Any]] = {}
+        for state, animation in entry.get("animations", {}).items():
+            job_ids = list(dict.fromkeys(animation.get("job_ids", [])))
+            compact_animation = {
+                field: animation[field]
+                for field in ("status", "directions", "queued_at", "verified_at")
+                if field in animation
+            }
+            if job_ids:
+                compact_animation["job_ids"] = job_ids
+            if animation.get("repair_attempts"):
+                try:
+                    compact_animation["repair_attempts"] = int(animation["repair_attempts"])
+                except (TypeError, ValueError) as exc:
+                    raise SystemExit(f"invalid repair_attempts for {key}/{state}") from exc
+            animations[state] = compact_animation
+        compact_entry = {
+            field: entry[field]
+            for field in ("spec", "character_id", "created_at", "collected_at", "rejected_character_ids")
+            if field in entry
+        }
+        compact_entry["status"] = "promoted" if status in {"collected", "promoted"} else status
+        compact_entry["animations"] = animations
+        compacted_entries[key] = compact_entry
+    ledger["targets"].update(compacted_entries)
+    save_ledger(ledger)
+    print(json.dumps({"compacted": sorted(compacted_entries), "ledger": str(LEDGER)}, indent=2))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("cmd", choices=["balance", "create", "animate", "collect", "promote", "status"])
+    parser.add_argument("cmd", choices=["balance", "create", "animate", "collect", "promote", "compact-ledger", "status"])
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--targets", default=None)
     parser.add_argument("--max-inflight", type=int, default=3)
@@ -846,6 +920,8 @@ def main() -> None:
         asyncio.run(collect(args.limit, args.targets, args.collect_timeout, args.download_workers))
     elif args.cmd == "promote":
         promote(args.targets)
+    elif args.cmd == "compact-ledger":
+        compact_ledger(args.targets)
     else:
         status()
 

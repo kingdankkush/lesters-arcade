@@ -2,18 +2,18 @@
   "version": "wo-17-global-art-census-v1",
   "generatedBy": "scripts/global-art-census.mjs",
   "summary": {
-    "totalAssets": 16266,
+    "totalAssets": 16651,
     "totalActors": 73,
     "layerCount": 8,
     "runtimeActorCount": 38,
-    "runtimeCompleteActorCount": 34,
-    "runtimePartialActorCount": 4,
+    "runtimeCompleteActorCount": 35,
+    "runtimePartialActorCount": 3,
     "runtimeZeroAnimationActorCount": 0,
     "runtimeStrictRenderableActorCount": 38,
     "runtimeAutoRepairedZeroAnimationActorCount": 0,
     "runtimeDeferredOrPurgedZeroAnimationActorCount": 0,
     "runtimeUnresolvedZeroAnimationActorCount": 0,
-    "complianceScore": 98
+    "complianceScore": 99
   },
   "layers": {
     "runtimeAnimatedRoster": {
@@ -22,11 +22,11 @@
       "manifestId": "hmh-animated-roster",
       "sourcePolicy": "Repo-owned runtime manifest for canonical actors; coverage judged by roster-coverage-report role matrix.",
       "actorCount": 38,
-      "assetCount": 15943,
-      "policyCompliantAssetCount": 15943,
-      "animationStateCount": 298,
-      "completeActorCount": 34,
-      "partialActorCount": 4,
+      "assetCount": 16328,
+      "policyCompliantAssetCount": 16328,
+      "animationStateCount": 305,
+      "completeActorCount": 35,
+      "partialActorCount": 3,
       "zeroAnimationActorCount": 0,
       "levelOneShipEnemyCount": 23,
       "sampleKeys": [
@@ -195,21 +195,20 @@
     }
   },
   "scorecard": {
-    "overallScore": 98,
+    "overallScore": 99,
     "categories": {
       "animationCoverage": {
-        "score": 93,
-        "summary": "34/38 actors complete; 0 zero-animation actors",
+        "score": 94,
+        "summary": "35/38 actors complete; 0 zero-animation actors",
         "gaps": [
           "bitcoin-maximalist-riot-cop: partial coverage",
-          "influencer-camera-drone: partial coverage",
           "nft-valet: partial coverage",
           "stablecoin-socialite: partial coverage"
         ]
       },
       "sourcePolicy": {
         "score": 100,
-        "summary": "16266/16266 counted assets carry repo-owned/original/curated policy text",
+        "summary": "16651/16651 counted assets carry repo-owned/original/curated policy text",
         "gaps": []
       },
       "gameplayReadability": {

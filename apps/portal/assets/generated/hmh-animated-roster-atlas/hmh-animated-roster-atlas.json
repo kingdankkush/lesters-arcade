@@ -4,10 +4,10 @@
   "maxTextureSize": 4096,
   "padding": 1,
   "actorCount": 38,
-  "sourceFrameRefs": 15943,
-  "uniqueFramePixels": 11184,
+  "sourceFrameRefs": 16328,
+  "uniqueFramePixels": 11513,
   "atlasPageCount": 44,
-  "atlasBytes": 72034738,
+  "atlasBytes": 73961434,
   "actors": [
     {
       "actor": "lester",
@@ -499,17 +499,17 @@
     },
     {
       "actor": "influencer-camera-drone",
-      "sourceFrameRefs": 63,
-      "uniqueFramePixels": 63,
-      "deduplicatedRefs": 0,
+      "sourceFrameRefs": 448,
+      "uniqueFramePixels": 392,
+      "deduplicatedRefs": 56,
       "atlasPages": 1,
-      "atlasBytes": 345092,
+      "atlasBytes": 2271788,
       "atlases": [
         {
           "src": "./assets/generated/hmh-animated-roster-atlas/influencer-camera-drone/influencer-camera-drone-00.webp",
-          "width": 3950,
-          "height": 3950,
-          "bytes": 345092
+          "width": 4088,
+          "height": 4088,
+          "bytes": 2271788
         }
       ]
     },
