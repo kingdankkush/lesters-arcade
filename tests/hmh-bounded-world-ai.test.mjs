@@ -52,7 +52,10 @@ test('runtime uses obstacle-tracking pursuit for intercept/reacquire and bounded
   assert.ok(main.includes('resolveTrackingAiMove'), 'main.js should import the obstacle-tracking movement helper');
   assert.ok(updateBlock.includes('resolveTrackingAiMove({'), 'tracking pursuit modes should detour around authored obstacles');
   assert.ok(updateBlock.includes('resolveBoundedAiMove(moveOptions)'), 'orbit and disengage should retain bounded movement');
-  assert.ok(updateBlock.includes('enemy.cachedMoveMode = pursuit.mode'), 'sampled steering should cache the tactical pursuit mode');
+  assert.ok(updateBlock.includes('enemy.cachedMoveMode = pursuit.mode'), 'sampled Level 1 steering should cache the tactical pursuit mode');
+  assert.match(updateBlock, /if \(levelOneBudgeted\) \{[\s\S]*?planCatAndMouseSteering\(\{/, 'cat-and-mouse planning must be isolated to Level 1');
+  assert.ok(updateBlock.includes("enemy.cachedMoveMode = 'chase'"), 'other campaign levels should retain legacy chase steering');
+  assert.ok(updateBlock.includes("enemy.cachedMoveMode = 'retreat'"), 'other campaign levels should retain legacy ranged retreat steering');
   assert.ok(updateBlock.includes('isCatMouseTrackingMode(cachedMoveMode)'), 'tracking modes should avoid per-enemy inline array allocation');
   assert.ok(updateBlock.includes('const movementDt = Math.min(dt, 0.05)'), 'collision movement should run in capped per-frame steps');
   assert.match(updateBlock, /boss: Boolean\(enemy\.boss \|\| enemy\.miniBoss \|\| enemy\.signatureBoss\)/, 'bosses should use the persistent catch-up pursuit speed law');

@@ -9792,28 +9792,8 @@ function updateRoguelikeEnemies(director, dt) {
             selfIndex: ei,
             maxNeighbors: 10,
         });
-        // LOS is sampled only on the existing AI stride. This makes buildings,
-        // cliff props, and town walls useful cover without adding a per-frame
-        // obstacle scan for distant enemies.
-        const hasLineOfSight = distance > 24 || !obstacleHitAlongSegment(
-          enemy.mapX,
-          enemy.mapY,
-          combat.playerMapX,
-          combat.playerMapY,
-          obstacles,
-          0.9,
-        );
-        const pursuit = planCatAndMouseSteering({
-          ranged: Boolean(enemy.ranged),
-          distanceTiles: distance,
-          desiredDistanceTiles: desiredDistance,
-          hasLineOfSight,
-          homing: { x: dx / distance, y: dy / distance },
-          playerVelocity: { x: combat.velocityX ?? 0, y: combat.velocityY ?? 0 },
-          orbitSide: ((ei + runSeed) & 1) === 0 ? 1 : -1,
-        });
         const playerMoveSpeed = 4.15 * (combat.roguelikeRun?.stats.movementSpeed ?? 1);
-        const speed = calculateEnemyChaseSpeed({
+        const chaseSpeed = calculateEnemyChaseSpeed({
           enemySpeed: enemy.speed ?? 1,
           elite: enemy.elite,
           boss: Boolean(enemy.boss || enemy.miniBoss || enemy.signatureBoss),
@@ -9821,20 +9801,70 @@ function updateRoguelikeEnemies(director, dt) {
           encounterSpeedMul: encounterBehavior.speedMul ?? 1,
           slowFactor,
           playerMoveSpeed,
-        }) * pursuit.speedMul;
-        const separationWeight = pursuit.mode === 'orbit' ? 0.34 : pursuit.mode === 'disengage' ? 0.46 : 0.6;
-        const dir = blendSteering(pursuit.direction, sep, separationWeight);
-        enemy.cachedMoveVx = dir.x * speed;
-        enemy.cachedMoveVy = dir.y * speed;
-        enemy.cachedMoveMode = pursuit.mode;
-        enemy.pursuitMode = pursuit.mode;
-        enemy.hasLineOfSight = hasLineOfSight;
-        enemy.usingCoverTactic = pursuit.usesCover;
+        });
+        if (levelOneBudgeted) {
+          // LOS is sampled only on the existing AI stride. This makes buildings,
+          // cliff props, and town walls useful cover without adding a per-frame
+          // obstacle scan for distant enemies.
+          const hasLineOfSight = distance > 24 || !obstacleHitAlongSegment(
+            enemy.mapX,
+            enemy.mapY,
+            combat.playerMapX,
+            combat.playerMapY,
+            obstacles,
+            0.9,
+          );
+          const pursuit = planCatAndMouseSteering({
+            ranged: Boolean(enemy.ranged),
+            distanceTiles: distance,
+            desiredDistanceTiles: desiredDistance,
+            hasLineOfSight,
+            homing: { x: dx / distance, y: dy / distance },
+            playerVelocity: { x: combat.velocityX ?? 0, y: combat.velocityY ?? 0 },
+            orbitSide: ((ei + runSeed) & 1) === 0 ? 1 : -1,
+          });
+          const speed = chaseSpeed * pursuit.speedMul;
+          const separationWeight = pursuit.mode === 'orbit' ? 0.34 : pursuit.mode === 'disengage' ? 0.46 : 0.6;
+          const dir = blendSteering(pursuit.direction, sep, separationWeight);
+          enemy.cachedMoveVx = dir.x * speed;
+          enemy.cachedMoveVy = dir.y * speed;
+          enemy.cachedMoveMode = pursuit.mode;
+          enemy.pursuitMode = pursuit.mode;
+          enemy.hasLineOfSight = hasLineOfSight;
+          enemy.usingCoverTactic = pursuit.usesCover;
+        } else if (distance > desiredDistance) {
+          const dir = blendSteering({ x: dx / distance, y: dy / distance }, sep, 0.6);
+          enemy.cachedMoveVx = dir.x * chaseSpeed;
+          enemy.cachedMoveVy = dir.y * chaseSpeed;
+          enemy.cachedMoveMode = 'chase';
+          enemy.pursuitMode = 'chase';
+          enemy.hasLineOfSight = true;
+          enemy.usingCoverTactic = false;
+        } else if (enemy.ranged) {
+          const dir = blendSteering({ x: -dx / distance, y: -dy / distance }, sep, 0.5);
+          enemy.cachedMoveVx = dir.x * 0.55 * slowFactor;
+          enemy.cachedMoveVy = dir.y * 0.55 * slowFactor;
+          enemy.cachedMoveMode = 'retreat';
+          enemy.pursuitMode = 'retreat';
+          enemy.hasLineOfSight = true;
+          enemy.usingCoverTactic = false;
+        } else {
+          enemy.cachedMoveVx = 0;
+          enemy.cachedMoveVy = 0;
+          enemy.cachedMoveMode = 'idle';
+          enemy.pursuitMode = 'idle';
+          enemy.hasLineOfSight = true;
+          enemy.usingCoverTactic = false;
+        }
       }
       const cachedMoveMode = enemy.cachedMoveMode ?? 'hold';
       const cachedMoveVx = Number.isFinite(enemy.cachedMoveVx) ? enemy.cachedMoveVx : 0;
       const cachedMoveVy = Number.isFinite(enemy.cachedMoveVy) ? enemy.cachedMoveVy : 0;
-      const cachedMovementMatchesState = cachedMoveMode !== 'hold' && cachedMoveMode !== 'idle';
+      const cachedMovementMatchesState = levelOneBudgeted
+        ? cachedMoveMode !== 'hold' && cachedMoveMode !== 'idle'
+        : cachedMoveMode === 'chase'
+          ? distance > desiredDistance
+          : cachedMoveMode === 'retreat' && enemy.ranged && distance <= desiredDistance;
       if (cachedMovementMatchesState && (cachedMoveVx !== 0 || cachedMoveVy !== 0)) {
         const fromX = enemy.mapX;
         const fromY = enemy.mapY;
@@ -9859,7 +9889,7 @@ function updateRoguelikeEnemies(director, dt) {
           biomeAt: currentTerrainBiomeAt,
           worldBounds: enemyWorldBounds,
         };
-        const trackingMove = isCatMouseTrackingMode(cachedMoveMode);
+        const trackingMove = cachedMoveMode === 'chase' || (levelOneBudgeted && isCatMouseTrackingMode(cachedMoveMode));
         const boundedMove = trackingMove
           ? resolveTrackingAiMove({
               ...moveOptions,
