@@ -83,6 +83,25 @@ function sceneObj(id, sceneAssetKey, sceneRole, worldX, worldY, { solid = true, 
   return Object.freeze({ id, sceneAssetKey, sceneRole, worldX, worldY, solid, radius, drawOrderBias });
 }
 
+function curatedObj(id, curatedAssetKey, sceneRole, worldX, worldY, {
+  solid = true,
+  radius = 0.5,
+  drawOrderBias = 0,
+  footprintTiles = null,
+} = {}) {
+  return Object.freeze({
+    id,
+    curatedAssetKey,
+    sceneRole,
+    worldX,
+    worldY,
+    solid,
+    radius,
+    drawOrderBias,
+    footprintTiles: footprintTiles ? Object.freeze({ ...footprintTiles }) : null,
+  });
+}
+
 export function buildEncounterSceneObjects({ poiId = null, arenaLayout = null, centerX = 0, centerY = 0 } = {}) {
   const key = normalizeId(poiId);
   const layout = normalizeId(arenaLayout);
@@ -90,8 +109,15 @@ export function buildEncounterSceneObjects({ poiId = null, arenaLayout = null, c
 
   if (key === 'dry-forest-cave' || layout === 'cave-mouth-funnel') {
     objects.push(
-      sceneObj('dry-cave-lamp', 'level-final-setpiece/torch-pockets', 'lamp', centerX - 1, centerY + 2, { radius: 0.35 }),
-      sceneObj('dry-cave-gate', 'construct/fence-gate', 'fence', centerX, centerY - 1, { radius: 0.32 }),
+      sceneObj('dry-cave-lamp', 'level-final-setpiece/torch-pockets', 'lamp', centerX - 1, centerY + 2, { solid: false, radius: 0 }),
+      curatedObj('dry-cave-juniper-flank', 'curated-tree/jul9-riparian-juniper-idle-00', 'canopy', centerX - 3.5, centerY + 1.5, {
+        radius: 1.25,
+        footprintTiles: { w: 2.5, h: 2.2 },
+      }),
+      curatedObj('dry-cave-dead-tree-flank', 'curated-tree/jul9-riparian-dead-tree-idle-00', 'canopy', centerX + 3.5, centerY + 1.5, {
+        radius: 1.25,
+        footprintTiles: { w: 2.5, h: 2.2 },
+      }),
     );
   }
 

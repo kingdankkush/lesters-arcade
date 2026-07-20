@@ -11783,8 +11783,10 @@ function currentObstacles() {
         kind: o.sceneRole === 'wall' || o.sceneRole === 'building' ? 'building' : 'doodad',
         biome: null,
         sceneAssetKey: o.sceneAssetKey,
+        curatedAssetKey: o.curatedAssetKey,
         sceneRole: o.sceneRole,
         drawOrderBias: o.drawOrderBias ?? 0,
+        footprintTiles: o.footprintTiles ?? null,
       }))
     : [];
   // AUTHORED WORLD LAYOUT: inject handcrafted landmark placements from
@@ -12425,14 +12427,17 @@ function drawRoguelikeScene(ctx, width, height) {
   }
   const enemyRenderBudget = currentLevelOnePerformanceBudget();
   const enemyRenderMargin = 180;
-  const visibleEnemies = combat.enemies.filter((enemy) => (
-    enemy.x >= -enemyRenderMargin
-    && enemy.x <= width + enemyRenderMargin
-    && enemy.y >= -enemyRenderMargin
-    && enemy.y <= height + enemyRenderMargin
-  ));
-  const maxAnimatedEnemies = Math.max(0, enemyRenderBudget.maxAnimatedEnemies ?? visibleEnemies.length);
-  const enemyRenderEntries = visibleEnemies.map((enemy) => ({ enemy, intent: enemyAnimationIntent(enemy) }));
+  const enemyRenderEntries = [];
+  for (const enemy of combat.enemies) {
+    if (
+      enemy.x < -enemyRenderMargin
+      || enemy.x > width + enemyRenderMargin
+      || enemy.y < -enemyRenderMargin
+      || enemy.y > height + enemyRenderMargin
+    ) continue;
+    enemyRenderEntries.push({ enemy, intent: enemyAnimationIntent(enemy) });
+  }
+  const maxAnimatedEnemies = Math.max(0, enemyRenderBudget.maxAnimatedEnemies ?? enemyRenderEntries.length);
   const animatedEnemies = selectAnimatedEnemySet(enemyRenderEntries, {
     maxAnimatedEnemies,
     playerX: combat.playerMapX,

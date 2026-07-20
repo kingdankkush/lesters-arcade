@@ -137,27 +137,42 @@ export function selectAnimatedEnemySet(entries = [], {
   viewportWidth = 0,
   viewportHeight = 0,
 } = {}) {
-  const safeEntries = Array.isArray(entries) ? entries.filter((entry) => entry?.enemy) : [];
-  const cap = Math.max(0, Math.min(safeEntries.length, Math.floor(Number(maxAnimatedEnemies) || 0)));
+  const inputEntries = Array.isArray(entries) ? entries : [];
+  let validEntryCount = 0;
+  for (const entry of inputEntries) {
+    if (entry?.enemy) validEntryCount += 1;
+  }
+  const cap = Math.max(0, Math.min(validEntryCount, Math.floor(Number(maxAnimatedEnemies) || 0)));
   if (cap === 0) return new Set();
-  if (cap >= safeEntries.length) return new Set(safeEntries.map((entry) => entry.enemy));
+  if (cap >= validEntryCount) {
+    const selected = new Set();
+    for (const entry of inputEntries) {
+      if (entry?.enemy) selected.add(entry.enemy);
+    }
+    return selected;
+  }
 
-  const ranked = safeEntries.map((entry, index) => {
+  const ranked = [];
+  for (let index = 0; index < inputEntries.length; index += 1) {
+    const entry = inputEntries[index];
+    if (!entry?.enemy) continue;
     const { enemy, intent = {} } = entry;
     const onScreen = Number.isFinite(enemy.x) && Number.isFinite(enemy.y)
       && enemy.x >= 0 && enemy.x <= viewportWidth
       && enemy.y >= 0 && enemy.y <= viewportHeight;
     const ex = Number.isFinite(enemy.mapX) ? enemy.mapX : playerX;
     const ey = Number.isFinite(enemy.mapY) ? enemy.mapY : playerY;
-    return {
+    ranked.push({
       enemy,
       index,
       tier: enemyAnimationPriorityTier(enemy, intent, onScreen),
       distance: Math.hypot(ex - playerX, ey - playerY),
-    };
-  });
+    });
+  }
   ranked.sort((a, b) => a.tier - b.tier || a.distance - b.distance || a.index - b.index);
-  return new Set(ranked.slice(0, cap).map((entry) => entry.enemy));
+  const selected = new Set();
+  for (let index = 0; index < cap; index += 1) selected.add(ranked[index].enemy);
+  return selected;
 }
 
 // Map an enemy's live state to a canonical animation state.

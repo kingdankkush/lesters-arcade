@@ -51,6 +51,18 @@ test('selectAnimatedEnemySet stays deterministic, honors zero/full caps, and pre
   })], [onscreen]);
 });
 
+test('selectAnimatedEnemySet ignores malformed entries without spending the animation cap', () => {
+  const tell = { id: 'tell', x: 500, y: 300, mapX: 5, mapY: 0 };
+  const idle = { id: 'idle', x: 520, y: 300, mapX: 1, mapY: 0 };
+  const entries = [null, {}, { enemy: idle, intent: {} }, { enemy: tell, intent: { telegraphing: true } }];
+  assert.deepEqual([...selectAnimatedEnemySet(entries, {
+    maxAnimatedEnemies: 1,
+    viewportWidth: 1240,
+    viewportHeight: 616,
+  })], [tell]);
+  assert.deepEqual([...selectAnimatedEnemySet(entries, { maxAnimatedEnemies: 99 })], [idle, tell]);
+});
+
 test('enemyDirectionFromEntity faces the player for attack intent and follows velocity while moving', () => {
   assert.equal(enemyDirectionFromEntity({ attacking: true, x: 2, y: 3, vx: -1 }, { playerX: 8, playerY: 3 }), 'east');
   assert.equal(enemyDirectionFromEntity({ x: 2, y: 3 }, { playerX: 0, playerY: 1, intent: { telegraphing: true } }), 'north-west');
@@ -89,6 +101,9 @@ test('canonical enemy renderer uses directional bridge for base and overlay fram
   assert.match(mainSource, /lastDirection: intent\.spawning \? null : HMH_ACTOR_FACING_CACHE\.get\(entity\)/);
   assert.match(mainSource, /selectAnimatedEnemySet\(enemyRenderEntries/);
   assert.match(mainSource, /const intent = renderOptions\.intent \?\? enemyAnimationIntent\(enemy\)/);
+  assert.match(mainSource, /for \(const enemy of combat\.enemies\)/, 'visible enemy render entries should be built in one pass');
+  assert.doesNotMatch(mainSource, /const visibleEnemies = combat\.enemies\.filter/, 'the render loop should not allocate a redundant visible-enemy array');
+  assert.doesNotMatch(mainSource, /const enemyRenderEntries = visibleEnemies\.map/, 'the render loop should not allocate a second mapped array');
 });
 
 test('enemyStateFromEntity maps post-attack recovery into melee-counter readability state', () => {

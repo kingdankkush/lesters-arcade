@@ -225,6 +225,8 @@ test('buildCampaignPoiEncounterProfile gives Dry Forest Cave and Oasis Lakeside 
   assert.equal(dryForest.spawnSlots.some((slot) => slot.enemyId === 'coyote-pack-runner' && slot.role === 'mini-boss'), true);
   assert.equal(dryForest.spawnSlots.some((slot) => slot.enemyId === 'fud-goblin-cave' && slot.role === 'support'), true);
   assert.equal(dryForest.spawnSlots.some((slot) => slot.enemyId === 'wild-boar' && slot.role === 'support'), true);
+  assert.equal(dryForest.spawnSlots.every((slot) => slot.angleDeg >= 220 && slot.angleDeg <= 320), true, 'cave enemies should stage from the north-side funnel instead of surrounding the player');
+  assert.equal(dryForest.spawnSlots.find((slot) => slot.role === 'mini-boss')?.angleDeg, 270, 'the Cave Warren Alpha should anchor the deep cave lane');
   assert.equal(oasis.visualPlan.telegraphCue.includes('waterline'), true);
   assert.equal(oasis.visualPlan.propClusters.some((cluster) => cluster.id === 'reed-bank-ring'), true);
   assert.equal(oasis.spawnSlots.some((slot) => slot.enemyId === 'rattlesnake' && slot.role === 'mini-boss'), true);

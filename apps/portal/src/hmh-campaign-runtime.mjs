@@ -43,10 +43,10 @@ const LEVEL_ONE_POI_ENCOUNTERS = Object.freeze({
     supportEnemyIds: Object.freeze(['fud-goblin-cave', 'wild-boar', 'coyote-pack-runner']),
     previewEnemyIds: Object.freeze(['fud-goblin-cave', 'wild-boar']),
     spawnSlots: Object.freeze([
-      Object.freeze({ enemyId: 'fud-goblin-cave', role: 'support', angleDeg: 228, radiusTiles: 20.0 }),
-      Object.freeze({ enemyId: 'wild-boar', role: 'support', angleDeg: 308, radiusTiles: 20.0, elite: true }),
-      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'mini-boss', angleDeg: 28, radiusTiles: 24.0, miniBoss: true, elite: true }),
-      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'support', angleDeg: 140, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'fud-goblin-cave', role: 'support', angleDeg: 230, radiusTiles: 20.0 }),
+      Object.freeze({ enemyId: 'wild-boar', role: 'support', angleDeg: 310, radiusTiles: 20.0, elite: true }),
+      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'mini-boss', angleDeg: 270, radiusTiles: 24.0, miniBoss: true, elite: true }),
+      Object.freeze({ enemyId: 'coyote-pack-runner', role: 'support', angleDeg: 250, radiusTiles: 20.0 }),
     ]),
   }),
   'litecoin-square-hub': Object.freeze({

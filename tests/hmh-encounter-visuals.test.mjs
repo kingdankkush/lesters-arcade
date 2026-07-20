@@ -18,6 +18,7 @@ import {
   enemyProxyRenderProfile,
   HMH_ENEMY_VISUAL_REDESIGN_QUEUE,
 } from '../apps/portal/src/hmh-encounter-visuals.mjs';
+import { resolvePlayerCollision } from '../apps/portal/src/world-obstacles.mjs';
 
 
 test('final setpiece kit ships original POI level-design assets for every authored Level 1 arena', () => {
@@ -154,8 +155,22 @@ test('buildEncounterSceneObjects preserves lightweight arena cues without duplic
 
   assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/cave-mouth-rocks'), false);
   assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/pine-wall-shadow'), false);
-  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/torch-pockets' && obj.sceneRole === 'lamp'), true);
-  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'construct/fence-gate' && obj.sceneRole === 'fence'), true);
+  const caveLamp = dryForest.find((obj) => obj.sceneAssetKey === 'level-final-setpiece/torch-pockets');
+  assert.equal(caveLamp?.sceneRole, 'lamp');
+  assert.equal(caveLamp?.solid, false, 'lighting cues must not create invisible collision');
+  assert.equal(dryForest.some((obj) => obj.sceneAssetKey === 'construct/fence-gate'), false, 'the center lane must not use a low-detail gate blocker');
+
+  const caveFlanks = dryForest
+    .filter((obj) => obj.curatedAssetKey)
+    .sort((a, b) => a.worldX - b.worldX);
+  assert.deepEqual(caveFlanks.map((obj) => obj.curatedAssetKey), [
+    'curated-tree/jul9-riparian-juniper-idle-00',
+    'curated-tree/jul9-riparian-dead-tree-idle-00',
+  ]);
+  assert.equal(caveFlanks.every((obj) => obj.sceneRole === 'canopy' && obj.solid === true), true);
+  assert.equal(caveFlanks.every((obj) => obj.worldY === -16.5), true, 'both flanks should share a readable cave-entry line');
+  const clearLaneWidth = (caveFlanks[1].worldX - caveFlanks[1].radius) - (caveFlanks[0].worldX + caveFlanks[0].radius);
+  assert.ok(clearLaneWidth >= 4, `cave choke must preserve at least four tiles, got ${clearLaneWidth}`);
 
   assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/shoreline-ripple-line' && obj.sceneRole === 'water-strip' && obj.solid === false), true);
   assert.equal(oasis.some((obj) => obj.sceneAssetKey === 'level-final-setpiece/driftwood-sandbar' && obj.sceneRole === 'smallprop'), true);
@@ -172,9 +187,31 @@ test('buildEncounterSceneObjects preserves lightweight arena cues without duplic
   for (const obj of [...dryForest, ...oasis, ...crossroads, ...mesa]) {
     assert.equal(typeof obj.worldX, 'number');
     assert.equal(typeof obj.worldY, 'number');
-    assert.equal(typeof obj.sceneAssetKey, 'string');
+    assert.equal(typeof (obj.sceneAssetKey ?? obj.curatedAssetKey), 'string');
     assert.equal(typeof obj.sceneRole, 'string');
+    assert.equal(Boolean(obj.sceneAssetKey || obj.curatedAssetKey), true);
   }
+});
+
+test('Dry Forest Cave choke preserves a swept player-radius crossing through the authored center lane', () => {
+  const objects = buildEncounterSceneObjects({
+    poiId: 'dry-forest-cave',
+    arenaLayout: 'cave-mouth-funnel',
+    centerX: 42,
+    centerY: -18,
+  });
+  const solidObjects = objects.filter((object) => object.solid);
+  let x = 42;
+  let y = -10;
+  for (let step = 0; step < 56; step += 1) {
+    const targetY = y - 0.25;
+    const resolved = resolvePlayerCollision(x, y, x, targetY, 0.6, solidObjects);
+    assert.equal(resolved.x, 42, `center lane shifted laterally at step ${step}`);
+    assert.equal(resolved.y, targetY, `center lane blocked at step ${step}`);
+    x = resolved.x;
+    y = resolved.y;
+  }
+  assert.equal(y, -24, 'the player-radius sweep should exit beyond the cave flank line');
 });
 
 

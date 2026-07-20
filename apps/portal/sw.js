@@ -10,7 +10,7 @@
 //                            this is where the repeat-visit speedup comes from)
 // Bumping CACHE_VERSION drops every old cache on activate.
 
-const CACHE_VERSION = 'lesters-arcade-v3-ship-polish-v44';
+const CACHE_VERSION = 'lesters-arcade-v3-ship-polish-v45';
 const CACHE_NAME = `${CACHE_VERSION}`;
 
 // Minimal app shell precached on install so the arcade boots offline.
