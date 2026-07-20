@@ -71,6 +71,52 @@ export function heroDirectionFromCombat(combat) {
   return directionFromVector(dx, dy);
 }
 
+const ENEMY_FACING_DIRECTIONS = new Set([
+  'south', 'south-east', 'east', 'north-east',
+  'north', 'north-west', 'west', 'south-west',
+]);
+
+// Keep canonical enemies aligned with their 8-way art. Attack/tell poses face
+// the player, locomotion follows velocity, and non-moving reactions preserve
+// the last rendered direction so hit/death frames do not snap south.
+export function enemyDirectionFromEntity(enemy = {}, {
+  playerX,
+  playerY,
+  lastDirection = null,
+  intent = null,
+} = {}) {
+  const hasPlayerVector = Number.isFinite(playerX) && Number.isFinite(playerY)
+    && Number.isFinite(enemy.x) && Number.isFinite(enemy.y);
+  const vx = Number.isFinite(enemy.vx) ? enemy.vx : 0;
+  const vy = Number.isFinite(enemy.vy) ? enemy.vy : 0;
+  const hasMeaningfulVelocity = Math.abs(vx) > 0.01 || Math.abs(vy) > 0.01;
+  const burrowTravel = enemy.burrowing && hasMeaningfulVelocity;
+  const hostileIntent = !burrowTravel && (
+    intent?.attacking || intent?.telegraphing || intent?.recovering
+    || enemy.attacking || enemy.telegraphing || enemy.recovering
+    || enemy.lunging || enemy.burrowing || enemy.aiming || enemy.windingUp
+    || enemy.reloading || enemy.postVolley
+    || ['attack', 'ranged-attack', 'telegraph', 'melee-tell', 'recover', 'melee-counter'].includes(enemy.state)
+  );
+
+  if (hostileIntent && hasPlayerVector) {
+    const facing = directionFromVector(playerX - enemy.x, playerY - enemy.y);
+    if (facing) return facing;
+  }
+
+  if (hasMeaningfulVelocity) {
+    const facing = directionFromVector(vx, vy);
+    if (facing) return facing;
+  }
+
+  if (ENEMY_FACING_DIRECTIONS.has(lastDirection)) return lastDirection;
+  if (hasPlayerVector) {
+    const facing = directionFromVector(playerX - enemy.x, playerY - enemy.y);
+    if (facing) return facing;
+  }
+  return 'south';
+}
+
 // Map an enemy's live state to a canonical animation state.
 export function enemyStateFromEntity(enemy) {
   if (enemy.dying || enemy.dead) return 'death';

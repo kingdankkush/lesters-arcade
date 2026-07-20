@@ -19,7 +19,7 @@ import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManua
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
-import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
@@ -422,13 +422,28 @@ function enemyAnimationIntent(entity = {}) {
   return { spawning, telegraphing, attacking, recovering, moving };
 }
 
-// Resolve a generated/canonical-art frame image for an entity, or null for legacy art.
-function pipelineActorFrame(entity, { boss = false } = {}) {
+const HMH_ACTOR_FACING_CACHE = new WeakMap();
+
+function pipelineActorVisualState(entity) {
   const actorId = registryActorIdFor(entity);
   if (!actorId || !HMH_ACTOR_REGISTRY.has(actorId)) return null;
   const actor = HMH_ACTOR_REGISTRY.get(actorId);
-  const dying = entity.dying || (entity.hp !== undefined && entity.hp <= 0);
   const intent = enemyAnimationIntent(entity);
+  const direction = enemyDirectionFromEntity(entity, {
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    lastDirection: intent.spawning ? null : HMH_ACTOR_FACING_CACHE.get(entity),
+    intent,
+  });
+  HMH_ACTOR_FACING_CACHE.set(entity, direction);
+  return { actor, direction, intent };
+}
+
+// Resolve a generated/canonical-art frame image for an entity, or null for legacy art.
+function pipelineActorFrame(entity, { visual = pipelineActorVisualState(entity) } = {}) {
+  if (!visual) return null;
+  const { actor, direction, intent } = visual;
+  const dying = entity.dying || (entity.hp !== undefined && entity.hp <= 0);
   let state = enemyStateFromEntity({
     dying,
     hitFrames: entity.hitFrames ?? ((entity.flashTimer ?? 0) > 0 ? 1 : 0),
@@ -443,14 +458,17 @@ function pipelineActorFrame(entity, { boss = false } = {}) {
     const tier = healthTierState(actor, entity);
     if (tier) state = tier;
   }
-  const frame = actor.frame({ state, direction: 'south', clock: combat.frame + Math.floor(entity.x ?? 0) });
+  const frame = actor.frame({
+    state,
+    direction,
+    clock: combat.frame + Math.floor(entity.x ?? 0),
+  });
   return frame?.image ?? null;
 }
 
-function pipelineActorOverlayFrame(entity) {
-  const actorId = registryActorIdFor(entity);
-  if (!actorId || !HMH_ACTOR_REGISTRY.has(actorId)) return null;
-  const actor = HMH_ACTOR_REGISTRY.get(actorId);
+function pipelineActorOverlayFrame(entity, { visual = pipelineActorVisualState(entity) } = {}) {
+  if (!visual) return null;
+  const { actor, direction } = visual;
   const state = enemyOverlayStateFromEntity({
     dying: entity.dying || (entity.hp !== undefined && entity.hp <= 0),
     dead: entity.dead,
@@ -458,7 +476,11 @@ function pipelineActorOverlayFrame(entity) {
     goreFrames: entity.goreFrames ?? 0,
   }, { goreEnabled: gameSettings.gore });
   if (!state || !actorDefinesState(actor, state)) return null;
-  const frame = actor.frame({ state, direction: 'south', clock: combat.frame + Math.floor(entity.x ?? 0) });
+  const frame = actor.frame({
+    state,
+    direction,
+    clock: combat.frame + Math.floor(entity.x ?? 0),
+  });
   return frame?.image ?? null;
 }
 
@@ -13629,8 +13651,9 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
       fps: renderOptions.enemyAnimationFps ?? 12,
     });
     const waveFrame = isLevelOneCuratedRuntime() ? null : (isMini ? null : roguelikeEnemyWaveArt(enemy));
-    const pipelineFrame = pipelineActorFrame(enemy);
-    const overlayFrame = pipelineActorOverlayFrame(enemy);
+    const pipelineVisual = pipelineActorVisualState(enemy);
+    const pipelineFrame = pipelineActorFrame(enemy, { visual: pipelineVisual });
+    const overlayFrame = pipelineActorOverlayFrame(enemy, { visual: pipelineVisual });
     const legacyEnemyFrame = isLevelOneCuratedRuntime() ? null : enemyArtFor(enemy);
     const wo110Frame = isSignatureBoss ? wo110BossRuntimeFrame(enemy) : null;
     const enemyFrame = (imageReady(wo110Frame?.image) ? wo110Frame.image : null)
@@ -13746,10 +13769,10 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
     }
 }
 
-function bossArtFor(boss) {
+function bossArtFor(boss, pipelineVisual) {
   if (!boss) return null;
   // Prefer the durable pipeline's generated boss art when available.
-  const pipelineFrame = pipelineActorFrame(boss, { boss: true });
+  const pipelineFrame = pipelineActorFrame(boss, { visual: pipelineVisual });
   if (pipelineFrame) return pipelineFrame;
   const id = `${boss.id ?? ''} ${boss.title ?? ''}`.toLowerCase();
   const key = id.includes('whale') || id.includes('bank') || id.includes('tycoon')
@@ -13771,11 +13794,12 @@ function bossArtFor(boss) {
 function drawBoss(ctx) {
   if (!combat.boss) return;
   const x = combat.boss.x;
-  const bossFrame = bossArtFor(combat.boss);
+  const pipelineVisual = pipelineActorVisualState(combat.boss);
+  const bossFrame = bossArtFor(combat.boss, pipelineVisual);
   const wo110Frame = wo110BossRuntimeFrame(combat.boss);
   const drawFrame = wo110Frame?.image ?? bossFrame;
   if (imageReady(drawFrame)) {
-    const bossOverlayFrame = pipelineActorOverlayFrame(combat.boss);
+    const bossOverlayFrame = pipelineActorOverlayFrame(combat.boss, { visual: pipelineVisual });
     const phaseScale = 1 + (combat.boss.phase - 1) * 0.08;
     const drawWidth = wo110Frame?.asset?.renderWidth ? Math.min(wo110Frame.asset.renderWidth, WO110_TRUE_SCALE_MAX_PX) : Math.round(150 * phaseScale);
     const drawHeight = wo110Frame?.asset?.renderHeight ? Math.min(wo110Frame.asset.renderHeight, WO110_TRUE_SCALE_MAX_PX) : Math.round(150 * phaseScale);
