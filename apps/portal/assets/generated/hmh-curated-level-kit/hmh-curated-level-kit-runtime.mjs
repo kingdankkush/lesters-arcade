@@ -121,7 +121,7 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
     "apps/portal/src/web3-live-readiness.mjs",
     "apps/portal/src/world-obstacles.mjs"
   ],
-  "totalReferencedKeys": 75,
+  "totalReferencedKeys": 74,
   "missing": [],
   "assets": [
     {
@@ -648,19 +648,6 @@ export const HMH_CURATED_LEVEL_KIT = Object.freeze({
       "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/bus-stop-sign.png",
       "width": 40,
       "height": 72,
-      "needsSlicing": false
-    },
-    {
-      "key": "level-1/prop/desert-08",
-      "label": "Desert 08",
-      "category": "set-dressing",
-      "family": "props",
-      "scope": "level-1-crypto-wasteland",
-      "role": "curated Level 1 prop",
-      "source": "level-1-crypto-wasteland/Random-Assets/desert-08.png",
-      "src": "./assets/generated/hmh-curated-level-kit/source/level-1-crypto-wasteland/Random-Assets/desert-08.png",
-      "width": 128,
-      "height": 128,
       "needsSlicing": false
     },
     {

@@ -8,7 +8,48 @@ import {
   enemyStateFromEntity,
   prewarmActorRegistry,
   prewarmSelectedHeroActorRegistry,
+  selectAnimatedEnemySet,
 } from '../apps/portal/src/combat-sprite-bridge.mjs';
+
+test('selectAnimatedEnemySet spends a fixed render cap on threats and reactions before idle proximity', () => {
+  const boss = { id: 'boss', signatureBoss: true, mapX: 40, mapY: 40, x: 900, y: 700 };
+  const tell = { id: 'tell', mapX: 30, mapY: 0, x: 800, y: 300 };
+  const hit = { id: 'hit', hitFrames: 4, mapX: 20, mapY: 0, x: 700, y: 300 };
+  const nearbyIdle = { id: 'idle-near', mapX: 1, mapY: 0, x: 640, y: 320 };
+  const fartherIdle = { id: 'idle-far', mapX: 8, mapY: 0, x: 680, y: 320 };
+  const entries = [
+    { enemy: nearbyIdle, intent: {} },
+    { enemy: fartherIdle, intent: {} },
+    { enemy: tell, intent: { telegraphing: true } },
+    { enemy: hit, intent: {} },
+    { enemy: boss, intent: {} },
+  ];
+
+  const selected = selectAnimatedEnemySet(entries, {
+    maxAnimatedEnemies: 3,
+    playerX: 0,
+    playerY: 0,
+    viewportWidth: 1240,
+    viewportHeight: 616,
+  });
+  assert.deepEqual([...selected].map((enemy) => enemy.id), ['boss', 'tell', 'hit']);
+  assert.equal(selected.has(nearbyIdle), false, 'idle proximity must not displace a boss, tell, or hit reaction');
+});
+
+test('selectAnimatedEnemySet stays deterministic, honors zero/full caps, and prefers on-screen idle ties', () => {
+  const offscreen = { id: 'offscreen', mapX: 1, mapY: 0, x: -80, y: 300, spawnLaneRole: 'elite', spawnLaneRoleApplied: false };
+  const onscreen = { id: 'onscreen', mapX: 4, mapY: 0, x: 500, y: 300 };
+  const entries = [{ enemy: offscreen, intent: {} }, { enemy: onscreen, intent: {} }];
+  assert.deepEqual([...selectAnimatedEnemySet(entries, { maxAnimatedEnemies: 0 })], []);
+  assert.deepEqual([...selectAnimatedEnemySet(entries, { maxAnimatedEnemies: 9 })], [offscreen, onscreen]);
+  assert.deepEqual([...selectAnimatedEnemySet(entries, {
+    maxAnimatedEnemies: 1,
+    playerX: 0,
+    playerY: 0,
+    viewportWidth: 1240,
+    viewportHeight: 616,
+  })], [onscreen]);
+});
 
 test('enemyDirectionFromEntity faces the player for attack intent and follows velocity while moving', () => {
   assert.equal(enemyDirectionFromEntity({ attacking: true, x: 2, y: 3, vx: -1 }, { playerX: 8, playerY: 3 }), 'east');
@@ -46,6 +87,8 @@ test('canonical enemy renderer uses directional bridge for base and overlay fram
   assert.match(mainSource, /pipelineActorOverlayFrame\(enemy, \{ visual: pipelineVisual \}\)/);
   assert.match(mainSource, /pipelineActorOverlayFrame\(combat\.boss, \{ visual: pipelineVisual \}\)/);
   assert.match(mainSource, /lastDirection: intent\.spawning \? null : HMH_ACTOR_FACING_CACHE\.get\(entity\)/);
+  assert.match(mainSource, /selectAnimatedEnemySet\(enemyRenderEntries/);
+  assert.match(mainSource, /const intent = renderOptions\.intent \?\? enemyAnimationIntent\(enemy\)/);
 });
 
 test('enemyStateFromEntity maps post-attack recovery into melee-counter readability state', () => {

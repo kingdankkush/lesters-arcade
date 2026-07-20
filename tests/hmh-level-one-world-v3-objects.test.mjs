@@ -166,6 +166,16 @@ test('solid World v3 object footprints preserve routes to all critical and optio
   }
 });
 
+test('World v3 boss-yard camera keeps one warehouse landmark while preserving extraction cover', () => {
+  const bossYard = buildLevelOneWorldV3VisibleObjects({ playerX: 79, playerY: -43, window: 18 });
+  const warehouses = bossYard.filter((object) => object.assetKey === 'wo105-world/extraction-yard-warehouse');
+  const containerCover = bossYard.filter((object) => object.assetKey === 'wo105-world/container-cover-line');
+
+  assert.equal(warehouses.length, 1, 'nearby boss and extraction anchors must not render duplicate warehouse facades in one combat camera');
+  assert.equal(warehouses[0].layoutPlacementId, 'v4-gulch-container-yard', 'the boss-yard perimeter owns the single warehouse landmark');
+  assert.equal(containerCover.length, 2, 'both anchors retain low tactical container cover after landmark deduplication');
+});
+
 test('World v3 visibility queries are deterministic, local, and runtime-gated', () => {
   const first = buildLevelOneWorldV3VisibleObjects({ playerX: 16, playerY: -13, window: 18 });
   const second = buildLevelOneWorldV3VisibleObjects({ playerX: 16, playerY: -13, window: 18 });

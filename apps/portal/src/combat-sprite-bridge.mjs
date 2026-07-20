@@ -117,6 +117,49 @@ export function enemyDirectionFromEntity(enemy = {}, {
   return 'south';
 }
 
+function enemyAnimationPriorityTier(enemy = {}, intent = {}, onScreen = false) {
+  if (enemy.signatureBoss || enemy.miniBoss || enemy.boss) return 0;
+  if (intent.telegraphing || intent.attacking || enemy.telegraphing || enemy.attacking) return 1;
+  if (intent.recovering || enemy.dying || enemy.dead || (enemy.hitFrames ?? 0) > 0 || (enemy.goreFrames ?? 0) > 0) return 2;
+  if (intent.spawning || enemy.spawning || (enemy.spawnFrames ?? 0) > 0) return 3;
+  const eliteClass = typeof enemy.class === 'string' && /(^|[-_\s])elite($|[-_\s])/.test(enemy.class);
+  if (enemy.elite || eliteClass || enemy.spawnLaneRoleApplied === true && enemy.spawnLaneRole === 'elite') return 4;
+  return onScreen ? 5 : 6;
+}
+
+// Preserve the existing hard animation cap while spending it on authored combat
+// readability first. This is render-only: every enemy remains simulated and
+// drawn, but idle margin enemies hold a still frame before active threats do.
+export function selectAnimatedEnemySet(entries = [], {
+  maxAnimatedEnemies = entries.length,
+  playerX = 0,
+  playerY = 0,
+  viewportWidth = 0,
+  viewportHeight = 0,
+} = {}) {
+  const safeEntries = Array.isArray(entries) ? entries.filter((entry) => entry?.enemy) : [];
+  const cap = Math.max(0, Math.min(safeEntries.length, Math.floor(Number(maxAnimatedEnemies) || 0)));
+  if (cap === 0) return new Set();
+  if (cap >= safeEntries.length) return new Set(safeEntries.map((entry) => entry.enemy));
+
+  const ranked = safeEntries.map((entry, index) => {
+    const { enemy, intent = {} } = entry;
+    const onScreen = Number.isFinite(enemy.x) && Number.isFinite(enemy.y)
+      && enemy.x >= 0 && enemy.x <= viewportWidth
+      && enemy.y >= 0 && enemy.y <= viewportHeight;
+    const ex = Number.isFinite(enemy.mapX) ? enemy.mapX : playerX;
+    const ey = Number.isFinite(enemy.mapY) ? enemy.mapY : playerY;
+    return {
+      enemy,
+      index,
+      tier: enemyAnimationPriorityTier(enemy, intent, onScreen),
+      distance: Math.hypot(ex - playerX, ey - playerY),
+    };
+  });
+  ranked.sort((a, b) => a.tier - b.tier || a.distance - b.distance || a.index - b.index);
+  return new Set(ranked.slice(0, cap).map((entry) => entry.enemy));
+}
+
 // Map an enemy's live state to a canonical animation state.
 export function enemyStateFromEntity(enemy) {
   if (enemy.dying || enemy.dead) return 'death';

@@ -333,6 +333,8 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     }),
     ...stampObjectsForKeys(JUL9_B_ASSETS.signals.slice(16, 20), 'dressing', { startX: -5, startY: 5 }),
     { assetKey: 'curated/jul9-industrial-buildings-large-03-crypto-mining-service-shed', use: 'landmark', dx: -7, dy: -9, solid: true },
+    { assetKey: 'wo105-world/container-cover-line', use: 'boundary', dx: 6, dy: 7, solid: true, metadata: { footprintTiles: { w: 4.2, h: 1.4 } } },
+    { assetKey: 'curated/jul9-fences-barricades-22-rubble-barricade', use: 'boundary', dx: -3, dy: 8, solid: true, metadata: { footprintTiles: { w: 2.8, h: 1.1 } } },
   ], { label: 'East extraction yard', routeBeat: 'boss', anchor: { x: 104, y: 4 }, routeRead: 'boss gates, extraction pad, pylons, and industrial shed form a complete east-side objective' }),
   prefabStamp('compact-southwest-rock-camp', 'compact-southwest', [
     ...stampObjectsForKeys(JUL9_B_ASSETS.rocks.slice(3), 'boundary', { startX: -7, startY: -7, spacingX: 7, solid: true }),
@@ -475,7 +477,6 @@ export const LEVEL_ONE_AUTHORED_PREFAB_STAMPS = Object.freeze([
     { assetKey: 'curated/jul9-small-cover-loot-20-crate-barrel-cover', use: 'dressing', dx: 4, dy: 3, solid: false },
   ], { label: 'Ghost town facade row pocket', routeBeat: 'arena', anchor: { x: 42, y: 6 }, routeRead: 'facade row, gas canopy, fence, and cover shape the town fight' }),
   prefabStamp('industrial-power-yard-extraction-pocket', 'finale-extraction', [
-    { assetKey: 'curated/jul9-industrial-buildings-large-03-crypto-mining-service-shed', use: 'landmark', dx: -7, dy: -5, solid: true, metadata: { footprintTiles: { w: 5.7, h: 3.0 } } },
     { assetKey: 'curated/jul9-power-yard-extraction-00-lit-extraction-beacon', use: 'landmark', dx: 1, dy: -2, solid: false },
     { assetKey: 'curated/jul9-power-yard-extraction-05-battery-cabinet', use: 'dressing', dx: 5, dy: -1, solid: false },
     { assetKey: 'curated/jul9-power-yard-extraction-13-power-yard-barricade', use: 'boundary', dx: -4, dy: 3, solid: true },

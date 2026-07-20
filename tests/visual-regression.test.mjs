@@ -7,8 +7,8 @@ const visualScript = readFileSync(new URL('../scripts/visual-regression.mjs', im
 const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
 test('WO-65 visual regression harness is command-wired and captures real HMH canvas frames', () => {
-  assert.equal(packageJson.scripts['visual:regression'], 'node scripts/visual-regression.mjs');
-  assert.equal(packageJson.scripts['visual:accept'], 'node scripts/visual-regression.mjs --accept');
+  assert.equal(packageJson.scripts['visual:regression'], 'npm run build && node scripts/visual-regression.mjs');
+  assert.equal(packageJson.scripts['visual:accept'], 'npm run build && node scripts/visual-regression.mjs --accept');
   assert.match(visualScript, /remote-debugging-port/);
   assert.match(visualScript, /Page\.captureScreenshot/);
   assert.match(visualScript, /appearDeadline/);

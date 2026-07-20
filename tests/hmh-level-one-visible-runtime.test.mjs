@@ -136,7 +136,7 @@ test('Jul 9 11:16 buildings, neighborhoods, park, water, cliffs, cover, and powe
     { playerX: 106, playerY: -54, stampId: 'residential-block-backlot-pocket', prefixes: ['curated/jul9-residential-block-buildings-large-', 'curated/jul9-vegetation-crop-edge-'] },
     { playerX: 66, playerY: 7, stampId: 'canal-park-ford-pocket', prefixes: ['curated/jul9-creek-canal-culvert-', 'curated/jul9-cliff-ditch-boundary-', 'curated/jul9-vegetation-crop-edge-'] },
     { playerX: 42, playerY: 6, stampId: 'ghost-town-facade-row-pocket', prefixes: ['curated/jul9-ghost-town-facade-modules-', 'curated/jul9-roadside-buildings-large-'] },
-    { playerX: 100, playerY: 6, stampId: 'industrial-power-yard-extraction-pocket', prefixes: ['curated/jul9-industrial-buildings-large-', 'curated/jul9-power-yard-extraction-'] },
+    { playerX: 100, playerY: 6, stampId: 'industrial-power-yard-extraction-pocket', prefixes: ['curated/jul9-power-yard-extraction-'] },
   ];
 
   for (const view of sampleViews) {
@@ -191,6 +191,20 @@ test('active prefab composition selects coherent scenes instead of placing every
     anchorCounts.set(key, (anchorCounts.get(key) ?? 0) + 1);
   }
   assert.ok([...anchorCounts.values()].every((count) => count <= 1), 'active authored scenes should not stack multiple prefabs on one anchor');
+});
+
+test('boss-yard composition keeps one perimeter service shed and removes the duplicate center blockage', () => {
+  const bossYardObjects = buildLevelOneCuratedVisibleSceneObjects({ playerX: 100, playerY: 6, window: 18 });
+  const serviceSheds = bossYardObjects.filter((object) => object.assetKey === 'curated/jul9-industrial-buildings-large-03-crypto-mining-service-shed');
+  const purposeBuiltWarehouses = bossYardObjects.filter((object) => object.assetKey === 'wo105-world/extraction-yard-warehouse');
+
+  assert.equal(serviceSheds.length, 1, 'boss yard should retain one perimeter service shed, not duplicate the landmark through overlapping stamps');
+  assert.equal(serviceSheds[0].prefabStampId, 'compact-east-extraction-yard');
+  assert.equal(purposeBuiltWarehouses.length, 1, 'purpose-built warehouse should remain the primary boss-yard industrial landmark');
+  const powerYard = LEVEL_ONE_ACTIVE_PREFAB_STAMPS.find((stamp) => stamp.id === 'industrial-power-yard-extraction-pocket');
+  assert.ok(powerYard, 'power-yard beacon and cover pocket remains active');
+  assert.equal(powerYard.assetKeys.includes('curated/jul9-industrial-buildings-large-03-crypto-mining-service-shed'), false, 'power-yard pocket must not place a second shed into the combat center');
+  assert.ok(powerYard.assetKeys.some((assetKey) => assetKey.startsWith('curated/jul9-power-yard-extraction-')), 'power-yard beacon, battery, barricade, and hazard art remain');
 });
 
 test('runtime emits only opening and selected prefab compositions, not the compressed legacy contract strip', () => {
@@ -412,4 +426,8 @@ test('package check gate includes the visible runtime module and regression test
   const syntaxCheckRunner = readFileSync(repoPath('scripts/syntax-check.mjs'), 'utf8');
   assert.equal(syntaxCheckRunner.includes('apps/portal/src/hmh-level-one-visible-runtime.mjs'), true);
   assert.equal(syntaxCheckRunner.includes('tests/hmh-level-one-visible-runtime.test.mjs'), true);
+
+  const packageJson = JSON.parse(readFileSync(repoPath('package.json'), 'utf8'));
+  assert.match(packageJson.scripts['visual:regression'], /^npm run build && /, 'visual regression must capture the current dist bundle, never a stale build');
+  assert.match(packageJson.scripts['visual:accept'], /^npm run build && /, 'baseline acceptance must also capture the current dist bundle');
 });

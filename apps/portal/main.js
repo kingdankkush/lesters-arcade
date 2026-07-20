@@ -19,7 +19,7 @@ import { buildDeviceProfile, joystickToKeys, joystickToManualAim, pointerToManua
 import { browserFullscreenCapability, computeCombatViewportFit } from './src/hmh-viewport-fit.mjs';
 import { assetSrcForFrameRef, parseAtlasFrameRef } from './src/atlas-frame-ref.mjs';
 import { canonicalActorIdForRuntimeEntity, manifestEnemyArtKeyForRuntimeEntity } from './src/canonical-actor-routing.mjs';
-import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame } from './src/combat-sprite-bridge.mjs';
+import { prewarmSelectedHeroActorRegistry, heroStateFromCombat, heroDirectionFromCombat, enemyDirectionFromEntity, enemyStateFromEntity, enemyOverlayStateFromEntity, resolveActorFrame, selectAnimatedEnemySet } from './src/combat-sprite-bridge.mjs';
 
 import { computeDamage, ENEMY_BALANCE, damageTypeColor } from './src/combat-damage.mjs';
 import { sweptAABB, circlesOverlap, stepProjectile, knockback, planGrenadeThrow, grenadeBlastDamageAt, applyEnvironmentalForces } from './src/combat-physics.mjs';
@@ -12432,21 +12432,21 @@ function drawRoguelikeScene(ctx, width, height) {
     && enemy.y <= height + enemyRenderMargin
   ));
   const maxAnimatedEnemies = Math.max(0, enemyRenderBudget.maxAnimatedEnemies ?? visibleEnemies.length);
-  const animatedEnemies = new Set(visibleEnemies
-    .map((enemy) => ({
-      enemy,
-      priority: (enemy.miniBoss || enemy.signatureBoss ? -10000 : 0)
-        + Math.hypot((enemy.mapX ?? 0) - combat.playerMapX, (enemy.mapY ?? 0) - combat.playerMapY),
-    }))
-    .sort((a, b) => a.priority - b.priority)
-    .slice(0, maxAnimatedEnemies)
-    .map((entry) => entry.enemy));
-  for (const enemy of visibleEnemies) {
+  const enemyRenderEntries = visibleEnemies.map((enemy) => ({ enemy, intent: enemyAnimationIntent(enemy) }));
+  const animatedEnemies = selectAnimatedEnemySet(enemyRenderEntries, {
+    maxAnimatedEnemies,
+    playerX: combat.playerMapX,
+    playerY: combat.playerMapY,
+    viewportWidth: width,
+    viewportHeight: height,
+  });
+  for (const { enemy, intent } of enemyRenderEntries) {
     renderList.push({
       depth: enemy.y,
       draw: () => drawSingleEnemy(ctx, enemy, {
         animate: animatedEnemies.has(enemy),
         enemyAnimationFps: enemyRenderBudget.enemyAnimationFps,
+        intent,
       }),
     });
   }
@@ -13642,7 +13642,7 @@ function drawSingleEnemy(ctx, enemy, renderOptions = {}) {
     // detection and combat readability stay aligned with the actual footprint.
     const renderProfile = enemyProxyRenderProfile(enemy);
     const drawScaleMul = 1;
-    const intent = enemyAnimationIntent(enemy);
+    const intent = renderOptions.intent ?? enemyAnimationIntent(enemy);
     // Contact shadows are disabled here too; keep enemies grounded via art only.
 
     // Canonical actor art first, then animated roster, then biome stills.

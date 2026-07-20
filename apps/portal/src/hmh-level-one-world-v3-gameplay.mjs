@@ -428,7 +428,6 @@ export const HMH_LEVEL_ONE_LAYOUT_V4_STAMP_PLACEMENTS = freezeArray([
   { id: 'v4-gulch-rock-camp', stampId: 'compact-southwest-rock-camp', anchorId: 'rugpull-gulch-boss-yard', kind: 'boss' },
   { id: 'v4-lighthouse-glow-bank', stampId: 'compact-southeast-glow-bank', anchorId: 'wrecked-lighthouse', kind: 'poi' },
   { id: 'v4-extraction-yard', stampId: 'compact-east-extraction-yard', anchorId: 'extraction', kind: 'extraction' },
-  { id: 'v4-extraction-container-line', stampId: 'wo105-container-extraction-yard-checkpoint', anchorId: 'extraction', kind: 'extraction' },
 ]);
 
 const BOUNDARY_PALETTES = freeze({
