@@ -78,7 +78,9 @@ test('roguelike ground pass batches diamonds by texture key and fills world-anch
   assert.match(body, /pattern\.setTransform\(new DOMMatrix\(\)\.translate\(/);
   assert.match(body, /groundPatternAnchorForOrigin\(/);
   assert.doesNotMatch(body, /translate\(-cameraWorldOffsetX, -cameraWorldOffsetY\)/);
-  assert.match(body, /const groupKey = `\$\{terrainCell\.textureKey\}\|\$\{terrainPresentation\.elevationPx\}`/);
+  assert.match(body, /const groupKey = `\$\{asset\.key \?\? terrainCell\.textureKey\}\|\$\{terrainPresentation\.elevationPx\}`/);
+  assert.match(body, /plan\.renderAssetForCell\?\.\(terrainCell\)/);
+  assert.match(body, /handledDirections\.includes\(edgeBlend\.direction\)/);
   assert.doesNotMatch(body, /blob-\$\{terrainCell\.blob\.variantIndex\}/);
   assert.doesNotMatch(body, /elev-\$\{terrainCell\.elevation\.band\}/);
   assert.match(body, /groundPlanPatternForGroup\(/);

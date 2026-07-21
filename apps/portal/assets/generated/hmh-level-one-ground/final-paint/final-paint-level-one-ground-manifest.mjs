@@ -8,19 +8,16 @@ export const HMH_LEVEL_ONE_FINAL_PAINT_GROUND = Object.freeze({
   "tileHeights": [
     64
   ],
-  "assetCount": 21,
+  "assetCount": 18,
   "roles": {
     "grass": [
-      "final-paint/grass-handpaint-01",
-      "final-paint/grass-handpaint-02"
+      "final-paint/grass-handpaint-01"
     ],
     "dirt": [
-      "final-paint/dirt-handpaint-01",
-      "final-paint/dirt-handpaint-02"
+      "final-paint/dirt-handpaint-01"
     ],
     "sand": [
-      "final-paint/sand-handpaint-01",
-      "final-paint/sand-handpaint-02"
+      "final-paint/sand-handpaint-01"
     ],
     "rocky": [
       "final-paint/rocky-handpaint-01",
@@ -68,18 +65,6 @@ export const HMH_LEVEL_ONE_FINAL_PAINT_GROUND = Object.freeze({
       "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
     },
     {
-      "key": "final-paint/grass-handpaint-02",
-      "role": "grass",
-      "category": "terrain",
-      "src": "./assets/generated/hmh-level-one-ground/final-paint/grass-handpaint-02.png",
-      "width": 128,
-      "height": 64,
-      "preferred": false,
-      "animated": false,
-      "description": "alternate grass patch for broad fields",
-      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
-    },
-    {
       "key": "final-paint/dirt-handpaint-01",
       "role": "dirt",
       "category": "terrain",
@@ -92,18 +77,6 @@ export const HMH_LEVEL_ONE_FINAL_PAINT_GROUND = Object.freeze({
       "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
     },
     {
-      "key": "final-paint/dirt-handpaint-02",
-      "role": "dirt",
-      "category": "terrain",
-      "src": "./assets/generated/hmh-level-one-ground/final-paint/dirt-handpaint-02.png",
-      "width": 128,
-      "height": 64,
-      "preferred": false,
-      "animated": false,
-      "description": "pebbled dirt variation",
-      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
-    },
-    {
       "key": "final-paint/sand-handpaint-01",
       "role": "sand",
       "category": "terrain",
@@ -113,18 +86,6 @@ export const HMH_LEVEL_ONE_FINAL_PAINT_GROUND = Object.freeze({
       "preferred": true,
       "animated": false,
       "description": "desert sand with wind streaks",
-      "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
-    },
-    {
-      "key": "final-paint/sand-handpaint-02",
-      "role": "sand",
-      "category": "terrain",
-      "src": "./assets/generated/hmh-level-one-ground/final-paint/sand-handpaint-02.png",
-      "width": 128,
-      "height": 64,
-      "preferred": false,
-      "animated": false,
-      "description": "brighter dune sand variant",
       "sourcePolicy": "Original repo-owned final-paint terrain generated from HMH art direction; no downloaded pixels copied."
     },
     {

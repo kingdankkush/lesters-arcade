@@ -204,11 +204,11 @@ def make_all():
     def add(name, role, category, fn, preferred=False, animated=False, desc=''):
         specs.append((Asset('final-paint/'+name, role, category, name+'.png', preferred=preferred, animated=animated, frames=FRAMES if animated else 1, description=desc), fn))
     add('grass-handpaint-01','grass','terrain',lambda:base_tile('grass','grass-handpaint-01',0),True,False,'lush Crypto Wasteland grass with hand-painted blade clusters')
-    add('grass-handpaint-02','grass','terrain',lambda:base_tile('grass','grass-handpaint-02',1),False,False,'alternate grass patch for broad fields')
+
     add('dirt-handpaint-01','dirt','terrain',lambda:base_tile('dirt','dirt-handpaint-01',0),True,False,'warm dirt trail tile')
-    add('dirt-handpaint-02','dirt','terrain',lambda:base_tile('dirt','dirt-handpaint-02',1),False,False,'pebbled dirt variation')
+
     add('sand-handpaint-01','sand','terrain',lambda:base_tile('sand','sand-handpaint-01',0),True,False,'desert sand with wind streaks')
-    add('sand-handpaint-02','sand','terrain',lambda:base_tile('sand','sand-handpaint-02',1),False,False,'brighter dune sand variant')
+
     add('rocky-handpaint-01','rocky','terrain',lambda:base_tile('rocky','rocky-handpaint-01',0),True,False,'rocky mesa ground with chips')
     add('rocky-handpaint-02','rocky','terrain',lambda:base_tile('rocky','rocky-handpaint-02',1),False,False,'darker cliff-foot rocky ground')
     add('road-asphalt-handpaint-01','road','road',lambda:base_tile('road','road-asphalt-handpaint-01',0),True,False,'dark broken asphalt with Litecoin-yellow paint flecks')

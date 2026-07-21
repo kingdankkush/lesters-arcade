@@ -26,6 +26,10 @@ import {
   HMH_CURATED_GROUND_RUNTIME,
 } from '../assets/generated/hmh-curated-level-art/hmh-curated-ground-runtime.mjs';
 import { levelOneWorldV3MaterialByKey } from '../assets/generated/hmh-level-one-world-v3/hmh-level-one-world-v3-materials.mjs';
+import {
+  desertApproachRuntimeAtlasAssets,
+  desertApproachRuntimeGroundAssetForCell,
+} from './hmh-terrain-presentation.mjs';
 
 const CONNECTIVE_ZONE_ID = 'connective-scrub';
 
@@ -446,6 +450,12 @@ function buildWorldV3GroundPlan(seed) {
     anchors: HMH_LEVEL_ONE_WORLD_V3.anchors,
     zones,
     textureForKey: textureAssetByKey,
+    renderAssetForCell(cell) {
+      return desertApproachRuntimeGroundAssetForCell(cell, { seed });
+    },
+    runtimeAtlasAssets() {
+      return desertApproachRuntimeAtlasAssets();
+    },
     textureKeys() {
       return Object.freeze(HMH_LEVEL_ONE_WORLD_V3.terrainFamilies.map((family) => family.materialKey));
     },

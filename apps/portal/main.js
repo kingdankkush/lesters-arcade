@@ -10646,8 +10646,15 @@ function curatedGroundTileImage(slug) {
 const sbsGroundTileImages = new Map();
 function sbsGroundTileImage(asset) {
   if (!asset?.src) return null;
-  if (!sbsGroundTileImages.has(asset.key)) sbsGroundTileImages.set(asset.key, loadImageAsset(asset.src));
-  return sbsGroundTileImages.get(asset.key);
+  if (!sbsGroundTileImages.has(asset.src)) sbsGroundTileImages.set(asset.src, loadImageAsset(asset.src));
+  return sbsGroundTileImages.get(asset.src);
+}
+
+function wangMaskAtlasImage(asset) {
+  const maskSrc = asset?.wangComposite?.maskSrc;
+  if (!maskSrc) return null;
+  if (!sbsGroundTileImages.has(maskSrc)) sbsGroundTileImages.set(maskSrc, loadImageAsset(maskSrc));
+  return sbsGroundTileImages.get(maskSrc);
 }
 
 function neighborBiomesForWorld(seed, worldX, worldY) {
@@ -10962,6 +10969,36 @@ function groundPlanPatternFrameIndex(asset) {
 }
 
 function groundPlanPatternSource(asset, image, frameIndex = groundPlanPatternFrameIndex(asset)) {
+  if (asset?.atlasRect && typeof document !== 'undefined') {
+    const key = `atlas:${asset.key}`;
+    let canvas = groundPlanPatternFrames.get(key);
+    if (!canvas) {
+      const maskImage = asset.wangComposite ? wangMaskAtlasImage(asset) : null;
+      if (asset.wangComposite && !imageReady(maskImage)) return null;
+      const { x, y, width, height } = asset.atlasRect;
+      canvas = document.createElement('canvas');
+      canvas.width = asset.width;
+      canvas.height = asset.height;
+      const frameCtx = canvas.getContext('2d');
+      frameCtx.imageSmoothingEnabled = false;
+      frameCtx.drawImage(image, x, y, width, height, 0, 0, asset.width, asset.height);
+      if (asset.wangComposite) {
+        const overlayCanvas = document.createElement('canvas');
+        overlayCanvas.width = asset.width;
+        overlayCanvas.height = asset.height;
+        const overlayCtx = overlayCanvas.getContext('2d');
+        overlayCtx.imageSmoothingEnabled = false;
+        const overlay = asset.wangComposite.overlayRect;
+        const mask = asset.wangComposite.maskRect;
+        overlayCtx.drawImage(image, overlay.x, overlay.y, overlay.width, overlay.height, 0, 0, asset.width, asset.height);
+        overlayCtx.globalCompositeOperation = 'destination-in';
+        overlayCtx.drawImage(maskImage, mask.x, mask.y, mask.width, mask.height, 0, 0, asset.width, asset.height);
+        frameCtx.drawImage(overlayCanvas, 0, 0);
+      }
+      groundPlanPatternFrames.set(key, canvas);
+    }
+    return canvas;
+  }
   if (!asset?.animated || !(asset.frames > 1) || !(asset.frameWidth > 0) || !(asset.frameHeight > 0) || typeof document === 'undefined') return image;
   const key = `${asset.key}:${frameIndex}`;
   let canvas = groundPlanPatternFrames.get(key);
@@ -11082,8 +11119,14 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
       frame: combat.frame,
       overlayMode: isLevelOneCuratedRuntime() ? 'texture-only' : 'full',
     });
-    let asset = plan.textureForKey(terrainCell.textureKey);
+    const runtimeAsset = plan.renderAssetForCell?.(terrainCell) ?? null;
+    let asset = runtimeAsset ?? plan.textureForKey(terrainCell.textureKey);
     let image = sbsGroundTileImage(asset);
+    const runtimeMaskImage = asset?.wangComposite ? wangMaskAtlasImage(asset) : null;
+    if (!imageReady(image) || (asset?.wangComposite && !imageReady(runtimeMaskImage))) {
+      asset = plan.textureForKey(terrainCell.textureKey);
+      image = sbsGroundTileImage(asset);
+    }
     if (!imageReady(image)) {
       const fallback = isLevelOneCuratedRuntime() ? curatedGroundFallbackPattern(plan) : null;
       if (fallback) {
@@ -11094,14 +11137,16 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
         continue;
       }
     }
-    const groupKey = `${terrainCell.textureKey}|${terrainPresentation.elevationPx}`;
+    const groupKey = `${asset.key ?? terrainCell.textureKey}|${terrainPresentation.elevationPx}`;
     let group = textureGroups.get(groupKey);
     if (!group) {
       group = { asset, image, path: new Path2D(), terrainCell, elevationPx: terrainPresentation.elevationPx };
       textureGroups.set(groupKey, group);
     }
     addDiamond(group.path, tile, terrainPresentation.elevationPx);
+    const handledDirections = asset.handledDirections ?? [];
     for (const edgeBlend of buildTerrainEdgeBlendsForCell(terrainCell)) {
+      if (handledDirections.includes(edgeBlend.direction)) continue;
       const blendAsset = plan.textureForKey(edgeBlend.textureKey);
       const blendImage = sbsGroundTileImage(blendAsset);
       if (!imageReady(blendImage)) continue;
@@ -11654,6 +11699,10 @@ async function prewarmHmhLevelAssets(level, onProgress = () => {}) {
   const curatedFallbackAsset = plan.textureForKey('world-v3-material/packed-dirt');
   const curatedFallbackImage = sbsGroundTileImage(curatedFallbackAsset);
   if (curatedFallbackImage) images.push(curatedFallbackImage);
+  for (const asset of plan.runtimeAtlasAssets?.() ?? []) {
+    const image = sbsGroundTileImage(asset);
+    if (image) images.push(image);
+  }
   for (const textureKey of plan.textureKeysNear(playerX, playerY, 22)) {
     const asset = plan.textureForKey(textureKey);
     const image = sbsGroundTileImage(asset);

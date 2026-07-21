@@ -57,7 +57,15 @@ function vfxList(zone, adjacency, elevation) {
 }
 
 function compactNeighbor(zone) {
-  return Object.freeze({ zoneId: zone.zoneId, role: zone.role, terrainRole: normalizeRole(zone), textureKey: zone.textureKey });
+  return Object.freeze({
+    zoneId: zone.zoneId,
+    role: zone.role,
+    terrainRole: normalizeRole(zone),
+    terrain: zone.terrain,
+    biome: zone.biome,
+    route: zone.route,
+    textureKey: zone.textureKey,
+  });
 }
 
 export function buildTerrainBlobCell(plan, worldX = 0, worldY = 0) {
@@ -87,6 +95,9 @@ export function buildTerrainBlobCell(plan, worldX = 0, worldY = 0) {
     zoneId: zone.zoneId,
     role: zone.role,
     terrainRole,
+    terrain: zone.terrain,
+    biome: zone.biome,
+    route: zone.route,
     textureKey: zone.textureKey,
     isWater: terrainRole === 'water',
     isBridge: terrainRole === 'bridge',

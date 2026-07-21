@@ -5,7 +5,7 @@ _Last updated: 2026-06-25_
 This pass adds original repo-owned final-paint terrain and animated water/shore spritesheets for Level 1. The earlier SBS CC0 ingestion remains as the geometry/fallback foundation, but these PNGs do not copy downloaded pixels.
 
 - Runtime folder: `apps/portal/assets/generated/hmh-level-one-ground/final-paint/`
-- Asset count: **21**
+- Asset count: **18**
 - Animated tiles: water ripple, Litecoin water glint, grass/dirt/sand shoreline, and grass-water bank.
 - Contact sheet: `docs/game-design/assets/hmh-level-1-final-paint-ground-contact-sheet.png`
 
