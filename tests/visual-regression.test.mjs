@@ -74,6 +74,7 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
 });
 
 test('browser soak crosses the READY gate and proves active combat time advances', () => {
+  assert.equal(packageJson.scripts['test:soak'], 'npm run build && node scripts/hmh-browser-soak.mjs --minutes=30');
   assert.match(browserSoakScript, /Input\.dispatchKeyEvent[^]*code: 'Space'/);
   assert.match(browserSoakScript, /data-stat="survived"/);
   assert.match(browserSoakScript, /runElapsedSeconds/);
@@ -84,4 +85,20 @@ test('browser soak crosses the READY gate and proves active combat time advances
   assert.match(browserSoakScript, /levelUpSelections/);
   assert.match(browserSoakScript, /\.run-it-back-button/);
   assert.match(browserSoakScript, /runRestarts/);
+  assert.match(browserSoakScript, /__hmhVisualDebugPerformance/);
+  assert.match(browserSoakScript, /__hmhSoakStressBossSwarm/);
+  assert.match(browserSoakScript, /stressSetup/);
+  assert.match(browserSoakScript, /STRESS_STABILIZATION_MS/);
+  assert.match(browserSoakScript, /frameDeltasMs/);
+  assert.match(browserSoakScript, /buildHmhPerformanceCertificate/);
+  assert.match(browserSoakScript, /performanceCertificate\.status === 'PASS'/);
+  assert.match(mainSource, /const occupancy = \{/);
+  assert.match(mainSource, /animation: \{ \.\.\.combat\.enemyRenderStats \}/);
+  assert.match(mainSource, /entry\.kind === 'enemy'/);
+  assert.doesNotMatch(mainSource, /draw: \(\) => drawSingleEnemy\(ctx, enemy/);
+  assert.match(mainSource, /function setupHmhSoakStressBossSwarm/);
+  assert.match(mainSource, /spawnLevelOneBossBeat\(stressBeat, director\)/);
+  assert.match(mainSource, /attackTimer: 90 \+ \(\(index \* 37\) % 240\)/);
+  assert.match(mainSource, /const stressDurabilityMultiplier = 20/);
+  assert.match(mainSource, /__hmhSoakStressBossSwarm/);
 });

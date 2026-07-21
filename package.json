@@ -25,7 +25,7 @@
     "visual:regression": "npm run build && node scripts/visual-regression.mjs",
     "visual:accept": "npm run build && node scripts/visual-regression.mjs --accept",
     "visual:responsive": "node scripts/responsive-matrix.mjs",
-    "test:soak": "node scripts/hmh-browser-soak.mjs --minutes=30",
+    "test:soak": "npm run build && node scripts/hmh-browser-soak.mjs --minutes=30",
     "design:audit": "node scripts/report-hmh-animation-coverage.mjs",
     "design:art-census": "node scripts/global-art-census.mjs",
     "design:art-repair": "node scripts/art-purge-repair.mjs",

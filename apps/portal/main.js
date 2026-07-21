@@ -1760,9 +1760,11 @@ const combat = {
   lastTimestamp: 0,
   accumulatorMs: 0,
   frameTimes: [],
+  updateTimes: [],
   renderTimes: [],
   fps: 60,
   adaptivePerformance: createAdaptivePerformanceState(),
+  enemyRenderStats: { visibleEnemies: 0, animatedEnemies: 0, maxAnimatedEnemies: 0 },
   groundRenderStats: { passMs: 0, groupCount: 0, cacheSize: 0, cacheHits: 0, cacheMisses: 0 },
   status: 'Attract mode: choose free or paid, then start the 60fps combat test.',
   gameOverSubmitted: false,
@@ -5907,6 +5909,7 @@ function executeSignOut() {
   combat.weaponUpgrades = Object.freeze({});
   combat.lastTimestamp = 0;
   combat.frameTimes.length = 0;
+  combat.updateTimes.length = 0;
   combat.renderTimes.length = 0;
 
   // 2) Tear down any lingering full-screen or modal overlays that were left
@@ -6658,6 +6661,7 @@ async function startCombat(options = {}) {
 
   combat.frame = 0;
   combat.frameTimes.length = 0;
+  combat.updateTimes.length = 0;
   combat.renderTimes.length = 0;
   combat.adaptivePerformance = createAdaptivePerformanceState();
   _obstacleCacheFrame = -1;
@@ -8160,6 +8164,151 @@ function syncProjectedPlayerPosition() {
   combat.playerY = groundContact.y;
 }
 
+function hmhVisualDebugPerformanceSnapshot() {
+  const samples = combat.renderTimes.slice().sort((a, b) => a - b);
+  const averageRenderMs = samples.length ? samples.reduce((sum, value) => sum + value, 0) / samples.length : 0;
+  const p95RenderMs = samples[Math.min(samples.length - 1, Math.floor(samples.length * 0.95))] ?? 0;
+  const frameSamples = combat.frameTimes.slice().sort((a, b) => a - b);
+  const averageFrameMs = frameSamples.length ? frameSamples.reduce((sum, value) => sum + value, 0) / frameSamples.length : 0;
+  const p95FrameMs = frameSamples[Math.min(frameSamples.length - 1, Math.floor(frameSamples.length * 0.95))] ?? 0;
+  const updateSamples = combat.updateTimes.slice().sort((a, b) => a - b);
+  const averageUpdateMs = updateSamples.length ? updateSamples.reduce((sum, value) => sum + value, 0) / updateSamples.length : 0;
+  const p95UpdateMs = updateSamples[Math.min(updateSamples.length - 1, Math.floor(updateSamples.length * 0.95))] ?? 0;
+  const performanceBudget = currentLevelOnePerformanceBudget();
+  const director = currentRoguelikeSpawnDirector(combat.elapsedGameSeconds);
+  const occupancy = {
+    activeEnemies: combat.enemies.length,
+    bossEnemies: combat.enemies.filter((enemy) => enemy.boss || enemy.miniBoss || enemy.signatureBoss).length,
+    playerProjectiles: combat.bullets.length + (combat.activeGrenades?.length ?? 0),
+    enemyProjectiles: combat.enemyShots.length,
+    particles: combat.particles.length,
+    vfxParticles: combat.vfxParticles.length,
+    floatingTexts: combat.floatingTexts.length,
+    xpGems: combat.xpGems.length,
+    powerUps: combat.powerUps.length,
+  };
+  occupancy.totalTrackedObjects = Object.values(occupancy).reduce((sum, value) => sum + value, 0);
+  const groundCell = getCombatGroundPlan().cellAt(Math.round(combat.playerMapX), Math.round(combat.playerMapY));
+  return {
+    fps: combat.fps,
+    averageFrameMs,
+    p95FrameMs,
+    averageUpdateMs,
+    p95UpdateMs,
+    averageRenderMs,
+    p95RenderMs,
+    sampleCount: samples.length,
+    adaptivePerformance: { ...combat.adaptivePerformance },
+    occupancy,
+    budgets: {
+      maxEnemiesOnMap: director.maxEnemiesOnMap,
+      enemyProjectileCap: director.enemyProjectileCap,
+      maxParticles: performanceBudget.maxParticles,
+      maxFloatingTexts: performanceBudget.maxFloatingTexts,
+    },
+    animation: { ...combat.enemyRenderStats },
+    enemyPursuitModes: combat.enemies.reduce((counts, enemy) => {
+      const mode = enemy.pursuitMode ?? 'unplanned';
+      counts[mode] = (counts[mode] ?? 0) + 1;
+      return counts;
+    }, {}),
+    canvas: {
+      internalWidth: dom.combatCanvas?.width ?? 0,
+      internalHeight: dom.combatCanvas?.height ?? 0,
+      cssWidth: dom.combatCanvas?.getBoundingClientRect().width ?? 0,
+      cssHeight: dom.combatCanvas?.getBoundingClientRect().height ?? 0,
+    },
+    groundRender: { ...combat.groundRenderStats },
+    groundCell: {
+      terrainRole: groundCell.terrainRole,
+      textureKey: groundCell.textureKey,
+      isBridge: groundCell.isBridge,
+    },
+    obstacleCount: currentObstacles().length,
+    player: {
+      x: combat.playerMapX,
+      y: combat.playerMapY,
+      boundaryClamped: combat.worldBoundaryClamped,
+    },
+  };
+}
+
+function setupHmhSoakStressBossSwarm({ targetEnemyCount = 48, elapsedSeconds = 12 * 60 } = {}) {
+  if (!combat.active || !combat.roguelikeRun) {
+    return { ok: false, reason: 'inactive-run', activeEnemies: combat.enemies.length, bossEnemies: 0 };
+  }
+  const stressElapsedSeconds = Math.max(12 * 60, Number(elapsedSeconds) || 0);
+  combat.elapsedGameSeconds = stressElapsedSeconds;
+  const director = currentRoguelikeSpawnDirector(stressElapsedSeconds);
+  const target = Math.min(
+    Math.max(1, director.maxEnemiesOnMap),
+    Math.max(40, Math.round(Number(targetEnemyCount) || 48)),
+  );
+  combat.enemies = [];
+  combat.enemyShots = [];
+  combat.particles = [];
+  combat.vfxParticles = [];
+  combat.floatingTexts = [];
+  combat.boss = null;
+  combat.activePoiEncounterId = null;
+  combat.triggeredBossBeatIds = new Set();
+  combat.adaptivePerformance = createAdaptivePerformanceState();
+  combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 60 * 60 * 60);
+  for (let index = 0; index < target - 1; index += 1) {
+    spawnRoguelikeEnemy(director, {
+      seed: 91000 + index,
+      ignoreSpawnBudget: true,
+      spawnSource: 'soak-minute12-swarm',
+      spawnLaneRole: index % 7 === 0 ? 'elite' : index % 3 === 0 ? 'ranged' : 'rusher',
+      ranged: index % 3 === 0,
+      elite: index % 7 === 0,
+      angleRadians: index * 2.399963229728653,
+      radiusTiles: 6 + (index % 4) * 1.1,
+      minDistanceTiles: 4,
+      attackTimer: 90 + ((index * 37) % 240),
+      spawnFrames: 30,
+    });
+  }
+  const stressBeat = Object.freeze({
+    id: 'soak-minute12-major-boss',
+    type: 'major-boss',
+    pressureTier: 2,
+    rosterOffset: 0,
+  });
+  const bossSpawned = spawnLevelOneBossBeat(stressBeat, director);
+  const stressDurabilityMultiplier = 20;
+  for (const enemy of combat.enemies) {
+    enemy.hp = Math.max(enemy.hp, Math.round(enemy.maxHp * stressDurabilityMultiplier));
+    enemy.maxHp = enemy.hp;
+  }
+  const bossEnemies = combat.enemies.filter((enemy) => enemy.boss || enemy.miniBoss || enemy.signatureBoss).length;
+  return {
+    ok: bossSpawned && combat.enemies.length >= target,
+    elapsedSeconds: combat.elapsedGameSeconds,
+    targetEnemyCount: target,
+    activeEnemies: combat.enemies.length,
+    bossEnemies,
+    bossSpawned,
+    stressDurabilityMultiplier,
+    directorMaxEnemies: director.maxEnemiesOnMap,
+    adaptiveTier: combat.adaptivePerformance.tier,
+  };
+}
+
+const hmhSoakMode = debugSearchParams.get('soak') === '1';
+if (tacticalBalanceDebugEnabled || hmhSoakMode) {
+  Object.defineProperty(globalThis, '__hmhVisualDebugPerformance', {
+    configurable: true,
+    value: hmhVisualDebugPerformanceSnapshot,
+  });
+}
+if (hmhSoakMode) {
+  Object.defineProperty(globalThis, '__hmhSoakStressBossSwarm', {
+    configurable: true,
+    value: setupHmhSoakStressBossSwarm,
+  });
+}
+
 if (tacticalBalanceDebugEnabled) {
   Object.defineProperty(globalThis, '__hmhVisualDebugTeleport', {
     configurable: true,
@@ -8266,45 +8415,6 @@ if (tacticalBalanceDebugEnabled) {
           })),
         renderedIds: entries.map((entry) => entry.id).filter(Boolean),
         undecodedIds,
-      };
-    },
-  });
-  Object.defineProperty(globalThis, '__hmhVisualDebugPerformance', {
-    configurable: true,
-    value() {
-      const samples = combat.renderTimes.slice().sort((a, b) => a - b);
-      const averageRenderMs = samples.length ? samples.reduce((sum, value) => sum + value, 0) / samples.length : 0;
-      const p95RenderMs = samples[Math.min(samples.length - 1, Math.floor(samples.length * 0.95))] ?? 0;
-      const groundCell = getCombatGroundPlan().cellAt(Math.round(combat.playerMapX), Math.round(combat.playerMapY));
-      return {
-        fps: combat.fps,
-        averageRenderMs,
-        p95RenderMs,
-        sampleCount: samples.length,
-        adaptivePerformance: { ...combat.adaptivePerformance },
-        enemyPursuitModes: combat.enemies.reduce((counts, enemy) => {
-          const mode = enemy.pursuitMode ?? 'unplanned';
-          counts[mode] = (counts[mode] ?? 0) + 1;
-          return counts;
-        }, {}),
-        canvas: {
-          internalWidth: dom.combatCanvas?.width ?? 0,
-          internalHeight: dom.combatCanvas?.height ?? 0,
-          cssWidth: dom.combatCanvas?.getBoundingClientRect().width ?? 0,
-          cssHeight: dom.combatCanvas?.getBoundingClientRect().height ?? 0,
-        },
-        groundRender: { ...combat.groundRenderStats },
-        groundCell: {
-          terrainRole: groundCell.terrainRole,
-          textureKey: groundCell.textureKey,
-          isBridge: groundCell.isBridge,
-        },
-        obstacleCount: currentObstacles().length,
-        player: {
-          x: combat.playerMapX,
-          y: combat.playerMapY,
-          boundaryClamped: combat.worldBoundaryClamped,
-        },
       };
     },
   });
@@ -9764,8 +9874,8 @@ function updateRoguelikeEnemies(director, dt) {
 
   const slowFactor = (combat.powerUpTimers.slowEnemies ?? 0) > 0 ? 0.4 : 1;
   // At the 64-body shipping cap, the ten-neighbor early-exit scan benchmarks
-  // faster than Map-backed spatial buckets in V8 and allocates no per-enemy data.
-  const enemyPositions = combat.enemies.map((e) => ({ x: e.mapX, y: e.mapY }));
+  // faster than Map-backed spatial buckets in V8. computeSeparation reads
+  // mapX/mapY directly, avoiding a fresh position-object snapshot every step.
   const attackTokenCap = Math.max(1, director.attackTokenCap ?? 8);
   const enemyProjectileCap = Math.max(12, director.enemyProjectileCap ?? 96);
   let attackTokensInUse = combat.enemies.reduce((count, enemy) => count + (enemy.attackTokenHeld ? 1 : 0), 0);
@@ -9819,11 +9929,12 @@ function updateRoguelikeEnemies(director, dt) {
         distanceTiles: distance,
         boss: Boolean(enemy.boss || enemy.signatureBoss),
         miniBoss: Boolean(enemy.miniBoss),
+        activeEnemies: combat.enemies.length,
       });
       const refreshSteeringThisStep = shouldUpdateEnemyAi({ frame: combat.frame, enemyIndex: ei, stride: aiStride });
       const movementDt = Math.min(dt, 0.05);
       if (refreshSteeringThisStep) {
-        const sep = computeSeparation({ x: enemy.mapX, y: enemy.mapY }, enemyPositions, {
+        const sep = computeSeparation(enemy, combat.enemies, {
             radius: 1.15,
             selfIndex: ei,
             maxNeighbors: 10,
@@ -12533,7 +12644,15 @@ function drawRoguelikeScene(ctx, width, height) {
       || enemy.y < -enemyRenderMargin
       || enemy.y > height + enemyRenderMargin
     ) continue;
-    enemyRenderEntries.push({ enemy, intent: enemyAnimationIntent(enemy) });
+    const intent = enemyAnimationIntent(enemy);
+    enemyRenderEntries.push({
+      depth: enemy.y,
+      kind: 'enemy',
+      enemy,
+      intent,
+      animate: false,
+      enemyAnimationFps: 0,
+    });
   }
   const maxAnimatedEnemies = Math.max(0, enemyRenderBudget.maxAnimatedEnemies ?? enemyRenderEntries.length);
   const animatedEnemies = selectAnimatedEnemySet(enemyRenderEntries, {
@@ -12543,15 +12662,13 @@ function drawRoguelikeScene(ctx, width, height) {
     viewportWidth: width,
     viewportHeight: height,
   });
-  for (const { enemy, intent } of enemyRenderEntries) {
-    renderList.push({
-      depth: enemy.y,
-      draw: () => drawSingleEnemy(ctx, enemy, {
-        animate: animatedEnemies.has(enemy),
-        enemyAnimationFps: enemyRenderBudget.enemyAnimationFps,
-        intent,
-      }),
-    });
+  combat.enemyRenderStats.visibleEnemies = enemyRenderEntries.length;
+  combat.enemyRenderStats.animatedEnemies = animatedEnemies.size;
+  combat.enemyRenderStats.maxAnimatedEnemies = maxAnimatedEnemies;
+  for (const entry of enemyRenderEntries) {
+    entry.animate = animatedEnemies.has(entry.enemy);
+    entry.enemyAnimationFps = enemyRenderBudget.enemyAnimationFps;
+    renderList.push(entry);
   }
   if (combat.bossDeathSpectacle) {
     const spectacle = combat.bossDeathSpectacle;
@@ -12576,7 +12693,10 @@ function drawRoguelikeScene(ctx, width, height) {
   renderList.sort((a, b) => a.depth - b.depth);
 
   drawPowerUps(ctx);
-  for (const entry of renderList) entry.draw();
+  for (const entry of renderList) {
+    if (entry.kind === 'enemy') drawSingleEnemy(ctx, entry.enemy, entry);
+    else entry.draw();
+  }
 
   // --- Dynamic lighting / shadow pass (Litecoin City After Dark mood) --------
   // Multiply a soft night tint over the world, then punch out warm light pools
@@ -12803,10 +12923,13 @@ function drawCombatScene(timestamp = 0) {
   });
   if (dom.fpsPill) dom.fpsPill.textContent = `${combat.fps}fps / target ${LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps}`;
 
+  const updateStartedAt = performance.now();
   while (combat.accumulatorMs >= FIXED_STEP_MS) {
     updateCombatStep(FIXED_STEP_MS);
     combat.accumulatorMs -= FIXED_STEP_MS;
   }
+  combat.updateTimes.push(performance.now() - updateStartedAt);
+  if (combat.updateTimes.length > 90) combat.updateTimes.shift();
 
   // --- Screen shake (juice): decays each frame, applied as a small translate. ---
   combat.shake = (combat.shake ?? 0) * 0.82;

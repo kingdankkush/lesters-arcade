@@ -223,8 +223,13 @@ test('spatial separation queries only neighboring buckets and remains determinis
 
 test('AI movement cadence keeps bosses and nearby threats full-rate while throttling distant stragglers', () => {
   assert.equal(enemyAiUpdateStride({ distanceTiles: 6 }), 1);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 6, activeEnemies: 39 }), 1);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 6, activeEnemies: 40 }), 2);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 6, activeEnemies: 47 }), 2);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 6, activeEnemies: 48 }), 3);
   assert.equal(enemyAiUpdateStride({ distanceTiles: 40, boss: true }), 1);
   assert.equal(enemyAiUpdateStride({ distanceTiles: 40, miniBoss: true }), 1);
+  assert.equal(enemyAiUpdateStride({ distanceTiles: 6, activeEnemies: 64, boss: true }), 1);
   assert.equal(enemyAiUpdateStride({ distanceTiles: 18 }), 2);
   assert.equal(enemyAiUpdateStride({ distanceTiles: 32 }), 3);
   assert.equal(shouldUpdateEnemyAi({ frame: 12, enemyIndex: 0, stride: 3 }), true);

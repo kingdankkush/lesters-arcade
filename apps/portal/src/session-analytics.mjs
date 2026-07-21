@@ -16,6 +16,74 @@ export function percentile(values, p = 0.5) {
   return Math.round(sorted[lower] * (1 - weight) + sorted[upper] * weight);
 }
 
+function precisePercentile(values, p = 0.5) {
+  const sorted = values.map((value) => numeric(value, NaN)).filter(Number.isFinite).sort((a, b) => a - b);
+  if (!sorted.length) return 0;
+  const clamped = Math.max(0, Math.min(1, numeric(p, 0.5)));
+  const index = (sorted.length - 1) * clamped;
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+  const weight = index - lower;
+  const value = lower === upper ? sorted[lower] : sorted[lower] * (1 - weight) + sorted[upper] * weight;
+  return Number(value.toFixed(2));
+}
+
+export function buildHmhPerformanceCertificate(samples = [], {
+  maxP95FrameMs = 20,
+  maxP99FrameMs = 28,
+  maxP95RenderMs = 18,
+} = {}) {
+  const input = Array.isArray(samples) ? samples : [];
+  const frameDeltas = input
+    .flatMap((sample) => Array.isArray(sample?.frameDeltasMs) ? sample.frameDeltasMs : [])
+    .map((value) => numeric(value, NaN))
+    .filter((value) => Number.isFinite(value) && value >= 0);
+  const telemetry = input.map((sample) => sample?.performance).filter(Boolean);
+  const renderP95Values = telemetry.map((entry) => numeric(entry.p95RenderMs, NaN)).filter(Number.isFinite);
+  const updateP95Values = telemetry.map((entry) => numeric(entry.p95UpdateMs, NaN)).filter(Number.isFinite);
+  const occupancyKeys = ['activeEnemies', 'bossEnemies', 'playerProjectiles', 'enemyProjectiles', 'particles', 'vfxParticles', 'floatingTexts', 'xpGems', 'powerUps', 'totalTrackedObjects'];
+  const maxOccupancy = Object.fromEntries(occupancyKeys.map((key) => [key, Math.max(0, ...telemetry.map((entry) => numeric(entry.occupancy?.[key], 0)))]));
+  const animationKeys = ['visibleEnemies', 'animatedEnemies', 'maxAnimatedEnemies'];
+  const maxAnimation = Object.fromEntries(animationKeys.map((key) => [key, Math.max(0, ...telemetry.map((entry) => numeric(entry.animation?.[key], 0)))]));
+  const capFailures = [];
+  for (const entry of telemetry) {
+    if (numeric(entry.occupancy?.enemyProjectiles, 0) > numeric(entry.budgets?.enemyProjectileCap, Infinity)) capFailures.push('enemy-projectile-cap');
+    if (numeric(entry.occupancy?.particles, 0) > numeric(entry.budgets?.maxParticles, Infinity)) capFailures.push('particle-cap');
+    if (numeric(entry.occupancy?.floatingTexts, 0) > numeric(entry.budgets?.maxFloatingTexts, Infinity)) capFailures.push('floating-text-cap');
+    if (numeric(entry.animation?.animatedEnemies, 0) > numeric(entry.animation?.maxAnimatedEnemies, Infinity)) capFailures.push('animation-cap');
+  }
+  const frameTimeMs = Object.freeze({
+    p50: precisePercentile(frameDeltas, 0.5),
+    p95: precisePercentile(frameDeltas, 0.95),
+    p99: precisePercentile(frameDeltas, 0.99),
+    max: frameDeltas.length ? Number(Math.max(...frameDeltas).toFixed(2)) : 0,
+  });
+  const renderTimeMs = Object.freeze({ p95: precisePercentile(renderP95Values, 0.95) });
+  const updateTimeMs = Object.freeze({ p95: precisePercentile(updateP95Values, 0.95) });
+  const failures = [];
+  if (!frameDeltas.length) failures.push('frame-samples-missing');
+  if (!telemetry.length) failures.push('runtime-telemetry-missing');
+  if (frameTimeMs.p95 > maxP95FrameMs) failures.push('p95-frame-time');
+  if (frameTimeMs.p99 > maxP99FrameMs) failures.push('p99-frame-time');
+  if (renderTimeMs.p95 > maxP95RenderMs) failures.push('p95-render-time');
+  failures.push(...new Set(capFailures));
+  return Object.freeze({
+    status: failures.length ? 'FAIL' : 'PASS',
+    thresholds: Object.freeze({ maxP95FrameMs, maxP99FrameMs, maxP95RenderMs }),
+    sampleCount: input.length,
+    telemetrySampleCount: telemetry.length,
+    frameSampleCount: frameDeltas.length,
+    frameTimeMs,
+    renderTimeMs,
+    updateTimeMs,
+    maxOccupancy: Object.freeze(maxOccupancy),
+    maxAnimation: Object.freeze(maxAnimation),
+    maxAdaptiveTier: Math.max(0, ...telemetry.map((entry) => numeric(entry.adaptivePerformance?.tier, 0))),
+    capViolationCount: capFailures.length,
+    failures: Object.freeze([...new Set(failures)]),
+  });
+}
+
 function survivalSecondsFor(session) {
   const stats = session?.runStats ?? {};
   return numeric(stats.elapsedSeconds ?? stats.surviveSeconds ?? stats.survivalSeconds ?? stats.survivalTime, 0);

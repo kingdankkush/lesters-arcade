@@ -37,6 +37,14 @@ test('selfIndex is skipped', () => {
   assert.ok(s.x < 0);
 });
 
+test('runtime mapX/mapY entities preserve separation math without position snapshot objects', () => {
+  const plain = [{ x: 0, y: 0 }, { x: 0.4, y: 0.2 }, { x: -0.25, y: 0.35 }];
+  const runtime = plain.map(({ x, y }) => ({ mapX: x, mapY: y }));
+  const expected = computeSeparation(plain[0], plain, { radius: 1.2, selfIndex: 0, maxNeighbors: 10 });
+  const actual = computeSeparation(runtime[0], runtime, { radius: 1.2, selfIndex: 0, maxNeighbors: 10 });
+  assert.deepEqual(actual, expected);
+});
+
 test('exactly overlapping agents still produce a non-zero split', () => {
   const agents = [{ x: 1, y: 1 }, { x: 1, y: 1 }, { x: 1, y: 1 }];
   const s0 = computeSeparation(agents[0], agents, { radius: 1.2, selfIndex: 0 });

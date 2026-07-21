@@ -19,8 +19,8 @@
  * crowders push harder. The result is normalized (length 0..1) and capped, so it
  * blends cleanly with a unit homing vector without producing runaway speeds.
  *
- * @param {{x:number,y:number}} self - the agent's position (map/tile space)
- * @param {Array<{x:number,y:number}>} neighbors - other agents' positions
+ * @param {{x?:number,y?:number,mapX?:number,mapY?:number}} self - the agent's position (map/tile space)
+ * @param {Array<{x?:number,y?:number,mapX?:number,mapY?:number}>} neighbors - positions or runtime enemy entities
  * @param {object} [opts]
  * @param {number} [opts.radius=1.2] - neighbor influence radius in tiles
  * @param {number} [opts.selfIndex=-1] - index in `neighbors` to skip (the agent itself)
@@ -32,14 +32,18 @@ export function computeSeparation(self, neighbors, opts = {}) {
   const selfIndex = opts.selfIndex ?? -1;
   const maxNeighbors = opts.maxNeighbors ?? 12;
   const r2 = radius * radius;
+  const selfX = Number.isFinite(self.x) ? self.x : self.mapX;
+  const selfY = Number.isFinite(self.y) ? self.y : self.mapY;
   let px = 0;
   let py = 0;
   let count = 0;
   for (let i = 0; i < neighbors.length; i += 1) {
     if (i === selfIndex) continue;
     const n = neighbors[i];
-    const dx = self.x - n.x;
-    const dy = self.y - n.y;
+    const neighborX = Number.isFinite(n.x) ? n.x : n.mapX;
+    const neighborY = Number.isFinite(n.y) ? n.y : n.mapY;
+    const dx = selfX - neighborX;
+    const dy = selfY - neighborY;
     const d2 = dx * dx + dy * dy;
     if (d2 >= r2) continue;
     if (d2 <= 1e-6) {
@@ -143,10 +147,12 @@ export function computeSpatialSeparation(self, agents = [], spatialHash, opts = 
   return { x: sx / len, y: sy / len, count };
 }
 
-export function enemyAiUpdateStride({ distanceTiles = 0, boss = false, miniBoss = false } = {}) {
+export function enemyAiUpdateStride({ distanceTiles = 0, boss = false, miniBoss = false, activeEnemies = 0 } = {}) {
   if (boss || miniBoss) return 1;
   const distance = Math.max(0, Number(distanceTiles) || 0);
-  if (distance <= 12) return 1;
+  const population = Math.max(0, Number(activeEnemies) || 0);
+  const swarmStride = population >= 48 ? 3 : population >= 40 ? 2 : 1;
+  if (distance <= 12) return swarmStride;
   if (distance <= 24) return 2;
   return 3;
 }

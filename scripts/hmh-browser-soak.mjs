@@ -6,6 +6,8 @@ import { createServer } from 'node:net';
 import path from 'node:path';
 import process from 'node:process';
 
+import { buildHmhPerformanceCertificate } from '../apps/portal/src/session-analytics.mjs';
+
 const ROOT = process.cwd();
 const PORTAL_ROOT = path.join(ROOT, 'apps', 'portal');
 const REPORT_JSON = path.join(ROOT, 'docs', 'testing', 'hmh-browser-soak.json');
@@ -25,6 +27,7 @@ const minutes = Number(minutesArg?.split('=')[1] ?? 30);
 if (!Number.isFinite(minutes) || minutes <= 0) throw new Error('--minutes must be a positive number');
 const durationMs = Math.round(minutes * 60_000);
 const sampleIntervalMs = Math.min(30_000, Math.max(2_000, Math.round(durationMs / 60)));
+const STRESS_STABILIZATION_MS = 15_000;
 
 async function freePort() {
   return new Promise((resolve, reject) => {
@@ -193,6 +196,11 @@ async function main() {
     await sleep(8_000);
     await waitFor(client, "(() => { const overlay = document.querySelector('#hmhLoadingOverlay'); return !overlay || overlay.hidden || getComputedStyle(overlay).display === 'none'; })()", 90_000);
     await activateCombatRun(client);
+    const stressSetup = await evaluate(client, `globalThis.__hmhSoakStressBossSwarm?.({ targetEnemyCount: 48, elapsedSeconds: 720 }) ?? null`);
+    if (!stressSetup?.ok || stressSetup.activeEnemies < 40 || stressSetup.bossEnemies < 1) {
+      throw new Error(`HMH stress setup failed: ${JSON.stringify(stressSetup)}`);
+    }
+    await sleep(STRESS_STABILIZATION_MS);
 
     const soakStarted = Date.now();
     let sampleIndex = 0;
@@ -240,11 +248,15 @@ async function main() {
       await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key, code });
       const sample = await evaluate(client, `(async () => {
         const start = performance.now();
+        let previousFrameAt = start;
         let frames = 0;
+        const frameDeltasMs = [];
         await new Promise((resolve) => {
-          const tick = () => {
+          const tick = (now) => {
             frames += 1;
-            if (performance.now() - start >= 1000) resolve();
+            frameDeltasMs.push(Number((now - previousFrameAt).toFixed(3)));
+            previousFrameAt = now;
+            if (now - start >= 1000) resolve();
             else requestAnimationFrame(tick);
           };
           requestAnimationFrame(tick);
@@ -256,6 +268,10 @@ async function main() {
         return {
           elapsedMs: performance.now(),
           fps: frames * 1000 / elapsed,
+          frameDeltasMs,
+          performance: typeof globalThis.__hmhVisualDebugPerformance === 'function'
+            ? globalThis.__hmhVisualDebugPerformance()
+            : null,
           heapUsed: performance.memory?.usedJSHeapSize ?? null,
           heapTotal: performance.memory?.totalJSHeapSize ?? null,
           domNodes: document.getElementsByTagName('*').length,
@@ -316,6 +332,7 @@ async function main() {
     const firstRunElapsedSeconds = samples[0]?.runElapsedSeconds ?? 0;
     const lastRunElapsedSeconds = samples.at(-1)?.runElapsedSeconds ?? 0;
     const activeRunAdvanceSeconds = (samples.at(-1)?.cumulativeRunSeconds ?? 0) - (samples[0]?.cumulativeRunSeconds ?? 0);
+    const performanceCertificate = buildHmhPerformanceCertificate(samples);
     const minimumRunAdvanceSeconds = Math.max(1, Math.floor((durationMs / 1000) * 0.8));
     const leakSuspected = heapGrowthBytes > 32 * 1024 * 1024 && heapGrowthPercent > 35;
     const pass = samples.length >= 2
@@ -323,6 +340,7 @@ async function main() {
       && samples.every((sample) => sample.canvasVisible && !sample.loading)
       && averageFps >= 50
       && minFps >= 40
+      && performanceCertificate.status === 'PASS'
       && firstRunElapsedSeconds > 0
       && activeRunAdvanceSeconds >= minimumRunAdvanceSeconds
       && !leakSuspected;
@@ -336,6 +354,9 @@ async function main() {
       sampleCount: samples.length,
       averageFps: Number(averageFps.toFixed(2)),
       minFps: Number(minFps.toFixed(2)),
+      stressSetup,
+      stressStabilizationSeconds: STRESS_STABILIZATION_MS / 1000,
+      performanceCertificate,
       firstRunElapsedSeconds,
       lastRunElapsedSeconds,
       activeRunAdvanceSeconds,
@@ -353,8 +374,8 @@ async function main() {
       finalScreenshot: 'docs/testing/VISUAL_BASELINES/current/soak/hmh-soak-final.png',
     };
     await writeFile(REPORT_JSON, `${JSON.stringify(report, null, 2)}\n`);
-    await writeFile(REPORT_MD, `# HMH Browser Soak Certificate\n\n- Status: **${report.status}**\n- Requested duration: ${report.requestedMinutes} minutes\n- Actual duration: ${report.actualMinutes} minutes\n- Active combat advance: ${report.activeRunAdvanceSeconds}s (${report.minimumRunAdvanceSeconds}s required)\n- Ending run timer: ${report.lastRunElapsedSeconds}s\n- Level-up selections: ${report.levelUpSelections}\n- Free-run restarts: ${report.runRestarts}\n- Samples: ${report.sampleCount}\n- Average FPS: ${report.averageFps}\n- Minimum FPS: ${report.minFps}\n- Heap growth: ${report.heapGrowthBytes} bytes (${report.heapGrowthPercent}%)\n- Leak suspected: ${report.leakSuspected ? 'yes' : 'no'}\n- Console/exception issues: ${report.consoleIssues.length}\n- Post-GC heap: ${report.afterGc.heapUsed ?? 'unavailable'} bytes\n\nRaw samples are in \`docs/testing/hmh-browser-soak.json\`. The ending screenshot is generated under the ignored current-baseline directory.\n`);
-    console.log(`Browser soak ${report.status}: ${report.actualMinutes}m, ${report.sampleCount} samples, avg ${report.averageFps} FPS, min ${report.minFps} FPS, heap ${report.heapGrowthPercent}%, console issues ${report.consoleIssues.length}.`);
+    await writeFile(REPORT_MD, `# HMH Browser Soak Certificate\n\n- Status: **${report.status}**\n- Requested duration: ${report.requestedMinutes} minutes\n- Actual duration: ${report.actualMinutes} minutes\n- Active combat advance: ${report.activeRunAdvanceSeconds}s (${report.minimumRunAdvanceSeconds}s required)\n- Ending run timer: ${report.lastRunElapsedSeconds}s\n- Level-up selections: ${report.levelUpSelections}\n- Free-run restarts: ${report.runRestarts}\n- Samples: ${report.sampleCount}\n- Stress setup: ${report.stressSetup.activeEnemies}/${report.stressSetup.targetEnemyCount} active enemies, ${report.stressSetup.bossEnemies} boss actor(s), minute ${report.stressSetup.elapsedSeconds / 60}, ${report.stressStabilizationSeconds}s stabilization\n- Average FPS: ${report.averageFps}\n- Minimum FPS: ${report.minFps}\n- Frame time p50/p95/p99/max: ${report.performanceCertificate.frameTimeMs.p50}/${report.performanceCertificate.frameTimeMs.p95}/${report.performanceCertificate.frameTimeMs.p99}/${report.performanceCertificate.frameTimeMs.max} ms\n- Render p95: ${report.performanceCertificate.renderTimeMs.p95} ms\n- Cap violations: ${report.performanceCertificate.capViolationCount}\n- Max active enemies: ${report.performanceCertificate.maxOccupancy.activeEnemies}\n- Max enemy projectiles: ${report.performanceCertificate.maxOccupancy.enemyProjectiles}\n- Max particles/text: ${report.performanceCertificate.maxOccupancy.particles}/${report.performanceCertificate.maxOccupancy.floatingTexts}\n- Max animated/visible enemies: ${report.performanceCertificate.maxAnimation.animatedEnemies}/${report.performanceCertificate.maxAnimation.visibleEnemies}\n- Heap growth: ${report.heapGrowthBytes} bytes (${report.heapGrowthPercent}%)\n- Leak suspected: ${report.leakSuspected ? 'yes' : 'no'}\n- Console/exception issues: ${report.consoleIssues.length}\n- Post-GC heap: ${report.afterGc.heapUsed ?? 'unavailable'} bytes\n\nRaw samples are in \`docs/testing/hmh-browser-soak.json\`. The ending screenshot is generated under the ignored current-baseline directory.\n`);
+    console.log(`Browser soak ${report.status}: ${report.actualMinutes}m, ${report.sampleCount} samples, avg ${report.averageFps} FPS, min ${report.minFps} FPS, p95 ${report.performanceCertificate.frameTimeMs.p95}ms, cap violations ${report.performanceCertificate.capViolationCount}, heap ${report.heapGrowthPercent}%, console issues ${report.consoleIssues.length}.`);
     await rm(PARTIAL_JSON, { force: true });
     if (!pass) process.exitCode = 1;
   } catch (error) {

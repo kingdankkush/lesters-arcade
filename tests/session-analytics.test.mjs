@@ -3,9 +3,47 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 import {
+  buildHmhPerformanceCertificate,
   buildSessionAnalyticsReport,
   buildSessionBalanceReportMarkdown,
 } from '../apps/portal/src/session-analytics.mjs';
+
+test('HMH browser performance certificate tracks frame tails and combat occupancy without hiding cap violations', () => {
+  const baseTelemetry = {
+    p95RenderMs: 9.5,
+    p95UpdateMs: 4.5,
+    occupancy: { activeEnemies: 40, playerProjectiles: 32, enemyProjectiles: 48, particles: 120, vfxParticles: 24, floatingTexts: 42, xpGems: 90, powerUps: 8 },
+    budgets: { maxEnemiesOnMap: 55, enemyProjectileCap: 72, maxParticles: 150, maxFloatingTexts: 64 },
+    animation: { visibleEnemies: 40, animatedEnemies: 32, maxAnimatedEnemies: 36 },
+    adaptivePerformance: { tier: 1, reason: 'boss-swarm-preemptive' },
+  };
+  const certificate = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [15, 16, 17, 18], performance: baseTelemetry },
+    { frameDeltasMs: [16, 17, 18, 19], performance: { ...baseTelemetry, occupancy: { ...baseTelemetry.occupancy, activeEnemies: 44, enemyProjectiles: 61 } } },
+  ]);
+  assert.equal(certificate.status, 'PASS');
+  assert.equal(certificate.frameSampleCount, 8);
+  assert.equal(certificate.frameTimeMs.p50, 17);
+  assert.equal(certificate.frameTimeMs.p95, 18.65);
+  assert.equal(certificate.frameTimeMs.p99, 18.93);
+  assert.equal(certificate.frameTimeMs.max, 19);
+  assert.equal(certificate.renderTimeMs.p95, 9.5);
+  assert.equal(certificate.updateTimeMs.p95, 4.5);
+  assert.equal(certificate.maxOccupancy.activeEnemies, 44);
+  assert.equal(certificate.maxOccupancy.enemyProjectiles, 61);
+  assert.equal(certificate.maxAnimation.animatedEnemies, 32);
+  assert.equal(certificate.maxAdaptiveTier, 1);
+  assert.equal(certificate.capViolationCount, 0);
+
+  const failed = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [16, 21, 29, 35], performance: { ...baseTelemetry, occupancy: { ...baseTelemetry.occupancy, particles: 151 } } },
+  ]);
+  assert.equal(failed.status, 'FAIL');
+  assert.equal(failed.capViolationCount, 1);
+  assert.ok(failed.failures.includes('particle-cap'));
+  assert.ok(failed.failures.includes('p95-frame-time'));
+  assert.ok(failed.failures.includes('p99-frame-time'));
+});
 
 const SESSIONS = [
   {
