@@ -7,11 +7,13 @@ import {
   authoredCellToWorld,
   buildLevelOneWorldV3Reachability,
   levelOneWorldV3CellAt,
+  levelOneWorldV3BridgeCrossing,
   levelOneWorldV3ElevationAt,
   levelOneWorldV3NeighborMask,
   levelOneWorldV3WorldBounds,
   worldToAuthoredCell,
 } from '../apps/portal/src/hmh-level-one-world-v3-runtime.mjs';
+import { resolveWaterCollision } from '../apps/portal/src/world-obstacles.mjs';
 
 test('Blueprint v3 runtime exports the complete approved 100x100 authored world', () => {
   assert.equal(HMH_LEVEL_ONE_WORLD_V3.id, 'hmh-level-1-world-blueprint-v3');
@@ -105,6 +107,31 @@ test('Blueprint v3 runtime preserves complete ground reachability and bridge con
   assert.equal(report.pointsOfInterest.every((anchor) => anchor.reachable), true);
   assert.equal(report.bridges.length, 4);
   assert.equal(report.bridges.every((bridge) => bridge.reachable && bridge.connectsWalkableSides), true);
+});
+
+test('every authored bridge supports a player-radius swept entry, deck crossing, and bank exit', () => {
+  const blockedTerrainAsWater = (_seed, worldX, worldY) => levelOneWorldV3CellAt(worldX, worldY).blocked ? 'water' : 'road';
+  for (const bridge of HMH_LEVEL_ONE_WORLD_V3.bridges) {
+    const crossing = levelOneWorldV3BridgeCrossing(bridge.id);
+    assert.ok(crossing, `${bridge.id} needs a runtime crossing contract`);
+    assert.equal(crossing.id, bridge.id);
+    assert.notEqual(levelOneWorldV3CellAt(crossing.entryWorld.x, crossing.entryWorld.y).groundNav, '#');
+    assert.notEqual(levelOneWorldV3CellAt(crossing.exitWorld.x, crossing.exitWorld.y).groundNav, '#');
+    const resolved = resolveWaterCollision(
+      1337,
+      crossing.entryWorld.x,
+      crossing.entryWorld.y,
+      crossing.exitWorld.x,
+      crossing.exitWorld.y,
+      blockedTerrainAsWater,
+      { radius: 0.42, maxStep: 0.1 },
+    );
+    assert.ok(
+      Math.hypot(resolved.x - crossing.exitWorld.x, resolved.y - crossing.exitWorld.y) < 0.05,
+      `${bridge.id} blocked the player at ${resolved.x},${resolved.y} before the declared exit bank`,
+    );
+  }
+  assert.equal(levelOneWorldV3BridgeCrossing('missing-bridge'), null);
 });
 
 test('Blueprint v3 runtime adapter and tests are included in the explicit syntax gate', () => {

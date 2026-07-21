@@ -394,6 +394,9 @@ ROAD_CARDINAL_EDGES = {
     8: ((0, 32), (64, 0)),
 }
 ROAD_STYLES = ("asphalt", "dirt")
+BRIDGE_STYLES = ("wood", "stone-road")
+BRIDGE_AXES = ("east-west", "north-east-south-west")
+BRIDGE_AXIS_MASKS = {"east-west": 1 | 2, "north-east-south-west": 32 | 128}
 
 
 def bresenham(a: tuple[int, int], b: tuple[int, int]) -> list[tuple[int, int]]:
@@ -543,10 +546,65 @@ def road_marking_tile(mask: int, style: str) -> Image.Image:
     return lattice_overlay(tile)
 
 
+def bridge_detail_tile(edge_bits: int, style: str, axis: str) -> Image.Image:
+    tile = Image.new("RGBA", (TILE_W, TILE_H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+    center = (64, 32)
+    axis_mask = BRIDGE_AXIS_MASKS[axis]
+    endpoints = [ROAD_DIRECTION_ENDPOINTS[bit] for bit in ROAD_DIRECTION_ENDPOINTS if axis_mask & bit]
+    if len(endpoints) != 2:
+        raise RuntimeError(f"bridge axis {axis} did not resolve two endpoints")
+
+    if style == "stone-road":
+        draw.line((endpoints[0], endpoints[1]), fill=(29, 29, 27, 150), width=6)
+        for endpoint in endpoints:
+            dash_a = lerp_pixel(center, endpoint, 0.30)
+            dash_b = lerp_pixel(center, endpoint, 0.68)
+            draw.line((dash_a, dash_b), fill=(224, 184, 76, 220), width=2)
+    else:
+        dx = endpoints[1][0] - endpoints[0][0]
+        dy = endpoints[1][1] - endpoints[0][1]
+        length = max(1.0, math.hypot(dx, dy))
+        px = -dy / length
+        py = dx / length
+        for step in range(1, 8):
+            amount = step / 8
+            cx = round(endpoints[0][0] + dx * amount)
+            cy = round(endpoints[0][1] + dy * amount)
+            half = 6 if step % 2 else 7
+            draw.line(
+                ((round(cx - px * half), round(cy - py * half)), (round(cx + px * half), round(cy + py * half))),
+                fill=(65, 39, 23, 178),
+                width=1,
+            )
+
+    rail_dark = (39, 29, 24, 235) if style == "wood" else (42, 43, 42, 235)
+    rail_light = (186, 130, 67, 225) if style == "wood" else (143, 145, 136, 220)
+    threshold = (94, 59, 31, 220) if style == "wood" else (91, 88, 79, 220)
+    for bit, edge in ROAD_CARDINAL_EDGES.items():
+        if not edge_bits & bit:
+            continue
+        is_approach = (axis == "east-west" and bit in {2, 8}) or (
+            axis == "north-east-south-west" and edge_bits in {3, 12}
+        )
+        inner = [lerp_pixel(point, center, 0.17) for point in edge]
+        if is_approach:
+            draw.line((inner[0], inner[1]), fill=rail_dark, width=5)
+            draw.line((lerp_pixel(inner[0], inner[1], 0.18), lerp_pixel(inner[0], inner[1], 0.82)), fill=threshold, width=2)
+            continue
+        draw.line((inner[0], inner[1]), fill=rail_dark, width=7)
+        draw.line((inner[0], inner[1]), fill=rail_light, width=2)
+        for amount in (0.18, 0.82):
+            post = lerp_pixel(inner[0], inner[1], amount)
+            draw.rectangle((post[0] - 2, post[1] - 3, post[0] + 2, post[1] + 2), fill=rail_dark)
+            draw.line(((post[0] - 1, post[1] - 3), (post[0] + 1, post[1] - 3)), fill=rail_light, width=1)
+    return lattice_overlay(tile)
+
+
 def build_road_supertile_runtime() -> dict:
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
     centerline_masks, masks_by_cell = road_centerline_masks()
-    atlas = Image.new("RGBA", (2048, 384), (0, 0, 0, 0))
+    atlas = Image.new("RGBA", (2048, 640), (0, 0, 0, 0))
 
     def paste_at(index: int, tile: Image.Image) -> None:
         atlas.alpha_composite(tile, ((index % 16) * TILE_W, (index // 16) * TILE_H))
@@ -557,8 +615,17 @@ def build_road_supertile_runtime() -> dict:
         for mask_index, mask in enumerate(centerline_masks):
             paste_at(32 + style_index * len(centerline_masks) + mask_index, road_marking_tile(mask, style))
 
+    bridge_base_index = 96
+    for style_index, style in enumerate(BRIDGE_STYLES):
+        for axis_index, axis in enumerate(BRIDGE_AXES):
+            for edge_bits in range(16):
+                paste_at(
+                    bridge_base_index + style_index * 32 + axis_index * 16 + edge_bits,
+                    bridge_detail_tile(edge_bits, style, axis),
+                )
+
     atlas.save(ROAD_SUPERTILE_ATLAS, optimize=True)
-    if atlas.size != (2048, 384) or len(centerline_masks) != 32:
+    if atlas.size != (2048, 640) or len(centerline_masks) != 32:
         raise RuntimeError("road supertile atlas certification failed")
     return {
         "status": "PASS",
@@ -566,8 +633,11 @@ def build_road_supertile_runtime() -> dict:
         "shoulderMasks": 16,
         "centerlineMasks": len(centerline_masks),
         "centerlineCells": len(masks_by_cell),
+        "bridgeStyles": len(BRIDGE_STYLES),
+        "bridgeAxes": len(BRIDGE_AXES),
+        "bridgeEdgeMasks": len(BRIDGE_STYLES) * len(BRIDGE_AXES) * 16,
         "atlasBytes": ROAD_SUPERTILE_ATLAS.stat().st_size,
-        "atlasDecodedBytes": 2048 * 384 * 4,
+        "atlasDecodedBytes": 2048 * 640 * 4,
     }
 
 def main() -> None:

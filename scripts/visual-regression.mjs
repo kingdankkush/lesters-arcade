@@ -532,6 +532,9 @@ try {
     { name: 'seed-1337-oasis-lakeside', x: 52, y: -13, requireWater: true },
     { name: 'seed-1337-crossroads', x: 50, y: -33, prefix: 'world-v3-infrastructure/crossroads-wagon-trading-post' },
     { name: 'seed-1337-pine-creek-bridge', x: 27, y: -39, prefix: 'world-v3-infrastructure/pine-creek-timber-bridge', requireBridge: true },
+    { name: 'seed-1337-west-river-main-bridge', x: 31, y: -26, requireBridge: true },
+    { name: 'seed-1337-east-river-bridge', x: 44, y: -32, requireBridge: true },
+    { name: 'seed-1337-lake-outlet-farm-bridge', x: 60, y: -3, requireBridge: true, requireWater: true },
     { name: 'seed-1337-frontier-town', x: 63, y: -26, prefix: 'world-v3-landmark/frontier-town-exchange-hall' },
     { name: 'seed-1337-wrecked-lighthouse', x: 74, y: 4, prefix: 'curated/jul9-ambient-water-glow-b-' },
     { name: 'seed-1337-boss-yard', x: 79, y: -43, prefix: 'world-v3-infrastructure/rugpull-gulch-sheriff-water-tower' },
@@ -557,8 +560,8 @@ try {
       await sleep(250);
       const bridgeProfile = await runInPage(client, `globalThis.__hmhVisualDebugPerformance?.()`);
       const bridgeStats = bridgeProfile?.groundRender?.terrainPresentationStats;
-      if (bridgeStats?.bridgeLightingCells !== 0 || bridgeStats?.overlayIds?.length !== 0) {
-        throw new Error(`HMH bridge tour rendered retired flat-color bridge overlays at ${stop.name}: ${JSON.stringify(bridgeProfile)}`);
+      if (!(bridgeStats?.bridgeDetailCells > 0) || bridgeStats?.bridgeLightingCells !== 0 || bridgeStats?.overlayIds?.length !== 0) {
+        throw new Error(`HMH bridge tour did not render batched bridge detail or retained flat-color overlays at ${stop.name}: ${JSON.stringify(bridgeProfile)}`);
       }
     }
     if (stop.requireWater) {

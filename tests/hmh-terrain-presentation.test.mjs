@@ -10,6 +10,7 @@ import {
   TERRAIN_PRESENTATION_OVERLAY_ORDER,
   HMH_DESERT_APPROACH_WANG_RUNTIME,
   HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME,
+  bridgeSupertilePresentationForCell,
   desertApproachRuntimeAtlasAssets,
   desertApproachRuntimeGroundAssetForCell,
   desertApproachRuntimeRoleForCell,
@@ -295,7 +296,7 @@ test('full authored map stays below the Wang composite cache budget', () => {
     }
   }
   const decodedCanvasBytes = keys.size * 128 * 64 * 4;
-  assert.equal(adaptedCells, 2478);
+  assert.equal(adaptedCells, 2479);
   assert.equal(compositeCells, 65);
   assert.ok(keys.size <= 128, `runtime created ${keys.size} unique terrain patterns`);
   assert.ok(decodedCanvasBytes <= 4 * 1024 * 1024, `runtime pattern cache needs ${decodedCanvasBytes} bytes`);
@@ -329,19 +330,63 @@ test('Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas', 
   assert.equal(manifest.status, 'runtime-ready-authored-centerlines');
   assert.deepEqual(manifest.tileSourceSize, [128, 64]);
   assert.deepEqual(manifest.styles, ['asphalt', 'dirt']);
+  assert.deepEqual(manifest.bridgeStyles, ['wood', 'stone-road']);
+  assert.deepEqual(manifest.bridgeAxes, ['east-west', 'north-east-south-west']);
   assert.equal(manifest.shoulderMasks, 16);
   assert.equal(manifest.centerlineMasks, 32);
+  assert.equal(manifest.bridgeEdgeMasks, 64);
   assert.equal(manifest.atlas.width, 2048);
-  assert.equal(manifest.atlas.height, 384);
+  assert.equal(manifest.atlas.height, 640);
   assert.equal(manifest.performance.atlasCount, 1);
   assert.equal(manifest.performance.maxOverlayLayersPerCell, 2);
-  assert.equal(manifest.performance.maxPatternCanvases, 96);
-  assert.equal(manifest.performance.atlasDecodedBytes, 3_145_728);
+  assert.equal(manifest.performance.maxBridgeLayersPerCell, 1);
+  assert.equal(manifest.performance.maxPatternCanvases, 160);
+  assert.equal(manifest.performance.atlasDecodedBytes, 5_242_880);
   assert.equal(repoAssetExists(manifest.atlas.src), true);
   const atlasBytes = readFileSync(new URL(`../apps/portal/${manifest.atlas.src.replace(/^\.\//, '')}`, import.meta.url));
   assert.equal(atlasBytes.readUInt32BE(16), 2048, 'PNG header width must match the runtime crop contract');
-  assert.equal(atlasBytes.readUInt32BE(20), 384, 'PNG header height must match the runtime crop contract');
+  assert.equal(atlasBytes.readUInt32BE(20), 640, 'PNG header height must match the runtime crop contract');
   assert.deepEqual(roadSupertileRuntimeAtlasAssets(), [manifest.atlas]);
+});
+
+test('authored bridge supertiles add one deterministic deck, rail, and abutment detail layer', () => {
+  const plan = buildGroundPlan({ seed: 1337 });
+  assert.equal(typeof plan.bridgePresentationForCell, 'function');
+  assert.equal(plan.bridgePresentationForCell(null), null);
+  let bridgeCells = 0;
+  let detailedCells = 0;
+  const keys = new Set();
+  for (let y = plan.worldBounds.minY; y <= plan.worldBounds.maxY; y += 1) {
+    for (let x = plan.worldBounds.minX; x <= plan.worldBounds.maxX; x += 1) {
+      const cell = plan.cellAt(x, y);
+      const presentation = plan.bridgePresentationForCell(cell);
+      if (cell.isBridge) bridgeCells += 1;
+      if (!presentation) continue;
+      detailedCells += 1;
+      assert.equal(cell.isBridge, true);
+      assert.equal(presentation.renderLayers, 1);
+      assert.ok(['wood', 'stone-road'].includes(presentation.style));
+      assert.ok(['east-west', 'north-east-south-west'].includes(presentation.axis));
+      assert.equal(presentation.detail.kind, 'bridge-detail');
+      assert.equal(presentation.detail.atlasRect.width, 128);
+      assert.equal(presentation.detail.atlasRect.height, 64);
+      assert.ok(presentation.detail.atlasRect.x + 128 <= HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME.atlas.width);
+      assert.ok(presentation.detail.atlasRect.y + 64 <= HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME.atlas.height);
+      keys.add(presentation.detail.key);
+    }
+  }
+  assert.equal(bridgeCells, 99);
+  assert.equal(detailedCells, bridgeCells, 'every authored deck cell should receive bridge-specific detail');
+  assert.ok(keys.size <= 32, `bridge runtime created ${keys.size} unique overlay crops`);
+  assert.ok(keys.size * 128 * 64 * 4 <= 1024 * 1024, 'bridge overlay crop cache must stay within 1 MiB');
+
+  const bridgeCenter = plan.cellAt(27, -39);
+  const first = bridgeSupertilePresentationForCell(bridgeCenter);
+  assert.equal(first.bridgeId, 'pine-creek-wood-bridge');
+  assert.equal(first.style, 'wood');
+  assert.equal(first.axis, 'east-west');
+  assert.equal(plan.bridgePresentationForCell(bridgeCenter), plan.bridgePresentationForCell(bridgeCenter));
+  assert.equal(bridgeSupertilePresentationForCell(plan.cellAt(0, 0)), null);
 });
 
 test('road supertile selector maps exposed route edges without altering broad route interiors', () => {
@@ -435,9 +480,9 @@ test('full authored road network stays inside overlay and cropped-canvas budgets
     }
   }
   const croppedCanvasBytes = keys.size * 128 * 64 * 4;
-  assert.equal(presentedCells, 740);
-  assert.equal(shoulderCells, 480);
-  assert.equal(markingCells, 263);
+  assert.equal(presentedCells, 732);
+  assert.equal(shoulderCells, 477);
+  assert.equal(markingCells, 258);
   assert.equal(maxLayers, 2);
   assert.ok(keys.size <= 64, `road runtime created ${keys.size} unique overlay patterns`);
   assert.ok(croppedCanvasBytes <= 2 * 1024 * 1024, `road crop cache needs ${croppedCanvasBytes} bytes`);

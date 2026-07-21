@@ -149,6 +149,17 @@ def paint_rect(layer: list[list[str]], x0: int, y0: int, x1: int, y1: int, value
             layer[y][x] = value
 
 
+def bridge_deck_cells(bridge: dict) -> list[tuple[int, int]]:
+    rect = bridge["deckRect"]
+    cells: list[tuple[int, int]] = []
+    for y in range(rect["yMin"], rect["yMax"] + 1):
+        for x in range(rect["xMin"], rect["xMax"] + 1):
+            if bridge["shape"] == "diagonal-band" and abs((x - bridge["x"]) + (y - bridge["y"])) > 2:
+                continue
+            cells.append((x, y))
+    return cells
+
+
 def set_cells(layer: list[list[str]], cells: list[tuple[int, int]], value: str) -> None:
     for x, y in cells:
         if in_bounds(x, y):
@@ -319,23 +330,29 @@ def build_layers() -> tuple[dict[str, list[list[str]]], dict]:
     paint_rect(route, 70, 43, 74, 59, "T")
 
     # Farm plots remain traversable but costlier for ground navigation at runtime.
-    for rect in [(53, 72, 60, 78), (62, 68, 69, 74), (70, 72, 77, 78), (59, 81, 67, 86)]:
-        paint_rect(terrain, *rect, "f")
-        paint_rect(biome, *rect, "A")
-        paint_rect(nav, *rect, "~")
+    # Preserve authored hydrology instead of erasing the Silver Wallet outlet
+    # beneath crop rectangles; bridges below are the only dry deck overrides.
+    for x0, y0, x1, y1 in [(53, 72, 60, 78), (62, 68, 69, 74), (70, 72, 77, 78), (59, 81, 67, 86)]:
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                if terrain[y][x] in {"W", "O", "M"}:
+                    continue
+                terrain[y][x] = "f"
+                biome[y][x] = "A"
+                nav[y][x] = "~"
 
     bridges = [
-        {"id": "pine-creek-wood-bridge", "x": 35, "y": 39, "surface": "H", "route": "N", "kind": "wood"},
-        {"id": "west-river-main-bridge", "x": 39, "y": 52, "surface": "Q", "route": "M", "kind": "stone-road"},
-        {"id": "east-river-main-bridge", "x": 52, "y": 46, "surface": "Q", "route": "M", "kind": "stone-road"},
-        {"id": "lake-outlet-farm-bridge", "x": 68, "y": 75, "surface": "H", "route": "S", "kind": "wood"},
+        {"id": "pine-creek-wood-bridge", "x": 35, "y": 39, "surface": "H", "route": "N", "kind": "wood", "axis": "east-west", "shape": "rectangle", "entry": [32, 39], "exit": [38, 39], "deckRect": {"xMin": 33, "xMax": 37, "yMin": 37, "yMax": 41}},
+        {"id": "west-river-main-bridge", "x": 39, "y": 52, "surface": "Q", "route": "M", "kind": "stone-road", "axis": "east-west", "shape": "rectangle", "entry": [36, 52], "exit": [43, 52], "deckRect": {"xMin": 37, "xMax": 42, "yMin": 50, "yMax": 54}},
+        {"id": "east-river-main-bridge", "x": 52, "y": 46, "surface": "Q", "route": "M", "kind": "stone-road", "axis": "east-west", "shape": "rectangle", "entry": [49, 46], "exit": [55, 46], "deckRect": {"xMin": 50, "xMax": 54, "yMin": 44, "yMax": 48}},
+        {"id": "lake-outlet-farm-bridge", "x": 68, "y": 75, "surface": "H", "route": "S", "kind": "wood", "axis": "north-east-south-west", "shape": "diagonal-band", "entry": [65, 78], "exit": [71, 72], "deckRect": {"xMin": 66, "xMax": 70, "yMin": 73, "yMax": 77}},
     ]
     for bridge in bridges:
-        x, y = bridge["x"], bridge["y"]
-        paint_rect(terrain, x - 2, y - 2, x + 2, y + 2, bridge["surface"])
-        paint_rect(nav, x - 2, y - 2, x + 2, y + 2, ".")
-        paint_rect(route, x - 2, y - 2, x + 2, y + 2, "B")
-        paint_rect(elevation, x - 2, y - 2, x + 2, y + 2, "1")
+        cells = bridge_deck_cells(bridge)
+        set_cells(terrain, cells, bridge["surface"])
+        set_cells(nav, cells, ".")
+        set_cells(route, cells, "B")
+        set_cells(elevation, cells, "1")
 
     # A single optional ford is slow but traversable; all ordinary water remains blocked.
     paint_rect(terrain, 55, 58, 57, 60, "w")
@@ -408,11 +425,11 @@ def build_layers() -> tuple[dict[str, list[list[str]]], dict]:
     # Declared crossings are gameplay contracts. Reapply them after cliff and
     # perimeter painting so later barrier passes can never silently bury a bridge.
     for bridge in bridges:
-        x, y = bridge["x"], bridge["y"]
-        paint_rect(terrain, x - 2, y - 2, x + 2, y + 2, bridge["surface"])
-        paint_rect(nav, x - 2, y - 2, x + 2, y + 2, ".")
-        paint_rect(route, x - 2, y - 2, x + 2, y + 2, "B")
-        paint_rect(elevation, x - 2, y - 2, x + 2, y + 2, "1")
+        cells = bridge_deck_cells(bridge)
+        set_cells(terrain, cells, bridge["surface"])
+        set_cells(nav, cells, ".")
+        set_cells(route, cells, "B")
+        set_cells(elevation, cells, "1")
 
     # Ensure critical anchors remain connected after terrain blockers are laid.
     critical_path = [

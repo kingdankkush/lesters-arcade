@@ -421,9 +421,18 @@ const ROAD_SUPERTILE_TILE_WIDTH = 128;
 const ROAD_SUPERTILE_TILE_HEIGHT = 64;
 const ROAD_SUPERTILE_COLUMNS = 16;
 const ROAD_SUPERTILE_STYLES = Object.freeze(['asphalt', 'dirt']);
+const BRIDGE_SUPERTILE_STYLES = Object.freeze(['wood', 'stone-road']);
+const BRIDGE_SUPERTILE_AXES = Object.freeze(['east-west', 'north-east-south-west']);
+const BRIDGE_SUPERTILE_BASE_INDEX = 96;
 const ROAD_ROUTE_CODES = new Set(['M', 'N', 'S', 'T', 'B']);
 const ROAD_DRAWABLE_ROUTE_CODES = new Set(['M', 'N', 'S', 'T']);
 const ROAD_CARDINAL_BITS = Object.freeze({ north: 1, east: 2, south: 4, west: 8 });
+const BRIDGE_CARDINAL_NEIGHBORS = Object.freeze([
+  Object.freeze(['north', 0, -1]),
+  Object.freeze(['east', 1, 0]),
+  Object.freeze(['south', 0, 1]),
+  Object.freeze(['west', -1, 0]),
+]);
 const ROAD_DIRECTION_BITS = new Map([
   ['-1|0', 1],
   ['1|0', 2],
@@ -497,12 +506,35 @@ function buildRoadCenterlineLookup() {
 const ROAD_CENTERLINE_MASK_BY_AUTHORED_CELL = buildRoadCenterlineLookup();
 const ROAD_CENTERLINE_MASKS = Object.freeze([...new Set(ROAD_CENTERLINE_MASK_BY_AUTHORED_CELL.values())].sort((a, b) => a - b));
 const ROAD_CENTERLINE_MASK_INDEX = new Map(ROAD_CENTERLINE_MASKS.map((mask, index) => [mask, index]));
+
+function bridgeContainsAuthoredCell(bridge, x, y) {
+  const rect = bridge?.deckRect;
+  if (!rect || x < rect.xMin || x > rect.xMax || y < rect.yMin || y > rect.yMax) return false;
+  if (bridge.shape === 'diagonal-band') return Math.abs((x - bridge.x) + (y - bridge.y)) <= 2;
+  return true;
+}
+
+function buildBridgeLookup() {
+  const lookup = new Map();
+  for (const bridge of HMH_LEVEL_ONE_WORLD_V3.bridges ?? []) {
+    const rect = bridge.deckRect;
+    if (!rect) continue;
+    for (let y = rect.yMin; y <= rect.yMax; y += 1) {
+      for (let x = rect.xMin; x <= rect.xMax; x += 1) {
+        if (bridgeContainsAuthoredCell(bridge, x, y)) lookup.set(`${x}|${y}`, bridge);
+      }
+    }
+  }
+  return lookup;
+}
+
+const BRIDGE_BY_AUTHORED_CELL = buildBridgeLookup();
 const ROAD_SUPERTILE_ATLAS = Object.freeze({
   key: 'road-supertiles-v1/runtime-atlas',
   src: ROAD_SUPERTILE_SRC,
   width: 2048,
-  height: 384,
-  decodedBytes: 2048 * 384 * 4,
+  height: 640,
+  decodedBytes: 2048 * 640 * 4,
   sampling: 'nearest-neighbor',
 });
 
@@ -512,14 +544,19 @@ export const HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME = Object.freeze({
   tileSourceSize: Object.freeze([ROAD_SUPERTILE_TILE_WIDTH, ROAD_SUPERTILE_TILE_HEIGHT]),
   logicalFootprint: Object.freeze([64, 32]),
   styles: ROAD_SUPERTILE_STYLES,
+  bridgeStyles: BRIDGE_SUPERTILE_STYLES,
+  bridgeAxes: BRIDGE_SUPERTILE_AXES,
   shoulderMasks: 16,
   centerlineMasks: ROAD_CENTERLINE_MASKS.length,
   centerlineCells: ROAD_CENTERLINE_MASK_BY_AUTHORED_CELL.size,
+  bridgeEdgeMasks: BRIDGE_SUPERTILE_STYLES.length * BRIDGE_SUPERTILE_AXES.length * 16,
+  bridgeCells: BRIDGE_BY_AUTHORED_CELL.size,
   atlas: ROAD_SUPERTILE_ATLAS,
   performance: Object.freeze({
     atlasCount: 1,
     maxOverlayLayersPerCell: 2,
-    maxPatternCanvases: 16 * ROAD_SUPERTILE_STYLES.length + ROAD_CENTERLINE_MASKS.length * ROAD_SUPERTILE_STYLES.length,
+    maxBridgeLayersPerCell: 1,
+    maxPatternCanvases: 160,
     atlasDecodedBytes: ROAD_SUPERTILE_ATLAS.decodedBytes,
   }),
   authority: 'visual-only; collision, traversal, elevation, and route truth remain authored metadata',
@@ -554,6 +591,38 @@ const ROAD_MARKING_ASSETS = Object.freeze(ROAD_SUPERTILE_STYLES.map((style, styl
     style,
     mask,
     32 + styleIndex * ROAD_CENTERLINE_MASKS.length + maskIndex,
+  )),
+)));
+
+function bridgeAtlasAsset(style, axis, edgeBits, atlasIndex) {
+  return Object.freeze({
+    key: `road-supertiles-v1/${style}/bridge-detail-${axis}-${edgeBits}`,
+    role: 'bridge-overlay',
+    style,
+    axis,
+    kind: 'bridge-detail',
+    mask: edgeBits,
+    src: ROAD_SUPERTILE_SRC,
+    width: ROAD_SUPERTILE_TILE_WIDTH,
+    height: ROAD_SUPERTILE_TILE_HEIGHT,
+    atlasRect: Object.freeze({
+      x: (atlasIndex % ROAD_SUPERTILE_COLUMNS) * ROAD_SUPERTILE_TILE_WIDTH,
+      y: Math.floor(atlasIndex / ROAD_SUPERTILE_COLUMNS) * ROAD_SUPERTILE_TILE_HEIGHT,
+      width: ROAD_SUPERTILE_TILE_WIDTH,
+      height: ROAD_SUPERTILE_TILE_HEIGHT,
+    }),
+    sampling: 'nearest-neighbor',
+  });
+}
+
+const BRIDGE_DETAIL_ASSETS = Object.freeze(BRIDGE_SUPERTILE_STYLES.map((style, styleIndex) => Object.freeze(
+  BRIDGE_SUPERTILE_AXES.map((axis, axisIndex) => Object.freeze(
+    Array.from({ length: 16 }, (_, edgeBits) => bridgeAtlasAsset(
+      style,
+      axis,
+      edgeBits,
+      BRIDGE_SUPERTILE_BASE_INDEX + styleIndex * 32 + axisIndex * 16 + edgeBits,
+    )),
   )),
 )));
 
@@ -604,5 +673,35 @@ export function roadSupertilePresentationForCell(cell = {}) {
     shoulder,
     marking,
     renderLayers: Number(Boolean(shoulder)) + Number(Boolean(marking)),
+  });
+}
+
+export function bridgeSupertilePresentationForCell(cell = {}) {
+  if (!cell?.isBridge || cell.blocked || cell.groundNav === '#') return null;
+  const authoredX = Number.isFinite(Number(cell.authoredX))
+    ? Math.round(Number(cell.authoredX))
+    : Math.round(Number(cell.x ?? cell.worldX) || 0) + HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.x;
+  const authoredY = Number.isFinite(Number(cell.authoredY))
+    ? Math.round(Number(cell.authoredY))
+    : Math.round(Number(cell.y ?? cell.worldY) || 0) + HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.y;
+  const bridge = BRIDGE_BY_AUTHORED_CELL.get(`${authoredX}|${authoredY}`);
+  if (!bridge?.deckRect) return null;
+  const styleIndex = BRIDGE_SUPERTILE_STYLES.indexOf(bridge.kind);
+  const axisIndex = BRIDGE_SUPERTILE_AXES.indexOf(bridge.axis);
+  if (styleIndex < 0 || axisIndex < 0) return null;
+  let edgeBits = 0;
+  for (const [direction, offsetX, offsetY] of BRIDGE_CARDINAL_NEIGHBORS) {
+    const neighborX = authoredX + offsetX;
+    const neighborY = authoredY + offsetY;
+    if (BRIDGE_BY_AUTHORED_CELL.get(`${neighborX}|${neighborY}`)?.id !== bridge.id) edgeBits |= ROAD_CARDINAL_BITS[direction];
+  }
+  const detail = BRIDGE_DETAIL_ASSETS[styleIndex][axisIndex][edgeBits];
+  return Object.freeze({
+    bridgeId: bridge.id,
+    style: bridge.kind,
+    axis: bridge.axis,
+    edgeBits,
+    detail,
+    renderLayers: 1,
   });
 }

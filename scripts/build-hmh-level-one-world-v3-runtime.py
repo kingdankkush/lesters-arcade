@@ -116,6 +116,16 @@ export function worldToAuthoredCell(worldX, worldY) {
   return Object.freeze({ x, y, inBounds: authoredInBounds(x, y) });
 }
 
+export function levelOneWorldV3BridgeCrossing(bridgeId) {
+  const bridge = DATA.bridges.find((item) => item.id === bridgeId);
+  if (!bridge) return null;
+  return Object.freeze({
+    ...bridge,
+    entryWorld: authoredCellToWorld(bridge.entry[0], bridge.entry[1]),
+    exitWorld: authoredCellToWorld(bridge.exit[0], bridge.exit[1]),
+  });
+}
+
 export function levelOneWorldV3WorldBounds() {
   return Object.freeze({ minX: -SPAWN_X, maxX: WIDTH - 1 - SPAWN_X, minY: -SPAWN_Y, maxY: HEIGHT - 1 - SPAWN_Y, width: WIDTH, height: HEIGHT });
 }

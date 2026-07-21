@@ -351,14 +351,21 @@ test('layout v4 perimeter palettes are side-specific and use shipped visible blo
   }
 });
 
-test('all World v3 bridges retain a fully passable 5x5 deck and reachable bank-adjacent exits', () => {
+test('all World v3 bridges retain passable declared deck shapes and reachable bank-adjacent exits', () => {
   assert.ok(HMH_LEVEL_ONE_WORLD_V3.bridges.length >= 4);
   for (const bridge of HMH_LEVEL_ONE_WORLD_V3.bridges) {
-    for (let dy = -2; dy <= 2; dy += 1) {
-      for (let dx = -2; dx <= 2; dx += 1) {
-        const cell = HMH_LEVEL_ONE_WORLD_V3.layers.groundNav[bridge.y + dy]?.[bridge.x + dx];
-        assert.notEqual(cell, '#', `${bridge.id} deck blocked at ${dx},${dy}`);
+    let deckCells = 0;
+    for (let y = bridge.deckRect.yMin; y <= bridge.deckRect.yMax; y += 1) {
+      for (let x = bridge.deckRect.xMin; x <= bridge.deckRect.xMax; x += 1) {
+        const onDeck = bridge.shape !== 'diagonal-band' || Math.abs((x - bridge.x) + (y - bridge.y)) <= 2;
+        if (!onDeck) continue;
+        deckCells += 1;
+        assert.notEqual(HMH_LEVEL_ONE_WORLD_V3.layers.groundNav[y]?.[x], '#', `${bridge.id} deck blocked at ${x},${y}`);
       }
+    }
+    assert.equal(deckCells, bridge.shape === 'diagonal-band' ? 19 : (bridge.deckRect.xMax - bridge.deckRect.xMin + 1) * (bridge.deckRect.yMax - bridge.deckRect.yMin + 1));
+    for (const [label, [x, y]] of [['entry', bridge.entry], ['exit', bridge.exit]]) {
+      assert.notEqual(HMH_LEVEL_ONE_WORLD_V3.layers.groundNav[y]?.[x], '#', `${bridge.id} ${label} bank blocked`);
     }
   }
 });

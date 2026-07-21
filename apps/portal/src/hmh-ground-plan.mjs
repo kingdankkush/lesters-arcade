@@ -29,6 +29,7 @@ import { levelOneWorldV3MaterialByKey } from '../assets/generated/hmh-level-one-
 import {
   desertApproachRuntimeAtlasAssets,
   desertApproachRuntimeGroundAssetForCell,
+  bridgeSupertilePresentationForCell,
   roadSupertilePresentationForCell,
   roadSupertileRuntimeAtlasAssets,
 } from './hmh-terrain-presentation.mjs';
@@ -394,6 +395,7 @@ function buildWorldV3GroundPlan(seed) {
   const zoneCache = new Map();
   const terrainCellCache = new Map();
   const roadPresentationCache = new Map();
+  const bridgePresentationCache = new Map();
   let terrainCellCacheHits = 0;
   let terrainCellCacheMisses = 0;
   const keyFor = (worldX, worldY) => `${Math.round(Number(worldX) || 0)}|${Math.round(Number(worldY) || 0)}`;
@@ -462,6 +464,14 @@ function buildWorldV3GroundPlan(seed) {
       if (roadPresentationCache.has(key)) return roadPresentationCache.get(key);
       const presentation = roadSupertilePresentationForCell(cell);
       roadPresentationCache.set(key, presentation);
+      return presentation;
+    },
+    bridgePresentationForCell(cell) {
+      if (!cell) return null;
+      const key = keyFor(cell?.x ?? cell?.worldX, cell?.y ?? cell?.worldY);
+      if (bridgePresentationCache.has(key)) return bridgePresentationCache.get(key);
+      const presentation = bridgeSupertilePresentationForCell(cell);
+      bridgePresentationCache.set(key, presentation);
       return presentation;
     },
     runtimeAtlasAssets() {

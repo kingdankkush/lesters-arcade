@@ -11058,6 +11058,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     edgeBlendStrips: 0,
     roadShoulderCells: 0,
     roadMarkingCells: 0,
+    bridgeDetailCells: 0,
   };
   const missingTextureTiles = [];
   const cameraAnchor = groundPatternAnchorForOrigin(isoToScreen(0, 0));
@@ -11170,7 +11171,8 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
       terrainPresentationStats.edgeBlendStrips += 1;
     }
     const roadPresentation = plan.roadPresentationForCell?.(terrainCell) ?? null;
-    for (const roadAsset of [roadPresentation?.shoulder, roadPresentation?.marking]) {
+    const bridgePresentation = plan.bridgePresentationForCell?.(terrainCell) ?? null;
+    for (const roadAsset of [roadPresentation?.shoulder, roadPresentation?.marking, bridgePresentation?.detail]) {
       if (!roadAsset) continue;
       const roadImage = sbsGroundTileImage(roadAsset);
       if (!imageReady(roadImage)) continue;
@@ -11183,6 +11185,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
       addDiamond(roadGroup.path, tile, terrainPresentation.elevationPx);
       if (roadAsset.kind === 'shoulder') terrainPresentationStats.roadShoulderCells += 1;
       if (roadAsset.kind === 'marking') terrainPresentationStats.roadMarkingCells += 1;
+      if (roadAsset.kind === 'bridge-detail') terrainPresentationStats.bridgeDetailCells += 1;
     }
     terrainPresentationStats.cellCount += 1;
     for (const overlay of terrainPresentation.overlays) {

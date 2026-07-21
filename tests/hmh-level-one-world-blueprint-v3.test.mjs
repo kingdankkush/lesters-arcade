@@ -97,6 +97,44 @@ test('Blueprint v3 waterways flow downhill from mountains to lake and sea', () =
   assert.equal(blueprint.hydrology.waterways.some((waterway) => waterway.destination === 'south-coast-sea'), true);
 });
 
+test('Blueprint v3 bridges declare authored bank endpoints, visual axes, and deck footprints', () => {
+  const blueprint = readJson(BLUEPRINT_URL);
+  assert.equal(blueprint.hydrology.bridges.length, 4);
+  for (const bridge of blueprint.hydrology.bridges) {
+    assert.ok(['east-west', 'north-east-south-west'].includes(bridge.axis), `${bridge.id} needs a supported visual axis`);
+    assert.ok(['rectangle', 'diagonal-band'].includes(bridge.shape), `${bridge.id} needs a supported deck shape`);
+    assert.equal(Array.isArray(bridge.entry) && bridge.entry.length === 2, true, `${bridge.id} needs an authored entry bank`);
+    assert.equal(Array.isArray(bridge.exit) && bridge.exit.length === 2, true, `${bridge.id} needs an authored exit bank`);
+    assert.notEqual(cell(blueprint.layers.groundNav, ...bridge.entry), '#', `${bridge.id} entry bank must be walkable`);
+    assert.notEqual(cell(blueprint.layers.groundNav, ...bridge.exit), '#', `${bridge.id} exit bank must be walkable`);
+    assert.equal(Number.isInteger(bridge.deckRect?.xMin), true);
+    assert.equal(Number.isInteger(bridge.deckRect?.xMax), true);
+    assert.equal(Number.isInteger(bridge.deckRect?.yMin), true);
+    assert.equal(Number.isInteger(bridge.deckRect?.yMax), true);
+    assert.ok(bridge.deckRect.xMin <= bridge.x && bridge.deckRect.xMax >= bridge.x);
+    assert.ok(bridge.deckRect.yMin <= bridge.y && bridge.deckRect.yMax >= bridge.y);
+  }
+  const outlet = blueprint.hydrology.bridges.find((bridge) => bridge.id === 'lake-outlet-farm-bridge');
+  assert.equal(outlet.shape, 'diagonal-band');
+  let outletDeckCells = 0;
+  for (let y = outlet.deckRect.yMin; y <= outlet.deckRect.yMax; y += 1) {
+    for (let x = outlet.deckRect.xMin; x <= outlet.deckRect.xMax; x += 1) {
+      if (cell(blueprint.layers.terrain, x, y) === outlet.surface) outletDeckCells += 1;
+    }
+  }
+  assert.equal(outletDeckCells, 19, 'farm bridge should read as a diagonal band instead of a square wood pad');
+});
+
+test('Silver Wallet outlet remains a visible blocked water corridor beside its farm bridge', () => {
+  const blueprint = readJson(BLUEPRINT_URL);
+  const outlet = blueprint.hydrology.waterways.find((waterway) => waterway.id === 'silver-wallet-outlet');
+  assert.ok(outlet);
+  const downstreamControlPoint = outlet.path.find(([x, y]) => x === 72 && y === 77);
+  assert.deepEqual(downstreamControlPoint, [72, 77]);
+  assert.equal(cell(blueprint.layers.terrain, 72, 77), 'W', 'farm plots must not erase the authored outlet river');
+  assert.equal(cell(blueprint.layers.groundNav, 72, 77), '#', 'visible deep outlet water must remain collision-backed');
+});
+
 test('Blueprint v3 art grammar covers every terrain code and every tile has prompt context', () => {
   const blueprint = readJson(BLUEPRINT_URL);
   const terrainCodes = new Set(rowsFor(blueprint.layers.terrain).join('').split(''));
