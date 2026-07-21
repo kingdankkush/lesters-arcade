@@ -199,6 +199,8 @@ DESERT_OUT = OUTPUT_ROOT
 SOURCE_MASK = OUTPUT_ROOT / "desert-approach-wang-v2-3-mask-source.png"
 RUNTIME_MATERIAL = OUTPUT_ROOT / "desert-approach-wang-v2-3-materials.png"
 RUNTIME_MASK = OUTPUT_ROOT / "desert-approach-wang-v2-3-masks.png"
+ROAD_SUPERTILE_ATLAS = OUTPUT_ROOT / "road-supertile-overlays-v1.png"
+BLUEPRINT_JSON = ROOT / "docs" / "game-design" / "data" / "hmh-level-1-world-blueprint-v3.json"
 TILE_W = 128
 TILE_H = 64
 ROLES = ("sand", "dirt", "rocky", "road")
@@ -364,9 +366,216 @@ def build_desert_approach_wang_runtime() -> dict:
     runtime_mask.save(RUNTIME_MASK, optimize=True)
     return {"status": "PASS", "materials": 16, "masks": 64, "colorsMax": colors_max, "materialAtlasBytes": RUNTIME_MATERIAL.stat().st_size, "maskAtlasBytes": RUNTIME_MASK.stat().st_size, "totalDecodedBytes": 1024 * 1024}
 
+
+ROAD_DIRECTION_BITS = {
+    (-1, 0): 1,
+    (1, 0): 2,
+    (0, -1): 4,
+    (0, 1): 8,
+    (-1, -1): 16,
+    (1, -1): 32,
+    (1, 1): 64,
+    (-1, 1): 128,
+}
+ROAD_DIRECTION_ENDPOINTS = {
+    1: (32, 16),
+    2: (96, 48),
+    4: (96, 16),
+    8: (32, 48),
+    16: (64, 0),
+    32: (127, 32),
+    64: (64, 63),
+    128: (0, 32),
+}
+ROAD_CARDINAL_EDGES = {
+    1: ((64, 0), (127, 32)),
+    2: ((127, 32), (64, 63)),
+    4: ((64, 63), (0, 32)),
+    8: ((0, 32), (64, 0)),
+}
+ROAD_STYLES = ("asphalt", "dirt")
+
+
+def bresenham(a: tuple[int, int], b: tuple[int, int]) -> list[tuple[int, int]]:
+    x0, y0 = a
+    x1, y1 = b
+    points: list[tuple[int, int]] = []
+    dx = abs(x1 - x0)
+    sx = 1 if x0 < x1 else -1
+    dy = -abs(y1 - y0)
+    sy = 1 if y0 < y1 else -1
+    error = dx + dy
+    while True:
+        points.append((x0, y0))
+        if (x0, y0) == (x1, y1):
+            return points
+        doubled = 2 * error
+        if doubled >= dy:
+            error += dy
+            x0 += sx
+        if doubled <= dx:
+            error += dx
+            y0 += sy
+
+
+def expand_control_points(control_points: list[list[int]]) -> list[tuple[int, int]]:
+    result: list[tuple[int, int]] = []
+    for index in range(len(control_points) - 1):
+        segment = bresenham(tuple(control_points[index]), tuple(control_points[index + 1]))
+        result.extend(segment if index == 0 else segment[1:])
+    return result
+
+
+def road_centerline_masks() -> tuple[list[int], dict[tuple[int, int], int]]:
+    if not BLUEPRINT_JSON.exists():
+        raise RuntimeError(f"road blueprint metadata is missing: {BLUEPRINT_JSON}")
+    blueprint = json.loads(BLUEPRINT_JSON.read_text(encoding="utf-8"))
+    directions_by_cell: dict[tuple[int, int], set[tuple[int, int]]] = {}
+    for path in blueprint["routePresentation"]["paths"]:
+        points = expand_control_points(path["controlPoints"])
+        for index, point in enumerate(points):
+            directions = directions_by_cell.setdefault(point, set())
+            neighbors = []
+            if index > 0:
+                neighbors.append(points[index - 1])
+            if index + 1 < len(points):
+                neighbors.append(points[index + 1])
+            for neighbor in neighbors:
+                directions.add((neighbor[0] - point[0], neighbor[1] - point[1]))
+    masks_by_cell = {
+        point: sum(ROAD_DIRECTION_BITS[direction] for direction in directions)
+        for point, directions in directions_by_cell.items()
+    }
+    masks = sorted(set(masks_by_cell.values()))
+    if len(masks) != 32:
+        raise RuntimeError(f"expected 32 authored road centerline masks, found {len(masks)}")
+    return masks, masks_by_cell
+
+
+def lattice_overlay(tile: Image.Image) -> Image.Image:
+    output = Image.new("RGBA", (TILE_W, TILE_H), (0, 0, 0, 0))
+    for offset_x, offset_y in LATTICE_SHIFTS:
+        shifted = Image.new("RGBA", (TILE_W, TILE_H), (0, 0, 0, 0))
+        shifted.alpha_composite(tile, (offset_x, offset_y))
+        output = Image.alpha_composite(output, shifted)
+    return output
+
+
+def road_shoulder_tile(bits: int, style: str) -> Image.Image:
+    tile = Image.new("RGBA", (TILE_W, TILE_H), (0, 0, 0, 0))
+    mask = Image.new("L", (TILE_W, TILE_H), 0)
+    mask_draw = ImageDraw.Draw(mask)
+    center = (64, 32)
+    for bit, edge in ROAD_CARDINAL_EDGES.items():
+        if not bits & bit:
+            continue
+        inner = [
+            (round(point[0] + (center[0] - point[0]) * 0.14), round(point[1] + (center[1] - point[1]) * 0.14))
+            for point in edge
+        ]
+        mask_draw.polygon([edge[0], edge[1], inner[1], inner[0]], fill=255)
+
+    palettes = {
+        "asphalt": ((125, 91, 57, 172), (78, 61, 46, 178), (171, 132, 78, 156)),
+        "dirt": ((139, 101, 62, 156), (91, 68, 49, 164), (181, 139, 82, 142)),
+    }
+    base, dark, light = palettes[style]
+    pixels = tile.load()
+    mask_pixels = mask.load()
+    salt = 71 if style == "asphalt" else 113
+    for y in range(TILE_H):
+        for x in range(TILE_W):
+            if not mask_pixels[x, y]:
+                continue
+            value = hash_cell(x, y, salt + bits * 17)
+            color = dark if value % 37 == 0 else light if value % 29 == 0 else base
+            pixels[x, y] = color
+
+    draw = ImageDraw.Draw(tile)
+    for bit, edge in ROAD_CARDINAL_EDGES.items():
+        if not bits & bit:
+            continue
+        inner = [
+            (round(point[0] + (center[0] - point[0]) * 0.14), round(point[1] + (center[1] - point[1]) * 0.14))
+            for point in edge
+        ]
+        draw.line((inner[0], inner[1]), fill=dark, width=1)
+    return lattice_overlay(tile)
+
+
+def lerp_pixel(a: tuple[int, int], b: tuple[int, int], amount: float) -> tuple[int, int]:
+    return (round(a[0] + (b[0] - a[0]) * amount), round(a[1] + (b[1] - a[1]) * amount))
+
+
+def road_marking_tile(mask: int, style: str) -> Image.Image:
+    tile = Image.new("RGBA", (TILE_W, TILE_H), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(tile)
+    center = (64, 32)
+    arm_count = sum(1 for bit in ROAD_DIRECTION_ENDPOINTS if mask & bit)
+    for bit, endpoint in ROAD_DIRECTION_ENDPOINTS.items():
+        if not mask & bit:
+            continue
+        if style == "asphalt":
+            draw.line((center, endpoint), fill=(30, 27, 25, 145), width=5)
+            inner = lerp_pixel(center, endpoint, 0.18 if arm_count <= 2 else 0.34)
+            dash_a = lerp_pixel(center, endpoint, 0.46)
+            dash_b = lerp_pixel(center, endpoint, 0.68)
+            outer = lerp_pixel(center, endpoint, 0.92)
+            paint = (221, 181, 72, 220)
+            draw.line((inner, dash_a), fill=paint, width=2)
+            draw.line((dash_b, outer), fill=paint, width=2)
+        else:
+            dx = endpoint[0] - center[0]
+            dy = endpoint[1] - center[1]
+            length = max(1.0, math.hypot(dx, dy))
+            ox = round(-dy / length * 3)
+            oy = round(dx / length * 3)
+            for sign in (-1, 1):
+                start = (center[0] + ox * sign, center[1] + oy * sign)
+                end = (endpoint[0] + ox * sign, endpoint[1] + oy * sign)
+                draw.line((start, end), fill=(74, 49, 34, 168), width=2)
+                highlight_start = lerp_pixel(start, end, 0.28)
+                highlight_end = lerp_pixel(start, end, 0.74)
+                draw.line((highlight_start, highlight_end), fill=(190, 140, 76, 125), width=1)
+    if arm_count >= 3:
+        fill = (72, 58, 39, 205) if style == "dirt" else (197, 157, 59, 205)
+        draw.rectangle((62, 30, 66, 34), fill=fill)
+    return lattice_overlay(tile)
+
+
+def build_road_supertile_runtime() -> dict:
+    OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
+    centerline_masks, masks_by_cell = road_centerline_masks()
+    atlas = Image.new("RGBA", (2048, 384), (0, 0, 0, 0))
+
+    def paste_at(index: int, tile: Image.Image) -> None:
+        atlas.alpha_composite(tile, ((index % 16) * TILE_W, (index // 16) * TILE_H))
+
+    for style_index, style in enumerate(ROAD_STYLES):
+        for bits in range(16):
+            paste_at(style_index * 16 + bits, road_shoulder_tile(bits, style))
+        for mask_index, mask in enumerate(centerline_masks):
+            paste_at(32 + style_index * len(centerline_masks) + mask_index, road_marking_tile(mask, style))
+
+    atlas.save(ROAD_SUPERTILE_ATLAS, optimize=True)
+    if atlas.size != (2048, 384) or len(centerline_masks) != 32:
+        raise RuntimeError("road supertile atlas certification failed")
+    return {
+        "status": "PASS",
+        "styles": len(ROAD_STYLES),
+        "shoulderMasks": 16,
+        "centerlineMasks": len(centerline_masks),
+        "centerlineCells": len(masks_by_cell),
+        "atlasBytes": ROAD_SUPERTILE_ATLAS.stat().st_size,
+        "atlasDecodedBytes": 2048 * 384 * 4,
+    }
+
 def main() -> None:
     if "--desert-wang-only" in sys.argv:
         print(json.dumps(build_desert_approach_wang_runtime(), indent=2))
+        return
+    if "--road-supertiles-only" in sys.argv:
+        print(json.dumps(build_road_supertile_runtime(), indent=2))
         return
     OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
     assets = []
@@ -397,7 +606,8 @@ def main() -> None:
     write_manifest(assets)
     write_contact_sheet(assets)
     desert = build_desert_approach_wang_runtime()
-    print(json.dumps({"assets": len(assets), "manifest": str(MANIFEST_JSON), "contactSheet": str(CONTACT_SHEET), "desertApproach": desert}, indent=2))
+    roads = build_road_supertile_runtime()
+    print(json.dumps({"assets": len(assets), "manifest": str(MANIFEST_JSON), "contactSheet": str(CONTACT_SHEET), "desertApproach": desert, "roadSupertiles": roads}, indent=2))
 
 
 if __name__ == "__main__":

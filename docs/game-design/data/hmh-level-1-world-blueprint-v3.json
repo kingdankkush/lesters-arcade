@@ -204,6 +204,220 @@
       "rejoin": "frontier-town-square"
     }
   ],
+  "routePresentation": {
+    "authority": "visual-only; collision and traversal remain authored layer contracts",
+    "centerlineModel": "expanded authored control points with merged eight-direction junctions",
+    "paths": [
+      {
+        "id": "main-spine",
+        "routeCode": "M",
+        "style": "asphalt",
+        "radius": 2,
+        "controlPoints": [
+          [
+            8,
+            78
+          ],
+          [
+            15,
+            72
+          ],
+          [
+            23,
+            66
+          ],
+          [
+            31,
+            60
+          ],
+          [
+            39,
+            52
+          ],
+          [
+            46,
+            47
+          ],
+          [
+            56,
+            45
+          ],
+          [
+            66,
+            49
+          ],
+          [
+            73,
+            52
+          ],
+          [
+            81,
+            44
+          ],
+          [
+            87,
+            35
+          ],
+          [
+            93,
+            39
+          ]
+        ]
+      },
+      {
+        "id": "north-adventure-loop",
+        "routeCode": "N",
+        "style": "dirt",
+        "radius": 1,
+        "controlPoints": [
+          [
+            24,
+            65
+          ],
+          [
+            20,
+            57
+          ],
+          [
+            18,
+            48
+          ],
+          [
+            20,
+            38
+          ],
+          [
+            27,
+            29
+          ],
+          [
+            38,
+            20
+          ],
+          [
+            48,
+            29
+          ],
+          [
+            54,
+            42
+          ],
+          [
+            57,
+            45
+          ]
+        ]
+      },
+      {
+        "id": "south-adventure-loop",
+        "routeCode": "S",
+        "style": "dirt",
+        "radius": 1,
+        "controlPoints": [
+          [
+            29,
+            62
+          ],
+          [
+            34,
+            70
+          ],
+          [
+            40,
+            77
+          ],
+          [
+            50,
+            80
+          ],
+          [
+            60,
+            77
+          ],
+          [
+            69,
+            76
+          ],
+          [
+            79,
+            82
+          ],
+          [
+            86,
+            75
+          ],
+          [
+            82,
+            62
+          ],
+          [
+            73,
+            52
+          ]
+        ]
+      },
+      {
+        "id": "coastal-spur",
+        "routeCode": "S",
+        "style": "dirt",
+        "radius": 1,
+        "controlPoints": [
+          [
+            70,
+            76
+          ],
+          [
+            76,
+            80
+          ],
+          [
+            82,
+            82
+          ],
+          [
+            88,
+            78
+          ],
+          [
+            91,
+            70
+          ]
+        ]
+      },
+      {
+        "id": "frontier-town-east-west",
+        "routeCode": "T",
+        "style": "asphalt",
+        "radius": 2,
+        "controlPoints": [
+          [
+            65,
+            51
+          ],
+          [
+            79,
+            51
+          ]
+        ]
+      },
+      {
+        "id": "frontier-town-north-south",
+        "routeCode": "T",
+        "style": "asphalt",
+        "radius": 2,
+        "controlPoints": [
+          [
+            72,
+            43
+          ],
+          [
+            72,
+            59
+          ]
+        ]
+      }
+    ]
+  },
   "pointsOfInterest": [
     {
       "id": "ghost-saloon-square",

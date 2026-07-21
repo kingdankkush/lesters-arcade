@@ -75,13 +75,6 @@ PROMPTS: list[dict[str, Any]] = [
         "description": "isometric T-junction road tile, readable side-route branching piece for the district road network, worn asphalt, no text, no logos",
     },
     {
-        "job_key": f"{SET_NAME}/road-crossroad",
-        "slug": "road-crossroad",
-        "width": 256,
-        "height": 256,
-        "description": "isometric four-way road intersection tile, readable crossroads for the Crypto Wasteland district map, faded paint and curb logic, no text",
-    },
-    {
         "job_key": f"{SET_NAME}/road-cap-end",
         "slug": "road-cap-end",
         "width": 256,

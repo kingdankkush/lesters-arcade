@@ -48,18 +48,7 @@
       "created_at": 1781216122.8706021,
       "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\crypto-wasteland\\road-tjunction.png"
     },
-    "crypto-wasteland/road-crossroad": {
-      "job_key": "crypto-wasteland/road-crossroad",
-      "set": "crypto-wasteland",
-      "slug": "road-crossroad",
-      "width": 256,
-      "height": 256,
-      "id": "50df79cb-46e5-451c-976b-4591ed909876",
-      "status": "downloaded",
-      "raw_create_response": "id: 50df79cb-46e5-451c-976b-4591ed909876\ndescription: isometric four-way road intersection tile, readable crossroads for the Crypto Wasteland district map, faded paint and curb logic, no text; isometric pixel art for Hard Money Heroes, retro arcade readability, crisp silhouette, limited SNES/Neo-Geo palette, transparent background, match the existing Crypto Wasteland district belts and scene-template language; no words, no letters, no numbers, no readable labels, no logos, no watermark\nsize: 256x256px\nview: high top-down\nmode: basic\nstatus: processing (~30-90s)\n\nwarning: auto-deletes after 8 hours\nhint: get_map_object(object_id=\"50df79cb-46e5-451c-976b-4591ed909876\")",
-      "created_at": 1781216141.053314,
-      "path": "apps\\portal\\assets\\generated\\hmh-coherent-world\\crypto-wasteland\\road-crossroad.png"
-    },
+
     "crypto-wasteland/road-cap-end": {
       "job_key": "crypto-wasteland/road-cap-end",
       "set": "crypto-wasteland",

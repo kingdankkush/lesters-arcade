@@ -29,6 +29,8 @@ import { levelOneWorldV3MaterialByKey } from '../assets/generated/hmh-level-one-
 import {
   desertApproachRuntimeAtlasAssets,
   desertApproachRuntimeGroundAssetForCell,
+  roadSupertilePresentationForCell,
+  roadSupertileRuntimeAtlasAssets,
 } from './hmh-terrain-presentation.mjs';
 
 const CONNECTIVE_ZONE_ID = 'connective-scrub';
@@ -391,6 +393,7 @@ function buildWorldV3GroundPlan(seed) {
   const worldBounds = levelOneWorldV3WorldBounds();
   const zoneCache = new Map();
   const terrainCellCache = new Map();
+  const roadPresentationCache = new Map();
   let terrainCellCacheHits = 0;
   let terrainCellCacheMisses = 0;
   const keyFor = (worldX, worldY) => `${Math.round(Number(worldX) || 0)}|${Math.round(Number(worldY) || 0)}`;
@@ -453,8 +456,16 @@ function buildWorldV3GroundPlan(seed) {
     renderAssetForCell(cell) {
       return desertApproachRuntimeGroundAssetForCell(cell, { seed });
     },
+    roadPresentationForCell(cell) {
+      if (!cell) return null;
+      const key = keyFor(cell?.x ?? cell?.worldX, cell?.y ?? cell?.worldY);
+      if (roadPresentationCache.has(key)) return roadPresentationCache.get(key);
+      const presentation = roadSupertilePresentationForCell(cell);
+      roadPresentationCache.set(key, presentation);
+      return presentation;
+    },
     runtimeAtlasAssets() {
-      return desertApproachRuntimeAtlasAssets();
+      return Object.freeze([...desertApproachRuntimeAtlasAssets(), ...roadSupertileRuntimeAtlasAssets()]);
     },
     textureKeys() {
       return Object.freeze(HMH_LEVEL_ONE_WORLD_V3.terrainFamilies.map((family) => family.materialKey));

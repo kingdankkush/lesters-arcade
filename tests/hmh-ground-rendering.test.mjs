@@ -86,6 +86,14 @@ test('roguelike ground pass batches diamonds by texture key and fills world-anch
   assert.match(body, /groundPlanPatternForGroup\(/);
   assert.match(body, /textureGroups\.get\(groupKey\)/);
   assert.match(body, /ctx\.fill\(group\.path\)/);
+  assert.match(body, /const roadSupertileGroups = new Map\(\)/);
+  assert.match(body, /plan\.roadPresentationForCell\?\.\(terrainCell\)/);
+  assert.match(body, /for \(const roadAsset of \[roadPresentation\?\.shoulder, roadPresentation\?\.marking\]\)/);
+  assert.match(body, /roadSupertileGroups\.get\(roadKey\)/);
+  assert.match(body, /terrainPresentationStats\.roadShoulderCells/);
+  assert.match(body, /terrainPresentationStats\.roadMarkingCells/);
+  assert.match(body, /for \(const group of roadSupertileGroups\.values\(\)\)/);
+  assert.doesNotMatch(body, /drawImage\([^)]*roadPresentation/);
 });
 
 test('drawProductionIsoTile no longer performs per-tile texture lookup or edge breakup for the roguelike path', () => {

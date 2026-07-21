@@ -1,3 +1,5 @@
+import { HMH_LEVEL_ONE_WORLD_V3 } from './hmh-level-one-world-v3-runtime.mjs';
+
 export const TERRAIN_PRESENTATION_OVERLAY_ORDER = Object.freeze([
   'terrain-shadow',
   'water-flow',
@@ -411,5 +413,196 @@ export function desertApproachRuntimeGroundAssetForCell(cell = {}, { seed = 0 } 
     handledDirections: wangComposite.handledDirections,
     renderLayers: 2,
     wangComposite,
+  });
+}
+
+const ROAD_SUPERTILE_SRC = './assets/generated/hmh-level-one-world-v3/materials/road-supertile-overlays-v1.png';
+const ROAD_SUPERTILE_TILE_WIDTH = 128;
+const ROAD_SUPERTILE_TILE_HEIGHT = 64;
+const ROAD_SUPERTILE_COLUMNS = 16;
+const ROAD_SUPERTILE_STYLES = Object.freeze(['asphalt', 'dirt']);
+const ROAD_ROUTE_CODES = new Set(['M', 'N', 'S', 'T', 'B']);
+const ROAD_DRAWABLE_ROUTE_CODES = new Set(['M', 'N', 'S', 'T']);
+const ROAD_CARDINAL_BITS = Object.freeze({ north: 1, east: 2, south: 4, west: 8 });
+const ROAD_DIRECTION_BITS = new Map([
+  ['-1|0', 1],
+  ['1|0', 2],
+  ['0|-1', 4],
+  ['0|1', 8],
+  ['-1|-1', 16],
+  ['1|-1', 32],
+  ['1|1', 64],
+  ['-1|1', 128],
+]);
+
+function roadBresenham(a, b) {
+  let x0 = Number(a?.[0]) || 0;
+  let y0 = Number(a?.[1]) || 0;
+  const x1 = Number(b?.[0]) || 0;
+  const y1 = Number(b?.[1]) || 0;
+  const points = [];
+  const dx = Math.abs(x1 - x0);
+  const sx = x0 < x1 ? 1 : -1;
+  const dy = -Math.abs(y1 - y0);
+  const sy = y0 < y1 ? 1 : -1;
+  let error = dx + dy;
+  while (true) {
+    points.push([x0, y0]);
+    if (x0 === x1 && y0 === y1) return points;
+    const doubled = error * 2;
+    if (doubled >= dy) {
+      error += dy;
+      x0 += sx;
+    }
+    if (doubled <= dx) {
+      error += dx;
+      y0 += sy;
+    }
+  }
+}
+
+function expandedRoadControlPoints(controlPoints = []) {
+  const points = [];
+  for (let index = 0; index < controlPoints.length - 1; index += 1) {
+    const segment = roadBresenham(controlPoints[index], controlPoints[index + 1]);
+    points.push(...(index === 0 ? segment : segment.slice(1)));
+  }
+  return points;
+}
+
+function buildRoadCenterlineLookup() {
+  const directionsByCell = new Map();
+  for (const path of HMH_LEVEL_ONE_WORLD_V3.routePresentation?.paths ?? []) {
+    const points = expandedRoadControlPoints(path.controlPoints);
+    for (let index = 0; index < points.length; index += 1) {
+      const [x, y] = points[index];
+      const key = `${x}|${y}`;
+      let directions = directionsByCell.get(key);
+      if (!directions) {
+        directions = new Set();
+        directionsByCell.set(key, directions);
+      }
+      const neighbors = [];
+      if (index > 0) neighbors.push(points[index - 1]);
+      if (index + 1 < points.length) neighbors.push(points[index + 1]);
+      for (const [neighborX, neighborY] of neighbors) directions.add(`${neighborX - x}|${neighborY - y}`);
+    }
+  }
+  return new Map([...directionsByCell].map(([key, directions]) => [
+    key,
+    [...directions].reduce((mask, direction) => mask | (ROAD_DIRECTION_BITS.get(direction) ?? 0), 0),
+  ]));
+}
+
+const ROAD_CENTERLINE_MASK_BY_AUTHORED_CELL = buildRoadCenterlineLookup();
+const ROAD_CENTERLINE_MASKS = Object.freeze([...new Set(ROAD_CENTERLINE_MASK_BY_AUTHORED_CELL.values())].sort((a, b) => a - b));
+const ROAD_CENTERLINE_MASK_INDEX = new Map(ROAD_CENTERLINE_MASKS.map((mask, index) => [mask, index]));
+const ROAD_SUPERTILE_ATLAS = Object.freeze({
+  key: 'road-supertiles-v1/runtime-atlas',
+  src: ROAD_SUPERTILE_SRC,
+  width: 2048,
+  height: 384,
+  decodedBytes: 2048 * 384 * 4,
+  sampling: 'nearest-neighbor',
+});
+
+export const HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME = Object.freeze({
+  id: 'hmh-level-one-road-supertiles-v1',
+  status: 'runtime-ready-authored-centerlines',
+  tileSourceSize: Object.freeze([ROAD_SUPERTILE_TILE_WIDTH, ROAD_SUPERTILE_TILE_HEIGHT]),
+  logicalFootprint: Object.freeze([64, 32]),
+  styles: ROAD_SUPERTILE_STYLES,
+  shoulderMasks: 16,
+  centerlineMasks: ROAD_CENTERLINE_MASKS.length,
+  centerlineCells: ROAD_CENTERLINE_MASK_BY_AUTHORED_CELL.size,
+  atlas: ROAD_SUPERTILE_ATLAS,
+  performance: Object.freeze({
+    atlasCount: 1,
+    maxOverlayLayersPerCell: 2,
+    maxPatternCanvases: 16 * ROAD_SUPERTILE_STYLES.length + ROAD_CENTERLINE_MASKS.length * ROAD_SUPERTILE_STYLES.length,
+    atlasDecodedBytes: ROAD_SUPERTILE_ATLAS.decodedBytes,
+  }),
+  authority: 'visual-only; collision, traversal, elevation, and route truth remain authored metadata',
+});
+
+function roadAtlasAsset(kind, style, mask, atlasIndex) {
+  return Object.freeze({
+    key: `road-supertiles-v1/${style}/${kind}-${mask}`,
+    role: 'road-overlay',
+    style,
+    kind,
+    mask,
+    src: ROAD_SUPERTILE_SRC,
+    width: ROAD_SUPERTILE_TILE_WIDTH,
+    height: ROAD_SUPERTILE_TILE_HEIGHT,
+    atlasRect: Object.freeze({
+      x: (atlasIndex % ROAD_SUPERTILE_COLUMNS) * ROAD_SUPERTILE_TILE_WIDTH,
+      y: Math.floor(atlasIndex / ROAD_SUPERTILE_COLUMNS) * ROAD_SUPERTILE_TILE_HEIGHT,
+      width: ROAD_SUPERTILE_TILE_WIDTH,
+      height: ROAD_SUPERTILE_TILE_HEIGHT,
+    }),
+    sampling: 'nearest-neighbor',
+  });
+}
+
+const ROAD_SHOULDER_ASSETS = Object.freeze(ROAD_SUPERTILE_STYLES.map((style, styleIndex) => Object.freeze(
+  Array.from({ length: 16 }, (_, edgeBits) => roadAtlasAsset('shoulder', style, edgeBits, styleIndex * 16 + edgeBits)),
+)));
+const ROAD_MARKING_ASSETS = Object.freeze(ROAD_SUPERTILE_STYLES.map((style, styleIndex) => Object.freeze(
+  ROAD_CENTERLINE_MASKS.map((mask, maskIndex) => roadAtlasAsset(
+    'marking',
+    style,
+    mask,
+    32 + styleIndex * ROAD_CENTERLINE_MASKS.length + maskIndex,
+  )),
+)));
+
+function roadStyleForCell(cell) {
+  const route = String(cell?.route ?? '.');
+  if (route === 'M' || route === 'T' || cell?.terrain === 'A') return 'asphalt';
+  if (route === 'N' || route === 'S') return 'dirt';
+  return null;
+}
+
+export function roadSupertileRuntimeAtlasAssets() {
+  return Object.freeze([ROAD_SUPERTILE_ATLAS]);
+}
+
+export function roadSupertilePresentationForCell(cell = {}) {
+  if (!cell) return null;
+  const route = String(cell.route ?? '.');
+  if (!ROAD_DRAWABLE_ROUTE_CODES.has(route) || cell.isBridge || cell.isWater || cell.blocked || cell.groundNav === '#') return null;
+  const style = roadStyleForCell(cell);
+  if (!style) return null;
+  const styleIndex = ROAD_SUPERTILE_STYLES.indexOf(style);
+  let edgeBits = 0;
+  const cardinal = cell.adjacency?.cardinal ?? {};
+  for (const [direction, bit] of Object.entries(ROAD_CARDINAL_BITS)) {
+    if (!ROAD_ROUTE_CODES.has(String(cardinal[direction]?.route ?? '.'))) edgeBits |= bit;
+  }
+
+  const authoredX = Number.isFinite(Number(cell.authoredX))
+    ? Math.round(Number(cell.authoredX))
+    : Math.round(Number(cell.x ?? cell.worldX) || 0) + HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.x;
+  const authoredY = Number.isFinite(Number(cell.authoredY))
+    ? Math.round(Number(cell.authoredY))
+    : Math.round(Number(cell.y ?? cell.worldY) || 0) + HMH_LEVEL_ONE_WORLD_V3.anchors.spawn.y;
+  const centerlineMask = ROAD_CENTERLINE_MASK_BY_AUTHORED_CELL.get(`${authoredX}|${authoredY}`) ?? 0;
+  const centerlineIndex = ROAD_CENTERLINE_MASK_INDEX.get(centerlineMask);
+  const shoulder = edgeBits > 0
+    ? ROAD_SHOULDER_ASSETS[styleIndex][edgeBits]
+    : null;
+  const marking = Number.isInteger(centerlineIndex)
+    ? ROAD_MARKING_ASSETS[styleIndex][centerlineIndex]
+    : null;
+  if (!shoulder && !marking) return null;
+  return Object.freeze({
+    style,
+    route,
+    edgeBits,
+    centerlineMask,
+    shoulder,
+    marking,
+    renderLayers: Number(Boolean(shoulder)) + Number(Boolean(marking)),
   });
 }

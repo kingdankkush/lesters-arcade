@@ -11045,6 +11045,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   const plan = getCombatGroundPlan();
   const textureGroups = new Map();
   const terrainEdgeBlendGroups = new Map();
+  const roadSupertileGroups = new Map();
   const terrainPresentationPaths = new Map();
   const terrainPresentationStats = {
     cellCount: 0,
@@ -11055,6 +11056,8 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     elevationLightingCells: 0,
     castShadowCells: 0,
     edgeBlendStrips: 0,
+    roadShoulderCells: 0,
+    roadMarkingCells: 0,
   };
   const missingTextureTiles = [];
   const cameraAnchor = groundPatternAnchorForOrigin(isoToScreen(0, 0));
@@ -11166,6 +11169,21 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
       addEdgeStrip(blendGroup.path, tile, edgeBlend.direction, edgeBlend.inset, terrainPresentation.elevationPx);
       terrainPresentationStats.edgeBlendStrips += 1;
     }
+    const roadPresentation = plan.roadPresentationForCell?.(terrainCell) ?? null;
+    for (const roadAsset of [roadPresentation?.shoulder, roadPresentation?.marking]) {
+      if (!roadAsset) continue;
+      const roadImage = sbsGroundTileImage(roadAsset);
+      if (!imageReady(roadImage)) continue;
+      const roadKey = `${roadAsset.key}|${terrainPresentation.elevationPx}`;
+      let roadGroup = roadSupertileGroups.get(roadKey);
+      if (!roadGroup) {
+        roadGroup = { asset: roadAsset, image: roadImage, path: new Path2D(), elevationPx: terrainPresentation.elevationPx };
+        roadSupertileGroups.set(roadKey, roadGroup);
+      }
+      addDiamond(roadGroup.path, tile, terrainPresentation.elevationPx);
+      if (roadAsset.kind === 'shoulder') terrainPresentationStats.roadShoulderCells += 1;
+      if (roadAsset.kind === 'marking') terrainPresentationStats.roadMarkingCells += 1;
+    }
     terrainPresentationStats.cellCount += 1;
     for (const overlay of terrainPresentation.overlays) {
       terrainPresentationStats.overlayIds.add(overlay.id);
@@ -11201,6 +11219,19 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
     ctx.restore();
   }
 
+  for (const group of roadSupertileGroups.values()) {
+    const pattern = groundPlanPatternForGroup(ctx, group);
+    if (!pattern) continue;
+    if (typeof DOMMatrix !== 'undefined' && typeof pattern.setTransform === 'function') {
+      pattern.setTransform(new DOMMatrix().translate(cameraAnchor.x, cameraAnchor.y + group.elevationPx));
+    }
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = pattern;
+    ctx.fill(group.path);
+    ctx.restore();
+  }
+
   for (const [overlayId, overlayEntry] of terrainPresentationPaths.entries()) {
     const alpha = overlayEntry.count ? Math.max(0, Math.min(1, overlayEntry.alphaSum / overlayEntry.count)) : 0;
     if (alpha <= 0) continue;
@@ -11223,6 +11254,7 @@ function drawGroundPlanPatternTiles(ctx, visibleTiles) {
   combat.groundRenderStats = {
     passMs: typeof performance !== 'undefined' ? performance.now() - groundPassStartedAt : 0,
     groupCount: textureGroups.size,
+    roadGroupCount: roadSupertileGroups.size,
     cacheSize: cacheStats.size,
     cacheHits: cacheStats.hits,
     cacheMisses: cacheStats.misses,

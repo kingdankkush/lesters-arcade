@@ -153611,15 +153611,7 @@
     "groupId": "roads-paths",
     "layer": "roads-paths"
   },
-  {
-    "key": "runtime/generated/hmh-coherent-world/crypto-wasteland/road-crossroad",
-    "label": "Crypto Wasteland Road Crossroad",
-    "src": "./assets/generated/hmh-coherent-world/crypto-wasteland/road-crossroad.png",
-    "source": "generated/hmh-coherent-world/crypto-wasteland",
-    "role": "level road/path tile",
-    "groupId": "roads-paths",
-    "layer": "roads-paths"
-  },
+
   {
     "key": "runtime/generated/hmh-coherent-world/crypto-wasteland/road-straight",
     "label": "Crypto Wasteland Road Straight",

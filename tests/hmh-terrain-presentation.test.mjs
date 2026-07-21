@@ -9,9 +9,12 @@ import {
   summarizeTerrainPresentation,
   TERRAIN_PRESENTATION_OVERLAY_ORDER,
   HMH_DESERT_APPROACH_WANG_RUNTIME,
+  HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME,
   desertApproachRuntimeAtlasAssets,
   desertApproachRuntimeGroundAssetForCell,
   desertApproachRuntimeRoleForCell,
+  roadSupertilePresentationForCell,
+  roadSupertileRuntimeAtlasAssets,
 } from '../apps/portal/src/hmh-terrain-presentation.mjs';
 
 test('terrain edge blends use neighboring material truth without softening bridge decks', () => {
@@ -245,7 +248,7 @@ test('live World v3 plan exposes the scoped Desert Approach adapter without repl
   const plan = buildGroundPlan({ seed: 1337 });
   assert.equal(typeof plan.renderAssetForCell, 'function');
   assert.equal(typeof plan.runtimeAtlasAssets, 'function');
-  assert.equal(plan.runtimeAtlasAssets().length, 2);
+  assert.equal(plan.runtimeAtlasAssets().length, 3);
 
   const found = new Map();
   for (let x = plan.worldBounds.minX; x <= plan.worldBounds.maxX && found.size < 5; x += 1) {
@@ -318,4 +321,124 @@ test('Desert Approach runtime source, tests, and generator are explicit syntax-g
   assert.match(syntaxSource, /apps\/portal\/src\/hmh-terrain-presentation\.mjs/);
   assert.match(syntaxSource, /tests\/hmh-terrain-presentation\.test\.mjs/);
   assert.match(syntaxSource, /scripts\/build-hmh-level-one-world-v3-materials\.py/);
+});
+
+test('Level 1 road supertiles ship one bounded nearest-neighbor overlay atlas', () => {
+  const manifest = HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME;
+  assert.equal(manifest.id, 'hmh-level-one-road-supertiles-v1');
+  assert.equal(manifest.status, 'runtime-ready-authored-centerlines');
+  assert.deepEqual(manifest.tileSourceSize, [128, 64]);
+  assert.deepEqual(manifest.styles, ['asphalt', 'dirt']);
+  assert.equal(manifest.shoulderMasks, 16);
+  assert.equal(manifest.centerlineMasks, 32);
+  assert.equal(manifest.atlas.width, 2048);
+  assert.equal(manifest.atlas.height, 384);
+  assert.equal(manifest.performance.atlasCount, 1);
+  assert.equal(manifest.performance.maxOverlayLayersPerCell, 2);
+  assert.equal(manifest.performance.maxPatternCanvases, 96);
+  assert.equal(manifest.performance.atlasDecodedBytes, 3_145_728);
+  assert.equal(repoAssetExists(manifest.atlas.src), true);
+  const atlasBytes = readFileSync(new URL(`../apps/portal/${manifest.atlas.src.replace(/^\.\//, '')}`, import.meta.url));
+  assert.equal(atlasBytes.readUInt32BE(16), 2048, 'PNG header width must match the runtime crop contract');
+  assert.equal(atlasBytes.readUInt32BE(20), 384, 'PNG header height must match the runtime crop contract');
+  assert.deepEqual(roadSupertileRuntimeAtlasAssets(), [manifest.atlas]);
+});
+
+test('road supertile selector maps exposed route edges without altering broad route interiors', () => {
+  const active = { route: 'M' };
+  const inactive = { route: '.' };
+  const cell = {
+    x: 999,
+    y: 999,
+    terrain: 'A',
+    terrainRole: 'road',
+    route: 'M',
+    groundNav: '.',
+    isBridge: false,
+    isWater: false,
+    adjacency: { cardinal: { north: inactive, east: active, south: active, west: active } },
+  };
+  const exposed = roadSupertilePresentationForCell(cell);
+  assert.equal(exposed.style, 'asphalt');
+  assert.equal(exposed.edgeBits, 1);
+  assert.equal(exposed.shoulder.atlasRect.x, 128);
+  assert.equal(exposed.shoulder.atlasRect.y, 0);
+  assert.equal(exposed.marking, null);
+  assert.equal(exposed.renderLayers, 1);
+
+  const interior = roadSupertilePresentationForCell({
+    ...cell,
+    adjacency: { cardinal: { north: active, east: active, south: active, west: active } },
+  });
+  assert.equal(interior, null, 'unmarked broad route interiors stay on the base material without extra draws');
+});
+
+test('authored road centerlines add directional paint while bridges and blocked water remain untouched', () => {
+  const plan = buildGroundPlan({ seed: 1337 });
+  assert.equal(typeof plan.roadPresentationForCell, 'function');
+  assert.equal(plan.runtimeAtlasAssets().length, 3);
+  assert.equal(plan.roadPresentationForCell(null), null);
+
+  const spawnCell = plan.cellAt(0, 0);
+  const spawnRoad = plan.roadPresentationForCell(spawnCell);
+  assert.ok(spawnRoad?.marking, 'authored main-spine spawn cell should carry directional paint');
+  assert.equal(plan.roadPresentationForCell(spawnCell), spawnRoad, 'road presentation should be cached by authored cell');
+  assert.equal(spawnRoad.style, 'asphalt');
+  assert.ok(spawnRoad.centerlineMask > 0);
+  assert.ok(spawnRoad.renderLayers >= 1 && spawnRoad.renderLayers <= 2);
+
+  const bridge = plan.cellAt(27, -39);
+  assert.equal(bridge.isBridge, true);
+  assert.equal(plan.roadPresentationForCell(bridge), null);
+
+  let blockedRouteWater = null;
+  let shoulderOnly = null;
+  for (let y = plan.worldBounds.minY; y <= plan.worldBounds.maxY; y += 1) {
+    for (let x = plan.worldBounds.minX; x <= plan.worldBounds.maxX; x += 1) {
+      const candidate = plan.cellAt(x, y);
+      if (!blockedRouteWater && candidate.isWater && candidate.route !== '.') blockedRouteWater = candidate;
+      const presentation = plan.roadPresentationForCell(candidate);
+      if (!shoulderOnly && presentation?.shoulder && !presentation.marking) shoulderOnly = presentation;
+    }
+  }
+  assert.ok(blockedRouteWater, 'fixture should include authored routes beneath blocked water');
+  assert.equal(plan.roadPresentationForCell(blockedRouteWater), null);
+  assert.ok(shoulderOnly, 'broad authored routes should expose dedicated shoulder-only cells');
+  assert.equal(shoulderOnly.renderLayers, 1);
+});
+
+test('full authored road network stays inside overlay and cropped-canvas budgets', () => {
+  const plan = buildGroundPlan({ seed: 1337 });
+  const keys = new Set();
+  let presentedCells = 0;
+  let shoulderCells = 0;
+  let markingCells = 0;
+  let maxLayers = 0;
+  for (let y = plan.worldBounds.minY; y <= plan.worldBounds.maxY; y += 1) {
+    for (let x = plan.worldBounds.minX; x <= plan.worldBounds.maxX; x += 1) {
+      const presentation = plan.roadPresentationForCell(plan.cellAt(x, y));
+      if (!presentation) continue;
+      presentedCells += 1;
+      maxLayers = Math.max(maxLayers, presentation.renderLayers);
+      for (const asset of [presentation.shoulder, presentation.marking]) {
+        if (!asset) continue;
+        assert.equal(asset.atlasRect.width, 128);
+        assert.equal(asset.atlasRect.height, 64);
+        assert.equal(asset.atlasRect.x % 128, 0);
+        assert.equal(asset.atlasRect.y % 64, 0);
+        assert.ok(asset.atlasRect.x + asset.atlasRect.width <= HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME.atlas.width);
+        assert.ok(asset.atlasRect.y + asset.atlasRect.height <= HMH_LEVEL_ONE_ROAD_SUPERTILE_RUNTIME.atlas.height);
+        keys.add(asset.key);
+        if (asset.kind === 'shoulder') shoulderCells += 1;
+        if (asset.kind === 'marking') markingCells += 1;
+      }
+    }
+  }
+  const croppedCanvasBytes = keys.size * 128 * 64 * 4;
+  assert.equal(presentedCells, 740);
+  assert.equal(shoulderCells, 480);
+  assert.equal(markingCells, 263);
+  assert.equal(maxLayers, 2);
+  assert.ok(keys.size <= 64, `road runtime created ${keys.size} unique overlay patterns`);
+  assert.ok(croppedCanvasBytes <= 2 * 1024 * 1024, `road crop cache needs ${croppedCanvasBytes} bytes`);
 });

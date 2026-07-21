@@ -287,6 +287,8 @@ def build_layers() -> tuple[dict[str, list[list[str]]], dict]:
     north_loop = [(24, 65), (20, 57), (18, 48), (20, 38), (27, 29), (38, 20), (48, 29), (54, 42), (57, 45)]
     south_loop = [(29, 62), (34, 70), (40, 77), (50, 80), (60, 77), (69, 76), (79, 82), (86, 75), (82, 62), (73, 52)]
     coastal_path = [(70, 76), (76, 80), (82, 82), (88, 78), (91, 70)]
+    frontier_town_east_west = [(65, 51), (79, 51)]
+    frontier_town_north_south = [(72, 43), (72, 59)]
 
     road_specs = [
         (main_spine, "A", "M", 2),
@@ -432,6 +434,14 @@ def build_layers() -> tuple[dict[str, list[list[str]]], dict]:
         "pointsOfInterest": points_of_interest,
         "criticalPath": critical_path,
         "paths": {"mainSpine": main_spine, "northAdventureLoop": north_loop, "southAdventureLoop": south_loop, "coastalSpur": coastal_path},
+        "routePresentation": [
+            {"id": "main-spine", "routeCode": "M", "style": "asphalt", "radius": 2, "controlPoints": main_spine},
+            {"id": "north-adventure-loop", "routeCode": "N", "style": "dirt", "radius": 1, "controlPoints": north_loop},
+            {"id": "south-adventure-loop", "routeCode": "S", "style": "dirt", "radius": 1, "controlPoints": south_loop},
+            {"id": "coastal-spur", "routeCode": "S", "style": "dirt", "radius": 1, "controlPoints": coastal_path},
+            {"id": "frontier-town-east-west", "routeCode": "T", "style": "asphalt", "radius": 2, "controlPoints": frontier_town_east_west},
+            {"id": "frontier-town-north-south", "routeCode": "T", "style": "asphalt", "radius": 2, "controlPoints": frontier_town_north_south},
+        ],
     }
     return layers, metadata
 
@@ -484,6 +494,11 @@ def build_blueprint(layers: dict[str, list[list[str]]], metadata: dict) -> dict:
             {"id": "north-adventure-loop", "title": "Pine Shadow and Mesa Loop", "path": metadata["paths"]["northAdventureLoop"], "risk": "tight forest ambushes and ridge ranged pressure", "rejoin": "crossroads-trading-post"},
             {"id": "south-adventure-loop", "title": "Hashrate, Farm, and Coast Loop", "path": metadata["paths"]["southAdventureLoop"], "risk": "open swarm fields, outlet chokepoint, and coastal mini-boss", "rejoin": "frontier-town-square"},
         ],
+        "routePresentation": {
+            "authority": "visual-only; collision and traversal remain authored layer contracts",
+            "centerlineModel": "expanded authored control points with merged eight-direction junctions",
+            "paths": metadata["routePresentation"],
+        },
         "pointsOfInterest": metadata["pointsOfInterest"],
         "hydrology": {
             "model": "two mountain tributaries feed Silver Wallet Lake; one outlet descends through farms and coast into the southern sea",

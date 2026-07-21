@@ -55,6 +55,7 @@ def runtime_payload(blueprint: dict) -> dict:
         "projection": blueprint["projection"],
         "anchors": blueprint["anchors"],
         "criticalPath": blueprint["criticalPath"],
+        "routePresentation": blueprint["routePresentation"],
         "pointsOfInterest": blueprint["pointsOfInterest"],
         "bridges": blueprint["hydrology"]["bridges"],
         "terrainFamilies": terrain_families,
