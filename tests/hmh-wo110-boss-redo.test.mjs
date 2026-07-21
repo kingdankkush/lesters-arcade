@@ -17,8 +17,11 @@ function assertAssetExists(asset) {
   assert.equal(existsSync(new URL(`../${relative}`, import.meta.url)), true, `${asset.key} should exist at ${relative}`);
 }
 
-test('WO-110 boss redo ships true-scale phase forms in the 192-256px range', () => {
-  assert.equal(HMH_WO110_BOSS_REDO.id, 'hmh-wo110-boss-redo-v1');
+test('WO-110 boss redo ships true-scale human phase forms in the 192-256px range', () => {
+  assert.equal(HMH_WO110_BOSS_REDO.id, 'hmh-wo110-boss-redo-v2');
+  assert.match(HMH_WO110_BOSS_REDO.artDirection, /human market baron/i);
+  assert.match(HMH_WO110_BOSS_REDO.artDirection, /gambler hat/i);
+  assert.match(HMH_WO110_BOSS_REDO.artDirection, /rug cape/i);
   assert.deepEqual(HMH_WO110_BOSS_REDO.trueScaleRangePx, [192, 256]);
   const phaseForms = HMH_WO110_BOSS_REDO.assets.filter((asset) => asset.state === 'phase-form');
   assert.equal(phaseForms.length, 3);
@@ -29,6 +32,16 @@ test('WO-110 boss redo ships true-scale phase forms in the 192-256px range', () 
     assert.equal(asset.renderWidth, asset.frameWidth);
     assertAssetExists(asset);
   }
+});
+
+test('WO-110 generator preserves authored pixel construction instead of geometric placeholder art', () => {
+  const generator = readFileSync(new URL('../scripts/generate-wo110-boss-redo.py', import.meta.url), 'utf8');
+  assert.match(generator, /ART_W = ART_H = 108/);
+  assert.match(generator, /Image\.Resampling\.NEAREST/);
+  assert.match(generator, /Contract ledger and dangling coin chain/);
+  assert.match(generator, /wide-brim market-gambler hat/);
+  assert.match(generator, /rug_pattern/);
+  assert.doesNotMatch(generator, /rounded_rectangle/);
 });
 
 test('WO-110 boss redo includes super-move telegraphs and death spectacle', () => {

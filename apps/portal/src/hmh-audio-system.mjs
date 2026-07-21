@@ -85,7 +85,8 @@ export const HMH_SFX_CUE_REGISTRY = Object.freeze({
 });
 
 export const HMH_AUDIO_MIX = Object.freeze({
-  version: 'wo-41-audio-system-v1',
+  version: 'wo-41-audio-system-v2',
+  maxVoices: 32,
   familyCaps: Object.freeze({ ui: 4, movement: 5, weapon: 16, impact: 14, damage: 4, reward: 12, boss: 4, state: 3, 'level1-interactive': 8 }),
   accessibility: Object.freeze({ reduceMotionVolumeMul: 0.82, maxSynthVolume: 0.16, minAudibleVolume: 0.008 }),
 });
@@ -137,6 +138,120 @@ export function resolveHmhSfxCuePlan(cue, {
     synth: spec.synth,
     samplePreferred: Boolean(spec.samplePreferred),
     spec,
+  });
+}
+
+function voicePriority(voice) {
+  const priority = Number(voice?.priority);
+  return Number.isFinite(priority) ? priority : 0;
+}
+
+function voiceStartedAt(voice) {
+  const startedAt = Number(voice?.startedAt);
+  return Number.isFinite(startedAt) ? startedAt : 0;
+}
+
+function oldestStealableVoice(voices, incomingPriority) {
+  return voices
+    .filter((voice) => voicePriority(voice) <= incomingPriority)
+    .sort((a, b) => voicePriority(a) - voicePriority(b)
+      || voiceStartedAt(a) - voiceStartedAt(b)
+      || String(a?.id ?? '').localeCompare(String(b?.id ?? '')))[0] ?? null;
+}
+
+export function resolveHmhSfxVoiceAllocation({
+  activeVoices = [],
+  incoming = {},
+  maxVoices = HMH_AUDIO_MIX.maxVoices,
+  familyCaps = HMH_AUDIO_MIX.familyCaps,
+} = {}) {
+  const voices = Array.isArray(activeVoices) ? activeVoices.filter(Boolean) : [];
+  const family = incoming.family ?? incoming.spec?.family ?? 'fallback';
+  const priority = voicePriority(incoming);
+  const configuredFamilyCap = Number(familyCaps?.[family] ?? maxVoices);
+  const familyCap = Math.max(0, Math.floor(Number.isFinite(configuredFamilyCap) ? configuredFamilyCap : maxVoices));
+  const globalCap = Math.max(1, Number(maxVoices) || HMH_AUDIO_MIX.maxVoices);
+  if (familyCap === 0) {
+    return Object.freeze({
+      allowed: false,
+      reason: 'family-disabled',
+      family,
+      priority,
+      stealVoiceId: null,
+      activeVoiceCount: voices.length,
+      familyVoiceCount: 0,
+      familyCap,
+      maxVoices: globalCap,
+    });
+  }
+  const familyVoices = voices.filter((voice) => voice.family === family);
+
+  if (familyVoices.length >= familyCap) {
+    const steal = oldestStealableVoice(familyVoices, priority);
+    if (!steal) {
+      return Object.freeze({
+        allowed: false,
+        reason: 'family-priority-protected',
+        family,
+        priority,
+        stealVoiceId: null,
+        activeVoiceCount: voices.length,
+        familyVoiceCount: familyVoices.length,
+        familyCap,
+        maxVoices: globalCap,
+      });
+    }
+    return Object.freeze({
+      allowed: true,
+      reason: 'family-oldest-steal',
+      family,
+      priority,
+      stealVoiceId: steal.id ?? null,
+      activeVoiceCount: voices.length,
+      familyVoiceCount: familyVoices.length,
+      familyCap,
+      maxVoices: globalCap,
+    });
+  }
+
+  if (voices.length >= globalCap) {
+    const steal = oldestStealableVoice(voices, priority);
+    if (!steal) {
+      return Object.freeze({
+        allowed: false,
+        reason: 'global-priority-protected',
+        family,
+        priority,
+        stealVoiceId: null,
+        activeVoiceCount: voices.length,
+        familyVoiceCount: familyVoices.length,
+        familyCap,
+        maxVoices: globalCap,
+      });
+    }
+    return Object.freeze({
+      allowed: true,
+      reason: 'global-priority-steal',
+      family,
+      priority,
+      stealVoiceId: steal.id ?? null,
+      activeVoiceCount: voices.length,
+      familyVoiceCount: familyVoices.length,
+      familyCap,
+      maxVoices: globalCap,
+    });
+  }
+
+  return Object.freeze({
+    allowed: true,
+    reason: 'voice-available',
+    family,
+    priority,
+    stealVoiceId: null,
+    activeVoiceCount: voices.length,
+    familyVoiceCount: familyVoices.length,
+    familyCap,
+    maxVoices: globalCap,
   });
 }
 

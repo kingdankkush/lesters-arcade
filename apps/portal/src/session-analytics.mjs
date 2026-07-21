@@ -28,10 +28,38 @@ function precisePercentile(values, p = 0.5) {
   return Number(value.toFixed(2));
 }
 
+export function planHmhFixedStepFrame({
+  rawDeltaMs = 0,
+  accumulatorMs = 0,
+  fixedStepMs = 1000 / 60,
+  maxSteps = 2,
+  maxFrameDeltaMs = 66,
+} = {}) {
+  const raw = Math.max(0, numeric(rawDeltaMs, 0));
+  const priorAccumulator = Math.max(0, numeric(accumulatorMs, 0));
+  const stepMs = Math.max(0.001, numeric(fixedStepMs, 1000 / 60));
+  const stepLimit = Math.max(1, Math.floor(numeric(maxSteps, 2)));
+  const frameDeltaLimit = Math.max(stepMs, numeric(maxFrameDeltaMs, 66));
+  const deltaMs = Math.min(frameDeltaLimit, raw);
+  const availableMs = priorAccumulator + deltaMs;
+  const maxAccumulatorMs = stepMs * stepLimit;
+  const boundedAccumulatorMs = Math.min(availableMs, maxAccumulatorMs);
+  const steps = Math.min(stepLimit, Math.floor((boundedAccumulatorMs + 1e-9) / stepMs));
+  return Object.freeze({
+    rawDeltaMs: raw,
+    deltaMs,
+    steps,
+    accumulatorMs: Math.max(0, boundedAccumulatorMs - steps * stepMs),
+    droppedSimulationMs: Math.max(0, raw - deltaMs) + Math.max(0, availableMs - boundedAccumulatorMs),
+  });
+}
+
 export function buildHmhPerformanceCertificate(samples = [], {
   maxP95FrameMs = 20,
   maxP99FrameMs = 28,
   maxP95RenderMs = 18,
+  maxDroppedSimulationMs = 2500,
+  maxDroppedSimulationRatio = 0.02,
 } = {}) {
   const input = Array.isArray(samples) ? samples : [];
   const frameDeltas = input
@@ -45,12 +73,48 @@ export function buildHmhPerformanceCertificate(samples = [], {
   const maxOccupancy = Object.fromEntries(occupancyKeys.map((key) => [key, Math.max(0, ...telemetry.map((entry) => numeric(entry.occupancy?.[key], 0)))]));
   const animationKeys = ['visibleEnemies', 'animatedEnemies', 'maxAnimatedEnemies'];
   const maxAnimation = Object.fromEntries(animationKeys.map((key) => [key, Math.max(0, ...telemetry.map((entry) => numeric(entry.animation?.[key], 0)))]));
+  const audioKeys = ['activeVoices', 'peakVoices', 'droppedVoices', 'stolenVoices'];
+  const maxAudio = Object.fromEntries(audioKeys.map((key) => [key, Math.max(0, ...telemetry.map((entry) => numeric(entry.audio?.[key], 0)))]));
+  const audioFamilies = new Set(telemetry.flatMap((entry) => Object.keys(entry.audio?.familyCounts ?? {})));
+  maxAudio.familyCounts = Object.fromEntries([...audioFamilies].sort().map((family) => [
+    family,
+    Math.max(0, ...telemetry.map((entry) => numeric(entry.audio?.familyCounts?.[family], 0))),
+  ]));
+  const simulationKeys = ['lastSteps', 'peakSteps', 'maxStepsPerFrame', 'observedWallClockMs', 'droppedSimulationMs', 'catchUpFrames'];
+  const maxSimulation = Object.fromEntries(simulationKeys.map((key) => [
+    key,
+    Math.max(0, ...telemetry.map((entry) => numeric(entry.simulation?.[key], 0))),
+  ]));
+  const terminalSimulationRatios = [];
+  let previousSimulationSample = null;
+  for (const entry of telemetry) {
+    const current = {
+      observedMs: numeric(entry.simulation?.observedWallClockMs, 0),
+      droppedMs: numeric(entry.simulation?.droppedSimulationMs, 0),
+    };
+    if (current.observedMs <= 0) continue;
+    if (previousSimulationSample
+      && (current.observedMs < previousSimulationSample.observedMs || current.droppedMs < previousSimulationSample.droppedMs)) {
+      terminalSimulationRatios.push(previousSimulationSample.droppedMs / previousSimulationSample.observedMs);
+    }
+    previousSimulationSample = current;
+  }
+  if (previousSimulationSample) {
+    terminalSimulationRatios.push(previousSimulationSample.droppedMs / previousSimulationSample.observedMs);
+  }
+  maxSimulation.droppedSimulationRatio = terminalSimulationRatios.length
+    ? Number(Math.max(...terminalSimulationRatios).toFixed(4))
+    : 0;
   const capFailures = [];
   for (const entry of telemetry) {
     if (numeric(entry.occupancy?.enemyProjectiles, 0) > numeric(entry.budgets?.enemyProjectileCap, Infinity)) capFailures.push('enemy-projectile-cap');
     if (numeric(entry.occupancy?.particles, 0) > numeric(entry.budgets?.maxParticles, Infinity)) capFailures.push('particle-cap');
     if (numeric(entry.occupancy?.floatingTexts, 0) > numeric(entry.budgets?.maxFloatingTexts, Infinity)) capFailures.push('floating-text-cap');
     if (numeric(entry.animation?.animatedEnemies, 0) > numeric(entry.animation?.maxAnimatedEnemies, Infinity)) capFailures.push('animation-cap');
+    if (numeric(entry.audio?.activeVoices, 0) > numeric(entry.budgets?.maxAudioVoices, Infinity)) capFailures.push('audio-voice-cap');
+    for (const [family, count] of Object.entries(entry.audio?.familyCounts ?? {})) {
+      if (numeric(count, 0) > numeric(entry.audio?.familyCaps?.[family], Infinity)) capFailures.push(`audio-family-cap:${family}`);
+    }
   }
   const frameTimeMs = Object.freeze({
     p50: precisePercentile(frameDeltas, 0.5),
@@ -66,10 +130,12 @@ export function buildHmhPerformanceCertificate(samples = [], {
   if (frameTimeMs.p95 > maxP95FrameMs) failures.push('p95-frame-time');
   if (frameTimeMs.p99 > maxP99FrameMs) failures.push('p99-frame-time');
   if (renderTimeMs.p95 > maxP95RenderMs) failures.push('p95-render-time');
+  if (maxSimulation.droppedSimulationMs > maxDroppedSimulationMs) failures.push('simulation-time-dropped');
+  if (maxSimulation.droppedSimulationRatio > maxDroppedSimulationRatio) failures.push('simulation-time-dropped-ratio');
   failures.push(...new Set(capFailures));
   return Object.freeze({
     status: failures.length ? 'FAIL' : 'PASS',
-    thresholds: Object.freeze({ maxP95FrameMs, maxP99FrameMs, maxP95RenderMs }),
+    thresholds: Object.freeze({ maxP95FrameMs, maxP99FrameMs, maxP95RenderMs, maxDroppedSimulationMs, maxDroppedSimulationRatio }),
     sampleCount: input.length,
     telemetrySampleCount: telemetry.length,
     frameSampleCount: frameDeltas.length,
@@ -78,6 +144,8 @@ export function buildHmhPerformanceCertificate(samples = [], {
     updateTimeMs,
     maxOccupancy: Object.freeze(maxOccupancy),
     maxAnimation: Object.freeze(maxAnimation),
+    maxAudio: Object.freeze({ ...maxAudio, familyCounts: Object.freeze(maxAudio.familyCounts) }),
+    maxSimulation: Object.freeze(maxSimulation),
     maxAdaptiveTier: Math.max(0, ...telemetry.map((entry) => numeric(entry.adaptivePerformance?.tier, 0))),
     capViolationCount: capFailures.length,
     failures: Object.freeze([...new Set(failures)]),

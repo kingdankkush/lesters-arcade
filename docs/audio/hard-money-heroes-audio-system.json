@@ -1,12 +1,13 @@
 {
-  "version": "wo-41-audio-system-v1",
+  "version": "wo-41-audio-system-v2",
   "validation": {
     "ok": true,
     "gaps": [],
     "cueCount": 83
   },
   "mix": {
-    "version": "wo-41-audio-system-v1",
+    "version": "wo-41-audio-system-v2",
+    "maxVoices": 32,
     "familyCaps": {
       "ui": 4,
       "movement": 5,

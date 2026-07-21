@@ -13,8 +13,10 @@ test('HMH browser performance certificate tracks frame tails and combat occupanc
     p95RenderMs: 9.5,
     p95UpdateMs: 4.5,
     occupancy: { activeEnemies: 40, playerProjectiles: 32, enemyProjectiles: 48, particles: 120, vfxParticles: 24, floatingTexts: 42, xpGems: 90, powerUps: 8 },
-    budgets: { maxEnemiesOnMap: 55, enemyProjectileCap: 72, maxParticles: 150, maxFloatingTexts: 64 },
+    budgets: { maxEnemiesOnMap: 55, enemyProjectileCap: 72, maxParticles: 150, maxFloatingTexts: 64, maxAudioVoices: 32 },
     animation: { visibleEnemies: 40, animatedEnemies: 32, maxAnimatedEnemies: 36 },
+    audio: { activeVoices: 18, peakVoices: 24, droppedVoices: 2, stolenVoices: 3, familyCounts: { weapon: 12, impact: 6 }, familyCaps: { weapon: 16, impact: 14 } },
+    simulation: { lastSteps: 1, peakSteps: 2, maxStepsPerFrame: 2, observedWallClockMs: 10000, droppedSimulationMs: 100, catchUpFrames: 4 },
     adaptivePerformance: { tier: 1, reason: 'boss-swarm-preemptive' },
   };
   const certificate = buildHmhPerformanceCertificate([
@@ -32,6 +34,13 @@ test('HMH browser performance certificate tracks frame tails and combat occupanc
   assert.equal(certificate.maxOccupancy.activeEnemies, 44);
   assert.equal(certificate.maxOccupancy.enemyProjectiles, 61);
   assert.equal(certificate.maxAnimation.animatedEnemies, 32);
+  assert.equal(certificate.maxAudio.activeVoices, 18);
+  assert.equal(certificate.maxAudio.peakVoices, 24);
+  assert.equal(certificate.maxAudio.droppedVoices, 2);
+  assert.equal(certificate.maxAudio.familyCounts.weapon, 12);
+  assert.equal(certificate.maxSimulation.peakSteps, 2);
+  assert.equal(certificate.maxSimulation.droppedSimulationMs, 100);
+  assert.equal(certificate.maxSimulation.droppedSimulationRatio, 0.01);
   assert.equal(certificate.maxAdaptiveTier, 1);
   assert.equal(certificate.capViolationCount, 0);
 
@@ -43,6 +52,40 @@ test('HMH browser performance certificate tracks frame tails and combat occupanc
   assert.ok(failed.failures.includes('particle-cap'));
   assert.ok(failed.failures.includes('p95-frame-time'));
   assert.ok(failed.failures.includes('p99-frame-time'));
+
+  const audioFailed = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [16, 17], performance: { ...baseTelemetry, audio: { ...baseTelemetry.audio, activeVoices: 33, familyCounts: { weapon: 17 } } } },
+  ]);
+  assert.equal(audioFailed.status, 'FAIL');
+  assert.ok(audioFailed.failures.includes('audio-voice-cap'));
+  assert.ok(audioFailed.failures.includes('audio-family-cap:weapon'));
+
+  const simulationFailed = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [16, 17], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, droppedSimulationMs: 2501 } } },
+  ]);
+  assert.equal(simulationFailed.status, 'FAIL');
+  assert.ok(simulationFailed.failures.includes('simulation-time-dropped'));
+
+  const simulationRatioFailed = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [16, 17], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, observedWallClockMs: 10000, droppedSimulationMs: 500 } } },
+  ]);
+  assert.equal(simulationRatioFailed.status, 'FAIL');
+  assert.ok(simulationRatioFailed.failures.includes('simulation-time-dropped-ratio'));
+
+  const startupDiluted = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [16], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, observedWallClockMs: 10000, droppedSimulationMs: 600 } } },
+    { frameDeltasMs: [16], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, observedWallClockMs: 100000, droppedSimulationMs: 1000 } } },
+  ]);
+  assert.equal(startupDiluted.status, 'PASS');
+  assert.equal(startupDiluted.maxSimulation.droppedSimulationRatio, 0.01);
+
+  const perRunRatioFailed = buildHmhPerformanceCertificate([
+    { frameDeltasMs: [16], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, observedWallClockMs: 50000, droppedSimulationMs: 1500 } } },
+    { frameDeltasMs: [16], performance: { ...baseTelemetry, simulation: { ...baseTelemetry.simulation, observedWallClockMs: 20000, droppedSimulationMs: 400 } } },
+  ]);
+  assert.equal(perRunRatioFailed.status, 'FAIL');
+  assert.equal(perRunRatioFailed.maxSimulation.droppedSimulationRatio, 0.03);
+  assert.ok(perRunRatioFailed.failures.includes('simulation-time-dropped-ratio'));
 });
 
 const SESSIONS = [

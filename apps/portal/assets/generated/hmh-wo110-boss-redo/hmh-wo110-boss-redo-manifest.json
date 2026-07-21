@@ -1,9 +1,10 @@
 {
-  "id": "hmh-wo110-boss-redo-v1",
+  "id": "hmh-wo110-boss-redo-v2",
   "actor": {
     "id": "rug-pull-baron",
     "name": "Rug Pull Baron"
   },
+  "artDirection": "Original human market baron with gambler hat, contract ledger, coin chain, and woven rug cape.",
   "sourcePolicy": "Original repo-owned WO-110 true-scale boss pixel art; no downloaded pixels copied.",
   "checkpoint": "PLAYTEST_CHECKPOINT_3",
   "trueScaleRangePx": [

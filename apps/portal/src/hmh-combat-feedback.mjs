@@ -66,6 +66,27 @@ function clampFlash(value, { reduceFlash = false } = {}) {
   return reduceFlash ? Math.min(4, Math.ceil(frames * 0.42)) : frames;
 }
 
+export function buildCrowdedCombatPlayerMarkerPlan({
+  active = false,
+  roguelikeRun = false,
+  visibleEnemies = 0,
+  bossEnemies = 0,
+  playerX = 0,
+  playerY = 0,
+  frame = 0,
+  reduceMotion = false,
+} = {}) {
+  const denseCombat = Number(visibleEnemies) >= 18 || Number(bossEnemies) > 0;
+  const visible = Boolean(active && roguelikeRun && denseCombat);
+  const safeFrame = Number.isFinite(Number(frame)) ? Number(frame) : 0;
+  return Object.freeze({
+    visible,
+    x: Math.round(Number(playerX) || 0),
+    y: Math.round((Number(playerY) || 0) - 78),
+    pulse: visible && !reduceMotion ? Math.round((Math.sin(safeFrame * 0.16) + 1) * 1.5) : 0,
+  });
+}
+
 function textEntry(text, color = '#ffe84d', dx = 0, dy = 0) {
   return Object.freeze({ text: String(text), color, dx, dy });
 }

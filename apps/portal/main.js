@@ -148,9 +148,10 @@ import {
   canActivateLevelUpChoice,
   isLevelUpInteractionReady,
 } from './src/hmh-upgrade-menu-ui.mjs';
-import { buildCombatFeedbackPlan } from './src/hmh-combat-feedback.mjs';
+import { buildCombatFeedbackPlan, buildCrowdedCombatPlayerMarkerPlan } from './src/hmh-combat-feedback.mjs';
 import { HMH_COPY_SHEET } from './src/hmh-copy-sheet.mjs';
-import { hmhSfxToneFor, resolveHmhSfxCuePlan } from './src/hmh-audio-system.mjs';
+import { HMH_AUDIO_MIX, hmhSfxToneFor, resolveHmhSfxCuePlan, resolveHmhSfxVoiceAllocation } from './src/hmh-audio-system.mjs';
+import { planHmhFixedStepFrame } from './src/session-analytics.mjs';
 
 import {
   ACHIEVEMENTS,
@@ -298,6 +299,17 @@ const ROGUELIKE_MIN_MINIBOSS_SPAWN_DISTANCE_TILES = 24;
 const ROGUELIKE_MIN_BOSS_SPAWN_DISTANCE_TILES = 28;
 const ROGUELIKE_MIN_SPAWN_ATTACK_DELAY_FRAMES = 96;
 const FIXED_STEP_MS = 1000 / LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps;
+const MAX_FIXED_STEPS_PER_FRAME = 2;
+function createFixedStepStats() {
+  return {
+    lastSteps: 0,
+    peakSteps: 0,
+    maxStepsPerFrame: MAX_FIXED_STEPS_PER_FRAME,
+    observedWallClockMs: 0,
+    droppedSimulationMs: 0,
+    catchUpFrames: 0,
+  };
+}
 const NORMAL_HIT_DAMAGE = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.damagePerNormalHitPercent;
 const PLAYER_MAX_HEALTH = LESTER_BLASTER_TACTICAL_COMBAT_V2.health.playerMaxPercent;
 const STAGE_COUNT = 13;
@@ -969,6 +981,11 @@ const arcadeMusic = {
 const combatAudio = {
   sfxEnabled: true,
   audioContext: null,
+  activeVoices: new Set(),
+  nextVoiceId: 0,
+  peakVoices: 0,
+  droppedVoices: 0,
+  stolenVoices: 0,
   lastSfxAt: new Map(),
   sfxBuffers: new Map(),
   sfxLoading: new Map(),
@@ -1318,7 +1335,65 @@ function preloadSfxSamples() {
   }
 }
 
-function playSfxSample(cue, volume) {
+function releaseSfxVoice(voice) {
+  if (!voice || voice.released) return;
+  voice.released = true;
+  combatAudio.activeVoices.delete(voice);
+  for (const node of voice.nodes ?? []) {
+    try { node.disconnect(); } catch { /* already disconnected */ }
+  }
+  try { voice.gain?.disconnect(); } catch { /* already disconnected */ }
+  voice.nodes.length = 0;
+}
+
+function stopSfxVoice(voice) {
+  if (!voice || voice.released) return;
+  for (const node of voice.nodes ?? []) {
+    try { node.stop(); } catch { /* already stopped */ }
+  }
+  releaseSfxVoice(voice);
+}
+
+function resetCombatAudioVoiceState() {
+  for (const voice of [...combatAudio.activeVoices]) stopSfxVoice(voice);
+  combatAudio.activeVoices.clear();
+  combatAudio.peakVoices = 0;
+  combatAudio.droppedVoices = 0;
+  combatAudio.stolenVoices = 0;
+  combatAudio.lastSfxAt.clear();
+}
+
+function allocateSfxVoice(plan, startedAt) {
+  const allocation = resolveHmhSfxVoiceAllocation({
+    activeVoices: [...combatAudio.activeVoices],
+    incoming: plan,
+  });
+  if (!allocation.allowed) {
+    combatAudio.droppedVoices += 1;
+    return null;
+  }
+  if (allocation.stealVoiceId) {
+    const stolen = [...combatAudio.activeVoices].find((voice) => voice.id === allocation.stealVoiceId);
+    if (stolen) {
+      combatAudio.stolenVoices += 1;
+      stopSfxVoice(stolen);
+    }
+  }
+  const voice = {
+    id: `sfx-${combatAudio.nextVoiceId += 1}`,
+    family: plan.family,
+    priority: plan.priority,
+    startedAt,
+    nodes: [],
+    gain: null,
+    released: false,
+  };
+  combatAudio.activeVoices.add(voice);
+  combatAudio.peakVoices = Math.max(combatAudio.peakVoices, combatAudio.activeVoices.size);
+  return voice;
+}
+
+function playSfxSample(cue, volume, voice) {
   const ctx = combatAudio.audioContext;
   const buffer = combatAudio.sfxBuffers.get(cue);
   if (!ctx || !buffer) return false;
@@ -1329,21 +1404,29 @@ function playSfxSample(cue, volume) {
   const source = ctx.createBufferSource();
   source.buffer = buffer;
   source.connect(gain);
+  voice.gain = gain;
+  voice.nodes.push(source);
+  source.onended = () => releaseSfxVoice(voice);
   source.start();
   return true;
 }
 
-function playSfxSynth(cue, volume, synth = 'triangle') {
+function playSfxSynth(cue, volume, synth = 'triangle', voice) {
   const ctx = combatAudio.audioContext;
   if (!ctx) return false;
   const gain = ctx.createGain();
   gain.gain.value = volume;
   gain.connect(ctx.destination);
-  sfxToneFor(cue).forEach((frequency, index) => {
+  const tones = sfxToneFor(cue);
+  if (!tones.length) return false;
+  voice.gain = gain;
+  tones.forEach((frequency, index) => {
     const oscillator = ctx.createOscillator();
     oscillator.type = ['sine', 'square', 'sawtooth', 'triangle'].includes(synth) ? synth : 'triangle';
     oscillator.frequency.value = frequency;
     oscillator.connect(gain);
+    voice.nodes.push(oscillator);
+    if (index === tones.length - 1) oscillator.onended = () => releaseSfxVoice(voice);
     const start = ctx.currentTime + index * 0.045;
     oscillator.start(start);
     oscillator.stop(start + 0.075);
@@ -1370,9 +1453,13 @@ function playSfxCue(cue, volume = 0.05) {
   preloadSfxSamples();
   // Prefer the real CC0 sample; fall back to the synth tone until it decodes
   // (or permanently, if the sample failed to load).
-  if (plan.samplePreferred && playSfxSample(cue, plan.volume)) return true;
+  const voice = allocateSfxVoice(plan, now);
+  if (!voice) return false;
+  if (plan.samplePreferred && playSfxSample(cue, plan.volume, voice)) return true;
   loadSfxSample(cue);
-  return playSfxSynth(cue, plan.volume, plan.synth);
+  const played = playSfxSynth(cue, plan.volume, plan.synth, voice);
+  if (!played) releaseSfxVoice(voice);
+  return played;
 }
 
 function weaponFireCueFor(weaponId) {
@@ -1762,6 +1849,7 @@ const combat = {
   frameTimes: [],
   updateTimes: [],
   renderTimes: [],
+  fixedStepStats: createFixedStepStats(),
   fps: 60,
   adaptivePerformance: createAdaptivePerformanceState(),
   enemyRenderStats: { visibleEnemies: 0, animatedEnemies: 0, maxAnimatedEnemies: 0 },
@@ -5896,6 +5984,7 @@ function showSignOutConfirmModal() {
 }
 
 function executeSignOut() {
+  resetCombatAudioVoiceState();
   playSfxCue('menu-click', 0.05);
 
   // 1) Stop any in-progress combat loop so the canvas + game loop don't
@@ -5911,6 +6000,7 @@ function executeSignOut() {
   combat.frameTimes.length = 0;
   combat.updateTimes.length = 0;
   combat.renderTimes.length = 0;
+  combat.fixedStepStats = createFixedStepStats();
 
   // 2) Tear down any lingering full-screen or modal overlays that were left
   //    around from the in-progress session (level-up cards, HMH loading,
@@ -6630,6 +6720,7 @@ function renderCodexPanels() {
 }
 
 async function startCombat(options = {}) {
+  resetCombatAudioVoiceState();
   const level = getHmhCampaignLevel(options.levelId ?? combat.currentCampaignLevelId ?? DEFAULT_CAMPAIGN_LEVEL_ID);
   const carryOver = options.carryOver ?? null;
   const startPendingBegin = Boolean(options.startPendingBegin);
@@ -6663,6 +6754,7 @@ async function startCombat(options = {}) {
   combat.frameTimes.length = 0;
   combat.updateTimes.length = 0;
   combat.renderTimes.length = 0;
+  combat.fixedStepStats = createFixedStepStats();
   combat.adaptivePerformance = createAdaptivePerformanceState();
   _obstacleCacheFrame = -1;
   _obstacleCache = [];
@@ -8188,6 +8280,10 @@ function hmhVisualDebugPerformanceSnapshot() {
     powerUps: combat.powerUps.length,
   };
   occupancy.totalTrackedObjects = Object.values(occupancy).reduce((sum, value) => sum + value, 0);
+  const audioFamilyCounts = [...combatAudio.activeVoices].reduce((counts, voice) => {
+    counts[voice.family] = (counts[voice.family] ?? 0) + 1;
+    return counts;
+  }, {});
   const groundCell = getCombatGroundPlan().cellAt(Math.round(combat.playerMapX), Math.round(combat.playerMapY));
   return {
     fps: combat.fps,
@@ -8205,8 +8301,18 @@ function hmhVisualDebugPerformanceSnapshot() {
       enemyProjectileCap: director.enemyProjectileCap,
       maxParticles: performanceBudget.maxParticles,
       maxFloatingTexts: performanceBudget.maxFloatingTexts,
+      maxAudioVoices: HMH_AUDIO_MIX.maxVoices,
     },
     animation: { ...combat.enemyRenderStats },
+    audio: {
+      activeVoices: combatAudio.activeVoices.size,
+      peakVoices: combatAudio.peakVoices,
+      droppedVoices: combatAudio.droppedVoices,
+      stolenVoices: combatAudio.stolenVoices,
+      familyCounts: audioFamilyCounts,
+      familyCaps: HMH_AUDIO_MIX.familyCaps,
+    },
+    simulation: { ...combat.fixedStepStats },
     enemyPursuitModes: combat.enemies.reduce((counts, enemy) => {
       const mode = enemy.pursuitMode ?? 'unplanned';
       counts[mode] = (counts[mode] ?? 0) + 1;
@@ -8253,6 +8359,10 @@ function setupHmhSoakStressBossSwarm({ targetEnemyCount = 48, elapsedSeconds = 1
   combat.activePoiEncounterId = null;
   combat.triggeredBossBeatIds = new Set();
   combat.adaptivePerformance = createAdaptivePerformanceState();
+  combatAudio.peakVoices = combatAudio.activeVoices.size;
+  combatAudio.droppedVoices = 0;
+  combatAudio.stolenVoices = 0;
+  combat.fixedStepStats = createFixedStepStats();
   combat.invulnerableFrames = Math.max(combat.invulnerableFrames, 60 * 60 * 60);
   for (let index = 0; index < target - 1; index += 1) {
     spawnRoguelikeEnemy(director, {
@@ -12708,6 +12818,7 @@ function drawRoguelikeScene(ctx, width, height) {
 
   drawBullets(ctx);
   drawParticles(ctx);
+  drawCrowdedCombatPlayerMarker(ctx);
   drawFloatingTexts(ctx);
   drawHud(ctx);
   drawRoguelikeMinimap(ctx, width, height);
@@ -12905,10 +13016,18 @@ function drawCombatScene(timestamp = 0) {
   combat.viewCenterY = height / 2;
 
   if (!combat.lastTimestamp) combat.lastTimestamp = timestamp;
-  const delta = Math.min(66, timestamp - combat.lastTimestamp);
+  const fixedStepPlan = planHmhFixedStepFrame({
+    rawDeltaMs: timestamp - combat.lastTimestamp,
+    accumulatorMs: combat.accumulatorMs,
+    fixedStepMs: FIXED_STEP_MS,
+    maxSteps: MAX_FIXED_STEPS_PER_FRAME,
+    maxFrameDeltaMs: 66,
+  });
   combat.lastTimestamp = timestamp;
-  combat.accumulatorMs += delta;
-  combat.frameTimes.push(delta || FIXED_STEP_MS);
+  combat.fixedStepStats.observedWallClockMs += fixedStepPlan.rawDeltaMs;
+  combat.fixedStepStats.droppedSimulationMs += fixedStepPlan.droppedSimulationMs;
+  combat.accumulatorMs = fixedStepPlan.accumulatorMs;
+  combat.frameTimes.push(fixedStepPlan.deltaMs || FIXED_STEP_MS);
   if (combat.frameTimes.length > 45) combat.frameTimes.shift();
   const avgFrame = combat.frameTimes.reduce((sum, frame) => sum + frame, 0) / combat.frameTimes.length;
   combat.fps = Math.round(1000 / Math.max(avgFrame, 1));
@@ -12924,10 +13043,13 @@ function drawCombatScene(timestamp = 0) {
   if (dom.fpsPill) dom.fpsPill.textContent = `${combat.fps}fps / target ${LESTER_BLASTER_PERFORMANCE_TARGETS.targetFps}`;
 
   const updateStartedAt = performance.now();
-  while (combat.accumulatorMs >= FIXED_STEP_MS) {
+  const fixedSteps = fixedStepPlan.steps;
+  for (let stepIndex = 0; stepIndex < fixedSteps; stepIndex += 1) {
     updateCombatStep(FIXED_STEP_MS);
-    combat.accumulatorMs -= FIXED_STEP_MS;
   }
+  combat.fixedStepStats.lastSteps = fixedSteps;
+  combat.fixedStepStats.peakSteps = Math.max(combat.fixedStepStats.peakSteps, fixedSteps);
+  if (fixedSteps > 1) combat.fixedStepStats.catchUpFrames += 1;
   combat.updateTimes.push(performance.now() - updateStartedAt);
   if (combat.updateTimes.length > 90) combat.updateTimes.shift();
 
@@ -13223,6 +13345,49 @@ function playerFacingLeft() {
   const left = combat.keys.has('a') || combat.keys.has('arrowleft');
   const right = combat.keys.has('d') || combat.keys.has('arrowright');
   return left && !right;
+}
+
+function drawCrowdedCombatPlayerMarker(ctx) {
+  const visibleEnemies = combat.enemyRenderStats.visibleEnemies;
+  let bossEnemies = 0;
+  for (const enemy of combat.enemies) {
+    if (enemy.boss || enemy.miniBoss || enemy.signatureBoss) bossEnemies += 1;
+  }
+  const plan = buildCrowdedCombatPlayerMarkerPlan({
+    active: combat.active,
+    roguelikeRun: combat.roguelikeRun,
+    visibleEnemies,
+    bossEnemies,
+    playerX: combat.playerX,
+    playerY: combat.playerY,
+    frame: combat.frame,
+    reduceMotion: gameSettings.reduceMotion,
+  });
+  if (!plan.visible) return;
+  const { x, y, pulse } = plan;
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 0.94;
+  ctx.fillStyle = 'rgba(5, 8, 20, 0.88)';
+  ctx.strokeStyle = '#19f7ff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(x, y - 8 - pulse);
+  ctx.lineTo(x + 8, y - pulse);
+  ctx.lineTo(x, y + 8 - pulse);
+  ctx.lineTo(x - 8, y - pulse);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#ffe84d';
+  ctx.fillRect(x - 2, y - 2 - pulse, 4, 4);
+  ctx.strokeStyle = 'rgba(25, 247, 255, 0.72)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y + 9 - pulse);
+  ctx.lineTo(x, y + 16);
+  ctx.stroke();
+  ctx.restore();
 }
 
 function drawPlayer(ctx) {

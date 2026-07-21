@@ -5,9 +5,11 @@ import test from 'node:test';
 import { HMH_SFX_MANIFEST } from '../apps/portal/assets/audio/sfx/sfx-manifest.mjs';
 import { COMBAT_FEEDBACK_MOMENTS } from '../apps/portal/src/hmh-combat-feedback.mjs';
 import {
+  HMH_AUDIO_MIX,
   HMH_SFX_CUE_REGISTRY,
   hmhSfxToneFor,
   resolveHmhSfxCuePlan,
+  resolveHmhSfxVoiceAllocation,
   validateHmhAudioSystem,
 } from '../apps/portal/src/hmh-audio-system.mjs';
 
@@ -48,6 +50,65 @@ test('WO-41 SFX plans apply per-cue cooldowns and volume mix rules', () => {
   assert.ok(boss.volume < 0.125, 'reduced motion should dampen heavy boss cue volume');
 });
 
+test('AAA SFX voice allocator enforces family and global caps with priority-safe stealing', () => {
+  const available = resolveHmhSfxVoiceAllocation({
+    activeVoices: [{ id: 'weapon-a', family: 'weapon', priority: 2, startedAt: 100 }],
+    incoming: { family: 'weapon', priority: 2 },
+  });
+  assert.equal(available.allowed, true);
+  assert.equal(available.stealVoiceId, null);
+
+  const familyVoices = Array.from({ length: 16 }, (_, index) => ({
+    id: `weapon-${index}`,
+    family: 'weapon',
+    priority: 2,
+    startedAt: 100 + index,
+  }));
+  const familySteal = resolveHmhSfxVoiceAllocation({
+    activeVoices: familyVoices,
+    incoming: { family: 'weapon', priority: 2 },
+  });
+  assert.equal(familySteal.allowed, true);
+  assert.equal(familySteal.reason, 'family-oldest-steal');
+  assert.equal(familySteal.stealVoiceId, 'weapon-0');
+
+  const disabledFamily = resolveHmhSfxVoiceAllocation({
+    activeVoices: [],
+    incoming: { family: 'ui', priority: 5 },
+    familyCaps: { ui: 0 },
+  });
+  assert.equal(disabledFamily.allowed, false);
+  assert.equal(disabledFamily.reason, 'family-disabled');
+
+  const protectedVoices = Array.from({ length: 32 }, (_, index) => ({
+    id: `critical-${index}`,
+    family: index % 2 ? 'boss' : 'damage',
+    priority: 5,
+    startedAt: index,
+  }));
+  const denied = resolveHmhSfxVoiceAllocation({
+    activeVoices: protectedVoices,
+    incoming: { family: 'ui', priority: 1 },
+  });
+  assert.equal(denied.allowed, false);
+  assert.equal(denied.reason, 'global-priority-protected');
+
+  const mixedVoices = Array.from({ length: 32 }, (_, index) => ({
+    id: `voice-${index}`,
+    family: index < 20 ? 'weapon' : 'impact',
+    priority: index < 20 ? 1 : 3,
+    startedAt: index,
+  }));
+  const bossSteal = resolveHmhSfxVoiceAllocation({
+    activeVoices: mixedVoices,
+    incoming: { family: 'boss', priority: 5 },
+  });
+  assert.equal(bossSteal.allowed, true);
+  assert.equal(bossSteal.reason, 'global-priority-steal');
+  assert.equal(bossSteal.stealVoiceId, 'voice-0');
+  assert.equal(HMH_AUDIO_MIX.maxVoices, 32);
+});
+
 test('WO-41 synth tones remain available for sample gaps and new gameplay cues', () => {
   for (const cue of ['hero-select', 'enemy-death', 'xp-pickup', 'grenade-boom', 'level-up', 'level1-gate-unlock']) {
     const tone = hmhSfxToneFor(cue);
@@ -63,6 +124,12 @@ test('WO-41 runtime playSfxCue uses the central audio system planner', () => {
 
   assert.equal(main.includes("./src/hmh-audio-system.mjs"), true);
   assert.equal(main.includes('resolveHmhSfxCuePlan('), true);
+  assert.equal(main.includes('resolveHmhSfxVoiceAllocation('), true);
+  assert.equal(main.includes('activeVoices: new Set()'), true);
+  assert.equal(main.includes('function resetCombatAudioVoiceState()'), true);
+  const startCombatSource = main.slice(main.indexOf('async function startCombat'), main.indexOf('function endCombat'));
+  assert.match(startCombatSource, /resetCombatAudioVoiceState\(\)/);
+  assert.equal(main.includes('source.onended'), true);
   assert.equal(main.includes('hmhSfxToneFor(cue)'), true);
   assert.equal(syntaxCheck.includes('apps/portal/src/hmh-audio-system.mjs'), true);
   assert.equal(syntaxCheck.includes('tests/hmh-audio-system.test.mjs'), true);
@@ -72,6 +139,15 @@ test('WO-41 registry keeps existing CC0 sample manifest cues sample-preferred', 
   for (const cue of Object.keys(HMH_SFX_MANIFEST.cues)) {
     assert.equal(HMH_SFX_CUE_REGISTRY[cue].samplePreferred, true, `${cue} should prefer the CC0 sample`);
   }
+});
+
+test('AAA generated audio report documents the enforced v2 voice budget', () => {
+  const report = JSON.parse(repoText('docs/audio/hard-money-heroes-audio-system.json'));
+  const markdown = repoText('docs/audio/hard-money-heroes-audio-system.md');
+  assert.equal(report.version, HMH_AUDIO_MIX.version);
+  assert.equal(report.mix.maxVoices, 32);
+  assert.match(markdown, /Global SFX voice cap: 32/);
+  assert.match(markdown, /runtime-enforced family caps with priority-safe oldest-voice stealing/);
 });
 
 test('SHIP audio inventory provides at least 64 playable and meaningfully distinct cues', () => {

@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
+import { buildCrowdedCombatPlayerMarkerPlan } from '../apps/portal/src/hmh-combat-feedback.mjs';
+import { planHmhFixedStepFrame } from '../apps/portal/src/session-analytics.mjs';
+
 const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const visualScript = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
 const browserSoakScript = readFileSync(new URL('../scripts/hmh-browser-soak.mjs', import.meta.url), 'utf8');
@@ -101,4 +104,42 @@ test('browser soak crosses the READY gate and proves active combat time advances
   assert.match(mainSource, /attackTimer: 90 \+ \(\(index \* 37\) % 240\)/);
   assert.match(mainSource, /const stressDurabilityMultiplier = 20/);
   assert.match(mainSource, /__hmhSoakStressBossSwarm/);
+});
+
+test('crowded boss combat keeps a bounded player locator above particles', () => {
+  const quiet = buildCrowdedCombatPlayerMarkerPlan({ active: true, roguelikeRun: true, visibleEnemies: 17, bossEnemies: 0 });
+  assert.equal(quiet.visible, false);
+  const crowded = buildCrowdedCombatPlayerMarkerPlan({ active: true, roguelikeRun: true, visibleEnemies: 18, bossEnemies: 0, playerX: 100.4, playerY: 200.4, frame: 10 });
+  assert.equal(crowded.visible, true);
+  assert.equal(crowded.x, 100);
+  assert.equal(crowded.y, 122);
+  assert.ok(crowded.pulse >= 0 && crowded.pulse <= 3);
+  const bossOverride = buildCrowdedCombatPlayerMarkerPlan({ active: true, roguelikeRun: true, visibleEnemies: 1, bossEnemies: 1, reduceMotion: true });
+  assert.equal(bossOverride.visible, true);
+  assert.equal(bossOverride.pulse, 0);
+  assert.equal(buildCrowdedCombatPlayerMarkerPlan({ active: false, roguelikeRun: true, visibleEnemies: 48, bossEnemies: 1 }).visible, false);
+  const particleDraw = mainSource.indexOf('  drawParticles(ctx);');
+  const markerDraw = mainSource.indexOf('  drawCrowdedCombatPlayerMarker(ctx);');
+  const floatingTextDraw = mainSource.indexOf('  drawFloatingTexts(ctx);');
+  assert.ok(particleDraw >= 0 && markerDraw > particleDraw, 'player locator must render after particles');
+  assert.ok(floatingTextDraw > markerDraw, 'player locator must remain below textual UI');
+});
+
+test('fixed-step catch-up is bounded and telemetry records discarded simulation time', () => {
+  const stepMs = 1000 / 60;
+  const normal = planHmhFixedStepFrame({ rawDeltaMs: stepMs, accumulatorMs: 0, fixedStepMs: stepMs, maxSteps: 2 });
+  assert.equal(normal.steps, 1);
+  assert.equal(normal.droppedSimulationMs, 0);
+  assert.ok(normal.accumulatorMs < 0.000001);
+
+  const stalled = planHmhFixedStepFrame({ rawDeltaMs: 200, accumulatorMs: 0, fixedStepMs: stepMs, maxSteps: 2, maxFrameDeltaMs: 66 });
+  assert.equal(stalled.steps, 2);
+  assert.equal(stalled.deltaMs, 66);
+  assert.ok(Math.abs(stalled.droppedSimulationMs - (200 - stepMs * 2)) < 0.000001);
+  assert.ok(stalled.accumulatorMs < 0.000001);
+
+  const backlog = planHmhFixedStepFrame({ rawDeltaMs: 20, accumulatorMs: 20, fixedStepMs: stepMs, maxSteps: 2, maxFrameDeltaMs: 66 });
+  assert.equal(backlog.steps, 2);
+  assert.ok(Math.abs(backlog.droppedSimulationMs - (40 - stepMs * 2)) < 0.000001);
+  assert.ok(backlog.accumulatorMs < 0.000001);
 });
