@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const visualScript = readFileSync(new URL('../scripts/visual-regression.mjs', import.meta.url), 'utf8');
+const browserSoakScript = readFileSync(new URL('../scripts/hmh-browser-soak.mjs', import.meta.url), 'utf8');
 const mainSource = readFileSync(new URL('../apps/portal/main.js', import.meta.url), 'utf8');
 
 test('WO-65 visual regression harness is command-wired and captures real HMH canvas frames', () => {
@@ -66,4 +67,17 @@ test('WO-65 visual regression harness is command-wired and captures real HMH can
   assert.match(visualScript, /meanAbsPerChannel <= 0\.25/);
   assert.match(visualScript, /WO-65 smoke captures live canvas frames/);
   assert.match(visualScript, /docs\/testing\/VISUAL_BASELINES/);
+});
+
+test('browser soak crosses the READY gate and proves active combat time advances', () => {
+  assert.match(browserSoakScript, /Input\.dispatchKeyEvent[^]*code: 'Space'/);
+  assert.match(browserSoakScript, /data-stat="survived"/);
+  assert.match(browserSoakScript, /runElapsedSeconds/);
+  assert.match(browserSoakScript, /activeRunAdvanceSeconds >= minimumRunAdvanceSeconds/);
+  assert.match(browserSoakScript, /querySelector\('#levelUpOverlay'\)/);
+  assert.match(browserSoakScript, /dataset\.armed === 'true'/);
+  assert.match(browserSoakScript, /code: 'Digit1'/);
+  assert.match(browserSoakScript, /levelUpSelections/);
+  assert.match(browserSoakScript, /\.run-it-back-button/);
+  assert.match(browserSoakScript, /runRestarts/);
 });

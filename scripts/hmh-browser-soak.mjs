@@ -121,6 +121,16 @@ async function waitFor(client, expression, timeoutMs = 45_000) {
   throw new Error(`Timed out waiting for browser condition: ${expression}`);
 }
 
+async function activateCombatRun(client) {
+  await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: ' ', code: 'Space' });
+  await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: ' ', code: 'Space' });
+  await waitFor(client, `(() => {
+    const text = document.querySelector('[data-stat="survived"] strong')?.textContent?.trim() ?? '';
+    const [minutesPart, secondsPart] = text.split(':').map(Number);
+    return Number.isFinite(minutesPart) && Number.isFinite(secondsPart) && minutesPart * 60 + secondsPart > 0;
+  })()`, 15_000);
+}
+
 function median(values) {
   const ordered = [...values].sort((a, b) => a - b);
   if (!ordered.length) return 0;
@@ -182,10 +192,47 @@ async function main() {
     await waitFor(client, "(() => { const overlay = document.querySelector('#hmhLoadingOverlay'); return !overlay || overlay.hidden || getComputedStyle(overlay).display === 'none'; })()", 90_000);
     await sleep(8_000);
     await waitFor(client, "(() => { const overlay = document.querySelector('#hmhLoadingOverlay'); return !overlay || overlay.hidden || getComputedStyle(overlay).display === 'none'; })()", 90_000);
+    await activateCombatRun(client);
 
     const soakStarted = Date.now();
     let sampleIndex = 0;
+    let levelUpSelections = 0;
+    let runRestarts = 0;
+    let previousRunElapsedSeconds = 0;
+    let cumulativeRunSeconds = 0;
     while (Date.now() - soakStarted < durationMs) {
+      const gameOverVisible = await evaluate(client, `(() => {
+        const summary = document.querySelector('#combatGameOverSummary');
+        return Boolean(summary && !summary.hidden && getComputedStyle(summary).display !== 'none' && summary.querySelector('.run-it-back-button'));
+      })()`);
+      if (gameOverVisible) {
+        await evaluate(client, "document.querySelector('#combatGameOverSummary .run-it-back-button').click(); true");
+        await waitFor(client, `(() => {
+          const summary = document.querySelector('#combatGameOverSummary');
+          const loading = document.querySelector('#hmhLoadingOverlay');
+          const summaryClosed = !summary || summary.hidden || getComputedStyle(summary).display === 'none';
+          const loadingClosed = !loading || loading.hidden || getComputedStyle(loading).display === 'none';
+          return summaryClosed && loadingClosed;
+        })()`, 90_000);
+        await sleep(1_000);
+        await activateCombatRun(client);
+        previousRunElapsedSeconds = 0;
+        runRestarts += 1;
+      }
+      const levelUpVisible = await evaluate(client, `(() => {
+        const overlay = document.querySelector('#levelUpOverlay');
+        return Boolean(overlay && !overlay.hidden && getComputedStyle(overlay).display !== 'none');
+      })()`);
+      if (levelUpVisible) {
+        await waitFor(client, "document.querySelector('#levelUpOverlay')?.dataset.armed === 'true'", 15_000);
+        await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key: '1', code: 'Digit1' });
+        await client.send('Input.dispatchKeyEvent', { type: 'keyUp', key: '1', code: 'Digit1' });
+        levelUpSelections += 1;
+        await waitFor(client, `(() => {
+          const overlay = document.querySelector('#levelUpOverlay');
+          return !overlay || overlay.hidden || getComputedStyle(overlay).display === 'none';
+        })()`, 15_000);
+      }
       const key = sampleIndex % 4 < 2 ? 'd' : 'a';
       const code = key === 'd' ? 'KeyD' : 'KeyA';
       await client.send('Input.dispatchKeyEvent', { type: 'keyDown', key, code });
@@ -204,6 +251,8 @@ async function main() {
         });
         const elapsed = performance.now() - start;
         const canvas = document.querySelector('#combatCanvas');
+        const survivedText = document.querySelector('[data-stat="survived"] strong')?.textContent?.trim() ?? '';
+        const [runMinutes, runSeconds] = survivedText.split(':').map(Number);
         return {
           elapsedMs: performance.now(),
           fps: frames * 1000 / elapsed,
@@ -212,13 +261,24 @@ async function main() {
           domNodes: document.getElementsByTagName('*').length,
           canvasVisible: Boolean(canvas && !canvas.hidden && canvas.width > 0 && canvas.height > 0),
           shellStep: document.querySelector('#officialApp')?.dataset.shellStep ?? null,
+          runElapsedSeconds: Number.isFinite(runMinutes) && Number.isFinite(runSeconds)
+            ? runMinutes * 60 + runSeconds
+            : null,
           loading: (() => {
             const overlay = document.querySelector('#hmhLoadingOverlay');
             return Boolean(overlay && !overlay.hidden && getComputedStyle(overlay).display !== 'none');
           })(),
         };
       })()`);
-      samples.push({ atSeconds: Number(((Date.now() - soakStarted) / 1000).toFixed(2)), ...sample });
+      if (Number.isFinite(sample.runElapsedSeconds)) {
+        cumulativeRunSeconds += Math.max(0, sample.runElapsedSeconds - previousRunElapsedSeconds);
+        previousRunElapsedSeconds = sample.runElapsedSeconds;
+      }
+      samples.push({
+        atSeconds: Number(((Date.now() - soakStarted) / 1000).toFixed(2)),
+        ...sample,
+        cumulativeRunSeconds,
+      });
       await writeFile(PARTIAL_JSON, `${JSON.stringify({
         status: 'RUNNING',
         startedAt: startedAt.toISOString(),
@@ -253,12 +313,18 @@ async function main() {
     const fpsValues = samples.map((sample) => sample.fps).filter(Number.isFinite);
     const minFps = fpsValues.length ? Math.min(...fpsValues) : 0;
     const averageFps = fpsValues.length ? fpsValues.reduce((sum, value) => sum + value, 0) / fpsValues.length : 0;
+    const firstRunElapsedSeconds = samples[0]?.runElapsedSeconds ?? 0;
+    const lastRunElapsedSeconds = samples.at(-1)?.runElapsedSeconds ?? 0;
+    const activeRunAdvanceSeconds = (samples.at(-1)?.cumulativeRunSeconds ?? 0) - (samples[0]?.cumulativeRunSeconds ?? 0);
+    const minimumRunAdvanceSeconds = Math.max(1, Math.floor((durationMs / 1000) * 0.8));
     const leakSuspected = heapGrowthBytes > 32 * 1024 * 1024 && heapGrowthPercent > 35;
     const pass = samples.length >= 2
       && consoleIssues.length === 0
       && samples.every((sample) => sample.canvasVisible && !sample.loading)
       && averageFps >= 50
       && minFps >= 40
+      && firstRunElapsedSeconds > 0
+      && activeRunAdvanceSeconds >= minimumRunAdvanceSeconds
       && !leakSuspected;
     const report = {
       startedAt: startedAt.toISOString(),
@@ -270,6 +336,12 @@ async function main() {
       sampleCount: samples.length,
       averageFps: Number(averageFps.toFixed(2)),
       minFps: Number(minFps.toFixed(2)),
+      firstRunElapsedSeconds,
+      lastRunElapsedSeconds,
+      activeRunAdvanceSeconds,
+      minimumRunAdvanceSeconds,
+      levelUpSelections,
+      runRestarts,
       firstHeapMedianBytes: Math.round(firstMedian),
       lastHeapMedianBytes: Math.round(lastMedian),
       heapGrowthBytes: Math.round(heapGrowthBytes),
@@ -281,7 +353,7 @@ async function main() {
       finalScreenshot: 'docs/testing/VISUAL_BASELINES/current/soak/hmh-soak-final.png',
     };
     await writeFile(REPORT_JSON, `${JSON.stringify(report, null, 2)}\n`);
-    await writeFile(REPORT_MD, `# HMH Browser Soak Certificate\n\n- Status: **${report.status}**\n- Requested duration: ${report.requestedMinutes} minutes\n- Actual duration: ${report.actualMinutes} minutes\n- Samples: ${report.sampleCount}\n- Average FPS: ${report.averageFps}\n- Minimum FPS: ${report.minFps}\n- Heap growth: ${report.heapGrowthBytes} bytes (${report.heapGrowthPercent}%)\n- Leak suspected: ${report.leakSuspected ? 'yes' : 'no'}\n- Console/exception issues: ${report.consoleIssues.length}\n- Post-GC heap: ${report.afterGc.heapUsed ?? 'unavailable'} bytes\n\nRaw samples are in \`docs/testing/hmh-browser-soak.json\`. The ending screenshot is generated under the ignored current-baseline directory.\n`);
+    await writeFile(REPORT_MD, `# HMH Browser Soak Certificate\n\n- Status: **${report.status}**\n- Requested duration: ${report.requestedMinutes} minutes\n- Actual duration: ${report.actualMinutes} minutes\n- Active combat advance: ${report.activeRunAdvanceSeconds}s (${report.minimumRunAdvanceSeconds}s required)\n- Ending run timer: ${report.lastRunElapsedSeconds}s\n- Level-up selections: ${report.levelUpSelections}\n- Free-run restarts: ${report.runRestarts}\n- Samples: ${report.sampleCount}\n- Average FPS: ${report.averageFps}\n- Minimum FPS: ${report.minFps}\n- Heap growth: ${report.heapGrowthBytes} bytes (${report.heapGrowthPercent}%)\n- Leak suspected: ${report.leakSuspected ? 'yes' : 'no'}\n- Console/exception issues: ${report.consoleIssues.length}\n- Post-GC heap: ${report.afterGc.heapUsed ?? 'unavailable'} bytes\n\nRaw samples are in \`docs/testing/hmh-browser-soak.json\`. The ending screenshot is generated under the ignored current-baseline directory.\n`);
     console.log(`Browser soak ${report.status}: ${report.actualMinutes}m, ${report.sampleCount} samples, avg ${report.averageFps} FPS, min ${report.minFps} FPS, heap ${report.heapGrowthPercent}%, console issues ${report.consoleIssues.length}.`);
     await rm(PARTIAL_JSON, { force: true });
     if (!pass) process.exitCode = 1;
